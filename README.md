@@ -21,7 +21,7 @@ The [wiki](https://github.com/TenMei/tenio/wiki) provides implementation level d
 - [TenIOLibgdx](https://github.com/TenMei/tenio-libgdx.git)
 
 ## Dependencies
-- netty-all 4.1.28.Final
+- netty-all 4.1.42.Final
 - mina-core 2.0.19
 - msgpack 0.6.12
 - guava 25.1-jre
