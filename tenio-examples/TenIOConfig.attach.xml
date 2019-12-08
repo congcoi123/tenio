@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server>
+
+	<Properties>
+		<Property name="name">tenio-examples</Property>
+		<Property name="id">tenio-examples</Property>
+		<Property name="versionCode">1</Property>
+		<Property name="versionName">1.0</Property>
+	</Properties>
+
+	<!-- Netty: 1, Apache Mina: 2 -->
+	<Network>
+		<Nio>1</Nio>
+	</Network>
+
+	<Port>
+		<Socket>8032</Socket>		<!-- Null with value -1 -->
+		<Datagram>8031</Datagram>	<!-- Null with value -1 -->
+		<WebSocket>-1</WebSocket>	<!-- Null with value -1 -->
+	</Port>
+
+	<Configuration>
+		<Properties>
+			<Property name="keepPlayerOnDisconnect">false</Property>
+			<Property name="maxHeartbeat">5</Property>		<!-- Null with value -1 -->
+			<Property name="maxPlayer">1000</Property>
+			<Property name="idleReader">180</Property>		<!-- Unit: Seconds -->
+			<Property name="idleWriter">60</Property>		<!-- Unit: Seconds -->
+			<Property name="emptyRoomScan">30</Property>	<!-- Unit: Seconds -->
+			<Property name="timeoutScan">45</Property>		<!-- Unit: Seconds -->
+			<Property name="ccuScan">60</Property>			<!-- Unit: Seconds -->
+		</Properties>
+	</Configuration>
+
+	<Extension>
+		<Properties>
+			<Property name="customValue1">String</Property>
+			<Property name="customValue2">1</Property>
+			<Property name="customValue3">1.5</Property>
+			<Property name="customValue4">True</Property>
+		</Properties>
+	</Extension>
+
+</Server>
