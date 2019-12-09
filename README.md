@@ -16,9 +16,10 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 ## Wiki
 The [wiki](https://github.com/TenMei/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use TenIO might have about it.
 
-### Client
+### Clients
 - [TenIOCocos2dx](https://github.com/TenMei/tenio-cocos2dx.git)
 - [TenIOLibgdx](https://github.com/TenMei/tenio-libgdx.git)
+- [TenIOJs](https://github.com/TenMei/tenio-js.git)
 
 ## Dependencies
 - netty-all 4.1.42.Final
