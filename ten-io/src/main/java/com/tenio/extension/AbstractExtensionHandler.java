@@ -80,7 +80,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 *             found in {@link TEvent}
 	 * @param sub  your own subscriber-class handler
 	 */
-	public void on(final TEvent type, final ISubscriber sub) {
+	protected void on(final TEvent type, final ISubscriber sub) {
 		__events.on(type, sub);
 	}
 
