@@ -7,7 +7,7 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 - Based on standard Java development, ensuring cross-platform support.
 - Simple event handlers implementation.
 - Simple physic simulator and debugger.
-- Have simple existing C++ and Java game clients for rapid development.
+- Have simple existing game clients for rapid development.
 
 ## First glimpse
 ![Simple Movement Simulation](https://github.com/TenMei/tenio/blob/master/assets/movement-simulation-example-4.gif)
