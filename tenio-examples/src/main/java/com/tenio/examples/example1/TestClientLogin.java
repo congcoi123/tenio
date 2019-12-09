@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example1;
 
+import java.security.SecureRandom;
+
 import com.tenio.entities.element.TObject;
 import com.tenio.examples.client.ISocketListener;
 import com.tenio.examples.client.TCP;
@@ -34,13 +36,21 @@ import com.tenio.examples.client.TCP;
  * 3. Receive messages via TCP connection from the server.<br>
  * 4. Be logout by server.
  * 
- * [NOTE] The client test is also available on <code>C++</code> language, please
- * see the <code>README.md</code> for more details
+ * [NOTE] The client test is also available on <code>C++</code> and
+ * <code>JavaScript</code> language, please see the <code>README.md</code> for
+ * more details
  * 
  * @author kong
  *
  */
 public final class TestClientLogin implements ISocketListener {
+
+	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+	private static final String NUMBER = "0123456789";
+
+	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+	private static SecureRandom RANDOM = new SecureRandom();
 
 	/**
 	 * The entry point
@@ -61,7 +71,7 @@ public final class TestClientLogin implements ISocketListener {
 
 		// send a login request
 		TObject message = new TObject();
-		message.put("u", "kong");
+		message.put("u", __generateRandomString(5));
 		__tcp.send(message);
 		System.err.println("Login Request -> " + message);
 
@@ -70,6 +80,23 @@ public final class TestClientLogin implements ISocketListener {
 	@Override
 	public void onReceivedTCP(TObject message) {
 		System.out.println("[RECV FROM SERVER TCP] -> " + message);
+	}
+
+	private String __generateRandomString(int length) {
+		if (length < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		StringBuilder sb = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			// 0-62 (exclusive), random returns 0-61
+			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+			sb.append(rndChar);
+		}
+
+		return sb.toString();
 	}
 
 }

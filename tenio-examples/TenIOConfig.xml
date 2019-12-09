@@ -16,7 +16,7 @@
 	<Port>
 		<Socket>8032</Socket>		<!-- Null with value -1 -->
 		<Datagram>-1</Datagram>	<!-- Null with value -1 -->
-		<WebSocket>-1</WebSocket>	<!-- Null with value -1 -->
+		<WebSocket>8033</WebSocket>	<!-- Null with value -1 -->
 	</Port>
 
 	<Configuration>
