@@ -25,8 +25,7 @@ package com.tenio.net.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
@@ -109,10 +108,8 @@ public class NettyConnection extends Connection {
 		// channel will be closed in the future
 		__channel.close();
 		// need to push event
-		AbstractPlayer player = PlayerApi.getInstance().get(__id);
-		if (player != null) {
-			EventManager.getInstance().emit(TEvent.DISCONNECT_PLAYER, player);
-		}
+		// need to push event now
+		EventManager.getLogic().emit(LogicEvent.MANUAL_CLOSE_CONNECTION, __id);
 	}
 
 	@Override

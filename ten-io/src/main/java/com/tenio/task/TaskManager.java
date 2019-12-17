@@ -43,20 +43,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class TaskManager extends AbstractLogger {
 
-	private static volatile TaskManager __instance;
-
-	private TaskManager() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static TaskManager getInstance() {
-		if (__instance == null) {
-			__instance = new TaskManager();
-		}
-		return __instance;
-	}
-
 	/**
 	 * A list of tasks in the server
 	 */

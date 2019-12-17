@@ -27,12 +27,9 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.manager.PlayerManager;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.event.EventManager;
 import com.tenio.net.Connection;
-import com.tenio.server.Server;
 
 /**
  * /** Use <a href="https://mina.apache.org/">Apache Mina</a> to handle message.
@@ -42,19 +39,6 @@ import com.tenio.server.Server;
  * 
  */
 public abstract class BaseMinaHandler extends IoHandlerAdapter {
-
-	/**
-	 * @see {@link Server}
-	 */
-	protected Server _server = Server.getInstance();
-	/**
-	 * @see {@link PlayerManager}
-	 */
-	protected PlayerManager _playersManager = PlayerManager.getInstance();
-	/**
-	 * @see {@link EventManager}
-	 */
-	protected EventManager _events = EventManager.getInstance();
 
 	/**
 	 * Retrieve a connection by its session
@@ -81,22 +65,7 @@ public abstract class BaseMinaHandler extends IoHandlerAdapter {
 	protected void _sessionClosed(IoSession session, boolean keepPlayerOnDisconnect) {
 		// get connection first
 		Connection connection = _getConnection(session);
-		if (connection != null) { // old connection
-			String id = connection.getId();
-			if (id != null) { // Player
-				AbstractPlayer player = _playersManager.get(id);
-				if (player != null) {
-					_events.emit(TEvent.DISCONNECT_PLAYER, player);
-					_playersManager.clearConnections(player);
-					if (!keepPlayerOnDisconnect) {
-						_playersManager.clean(player);
-					}
-				}
-			} else { // Connection
-				_events.emit(TEvent.DISCONNECT_CONNECTION, connection);
-			}
-			connection.clean();
-		}
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
 		connection = null;
 	}
 
@@ -109,17 +78,7 @@ public abstract class BaseMinaHandler extends IoHandlerAdapter {
 	protected void _exceptionCaught(IoSession session, Throwable cause) {
 		// get connection first
 		Connection connection = _getConnection(session);
-		if (connection != null) { // old connection
-			String id = connection.getId();
-			if (id != null) { // Player
-				AbstractPlayer player = _playersManager.get(id);
-				if (player != null) {
-					_server.exception(player, cause);
-					return;
-				}
-			}
-		}
-		_server.exception(String.valueOf(session.getId()), cause);
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, connection, cause);
 	}
-
+	
 }

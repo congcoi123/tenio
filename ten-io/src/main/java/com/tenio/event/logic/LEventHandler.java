@@ -21,65 +21,49 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.event.logic;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.event.IEvent;
 
 /**
  * 
  * @author kong
  * 
  */
-public final class EventHandler<T> {
+public final class LEventHandler<T> {
 
 	/**
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers
 	 */
-	private Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
+	private Map<LogicEvent, IEvent<T>> __delegate = new HashMap<LogicEvent, IEvent<T>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers
 	 * 
-	 * @param type  @see {@link TEvent}
+	 * @param type  @see {@link LogicEvent}
 	 * @param event @see {@link IEvent}
 	 */
-	public void subscribe(final TEvent type, final IEvent<T> event) {
-		if (__delegate.containsKey(type)) {
-			__delegate.get(type).add(event);
-		} else {
-			// create a new array of events
-			List<IEvent<T>> events = new ArrayList<IEvent<T>>();
-			// add the first event
-			events.add(event);
-			__delegate.put(type, events);
-		}
+	public void subscribe(final LogicEvent type, final IEvent<T> event) {
+		__delegate.put(type, event);
 	}
 
 	/**
 	 * Emit an event with its parameters
 	 * 
 	 * @param source the source object
-	 * @param type   @see {@link TEvent}
+	 * @param type   @see {@link LogicEvent}
 	 * @param args   a list parameters of this event
 	 * @return Returns the event result (the response of its subscribers) @see
 	 *         {@link Object} or <code>null</code>
 	 */
-	public Object emit(final Object source, final TEvent type, final @SuppressWarnings("unchecked") T... args) {
-		if (!__delegate.isEmpty()) {
-			Object obj = null;
-			if (__delegate.containsKey(type)) {
-				for (IEvent<T> event : __delegate.get(type)) {
-					obj = event.emit(source, args);
-				}
-			}
-			// return the last event's result
-			return obj;
+	public Object emit(final Object source, final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
+		if (__delegate.containsKey(type)) {
+			return __delegate.get(type).emit(source, args);
 		}
 		return null;
 	}

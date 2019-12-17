@@ -45,17 +45,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class HeartBeatManager extends AbstractLogger {
 
-	private static volatile HeartBeatManager __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static HeartBeatManager getInstance() {
-		if (__instance == null) {
-			__instance = new HeartBeatManager();
-		}
-		return __instance;
-	}
-
 	private Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
 	private ExecutorService __executorService;
 

@@ -24,12 +24,9 @@ THE SOFTWARE.
 package com.tenio.net.netty;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.manager.PlayerManager;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.event.EventManager;
 import com.tenio.net.Connection;
-import com.tenio.server.Server;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,19 +40,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * 
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
-
-	/**
-	 * @see {@link Server}
-	 */
-	protected Server _server = Server.getInstance();
-	/**
-	 * @see {@link PlayerManager}
-	 */
-	protected PlayerManager _playersManager = PlayerManager.getInstance();
-	/**
-	 * @see {@link EventManager}
-	 */
-	protected EventManager _events = EventManager.getInstance();
 
 	/**
 	 * Retrieve a connection by its channel
@@ -82,22 +66,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _channelInactive(ChannelHandlerContext ctx, boolean keepPlayerOnDisconnect) {
 		// get connection first
 		Connection connection = _getConnection(ctx.channel());
-		if (connection != null) { // old connection
-			String id = connection.getId();
-			if (id != null) { // Player
-				AbstractPlayer player = _playersManager.get(id);
-				if (player != null) {
-					_events.emit(TEvent.DISCONNECT_PLAYER, player);
-					_playersManager.clearConnections(player);
-					if (!keepPlayerOnDisconnect) {
-						_playersManager.clean(player);
-					}
-				}
-			} else { // Connection
-				_events.emit(TEvent.DISCONNECT_CONNECTION, connection);
-			}
-			connection.clean();
-		}
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
 		connection = null;
 	}
 
@@ -110,17 +79,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// get connection first
 		Connection connection = _getConnection(ctx.channel());
-		if (connection != null) { // old connection
-			String id = connection.getId();
-			if (id != null) { // Player
-				AbstractPlayer player = _playersManager.get(id);
-				if (player != null) {
-					_server.exception(player, cause);
-					return;
-				}
-			}
-		}
-		_server.exception(ctx.channel().id().asLongText(), cause);
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, connection, cause);
 	}
 
 }

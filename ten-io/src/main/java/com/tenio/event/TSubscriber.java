@@ -21,40 +21,44 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.event;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.TEventManager;
-import com.tenio.logger.AbstractLogger;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations @see {@link BaseConfiguration}
+ * An object which creates a mapping between an event type with a subscriber
  * 
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger {
+public final class TSubscriber {
 
 	/**
-	 * The period time for retrieving CCU
+	 * @see TEvent
 	 */
-	private int __ccuScanPeriod;
+	private TEvent __type;
+	/**
+	 * @see ISubscriber
+	 */
+	private ISubscriber __sub;
 
-	public CCUScanTask(int ccuScanPeriod) {
-		__ccuScanPeriod = ccuScanPeriod;
+	public TSubscriber(final TEvent type, final ISubscriber sub) {
+		__type = type;
+		__sub = sub;
 	}
 
-	public void run() {
-		info("CCU SCAN TASK", "Running ...");
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__events.emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+	/**
+	 * @return Returns @see {@link TEvent}
+	 */
+	public TEvent getType() {
+		return __type;
+	}
+
+	/**
+	 * @return Returns @see {@link ISubscriber}
+	 */
+	public ISubscriber getSub() {
+		return __sub;
 	}
 
 }

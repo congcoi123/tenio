@@ -21,53 +21,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.api;
+package com.tenio.event.logic;
 
-import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.logger.AbstractLogger;
+import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.event.ISubscriber;
 
 /**
- * This class provides you a necessary interface for managing hearbeats.
- * 
- * @see {@link HeartBeatManager}
+ * An object which creates a mapping between an event type with a subscriber
  * 
  * @author kong
  * 
  */
-public class HeartBeatApi extends AbstractLogger {
+public final class LSubscriber {
 
-	private static volatile HeartBeatApi __instance;
+	/**
+	 * @see LogicEvent
+	 */
+	private LogicEvent __type;
+	/**
+	 * @see ISubscriber
+	 */
+	private ISubscriber __sub;
 
-	private HeartBeatApi() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static HeartBeatApi getInstance() {
-		if (__instance == null) {
-			__instance = new HeartBeatApi();
-		}
-		return __instance;
+	public LSubscriber(final LogicEvent type, final ISubscriber sub) {
+		__type = type;
+		__sub = sub;
 	}
 
 	/**
-	 * @see HeartBeatManager
+	 * @return Returns @see {@link LogicEvent}
 	 */
-	private HeartBeatManager __manager = HeartBeatManager.getInstance();
-
-	/**
-	 * @see HeartBeatManager#create(String, AbstractHeartBeat)
-	 */
-	public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
-		__manager.create(id, heartbeat);
+	public LogicEvent getType() {
+		return __type;
 	}
 
 	/**
-	 * @see HeartBeatManager#dispose(String)
+	 * @return Returns @see {@link ISubscriber}
 	 */
-	public synchronized void dispose(final String id) {
-		__manager.dispose(id);
+	public ISubscriber getSub() {
+		return __sub;
 	}
 
 }

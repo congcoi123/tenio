@@ -33,7 +33,9 @@ import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
 import com.tenio.entities.manager.PlayerManager;
 import com.tenio.entities.manager.RoomManager;
-import com.tenio.event.EventManager;
+import com.tenio.event.TEventManager;
+import com.tenio.event.logic.BaseManager;
+import com.tenio.event.logic.LEventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.net.INetwork;
@@ -54,7 +56,7 @@ public final class Server extends AbstractLogger implements IServer {
 	private static volatile Server __instance;
 
 	private Server() {
-		__events = EventManager.getInstance();
+		
 	} // prevent creation manually
 
 	// preventing Singleton object instantiation from outside
@@ -67,9 +69,20 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	/**
-	 * @see {@link EventManager}
+	 * @see {@link TEventManager}
 	 */
-	private EventManager __events;
+	private TEventManager __events;
+
+	/**
+	 * @see {@link LEventManager}
+	 */
+	private LEventManager __logicEvents;
+	
+	/**
+	 * @see {@link HeartBeatManager}
+	 */
+	private HeartBeatManager __heartBeatManager;
+	
 	/**
 	 * @see {@link IExtension}
 	 */
@@ -83,61 +96,36 @@ public final class Server extends AbstractLogger implements IServer {
 	public void start(BaseConfiguration configuration) {
 		info("SERVER", (String) configuration.get(BaseConfiguration.SERVER_NAME), "Starting ...");
 		try {
+			// main server logic
+			new ServerLogic();
+			
 			// Datagram connection can not stand alone
-			if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
-					&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
-				throw new Exception(new Throwable(
-						"Datagram connection can not stand alone, please define the Socket connection too"));
-			}
+			__checkDefinedMainConnection(configuration);
 
-			// schedule
-			(new TimeOutScanTask((int) configuration.get(BaseConfiguration.IDLE_READER),
-					(int) configuration.get(BaseConfiguration.IDLE_WRITER),
-					(int) configuration.get(BaseConfiguration.TIMEOUT_SCAN))).run();
-			(new EmptyRoomScanTask((int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
-			(new CCUScanTask((int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
+			// schedules
+			__createAllSchedules(configuration);
 
 			// start network
 			__startNetwork(configuration);
 
-			// initialize hear-beat
+			// initialize heart-beat
 			if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
-				HeartBeatManager.getInstance().initialize(configuration);
+				__heartBeatManager.initialize(configuration);
 			}
 
 			// initialize the subscribers
 			getExtension().init();
 
 			// check subscribers
-			// must handle subscribers for udp attachment
-			if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
-				try {
-					if (!__events.hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
-							|| !__events.hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
-							|| !__events.hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
-						throw new Exception(new Throwable(
-								"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
-					}
-				} catch (Exception e) {
-					error("EXCEPTION EVENT", "system", e.getCause());
-				}
-			}
+			// must handle subscribers for UDP attachment
+			__checkSubscriberUDPAttach(configuration);
 
 			// must handle subscribers for reconnection
-			if ((boolean) configuration.get(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-				try {
-					if (!__events.hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-							|| !__events.hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-						throw new Exception(new Throwable(
-								"Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
-					}
-				} catch (Exception e) {
-					error("EXCEPTION EVENT", "system", e.getCause());
-				}
-			}
+			__checkSubscriberReconnection(configuration);
 
-			// collect all subscribers
-			__events.subscribe();
+			// collect all subscribers, listen all the events
+			BaseManager.subscribe();
+			BaseManager.subscribeLogic();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
@@ -173,7 +161,10 @@ public final class Server extends AbstractLogger implements IServer {
 	public void shutdown() {
 		__network.shutdown();
 		// clear all objects
-		EventManager.getInstance().clear();
+		__events.clear();
+		__logicEvents.clear();
+		__heartBeatManager.clear();
+		TEventManager.getInstance().clear();
 		RoomManager.getInstance().clear();
 		PlayerManager.getInstance().clear();
 		HeartBeatManager.getInstance().clear();
@@ -208,6 +199,51 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void exception(String identify, Throwable cause) {
 		error("EXCEPTION CONNECTION CHANNEL", identify, cause);
+	}
+
+	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
+		if ((boolean) configuration.get(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
+			try {
+				if (!__events.hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
+						|| !__events.hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
+					throw new Exception(
+							new Throwable("Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
+				}
+			} catch (Exception e) {
+				error("EXCEPTION EVENT", "system", e.getCause());
+			}
+		}
+	}
+
+	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
+		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
+			try {
+				if (!__events.hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
+						|| !__events.hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
+						|| !__events.hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
+					throw new Exception(new Throwable(
+							"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
+				}
+			} catch (Exception e) {
+				error("EXCEPTION EVENT", "system", e.getCause());
+			}
+		}
+	}
+
+	private void __checkDefinedMainConnection(BaseConfiguration configuration) throws Exception {
+		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
+				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
+			throw new Exception(
+					new Throwable("Datagram connection can not stand alone, please define the Socket connection too"));
+		}
+	}
+
+	private void __createAllSchedules(BaseConfiguration configuration) {
+		(new TimeOutScanTask((int) configuration.get(BaseConfiguration.IDLE_READER),
+				(int) configuration.get(BaseConfiguration.IDLE_WRITER),
+				(int) configuration.get(BaseConfiguration.TIMEOUT_SCAN))).run();
+		(new EmptyRoomScanTask((int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
+		(new CCUScanTask((int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
 	}
 
 }

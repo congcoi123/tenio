@@ -29,7 +29,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.EventManager;
+import com.tenio.event.TEventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
 
@@ -68,10 +68,6 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @see {@link HeartBeatApi}
 	 */
 	protected HeartBeatApi _heartbeatApi = HeartBeatApi.getInstance();
-	/**
-	 * @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
 
 	/**
 	 * Handle your own logic with the corresponding event type

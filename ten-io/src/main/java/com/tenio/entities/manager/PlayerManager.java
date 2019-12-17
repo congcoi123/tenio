@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tenio.api.PlayerApi;
 import com.tenio.configuration.constant.ErrorMsg;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
@@ -46,28 +47,6 @@ import com.tenio.net.Connection;
  */
 public final class PlayerManager extends AbstractLogger {
 
-	private static volatile PlayerManager __instance;
-
-	private PlayerManager() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static PlayerManager getInstance() {
-		if (__instance == null) {
-			__instance = new PlayerManager();
-		}
-		return __instance;
-	}
-
-	/**
-	 * An instance to push events @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
-	/**
-	 * An instance for managing rooms @see {@link RoomManager}
-	 */
-	private RoomManager __roomManger = RoomManager.getInstance();
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
@@ -120,7 +99,7 @@ public final class PlayerManager extends AbstractLogger {
 	 *                   {@link AbstractPlayer}
 	 * @param connection the corresponding connection @see {@link Connection}
 	 */
-	public synchronized void add(final AbstractPlayer player, final Connection connection) {
+	public void add(final AbstractPlayer player, final Connection connection) {
 		try {
 			if (player.getName() == null) {
 				throw new NullPointerException();
@@ -130,12 +109,12 @@ public final class PlayerManager extends AbstractLogger {
 			}
 		} catch (DuplicatedElementException e) {
 			// fire event
-			__events.emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
 		} catch (NullPointerException e) {
 			// fire event
-			__events.emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
+			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
 		}
@@ -146,7 +125,7 @@ public final class PlayerManager extends AbstractLogger {
 		__players.put(player.getName(), player);
 
 		// fire event
-		__events.emit(TEvent.PLAYER_IN_SUCCESS, player);
+		EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
 	}
 
 	/**
@@ -155,14 +134,14 @@ public final class PlayerManager extends AbstractLogger {
 	 * 
 	 * @param player that is created from your server @see {@link AbstractPlayer}
 	 */
-	public synchronized void add(final AbstractPlayer player) {
+	public void add(final AbstractPlayer player) {
 		try {
 			if (contain(player.getName())) {
 				throw new DuplicatedElementException();
 			}
 		} catch (DuplicatedElementException e) {
 			// fire event
-			__events.emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 			error("ADD PLAYER", player.getName(), e);
 			return;
 		}
@@ -170,7 +149,7 @@ public final class PlayerManager extends AbstractLogger {
 		__players.put(player.getName(), player);
 
 		// fire event
-		__events.emit(TEvent.PLAYER_IN_SUCCESS, player);
+		EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
 	}
 
 	/**
@@ -178,13 +157,13 @@ public final class PlayerManager extends AbstractLogger {
 	 * 
 	 * @param player that is removed @see {@link AbstractPlayer}
 	 */
-	public synchronized void remove(final AbstractPlayer player) {
+	public void remove(final AbstractPlayer player) {
 		if (player == null || !contain(player.getName())) {
 			return;
 		}
 
 		// force player leave room
-		__roomManger.playerLeaveRoom(player, true);
+		EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
 		// remove connection, player
 		if (player.hasConnection()) {
@@ -207,7 +186,7 @@ public final class PlayerManager extends AbstractLogger {
 	 * 
 	 * @param player the corresponding player @see {@link AbstractPlayer}
 	 */
-	public synchronized void clearConnections(final AbstractPlayer player) {
+	public void clearConnections(final AbstractPlayer player) {
 		player.setConnection(null);
 		player.setSubConnection(null);
 	}
@@ -219,7 +198,7 @@ public final class PlayerManager extends AbstractLogger {
 	 * 
 	 * @param player that is removed @see {@link AbstractPlayer}
 	 */
-	public synchronized void clean(final AbstractPlayer player) {
+	public void clean(final AbstractPlayer player) {
 		if (player == null || !contain(player.getName())) {
 			return;
 		}

@@ -32,7 +32,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
-import com.tenio.event.EventManager;
+import com.tenio.event.TEventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -47,9 +47,9 @@ import com.tenio.logger.AbstractLogger;
 public final class TimeOutScanTask extends AbstractLogger {
 
 	/**
-	 * @see EventManager
+	 * @see TEventManager
 	 */
-	private EventManager __events = EventManager.getInstance();
+	private TEventManager __events = TEventManager.getInstance();
 	/**
 	 * @see PlayerApi
 	 */

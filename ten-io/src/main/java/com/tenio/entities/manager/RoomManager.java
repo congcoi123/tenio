@@ -44,24 +44,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class RoomManager extends AbstractLogger {
 
-	private static volatile RoomManager __instance;
-
-	private RoomManager() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static RoomManager getInstance() {
-		if (__instance == null) {
-			__instance = new RoomManager();
-		}
-		return __instance;
-	}
-
-	/**
-	 * An instance to push events @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
 	/**
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
@@ -99,10 +81,10 @@ public final class RoomManager extends AbstractLogger {
 	 * 
 	 * @param room that is added @see {@link AbstractRoom}
 	 */
-	public synchronized void add(final AbstractRoom room) {
+	public void add(final AbstractRoom room) {
 		__rooms.put(room.getId(), room);
 		// fire event
-		__events.emit(TEvent.CREATED_ROOM, room);
+		EventManager.getEvent().emit(TEvent.CREATED_ROOM, room);
 	}
 
 	/**
@@ -110,7 +92,7 @@ public final class RoomManager extends AbstractLogger {
 	 * 
 	 * @param room that is removed @see {@link AbstractRoom}
 	 */
-	public synchronized void remove(final AbstractRoom room) {
+	public void remove(final AbstractRoom room) {
 		try {
 			if (!contain(room.getId())) {
 				throw new NullPointerException();
@@ -121,7 +103,7 @@ public final class RoomManager extends AbstractLogger {
 		}
 
 		// fire event
-		__events.emit(TEvent.REMOVE_ROOM, room);
+		EventManager.getEvent().emit(TEvent.REMOVE_ROOM, room);
 		// force all player leave from room
 		__forceAllPlayersLeaveRoom(room);
 		// remove itself from the current list
@@ -148,14 +130,14 @@ public final class RoomManager extends AbstractLogger {
 	 * @param room   the desired room @see {@link AbstractRoom}
 	 * @param player the current player @see {@link AbstractPlayer}
 	 */
-	public synchronized void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
-			__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.PLAYER_WAS_IN_ROOM);
+			EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.PLAYER_WAS_IN_ROOM);
 			return;
 		}
 
 		if (room.isFull()) {
-			__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
+			EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
 			return;
 		}
 
@@ -165,7 +147,7 @@ public final class RoomManager extends AbstractLogger {
 		room.add(player);
 		player.setRoom(room);
 		// fire event
-		__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
+		EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
 	}
 
 	/**
@@ -176,18 +158,18 @@ public final class RoomManager extends AbstractLogger {
 	 * @param force  it's set <code>true</code> if you want to force the player
 	 *               leave. Otherwise, it's set <code>false</code>
 	 */
-	public synchronized void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		AbstractRoom room = player.getRoom();
 		if (room == null) {
 			return;
 		}
 
 		// fire event
-		__events.emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		EventManager.getEvent().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
 		// fire event
-		__events.emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
+		EventManager.getEvent().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
 	}
 
 }

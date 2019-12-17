@@ -21,39 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.event.logic;
 
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.configuration.constant.LogicEvent;
 
 /**
- * Only for creating an event handler object @see {@link EventHandler}
+ * Only for creating an event handler object @see {@link LEventHandler}
  * 
  * @author kong
  * 
  */
-public final class EventProducer {
+public final class LEventProducer {
 
 	/**
-	 * @see EventHandler
+	 * @see LEventHandler
 	 */
-	private EventHandler<Object> __eventHandler = new EventHandler<Object>();
+	private LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
 
 	/**
-	 * @return Returns @see {@link EventHandler}
+	 * @return Returns @see {@link LEventHandler}
 	 */
-	public EventHandler<Object> getEventHandler() {
+	public LEventHandler<Object> getEventHandler() {
 		return __eventHandler;
 	}
 
 	/**
-	 * @see EventHandler#emit(Object, TEvent, Object...)
+	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final Object... args) {
+	public Object emit(final LogicEvent type, final Object... args) {
 		return __eventHandler.emit(this, type, args);
 	}
 
 	/**
-	 * @see EventHandler#clear()
+	 * @see LEventHandler#clear()
 	 */
 	public void clear() {
 		__eventHandler.clear();

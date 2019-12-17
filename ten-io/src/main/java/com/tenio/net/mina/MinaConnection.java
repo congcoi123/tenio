@@ -27,8 +27,7 @@ import java.net.InetSocketAddress;
 
 import org.apache.mina.core.session.IoSession;
 
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
@@ -104,10 +103,7 @@ public class MinaConnection extends Connection {
 		// the session will be closed in the future
 		__session.closeNow();
 		// need to push event now
-		AbstractPlayer player = PlayerApi.getInstance().get(__id);
-		if (player != null) {
-			EventManager.getInstance().emit(TEvent.DISCONNECT_PLAYER, player);
-		}
+		EventManager.getLogic().emit(LogicEvent.MANUAL_CLOSE_CONNECTION, __id);
 	}
 
 	@Override

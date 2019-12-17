@@ -1,0 +1,130 @@
+package com.tenio.server;
+
+import com.tenio.configuration.constant.ErrorMsg;
+import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.AbstractPlayer;
+import com.tenio.entities.element.TObject;
+import com.tenio.entities.manager.PlayerManager;
+import com.tenio.entities.manager.RoomManager;
+import com.tenio.event.EventManager;
+import com.tenio.logger.AbstractLogger;
+import com.tenio.net.Connection;
+
+public final class ServerLogic extends AbstractLogger {
+
+	private PlayerManager __playerManager = new PlayerManager();
+	private RoomManager __roomManager = new RoomManager();
+
+	public ServerLogic() {
+
+		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, (source, args) -> {
+			AbstractPlayer player = (AbstractPlayer) args[0];
+			synchronized (player) {
+				__roomManager.playerLeaveRoom(player, true);
+			}
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.CONNECTION_CLOSE, (source, args) -> {
+			Connection connection = (Connection) args[0];
+			boolean keepPlayerOnDisconnect = (boolean) args[1];
+
+			if (connection != null) { // old connection
+				String id = connection.getId();
+				if (id != null) { // Player
+					AbstractPlayer player = __playerManager.get(id);
+					if (player != null) {
+						EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
+						__playerManager.clearConnections(player);
+						if (!keepPlayerOnDisconnect) {
+							__playerManager.clean(player);
+						}
+					}
+				} else { // Connection
+					EventManager.getEvent().emit(TEvent.DISCONNECT_CONNECTION, connection);
+				}
+				connection.clean();
+			}
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, (source, args) -> {
+			Connection connection = (Connection) args[0];
+			Throwable cause = (Throwable) args[1];
+
+			if (connection != null) { // old connection
+				String id = connection.getId();
+				if (id != null) { // Player
+					AbstractPlayer player = __playerManager.get(id);
+					if (player != null) {
+						_server.exception(player, cause);
+						return;
+					}
+				}
+			}
+			_server.exception(String.valueOf(session.getId()), cause);
+
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.MANUAL_CLOSE_CONNECTION, (source, args) -> {
+			String name = (String) args[0];
+
+			AbstractPlayer player = __playerManager.get(name);
+			if (player != null) {
+				EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
+			}
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.CREATE_NEW_CONNECTION, (source, args) -> {
+			int maxPlayer = (int) args[0];
+			boolean keepPlayerOnDisconnect = (boolean) args[1];
+			Connection connection = (Connection) args[2];
+			TObject message = (TObject) args[3];
+
+			// check reconnection
+			if (keepPlayerOnDisconnect) {
+				AbstractPlayer player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST,
+						connection, message);
+				if (player != null) {
+					player.currentReaderTime();
+					connection.setId(player.getName());
+					player.setConnection(connection);
+
+					EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
+					return null;
+				}
+			}
+
+			if (__playerManager.count() > maxPlayer) {
+				EventManager.getEvent().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
+				connection.close();
+			} else {
+				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+			}
+
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.SOCKET_HANDLE, (source, args) -> {
+			Connection connection = (Connection) args[0];
+			TObject message = (TObject) args[1];
+
+			String id = connection.getId();
+			if (id != null) { // player's identify
+				AbstractPlayer player = __playerManager.get(id);
+				if (player != null) {
+					_server.handle(player, false, message);
+				}
+			} else { // connection
+				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+			}
+
+			return null;
+		});
+
+	}
+
+}
