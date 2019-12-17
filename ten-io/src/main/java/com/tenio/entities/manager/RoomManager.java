@@ -26,7 +26,6 @@ package com.tenio.entities.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.api.RoomApi;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;

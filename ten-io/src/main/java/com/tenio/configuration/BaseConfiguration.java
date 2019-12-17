@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.configuration;
 
-import com.tenio.logger.AbstractLogger;
-import com.tenio.utils.XMLUtil;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +32,9 @@ import javax.xml.xpath.XPathException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.tenio.logger.AbstractLogger;
+import com.tenio.utils.XMLUtil;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -117,10 +117,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 */
 	public void load(final String file) throws Exception {
 
-		XMLUtil xmlUtil = new XMLUtil();
-		Document xDoc = null;
-
-		xDoc = xmlUtil.parseFile(new File(file));
+		Document xDoc = XMLUtil.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 		NodeList attrNodes = root.getChildNodes();
 
@@ -128,7 +125,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			Node attrNode = attrNodes.item(i);
 
 			// Properties
-			NodeList attrRootProperties = xmlUtil.getNodeList(attrNode, "//Server/Properties/Property");
+			NodeList attrRootProperties = XMLUtil.getNodeList(attrNode, "//Server/Properties/Property");
 			for (int j = 0; j < attrRootProperties.getLength(); j++) {
 				Node pDataNode = attrRootProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
@@ -179,7 +176,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Configuration
-			NodeList attrConfigurationProperties = xmlUtil.getNodeList(attrNode,
+			NodeList attrConfigurationProperties = XMLUtil.getNodeList(attrNode,
 					"//Server/Configuration/Properties/Property");
 			for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 				Node pDataNode = attrConfigurationProperties.item(j);
@@ -219,7 +216,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Extension
-			_extend(xmlUtil, attrNode);
+			_extend(attrNode);
 
 		}
 
@@ -259,10 +256,9 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * Your extension part can be handled here. Check the examples for more details
 	 * about how to use it.
 	 * 
-	 * @param xmlUtil  a {@link XMLUtil} class is used to parse configuration file
 	 * @param attrNode one node in the XML structure
 	 * @throws some exceptions when reading node values @see {@link XPathException}
 	 */
-	protected abstract void _extend(XMLUtil xmlUtil, Node attrNode) throws XPathException;
+	protected abstract void _extend(Node attrNode) throws XPathException;
 
 }

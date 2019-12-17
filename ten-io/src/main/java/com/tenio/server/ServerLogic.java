@@ -50,20 +50,21 @@ public final class ServerLogic extends AbstractLogger {
 		});
 
 		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, (source, args) -> {
-			Connection connection = (Connection) args[0];
-			Throwable cause = (Throwable) args[1];
+			String channelId = (String) args[0];
+			Connection connection = (Connection) args[1];
+			Throwable cause = (Throwable) args[2];
 
 			if (connection != null) { // old connection
 				String id = connection.getId();
 				if (id != null) { // Player
 					AbstractPlayer player = __playerManager.get(id);
 					if (player != null) {
-						_server.exception(player, cause);
-						return;
+						exception(player, cause);
+						return null;
 					}
 				}
 			}
-			_server.exception(String.valueOf(session.getId()), cause);
+			exception(channelId, cause);
 
 			return null;
 		});
@@ -116,7 +117,7 @@ public final class ServerLogic extends AbstractLogger {
 			if (id != null) { // player's identify
 				AbstractPlayer player = __playerManager.get(id);
 				if (player != null) {
-					_server.handle(player, false, message);
+					handle(player, false, message);
 				}
 			} else { // connection
 				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
@@ -125,6 +126,24 @@ public final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
+	}
+	
+	public void handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
+		if (isSubConnection) {
+			debug("RECV PLAYER SUB", player.getName(), message.toString());
+		} else {
+			debug("RECV PLAYER", player.getName(), message.toString());
+		}
+		player.currentReaderTime();
+		EventManager.getEvent().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
+	}
+
+	public void exception(AbstractPlayer player, Throwable cause) {
+		error("EXCEPTION PLAYER", player.getName(), cause);
+	}
+
+	public void exception(String identify, Throwable cause) {
+		error("EXCEPTION CONNECTION CHANNEL", identify, cause);
 	}
 
 }

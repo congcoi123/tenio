@@ -29,12 +29,10 @@ import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.entities.manager.PlayerManager;
 import com.tenio.entities.manager.RoomManager;
+import com.tenio.event.EventManager;
 import com.tenio.event.TEventManager;
-import com.tenio.event.logic.BaseManager;
 import com.tenio.event.logic.LEventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
@@ -124,8 +122,8 @@ public final class Server extends AbstractLogger implements IServer {
 			__checkSubscriberReconnection(configuration);
 
 			// collect all subscribers, listen all the events
-			BaseManager.subscribe();
-			BaseManager.subscribeLogic();
+			EventManager.getEvent().subscribe();
+			EventManager.getLogic().subscribe();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
@@ -178,27 +176,6 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void setExtension(IExtension extension) {
 		__extension = extension;
-	}
-
-	@Override
-	public void handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
-		if (isSubConnection) {
-			debug("RECV PLAYER SUB", player.getName(), message.toString());
-		} else {
-			debug("RECV PLAYER", player.getName(), message.toString());
-		}
-		player.currentReaderTime();
-		__events.emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
-	}
-
-	@Override
-	public void exception(AbstractPlayer player, Throwable cause) {
-		error("EXCEPTION PLAYER", player.getName(), cause);
-	}
-
-	@Override
-	public void exception(String identify, Throwable cause) {
-		error("EXCEPTION CONNECTION CHANNEL", identify, cause);
 	}
 
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) {

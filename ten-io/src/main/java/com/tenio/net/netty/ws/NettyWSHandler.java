@@ -24,10 +24,9 @@ THE SOFTWARE.
 package com.tenio.net.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
+import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.entities.element.TObject;
+import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.net.Connection;
 import com.tenio.net.netty.BaseNettyHandler;
@@ -87,41 +86,11 @@ public class NettyWSHandler extends BaseNettyHandler {
 			// get connection first
 			Connection connection = _getConnection(ctx.channel());
 			if (connection == null) { // new connection
-
 				connection = NettyConnection.create(Connection.Type.WEB_SOCKET, ctx.channel());
-
-				// check reconnection
-				if (__keepPlayerOnDisconnect) {
-					AbstractPlayer player = (AbstractPlayer) _events.emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
-							message);
-					if (player != null) {
-						player.currentReaderTime();
-						connection.setId(player.getName());
-						player.setConnection(connection);
-
-						_events.emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
-						return;
-					}
-				}
-
-				if (_playersManager.count() > __maxPlayer) {
-					_events.emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
-					connection.close();
-				} else {
-					_events.emit(TEvent.CONNECTION_SUCCESS, connection, message);
-				}
-				return;
-			}
-
-			// get player's id
-			String id = connection.getId();
-			if (id != null) { // player's identify
-				AbstractPlayer player = _playersManager.get(id);
-				if (player != null) {
-					_server.handle(player, false, message);
-				}
-			} else { // connection
-				_events.emit(TEvent.CONNECTION_SUCCESS, connection, message);
+				EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
+						connection, message);
+			} else {
+				EventManager.getLogic().emit(LogicEvent.SOCKET_HANDLE, connection, message);
 			}
 
 		}

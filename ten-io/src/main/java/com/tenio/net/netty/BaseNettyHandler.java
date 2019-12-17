@@ -79,7 +79,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// get connection first
 		Connection connection = _getConnection(ctx.channel());
-		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, connection, cause);
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection, cause);
 	}
 
 }

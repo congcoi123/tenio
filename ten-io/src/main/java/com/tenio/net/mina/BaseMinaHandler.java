@@ -78,7 +78,8 @@ public abstract class BaseMinaHandler extends IoHandlerAdapter {
 	protected void _exceptionCaught(IoSession session, Throwable cause) {
 		// get connection first
 		Connection connection = _getConnection(session);
-		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, connection, cause);
+		String id = String.valueOf(session.getId());
+		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, id, connection, cause);
 	}
 	
 }

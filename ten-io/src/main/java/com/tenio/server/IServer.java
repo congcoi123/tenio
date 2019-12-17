@@ -24,13 +24,11 @@ THE SOFTWARE.
 package com.tenio.server;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set first and all
+ * orders are important, event subscribes must be set last and all
  * configuration values should be confirmed.
  * 
  * @author kong
@@ -61,30 +59,5 @@ interface IServer {
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
 	void setExtension(IExtension extension);
-
-	/**
-	 * When a message sent from a player, you can handle it here
-	 * 
-	 * @param player          the player who sent a message to the server
-	 * @param isSubConnection if it is true, this is a sub-connection
-	 * @param message         the message's content
-	 */
-	void handle(AbstractPlayer player, boolean isSubConnection, TObject message);
-
-	/**
-	 * Handle a player's exception
-	 * 
-	 * @param player the player who cause an exception
-	 * @param cause  the exception's content
-	 */
-	void exception(AbstractPlayer player, Throwable cause);
-
-	/**
-	 * Handle a connection's exception
-	 * 
-	 * @param identify the "connection" id (channel's id, session's id, ...)
-	 * @param cause    the exception's content
-	 */
-	void exception(String identify, Throwable cause);
 
 }

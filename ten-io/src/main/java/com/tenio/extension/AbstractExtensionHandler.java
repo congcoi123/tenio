@@ -30,6 +30,7 @@ import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.TEventManager;
+import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
 
@@ -77,7 +78,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @param sub  your own subscriber-class handler
 	 */
 	protected void on(final TEvent type, final ISubscriber sub) {
-		__events.on(type, sub);
+		EventManager.getEvent().on(type, sub);
 	}
 
 }
