@@ -46,7 +46,7 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	/**
 	 * @see {@link RoomApi}
 	 */
-	private RoomApi __roomApi = RoomApi.getInstance();
+	private RoomApi __roomApi;
 	/**
 	 * The current list of rooms
 	 */
@@ -60,7 +60,8 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	 */
 	private int __emptyRoomScanPeriod;
 
-	public EmptyRoomScanTask(int emptyRoomScanPeriod) {
+	public EmptyRoomScanTask(RoomApi roomApi, int emptyRoomScanPeriod) {
+		__roomApi = roomApi;
 		__emptyRoomScanPeriod = emptyRoomScanPeriod;
 	}
 
@@ -70,7 +71,9 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 
 			__rooms.forEach((key, value) -> {
 				if (value.isEmpty()) {
-					__removables.add(value);
+					synchronized (__rooms) {
+						__removables.add(value);
+					}
 				}
 			});
 

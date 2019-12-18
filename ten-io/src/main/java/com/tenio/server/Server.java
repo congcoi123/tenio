@@ -25,6 +25,11 @@ package com.tenio.server;
 
 import java.io.IOException;
 
+import com.tenio.api.HeartBeatApi;
+import com.tenio.api.MessageApi;
+import com.tenio.api.PlayerApi;
+import com.tenio.api.RoomApi;
+import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
@@ -221,6 +226,36 @@ public final class Server extends AbstractLogger implements IServer {
 				(int) configuration.get(BaseConfiguration.TIMEOUT_SCAN))).run();
 		(new EmptyRoomScanTask((int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
 		(new CCUScanTask((int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
+	}
+
+	@Override
+	public PlayerApi getPlayerApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RoomApi getRoomApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MessageApi getMessageApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HeartBeatApi getHeartBeatApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TaskApi getTaskApi() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

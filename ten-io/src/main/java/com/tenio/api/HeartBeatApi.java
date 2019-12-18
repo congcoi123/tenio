@@ -21,43 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.api;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.EventManager;
+import com.tenio.engine.heartbeat.AbstractHeartBeat;
+import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations @see {@link BaseConfiguration}
+ * This class provides you a necessary interface for managing heart beats.
+ * 
+ * @see {@link HeartBeatManager}
  * 
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger {
+public class HeartBeatApi extends AbstractLogger {
 
 	/**
-	 * The period time for retrieving CCU
+	 * @see HeartBeatManager
 	 */
-	private int __ccuScanPeriod;
-	
-	private PlayerApi __playerApi;
+	private HeartBeatManager __heartBeatmanager;
 
-	public CCUScanTask(PlayerApi playerApi, int ccuScanPeriod) {
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
+	/**
+	 * @see HeartBeatManager#create(String, AbstractHeartBeat)
+	 */
+	public void create(final String id, final AbstractHeartBeat heartbeat) {
+		__heartBeatmanager.create(id, heartbeat);
 	}
 
-	public void run() {
-		info("CCU SCAN TASK", "Running ...");
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			EventManager.getEvent().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+	/**
+	 * @see HeartBeatManager#dispose(String)
+	 */
+	public void dispose(final String id) {
+		__heartBeatmanager.dispose(id);
 	}
 
 }

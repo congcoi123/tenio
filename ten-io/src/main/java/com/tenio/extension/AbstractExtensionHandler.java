@@ -29,10 +29,10 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.TEventManager;
 import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.server.Server;
 
 /**
  * This class provides you all the necessary APIs for your own logic game
@@ -49,26 +49,28 @@ import com.tenio.logger.AbstractLogger;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
+	protected Server _server = Server.getInstance();
+	
 	/**
 	 * @see {@link MessageApi}
 	 */
-	protected MessageApi _messageApi = MessageApi.getInstance();
+	protected MessageApi _messageApi = _server.getMessageApi();
 	/**
 	 * @see {@link PlayerApi}
 	 */
-	protected PlayerApi _playerApi = PlayerApi.getInstance();
+	protected PlayerApi _playerApi = _server.getPlayerApi();
 	/**
 	 * @see {@link RoomApi}
 	 */
-	protected RoomApi _roomApi = RoomApi.getInstance();
+	protected RoomApi _roomApi = _server.getRoomApi();
 	/**
 	 * @see {@link TaskApi}
 	 */
-	protected TaskApi _taskApi = TaskApi.getInstance();
+	protected TaskApi _taskApi = _server.getTaskApi();
 	/**
 	 * @see {@link HeartBeatApi}
 	 */
-	protected HeartBeatApi _heartbeatApi = HeartBeatApi.getInstance();
+	protected HeartBeatApi _heartbeatApi = _server.getHeartBeatApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type

@@ -23,6 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
+import com.tenio.api.HeartBeatApi;
+import com.tenio.api.MessageApi;
+import com.tenio.api.PlayerApi;
+import com.tenio.api.RoomApi;
+import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.extension.IExtension;
 
@@ -59,5 +64,15 @@ interface IServer {
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
 	void setExtension(IExtension extension);
+	
+	PlayerApi getPlayerApi();
+	
+	RoomApi getRoomApi();
+	
+	MessageApi getMessageApi();
+	
+	HeartBeatApi getHeartBeatApi();
+	
+	TaskApi getTaskApi();
 
 }

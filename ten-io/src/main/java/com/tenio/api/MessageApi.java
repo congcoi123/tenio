@@ -47,20 +47,6 @@ import com.tenio.pool.ObjectPool;
  */
 public final class MessageApi extends AbstractLogger {
 
-	private static volatile MessageApi __instance;
-
-	private MessageApi() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static MessageApi getInstance() {
-		if (__instance == null) {
-			__instance = new MessageApi();
-		}
-		return __instance;
-	}
-
 	/**
 	 * @see ArrayPool
 	 */
@@ -69,10 +55,6 @@ public final class MessageApi extends AbstractLogger {
 	 * @see ObjectPool
 	 */
 	private ObjectPool __objectPool = ObjectPool.getInstance();
-	/**
-	 * @see EventManager
-	 */
-	private EventManager __events = EventManager.getInstance();
 
 	/**
 	 * Send a message for a connection
@@ -137,7 +119,7 @@ public final class MessageApi extends AbstractLogger {
 				debug("SENT SUB NPC", player.getName(), message.toString());
 			}
 		}
-		__events.emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
+		EventManager.getEvent().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
 	}
 
 	/**

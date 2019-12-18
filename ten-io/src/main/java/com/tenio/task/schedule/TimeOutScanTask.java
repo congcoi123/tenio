@@ -32,7 +32,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
-import com.tenio.event.TEventManager;
+import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -47,13 +47,9 @@ import com.tenio.logger.AbstractLogger;
 public final class TimeOutScanTask extends AbstractLogger {
 
 	/**
-	 * @see TEventManager
-	 */
-	private TEventManager __events = TEventManager.getInstance();
-	/**
 	 * @see PlayerApi
 	 */
-	private PlayerApi __playerApi = PlayerApi.getInstance();
+	private PlayerApi __playerApi;
 	/**
 	 * The removable list of players
 	 */
@@ -73,7 +69,8 @@ public final class TimeOutScanTask extends AbstractLogger {
 	 */
 	private int __timeoutScanPeriod;
 
-	public TimeOutScanTask(int idleReader, int idleWriter, int timeoutScanPeriod) {
+	public TimeOutScanTask(PlayerApi playerApi, int idleReader, int idleWriter, int timeoutScanPeriod) {
+		__playerApi = playerApi;
 		__idleReader = idleReader;
 		__idleWriter = idleWriter;
 		__timeoutScanPeriod = timeoutScanPeriod;
@@ -89,12 +86,16 @@ public final class TimeOutScanTask extends AbstractLogger {
 				if (!value.isIgnoreTimeout()) {
 					long writerTime = value.getWriterTime();
 					if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
-						__removeables.add(value);
+						synchronized (__removeables) {
+							__removeables.add(value);
+						}
 						return;
 					} else { // check reader time
 						long readerTime = value.getReaderTime();
 						if (currentTime - readerTime >= (__idleReader * 1000)) {
-							__removeables.add(value);
+							synchronized (__removeables) {
+								__removeables.add(value);
+							}
 							return;
 						}
 					}
@@ -102,7 +103,7 @@ public final class TimeOutScanTask extends AbstractLogger {
 			});
 
 			__removeables.forEach((player) -> {
-				__events.emit(TEvent.PLAYER_TIMEOUT, player);
+				EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 
