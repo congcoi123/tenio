@@ -12,6 +12,10 @@ public enum LogicEvent {
 	
 	CREATE_NEW_CONNECTION,
 	
-	SOCKET_HANDLE
+	SOCKET_HANDLE,
+	
+	DATAGRAM_HANDLE,
+	
+	GET_PLAYER,
 
 }

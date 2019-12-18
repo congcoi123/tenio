@@ -126,8 +126,26 @@ public final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
+		EventManager.getLogic().on(LogicEvent.DATAGRAM_HANDLE, (source, args) -> {
+			AbstractPlayer player = (AbstractPlayer) args[0];
+			TObject message = (TObject) args[1];
+
+			// UDP is only attach connection, so if the main connection not found, the UDP
+			// must be stop handled
+			if (player.hasConnection()) {
+				handle(player, true, message);
+			}
+
+			return null;
+		});
+
+		EventManager.getLogic().on(LogicEvent.GET_PLAYER, (source, args) -> {
+			String name = (String) args[0];
+			return __playerManager.get(name);
+		});
+
 	}
-	
+
 	public void handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
 		if (isSubConnection) {
 			debug("RECV PLAYER SUB", player.getName(), message.toString());

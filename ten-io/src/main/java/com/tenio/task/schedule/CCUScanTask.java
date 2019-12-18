@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.manager.PlayerManager;
 import com.tenio.event.TEventManager;
 import com.tenio.logger.AbstractLogger;
 
