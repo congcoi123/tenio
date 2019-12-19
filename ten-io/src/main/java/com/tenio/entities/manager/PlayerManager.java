@@ -25,7 +25,6 @@ package com.tenio.entities.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LogicEvent;
@@ -33,106 +32,90 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
 import com.tenio.exception.DuplicatedElementException;
+import com.tenio.exception.DuplicatedPlayerException;
+import com.tenio.exception.NullPlayerException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.net.Connection;
 
 /**
- * Manage all your players @see {@link AbstractPlayer} on the server. It is a
- * singleton pattern class, which can be called anywhere. But it's better that
- * you use the {@link PlayerApi} interface for easy management.
+ * @see {@link IPlayerManager}
  * 
  * @author kong
  * 
  */
-public final class PlayerManager extends AbstractLogger {
+public final class PlayerManager extends AbstractLogger implements IPlayerManager {
 
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
 	private Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 
-	/**
-	 * @return the number of all current players instance (include bots)
-	 */
+	@Override
 	public int count() {
 		return __players.size();
 	}
 
-	/**
-	 * @return the number of all current players that have connection (without bots)
-	 */
+	@Override
 	public int countPlayers() {
-		AtomicInteger ordinal = new AtomicInteger(0);
-		__players.forEach((key, value) -> {
-			if (!value.isNPC()) {
-				ordinal.incrementAndGet();
-			}
-		});
-		return ordinal.get();
+		return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
 	}
 
-	/**
-	 * @return all current players
-	 */
+	@Override
 	public Map<String, AbstractPlayer> gets() {
 		return __players;
 	}
 
+	@Override
 	public void clear() {
 		__players.clear();
 		__players = null;
 	}
 
+	@Override
 	public boolean contain(final String name) {
 		return __players.containsKey(name);
 	}
 
+	@Override
 	public AbstractPlayer get(final String name) {
 		return __players.get(name);
 	}
 
-	/**
-	 * Add a new player to your server (the player is upgraded from one connection).
-	 * 
-	 * @param player     that is created from your server @see
-	 *                   {@link AbstractPlayer}
-	 * @param connection the corresponding connection @see {@link Connection}
-	 */
+	@Override
 	public void add(final AbstractPlayer player, final Connection connection) {
 		try {
 			if (player.getName() == null) {
-				throw new NullPointerException();
+				throw new NullPlayerException();
 			}
 			if (contain(player.getName())) {
-				throw new DuplicatedElementException();
+				throw new DuplicatedPlayerException();
 			}
-		} catch (DuplicatedElementException e) {
+		} catch (DuplicatedPlayerException e) {
 			// fire event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
-		} catch (NullPointerException e) {
+		} catch (NullPlayerException e) {
 			// fire event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
 		}
 
-		connection.setId(player.getName());
-		player.setConnection(connection);
+		synchronized (__players) {
+			// add the connection
+			connection.setId(player.getName());
+			player.setConnection(connection);
 
-		__players.put(player.getName(), player);
+			__players.put(player.getName(), player);
 
-		// fire event
-		EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+			// fire event
+			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+		}
+
 	}
 
-	/**
-	 * Add a new player to your server (the player is known as one bot) without a
-	 * attached connection.
-	 * 
-	 * @param player that is created from your server @see {@link AbstractPlayer}
-	 */
+	@Override
 	public void add(final AbstractPlayer player) {
 		try {
 			if (contain(player.getName())) {
@@ -145,65 +128,57 @@ public final class PlayerManager extends AbstractLogger {
 			return;
 		}
 
-		__players.put(player.getName(), player);
+		synchronized (__players) {
+			__players.put(player.getName(), player);
 
-		// fire event
-		EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+			// fire event
+			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+		}
+
 	}
 
-	/**
-	 * Remove a player from your server.
-	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
-	 */
+	@Override
 	public void remove(final AbstractPlayer player) {
 		if (player == null || !contain(player.getName())) {
 			return;
 		}
 
-		// force player leave room
-		EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
+		synchronized (__players) {
+			// force player leave room
+			EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
-		// remove connection, player
-		if (player.hasConnection()) {
-			player.getConnection().close();
+			// remove connection, player
+			if (player.hasConnection()) {
+				player.getConnection().close();
+			}
+			// remove sub-connection (no need to close, because of the UDP behavior)
+			/*
+			 * if (player.hasSubConnection()) {
+			 * 
+			 * }
+			 */
+			removeAllConnections(player);
+			__players.remove(player.getName());
 		}
-		// remove sub-connection (no need to close, because of the UDP behavior)
-		/*
-		 * if (player.hasSubConnection()) {
-		 * 
-		 * }
-		 */
-		clearConnections(player);
-		__players.remove(player.getName());
 
 	}
 
-	/**
-	 * When a player is disconnected, all the related connections need to be deleted
-	 * too.
-	 * 
-	 * @param player the corresponding player @see {@link AbstractPlayer}
-	 */
-	public void clearConnections(final AbstractPlayer player) {
+	@Override
+	public void removeAllConnections(final AbstractPlayer player) {
 		player.setConnection(null);
 		player.setSubConnection(null);
 	}
 
-	/**
-	 * Make sure one player is removed from this management (as well as your
-	 * server). It is used when you don't want your player can re-connect with any
-	 * interruption's reason.
-	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
-	 */
+	@Override
 	public void clean(final AbstractPlayer player) {
 		if (player == null || !contain(player.getName())) {
 			return;
 		}
 
-		__players.remove(player.getName());
-		
+		synchronized (__players) {
+			__players.remove(player.getName());
+		}
+
 	}
 
 }

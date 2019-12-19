@@ -36,7 +36,7 @@ public final class ServerLogic extends AbstractLogger {
 					AbstractPlayer player = __playerManager.get(id);
 					if (player != null) {
 						EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
-						__playerManager.clearConnections(player);
+						__playerManager.removeAllConnections(player);
 						if (!keepPlayerOnDisconnect) {
 							__playerManager.clean(player);
 						}
