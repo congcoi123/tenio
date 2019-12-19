@@ -21,42 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.task;
 
-import com.tenio.configuration.constant.TEvent;
+import java.util.concurrent.ScheduledFuture;
 
 /**
- * Only for creating an event handler object @see {@link TEventHandler}
+ * This class uses Java scheduler @see {@link ScheduledFuture} to manage your
+ * tasks. The scheduler is used to schedule a thread or task that executes at a
+ * certain period of time or periodically at a fixed interval. It's useful when
+ * you want to create a time counter before starting a match or send messages
+ * periodically for one player.
  * 
  * @author kong
  * 
  */
-public final class TEventProducer {
+public interface ITaskManager {
 
 	/**
-	 * @see TEventHandler
+	 * Create a new task.
+	 * 
+	 * @param id   the unique id for management
+	 * @param task the running task @see {@link ScheduledFuture}
 	 */
-	private TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
+	void create(String id, ScheduledFuture<?> task);
 
 	/**
-	 * @return Returns @see {@link TEventHandler}
+	 * Kill or stop a running task.
+	 * 
+	 * @param id the unique id
 	 */
-	public TEventHandler<Object> getEventHandler() {
-		return __eventHandler;
-	}
+	void kill(String id);
 
 	/**
-	 * @see TEventHandler#emit(Object, TEvent, Object...)
+	 * Retrieve the remain time of one task.
+	 * 
+	 * @param id the unique for retrieving the desired task
+	 * @return Returns the left time
 	 */
-	public Object emit(final TEvent type, final Object... args) {
-		return __eventHandler.emit(this, type, args);
-	}
-
-	/**
-	 * @see TEventHandler#clear()
-	 */
-	public void clear() {
-		__eventHandler.clear();
-	}
+	int getRemainTime(String id);
 
 }

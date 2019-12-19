@@ -1,6 +1,7 @@
 package com.tenio.event;
 
 import com.tenio.event.logic.LEventManager;
+import com.tenio.event.main.TEventManager;
 import com.tenio.logger.AbstractLogger;
 
 public final class EventManager extends AbstractLogger {

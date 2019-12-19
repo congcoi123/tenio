@@ -32,29 +32,21 @@ import com.tenio.exception.RunningScheduledTaskException;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * This class uses Java scheduler @see {@link ScheduledFuture} to manage your
- * tasks. The scheduler is used to schedule a thread or task that executes at a
- * certain period of time or periodically at a fixed interval. It's useful when
- * you want to create a time counter before starting a match or send messages
- * periodically for one player.
+ * 
+ * @see {@link ITaskManager}
  * 
  * @author kong
  * 
  */
-public final class TaskManager extends AbstractLogger {
+public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	/**
 	 * A list of tasks in the server
 	 */
 	private Map<String, ScheduledFuture<?>> __tasks = new HashMap<String, ScheduledFuture<?>>();
 
-	/**
-	 * Create a new task.
-	 * 
-	 * @param id   the unique id for management
-	 * @param task the running task @see {@link ScheduledFuture}
-	 */
-	public synchronized void create(String id, ScheduledFuture<?> task) {
+	@Override
+	public void create(String id, ScheduledFuture<?> task) {
 		if (__tasks.containsKey(id)) {
 			try {
 				if (!__tasks.get(id).isDone() || !__tasks.get(id).isCancelled()) {
@@ -66,30 +58,26 @@ public final class TaskManager extends AbstractLogger {
 			}
 		}
 
-		__tasks.put(id, task);
-		info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		synchronized (__tasks) {
+			__tasks.put(id, task);
+			info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		}
+
 	}
 
-	/**
-	 * Kill or stop a running task
-	 * 
-	 * @param id the unique id
-	 */
-	public synchronized void kill(String id) {
+	@Override
+	public void kill(String id) {
 		ScheduledFuture<?> task = __tasks.get(id);
 		if (task != null) {
-			task.cancel(true);
-			info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
-			__tasks.remove(id);
+			synchronized (__tasks) {
+				task.cancel(true);
+				info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+				__tasks.remove(id);
+			}
 		}
 	}
 
-	/**
-	 * Retrieve the remain time of one task
-	 * 
-	 * @param id the unique for retrieving the desired task
-	 * @return Returns the left time
-	 */
+	@Override
 	public int getRemainTime(String id) {
 		ScheduledFuture<?> task = __tasks.get(id);
 		if (task != null) {

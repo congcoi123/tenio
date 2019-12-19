@@ -21,44 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.event.main;
 
 import com.tenio.configuration.constant.TEvent;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
+ * Only for creating an event handler object @see {@link TEventHandler}
  * 
  * @author kong
  * 
  */
-public final class TSubscriber {
+public final class TEventProducer {
 
 	/**
-	 * @see TEvent
+	 * @see TEventHandler
 	 */
-	private TEvent __type;
-	/**
-	 * @see ISubscriber
-	 */
-	private ISubscriber __sub;
+	private TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
 
-	public TSubscriber(final TEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
+	/**
+	 * @return Returns @see {@link TEventHandler}
+	 */
+	public TEventHandler<Object> getEventHandler() {
+		return __eventHandler;
 	}
 
 	/**
-	 * @return Returns @see {@link TEvent}
+	 * @see TEventHandler#emit(Object, TEvent, Object...)
 	 */
-	public TEvent getType() {
-		return __type;
+	public Object emit(final TEvent type, final Object... args) {
+		return __eventHandler.emit(this, type, args);
 	}
 
 	/**
-	 * @return Returns @see {@link ISubscriber}
+	 * @see TEventHandler#clear()
 	 */
-	public ISubscriber getSub() {
-		return __sub;
+	public void clear() {
+		__eventHandler.clear();
 	}
 
 }
