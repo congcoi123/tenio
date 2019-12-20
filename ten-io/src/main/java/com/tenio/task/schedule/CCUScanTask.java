@@ -42,26 +42,21 @@ import com.tenio.logger.AbstractLogger;
 public final class CCUScanTask extends AbstractLogger {
 
 	/**
-	 * @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
-	/**
-	 * @see {@link PlayerApi}
-	 */
-	private PlayerApi __playerApi = PlayerApi.getInstance();
-	/**
 	 * The period time for retrieving CCU
 	 */
 	private int __ccuScanPeriod;
+	
+	private PlayerApi __playerApi;
 
-	public CCUScanTask(int ccuScanPeriod) {
+	public CCUScanTask(PlayerApi playerApi, int ccuScanPeriod) {
+		__playerApi = playerApi;
 		__ccuScanPeriod = ccuScanPeriod;
 	}
 
 	public void run() {
 		info("CCU SCAN TASK", "Running ...");
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__events.emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
+			EventManager.getEvent().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
 		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
 	}
 

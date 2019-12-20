@@ -23,20 +23,23 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
+import com.tenio.api.HeartBeatApi;
+import com.tenio.api.MessageApi;
+import com.tenio.api.PlayerApi;
+import com.tenio.api.RoomApi;
+import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set first and all
- * configuration values should be confirmed.
+ * orders are important, event subscribes must be set last and all configuration
+ * values should be confirmed.
  * 
  * @author kong
  * 
  */
-interface IServer {
+public interface IServer {
 
 	/**
 	 * Start the server base on your own configurations
@@ -63,28 +66,28 @@ interface IServer {
 	void setExtension(IExtension extension);
 
 	/**
-	 * When a message sent from a player, you can handle it here
-	 * 
-	 * @param player          the player who sent a message to the server
-	 * @param isSubConnection if it is true, this is a sub-connection
-	 * @param message         the message's content
+	 * @return Returns @see {@link PlayerApi}
 	 */
-	void handle(AbstractPlayer player, boolean isSubConnection, TObject message);
+	PlayerApi getPlayerApi();
 
 	/**
-	 * Handle a player's exception
-	 * 
-	 * @param player the player who cause an exception
-	 * @param cause  the exception's content
+	 * @return Returns @see {@link RoomApi}
 	 */
-	void exception(AbstractPlayer player, Throwable cause);
+	RoomApi getRoomApi();
 
 	/**
-	 * Handle a connection's exception
-	 * 
-	 * @param identify the "connection" id (channel's id, session's id, ...)
-	 * @param cause    the exception's content
+	 * @return Returns @see {@link MessageApi}
 	 */
-	void exception(String identify, Throwable cause);
+	MessageApi getMessageApi();
+
+	/**
+	 * @return Returns @see {@link HeartBeatApi}
+	 */
+	HeartBeatApi getHeartBeatApi();
+
+	/**
+	 * @return Returns @see {@link TaskApi}
+	 */
+	TaskApi getTaskApi();
 
 }

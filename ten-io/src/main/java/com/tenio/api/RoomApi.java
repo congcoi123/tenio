@@ -28,54 +28,44 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entities.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
  * This class provides you a necessary interface for managing rooms.
  * 
- * @see {@link RoomManager}
+ * @see {@link IRoomManager}
  * 
  * @author kong
  * 
  */
 public final class RoomApi extends AbstractLogger {
 
-	private static volatile RoomApi __instance;
+	/**
+	 * @see {@link IRoomManager}
+	 */
+	private IRoomManager __roomManager;
 
-	private RoomApi() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static RoomApi getInstance() {
-		if (__instance == null) {
-			__instance = new RoomApi();
-		}
-		return __instance;
+	public RoomApi(IRoomManager roomManager) {
+		__roomManager = roomManager;
 	}
 
 	/**
-	 * @see {@link RoomManager}
-	 */
-	private RoomManager __roomManager = RoomManager.getInstance();
-
-	/**
-	 * @see RoomManager#gets()
+	 * @see IRoomManager#gets()
 	 */
 	public Map<String, AbstractRoom> gets() {
 		return __roomManager.gets();
 	}
 
 	/**
-	 * @see RoomManager#add(AbstractRoom)
+	 * @see IRoomManager#add(AbstractRoom)
 	 */
 	public void add(final AbstractRoom room) {
 		__roomManager.add(room);
 	}
 
 	/**
-	 * @see RoomManager#remove(AbstractRoom)
+	 * @see IRoomManager#remove(AbstractRoom)
 	 */
 	public void remove(final AbstractRoom room) {
 		__roomManager.remove(room);

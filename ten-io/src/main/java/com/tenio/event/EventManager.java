@@ -23,101 +23,33 @@ THE SOFTWARE.
 */
 package com.tenio.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.event.logic.LEventManager;
+import com.tenio.event.main.TEventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * This class for managing events and these subscribers.
+ * Manage all events in the server
  * 
  * @author kong
- * 
+ *
  */
 public final class EventManager extends AbstractLogger {
 
-	private static volatile EventManager __instance;
+	/**
+	 * @see TEventManager
+	 */
+	private static volatile TEventManager __tEvent = new TEventManager();
+	/**
+	 * @see LEventManager
+	 */
+	private static volatile LEventManager __lEvent = new LEventManager();
 
-	private EventManager() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static EventManager getInstance() {
-		if (__instance == null) {
-			__instance = new EventManager();
-		}
-		return __instance;
+	public static TEventManager getEvent() {
+		return __tEvent;
 	}
 
-	/**
-	 * A list of subscribers
-	 */
-	private List<Subscriber> __subscribers = new ArrayList<Subscriber>();
-	/**
-	 * @see EventProducer
-	 */
-	private EventProducer __producer = new EventProducer();
-
-	/**
-	 * @see EventProducer#emit(TEvent, Object...)
-	 */
-	public Object emit(final TEvent type, final Object... args) {
-		return __producer.emit(type, args);
-	}
-
-	/**
-	 * Add a subscriber's handler
-	 * 
-	 * @param type @see {@link TEvent}
-	 * @param sub  @see {@link ISubscriber}
-	 */
-	public void on(final TEvent type, final ISubscriber sub) {
-		if (hasSubscriber(type)) {
-			info("EVENT WARNING", "Duplicated", type);
-		}
-
-		__subscribers.add(new Subscriber(type, sub));
-	}
-
-	/**
-	 * Collect all subscribers and these corresponding events
-	 */
-	public void subscribe() {
-		__producer.clear(); // clear the old first
-
-		// only for log recording
-		List<TEvent> subs = new ArrayList<TEvent>();
-		// start handling
-		__subscribers.forEach(s -> {
-			subs.add(s.getType());
-			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
-		});
-		info("EVENT UPDATED", "Subscribers", subs.toString());
-	}
-
-	/**
-	 * Check if an event has any subscribers or not
-	 * 
-	 * @param type @see {@link TEvent}
-	 * @return Returns <code>true</code> if an event has any subscribers
-	 */
-	public boolean hasSubscriber(final TEvent type) {
-		for (Subscriber subscriber : __subscribers) {
-			if (subscriber.getType() == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Clear all subscribers and these corresponding events
-	 */
-	public void clear() {
-		__subscribers.clear();
-		__producer.clear();
+	public static LEventManager getLogic() {
+		return __lEvent;
 	}
 
 }

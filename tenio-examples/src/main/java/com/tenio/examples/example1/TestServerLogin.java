@@ -33,7 +33,7 @@ import com.tenio.entities.element.TObject;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This class shows how a server handle messages that came from a client

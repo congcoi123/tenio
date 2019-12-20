@@ -25,49 +25,47 @@ package com.tenio.api;
 
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.heartbeat.IHeartBeatManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * This class provides you a necessary interface for managing hearbeats.
+ * This class provides you a necessary interface for managing heart beats.
  * 
- * @see {@link HeartBeatManager}
+ * @see {@link IHeartBeatManager}
  * 
  * @author kong
  * 
  */
-public class HeartBeatApi extends AbstractLogger {
+public final class HeartBeatApi extends AbstractLogger {
 
-	private static volatile HeartBeatApi __instance;
+	/**
+	 * @see IHeartBeatManager
+	 */
+	private IHeartBeatManager __heartBeatManager;
 
-	private HeartBeatApi() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static HeartBeatApi getInstance() {
-		if (__instance == null) {
-			__instance = new HeartBeatApi();
-		}
-		return __instance;
+	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
+		__heartBeatManager = heartBeatManager;
+	}
+	
+	/**
+	 * @see HeartBeatManager#initialize(int)
+	 */
+	public void initialize(int maxHeartbeat) {
+		__heartBeatManager.initialize(maxHeartbeat);
 	}
 
 	/**
-	 * @see HeartBeatManager
+	 * @see IHeartBeatManager#create(String, AbstractHeartBeat)
 	 */
-	private HeartBeatManager __manager = HeartBeatManager.getInstance();
-
-	/**
-	 * @see HeartBeatManager#create(String, AbstractHeartBeat)
-	 */
-	public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
-		__manager.create(id, heartbeat);
+	public void create(final String id, final AbstractHeartBeat heartbeat) {
+		__heartBeatManager.create(id, heartbeat);
 	}
 
 	/**
-	 * @see HeartBeatManager#dispose(String)
+	 * @see IHeartBeatManager#dispose(String)
 	 */
-	public synchronized void dispose(final String id) {
-		__manager.dispose(id);
+	public void dispose(final String id) {
+		__heartBeatManager.dispose(id);
 	}
 
 }

@@ -41,12 +41,12 @@ import org.w3c.dom.NodeList;
 /**
  * Parse an XML file and convert its content to nodes.
  * 
- * @author Someone from China
+ * @author kong
  * 
  */
 public final class XMLUtil {
 
-	private XPath __oXpath;
+	private static XPath __oXpath;
 
 	/**
 	 * To parse an XML file
@@ -55,7 +55,7 @@ public final class XMLUtil {
 	 * @return Returns a document object to easy use @see {@link Document}
 	 * @throws Exception
 	 */
-	public Document parseFile(final File file) throws Exception {
+	public static Document parseFile(final File file) throws Exception {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -73,7 +73,7 @@ public final class XMLUtil {
 	 * @return Returns a document object to easy use @see {@link Document}
 	 * @throws Exception
 	 */
-	public Document parseStream(final InputStream in) throws Exception {
+	public static Document parseStream(final InputStream in) throws Exception {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -90,7 +90,7 @@ public final class XMLUtil {
 	 * @param node the current node
 	 * @return Returns its content in string value
 	 */
-	public String getNodeValue(final Node node) {
+	public static String getNodeValue(final Node node) {
 		String dataValue = node.getTextContent();
 		return dataValue;
 	}
@@ -103,7 +103,7 @@ public final class XMLUtil {
 	 * @return Returns a list of nodes
 	 * @throws XPathExpressionException
 	 */
-	public NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
+	public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
 		NodeList nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
 
 		return nodeList;
@@ -117,7 +117,7 @@ public final class XMLUtil {
 	 * @return Returns the children node
 	 * @throws XPathExpressionException
 	 */
-	public Node getNode(final Node node, final String xpath) throws XPathExpressionException {
+	public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
 		Node nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
 
 		return nodeRet;
@@ -130,7 +130,7 @@ public final class XMLUtil {
 	 * @param name the current attribute name
 	 * @return Returns the value of node's attribute
 	 */
-	public String getAttrVal(final Node node, final String name) {
+	public static String getAttrVal(final Node node, final String name) {
 		String val = "";
 
 		Element eNode = (Element) node;

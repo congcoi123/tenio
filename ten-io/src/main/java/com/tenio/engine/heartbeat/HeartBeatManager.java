@@ -34,41 +34,24 @@ import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * The Java ExecutorService is a construct that allows you to pass a task to be
- * executed by a thread asynchronously. The executor service creates and
- * maintains a reusable pool of threads for executing submitted tasks. This
- * class helps you create and manage your HeartBeats @see
- * {@link AbstractHeartBeat}
+ * 
+ * @see {@link IHeartBeatManager}
  * 
  * @author kong
  *
  */
-public final class HeartBeatManager extends AbstractLogger {
-
-	private static volatile HeartBeatManager __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static HeartBeatManager getInstance() {
-		if (__instance == null) {
-			__instance = new HeartBeatManager();
-		}
-		return __instance;
-	}
+public final class HeartBeatManager extends AbstractLogger implements IHeartBeatManager {
 
 	private Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
 	private ExecutorService __executorService;
 
-	/**
-	 * The number of maximum heartbeats that the server can handle
-	 * 
-	 * @param configuration @see {@link BaseConfiguration}
-	 */
+	@Override
 	public void initialize(final BaseConfiguration configuration) {
 		int maxHeartbeat = (int) configuration.get(BaseConfiguration.MAX_HEARTBEAT);
 		initialize(maxHeartbeat);
 	}
 
+	@Override
 	public void initialize(final int maxHeartbeat) {
 		try {
 			__executorService = Executors.newFixedThreadPool(maxHeartbeat);
@@ -78,12 +61,7 @@ public final class HeartBeatManager extends AbstractLogger {
 		}
 	}
 
-	/**
-	 * Create a new hearbeat
-	 * 
-	 * @param id        the unique id
-	 * @param heartbeat @see {@link AbstractHeartBeat}
-	 */
+	@Override
 	public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
 		try {
 			info("CREATE HEART BEAT", buildgen("id: ", id));
@@ -94,11 +72,7 @@ public final class HeartBeatManager extends AbstractLogger {
 		}
 	}
 
-	/**
-	 * Dispose a heartbeat
-	 * 
-	 * @param id the unique id
-	 */
+	@Override
 	public synchronized void dispose(final String id) {
 		try {
 			if (!__pool.containsKey(id)) {
@@ -122,19 +96,12 @@ public final class HeartBeatManager extends AbstractLogger {
 		}
 	}
 
-	/**
-	 * Check if a heartbeat is existed or not
-	 * 
-	 * @param id the unique id
-	 * @return Returns <code>true</code> if the corresponding heartbeat is existed
-	 */
+	@Override
 	public boolean contains(final String id) {
 		return __pool.containsKey(id);
 	}
 
-	/**
-	 * Destroy all heartbeats and clear all references
-	 */
+	@Override
 	public void clear() {
 		__executorService.shutdownNow();
 		__executorService = null;

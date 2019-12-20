@@ -26,52 +26,42 @@ package com.tenio.api;
 import java.util.concurrent.ScheduledFuture;
 
 import com.tenio.logger.AbstractLogger;
-import com.tenio.task.TaskManager;
+import com.tenio.task.ITaskManager;
 
 /**
  * This class provides you a necessary interface for managing tasks.
  * 
- * @see {@link TaskManager}
+ * @see {@link ITaskManager}
  * @author kong
  * 
  */
 public final class TaskApi extends AbstractLogger {
 
-	private static volatile TaskApi __instance;
+	/**
+	 * @see {@link ITaskManager}
+	 */
+	private ITaskManager __taskManager;
 
-	private TaskApi() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static TaskApi getInstance() {
-		if (__instance == null) {
-			__instance = new TaskApi();
-		}
-		return __instance;
+	public TaskApi(ITaskManager taskManager) {
+		__taskManager = taskManager;
 	}
 
 	/**
-	 * @see {@link TaskManager}
-	 */
-	private TaskManager __manager = TaskManager.getInstance();
-
-	/**
-	 * @see TaskManager#create(String, ScheduledFuture)
+	 * @see ITaskManager#create(String, ScheduledFuture)
 	 */
 	public void run(String id, ScheduledFuture<?> task) {
-		__manager.create(id, task);
+		__taskManager.create(id, task);
 	}
 
 	/**
-	 * @see TaskManager#kill(String)
+	 * @see ITaskManager#kill(String)
 	 */
 	public void kill(String id) {
-		__manager.kill(id);
+		__taskManager.kill(id);
 	}
 
 	/**
-	 * Check if the desired task is running or not
+	 * Check if the desired task is running or not.
 	 * 
 	 * @param id the task's id
 	 * @return Returns <code>true</code> if this task is running
@@ -81,10 +71,10 @@ public final class TaskApi extends AbstractLogger {
 	}
 
 	/**
-	 * @see TaskManager#getRemainTime(String)
+	 * @see ITaskManager#getRemainTime(String)
 	 */
 	public int getTaskRemainTime(String id) {
-		return __manager.getRemainTime(id);
+		return __taskManager.getRemainTime(id);
 	}
 
 }

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tenio.engine.fsm.entities.AbstractEntity;
-import com.tenio.exception.DuplicatedElementException;
+import com.tenio.exception.DuplicatedEntityException;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -51,10 +51,10 @@ public final class EntityManager extends AbstractLogger {
 	public void register(AbstractEntity entity) {
 		try {
 			if (contain(entity.getId())) {
-				throw new DuplicatedElementException();
+				throw new DuplicatedEntityException();
 			}
-		} catch (DuplicatedElementException e) {
-			// fire event
+		} catch (DuplicatedEntityException e) {
+			// fire an event
 			error("REGISTER ENTITY", String.valueOf(entity.getId()), e);
 			return;
 		}

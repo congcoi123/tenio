@@ -26,106 +26,84 @@ package com.tenio.entities.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.api.RoomApi;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.AbstractRoom;
 import com.tenio.event.EventManager;
+import com.tenio.exception.NullRoomException;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * Manage all your rooms @see {@link AbstractRoom} on the server. It is a
- * singleton pattern class, which can be called anywhere. But it's better that
- * you use the {@link RoomApi} interface for easy management.
+ * 
+ * @see {@link IRoomManager}
  * 
  * @author kong
  * 
  */
-public final class RoomManager extends AbstractLogger {
+public final class RoomManager extends AbstractLogger implements IRoomManager {
 
-	private static volatile RoomManager __instance;
-
-	private RoomManager() {
-	} // prevent creation manually
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static RoomManager getInstance() {
-		if (__instance == null) {
-			__instance = new RoomManager();
-		}
-		return __instance;
-	}
-
-	/**
-	 * An instance to push events @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
 	/**
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
 	private Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
 
-	/**
-	 * @return the number of rooms in your server
-	 */
+	@Override
 	public int count() {
 		return __rooms.size();
 	}
 
-	/**
-	 * @return all the current rooms in your server
-	 */
+	@Override
 	public Map<String, AbstractRoom> gets() {
 		return __rooms;
 	}
 
+	@Override
 	public void clear() {
 		__rooms.clear();
 		__rooms = null;
 	}
 
+	@Override
 	public AbstractRoom get(final String roomId) {
 		return __rooms.get(roomId);
 	}
 
+	@Override
 	public boolean contain(final String roomId) {
 		return __rooms.containsKey(roomId);
 	}
 
-	/**
-	 * Add a new room to your server. You need create your own room first.
-	 * 
-	 * @param room that is added @see {@link AbstractRoom}
-	 */
-	public synchronized void add(final AbstractRoom room) {
-		__rooms.put(room.getId(), room);
-		// fire event
-		__events.emit(TEvent.CREATED_ROOM, room);
+	@Override
+	public void add(final AbstractRoom room) {
+		synchronized (__rooms) {
+			__rooms.put(room.getId(), room);
+			// fire an event
+			EventManager.getEvent().emit(TEvent.CREATED_ROOM, room);
+		}
+
 	}
 
-	/**
-	 * Remove a room from your server.
-	 * 
-	 * @param room that is removed @see {@link AbstractRoom}
-	 */
-	public synchronized void remove(final AbstractRoom room) {
+	@Override
+	public void remove(final AbstractRoom room) {
 		try {
 			if (!contain(room.getId())) {
-				throw new NullPointerException();
+				throw new NullRoomException();
 			}
-		} catch (NullPointerException e) {
+		} catch (NullRoomException e) {
 			error("REMOVE ROOM", room.getName(), e);
 			return;
 		}
 
-		// fire event
-		__events.emit(TEvent.REMOVE_ROOM, room);
-		// force all player leave from room
-		__forceAllPlayersLeaveRoom(room);
-		// remove itself from the current list
-		__rooms.remove(room.getId());
+		synchronized (__rooms) {
+			// fire an event
+			EventManager.getEvent().emit(TEvent.REMOVE_ROOM, room);
+			// force all players leave this room
+			__forceAllPlayersLeaveRoom(room);
+			// remove itself from the current list
+			__rooms.remove(room.getId());
+		}
+
 	}
 
 	/**
@@ -141,53 +119,40 @@ public final class RoomManager extends AbstractLogger {
 		});
 	}
 
-	/**
-	 * Request one player to join a room. This request can be refused with some
-	 * reason. You can handle these results in the corresponding events.
-	 * 
-	 * @param room   the desired room @see {@link AbstractRoom}
-	 * @param player the current player @see {@link AbstractPlayer}
-	 */
-	public synchronized void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	@Override
+	public void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
-			__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.PLAYER_WAS_IN_ROOM);
+			EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.PLAYER_WAS_IN_ROOM);
 			return;
 		}
 
 		if (room.isFull()) {
-			__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
+			EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
 			return;
 		}
 
-		// player need to leave his room (if existed) first
+		// the player need to leave his room (if existed) first
 		playerLeaveRoom(player, false);
 
 		room.add(player);
 		player.setRoom(room);
-		// fire event
-		__events.emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
+		// fire an event
+		EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
 	}
 
-	/**
-	 * Allow a player to leave his current room. You can handle your own logic in
-	 * the corresponding events.
-	 * 
-	 * @param player that will be left his current room @see {@link AbstractPlayer}
-	 * @param force  it's set <code>true</code> if you want to force the player
-	 *               leave. Otherwise, it's set <code>false</code>
-	 */
-	public synchronized void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	@Override
+	public void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		AbstractRoom room = player.getRoom();
 		if (room == null) {
 			return;
 		}
 
-		// fire event
-		__events.emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		// fire an event
+		EventManager.getEvent().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
-		// fire event
-		__events.emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
+		// fire an event
+		EventManager.getEvent().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
 	}
 
 }

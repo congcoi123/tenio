@@ -36,7 +36,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.tenio.api.MessageApi;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.logger.AbstractLogger;
@@ -67,11 +66,6 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * 1.
 	 */
 	private static final int MAX_UPDATES_BEFORE_RENDER = 5;
-
-	/**
-	 * @see MessageApi
-	 */
-	protected MessageApi _messageApi = MessageApi.getInstance();
 
 	/**
 	 * For displaying debugger

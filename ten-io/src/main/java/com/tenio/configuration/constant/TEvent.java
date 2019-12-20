@@ -29,7 +29,7 @@ import com.tenio.entities.AbstractRoom;
 import com.tenio.entities.element.TObject;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by

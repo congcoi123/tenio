@@ -32,6 +32,8 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.server.IServer;
+import com.tenio.server.Server;
 
 /**
  * This class provides you all the necessary APIs for your own logic game
@@ -48,30 +50,28 @@ import com.tenio.logger.AbstractLogger;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
+	private IServer __server = Server.getInstance();
+	
 	/**
 	 * @see {@link MessageApi}
 	 */
-	protected MessageApi _messageApi = MessageApi.getInstance();
+	protected MessageApi _messageApi = __server.getMessageApi();
 	/**
 	 * @see {@link PlayerApi}
 	 */
-	protected PlayerApi _playerApi = PlayerApi.getInstance();
+	protected PlayerApi _playerApi = __server.getPlayerApi();
 	/**
 	 * @see {@link RoomApi}
 	 */
-	protected RoomApi _roomApi = RoomApi.getInstance();
+	protected RoomApi _roomApi = __server.getRoomApi();
 	/**
 	 * @see {@link TaskApi}
 	 */
-	protected TaskApi _taskApi = TaskApi.getInstance();
+	protected TaskApi _taskApi = __server.getTaskApi();
 	/**
 	 * @see {@link HeartBeatApi}
 	 */
-	protected HeartBeatApi _heartbeatApi = HeartBeatApi.getInstance();
-	/**
-	 * @see {@link EventManager}
-	 */
-	private EventManager __events = EventManager.getInstance();
+	protected HeartBeatApi _heartbeatApi = __server.getHeartBeatApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type
@@ -81,7 +81,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @param sub  your own subscriber-class handler
 	 */
 	protected void on(final TEvent type, final ISubscriber sub) {
-		__events.on(type, sub);
+		EventManager.getEvent().on(type, sub);
 	}
 
 }
