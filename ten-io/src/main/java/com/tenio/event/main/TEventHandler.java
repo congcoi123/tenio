@@ -40,12 +40,12 @@ public final class TEventHandler<T> {
 
 	/**
 	 * An instance creates a mapping between an event with its list of event
-	 * handlers
+	 * handlers.
 	 */
 	private Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
 
 	/**
-	 * Create a link between an event and its list of event handlers
+	 * Create a link between an event and its list of event handlers.
 	 * 
 	 * @param type  @see {@link TEvent}
 	 * @param event @see {@link IEvent}
@@ -63,7 +63,7 @@ public final class TEventHandler<T> {
 	}
 
 	/**
-	 * Emit an event with its parameters
+	 * Emit an event with its parameters.
 	 * 
 	 * @param source the source object
 	 * @param type   @see {@link TEvent}
@@ -86,7 +86,7 @@ public final class TEventHandler<T> {
 	}
 
 	/**
-	 * Clear all events and these handlers
+	 * Clear all events and these handlers.
 	 */
 	public void clear() {
 		if (!__delegate.isEmpty()) {

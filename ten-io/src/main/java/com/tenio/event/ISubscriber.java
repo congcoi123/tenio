@@ -34,7 +34,7 @@ package com.tenio.event;
 public interface ISubscriber {
 
 	/**
-	 * To dispatch results from one event
+	 * To dispatch results from one event.
 	 * 
 	 * @param source the source object
 	 * @param args   all the results in an array

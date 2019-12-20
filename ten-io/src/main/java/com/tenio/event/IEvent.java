@@ -33,7 +33,7 @@ package com.tenio.event;
 public interface IEvent<T extends Object> {
 
 	/**
-	 * To invoke an event
+	 * To invoke an event.
 	 * 
 	 * @param source the source object
 	 * @param args   the parameters those will be sent to subscribers

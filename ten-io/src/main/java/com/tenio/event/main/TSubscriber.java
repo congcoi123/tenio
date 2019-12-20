@@ -27,7 +27,7 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.ISubscriber;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
+ * An object which creates a mapping between an event type with a subscriber.
  * 
  * @author kong
  * 

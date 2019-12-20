@@ -51,8 +51,8 @@ public class Configuration extends BaseConfiguration {
 	}
 
 	@Override
-	protected void _extend(XMLUtil xmlUtil, Node attrNode) throws XPathExpressionException {
-		NodeList attrConfigurationProperties = xmlUtil.getNodeList(attrNode, "//Server/Extension/Properties/Property");
+	protected void _extend(Node attrNode) throws XPathExpressionException {
+		NodeList attrConfigurationProperties = XMLUtil.getNodeList(attrNode, "//Server/Extension/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			Node pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {

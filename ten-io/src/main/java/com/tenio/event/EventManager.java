@@ -6,8 +6,8 @@ import com.tenio.logger.AbstractLogger;
 
 public final class EventManager extends AbstractLogger {
 
-	private static TEventManager __tEvent = new TEventManager();
-	private static LEventManager __lEvent = new LEventManager();
+	private static volatile TEventManager __tEvent = new TEventManager();
+	private static volatile LEventManager __lEvent = new LEventManager();
 
 	public static TEventManager getEvent() {
 		return __tEvent;

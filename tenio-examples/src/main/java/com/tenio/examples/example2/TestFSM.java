@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example2;
 
-import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.server.Server;
 
 /**
  * Only for testing the FSM mechanism
@@ -37,8 +37,8 @@ public class TestFSM {
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		HeartBeatManager.getInstance().initialize(1);
-		HeartBeatManager.getInstance().create("test", new LifeCycle());
+		Server.getInstance().getHeartBeatApi().initialize(1);
+		Server.getInstance().getHeartBeatApi().create("daily-life", new LifeCycle());
 	}
 
 }

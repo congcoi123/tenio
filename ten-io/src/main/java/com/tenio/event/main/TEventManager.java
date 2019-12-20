@@ -39,7 +39,7 @@ import com.tenio.logger.AbstractLogger;
 public final class TEventManager extends AbstractLogger {
 
 	/**
-	 * A list of subscribers
+	 * A list of subscribers.
 	 */
 	private List<TSubscriber> __subscribers = new ArrayList<TSubscriber>();
 	/**
@@ -55,7 +55,7 @@ public final class TEventManager extends AbstractLogger {
 	}
 
 	/**
-	 * Add a subscriber's handler
+	 * Add a subscriber's handler.
 	 * 
 	 * @param type @see {@link TEvent}
 	 * @param sub  @see {@link ISubscriber}
@@ -69,7 +69,7 @@ public final class TEventManager extends AbstractLogger {
 	}
 
 	/**
-	 * Collect all subscribers and these corresponding events
+	 * Collect all subscribers and these corresponding events.
 	 */
 	public void subscribe() {
 		__producer.clear(); // clear the old first
@@ -85,7 +85,7 @@ public final class TEventManager extends AbstractLogger {
 	}
 
 	/**
-	 * Check if an event has any subscribers or not
+	 * Check if an event has any subscribers or not.
 	 * 
 	 * @param type @see {@link TEvent}
 	 * @return Returns <code>true</code> if an event has any subscribers
@@ -100,7 +100,7 @@ public final class TEventManager extends AbstractLogger {
 	}
 
 	/**
-	 * Clear all subscribers and these corresponding events
+	 * Clear all subscribers and these corresponding events.
 	 */
 	public void clear() {
 		__subscribers.clear();

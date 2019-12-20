@@ -25,35 +25,47 @@ package com.tenio.api;
 
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.heartbeat.IHeartBeatManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
  * This class provides you a necessary interface for managing heart beats.
  * 
- * @see {@link HeartBeatManager}
+ * @see {@link IHeartBeatManager}
  * 
  * @author kong
  * 
  */
-public class HeartBeatApi extends AbstractLogger {
+public final class HeartBeatApi extends AbstractLogger {
 
 	/**
-	 * @see HeartBeatManager
+	 * @see IHeartBeatManager
 	 */
-	private HeartBeatManager __heartBeatmanager;
+	private IHeartBeatManager __heartBeatManager;
 
+	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
+		__heartBeatManager = heartBeatManager;
+	}
+	
 	/**
-	 * @see HeartBeatManager#create(String, AbstractHeartBeat)
+	 * @see HeartBeatManager#initialize(int)
 	 */
-	public void create(final String id, final AbstractHeartBeat heartbeat) {
-		__heartBeatmanager.create(id, heartbeat);
+	public void initialize(int maxHeartbeat) {
+		__heartBeatManager.initialize(maxHeartbeat);
 	}
 
 	/**
-	 * @see HeartBeatManager#dispose(String)
+	 * @see IHeartBeatManager#create(String, AbstractHeartBeat)
+	 */
+	public void create(final String id, final AbstractHeartBeat heartbeat) {
+		__heartBeatManager.create(id, heartbeat);
+	}
+
+	/**
+	 * @see IHeartBeatManager#dispose(String)
 	 */
 	public void dispose(final String id) {
-		__heartBeatmanager.dispose(id);
+		__heartBeatManager.dispose(id);
 	}
 
 }

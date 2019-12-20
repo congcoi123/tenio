@@ -29,15 +29,15 @@ import java.util.Map;
 
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entities.manager.IPlayerManager;
+import com.tenio.entities.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.net.Connection;
 
 /**
  * This class provides you a necessary interface for managing players.
  * 
- * @see {@link PlayerManager}
+ * @see {@link IPlayerManager}
  * 
  * @author kong
  * 
@@ -45,72 +45,77 @@ import com.tenio.net.Connection;
 public final class PlayerApi extends AbstractLogger {
 
 	/**
-	 * @see {@link PlayerManager}
+	 * @see {@link IPlayerManager}
 	 */
-	private PlayerManager __playerManager;
+	private IPlayerManager __playerManager;
 	/**
-	 * @see {@link RoomManager}
+	 * @see {@link IRoomManager}
 	 */
-	private RoomManager __roomManager;
+	private IRoomManager __roomManager;
+
+	public PlayerApi(IPlayerManager playerManager, IRoomManager roomManager) {
+		__playerManager = playerManager;
+		__roomManager = roomManager;
+	}
 
 	/**
-	 * @see PlayerManager#contain(String)
+	 * @see IPlayerManager#contain(String)
 	 */
 	public boolean contain(final String userName) {
 		return __playerManager.contain(userName);
 	}
 
 	/**
-	 * @see PlayerManager#get(String)
+	 * @see IPlayerManager#get(String)
 	 */
 	public AbstractPlayer get(final String userName) {
 		return __playerManager.get(userName);
 	}
 
 	/**
-	 * @see PlayerManager#count()
+	 * @see IPlayerManager#count()
 	 */
 	public int count() {
 		return __playerManager.count();
 	}
 
 	/**
-	 * @see PlayerManager#countPlayers()
+	 * @see IPlayerManager#countPlayers()
 	 */
 	public int countPlayers() {
 		return __playerManager.countPlayers();
 	}
 
 	/**
-	 * @see PlayerManager#gets()
+	 * @see IPlayerManager#gets()
 	 */
 	public Map<String, AbstractPlayer> gets() {
 		return __playerManager.gets();
 	}
 
 	/**
-	 * @see PlayerManager#add(AbstractPlayer, Connection)
+	 * @see IPlayerManager#add(AbstractPlayer, Connection)
 	 */
 	public void login(final AbstractPlayer player, final Connection connection) {
 		__playerManager.add(player, connection);
 	}
 
 	/**
-	 * @see PlayerManager#add(AbstractPlayer)
+	 * @see IPlayerManager#add(AbstractPlayer)
 	 */
 	public void login(final AbstractPlayer player) {
 		__playerManager.add(player);
 	}
 
 	/**
-	 * @see RoomManager#playerJoinRoom(AbstractRoom, AbstractPlayer)
+	 * @see IRoomManager#playerJoinRoom(AbstractRoom, AbstractPlayer)
 	 */
 	public void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		__roomManager.playerJoinRoom(room, player);
 	}
 
 	/**
-	 * @see RoomManager#playerLeaveRoom(AbstractPlayer, boolean)
+	 * @see IRoomManager#playerLeaveRoom(AbstractPlayer, boolean)
 	 */
 	public void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		__roomManager.playerLeaveRoom(player, force);
@@ -124,7 +129,7 @@ public final class PlayerApi extends AbstractLogger {
 	}
 
 	/**
-	 * @see PlayerManager#remove(AbstractPlayer)
+	 * @see IPlayerManager#remove(AbstractPlayer)
 	 */
 	public void logOut(final AbstractPlayer player) {
 		__playerManager.remove(player);

@@ -25,20 +25,28 @@ package com.tenio.server;
 
 import java.io.IOException;
 
+import com.tenio.api.HeartBeatApi;
+import com.tenio.api.MessageApi;
+import com.tenio.api.PlayerApi;
+import com.tenio.api.RoomApi;
+import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.heartbeat.IHeartBeatManager;
+import com.tenio.entities.manager.IPlayerManager;
+import com.tenio.entities.manager.IRoomManager;
 import com.tenio.entities.manager.PlayerManager;
 import com.tenio.entities.manager.RoomManager;
 import com.tenio.event.EventManager;
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.net.INetwork;
 import com.tenio.net.mina.MinaNetwork;
 import com.tenio.net.netty.NettyNetwork;
+import com.tenio.task.ITaskManager;
+import com.tenio.task.TaskManager;
 import com.tenio.task.schedule.CCUScanTask;
 import com.tenio.task.schedule.EmptyRoomScanTask;
 import com.tenio.task.schedule.TimeOutScanTask;
@@ -54,6 +62,16 @@ public final class Server extends AbstractLogger implements IServer {
 	private static volatile Server __instance;
 
 	private Server() {
+		__heartBeatManager = new HeartBeatManager();
+		__roomManager = new RoomManager();
+		__playerManager = new PlayerManager();
+		__taskManager = new TaskManager();
+		
+		__playerApi = new PlayerApi(__playerManager, __roomManager);
+		__roomApi = new RoomApi(__roomManager);
+		__heartbeatApi = new HeartBeatApi(__heartBeatManager);
+		__taskApi = new TaskApi(__taskManager);
+		__messageApi = new MessageApi();
 		
 	} // prevent creation manually
 
@@ -66,20 +84,16 @@ public final class Server extends AbstractLogger implements IServer {
 		return __instance;
 	}
 
-	/**
-	 * @see {@link TEventManager}
-	 */
-	private TEventManager __events;
-
-	/**
-	 * @see {@link LEventManager}
-	 */
-	private LEventManager __logicEvents;
+	private IHeartBeatManager __heartBeatManager;
+	private IRoomManager __roomManager;
+	private IPlayerManager __playerManager;
+	private ITaskManager __taskManager;
 	
-	/**
-	 * @see {@link HeartBeatManager}
-	 */
-	private HeartBeatManager __heartBeatManager;
+	private PlayerApi __playerApi;
+	private RoomApi __roomApi;
+	private HeartBeatApi __heartbeatApi;
+	private TaskApi __taskApi;
+	private MessageApi __messageApi;
 	
 	/**
 	 * @see {@link IExtension}
@@ -159,13 +173,11 @@ public final class Server extends AbstractLogger implements IServer {
 	public void shutdown() {
 		__network.shutdown();
 		// clear all objects
-		__events.clear();
-		__logicEvents.clear();
 		__heartBeatManager.clear();
-		TEventManager.getInstance().clear();
-		RoomManager.getInstance().clear();
-		PlayerManager.getInstance().clear();
-		HeartBeatManager.getInstance().clear();
+		__roomManager.clear();
+		__playerManager.clear();
+		EventManager.getEvent().clear();
+		EventManager.getLogic().clear();
 	}
 
 	@Override
@@ -181,8 +193,8 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
 		if ((boolean) configuration.get(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
 			try {
-				if (!__events.hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-						|| !__events.hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
+				if (!EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
+						|| !EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
 					throw new Exception(
 							new Throwable("Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
 				}
@@ -195,9 +207,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
 			try {
-				if (!__events.hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
-						|| !__events.hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
-						|| !__events.hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
+				if (!EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
+						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
+						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
 					throw new Exception(new Throwable(
 							"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
 				}
@@ -216,11 +228,36 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
-		(new TimeOutScanTask((int) configuration.get(BaseConfiguration.IDLE_READER),
+		(new TimeOutScanTask(__playerApi, (int) configuration.get(BaseConfiguration.IDLE_READER),
 				(int) configuration.get(BaseConfiguration.IDLE_WRITER),
 				(int) configuration.get(BaseConfiguration.TIMEOUT_SCAN))).run();
-		(new EmptyRoomScanTask((int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
-		(new CCUScanTask((int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
+		(new EmptyRoomScanTask(__roomApi, (int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
+		(new CCUScanTask(__playerApi, (int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
+	}
+
+	@Override
+	public PlayerApi getPlayerApi() {
+		return __playerApi;
+	}
+
+	@Override
+	public RoomApi getRoomApi() {
+		return __roomApi;
+	}
+
+	@Override
+	public MessageApi getMessageApi() {
+		return __messageApi;
+	}
+
+	@Override
+	public HeartBeatApi getHeartBeatApi() {
+		return __heartbeatApi;
+	}
+
+	@Override
+	public TaskApi getTaskApi() {
+		return __taskApi;
 	}
 
 }

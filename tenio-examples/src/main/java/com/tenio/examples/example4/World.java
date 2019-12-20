@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.tenio.api.PlayerApi;
+import com.tenio.api.MessageApi;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.physic.common.BaseGameEntity;
 import com.tenio.engine.physic.common.InvertedAABBox2D;
@@ -26,6 +26,7 @@ import com.tenio.examples.example4.constants.SummingMethod;
 import com.tenio.examples.example4.entities.Obstacle;
 import com.tenio.examples.example4.entities.Vehicle;
 import com.tenio.examples.example4.entities.Wall;
+import com.tenio.server.Server;
 
 /**
  * All the environment data and methods for the Steering Behavior projects. This
@@ -75,7 +76,8 @@ public class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, 0f);
 	// for network communication
-	private Collection<AbstractPlayer> __inspectors = PlayerApi.getInstance().gets().values();
+	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private TArray __ids = new TArray();
 	private TArray __pxs = new TArray();
 	private TArray __pys = new TArray();
@@ -457,8 +459,8 @@ public class World extends AbstractHeartBeat {
 
 		// send to client (naive way)
 		for (AbstractPlayer inspector : __inspectors) {
-			_messageApi.sendToPlayerSub(inspector, "p",
-					_messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
+			__messageApi.sendToPlayerSub(inspector, "p",
+					__messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
 		}
 
 	}

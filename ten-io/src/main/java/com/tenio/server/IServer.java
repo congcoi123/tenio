@@ -33,13 +33,13 @@ import com.tenio.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set last and all
- * configuration values should be confirmed.
+ * orders are important, event subscribes must be set last and all configuration
+ * values should be confirmed.
  * 
  * @author kong
  * 
  */
-interface IServer {
+public interface IServer {
 
 	/**
 	 * Start the server base on your own configurations
@@ -64,15 +64,30 @@ interface IServer {
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
 	void setExtension(IExtension extension);
-	
+
+	/**
+	 * @return Returns @see {@link PlayerApi}
+	 */
 	PlayerApi getPlayerApi();
-	
+
+	/**
+	 * @return Returns @see {@link RoomApi}
+	 */
 	RoomApi getRoomApi();
-	
+
+	/**
+	 * @return Returns @see {@link MessageApi}
+	 */
 	MessageApi getMessageApi();
-	
+
+	/**
+	 * @return Returns @see {@link HeartBeatApi}
+	 */
 	HeartBeatApi getHeartBeatApi();
-	
+
+	/**
+	 * @return Returns @see {@link TaskApi}
+	 */
 	TaskApi getTaskApi();
 
 }

@@ -11,7 +11,7 @@ import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.net.Connection;
 
-public final class ServerLogic extends AbstractLogger {
+final class ServerLogic extends AbstractLogger {
 
 	private PlayerManager __playerManager = new PlayerManager();
 	private RoomManager __roomManager = new RoomManager();

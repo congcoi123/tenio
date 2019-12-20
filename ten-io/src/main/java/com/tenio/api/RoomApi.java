@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entities.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
  * This class provides you a necessary interface for managing rooms.
  * 
- * @see {@link RoomManager}
+ * @see {@link IRoomManager}
  * 
  * @author kong
  * 
@@ -42,26 +42,30 @@ import com.tenio.logger.AbstractLogger;
 public final class RoomApi extends AbstractLogger {
 
 	/**
-	 * @see {@link RoomManager}
+	 * @see {@link IRoomManager}
 	 */
-	private RoomManager __roomManager;
+	private IRoomManager __roomManager;
+
+	public RoomApi(IRoomManager roomManager) {
+		__roomManager = roomManager;
+	}
 
 	/**
-	 * @see RoomManager#gets()
+	 * @see IRoomManager#gets()
 	 */
 	public Map<String, AbstractRoom> gets() {
 		return __roomManager.gets();
 	}
 
 	/**
-	 * @see RoomManager#add(AbstractRoom)
+	 * @see IRoomManager#add(AbstractRoom)
 	 */
 	public void add(final AbstractRoom room) {
 		__roomManager.add(room);
 	}
 
 	/**
-	 * @see RoomManager#remove(AbstractRoom)
+	 * @see IRoomManager#remove(AbstractRoom)
 	 */
 	public void remove(final AbstractRoom room) {
 		__roomManager.remove(room);

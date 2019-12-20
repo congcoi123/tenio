@@ -50,7 +50,7 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	/**
 	 * The current list of rooms
 	 */
-	private Map<String, AbstractRoom> __rooms = __roomApi.gets();
+	private Map<String, AbstractRoom> __rooms;
 	/**
 	 * Removable list of rooms
 	 */
@@ -63,6 +63,7 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	public EmptyRoomScanTask(RoomApi roomApi, int emptyRoomScanPeriod) {
 		__roomApi = roomApi;
 		__emptyRoomScanPeriod = emptyRoomScanPeriod;
+		__rooms = __roomApi.gets();
 	}
 
 	public void run() {

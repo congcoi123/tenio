@@ -25,6 +25,7 @@ package com.tenio.examples.example2;
 
 import java.util.Collection;
 
+import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.IMessageListener;
@@ -37,6 +38,7 @@ import com.tenio.examples.example2.constants.EntityName;
 import com.tenio.examples.example2.entities.BaseEntity;
 import com.tenio.examples.example2.entities.Miner;
 import com.tenio.examples.example2.entities.Wife;
+import com.tenio.server.Server;
 
 /**
  * The lifecycle, all actions is performed in this class
@@ -60,7 +62,12 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	/**
 	 * @see PlayerApi#gets()
 	 */
-	private Collection<AbstractPlayer> __inspectors = PlayerApi.getInstance().gets().values();
+	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	
+	/**
+	 * @see MessageApi
+	 */
+	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 
 	/**
 	 * Making slow steps to inspect what happening
@@ -99,7 +106,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 				if (base.getMood() != null) {
 					// send to all inspectors
 					for (AbstractPlayer inspector : __inspectors) {
-						_messageApi.sendToPlayer(inspector, "m", base.getMood());
+						__messageApi.sendToPlayer(inspector, "m", base.getMood());
 					}
 				}
 			});
