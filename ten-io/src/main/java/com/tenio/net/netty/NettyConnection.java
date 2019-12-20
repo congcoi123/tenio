@@ -107,9 +107,8 @@ public class NettyConnection extends Connection {
 	public void close() {
 		// channel will be closed in the future
 		__channel.close();
-		// need to push event
 		// need to push event now
-		EventManager.getLogic().emit(LogicEvent.MANUAL_CLOSE_CONNECTION, __id);
+		EventManager.getLogic().emit(LogicEvent.MANUALY_CLOSE_CONNECTION, __id);
 	}
 
 	@Override

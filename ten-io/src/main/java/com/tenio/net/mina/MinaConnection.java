@@ -103,7 +103,7 @@ public class MinaConnection extends Connection {
 		// the session will be closed in the future
 		__session.closeNow();
 		// need to push event now
-		EventManager.getLogic().emit(LogicEvent.MANUAL_CLOSE_CONNECTION, __id);
+		EventManager.getLogic().emit(LogicEvent.MANUALY_CLOSE_CONNECTION, __id);
 	}
 
 	@Override

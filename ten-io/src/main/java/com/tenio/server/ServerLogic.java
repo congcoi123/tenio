@@ -69,7 +69,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.MANUAL_CLOSE_CONNECTION, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.MANUALY_CLOSE_CONNECTION, (source, args) -> {
 			String name = (String) args[0];
 
 			AbstractPlayer player = __playerManager.get(name);
