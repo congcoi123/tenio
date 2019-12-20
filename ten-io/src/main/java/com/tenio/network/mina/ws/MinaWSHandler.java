@@ -21,35 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.network.mina.ws;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
-import com.tenio.logger.AbstractLogger;
+import org.apache.mina.core.session.IoSession;
+
+import com.tenio.network.mina.BaseMinaHandler;
 
 /**
- * Manage all events in the server
+ * Receive all messages sent from clients. It converts serialize data to a
+ * system's object for convenience and easy to use. It also handles the logic
+ * for the processing of players and connections.
+ * 
+ * FIXME [Under construction!]
+ * 
+ * @see {@link BaseMinaHandler}
  * 
  * @author kong
- *
+ * 
  */
-public final class EventManager extends AbstractLogger {
+public class MinaWSHandler extends BaseMinaHandler {
 
-	/**
-	 * @see TEventManager
-	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
-	/**
-	 * @see LEventManager
-	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
+	@Override
+	public void sessionClosed(IoSession session) throws Exception {
 
-	public static TEventManager getEvent() {
-		return __tEvent;
 	}
 
-	public static LEventManager getLogic() {
-		return __lEvent;
+	@Override
+	public void messageReceived(IoSession session, Object msg) throws Exception {
+
+	}
+
+	@Override
+	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+
 	}
 
 }

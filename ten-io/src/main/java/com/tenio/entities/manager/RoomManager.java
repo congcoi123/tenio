@@ -78,7 +78,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	public void add(final AbstractRoom room) {
 		synchronized (__rooms) {
 			__rooms.put(room.getId(), room);
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.CREATED_ROOM, room);
 		}
 
@@ -96,9 +96,9 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		}
 
 		synchronized (__rooms) {
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.REMOVE_ROOM, room);
-			// force all player leave from room
+			// force all players leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
 			__rooms.remove(room.getId());
@@ -131,12 +131,12 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			return;
 		}
 
-		// player need to leave his room (if existed) first
+		// the player need to leave his room (if existed) first
 		playerLeaveRoom(player, false);
 
 		room.add(player);
 		player.setRoom(room);
-		// fire event
+		// fire an event
 		EventManager.getEvent().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
 	}
 
@@ -147,11 +147,11 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			return;
 		}
 
-		// fire event
+		// fire an event
 		EventManager.getEvent().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
-		// fire event
+		// fire an event
 		EventManager.getEvent().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
 	}
 

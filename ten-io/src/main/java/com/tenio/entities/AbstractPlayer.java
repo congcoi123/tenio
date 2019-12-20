@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.entities;
 
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * A player is one of the base elements in your server. It is a representation

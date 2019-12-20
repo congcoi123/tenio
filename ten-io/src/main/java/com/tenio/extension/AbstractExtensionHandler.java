@@ -50,28 +50,28 @@ import com.tenio.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	protected IServer _server = Server.getInstance();
+	private IServer __server = Server.getInstance();
 	
 	/**
 	 * @see {@link MessageApi}
 	 */
-	protected MessageApi _messageApi = _server.getMessageApi();
+	protected MessageApi _messageApi = __server.getMessageApi();
 	/**
 	 * @see {@link PlayerApi}
 	 */
-	protected PlayerApi _playerApi = _server.getPlayerApi();
+	protected PlayerApi _playerApi = __server.getPlayerApi();
 	/**
 	 * @see {@link RoomApi}
 	 */
-	protected RoomApi _roomApi = _server.getRoomApi();
+	protected RoomApi _roomApi = __server.getRoomApi();
 	/**
 	 * @see {@link TaskApi}
 	 */
-	protected TaskApi _taskApi = _server.getTaskApi();
+	protected TaskApi _taskApi = __server.getTaskApi();
 	/**
 	 * @see {@link HeartBeatApi}
 	 */
-	protected HeartBeatApi _heartbeatApi = _server.getHeartBeatApi();
+	protected HeartBeatApi _heartbeatApi = __server.getHeartBeatApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type

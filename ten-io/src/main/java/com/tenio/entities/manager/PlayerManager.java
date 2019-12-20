@@ -31,11 +31,10 @@ import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
-import com.tenio.exception.DuplicatedElementException;
 import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.NullPlayerException;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * @see {@link IPlayerManager}
@@ -91,25 +90,25 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 				throw new DuplicatedPlayerException();
 			}
 		} catch (DuplicatedPlayerException e) {
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
 		} catch (NullPlayerException e) {
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			return;
 		}
 
 		synchronized (__players) {
-			// add the connection
+			// add the main connection
 			connection.setId(player.getName());
 			player.setConnection(connection);
 
 			__players.put(player.getName(), player);
 
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
 		}
 
@@ -119,10 +118,10 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	public void add(final AbstractPlayer player) {
 		try {
 			if (contain(player.getName())) {
-				throw new DuplicatedElementException();
+				throw new DuplicatedPlayerException();
 			}
-		} catch (DuplicatedElementException e) {
-			// fire event
+		} catch (DuplicatedPlayerException e) {
+			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 			error("ADD PLAYER", player.getName(), e);
 			return;
@@ -130,8 +129,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 		synchronized (__players) {
 			__players.put(player.getName(), player);
-
-			// fire event
+			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
 		}
 
@@ -144,7 +142,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		}
 
 		synchronized (__players) {
-			// force player leave room
+			// force player leave room, fire a logic event
 			EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
 			// remove connection, player

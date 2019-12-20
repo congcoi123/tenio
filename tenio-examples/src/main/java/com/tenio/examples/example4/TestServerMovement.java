@@ -31,7 +31,7 @@ import com.tenio.examples.example4.entities.Inspector;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.

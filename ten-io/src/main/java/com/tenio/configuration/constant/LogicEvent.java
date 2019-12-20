@@ -25,7 +25,7 @@ package com.tenio.configuration.constant;
 
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should
@@ -60,7 +60,7 @@ public enum LogicEvent {
 	CONNECTION_CLOSE,
 
 	/**
-	 * Record the exceptions.
+	 * The exceptions occur when the server handles messages from a client.
 	 * 
 	 * @parameter [0] the connection's id in string
 	 * @parameter [1] the connection @see {@link Connection}

@@ -21,35 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
-
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
-import com.tenio.logger.AbstractLogger;
+package com.tenio.exception;
 
 /**
- * Manage all events in the server
  * 
  * @author kong
- *
+ * 
  */
-public final class EventManager extends AbstractLogger {
-
+public class DuplicatedEntityException extends RuntimeException {
 	/**
-	 * @see TEventManager
+	 * 
 	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
-	/**
-	 * @see LEventManager
-	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
-
-	public static TEventManager getEvent() {
-		return __tEvent;
-	}
-
-	public static LEventManager getLogic() {
-		return __lEvent;
-	}
+	private static final long serialVersionUID = -80794287575635412L;
 
 }

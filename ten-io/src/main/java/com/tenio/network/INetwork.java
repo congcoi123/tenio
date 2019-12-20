@@ -21,35 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.network;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
-import com.tenio.logger.AbstractLogger;
+import java.io.IOException;
+
+import com.tenio.configuration.BaseConfiguration;
 
 /**
- * Manage all events in the server
+ * A network is one of the most important parts of this server for the main
+ * purpose of communication. This class help create a new network instance by
+ * your own configurations @see {@link BaseConfiguration}.
  * 
  * @author kong
- *
+ * 
  */
-public final class EventManager extends AbstractLogger {
+public interface INetwork {
 
 	/**
-	 * @see TEventManager
+	 * Start a new network for communication
+	 * 
+	 * @param configuration your own configuration
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
+	void start(BaseConfiguration configuration) throws IOException, InterruptedException;
+
 	/**
-	 * @see LEventManager
+	 * Shutdown the network
 	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
-
-	public static TEventManager getEvent() {
-		return __tEvent;
-	}
-
-	public static LEventManager getLogic() {
-		return __lEvent;
-	}
+	void shutdown();
 
 }

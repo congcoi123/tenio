@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.tenio.api.PlayerApi;
 import com.tenio.entities.AbstractPlayer;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * Manage all your players @see {@link AbstractPlayer} on the server. It is a

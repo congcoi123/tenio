@@ -30,7 +30,7 @@ import com.tenio.examples.example2.entities.Inspector;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This class is used to send to clients all the daily life of our miner and his

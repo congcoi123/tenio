@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2019 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.server;
 
 import com.tenio.configuration.constant.ErrorMsg;
@@ -5,24 +28,44 @@ import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entities.manager.IPlayerManager;
+import com.tenio.entities.manager.IRoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
+/**
+ * Handle the main logic of the server.
+ * 
+ * @author kong
+ *
+ */
 final class ServerLogic extends AbstractLogger {
 
-	private PlayerManager __playerManager = new PlayerManager();
-	private RoomManager __roomManager = new RoomManager();
+	/**
+	 * @see IPlayerManager
+	 */
+	private IPlayerManager __playerManager;
+	/**
+	 * @see IRoomManager
+	 */
+	private IRoomManager __roomManager;
 
-	public ServerLogic() {
+	public ServerLogic(IPlayerManager playerManager, IRoomManager roomManager) {
+		__playerManager = playerManager;
+		__roomManager = roomManager;
+	}
 
+	/**
+	 * Start handling
+	 */
+	public void init() {
+		
 		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, (source, args) -> {
 			AbstractPlayer player = (AbstractPlayer) args[0];
-			synchronized (player) {
-				__roomManager.playerLeaveRoom(player, true);
-			}
+			
+			__roomManager.playerLeaveRoom(player, true);
+			
 			return null;
 		});
 
@@ -30,22 +73,23 @@ final class ServerLogic extends AbstractLogger {
 			Connection connection = (Connection) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 
-			if (connection != null) { // old connection
+			if (connection != null) { // the connection has existed
 				String id = connection.getId();
-				if (id != null) { // Player
+				if (id != null) { // the player maybe exist
 					AbstractPlayer player = __playerManager.get(id);
-					if (player != null) {
+					if (player != null) { // the player has existed
 						EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
 						if (!keepPlayerOnDisconnect) {
 							__playerManager.clean(player);
 						}
 					}
-				} else { // Connection
+				} else { // the free connection (without a corresponding player)
 					EventManager.getEvent().emit(TEvent.DISCONNECT_CONNECTION, connection);
 				}
 				connection.clean();
 			}
+			
 			return null;
 		});
 
@@ -54,17 +98,18 @@ final class ServerLogic extends AbstractLogger {
 			Connection connection = (Connection) args[1];
 			Throwable cause = (Throwable) args[2];
 
-			if (connection != null) { // old connection
+			if (connection != null) { // the old connection
 				String id = connection.getId();
-				if (id != null) { // Player
+				if (id != null) { // the player maybe exist
 					AbstractPlayer player = __playerManager.get(id);
-					if (player != null) {
-						exception(player, cause);
+					if (player != null) { // the player has existed
+						__exception(player, cause);
 						return null;
 					}
 				}
 			}
-			exception(channelId, cause);
+			// also catch the exception for "channel"
+			__exception(channelId, cause);
 
 			return null;
 		});
@@ -76,6 +121,7 @@ final class ServerLogic extends AbstractLogger {
 			if (player != null) {
 				EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
 			}
+			
 			return null;
 		});
 
@@ -85,7 +131,7 @@ final class ServerLogic extends AbstractLogger {
 			Connection connection = (Connection) args[2];
 			TObject message = (TObject) args[3];
 
-			// check reconnection
+			// check the reconnection first
 			if (keepPlayerOnDisconnect) {
 				AbstractPlayer player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST,
 						connection, message);
@@ -98,7 +144,7 @@ final class ServerLogic extends AbstractLogger {
 					return null;
 				}
 			}
-
+			// check the number of current players
 			if (__playerManager.count() > maxPlayer) {
 				EventManager.getEvent().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
 				connection.close();
@@ -114,12 +160,12 @@ final class ServerLogic extends AbstractLogger {
 			TObject message = (TObject) args[1];
 
 			String id = connection.getId();
-			if (id != null) { // player's identify
+			if (id != null) { // the player's identify
 				AbstractPlayer player = __playerManager.get(id);
 				if (player != null) {
-					handle(player, false, message);
+					__handle(player, false, message);
 				}
-			} else { // connection
+			} else { // a new connection
 				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
 			}
 
@@ -133,7 +179,7 @@ final class ServerLogic extends AbstractLogger {
 			// UDP is only attach connection, so if the main connection not found, the UDP
 			// must be stop handled
 			if (player.hasConnection()) {
-				handle(player, true, message);
+				__handle(player, true, message);
 			}
 
 			return null;
@@ -143,10 +189,10 @@ final class ServerLogic extends AbstractLogger {
 			String name = (String) args[0];
 			return __playerManager.get(name);
 		});
-
+		
 	}
 
-	public void handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
+	private void __handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
 		if (isSubConnection) {
 			debug("RECV PLAYER SUB", player.getName(), message.toString());
 		} else {
@@ -156,11 +202,11 @@ final class ServerLogic extends AbstractLogger {
 		EventManager.getEvent().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
 	}
 
-	public void exception(AbstractPlayer player, Throwable cause) {
+	private void __exception(AbstractPlayer player, Throwable cause) {
 		error("EXCEPTION PLAYER", player.getName(), cause);
 	}
 
-	public void exception(String identify, Throwable cause) {
+	private void __exception(String identify, Throwable cause) {
 		error("EXCEPTION CONNECTION CHANNEL", identify, cause);
 	}
 

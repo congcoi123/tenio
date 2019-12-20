@@ -32,7 +32,7 @@ import com.tenio.entities.AbstractRoom;
 import com.tenio.entities.manager.IPlayerManager;
 import com.tenio.entities.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 
 /**
  * This class provides you a necessary interface for managing players.

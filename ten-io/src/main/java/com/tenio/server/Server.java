@@ -42,9 +42,9 @@ import com.tenio.entities.manager.RoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.net.INetwork;
-import com.tenio.net.mina.MinaNetwork;
-import com.tenio.net.netty.NettyNetwork;
+import com.tenio.network.INetwork;
+import com.tenio.network.mina.MinaNetwork;
+import com.tenio.network.netty.NettyNetwork;
 import com.tenio.task.ITaskManager;
 import com.tenio.task.TaskManager;
 import com.tenio.task.schedule.CCUScanTask;
@@ -73,6 +73,8 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi();
 		
+		__logic = new ServerLogic(__playerManager, __roomManager);
+		
 	} // prevent creation manually
 
 	// preventing Singleton object instantiation from outside
@@ -94,7 +96,11 @@ public final class Server extends AbstractLogger implements IServer {
 	private HeartBeatApi __heartbeatApi;
 	private TaskApi __taskApi;
 	private MessageApi __messageApi;
-	
+
+	/**
+	 * @see {@link ServerLogic}
+	 */
+	private ServerLogic __logic;
 	/**
 	 * @see {@link IExtension}
 	 */
@@ -109,7 +115,7 @@ public final class Server extends AbstractLogger implements IServer {
 		info("SERVER", (String) configuration.get(BaseConfiguration.SERVER_NAME), "Starting ...");
 		try {
 			// main server logic
-			new ServerLogic();
+			__logic.init();
 			
 			// Datagram connection can not stand alone
 			__checkDefinedMainConnection(configuration);

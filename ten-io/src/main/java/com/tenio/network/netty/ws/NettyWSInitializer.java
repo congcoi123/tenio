@@ -21,35 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.network.netty.ws;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
-import com.tenio.logger.AbstractLogger;
+import com.tenio.configuration.BaseConfiguration;
+
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpServerCodec;
 
 /**
- * Manage all events in the server
+ * This class for initializing a channel.
  * 
  * @author kong
- *
+ * 
  */
-public final class EventManager extends AbstractLogger {
+public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
 	/**
-	 * @see TEventManager
+	 * @see {@link BaseConfiguration}
 	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
-	/**
-	 * @see LEventManager
-	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
+	private BaseConfiguration __configuration;
 
-	public static TEventManager getEvent() {
-		return __tEvent;
+	public NettyWSInitializer(BaseConfiguration configuration) {
+		__configuration = configuration;
 	}
 
-	public static LEventManager getLogic() {
-		return __lEvent;
+	@Override
+	protected void initChannel(SocketChannel channel) throws Exception {
+		ChannelPipeline pipeline = channel.pipeline();
+
+		// add http-codec for TCP hand shaker
+		pipeline.addLast("httpServerCodec", new HttpServerCodec());
+
+		// the logic handler
+		pipeline.addLast("http-handshake", new NettyWSHandShake(__configuration));
 	}
 
 }

@@ -21,35 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event;
+package com.tenio.network.mina.codec.ws;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
-import com.tenio.logger.AbstractLogger;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFactory;
+import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * Manage all events in the server
+ * Under construction!
  * 
  * @author kong
- *
+ * 
  */
-public final class EventManager extends AbstractLogger {
+public class WSCodecFactory implements ProtocolCodecFactory {
 
-	/**
-	 * @see TEventManager
-	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
-	/**
-	 * @see LEventManager
-	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
-
-	public static TEventManager getEvent() {
-		return __tEvent;
+	@Override
+	public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+		return null;
 	}
 
-	public static LEventManager getLogic() {
-		return __lEvent;
+	@Override
+	public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+		return null;
 	}
 
 }

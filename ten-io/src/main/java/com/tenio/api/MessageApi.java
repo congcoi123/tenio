@@ -30,7 +30,7 @@ import com.tenio.entities.element.TArray;
 import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.net.Connection;
+import com.tenio.network.Connection;
 import com.tenio.pool.ArrayPool;
 import com.tenio.pool.ObjectPool;
 
