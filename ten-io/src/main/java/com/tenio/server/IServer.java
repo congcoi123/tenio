@@ -39,7 +39,7 @@ import com.tenio.extension.IExtension;
  * @author kong
  * 
  */
-public interface IServer {
+interface IServer {
 
 	/**
 	 * Start the server base on your own configurations

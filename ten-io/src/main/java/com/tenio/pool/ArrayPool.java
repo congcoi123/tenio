@@ -36,17 +36,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class ArrayPool extends AbstractLogger implements IElementPool<TArray> {
 
-	private static volatile ArrayPool __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static ArrayPool getInstance() {
-		if (__instance == null) {
-			__instance = new ArrayPool();
-		}
-		return __instance;
-	}
-
 	private TArray[] __pool;
 	private boolean[] __used;
 

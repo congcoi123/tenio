@@ -32,7 +32,6 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.server.IServer;
 import com.tenio.server.Server;
 
 /**
@@ -50,7 +49,7 @@ import com.tenio.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	private IServer __server = Server.getInstance();
+	private Server __server = Server.getInstance();
 	
 	/**
 	 * @see {@link MessageApi}
