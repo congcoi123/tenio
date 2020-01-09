@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.heartbeat;
 
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.entities.element.TObject;
 
 /**
  * The Java ExecutorService is a construct that allows you to pass a task to be
@@ -77,5 +78,22 @@ public interface IHeartBeatManager {
 	 * Destroy all heart-beats and clear all references.
 	 */
 	void clear();
+
+	/**
+	 * Send a message to a particular heart-beat with a delay time
+	 * 
+	 * @param id        the unique id
+	 * @param message   the message content
+	 * @param delayTime the delay time in seconds
+	 */
+	void sendMessage(final String id, final TObject message, final double delayTime);
+
+	/**
+	 * Send a message to a particular heart-beat with no delay time
+	 * 
+	 * @param id      the unique id
+	 * @param message the message content
+	 */
+	void sendMessage(final String id, final TObject message);
 
 }

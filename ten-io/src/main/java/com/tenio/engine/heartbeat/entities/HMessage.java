@@ -21,110 +21,80 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.fsm.entities;
+package com.tenio.engine.heartbeat.entities;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tenio.entities.element.TObject;
 
 /**
- * This object is used for communication between entities.
+ * The message which is used for communication between one heart-beat and
+ * outside
  * 
  * @author kong
  * 
  */
 @SuppressWarnings("rawtypes")
-public class Telegram implements Comparable {
+public class HMessage implements Comparable {
 
 	/**
-	 * These telegrams will be stored in a priority queue. Therefore the operator
-	 * needs to be overloaded so that the PQ can sort the telegrams by time
-	 * priority. Note how the times must be smaller than SmallestDelay apart before
-	 * two Telegrams are considered unique.
+	 * These messages will be stored in a priority queue. Therefore the operator
+	 * needs to be overloaded so that the PQ can sort the messages by time priority.
+	 * Note how the times must be smaller than SmallestDelay apart before two
+	 * messages are considered unique.
 	 */
 	public final static double SMALLEST_DELAY = 0.25f;
 
 	/**
-	 * The id of the sender
+	 * For creating a unique id value
 	 */
-	private int __sender;
+	private static AtomicInteger __atomic = new AtomicInteger(0);
 	/**
-	 * The id of the receiver
+	 * The unique id of message
 	 */
-	private int __receiver;
-	/**
-	 * The type of this message
-	 */
-	private int __type;
-	/**
-	 * The creation time
-	 */
-	private double __createdTime;
+	private int __id;
 	/**
 	 * The message will be sent after an interval time
 	 */
 	private double __dispatchTime;
 	/**
-	 * The extra information
+	 * The main information
 	 */
-	private TObject __info;
+	private TObject __message;
 
-	public Telegram() {
-		__createdTime = System.currentTimeMillis() * 0.001;
-		__dispatchTime = -1;
-		__sender = -1;
-		__receiver = -1;
-		__type = -1;
-	}
-
-	public Telegram(double dispatchTime, int sender, int receiver, int type) {
-		this(dispatchTime, sender, receiver, type, null);
-	}
-
-	public Telegram(double dispatchTime, int sender, int receiver, int type, TObject info) {
-		__dispatchTime = dispatchTime;
-		__sender = sender;
-		__receiver = receiver;
-		__type = type;
-		__info = info;
-	}
-
-	public int getSender() {
-		return __sender;
-	}
-
-	public int getReceiver() {
-		return __receiver;
-	}
-
-	public int getType() {
-		return __type;
+	public HMessage(TObject message, double dispatchTime) {
+		__id = __atomic.incrementAndGet();
+		__setDelayDispatchTime(dispatchTime);
+		__message = message;
 	}
 
 	public double getDispatchTime() {
 		return __dispatchTime;
 	}
 
-	public void setDelayDispatchTime(double delay) {
+	/**
+	 * @param delay the delay time in seconds
+	 */
+	private void __setDelayDispatchTime(double delay) {
 		__dispatchTime = System.currentTimeMillis() * 0.001 + delay;
 	}
 
-	public double getCreatedTime() {
-		return __createdTime;
+	public int getId() {
+		return __id;
 	}
 
-	public TObject getInfo() {
-		return __info;
+	public TObject getMessage() {
+		return __message;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Telegram)) {
+		if (!(o instanceof HMessage)) {
 			return false;
 		}
-		Telegram t1 = this;
-		Telegram t2 = (Telegram) o;
-		return (Math.abs(t1.getDispatchTime() - t2.getDispatchTime()) < SMALLEST_DELAY)
-				&& (t1.getSender() == t2.getSender()) && (t1.getReceiver() == t2.getReceiver())
-				&& (t1.getType() == t2.getType());
+		HMessage t1 = this;
+		HMessage t2 = (HMessage) o;
+		return (Math.abs(t1.getDispatchTime() - t2.getDispatchTime()) < SMALLEST_DELAY);
 	}
 
 	/**
@@ -136,9 +106,7 @@ public class Telegram implements Comparable {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 89 * hash + __sender;
-		hash = 89 * hash + __receiver;
-		hash = 89 * hash + __type;
+		hash = 89 * hash + __id;
 		return hash;
 	}
 
@@ -147,8 +115,8 @@ public class Telegram implements Comparable {
 	 */
 	@Override
 	public int compareTo(Object o2) {
-		Telegram t1 = this;
-		Telegram t2 = (Telegram) o2;
+		HMessage t1 = this;
+		HMessage t2 = (HMessage) o2;
 		if (t1 == t2) {
 			return 0;
 		} else {
@@ -159,16 +127,12 @@ public class Telegram implements Comparable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Time: ");
+		builder.append("Id: ");
+		builder.append(__id);
+		builder.append(", Time: ");
 		builder.append(__dispatchTime);
-		builder.append(", Sender: ");
-		builder.append(__sender);
-		builder.append(", Receiver: ");
-		builder.append(__receiver);
-		builder.append(", MsgType: ");
-		builder.append(__type);
-		builder.append(", Info: ");
-		builder.append(__info);
+		builder.append(", Message: ");
+		builder.append(__message);
 		return builder.toString();
 	}
 

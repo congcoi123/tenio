@@ -26,6 +26,7 @@ package com.tenio.api;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
+import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -66,6 +67,20 @@ public final class HeartBeatApi extends AbstractLogger {
 	 */
 	public void dispose(final String id) {
 		__heartBeatManager.dispose(id);
+	}
+	
+	/**
+	 * @see IHeartBeatManager#sendMessage(String, TObject, double)
+	 */
+	public void sendMessage(final String id, final TObject message, final double delayTime) {
+		__heartBeatManager.sendMessage(id, message, delayTime);
+	}
+
+	/**
+	 * @see IHeartBeatManager#sendMessage(String, TObject)
+	 */
+	public void sendMessage(final String id, final TObject message) {
+		__heartBeatManager.sendMessage(id, message);
 	}
 
 }

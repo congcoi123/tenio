@@ -21,40 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example2;
-
-import com.tenio.entities.element.TObject;
-import com.tenio.server.Server;
+package com.tenio.exception;
 
 /**
- * Only for testing the FSM mechanism
  * 
  * @author kong
- *
+ * 
  */
-public class TestFSM {
-
+public class HeartbeatNotFoundException extends RuntimeException {
 	/**
-	 * The entry point
+	 * 
 	 */
-	public static void main(String[] args) {
-		// create a heart-beat
-		Server.getInstance().getHeartBeatApi().initialize(1);
-		Server.getInstance().getHeartBeatApi().create("daily-life", new LifeCycle());
-		
-		// try to send a message immediately
-		TObject message = new TObject();
-		message.put("key", "Hello Heartbeat");
-		Server.getInstance().getHeartBeatApi().sendMessage("daily-life", message);
-		
-		// try to send messages with delay time
-		for (int i = 1; i <= 5; i++) {
-			TObject mess = new TObject();
-			mess.put("key", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
-			System.out.println("SEND: " + mess);
-			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", mess, i * 10);
-		}
-		
-	}
+	private static final long serialVersionUID = 7597111087047955872L;
 
 }
