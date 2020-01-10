@@ -41,6 +41,7 @@ import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.utils.TimeUtility;
 
 /**
  * The game loop is the overall flow control for the entire game program. It's a
@@ -254,7 +255,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 
 				// Message communication
 				// get current time
-				double currentTime = System.currentTimeMillis() * 0.001;
+				double currentTime = TimeUtility.currentTimeSeconds();
 
 				// now peek at the queue to see if any telegrams need dispatching.
 				// remove all telegrams from the front of the queue that have gone

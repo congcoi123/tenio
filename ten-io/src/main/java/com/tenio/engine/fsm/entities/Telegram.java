@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.fsm.entities;
 
 import com.tenio.entities.element.TObject;
+import com.tenio.utils.TimeUtility;
 
 /**
  * This object is used for communication between entities.
@@ -68,7 +69,7 @@ public class Telegram implements Comparable {
 	private TObject __info;
 
 	public Telegram() {
-		__createdTime = System.currentTimeMillis() * 0.001;
+		__createdTime = TimeUtility.currentTimeSeconds();
 		__dispatchTime = -1;
 		__sender = -1;
 		__receiver = -1;
@@ -104,7 +105,7 @@ public class Telegram implements Comparable {
 	}
 
 	public void setDelayDispatchTime(double delay) {
-		__dispatchTime = System.currentTimeMillis() * 0.001 + delay;
+		__dispatchTime = TimeUtility.currentTimeSeconds() + delay;
 	}
 
 	public double getCreatedTime() {

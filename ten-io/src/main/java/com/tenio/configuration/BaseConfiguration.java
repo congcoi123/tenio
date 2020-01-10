@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.tenio.logger.AbstractLogger;
-import com.tenio.utils.XMLUtil;
+import com.tenio.utils.XMLUtility;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -117,7 +117,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 */
 	public void load(final String file) throws Exception {
 
-		Document xDoc = XMLUtil.parseFile(new File(file));
+		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 		NodeList attrNodes = root.getChildNodes();
 
@@ -125,7 +125,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			Node attrNode = attrNodes.item(i);
 
 			// Properties
-			NodeList attrRootProperties = XMLUtil.getNodeList(attrNode, "//Server/Properties/Property");
+			NodeList attrRootProperties = XMLUtility.getNodeList(attrNode, "//Server/Properties/Property");
 			for (int j = 0; j < attrRootProperties.getLength(); j++) {
 				Node pDataNode = attrRootProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
@@ -176,7 +176,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Configuration
-			NodeList attrConfigurationProperties = XMLUtil.getNodeList(attrNode,
+			NodeList attrConfigurationProperties = XMLUtility.getNodeList(attrNode,
 					"//Server/Configuration/Properties/Property");
 			for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 				Node pDataNode = attrConfigurationProperties.item(j);

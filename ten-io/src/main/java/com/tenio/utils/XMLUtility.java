@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
  * @author kong
  * 
  */
-public final class XMLUtil {
+public final class XMLUtility {
 
 	private static XPath __oXpath;
 

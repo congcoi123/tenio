@@ -26,6 +26,7 @@ package com.tenio.engine.heartbeat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tenio.entities.element.TObject;
+import com.tenio.utils.TimeUtility;
 
 /**
  * The message which is used for communication between one heart-beat and
@@ -76,7 +77,7 @@ final class HMessage implements Comparable {
 	 * @param delayTime the delay time in seconds
 	 */
 	private void __setDelayTime(double delayTime) {
-		__delayTime = System.currentTimeMillis() * 0.001 + delayTime;
+		__delayTime = TimeUtility.currentTimeSeconds() + delayTime;
 	}
 
 	public int getId() {
