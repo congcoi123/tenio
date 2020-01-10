@@ -259,7 +259,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 				// now peek at the queue to see if any telegrams need dispatching.
 				// remove all telegrams from the front of the queue that have gone
 				// past their sell by date
-				while (!__listener.isEmpty() && (__listener.last().getDispatchTime() < currentTime)) {
+				while (!__listener.isEmpty() && (__listener.last().getDelayTime() < currentTime)) {
 					// read the message from the front of the queue
 					final HMessage message = __listener.last();
 					// listening

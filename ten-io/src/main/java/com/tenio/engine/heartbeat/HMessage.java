@@ -56,27 +56,27 @@ final class HMessage implements Comparable {
 	/**
 	 * The message will be sent after an interval time
 	 */
-	private double __dispatchTime;
+	private double __delayTime;
 	/**
 	 * The main information
 	 */
 	private TObject __message;
 
-	public HMessage(TObject message, double dispatchTime) {
+	public HMessage(TObject message, double delayTime) {
 		__id = __atomic.incrementAndGet();
-		__setDelayDispatchTime(dispatchTime);
+		__setDelayTime(delayTime);
 		__message = message;
 	}
 
-	public double getDispatchTime() {
-		return __dispatchTime;
+	public double getDelayTime() {
+		return __delayTime;
 	}
 
 	/**
-	 * @param delay the delay time in seconds
+	 * @param delayTime the delay time in seconds
 	 */
-	private void __setDelayDispatchTime(double delay) {
-		__dispatchTime = System.currentTimeMillis() * 0.001 + delay;
+	private void __setDelayTime(double delayTime) {
+		__delayTime = System.currentTimeMillis() * 0.001 + delayTime;
 	}
 
 	public int getId() {
@@ -94,7 +94,7 @@ final class HMessage implements Comparable {
 		}
 		HMessage t1 = this;
 		HMessage t2 = (HMessage) o;
-		return (Math.abs(t1.getDispatchTime() - t2.getDispatchTime()) < SMALLEST_DELAY);
+		return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY);
 	}
 
 	/**
@@ -120,7 +120,7 @@ final class HMessage implements Comparable {
 		if (t1 == t2) {
 			return 0;
 		} else {
-			return (t1.getDispatchTime() > t2.getDispatchTime()) ? -1 : 1;
+			return (t1.getDelayTime() > t2.getDelayTime()) ? -1 : 1;
 		}
 	}
 
@@ -130,7 +130,7 @@ final class HMessage implements Comparable {
 		builder.append("Id: ");
 		builder.append(__id);
 		builder.append(", Time: ");
-		builder.append(__dispatchTime);
+		builder.append(__delayTime);
 		builder.append(", Message: ");
 		builder.append(__message);
 		return builder.toString();

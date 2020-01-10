@@ -128,9 +128,6 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public void sendMessage(String id, TObject message, double delayTime) {
-		if (!__pool.containsKey(id)) {
-			throw new HeartbeatNotFoundException();
-		}
 		HMessage container = new HMessage(message, delayTime);
 		__listeners.get(id).add(container);
 	}
