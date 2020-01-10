@@ -31,7 +31,7 @@ package com.tenio.utils;
 public final class TimeUtility {
 
 	/**
-	 * @return the current time in seconds
+	 * @return Returns the current time in seconds
 	 */
 	public static double currentTimeSeconds() {
 		return System.currentTimeMillis() * 0.001;

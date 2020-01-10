@@ -69,7 +69,7 @@ public final class TestServerLogin extends AbstractApp {
 
 		@Override
 		public void init() {
-			_on(TEvent.CONNECTION_SUCCESS, (source, args) -> {
+			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				Connection connection = (Connection) args[0];
 				TObject message = (TObject) args[1];
 
@@ -84,7 +84,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, (source, args) -> {
+			_on(TEvent.DISCONNECT_CONNECTION, args -> {
 				Connection connection = (Connection) args[0];
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
@@ -92,7 +92,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_IN_SUCCESS, (source, args) -> {
+			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// The player has login successful
 				PlayerLogin player = (PlayerLogin) args[0];
 
@@ -118,7 +118,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, (source, args) -> {
+			_on(TEvent.PLAYER_TIMEOUT, args -> {
 				PlayerLogin player = (PlayerLogin) args[0];
 
 				info("PLAYER TIMEOUT", player.getName());
@@ -126,7 +126,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_PLAYER, (source, args) -> {
+			_on(TEvent.DISCONNECT_PLAYER, args -> {
 				PlayerLogin player = (PlayerLogin) args[0];
 
 				info("DISCONNECT PLAYER", player.getName());
@@ -134,7 +134,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.SEND_TO_PLAYER, (source, args) -> {
+			_on(TEvent.SEND_TO_PLAYER, args -> {
 				TObject message = (TObject) args[2];
 
 				info("SEND_TO_PLAYER", message.toString());

@@ -49,7 +49,7 @@ public final class LEventProducer {
 	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
 	 */
 	public Object emit(final LogicEvent type, final Object... args) {
-		return __eventHandler.emit(this, type, args);
+		return __eventHandler.emit(type, args);
 	}
 
 	/**

@@ -49,7 +49,7 @@ public final class TEventProducer {
 	 * @see TEventHandler#emit(Object, TEvent, Object...)
 	 */
 	public Object emit(final TEvent type, final Object... args) {
-		return __eventHandler.emit(this, type, args);
+		return __eventHandler.emit(type, args);
 	}
 
 	/**

@@ -65,18 +65,17 @@ public final class TEventHandler<T> {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param source the source object
-	 * @param type   @see {@link TEvent}
-	 * @param args   a list parameters of this event
+	 * @param type @see {@link TEvent}
+	 * @param args a list parameters of this event
 	 * @return Returns the event result (the response of its subscribers) @see
 	 *         {@link Object} or <code>null</code>
 	 */
-	public Object emit(final Object source, final TEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (!__delegate.isEmpty()) {
 			Object obj = null;
 			if (__delegate.containsKey(type)) {
 				for (IEvent<T> event : __delegate.get(type)) {
-					obj = event.emit(source, args);
+					obj = event.emit(args);
 				}
 			}
 			// return the last event's result

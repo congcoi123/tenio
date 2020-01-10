@@ -70,7 +70,7 @@ public final class TestServerMovement extends AbstractApp {
 		@Override
 		public void init() {
 
-			_on(TEvent.CONNECTION_SUCCESS, (source, args) -> {
+			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				Connection connection = (Connection) args[0];
 				TObject message = (TObject) args[1];
 
@@ -83,7 +83,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, (source, args) -> {
+			_on(TEvent.DISCONNECT_CONNECTION, args -> {
 				Connection connection = (Connection) args[0];
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
@@ -91,7 +91,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_IN_SUCCESS, (source, args) -> {
+			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// the player has login successful
 				Inspector player = (Inspector) args[0];
 				player.isIgnoreTimeout();
@@ -104,7 +104,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, (source, args) -> {
+			_on(TEvent.PLAYER_TIMEOUT, args -> {
 				Inspector player = (Inspector) args[0];
 
 				info("PLAYER TIMEOUT", player.getName());
@@ -112,7 +112,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_PLAYER, (source, args) -> {
+			_on(TEvent.DISCONNECT_PLAYER, args -> {
 				Inspector player = (Inspector) args[0];
 
 				info("DISCONNECT PLAYER", player.getName());
@@ -120,7 +120,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.ATTACH_UDP_REQUEST, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_REQUEST, args -> {
 				TObject message = (TObject) args[0];
 				String name = message.getString("u");
 
@@ -132,7 +132,7 @@ public final class TestServerMovement extends AbstractApp {
 				return _playerApi.get(name);
 			});
 
-			_on(TEvent.ATTACH_UDP_SUCCESS, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_SUCCESS, args -> {
 				Inspector player = (Inspector) args[0];
 
 				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
@@ -143,7 +143,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.ATTACH_UDP_FAILED, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_FAILED, args -> {
 				String reason = (String) args[1];
 
 				info("ATTACH UDP FAILED", reason);
