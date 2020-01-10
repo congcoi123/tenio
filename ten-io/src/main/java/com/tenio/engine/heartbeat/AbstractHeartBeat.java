@@ -37,7 +37,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.tenio.engine.heartbeat.entities.HMessage;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.entities.element.TObject;

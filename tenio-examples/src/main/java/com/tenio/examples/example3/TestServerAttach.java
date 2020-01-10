@@ -65,7 +65,7 @@ public final class TestServerAttach extends AbstractApp {
 
 		@Override
 		public void init() {
-			on(TEvent.CONNECTION_SUCCESS, (source, args) -> {
+			_on(TEvent.CONNECTION_SUCCESS, (source, args) -> {
 				Connection connection = (Connection) args[0];
 				TObject message = (TObject) args[1];
 
@@ -80,7 +80,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.DISCONNECT_CONNECTION, (source, args) -> {
+			_on(TEvent.DISCONNECT_CONNECTION, (source, args) -> {
 				Connection connection = (Connection) args[0];
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
@@ -88,7 +88,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.PLAYER_IN_SUCCESS, (source, args) -> {
+			_on(TEvent.PLAYER_IN_SUCCESS, (source, args) -> {
 				// The player has login successful
 				PlayerAttach player = (PlayerAttach) args[0];
 
@@ -100,7 +100,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.RECEIVED_FROM_PLAYER, (source, args) -> {
+			_on(TEvent.RECEIVED_FROM_PLAYER, (source, args) -> {
 				PlayerAttach player = (PlayerAttach) args[0];
 				boolean isSubConnection = (boolean) args[1];
 				TObject message = (TObject) args[2];
@@ -116,7 +116,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.PLAYER_TIMEOUT, (source, args) -> {
+			_on(TEvent.PLAYER_TIMEOUT, (source, args) -> {
 				PlayerAttach player = (PlayerAttach) args[0];
 
 				info("PLAYER TIMEOUT", player.getName());
@@ -124,7 +124,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.DISCONNECT_PLAYER, (source, args) -> {
+			_on(TEvent.DISCONNECT_PLAYER, (source, args) -> {
 				PlayerAttach player = (PlayerAttach) args[0];
 
 				info("DISCONNECT PLAYER", player.getName());
@@ -132,7 +132,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.ATTACH_UDP_REQUEST, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_REQUEST, (source, args) -> {
 				TObject message = (TObject) args[0];
 				String name = message.getString("u");
 
@@ -144,7 +144,7 @@ public final class TestServerAttach extends AbstractApp {
 				return _playerApi.get(name);
 			});
 
-			on(TEvent.ATTACH_UDP_SUCCESS, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_SUCCESS, (source, args) -> {
 				PlayerAttach player = (PlayerAttach) args[0];
 
 				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
@@ -155,7 +155,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.ATTACH_UDP_FAILED, (source, args) -> {
+			_on(TEvent.ATTACH_UDP_FAILED, (source, args) -> {
 				String reason = (String) args[1];
 
 				info("ATTACH UDP FAILED", reason);

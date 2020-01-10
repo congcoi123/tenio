@@ -31,7 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.engine.heartbeat.entities.HMessage;
 import com.tenio.entities.element.TObject;
 import com.tenio.exception.HeartbeatNotFoundException;
 import com.tenio.logger.AbstractLogger;
@@ -102,6 +101,10 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			__pool.remove(id);
 
 			info("DISPOSE HEART BEAT", buildgen(id));
+			
+			// Remove the listener
+			__listeners.get(id).clear();
+			__listeners.remove(id);
 
 			future = null;
 

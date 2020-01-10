@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.heartbeat.entities;
+package com.tenio.engine.heartbeat;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +35,7 @@ import com.tenio.entities.element.TObject;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class HMessage implements Comparable {
+final class HMessage implements Comparable {
 
 	/**
 	 * These messages will be stored in a priority queue. Therefore the operator

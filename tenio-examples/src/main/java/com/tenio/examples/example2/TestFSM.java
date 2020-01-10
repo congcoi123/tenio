@@ -42,16 +42,19 @@ public class TestFSM {
 		Server.getInstance().getHeartBeatApi().initialize(1);
 		Server.getInstance().getHeartBeatApi().create("daily-life", new LifeCycle());
 		
-		// try to send a message immediately
-		TObject message = new TObject();
-		message.put("key", "Hello Heartbeat");
-		Server.getInstance().getHeartBeatApi().sendMessage("daily-life", message);
+		// try to send messages immediately
+		for (int i = 1; i <= 5; i++) {
+			TObject message = new TObject();
+			message.put("IMMEDIATELY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
+			System.out.println("SEND IMMEDIATELY: " + message);
+			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", message);
+		}
 		
 		// try to send messages with delay time
 		for (int i = 1; i <= 5; i++) {
 			TObject mess = new TObject();
-			mess.put("key", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
-			System.out.println("SEND: " + mess);
+			mess.put("DELAY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
+			System.out.println("SEND DELAY: " + mess);
 			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", mess, i * 10);
 		}
 		
