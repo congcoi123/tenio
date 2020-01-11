@@ -68,7 +68,7 @@ public final class TestServerFSM extends AbstractApp {
 		@Override
 		public void init() {
 
-			on(TEvent.CONNECTION_SUCCESS, (source, args) -> {
+			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				Connection connection = (Connection) args[0];
 				TObject message = (TObject) args[1];
 
@@ -81,7 +81,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.DISCONNECT_CONNECTION, (source, args) -> {
+			_on(TEvent.DISCONNECT_CONNECTION, args -> {
 				Connection connection = (Connection) args[0];
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
@@ -89,7 +89,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.PLAYER_IN_SUCCESS, (source, args) -> {
+			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// Login successful
 				Inspector player = (Inspector) args[0];
 
@@ -98,7 +98,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.PLAYER_TIMEOUT, (source, args) -> {
+			_on(TEvent.PLAYER_TIMEOUT, args -> {
 				Inspector player = (Inspector) args[0];
 
 				info("PLAYER TIMEOUT", player.getName());
@@ -106,7 +106,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			on(TEvent.DISCONNECT_PLAYER, (source, args) -> {
+			_on(TEvent.DISCONNECT_PLAYER, args -> {
 				Inspector player = (Inspector) args[0];
 
 				info("DISCONNECT PLAYER", player.getName());

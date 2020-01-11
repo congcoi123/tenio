@@ -36,17 +36,6 @@ import com.tenio.message.codec.ByteArrayInputStream;
  */
 public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementPool<ByteArrayInputStream> {
 
-	private static volatile ByteArrayInputStreamPool __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static ByteArrayInputStreamPool getInstance() {
-		if (__instance == null) {
-			__instance = new ByteArrayInputStreamPool();
-		}
-		return __instance;
-	}
-
 	private ByteArrayInputStream[] __pool;
 	private boolean[] __used;
 

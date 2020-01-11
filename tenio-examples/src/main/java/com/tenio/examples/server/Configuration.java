@@ -29,7 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.utils.XMLUtil;
+import com.tenio.utils.XMLUtility;
 
 /**
  * Create your own configurations
@@ -52,7 +52,7 @@ public class Configuration extends BaseConfiguration {
 
 	@Override
 	protected void _extend(Node attrNode) throws XPathExpressionException {
-		NodeList attrConfigurationProperties = XMLUtil.getNodeList(attrNode, "//Server/Extension/Properties/Property");
+		NodeList attrConfigurationProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			Node pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {

@@ -30,6 +30,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import javax.swing.JButton;
@@ -38,7 +39,9 @@ import javax.swing.JPanel;
 
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.utility.MathUtility;
+import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.utils.TimeUtility;
 
 /**
  * The game loop is the overall flow control for the entire game program. It's a
@@ -66,6 +69,13 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * 1.
 	 */
 	private static final int MAX_UPDATES_BEFORE_RENDER = 5;
+
+	/**
+	 * A Set is used as the container for the delayed messages because of the
+	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
+	 * by their dispatch time. @see {@link HMessage}
+	 */
+	private TreeSet<HMessage> __listener;
 
 	/**
 	 * For displaying debugger
@@ -128,6 +138,16 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 		this();
 		__viewWidth = viewWidth;
 		__viewHeight = viewHeight;
+	}
+
+	/**
+	 * Set the listener for the heart-beat. It's used to communicate with outside.
+	 * This method must be called before {@link #call()}
+	 * 
+	 * @param listener the messages' listener
+	 */
+	public void setMessageListener(TreeSet<HMessage> listener) {
+		__listener = listener;
 	}
 
 	/**
@@ -232,7 +252,26 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 			// Do as many game updates as we need to, potentially playing catch-up.
 			while (now - lastUpdateTime > TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BEFORE_RENDER) {
 				float delta = 1.0f / __curFps;
+
+				// Message communication
+				// get current time
+				double currentTime = TimeUtility.currentTimeSeconds();
+
+				// now peek at the queue to see if any telegrams need dispatching.
+				// remove all telegrams from the front of the queue that have gone
+				// past their sell by date
+				while (!__listener.isEmpty() && (__listener.last().getDelayTime() < currentTime)) {
+					// read the message from the front of the queue
+					final HMessage message = __listener.last();
+					// listening
+					_onMessage(message.getMessage());
+					// remove it from the queue
+					__listener.remove(message);
+				}
+
+				// Main update
 				_onUpdate(delta);
+
 				lastUpdateTime += TIME_BETWEEN_UPDATES;
 				updateCount++;
 			}
@@ -332,6 +371,13 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * It is called when start a game loop
 	 */
 	protected abstract void _onCreate();
+
+	/**
+	 * It is called when the heart-beat receives a message from outside
+	 * 
+	 * @param message the coming message @see {@link TObject}
+	 */
+	protected abstract void _onMessage(TObject message);
 
 	/**
 	 * It is called every frame in a game loop

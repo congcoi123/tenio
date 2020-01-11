@@ -25,12 +25,14 @@ package com.tenio.engine.heartbeat;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.exception.NullElementPoolException;
+import com.tenio.entities.element.TObject;
+import com.tenio.exception.HeartbeatNotFoundException;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -42,6 +44,12 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class HeartBeatManager extends AbstractLogger implements IHeartBeatManager {
 
+	/**
+	 * A Set is used as the container for the delayed messages because of the
+	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
+	 * by their dispatch time. @see {@link HMessage}
+	 */
+	private Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
 	private Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
 	private ExecutorService __executorService;
 
@@ -65,6 +73,11 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
 		try {
 			info("CREATE HEART BEAT", buildgen("id: ", id));
+			// Add the listener
+			TreeSet<HMessage> listener = new TreeSet<HMessage>();
+			heartbeat.setMessageListener(listener);
+			__listeners.put(id, listener);
+			// Start the heart-beat
 			Future<Void> future = __executorService.submit(heartbeat);
 			__pool.put(id, future);
 		} catch (Exception e) {
@@ -76,7 +89,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	public synchronized void dispose(final String id) {
 		try {
 			if (!__pool.containsKey(id)) {
-				throw new NullElementPoolException();
+				throw new HeartbeatNotFoundException();
 			}
 
 			Future<Void> future = __pool.get(id);
@@ -88,6 +101,10 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			__pool.remove(id);
 
 			info("DISPOSE HEART BEAT", buildgen(id));
+			
+			// Remove the listener
+			__listeners.get(id).clear();
+			__listeners.remove(id);
 
 			future = null;
 
@@ -107,6 +124,17 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 		__executorService = null;
 		__pool.clear();
 		__pool = null;
+	}
+
+	@Override
+	public void sendMessage(String id, TObject message, double delayTime) {
+		HMessage container = new HMessage(message, delayTime);
+		__listeners.get(id).add(container);
+	}
+
+	@Override
+	public void sendMessage(String id, TObject message) {
+		sendMessage(id, message, 0);
 	}
 
 }

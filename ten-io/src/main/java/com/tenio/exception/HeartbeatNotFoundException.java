@@ -21,42 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.logic;
-
-import com.tenio.configuration.constant.LogicEvent;
+package com.tenio.exception;
 
 /**
- * Only for creating an event handler object @see {@link LEventHandler}
  * 
  * @author kong
  * 
  */
-public final class LEventProducer {
-
+public class HeartbeatNotFoundException extends RuntimeException {
 	/**
-	 * @see LEventHandler
+	 * 
 	 */
-	private LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
-
-	/**
-	 * @return Returns @see {@link LEventHandler}
-	 */
-	public LEventHandler<Object> getEventHandler() {
-		return __eventHandler;
-	}
-
-	/**
-	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
-	 */
-	public Object emit(final LogicEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
-	}
-
-	/**
-	 * @see LEventHandler#clear()
-	 */
-	public void clear() {
-		__eventHandler.clear();
-	}
+	private static final long serialVersionUID = 7597111087047955872L;
 
 }

@@ -61,7 +61,7 @@ final class ServerLogic extends AbstractLogger {
 	 */
 	public void init() {
 		
-		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
 			AbstractPlayer player = (AbstractPlayer) args[0];
 			
 			__roomManager.playerLeaveRoom(player, true);
@@ -69,7 +69,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CONNECTION_CLOSE, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.CONNECTION_CLOSE, args -> {
 			Connection connection = (Connection) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 
@@ -93,7 +93,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, args -> {
 			String channelId = (String) args[0];
 			Connection connection = (Connection) args[1];
 			Throwable cause = (Throwable) args[2];
@@ -114,7 +114,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.MANUALY_CLOSE_CONNECTION, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
 			String name = (String) args[0];
 
 			AbstractPlayer player = __playerManager.get(name);
@@ -125,7 +125,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CREATE_NEW_CONNECTION, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
 			int maxPlayer = (int) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 			Connection connection = (Connection) args[2];
@@ -155,7 +155,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.SOCKET_HANDLE, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.SOCKET_HANDLE, args -> {
 			Connection connection = (Connection) args[0];
 			TObject message = (TObject) args[1];
 
@@ -172,7 +172,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.DATAGRAM_HANDLE, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.DATAGRAM_HANDLE, args -> {
 			AbstractPlayer player = (AbstractPlayer) args[0];
 			TObject message = (TObject) args[1];
 
@@ -185,7 +185,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.GET_PLAYER, (source, args) -> {
+		EventManager.getLogic().on(LogicEvent.GET_PLAYER, args -> {
 			String name = (String) args[0];
 			return __playerManager.get(name);
 		});

@@ -21,42 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.logic;
-
-import com.tenio.configuration.constant.LogicEvent;
+package com.tenio.utils;
 
 /**
- * Only for creating an event handler object @see {@link LEventHandler}
  * 
  * @author kong
- * 
+ *
  */
-public final class LEventProducer {
+public final class TimeUtility {
 
 	/**
-	 * @see LEventHandler
+	 * @return Returns the current time in seconds
 	 */
-	private LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
-
-	/**
-	 * @return Returns @see {@link LEventHandler}
-	 */
-	public LEventHandler<Object> getEventHandler() {
-		return __eventHandler;
-	}
-
-	/**
-	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
-	 */
-	public Object emit(final LogicEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
-	}
-
-	/**
-	 * @see LEventHandler#clear()
-	 */
-	public void clear() {
-		__eventHandler.clear();
+	public static double currentTimeSeconds() {
+		return System.currentTimeMillis() * 0.001;
 	}
 
 }

@@ -34,6 +34,7 @@ import com.tenio.engine.fsm.entities.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.entities.AbstractPlayer;
+import com.tenio.entities.element.TObject;
 import com.tenio.examples.example2.constants.EntityName;
 import com.tenio.examples.example2.entities.BaseEntity;
 import com.tenio.examples.example2.entities.Miner;
@@ -157,6 +158,11 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	@Override
 	protected void _onAction3() {
 		System.out.println("HeartBeat._onAction3()");
+	}
+
+	@Override
+	protected void _onMessage(TObject message) {
+		System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
 	}
 
 }

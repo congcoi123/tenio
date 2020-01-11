@@ -36,17 +36,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class ObjectPool extends AbstractLogger implements IElementPool<TObject> {
 
-	private static volatile ObjectPool __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static ObjectPool getInstance() {
-		if (__instance == null) {
-			__instance = new ObjectPool();
-		}
-		return __instance;
-	}
-
 	private TObject[] __pool;
 	private boolean[] __used;
 

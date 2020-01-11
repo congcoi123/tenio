@@ -30,6 +30,7 @@ import com.tenio.examples.example2.constants.EntityName;
 import com.tenio.examples.example2.constants.Location;
 import com.tenio.examples.example2.constants.MessageType;
 import com.tenio.examples.example2.entities.Miner;
+import com.tenio.utils.TimeUtility;
 
 /**
  * Miner will go home and sleep until his fatigue is decreased sufficiently
@@ -96,7 +97,7 @@ public final class GoHomeAndSleepTilRested extends State<Miner> {
 	public boolean onMessage(Miner miner, Telegram msg) {
 		if (msg.getType() == MessageType.STEW_READY.get()) {
 			System.out.println("\nMessage handled by " + miner.getName() + " at time: "
-					+ (System.currentTimeMillis() * 0.001 - msg.getCreatedTime()));
+					+ (TimeUtility.currentTimeSeconds() - msg.getCreatedTime()));
 
 			miner.setMood(miner.getName() + ": Okay Hun, ahm a comin'!");
 			System.out.println("\n" + miner.getMood());

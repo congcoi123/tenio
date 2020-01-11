@@ -31,6 +31,7 @@ import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.fsm.entities.AbstractEntity;
 import com.tenio.engine.fsm.entities.Telegram;
 import com.tenio.entities.element.TObject;
+import com.tenio.utils.TimeUtility;
 
 /**
  * This class is used for sending messages between entities
@@ -106,7 +107,7 @@ public final class MessageDispatcher {
 	public void update(double delta) {
 
 		// get current time
-		double currentTime = System.currentTimeMillis() * 0.001;
+		double currentTime = TimeUtility.currentTimeSeconds();
 
 		// now peek at the queue to see if any telegrams need dispatching.
 		// remove all telegrams from the front of the queue that have gone

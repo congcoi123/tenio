@@ -21,6 +21,7 @@ import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.engine.physic.utility.Smoother;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TArray;
+import com.tenio.entities.element.TObject;
 import com.tenio.examples.example4.configuration.ParamLoader;
 import com.tenio.examples.example4.constants.SummingMethod;
 import com.tenio.examples.example4.entities.Obstacle;
@@ -499,6 +500,11 @@ public class World extends AbstractHeartBeat {
 		__vehicles.forEach(vehicle -> {
 			vehicle.getBehavior().setSummingMethod(SummingMethod.DITHERED);
 		});
+	}
+
+	@Override
+	protected void _onMessage(TObject message) {
+		System.out.println("World._onMessage(): " + message);
 	}
 
 }

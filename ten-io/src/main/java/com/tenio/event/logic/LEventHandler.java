@@ -55,15 +55,14 @@ public final class LEventHandler<T> {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param source the source object
-	 * @param type   @see {@link LogicEvent}
-	 * @param args   a list parameters of this event
+	 * @param type @see {@link LogicEvent}
+	 * @param args a list parameters of this event
 	 * @return Returns the event result (the response of its subscribers) @see
 	 *         {@link Object} or <code>null</code>
 	 */
-	public Object emit(final Object source, final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public Object emit(final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (__delegate.containsKey(type)) {
-			return __delegate.get(type).emit(source, args);
+			return __delegate.get(type).emit(args);
 		}
 		return null;
 	}
