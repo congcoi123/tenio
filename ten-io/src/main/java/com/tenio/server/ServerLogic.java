@@ -31,6 +31,7 @@ import com.tenio.entities.element.TObject;
 import com.tenio.entities.manager.IPlayerManager;
 import com.tenio.entities.manager.IRoomManager;
 import com.tenio.event.EventManager;
+import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 
@@ -61,7 +62,7 @@ final class ServerLogic extends AbstractLogger {
 	 */
 	public void init() {
 		
-		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
+		__on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
 			AbstractPlayer player = (AbstractPlayer) args[0];
 			
 			__roomManager.playerLeaveRoom(player, true);
@@ -69,7 +70,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CONNECTION_CLOSE, args -> {
+		__on(LogicEvent.CONNECTION_CLOSE, args -> {
 			Connection connection = (Connection) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 
@@ -93,7 +94,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, args -> {
+		__on(LogicEvent.CONNECTION_EXCEPTION, args -> {
 			String channelId = (String) args[0];
 			Connection connection = (Connection) args[1];
 			Throwable cause = (Throwable) args[2];
@@ -114,7 +115,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
+		__on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
 			String name = (String) args[0];
 
 			AbstractPlayer player = __playerManager.get(name);
@@ -125,7 +126,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
+		__on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
 			int maxPlayer = (int) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 			Connection connection = (Connection) args[2];
@@ -155,7 +156,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.SOCKET_HANDLE, args -> {
+		__on(LogicEvent.SOCKET_HANDLE, args -> {
 			Connection connection = (Connection) args[0];
 			TObject message = (TObject) args[1];
 
@@ -172,7 +173,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.DATAGRAM_HANDLE, args -> {
+		__on(LogicEvent.DATAGRAM_HANDLE, args -> {
 			AbstractPlayer player = (AbstractPlayer) args[0];
 			TObject message = (TObject) args[1];
 
@@ -185,11 +186,15 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.GET_PLAYER, args -> {
+		__on(LogicEvent.GET_PLAYER, args -> {
 			String name = (String) args[0];
 			return __playerManager.get(name);
 		});
 		
+	}
+	
+	private void __on(final LogicEvent event, ISubscriber sub) {
+		EventManager.getLogic().on(event, sub);
 	}
 
 	private void __handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
