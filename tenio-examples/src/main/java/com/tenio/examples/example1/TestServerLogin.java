@@ -70,8 +70,8 @@ public final class TestServerLogin extends AbstractApp {
 		@Override
 		public void init() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				Connection connection = (Connection) args[0];
-				TObject message = (TObject) args[1];
+				var connection = (Connection) args[0];
+				var message = (TObject) args[1];
 
 				info("CONNECTION", connection.getAddress());
 
