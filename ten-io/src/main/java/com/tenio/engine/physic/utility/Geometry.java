@@ -12,8 +12,8 @@ import com.tenio.engine.physic.math.Vector2;
  */
 public final class Geometry {
 
-	private static final Vector2 __temp1 = new Vector2();
-	private static final Vector2 __temp2 = new Vector2();
+	private static final Vector2 __temp1 = Vector2.newInstance();
+	private static final Vector2 __temp2 = Vector2.newInstance();
 
 	// ------------------------- WhereIsPoint ------------------------
 	// ---------------------------------------------------------------
@@ -224,7 +224,7 @@ public final class Geometry {
 
 		if ((r > 0) && (r < 1) && (s > 0) && (s < 1)) {
 			// Point = A + (r * (B - A))
-			var point = new Vector2(B).sub(A).mul(r).add(A);
+			var point = Vector2.valueOf(B).sub(A).mul(r).add(A);
 			return point;
 		}
 

@@ -65,8 +65,14 @@ public final class Matrix3 {
 	// The temporary object for calculations
 	private final Matrix __matrix = new Matrix();
 	private final Matrix __temp = new Matrix();
+	
+	public static Matrix3 newInstance() {
+		var matrix = new Matrix3();
+		matrix.initialize();
+		return matrix;
+	}
 
-	public Matrix3() {
+	private Matrix3() {
 		// initialize the matrix to an identity matrix
 		initialize();
 	}

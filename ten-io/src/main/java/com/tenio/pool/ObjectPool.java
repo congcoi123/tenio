@@ -44,7 +44,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = new TObject();
+			__pool[i] = TObject.newInstance();
 			__used[i] = false;
 		}
 	}
@@ -69,7 +69,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = new TObject();
+			__pool[i] = TObject.newInstance();
 			__used[i] = false;
 		}
 

@@ -70,7 +70,7 @@ public final class TestClientLogin implements ISocketListener {
 		__tcp.receive(this);
 
 		// send a login request
-		var message = new TObject();
+		var message = TObject.newInstance();
 		message.put("u", __generateRandomString(5));
 		__tcp.send(message);
 		System.err.println("Login Request -> " + message);

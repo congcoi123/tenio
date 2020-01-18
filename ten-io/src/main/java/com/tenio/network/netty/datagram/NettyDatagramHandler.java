@@ -89,7 +89,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 				EventManager.getEvent().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				__savePlayerRemote(ctx.channel(), datagram.sender().toString(), player.getName());
-				var connection = NettyConnection.create(Connection.Type.DATAGRAM, ctx.channel());
+				var connection = NettyConnection.newInstance(Connection.Type.DATAGRAM, ctx.channel());
 				connection.setSockAddress(datagram.sender());
 				player.setSubConnection(connection);
 				EventManager.getEvent().emit(TEvent.ATTACH_UDP_SUCCESS, player);

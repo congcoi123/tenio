@@ -71,7 +71,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		__udp.receive(this);
 
 		// send a login request
-		var message = new TObject();
+		var message = TObject.newInstance();
 		message.put("u", "kong");
 		__tcp.send(message);
 		System.out.println("Login Request -> " + message);
@@ -85,7 +85,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		switch ((String) message.get("c")) {
 		case "udp": {
 			// now you can send request for UDP connection request
-			var request = new TObject();
+			var request = TObject.newInstance();
 			request.put("u", "kong");
 			__udp.send(request);
 			System.out.println("Request a UDP connection -> " + request);
@@ -96,8 +96,8 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 			// the UDP connected successful, you now can send test requests
 			System.out.println("Start the conversation ...");
 			for (int i = 1; i <= 10; i++) {
-				var request = new TObject();
-				request.put("fc", (new TArray()).put("F").put("r").put(0).put(false));
+				var request = TObject.newInstance();
+				request.put("fc", TArray.newInstance().put("F").put("r").put(0).put(false));
 				__udp.send(request);
 				System.out.println("[SENT TO SERVER " + i + "] -> " + request);
 				try {

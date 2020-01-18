@@ -65,7 +65,7 @@ public final class TEventManager extends AbstractLogger {
 			info("EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(new TSubscriber(type, sub));
+		__subscribers.add(TSubscriber.newInstance(type, sub));
 	}
 
 	/**

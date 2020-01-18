@@ -35,7 +35,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 	// vector smoothed over the last few frames
 	private float __smoothedHeadingX;
 	private float __smoothedHeadingY;
-	private Vector2 __smoothedHeading = new Vector2();
+	private Vector2 __smoothedHeading = Vector2.newInstance();
 	// when true, smoothing is active
 	private boolean __enableSmoothing;
 	// keeps a track of the most recent update time. (some of the
@@ -46,8 +46,9 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 	public Vehicle(World world, Vector2 position, float rotation, Vector2 velocity, float mass, float maxForce,
 			float maxSpeed, float maxTurnRate, float scale) {
-		super(position, scale, velocity, maxSpeed, new Vector2((float) Math.sin(rotation), (float) -Math.cos(rotation)),
-				mass, new Vector2(scale, scale), maxTurnRate, maxForce);
+		super(position, scale, velocity, maxSpeed,
+				Vector2.valueOf((float) Math.sin(rotation), (float) -Math.cos(rotation)), mass,
+				Vector2.valueOf(scale, scale), maxTurnRate, maxForce);
 
 		__world = world;
 		__smoothedHeadingX = 0;
@@ -62,7 +63,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 		// set up the smoother
 		__headingSmoother = new SmootherVector<Vector2>(ParamLoader.getInstance().NUM_SAMPLES_FOR_SMOOTHING,
-				new Vector2());
+				Vector2.newInstance());
 
 	}
 
@@ -72,7 +73,8 @@ public class Vehicle extends MoveableEntity implements IRender {
 	private void __createShape() {
 		final int numVehicleVerts = 3;
 
-		Vector2 vehicle[] = { new Vector2(-1.0f, 0.6f), new Vector2(1.0f, 0.0f), new Vector2(-1.0f, -0.6f) };
+		Vector2 vehicle[] = { Vector2.valueOf(-1.0f, 0.6f), Vector2.valueOf(1.0f, 0.0f),
+				Vector2.valueOf(-1.0f, -0.6f) };
 
 		// setup the vertex buffers and calculate the bounding radius
 		for (int vtx = 0; vtx < numVehicleVerts; ++vtx) {

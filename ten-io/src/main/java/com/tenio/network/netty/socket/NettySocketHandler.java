@@ -76,7 +76,7 @@ public final class NettySocketHandler extends BaseNettyHandler {
 		// get the connection first
 		var connection = _getConnection(ctx.channel());
 		if (connection == null) { // the new connection
-			connection = NettyConnection.create(Connection.Type.SOCKET, ctx.channel());
+			connection = NettyConnection.newInstance(Connection.Type.SOCKET, ctx.channel());
 			EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 					connection, message);
 		} else {

@@ -39,17 +39,17 @@ public class SteeringBehavior implements IRender {
 
 	private ParamLoader __paramLoader = ParamLoader.getInstance();
 
-	private final Vector2 __temp1 = new Vector2();
-	private final Vector2 __temp2 = new Vector2();
-	private final Vector2 __temp3 = new Vector2();
-	private final Vector2 __temp4 = new Vector2();
-	private final Vector2 __temp5 = new Vector2();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final Vector2 __temp2 = Vector2.newInstance();
+	private final Vector2 __temp3 = Vector2.newInstance();
+	private final Vector2 __temp4 = Vector2.newInstance();
+	private final Vector2 __temp5 = Vector2.newInstance();
 
 	// a pointer to the owner of this instance
 	private Vehicle __vehicle;
 	// the steering force created by the combined effect of all
 	// the selected behaviors
-	private Vector2 __steeringForce = new Vector2();
+	private Vector2 __steeringForce = Vector2.newInstance();
 	// these can be used to keep track of friends, pursuers, or prey
 	private Vehicle __targetAgent1;
 	private Vehicle __targetAgent2;
@@ -141,7 +141,7 @@ public class SteeringBehavior implements IRender {
 		float theta = MathUtility.randFloat() * MathUtility.TWO_PI;
 
 		// create a vector to a target position on the wander circle
-		__wanderTarget = new Vector2((float) (__wanderRadius * Math.cos(theta)),
+		__wanderTarget = Vector2.valueOf((float) (__wanderRadius * Math.cos(theta)),
 				(float) (__wanderRadius * Math.sin(theta)));
 
 		// create a Path
@@ -160,7 +160,7 @@ public class SteeringBehavior implements IRender {
 	 * This function calculates how much of its max steering force the vehicle has
 	 * left to apply and then applies that amount of the force to add.
 	 */
-	private Vector2 __vAccumulateForce = new Vector2();
+	private Vector2 __vAccumulateForce = Vector2.newInstance();
 
 	private void __accumulateForce(Vector2 forceToAdd) {
 
@@ -198,7 +198,7 @@ public class SteeringBehavior implements IRender {
 	private void __createSensors() {
 		__sensors.clear();
 		// feeler pointing straight in front
-		var front = new Vector2(__vehicle.getHeading()).mul(__wallDetectionSensorLength)
+		var front = Vector2.valueOf(__vehicle.getHeading()).mul(__wallDetectionSensorLength)
 				.add(__vehicle.getPosition());
 		__sensors.add(front);
 
@@ -221,7 +221,7 @@ public class SteeringBehavior implements IRender {
 	 * agent towards the target
 	 */
 	private Vector2 __doSeek(Vector2 targetPos) {
-		var desiredVelocity = new Vector2(targetPos).sub(__vehicle.getPosition()).normalize()
+		var desiredVelocity = Vector2.valueOf(targetPos).sub(__vehicle.getPosition()).normalize()
 				.mul(__vehicle.getMaxSpeed());
 		return desiredVelocity.sub(__vehicle.getVelocity());
 	}
@@ -232,7 +232,7 @@ public class SteeringBehavior implements IRender {
 	private Vector2 __doFlee(Vector2 targetPos) {
 		// only flee if the target is within 'panic distance'. Work in distance squared
 		// space.
-		var desiredVelocity = new Vector2(__vehicle.getPosition()).sub(targetPos).normalize()
+		var desiredVelocity = Vector2.valueOf(__vehicle.getPosition()).sub(targetPos).normalize()
 				.mul(__vehicle.getMaxSpeed());
 		return desiredVelocity.sub(__vehicle.getVelocity());
 	}
@@ -242,7 +242,7 @@ public class SteeringBehavior implements IRender {
 	 * a zero velocity
 	 */
 	private Vector2 __doArrive(Vector2 targetPos, Deceleration deceleration) {
-		var toTarget = new Vector2(targetPos).sub(__vehicle.getPosition());
+		var toTarget = Vector2.valueOf(targetPos).sub(__vehicle.getPosition());
 
 		// calculate the distance to the target
 		float dist = toTarget.getLength();
@@ -309,7 +309,7 @@ public class SteeringBehavior implements IRender {
 		// within a 'threat range'
 		final float threatRange = 100;
 		if (toPursuer.getLengthSqr() > threatRange * threatRange) {
-			return new Vector2();
+			return Vector2.newInstance();
 		}
 
 		// the lookahead time is proportional to the distance between the pursuer
@@ -1034,7 +1034,7 @@ public class SteeringBehavior implements IRender {
 			break;
 
 		default:
-			__steeringForce = new Vector2();
+			__steeringForce = Vector2.newInstance();
 			break;
 		}
 

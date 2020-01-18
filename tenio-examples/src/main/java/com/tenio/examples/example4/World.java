@@ -42,8 +42,8 @@ public class World extends AbstractHeartBeat {
 
 	private ParamLoader __paramLoader = ParamLoader.getInstance();
 
-	private final Vector2 __temp1 = new Vector2();
-	private final InvertedAABBox2D __aabb = new InvertedAABBox2D();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final InvertedAABBox2D __aabb = InvertedAABBox2D.newInstance();
 
 	// a container of all the moving entities
 	private List<Vehicle> __vehicles = new ArrayList<Vehicle>(__paramLoader.NUM_AGENTS);
@@ -78,10 +78,10 @@ public class World extends AbstractHeartBeat {
 	// for network communication
 	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
-	private TArray __ids = new TArray();
-	private TArray __pxs = new TArray();
-	private TArray __pys = new TArray();
-	private TArray __prs = new TArray();
+	private TArray __ids = TArray.newInstance();
+	private TArray __pxs = TArray.newInstance();
+	private TArray __pys = TArray.newInstance();
+	private TArray __prs = TArray.newInstance();
 
 	public World(int cx, int cy) {
 		super(cx, cy);
@@ -89,7 +89,7 @@ public class World extends AbstractHeartBeat {
 		__clientX = cx;
 		__clientY = cy;
 		__pause = false;
-		__crosshair = new Vector2(getClientX() / 2, getClientX() / 2);
+		__crosshair = Vector2.valueOf(getClientX() / 2, getClientX() / 2);
 		__enableShowWalls = false;
 		__enableShowObstacles = false;
 		__enableShowPath = false;
@@ -114,12 +114,12 @@ public class World extends AbstractHeartBeat {
 		BaseGameEntity.resetValidID();
 		for (int a = 0; a < __paramLoader.NUM_AGENTS; ++a) {
 			// determine a random starting position
-			var SpawnPos = new Vector2(cx / 2 + MathUtility.randomClamped() * cx / 2,
+			var SpawnPos = Vector2.valueOf(cx / 2 + MathUtility.randomClamped() * cx / 2,
 					cy / 2 + MathUtility.randomClamped() * cy / 2);
 
 			var pVehicle = new Vehicle(this, SpawnPos, // initial position
 					MathUtility.randFloat() * MathUtility.TWO_PI, // start rotation
-					new Vector2(0, 0), // velocity
+					Vector2.newInstance(), // velocity
 					__paramLoader.VEHICLE_MASS, // mass
 					__paramLoader.MAX_STEERING_FORCE, // max force
 					__paramLoader.MAX_SPEED, // max velocity
@@ -137,7 +137,7 @@ public class World extends AbstractHeartBeat {
 		final boolean enableShoal = true;
 		if (enableShoal) {
 			__vehicles.get(__paramLoader.NUM_AGENTS - 1).getBehavior().setFlockingOff();
-			__vehicles.get(__paramLoader.NUM_AGENTS - 1).setScale(new Vector2(10, 10));
+			__vehicles.get(__paramLoader.NUM_AGENTS - 1).setScale(Vector2.valueOf(10, 10));
 			__vehicles.get(__paramLoader.NUM_AGENTS - 1).getBehavior().setWanderOn();
 			__vehicles.get(__paramLoader.NUM_AGENTS - 1).setMaxSpeed(70);
 
@@ -265,14 +265,14 @@ public class World extends AbstractHeartBeat {
 		float vDist = __clientY - 2 * bordersize;
 		float hDist = __clientX - 2 * bordersize;
 
-		Vector2 walls[] = { new Vector2(hDist * cornerSize + bordersize, bordersize),
-				new Vector2(__clientX - bordersize - hDist * cornerSize, bordersize),
-				new Vector2(__clientX - bordersize, bordersize + vDist * cornerSize),
-				new Vector2(__clientX - bordersize, __clientY - bordersize - vDist * cornerSize),
-				new Vector2(__clientX - bordersize - hDist * cornerSize, __clientY - bordersize),
-				new Vector2(hDist * cornerSize + bordersize, __clientY - bordersize),
-				new Vector2(bordersize, __clientY - bordersize - vDist * cornerSize),
-				new Vector2(bordersize, bordersize + vDist * cornerSize) };
+		Vector2 walls[] = { Vector2.valueOf(hDist * cornerSize + bordersize, bordersize),
+				Vector2.valueOf(__clientX - bordersize - hDist * cornerSize, bordersize),
+				Vector2.valueOf(__clientX - bordersize, bordersize + vDist * cornerSize),
+				Vector2.valueOf(__clientX - bordersize, __clientY - bordersize - vDist * cornerSize),
+				Vector2.valueOf(__clientX - bordersize - hDist * cornerSize, __clientY - bordersize),
+				Vector2.valueOf(hDist * cornerSize + bordersize, __clientY - bordersize),
+				Vector2.valueOf(bordersize, __clientY - bordersize - vDist * cornerSize),
+				Vector2.valueOf(bordersize, bordersize + vDist * cornerSize) };
 
 		final int numWallVerts = walls.length;
 
@@ -332,7 +332,7 @@ public class World extends AbstractHeartBeat {
 	 * the position appropriately
 	 */
 	synchronized public void setCrosshair(PPoint p) {
-		var proposedPosition = new Vector2((float) p.x, (float) p.y);
+		var proposedPosition = Vector2.valueOf((float) p.x, (float) p.y);
 
 		// make sure it's not inside an obstacle
 		var it = __obstacles.listIterator();

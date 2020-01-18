@@ -36,21 +36,21 @@ import com.tenio.engine.physic.math.Vector2;
 public abstract class MoveableEntity extends BaseGameEntity {
 
 	// for temporary calculations
-	private final Vector2 __temp1 = new Vector2();
-	private final Matrix3 __matrix = new Matrix3();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final Matrix3 __matrix = Matrix3.newInstance();
 
 	// vector for velocity
 	private float __velocityX;
 	private float __velocityY;
-	private Vector2 __velocity = new Vector2();
+	private Vector2 __velocity = Vector2.newInstance();
 	// a normalized vector pointing in the direction the entity is heading
 	private float __headingX;
 	private float __headingY;
-	private Vector2 __heading = new Vector2();
+	private Vector2 __heading = Vector2.newInstance();
 	// a vector perpendicular to the heading vector
 	private float __sideX;
 	private float __sideY;
-	private Vector2 __side = new Vector2();
+	private Vector2 __side = Vector2.newInstance();
 	// for entity's mass
 	private float __mass;
 	// the maximum speed this entity may travel at

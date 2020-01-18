@@ -16,7 +16,7 @@ import com.tenio.engine.physic.math.Vector2;
  */
 public final class EntitiesRelationship {
 
-	private static final Vector2 __temp1 = new Vector2();
+	private static final Vector2 __temp1 = Vector2.newInstance();
 
 	/**
 	 * Tests to see if an entity is overlapping any of a number of entities stored

@@ -40,10 +40,10 @@ import com.tenio.engine.physic.math.Vector2;
 public final class Paint {
 
 	// These objects for temporary calculations
-	private final Vector2 __temp1 = new Vector2();
-	private final Vector2 __temp2 = new Vector2();
-	private final Vector2 __temp3 = new Vector2();
-	private final Vector2 __temp4 = new Vector2();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final Vector2 __temp2 = Vector2.newInstance();
+	private final Vector2 __temp3 = Vector2.newInstance();
+	private final Vector2 __temp4 = Vector2.newInstance();
 
 	/**
 	 * It is used for rendering an object in shape

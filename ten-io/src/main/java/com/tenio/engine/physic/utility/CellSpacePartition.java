@@ -30,7 +30,7 @@ class Cell<E extends Object> {
 	public InvertedAABBox2D bbox;
 
 	public Cell(float left, float top, float right, float bottom) {
-		bbox = new InvertedAABBox2D(left, top, right, bottom);
+		bbox = InvertedAABBox2D.valueOf(left, top, right, bottom);
 	}
 
 }
@@ -53,8 +53,8 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	/**
 	 * Only for temporary calculations
 	 */
-	private final Vector2 __temp1 = new Vector2();
-	private final InvertedAABBox2D __aabb = new InvertedAABBox2D();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final InvertedAABBox2D __aabb = InvertedAABBox2D.newInstance();
 
 	/**
 	 * The required amount of cells in the space

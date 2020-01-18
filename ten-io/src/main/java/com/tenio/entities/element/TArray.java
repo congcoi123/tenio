@@ -36,6 +36,13 @@ public final class TArray extends ArrayList<Object> {
 
 	private static final long serialVersionUID = -5100842875580575666L;
 
+	public static TArray newInstance() {
+		return new TArray();
+	}
+
+	private TArray() {
+	}
+
 	public TArray put(final Object e) {
 		add(e);
 		return this;

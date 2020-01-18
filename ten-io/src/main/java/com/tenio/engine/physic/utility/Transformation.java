@@ -14,9 +14,9 @@ import com.tenio.engine.physic.math.Vector2;
  */
 public final class Transformation {
 
-	private static final Vector2 __temp1 = new Vector2();
-	private static final Vector2 __temp2 = new Vector2();
-	private static final Matrix3 __matrix = new Matrix3();
+	private static final Vector2 __temp1 = Vector2.newInstance();
+	private static final Vector2 __temp2 = Vector2.newInstance();
+	private static final Matrix3 __matrix = Matrix3.newInstance();
 
 	// --------------------------- WorldTransform -------------------------------
 	// Given a list of 2D vectors (points), a position, orientation and scale,

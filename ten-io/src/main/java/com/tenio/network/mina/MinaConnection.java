@@ -82,7 +82,7 @@ public class MinaConnection extends Connection {
 		__id = null;
 	}
 
-	public static MinaConnection create(Type type, IoSession session) {
+	public static MinaConnection newInstance(Type type, IoSession session) {
 		return new MinaConnection(type, session);
 	}
 

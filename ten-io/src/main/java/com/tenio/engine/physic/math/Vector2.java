@@ -39,15 +39,27 @@ public class Vector2 {
 	public float x;
 	public float y;
 
-	public Vector2() {
+	public static Vector2 newInstance() {
+		return new Vector2();
+	}
+
+	public static Vector2 valueOf(float a, float b) {
+		return newInstance().set(a, b);
+	}
+
+	public static Vector2 valueOf(Vector2 vector) {
+		return newInstance().set(vector);
+	}
+
+	private Vector2() {
 		zero();
 	}
 
-	public Vector2(float a, float b) {
+	private Vector2(float a, float b) {
 		set(a, b);
 	}
 
-	public Vector2(Vector2 vector) {
+	private Vector2(Vector2 vector) {
 		set(vector);
 	}
 

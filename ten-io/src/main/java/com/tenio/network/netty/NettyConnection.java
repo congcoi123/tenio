@@ -84,7 +84,7 @@ public class NettyConnection extends Connection {
 		__id = null;
 	}
 
-	public static NettyConnection create(Type type, Channel channel) {
+	public static NettyConnection newInstance(Type type, Channel channel) {
 		return new NettyConnection(type, channel);
 	}
 

@@ -65,7 +65,7 @@ public final class LEventManager extends AbstractLogger {
 			info("EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(new LSubscriber(type, sub));
+		__subscribers.add(LSubscriber.newInstance(type, sub));
 	}
 
 	/**

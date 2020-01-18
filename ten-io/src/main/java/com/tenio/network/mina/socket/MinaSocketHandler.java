@@ -77,7 +77,7 @@ public class MinaSocketHandler extends BaseMinaHandler {
 
 		var connection = _getConnection(session);
 		if (connection == null) { // the new connection
-			connection = MinaConnection.create(Connection.Type.SOCKET, session);
+			connection = MinaConnection.newInstance(Connection.Type.SOCKET, session);
 			EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 					connection, message);
 		} else {

@@ -68,7 +68,7 @@ public final class MsgPackConverter {
 	 * @return Returns an object in <code>TObject</code> type
 	 */
 	public static TObject unserialize(byte[] msg) {
-		var object = new TObject();
+		var object = TObject.newInstance();
 		Map<String, Value> dstMap = MsgPackUtil.unpack(msg);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
@@ -152,7 +152,7 @@ public final class MsgPackConverter {
 			} else if (value.isArrayValue()) {
 				// Convert value to list of objects (TArray)
 				var arr = value.asArrayValue();
-				var array = new TArray();
+				var array = TArray.newInstance();
 				for (var element : arr) {
 					array.add(valueToObject(element));
 				}

@@ -36,7 +36,7 @@ import com.tenio.engine.physic.math.Vector2;
  */
 public class Wall implements IRender {
 
-	private final Vector2 __temp = new Vector2();
+	private final Vector2 __temp = Vector2.newInstance();
 
 	private float __vAX;
 	private float __vAY;

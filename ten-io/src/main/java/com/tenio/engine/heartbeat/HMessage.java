@@ -62,8 +62,12 @@ final class HMessage implements Comparable {
 	 * The main information
 	 */
 	private TObject __message;
+	
+	public static HMessage newInstance(TObject message, double delayTime) {
+		return new HMessage(message, delayTime);
+	}
 
-	public HMessage(TObject message, double delayTime) {
+	private HMessage(TObject message, double delayTime) {
 		__id = __atomic.incrementAndGet();
 		__setDelayTime(delayTime);
 		__message = message;
