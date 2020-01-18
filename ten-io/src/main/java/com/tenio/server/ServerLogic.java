@@ -60,23 +60,23 @@ final class ServerLogic extends AbstractLogger {
 	 * Start handling
 	 */
 	public void init() {
-		
+
 		EventManager.getLogic().on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
-			AbstractPlayer player = (AbstractPlayer) args[0];
-			
+			var player = AbstractPlayer.convert(args[0]);
+
 			__roomManager.playerLeaveRoom(player, true);
-			
+
 			return null;
 		});
 
 		EventManager.getLogic().on(LogicEvent.CONNECTION_CLOSE, args -> {
-			Connection connection = (Connection) args[0];
+			var connection = Connection.convert(args[0]);
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
 
 			if (connection != null) { // the connection has existed
 				String id = connection.getId();
 				if (id != null) { // the player maybe exist
-					AbstractPlayer player = __playerManager.get(id);
+					var player = __playerManager.get(id);
 					if (player != null) { // the player has existed
 						EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
@@ -89,19 +89,19 @@ final class ServerLogic extends AbstractLogger {
 				}
 				connection.clean();
 			}
-			
+
 			return null;
 		});
 
 		EventManager.getLogic().on(LogicEvent.CONNECTION_EXCEPTION, args -> {
 			String channelId = (String) args[0];
-			Connection connection = (Connection) args[1];
-			Throwable cause = (Throwable) args[2];
+			var connection = Connection.convert(args[1]);
+			var cause = (Throwable) args[2];
 
 			if (connection != null) { // the old connection
 				String id = connection.getId();
 				if (id != null) { // the player maybe exist
-					AbstractPlayer player = __playerManager.get(id);
+					var player = __playerManager.get(id);
 					if (player != null) { // the player has existed
 						__exception(player, cause);
 						return null;
@@ -117,24 +117,24 @@ final class ServerLogic extends AbstractLogger {
 		EventManager.getLogic().on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
 			String name = (String) args[0];
 
-			AbstractPlayer player = __playerManager.get(name);
+			var player = __playerManager.get(name);
 			if (player != null) {
 				EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
 			}
-			
+
 			return null;
 		});
 
 		EventManager.getLogic().on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
 			int maxPlayer = (int) args[0];
 			boolean keepPlayerOnDisconnect = (boolean) args[1];
-			Connection connection = (Connection) args[2];
-			TObject message = (TObject) args[3];
+			var connection = Connection.convert(args[2]);
+			var message = TObject.convert(args[3]);
 
 			// check the reconnection first
 			if (keepPlayerOnDisconnect) {
-				AbstractPlayer player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST,
-						connection, message);
+				var player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
+						message);
 				if (player != null) {
 					player.currentReaderTime();
 					connection.setId(player.getName());
@@ -156,12 +156,12 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		EventManager.getLogic().on(LogicEvent.SOCKET_HANDLE, args -> {
-			Connection connection = (Connection) args[0];
-			TObject message = (TObject) args[1];
+			var connection = Connection.convert(args[0]);
+			var message = TObject.convert(args[1]);
 
 			String id = connection.getId();
 			if (id != null) { // the player's identify
-				AbstractPlayer player = __playerManager.get(id);
+				var player = __playerManager.get(id);
 				if (player != null) {
 					__handle(player, false, message);
 				}
@@ -173,8 +173,8 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		EventManager.getLogic().on(LogicEvent.DATAGRAM_HANDLE, args -> {
-			AbstractPlayer player = (AbstractPlayer) args[0];
-			TObject message = (TObject) args[1];
+			var player = AbstractPlayer.convert(args[0]);
+			var message = TObject.convert(args[1]);
 
 			// UDP is only attach connection, so if the main connection not found, the UDP
 			// must be stop handled
@@ -189,7 +189,7 @@ final class ServerLogic extends AbstractLogger {
 			String name = (String) args[0];
 			return __playerManager.get(name);
 		});
-		
+
 	}
 
 	private void __handle(AbstractPlayer player, boolean isSubConnection, TObject message) {

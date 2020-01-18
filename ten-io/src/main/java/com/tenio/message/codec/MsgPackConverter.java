@@ -31,10 +31,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.msgpack.MessagePack;
-import org.msgpack.template.Template;
-import org.msgpack.type.ArrayValue;
 import org.msgpack.type.Value;
-import org.msgpack.unpacker.Unpacker;
 
 import com.tenio.entities.element.TArray;
 import com.tenio.entities.element.TObject;
@@ -71,7 +68,7 @@ public final class MsgPackConverter {
 	 * @return Returns an object in <code>TObject</code> type
 	 */
 	public static TObject unserialize(byte[] msg) {
-		TObject object = new TObject();
+		var object = new TObject();
 		Map<String, Value> dstMap = MsgPackUtil.unpack(msg);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
@@ -116,11 +113,11 @@ public final class MsgPackConverter {
 		 * @return Returns a object in map type
 		 */
 		public static Map<String, Value> unpack(byte[] msg) {
-			Template<Map<String, Value>> mapTmpl = tMap(TString, TValue);
-			ByteArrayInputStream in = __bytesPool.get();
+			var mapTmpl = tMap(TString, TValue);
+			var in = __bytesPool.get();
 			try {
 				in.reset(msg);
-				Unpacker unpacker = __packer.createUnpacker(in);
+				var unpacker = __packer.createUnpacker(in);
 				return unpacker.read(mapTmpl);
 			} catch (IOException | IllegalArgumentException e) {
 				e.printStackTrace();
@@ -154,9 +151,9 @@ public final class MsgPackConverter {
 				return value.asIntegerValue().getInt();
 			} else if (value.isArrayValue()) {
 				// Convert value to list of objects (TArray)
-				ArrayValue arr = value.asArrayValue();
-				TArray array = new TArray();
-				for (Value element : arr) {
+				var arr = value.asArrayValue();
+				var array = new TArray();
+				for (var element : arr) {
 					array.add(valueToObject(element));
 				}
 				return array;

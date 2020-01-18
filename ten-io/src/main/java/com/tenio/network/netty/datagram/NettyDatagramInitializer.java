@@ -26,7 +26,6 @@ package com.tenio.network.netty.datagram;
 import com.tenio.configuration.BaseConfiguration;
 
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
@@ -50,7 +49,7 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 
 	@Override
 	protected void initChannel(DatagramChannel channel) throws Exception {
-		ChannelPipeline pipeline = channel.pipeline();
+		var pipeline = channel.pipeline();
 
 		// converts each data chunk into a byte array (read-up)
 		pipeline.addLast("bytearray-decoder", new ByteArrayDecoder());

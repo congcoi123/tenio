@@ -45,7 +45,7 @@ public final class TestServerFSM extends AbstractApp {
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		TestServerFSM game = new TestServerFSM();
+		var game = new TestServerFSM();
 		game.setup();
 	}
 
@@ -69,8 +69,8 @@ public final class TestServerFSM extends AbstractApp {
 		public void init() {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				Connection connection = (Connection) args[0];
-				TObject message = (TObject) args[1];
+				var connection = Connection.convert(args[0]);
+				var message = TObject.convert(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -82,7 +82,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				Connection connection = (Connection) args[0];
+				var connection = Connection.convert(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
 
@@ -91,7 +91,7 @@ public final class TestServerFSM extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// Login successful
-				Inspector player = (Inspector) args[0];
+				var player = Inspector.<Inspector>convert(args[0]);
 
 				info("PLAYER IN", player.getName());
 
@@ -99,7 +99,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				Inspector player = (Inspector) args[0];
+				var player = Inspector.<Inspector>convert(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -107,7 +107,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				Inspector player = (Inspector) args[0];
+				var player = Inspector.<Inspector>convert(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 

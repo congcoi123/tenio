@@ -170,7 +170,7 @@ public abstract class AbstractRoom {
 	 * @param state the desired state
 	 */
 	public void setPlayersState(final int state) {
-		for (AbstractPlayer player : __players.values()) {
+		for (var player : __players.values()) {
 			player.setState(state);
 		}
 	}

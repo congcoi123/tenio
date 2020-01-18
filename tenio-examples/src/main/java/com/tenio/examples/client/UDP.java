@@ -29,7 +29,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -87,8 +86,8 @@ public class UDP {
 	 * @param message the desired message @see {@link TObject}
 	 */
 	public void send(TObject message) {
-		byte[] pack = MsgPackConverter.serialize(message);
-		DatagramPacket request = new DatagramPacket(pack, pack.length, __address, __port);
+		var pack = MsgPackConverter.serialize(message);
+		var request = new DatagramPacket(pack, pack.length, __address, __port);
 		try {
 			__socket.send(request);
 		} catch (IOException e) {
@@ -102,21 +101,18 @@ public class UDP {
 	 * @param listener @see {@link IDatagramListener}
 	 */
 	public void receive(IDatagramListener listener) {
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		__future = executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						byte[] buffer = new byte[10240];
-						DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-						__socket.receive(response);
-						TObject message = MsgPackConverter.unserialize(buffer);
-						listener.onReceivedUDP(message);
-					} catch (IOException e) {
-						e.printStackTrace();
-						return;
-					}
+		var executorService = Executors.newSingleThreadExecutor();
+		__future = executorService.submit(() -> {
+			while (true) {
+				try {
+					byte[] buffer = new byte[10240];
+					DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+					__socket.receive(response);
+					TObject message = MsgPackConverter.unserialize(buffer);
+					listener.onReceivedUDP(message);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
 				}
 			}
 		});

@@ -267,9 +267,9 @@ public class ByteArrayInputStream extends InputStream {
 					+ data.length + "]");
 		}
 
-		this.__offset = 0;
-		this.__length = length;
-		this.__buffer = data;
+		__offset = 0;
+		__length = length;
+		__buffer = data;
 	}
 
 	public byte[] getArray() {

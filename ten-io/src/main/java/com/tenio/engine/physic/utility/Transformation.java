@@ -25,7 +25,7 @@ public final class Transformation {
 	public static List<Vector2> pointsToWorldSpace(List<Vector2> points, Vector2 position, Vector2 forward,
 			Vector2 side, Vector2 scale) {
 		// copy the original vertices into the buffer about to be transformed
-		List<Vector2> tranVector2Ds = __clone(points);
+		var tranVector2Ds = __clone(points);
 
 		// create a transformation matrix
 		__matrix.initialize();
@@ -54,7 +54,7 @@ public final class Transformation {
 	public static List<Vector2> pointsToWorldSpace(List<Vector2> points, Vector2 position, Vector2 forward,
 			Vector2 side) {
 		// copy the original vertices into the buffer about to be transformed
-		List<Vector2> tranVector2Ds = __clone(points);
+		var tranVector2Ds = __clone(points);
 
 		// create a transformation matrix
 		__matrix.initialize();
@@ -210,13 +210,13 @@ public final class Transformation {
 		// this is the magnitude of the angle separating each whisker
 		float sectorSize = fov / (float) (numWhiskers - 1);
 
-		List<Vector2> whiskers = new ArrayList<Vector2>(numWhiskers);
+		var whiskers = new ArrayList<Vector2>(numWhiskers);
 		float angle = -fov * 0.5f;
 
 		for (int w = 0; w < numWhiskers; ++w) {
 			// create the whisker extending outwards at this angle
 			__temp2.set(facing);
-			Vector2 temp = vec2DRotateAroundOrigin(__temp2, angle);
+			var temp = vec2DRotateAroundOrigin(__temp2, angle);
 			__temp1.set(temp).mul(whiskerLength).add(origin);
 			whiskers.add(__temp1.clone());
 
@@ -260,9 +260,9 @@ public final class Transformation {
 	@SuppressWarnings({ "unchecked" })
 	private static <T extends Object> List<T> __clone(List<T> list) {
 		try {
-			List<T> c = list.getClass().newInstance();
-			for (T t : list) {
-				T copy = (T) t.getClass().getDeclaredConstructor(t.getClass()).newInstance(t);
+			var c = list.getClass().getDeclaredConstructor().newInstance();
+			for (var t : list) {
+				var copy = (T) t.getClass().getDeclaredConstructor(t.getClass()).newInstance(t);
 				c.add(copy);
 			}
 			return c;

@@ -224,7 +224,7 @@ public final class Geometry {
 
 		if ((r > 0) && (r < 1) && (s > 0) && (s < 1)) {
 			// Point = A + (r * (B - A))
-			Vector2 point = new Vector2(B).sub(A).mul(r).add(A);
+			var point = new Vector2(B).sub(A).mul(r).add(A);
 			return point;
 		}
 
@@ -461,7 +461,7 @@ public final class Geometry {
 
 		// move the circle into the local space defined by the vector B-A with origin at
 		// A
-		Vector2 localPos = Transformation.pointToLocalSpace(C, __temp1, __temp2, A);
+		var localPos = Transformation.pointToLocalSpace(C, __temp1, __temp2, A);
 
 		boolean ipFound = false;
 

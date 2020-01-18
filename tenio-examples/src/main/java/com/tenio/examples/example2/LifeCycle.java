@@ -83,10 +83,10 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 		__dispatcher.listen(this);
 
 		// create a miner
-		Miner Bob = new Miner(__dispatcher, EntityName.MINER);
+		var Bob = new Miner(__dispatcher, EntityName.MINER);
 
 		// create his wife
-		Wife Elsa = new Wife(__dispatcher, EntityName.WIFE);
+		var Elsa = new Wife(__dispatcher, EntityName.WIFE);
 
 		// register them with the entity manager
 		__entities.register(Bob);
@@ -103,10 +103,10 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	protected void _onUpdate(float delta) {
 		if (tick >= PERIOD_STEPS_IN_SECONDS) {
 			__entities.gets().forEach((id, entity) -> {
-				BaseEntity base = (BaseEntity) entity;
+				var base = (BaseEntity) entity;
 				if (base.getMood() != null) {
 					// send to all inspectors
-					for (AbstractPlayer inspector : __inspectors) {
+					for (var inspector : __inspectors) {
 						__messageApi.sendToPlayer(inspector, "m", base.getMood());
 					}
 				}

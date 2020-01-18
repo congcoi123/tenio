@@ -74,11 +74,11 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 		try {
 			info("CREATE HEART BEAT", buildgen("id: ", id));
 			// Add the listener
-			TreeSet<HMessage> listener = new TreeSet<HMessage>();
+			var listener = new TreeSet<HMessage>();
 			heartbeat.setMessageListener(listener);
 			__listeners.put(id, listener);
 			// Start the heart-beat
-			Future<Void> future = __executorService.submit(heartbeat);
+			var future = __executorService.submit(heartbeat);
 			__pool.put(id, future);
 		} catch (Exception e) {
 			error("HEART BEAT", id, e.getCause());
@@ -92,7 +92,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 				throw new HeartbeatNotFoundException();
 			}
 
-			Future<Void> future = __pool.get(id);
+			var future = __pool.get(id);
 			if (future == null) {
 				throw new NullPointerException();
 			}
@@ -101,7 +101,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			__pool.remove(id);
 
 			info("DISPOSE HEART BEAT", buildgen(id));
-			
+
 			// Remove the listener
 			__listeners.get(id).clear();
 			__listeners.remove(id);
@@ -128,7 +128,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public void sendMessage(String id, TObject message, double delayTime) {
-		HMessage container = new HMessage(message, delayTime);
+		var container = new HMessage(message, delayTime);
 		__listeners.get(id).add(container);
 	}
 

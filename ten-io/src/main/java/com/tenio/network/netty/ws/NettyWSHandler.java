@@ -25,14 +25,12 @@ package com.tenio.network.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
 import com.tenio.network.netty.NettyConnection;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 
@@ -73,18 +71,18 @@ public class NettyWSHandler extends BaseNettyHandler {
 		// only allow this type of frame
 		if (msg instanceof BinaryWebSocketFrame) {
 			// convert the BinaryWebSocketFrame to bytes' array
-			ByteBuf buffer = ((BinaryWebSocketFrame) msg).content();
-			final byte[] bytes = new byte[buffer.readableBytes()];
+			var buffer = ((BinaryWebSocketFrame) msg).content();
+			var bytes = new byte[buffer.readableBytes()];
 			buffer.getBytes(buffer.readerIndex(), bytes);
 			buffer.release();
 
-			TObject message = MsgPackConverter.unserialize(bytes);
+			var message = MsgPackConverter.unserialize(bytes);
 			if (message == null) {
 				return;
 			}
 
 			// get the connection first
-			Connection connection = _getConnection(ctx.channel());
+			var connection = _getConnection(ctx.channel());
 			if (connection == null) { // the new connection
 				connection = NettyConnection.create(Connection.Type.WEB_SOCKET, ctx.channel());
 				EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,

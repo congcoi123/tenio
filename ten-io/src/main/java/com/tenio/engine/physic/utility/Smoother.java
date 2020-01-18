@@ -2,7 +2,6 @@ package com.tenio.engine.physic.utility;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.tenio.engine.physic.math.Vector2;
 
@@ -67,7 +66,7 @@ public class Smoother<T extends Number> {
 			System.exit(1);
 		}
 
-		ListIterator<T> it = __histories.listIterator();
+		var it = __histories.listIterator();
 
 		while (it.hasNext()) {
 			sum = add(sum, it.next());
@@ -79,12 +78,12 @@ public class Smoother<T extends Number> {
 
 	@SuppressWarnings("unchecked")
 	public <X extends Number> X add(X a, X b) {
-		return (X) new Float(a.floatValue() + b.floatValue());
+		return (X) Float.valueOf(a.floatValue() + b.floatValue());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <X extends Number> X div(X a, float b) {
-		return (X) new Float(a.floatValue() / b);
+		return (X) Float.valueOf(a.floatValue() / b);
 	}
 
 }

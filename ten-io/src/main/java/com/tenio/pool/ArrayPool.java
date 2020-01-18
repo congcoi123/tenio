@@ -60,11 +60,11 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		// If we got here, then all the Elements are in use. We will
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
-		boolean[] oldUsed = __used;
+		var oldUsed = __used;
 		__used = new boolean[oldUsed.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
-		TArray[] oldPool = __pool;
+		var oldPool = __pool;
 		__pool = new TArray[oldPool.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 

@@ -80,7 +80,7 @@ public final class EntityManager extends AbstractLogger {
 	 * @param delta the time between two consecutive frames
 	 */
 	public void update(float delta) {
-		for (AbstractEntity entity : __entities.values()) {
+		for (var entity : __entities.values()) {
 			entity.update(delta);
 		}
 	}

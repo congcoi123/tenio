@@ -27,7 +27,6 @@ import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
 
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
@@ -53,7 +52,7 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 
 	@Override
 	protected void initChannel(SocketChannel channel) throws Exception {
-		ChannelPipeline pipeline = channel.pipeline();
+		var pipeline = channel.pipeline();
 
 		// break each data chunk by newlines (read-up)
 		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, Constants.HEADER_BYTES,

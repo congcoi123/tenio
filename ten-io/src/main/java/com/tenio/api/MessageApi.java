@@ -230,7 +230,7 @@ public final class MessageApi extends AbstractLogger {
 	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value) {
 		TObject message = __objectPool.get();
 		message.put(key, value);
-		for (AbstractPlayer player : room.getPlayers().values()) {
+		for (var player : room.getPlayers().values()) {
 			__send(player, isSubConnection, message);
 		}
 		__objectPool.repay(message);
@@ -284,7 +284,7 @@ public final class MessageApi extends AbstractLogger {
 		TObject message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
-		for (AbstractPlayer player : room.getPlayers().values()) {
+		for (var player : room.getPlayers().values()) {
 			__send(player, isSubConnection, message);
 		}
 		__objectPool.repay(message);
@@ -334,7 +334,7 @@ public final class MessageApi extends AbstractLogger {
 		AbstractRoom room = player.getRoom();
 		TObject message = __objectPool.get();
 		message.put(key, value);
-		for (AbstractPlayer p : room.getPlayers().values()) {
+		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
 				__send(p, isSubConnection, message);
 			}
@@ -393,7 +393,7 @@ public final class MessageApi extends AbstractLogger {
 		TObject message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
-		for (AbstractPlayer p : room.getPlayers().values()) {
+		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
 				__send(p, isSubConnection, message);
 			}

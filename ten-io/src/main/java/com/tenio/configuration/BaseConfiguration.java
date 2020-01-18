@@ -122,12 +122,12 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		NodeList attrNodes = root.getChildNodes();
 
 		for (int i = 0; i < attrNodes.getLength(); i++) {
-			Node attrNode = attrNodes.item(i);
+			var attrNode = attrNodes.item(i);
 
 			// Properties
-			NodeList attrRootProperties = XMLUtility.getNodeList(attrNode, "//Server/Properties/Property");
+			var attrRootProperties = XMLUtility.getNodeList(attrNode, "//Server/Properties/Property");
 			for (int j = 0; j < attrRootProperties.getLength(); j++) {
-				Node pDataNode = attrRootProperties.item(j);
+				var pDataNode = attrRootProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 				case "name":
 					configuration.put(SERVER_NAME, pDataNode.getTextContent());
@@ -148,9 +148,9 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Network
-			NodeList attrRootNetwork = attrNode.getChildNodes();
+			var attrRootNetwork = attrNode.getChildNodes();
 			for (int j = 0; j < attrRootNetwork.getLength(); j++) {
-				Node pDataNode = attrRootNetwork.item(j);
+				var pDataNode = attrRootNetwork.item(j);
 				switch (pDataNode.getNodeName()) {
 				case "Nio":
 					configuration.put(NIO, Integer.parseInt(pDataNode.getTextContent()));
@@ -159,9 +159,9 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Port
-			NodeList attrRootPort = attrNode.getChildNodes();
+			var attrRootPort = attrNode.getChildNodes();
 			for (int j = 0; j < attrRootPort.getLength(); j++) {
-				Node pDataNode = attrRootPort.item(j);
+				var pDataNode = attrRootPort.item(j);
 				switch (pDataNode.getNodeName()) {
 				case "Socket":
 					configuration.put(SOCKET_PORT, Integer.parseInt(pDataNode.getTextContent()));
@@ -176,10 +176,10 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Configuration
-			NodeList attrConfigurationProperties = XMLUtility.getNodeList(attrNode,
+			var attrConfigurationProperties = XMLUtility.getNodeList(attrNode,
 					"//Server/Configuration/Properties/Property");
 			for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
-				Node pDataNode = attrConfigurationProperties.item(j);
+				var pDataNode = attrConfigurationProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 				case "keepPlayerOnDisconnect":
 					configuration.put(KEEP_PLAYER_ON_DISCONNECT, Boolean.parseBoolean(pDataNode.getTextContent()));

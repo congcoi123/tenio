@@ -193,15 +193,15 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 		// iterate through each cell and test to see if its bounding box overlaps
 		// with the query box. If it does and it also contains entities then
 		// make further proximity tests.
-		ListIterator<Cell<E>> c_it = __cells.listIterator();
+		var c_it = __cells.listIterator();
 		while (c_it.hasNext()) {
-			Cell<E> curCell = c_it.next();
+			var curCell = c_it.next();
 			// test to see if this cell contains members and if it overlaps the
 			// query box
 			if (curCell.bbox.isOverlappedWith(__aabb) && !curCell.members.isEmpty()) {
 
 				// add any entities found within query radius to the neighbor list
-				ListIterator<E> it = curCell.members.listIterator();
+				var it = curCell.members.listIterator();
 				while (it.hasNext()) {
 					E ent = it.next();
 					if (__temp1.set(ent.getPosition()).getDistanceSqrValue(targetPos) < queryRadius * queryRadius) {
@@ -245,8 +245,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * Clears the cells of all entities
 	 */
 	public void clearCells() {
-		ListIterator<Cell<E>> it = __cells.listIterator();
-
+		var it = __cells.listIterator();
 		while (it.hasNext()) {
 			it.next().members.clear();
 		}
@@ -254,7 +253,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 
 	@Override
 	public void render(Paint paint) {
-		ListIterator<Cell<E>> curCell = __cells.listIterator();
+		var curCell = __cells.listIterator();
 		while (curCell.hasNext()) {
 			curCell.next().bbox.render(paint);
 		}

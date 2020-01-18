@@ -82,7 +82,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 */
 	private void __bindUDP(BaseConfiguration configuration) throws IOException, InterruptedException {
-		Bootstrap bootstrap = new Bootstrap();
+		var bootstrap = new Bootstrap();
 		bootstrap.group(__producer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
 				.handler(new NettyDatagramInitializer(configuration));
@@ -101,7 +101,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 */
 	private void __bindTCP(BaseConfiguration configuration) throws IOException, InterruptedException {
-		ServerBootstrap bootstrap = new ServerBootstrap();
+		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 10240)
 				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -122,7 +122,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 */
 	private void __bindWS(BaseConfiguration configuration) throws IOException, InterruptedException {
-		ServerBootstrap bootstrap = new ServerBootstrap();
+		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 1024)
 				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)

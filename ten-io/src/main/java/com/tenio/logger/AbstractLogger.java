@@ -261,7 +261,7 @@ public abstract class AbstractLogger {
 	 */
 	public final StringBuilder buildgen(final Object... objects) {
 		StringBuilder builder = __stringPool.get();
-		for (Object object : objects) {
+		for (var object : objects) {
 			builder.append(object);
 		}
 		return builder;
@@ -276,7 +276,7 @@ public abstract class AbstractLogger {
 	 */
 	public final String strgen(final Object... objects) {
 		StringBuilder builder = new StringBuilder();
-		for (Object object : objects) {
+		for (var object : objects) {
 			builder.append(object);
 		}
 		return builder.toString();

@@ -142,7 +142,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 
 	@Override
 	public void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
-		AbstractRoom room = player.getRoom();
+		var room = player.getRoom();
 		if (room == null) {
 			return;
 		}

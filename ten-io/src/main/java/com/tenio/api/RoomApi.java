@@ -75,14 +75,14 @@ public final class RoomApi extends AbstractLogger {
 	 * @return Returns all rooms' information data
 	 */
 	public List<List<Object>> getAllRoomInfos() {
-		List<List<Object>> list = new ArrayList<List<Object>>();
+		var list = new ArrayList<List<Object>>();
 		gets().values().forEach((room) -> {
-			List<Object> data = new ArrayList<Object>();
+			var data = new ArrayList<Object>();
 			data.add(room.getId());
 			data.add(room.getName());
 			data.add(strgen(room.getPlayers().size(), "/", room.getCapacity()));
 			data.add(room.getState());
-			StringBuilder players = new StringBuilder();
+			var players = new StringBuilder();
 			players.append("{ ");
 			room.getPlayers().forEach((key, player) -> {
 				players.append(player.getName());

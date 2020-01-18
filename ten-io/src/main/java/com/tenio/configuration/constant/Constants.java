@@ -55,9 +55,10 @@ public final class Constants {
 	/**
 	 * It is used in the FSM pattern in which all entities can communicate with
 	 * others by message in some delay time. The value below describes one entity
-	 * can send a message immediately for others.
+	 * can send a message immediately for others. It is also used for communication
+	 * between a heart-beat with outside.
 	 */
-	public static final double SEND_MSG_IMMEDIATELY = 0.0f;
+	public static final double SEND_MSG_IMMEDIATELY = 0;
 
 	/**
 	 * The number of elements in a bulk those created for the first time. @see

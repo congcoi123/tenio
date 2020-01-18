@@ -28,7 +28,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -98,9 +97,9 @@ public class TCP {
 	 */
 	public void send(TObject message) {
 		// convert message object to bytes data
-		byte[] pack = MsgPackConverter.serialize(message);
+		var pack = MsgPackConverter.serialize(message);
 		// attach the packet's length to packet's header
-		byte[] bytes = MessagePacker.pack(pack);
+		var bytes = MessagePacker.pack(pack);
 		try {
 			__out.write(bytes);
 			__out.flush();
@@ -116,19 +115,16 @@ public class TCP {
 	 */
 	public void receive(ISocketListener listener) {
 		__listener = listener;
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		__future = executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				byte[] buffer = new byte[10240];
-				try {
-					while (__in.read(buffer) > 0) {
-						__onRecvData(buffer);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					return;
+		var executorService = Executors.newSingleThreadExecutor();
+		__future = executorService.submit(() -> {
+			var buffer = new byte[10240];
+			try {
+				while (__in.read(buffer) > 0) {
+					__onRecvData(buffer);
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
 			}
 		});
 	}
@@ -147,11 +143,11 @@ public class TCP {
 
 	private void __updateRecvHeaderData(byte[] bytes) {
 		if (bytes.length >= Constants.HEADER_BYTES) { // header length
-			byte[] header = Arrays.copyOfRange(bytes, 0, Constants.HEADER_BYTES);
+			var header = Arrays.copyOfRange(bytes, 0, Constants.HEADER_BYTES);
 			__dataSize = MessagePacker.byteToShort(header); // network to host short
 			__recvHeader = false;
 			// package = |2 bytes header| <content bytes> |
-			byte[] data = Arrays.copyOfRange(bytes, Constants.HEADER_BYTES, __dataSize + Constants.HEADER_BYTES);
+			var data = Arrays.copyOfRange(bytes, Constants.HEADER_BYTES, __dataSize + Constants.HEADER_BYTES);
 			__onRecvData(data); // recursion
 		}
 	}
@@ -165,7 +161,7 @@ public class TCP {
 
 	private void __onRecvMessage(byte[] bytes) {
 		// convert a received array of bytes to a message
-		TObject message = MsgPackConverter.unserialize(bytes);
+		var message = MsgPackConverter.unserialize(bytes);
 		__listener.onReceivedTCP(message);
 	}
 

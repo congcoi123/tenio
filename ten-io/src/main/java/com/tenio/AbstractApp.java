@@ -40,7 +40,7 @@ public abstract class AbstractApp extends AbstractLogger {
 	 * Start The Game Server
 	 */
 	public void setup() {
-		Server server = Server.getInstance();
+		var server = Server.getInstance();
 		server.setExtension(getExtension());
 		server.start(getConfiguration());
 	}
