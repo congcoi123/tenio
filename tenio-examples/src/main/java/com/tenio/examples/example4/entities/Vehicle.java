@@ -131,25 +131,25 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 		// keep a record of its old position so we can update its cell later
 		// in this method
-		Vector2 oldPos = getPosition();
+		var oldPos = getPosition();
 
 		// calculate the combined force from each steering behavior in the
 		// vehicle's list
-		Vector2 steeringForce = getBehavior().calculateAccumulate();
+		var steeringForce = getBehavior().calculateAccumulate();
 		// Vector2 steeringForce = new Vector2(1, 1);
 
 		// Acceleration = Force/Mass
-		Vector2 acceleration = steeringForce.div(getMass());
+		var acceleration = steeringForce.div(getMass());
 
 		// update velocity
-		Vector2 velocity = acceleration.mul(delta).add(getVelocity());
+		var velocity = acceleration.mul(delta).add(getVelocity());
 
 		// make sure vehicle does not exceed maximum velocity
 		velocity.truncate(getMaxSpeed());
 		setVelocity(velocity);
 
 		// update the position
-		Vector2 position = velocity.mul(delta).add(getPosition());
+		var position = velocity.mul(delta).add(getPosition());
 		setPosition(position);
 
 		// update the heading if the vehicle has a non zero velocity
@@ -158,7 +158,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 		}
 
 		// treat the screen as a endless screen
-		Vector2 around = Transformation.wrapAround(getPosition(), __world.getClientX(), __world.getClientY());
+		var around = Transformation.wrapAround(getPosition(), __world.getClientX(), __world.getClientY());
 		setPosition(around);
 
 		// update the vehicle's current cell if space partitioning is turned on

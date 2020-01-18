@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -38,7 +37,7 @@ public class FileLoaderBase {
 		// define some delimiters
 		final String delims = "[ ;=,]";
 		final Pattern pattern = Pattern.compile(delims);
-		String[] s = pattern.split(line);
+		var s = pattern.split(line);
 		if (s.length > 0) {
 			return s[s.length - 1];
 		}
@@ -76,8 +75,8 @@ public class FileLoaderBase {
 
 		// define some delimiters
 		final String delims = "[ ;=,]+";
-		final Pattern pattern = Pattern.compile(delims);
-		Matcher matcher = pattern.matcher(__line);
+		var pattern = Pattern.compile(delims);
+		var matcher = pattern.matcher(__line);
 
 		// find the end of the parameter description
 		if (matcher.find()) {

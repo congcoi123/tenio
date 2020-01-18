@@ -3,10 +3,8 @@ package com.tenio.examples.example4.behavior;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.tenio.engine.physic.common.BaseGameEntity;
-import com.tenio.engine.physic.common.MoveableEntity;
 import com.tenio.engine.physic.common.Path;
 import com.tenio.engine.physic.graphic.IRender;
 import com.tenio.engine.physic.graphic.Paint;
@@ -200,17 +198,17 @@ public class SteeringBehavior implements IRender {
 	private void __createSensors() {
 		__sensors.clear();
 		// feeler pointing straight in front
-		Vector2 front = new Vector2(__vehicle.getHeading()).mul(__wallDetectionSensorLength)
+		var front = new Vector2(__vehicle.getHeading()).mul(__wallDetectionSensorLength)
 				.add(__vehicle.getPosition());
 		__sensors.add(front);
 
 		// feeler to left
-		Vector2 left = Transformation.vec2DRotateAroundOrigin(__vehicle.getHeading(), MathUtility.HALF_PI * 3.5f);
+		var left = Transformation.vec2DRotateAroundOrigin(__vehicle.getHeading(), MathUtility.HALF_PI * 3.5f);
 		left.mul(__wallDetectionSensorLength / 2.0f).add(__vehicle.getPosition());
 		__sensors.add(left);
 
 		// feeler to right
-		Vector2 right = Transformation.vec2DRotateAroundOrigin(__vehicle.getHeading(), MathUtility.HALF_PI * 0.5f);
+		var right = Transformation.vec2DRotateAroundOrigin(__vehicle.getHeading(), MathUtility.HALF_PI * 0.5f);
 		right.mul(__wallDetectionSensorLength / 2.0f).add(__vehicle.getPosition());
 		__sensors.add(right);
 	}
@@ -223,7 +221,7 @@ public class SteeringBehavior implements IRender {
 	 * agent towards the target
 	 */
 	private Vector2 __doSeek(Vector2 targetPos) {
-		Vector2 desiredVelocity = new Vector2(targetPos).sub(__vehicle.getPosition()).normalize()
+		var desiredVelocity = new Vector2(targetPos).sub(__vehicle.getPosition()).normalize()
 				.mul(__vehicle.getMaxSpeed());
 		return desiredVelocity.sub(__vehicle.getVelocity());
 	}
@@ -234,7 +232,7 @@ public class SteeringBehavior implements IRender {
 	private Vector2 __doFlee(Vector2 targetPos) {
 		// only flee if the target is within 'panic distance'. Work in distance squared
 		// space.
-		Vector2 desiredVelocity = new Vector2(__vehicle.getPosition()).sub(targetPos).normalize()
+		var desiredVelocity = new Vector2(__vehicle.getPosition()).sub(targetPos).normalize()
 				.mul(__vehicle.getMaxSpeed());
 		return desiredVelocity.sub(__vehicle.getVelocity());
 	}
@@ -244,7 +242,7 @@ public class SteeringBehavior implements IRender {
 	 * a zero velocity
 	 */
 	private Vector2 __doArrive(Vector2 targetPos, Deceleration deceleration) {
-		Vector2 toTarget = new Vector2(targetPos).sub(__vehicle.getPosition());
+		var toTarget = new Vector2(targetPos).sub(__vehicle.getPosition());
 
 		// calculate the distance to the target
 		float dist = toTarget.getLength();
@@ -264,7 +262,7 @@ public class SteeringBehavior implements IRender {
 			// from here proceed just like Seek except we don't need to normalize
 			// the ToTarget vector because we have already gone to the trouble
 			// of calculating its length: dist.
-			Vector2 desiredVelocity = toTarget.mul(speed / dist);
+			var desiredVelocity = toTarget.mul(speed / dist);
 
 			return desiredVelocity.sub(__vehicle.getVelocity());
 		}
@@ -278,7 +276,7 @@ public class SteeringBehavior implements IRender {
 	private Vector2 __doPursuit(Vehicle evader) {
 		// if the evader is ahead and facing the agent then we can just seek
 		// for the evader's current position.
-		Vector2 toEvader = evader.getPosition().sub(__vehicle.getPosition());
+		var toEvader = evader.getPosition().sub(__vehicle.getPosition());
 
 		float relativeHeading = __vehicle.getHeading().getDotProductValue(evader.getHeading());
 
@@ -305,7 +303,7 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doEvade(final Vehicle pursuer) {
 		// Not necessary to include the check for facing direction this time
-		Vector2 toPursuer = pursuer.getPosition().sub(__vehicle.getPosition());
+		var toPursuer = pursuer.getPosition().sub(__vehicle.getPosition());
 
 		// uncomment the following two lines to have Evade only consider pursuers
 		// within a 'threat range'
@@ -343,10 +341,10 @@ public class SteeringBehavior implements IRender {
 		__temp2.mul(__wanderRadius);
 
 		// move the target into a position WanderDist in front of the agent
-		Vector2 target = __temp1.set(__wanderDistance, 0).add(__temp2);
+		var target = __temp1.set(__wanderDistance, 0).add(__temp2);
 
 		// project the target into world space
-		Vector2 targetToWorldSpace = Transformation.pointToWorldSpace(target, __vehicle.getHeading(),
+		var targetToWorldSpace = Transformation.pointToWorldSpace(target, __vehicle.getHeading(),
 				__vehicle.getSide(), __vehicle.getPosition());
 
 		// and steer towards it
@@ -372,16 +370,16 @@ public class SteeringBehavior implements IRender {
 		float distToClosestIP = MathUtility.MAX_FLOAT;
 
 		// this will record the transformed local coordinates of the CIB
-		Vector2 localPosOfClosestObstacle = __temp1.zero();
+		var localPosOfClosestObstacle = __temp1.zero();
 
-		ListIterator<BaseGameEntity> it = obstacles.listIterator();
+		var it = obstacles.listIterator();
 
 		while (it.hasNext()) {
 			// if the obstacle has been tagged within range proceed
-			BaseGameEntity curOb = it.next();
+			var curOb = it.next();
 			if (curOb.isTagged()) {
 				// calculate this obstacle's position in local space
-				Vector2 localPos = Transformation.pointToLocalSpace(curOb.getPosition(), __vehicle.getHeading(),
+				var localPos = Transformation.pointToLocalSpace(curOb.getPosition(), __vehicle.getHeading(),
 						__vehicle.getSide(), __vehicle.getPosition());
 
 				// if the local position has a negative x value then it must lay
@@ -426,7 +424,7 @@ public class SteeringBehavior implements IRender {
 
 		// if we have found an intersecting obstacle, calculate a steering
 		// force away from it
-		Vector2 steeringForce = __temp2.zero();
+		var steeringForce = __temp2.zero();
 
 		if (closestIntersectingObstacle != null) {
 			// the closer the agent is to an object, the stronger the
@@ -463,8 +461,8 @@ public class SteeringBehavior implements IRender {
 		// this will hold an index into the vector of walls
 		int closestWall = -1;
 
-		Vector2 steeringForce = __temp1.zero();
-		Vector2 closestPoint = __temp3.zero(); // holds the closest intersection point
+		var steeringForce = __temp1.zero();
+		var closestPoint = __temp3.zero(); // holds the closest intersection point
 
 		// examine each feeler in turn
 		for (int flr = 0; flr < __sensors.size(); ++flr) {
@@ -490,7 +488,7 @@ public class SteeringBehavior implements IRender {
 			if (closestWall >= 0) {
 				// calculate by what distance the projected position of the agent
 				// will overshoot the wall
-				Vector2 overShoot = __sensors.get(flr).sub(closestPoint);
+				var overShoot = __sensors.get(flr).sub(closestPoint);
 
 				// create a force in the direction of the wall normal, with a
 				// magnitude of the overshoot
@@ -506,7 +504,7 @@ public class SteeringBehavior implements IRender {
 	 * This calculates a force re-pelling from the other neighbors
 	 */
 	private Vector2 __doSeparation(List<Vehicle> neighbors) {
-		Vector2 steeringForce = __temp1.zero();
+		var steeringForce = __temp1.zero();
 
 		for (int a = 0; a < neighbors.size(); ++a) {
 			// make sure this agent isn't included in the calculations and that
@@ -514,7 +512,7 @@ public class SteeringBehavior implements IRender {
 			// include the evade target ***
 			if ((neighbors.get(a) != __vehicle) && neighbors.get(a).isTagged()
 					&& (neighbors.get(a) != __targetAgent1)) {
-				Vector2 toAgent = __temp2.set(__vehicle.getPosition()).sub(neighbors.get(a).getPosition());
+				var toAgent = __temp2.set(__vehicle.getPosition()).sub(neighbors.get(a).getPosition());
 
 				// scale the force inversely proportional to the agents distance
 				// from its neighbor.
@@ -531,7 +529,7 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doAlignment(List<Vehicle> neighbors) {
 		// used to record the average heading of the neighbors
-		Vector2 averageHeading = __temp1.zero();
+		var averageHeading = __temp1.zero();
 
 		// used to count the number of vehicles in the neighborhood
 		int neighborCount = 0;
@@ -565,8 +563,8 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doCohesion(final List<Vehicle> neighbors) {
 		// first find the center of mass of all the agents
-		Vector2 centerOfMass = __temp1.zero();
-		Vector2 steeringForce = __temp2.zero();
+		var centerOfMass = __temp1.zero();
+		var steeringForce = __temp2.zero();
 
 		int neighborCount = 0;
 
@@ -606,15 +604,15 @@ public class SteeringBehavior implements IRender {
 	 * USES SPACIAL PARTITIONING
 	 */
 	private Vector2 __doSeparationPlus(List<Vehicle> neighbors) {
-		Vector2 steeringForce = __temp1.zero();
+		var steeringForce = __temp1.zero();
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (BaseGameEntity pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
 				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure this agent isn't included in the calculations and that
 			// the agent being examined is close enough
 			if (pV != __vehicle) {
-				Vector2 toAgent = __temp2.set(__vehicle.getPosition()).sub(pV.getPosition());
+				var toAgent = __temp2.set(__vehicle.getPosition()).sub(pV.getPosition());
 
 				// scale the force inversely proportional to the agents distance
 				// from its neighbor.
@@ -634,13 +632,13 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doAlignmentPlus(List<Vehicle> neighbors) {
 		// This will record the average heading of the neighbors
-		Vector2 averageHeading = __temp1.zero();
+		var averageHeading = __temp1.zero();
 
 		// This count the number of vehicles in the neighborhood
 		float neighborCount = 0;
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (MoveableEntity pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
 				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure *this* agent isn't included in the calculations and that
 			// the agent being examined is close enough
@@ -668,13 +666,13 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doCohesionPlus(final List<Vehicle> neighbors) {
 		// first find the center of mass of all the agents
-		Vector2 centerOfMass = __temp1.zero();
-		Vector2 steeringForce = __temp2.zero();
+		var centerOfMass = __temp1.zero();
+		var steeringForce = __temp2.zero();
 
 		int neighborCount = 0;
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (BaseGameEntity pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
 				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure *this* agent isn't included in the calculations and that
 			// the agent being examined is close enough
@@ -706,14 +704,14 @@ public class SteeringBehavior implements IRender {
 		// first we need to figure out where the two agents are going to be at
 		// time T in the future. This is approximated by determining the time
 		// taken to reach the mid way point at the current time at at max speed.
-		Vector2 midPoint = __temp1.set(agentA.getPosition()).add(agentB.getPosition()).div(2);
+		var midPoint = __temp1.set(agentA.getPosition()).add(agentB.getPosition()).div(2);
 
 		float timeToReachMidPoint = __vehicle.getPosition().getDistanceValue(midPoint) / __vehicle.getMaxSpeed();
 
 		// now we have T, we assume that agent A and agent B will continue on a
 		// straight trajectory and extrapolate to get their future positions
-		Vector2 aPos = __temp2.set(agentA.getVelocity()).mul(timeToReachMidPoint).add(agentA.getPosition());
-		Vector2 bPos = __temp3.set(agentB.getVelocity()).mul(timeToReachMidPoint).add(agentB.getPosition());
+		var aPos = __temp2.set(agentA.getVelocity()).mul(timeToReachMidPoint).add(agentA.getPosition());
+		var bPos = __temp3.set(agentB.getVelocity()).mul(timeToReachMidPoint).add(agentB.getPosition());
 
 		// calculate the mid point of these predicted positions
 		midPoint = __temp4.set(aPos).add(bPos).div(2);
@@ -724,14 +722,14 @@ public class SteeringBehavior implements IRender {
 
 	private Vector2 __doHide(final Vehicle hunter, final List<BaseGameEntity> obstacles) {
 		float distToClosest = MathUtility.MAX_FLOAT;
-		Vector2 bestHidingSpot = __temp1.zero();
+		var bestHidingSpot = __temp1.zero();
 
-		ListIterator<BaseGameEntity> it = obstacles.listIterator();
+		var it = obstacles.listIterator();
 
 		while (it.hasNext()) {
-			BaseGameEntity curOb = it.next();
+			var curOb = it.next();
 			// calculate the position of the hiding spot for this obstacle
-			Vector2 hidingSpot = __getHidingPosition(curOb.getPosition(), curOb.getBoundingRadius(),
+			var hidingSpot = __getHidingPosition(curOb.getPosition(), curOb.getBoundingRadius(),
 					hunter.getPosition());
 
 			// work in distance-squared space to find the closest hiding
@@ -765,7 +763,7 @@ public class SteeringBehavior implements IRender {
 		float distAway = radiusOb + distanceFromBoundary;
 
 		// calculate the heading toward the object from the hunter
-		Vector2 toOb = __temp1.set(posOb).sub(posHunter).normalize();
+		var toOb = __temp1.set(posOb).sub(posHunter).normalize();
 
 		// scale it to size and add to the obstacles position to get
 		// the hiding spot.
@@ -798,10 +796,10 @@ public class SteeringBehavior implements IRender {
 	 */
 	private Vector2 __doOffsetPursuit(final Vehicle leader, final Vector2 offset) {
 		// calculate the offset's position in world space
-		Vector2 worldOffsetPos = Transformation.pointToWorldSpace(offset, leader.getHeading(), leader.getSide(),
+		var worldOffsetPos = Transformation.pointToWorldSpace(offset, leader.getHeading(), leader.getSide(),
 				leader.getPosition());
 
-		Vector2 toOffset = worldOffsetPos.sub(__vehicle.getPosition());
+		var toOffset = worldOffsetPos.sub(__vehicle.getPosition());
 
 		// the lookahead time is proportional to the distance between the leader
 		// and the pursuer; and is inversely proportional to the sum of both
@@ -845,7 +843,7 @@ public class SteeringBehavior implements IRender {
 		// render the steering force
 		if (__vehicle.getWorld().isRenderSteeringForce()) {
 			paint.setPenColor(Color.RED);
-			Vector2 F = __temp1.set(__steeringForce).div(__paramLoader.STEERING_FORCE_TWEAKER)
+			var F = __temp1.set(__steeringForce).div(__paramLoader.STEERING_FORCE_TWEAKER)
 					.mul(__paramLoader.VEHICLE_SCALE);
 			paint.drawLine(__vehicle.getPosition(), __temp2.set(__vehicle.getPosition().add(F)));
 		}
@@ -870,7 +868,7 @@ public class SteeringBehavior implements IRender {
 			}
 
 			// calculate the center of the wander circle
-			Vector2 vTCC = Transformation.pointToWorldSpace(
+			var vTCC = Transformation.pointToWorldSpace(
 					__temp1.set(__wanderDistance * __vehicle.getBoundingRadius(), 0), __vehicle.getHeading(),
 					__vehicle.getSide(), __vehicle.getPosition());
 			// draw the wander circle
@@ -917,14 +915,14 @@ public class SteeringBehavior implements IRender {
 			// tag all obstacles within range of the box for processing
 			__vehicle.getWorld().tagObstaclesWithinViewRange(__vehicle, __detectBoxLength);
 
-			ListIterator<BaseGameEntity> it = __vehicle.getWorld().getObstacles().listIterator();
+			var it = __vehicle.getWorld().getObstacles().listIterator();
 
 			while (it.hasNext()) {
-				BaseGameEntity curOb = it.next();
+				var curOb = it.next();
 				// if the obstacle has been tagged within range proceed
 				if (curOb.isTagged()) {
 					// calculate this obstacle's position in local space
-					Vector2 localPos = Transformation.pointToLocalSpace(curOb.getPosition(), __vehicle.getHeading(),
+					var localPos = Transformation.pointToLocalSpace(curOb.getPosition(), __vehicle.getHeading(),
 							__vehicle.getSide(), __vehicle.getPosition());
 
 					// if the local position has a negative x value then it must lay
@@ -1066,22 +1064,22 @@ public class SteeringBehavior implements IRender {
 	private void __calculatePrioritized() {
 
 		if (__isBehavior(Behavior.WALL_AVOIDANCE)) {
-			Vector2 force = __doWallAvoidance(__vehicle.getWorld().getWalls()).mul(__weightWallAvoidance);
+			var force = __doWallAvoidance(__vehicle.getWorld().getWalls()).mul(__weightWallAvoidance);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.OBSTACLE_AVOIDANCE)) {
-			Vector2 force = __doObstacleAvoidance(__vehicle.getWorld().getObstacles()).mul(__weightObstacleAvoidance);
+			var force = __doObstacleAvoidance(__vehicle.getWorld().getObstacles()).mul(__weightObstacleAvoidance);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.EVADE)) {
-			Vector2 force = __doEvade(__targetAgent1).mul(__weightEvade);
+			var force = __doEvade(__targetAgent1).mul(__weightEvade);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.FLEE)) {
-			Vector2 force = __doFlee(__vehicle.getWorld().getCrosshair()).mul(__weightFlee);
+			var force = __doFlee(__vehicle.getWorld().getCrosshair()).mul(__weightFlee);
 			__accumulateForce(force);
 		}
 
@@ -1089,73 +1087,73 @@ public class SteeringBehavior implements IRender {
 		// also a good behavior to add into this mix)
 		if (!isSpacePartitioning()) {
 			if (__isBehavior(Behavior.SEPARATION)) {
-				Vector2 force = __doSeparation(__vehicle.getWorld().getAgents()).mul(__weightSeparation);
+				var force = __doSeparation(__vehicle.getWorld().getAgents()).mul(__weightSeparation);
 				__accumulateForce(force);
 			}
 
 			if (__isBehavior(Behavior.ALLIGNMENT)) {
-				Vector2 force = __doAlignment(__vehicle.getWorld().getAgents()).mul(__weightAlignment);
+				var force = __doAlignment(__vehicle.getWorld().getAgents()).mul(__weightAlignment);
 				__accumulateForce(force);
 			}
 
 			if (__isBehavior(Behavior.COHESION)) {
-				Vector2 force = __doCohesion(__vehicle.getWorld().getAgents()).mul(__weightCohesion);
+				var force = __doCohesion(__vehicle.getWorld().getAgents()).mul(__weightCohesion);
 				__accumulateForce(force);
 			}
 		} else {
 			if (__isBehavior(Behavior.SEPARATION)) {
-				Vector2 force = __doSeparationPlus(__vehicle.getWorld().getAgents()).mul(__weightSeparation);
+				var force = __doSeparationPlus(__vehicle.getWorld().getAgents()).mul(__weightSeparation);
 				__accumulateForce(force);
 			}
 
 			if (__isBehavior(Behavior.ALLIGNMENT)) {
-				Vector2 force = __doAlignmentPlus(__vehicle.getWorld().getAgents()).mul(__weightAlignment);
+				var force = __doAlignmentPlus(__vehicle.getWorld().getAgents()).mul(__weightAlignment);
 				__accumulateForce(force);
 			}
 
 			if (__isBehavior(Behavior.COHESION)) {
-				Vector2 force = __doCohesionPlus(__vehicle.getWorld().getAgents()).mul(__weightCohesion);
+				var force = __doCohesionPlus(__vehicle.getWorld().getAgents()).mul(__weightCohesion);
 				__accumulateForce(force);
 			}
 		}
 
 		if (__isBehavior(Behavior.SEEK)) {
-			Vector2 force = __doSeek(__vehicle.getWorld().getCrosshair()).mul(__weightSeek);
+			var force = __doSeek(__vehicle.getWorld().getCrosshair()).mul(__weightSeek);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.ARRIVE)) {
-			Vector2 force = __doArrive(__vehicle.getWorld().getCrosshair(), __deceleration).mul(__weightArrive);
+			var force = __doArrive(__vehicle.getWorld().getCrosshair(), __deceleration).mul(__weightArrive);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.WANDER)) {
-			Vector2 force = __doWander().mul(__weightWander);
+			var force = __doWander().mul(__weightWander);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.PURSUIT)) {
-			Vector2 force = __doPursuit(__targetAgent1).mul(__weightPursuit);
+			var force = __doPursuit(__targetAgent1).mul(__weightPursuit);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.OFFSET_PURSUIT)) {
-			Vector2 force = __doOffsetPursuit(__targetAgent1, __offset);
+			var force = __doOffsetPursuit(__targetAgent1, __offset);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.INTERPOSE)) {
-			Vector2 force = __doInterpose(__targetAgent1, __targetAgent2).mul(__weightInterpose);
+			var force = __doInterpose(__targetAgent1, __targetAgent2).mul(__weightInterpose);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.HIDE)) {
-			Vector2 force = __doHide(__targetAgent1, __vehicle.getWorld().getObstacles()).mul(__weightHide);
+			var force = __doHide(__targetAgent1, __vehicle.getWorld().getObstacles()).mul(__weightHide);
 			__accumulateForce(force);
 		}
 
 		if (__isBehavior(Behavior.FOLLOW_PATH)) {
-			Vector2 force = __doFollowPath().mul(__weightFollowPath);
+			var force = __doFollowPath().mul(__weightFollowPath);
 			__accumulateForce(force);
 		}
 

@@ -26,7 +26,6 @@ package com.tenio.examples.server;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.utils.XMLUtility;
@@ -52,7 +51,7 @@ public class Configuration extends BaseConfiguration {
 
 	@Override
 	protected void _extend(Node attrNode) throws XPathExpressionException {
-		NodeList attrConfigurationProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
+		var attrConfigurationProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			Node pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {

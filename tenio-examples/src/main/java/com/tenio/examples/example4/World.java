@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.tenio.api.MessageApi;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
@@ -115,10 +114,10 @@ public class World extends AbstractHeartBeat {
 		BaseGameEntity.resetValidID();
 		for (int a = 0; a < __paramLoader.NUM_AGENTS; ++a) {
 			// determine a random starting position
-			Vector2 SpawnPos = new Vector2(cx / 2 + MathUtility.randomClamped() * cx / 2,
+			var SpawnPos = new Vector2(cx / 2 + MathUtility.randomClamped() * cx / 2,
 					cy / 2 + MathUtility.randomClamped() * cy / 2);
 
-			Vehicle pVehicle = new Vehicle(this, SpawnPos, // initial position
+			var pVehicle = new Vehicle(this, SpawnPos, // initial position
 					MathUtility.randFloat() * MathUtility.TWO_PI, // start rotation
 					new Vector2(0, 0), // velocity
 					__paramLoader.VEHICLE_MASS, // mass
@@ -313,7 +312,7 @@ public class World extends AbstractHeartBeat {
 				final int border = 10;
 				final int minGapBetweenObstacles = 20;
 
-				Obstacle ob = new Obstacle(MathUtility.randInt(radius + border, __clientX - radius - border),
+				var ob = new Obstacle(MathUtility.randInt(radius + border, __clientX - radius - border),
 						MathUtility.randInt(radius + border, __clientY - radius - 30 - border), radius);
 
 				if (!EntitiesRelationship.isOverlapped((BaseGameEntity) ob, __obstacles, minGapBetweenObstacles)) {
@@ -333,12 +332,12 @@ public class World extends AbstractHeartBeat {
 	 * the position appropriately
 	 */
 	synchronized public void setCrosshair(PPoint p) {
-		Vector2 proposedPosition = new Vector2((float) p.x, (float) p.y);
+		var proposedPosition = new Vector2((float) p.x, (float) p.y);
 
 		// make sure it's not inside an obstacle
-		ListIterator<BaseGameEntity> it = __obstacles.listIterator();
+		var it = __obstacles.listIterator();
 		while (it.hasNext()) {
-			BaseGameEntity curOb = it.next();
+			var curOb = it.next();
 			if (Geometry.isPointInCircle(curOb.getPosition(), curOb.getBoundingRadius(), proposedPosition)) {
 				return;
 			}
@@ -459,7 +458,7 @@ public class World extends AbstractHeartBeat {
 		}
 
 		// send to client (naive way)
-		for (AbstractPlayer inspector : __inspectors) {
+		for (var inspector : __inspectors) {
 			__messageApi.sendToPlayerSub(inspector, "p",
 					__messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
 		}

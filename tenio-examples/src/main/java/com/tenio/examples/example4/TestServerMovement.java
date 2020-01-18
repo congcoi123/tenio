@@ -25,6 +25,7 @@ package com.tenio.examples.example4;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
 import com.tenio.examples.example4.constants.Constants;
 import com.tenio.examples.example4.entities.Inspector;
@@ -71,8 +72,8 @@ public final class TestServerMovement extends AbstractApp {
 		public void init() {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				Connection connection = (Connection) args[0];
-				TObject message = (TObject) args[1];
+				var connection = Connection.convert(args[0]);
+				var message = TObject.convert(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -84,7 +85,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				Connection connection = (Connection) args[0];
+				var connection = Connection.convert(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
 
@@ -93,7 +94,7 @@ public final class TestServerMovement extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// the player has login successful
-				Inspector player = (Inspector) args[0];
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 				player.isIgnoreTimeout();
 
 				info("PLAYER IN", player.getName());
@@ -105,7 +106,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				Inspector player = (Inspector) args[0];
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -113,7 +114,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				Inspector player = (Inspector) args[0];
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 
@@ -121,7 +122,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_REQUEST, args -> {
-				TObject message = (TObject) args[0];
+				var message = TObject.convert(args[0]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -133,7 +134,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_SUCCESS, args -> {
-				Inspector player = (Inspector) args[0];
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
 						+ player.getSubConnection().getAddress());
@@ -152,7 +153,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			// Create a world
-			World world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 			world.debug("[TenIO] Server Debugger : Movement Simulation");
 			_heartbeatApi.create("world", world);
 
