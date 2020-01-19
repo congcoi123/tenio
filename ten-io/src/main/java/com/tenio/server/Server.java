@@ -59,7 +59,7 @@ import com.tenio.task.schedule.TimeOutScanTask;
  */
 public final class Server extends AbstractLogger implements IServer {
 
-	private static volatile Server __instance;
+	private static Server __instance;
 
 	private Server() {
 		__heartBeatManager = new HeartBeatManager();
