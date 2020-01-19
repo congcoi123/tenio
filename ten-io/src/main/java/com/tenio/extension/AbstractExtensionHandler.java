@@ -29,9 +29,12 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.AbstractPlayer;
+import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.network.Connection;
 import com.tenio.server.Server;
 
 /**
@@ -50,7 +53,7 @@ import com.tenio.server.Server;
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	private Server __server = Server.getInstance();
-	
+
 	/**
 	 * @see {@link MessageApi}
 	 */
@@ -81,6 +84,64 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 */
 	protected void _on(final TEvent type, final ISubscriber sub) {
 		EventManager.getEvent().on(type, sub);
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link TObject}
+	 */
+	protected TObject _getTObject(Object object) {
+		return (TObject) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Connection}
+	 */
+	protected Connection _getConnection(Object object) {
+		return (Connection) object;
+	}
+
+	@SuppressWarnings("unchecked")
+	/**
+	 * @param <T>    the corresponding return type
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link AbstractPlayer}
+	 */
+	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
+		return (T) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Boolean}
+	 */
+	protected boolean _getBoolean(Object object) {
+		return (boolean) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link String}
+	 */
+	protected String _getString(Object object) {
+		return (String) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Integer}
+	 */
+	protected int _getInt(Object object) {
+		return (int) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Throwable}
+	 */
+	protected Throwable _getThrowable(Object object) {
+		return (Throwable) object;
 	}
 
 }

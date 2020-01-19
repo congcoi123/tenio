@@ -25,12 +25,9 @@ package com.tenio.examples.example3;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.network.Connection;
 
 /**
  * This class shows how a server handle messages that came from a client
@@ -67,8 +64,8 @@ public final class TestServerAttach extends AbstractApp {
 		@Override
 		public void init() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				var connection = Connection.convert(args[0]);
-				var message = TObject.convert(args[1]);
+				var connection = _getConnection(args[0]);
+				var message = _getTObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -82,7 +79,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = Connection.convert(args[0]);
+				var connection = _getConnection(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
 
@@ -91,7 +88,7 @@ public final class TestServerAttach extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// The player has login successful
-				var player = AbstractPlayer.<PlayerAttach>convert(args[0]);
+				var player = this.<PlayerAttach>_getPlayer(args[0]);
 
 				info("PLAYER IN", player.getName());
 
@@ -102,9 +99,9 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
-				var player = AbstractPlayer.<PlayerAttach>convert(args[0]);
-				boolean isSubConnection = (boolean) args[1];
-				var message = TObject.convert(args[2]);
+				var player = this.<PlayerAttach>_getPlayer(args[0]);
+				boolean isSubConnection = _getBoolean(args[1]);
+				var message = _getTObject(args[2]);
 
 				info("PLAYER RECV ", message);
 
@@ -118,7 +115,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = AbstractPlayer.<PlayerAttach>convert(args[0]);
+				var player = this.<PlayerAttach>_getPlayer(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -126,7 +123,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = AbstractPlayer.<PlayerAttach>convert(args[0]);
+				var player = this.<PlayerAttach>_getPlayer(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 
@@ -134,7 +131,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_REQUEST, args -> {
-				var message = TObject.convert(args[0]);
+				var message = _getTObject(args[0]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -146,7 +143,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_SUCCESS, args -> {
-				var player = AbstractPlayer.<PlayerAttach>convert(args[0]);
+				var player = this.<PlayerAttach>_getPlayer(args[0]);
 
 				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
 						+ player.getSubConnection().getAddress());
@@ -157,7 +154,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_FAILED, args -> {
-				String reason = (String) args[1];
+				String reason = _getString(args[1]);
 
 				info("ATTACH UDP FAILED", reason);
 

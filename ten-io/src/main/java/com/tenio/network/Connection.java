@@ -55,10 +55,6 @@ public abstract class Connection {
 		SOCKET, DATAGRAM, WEB_SOCKET
 	}
 
-	public static Connection convert(Object object) {
-		return (Connection) object;
-	}
-
 	public Connection(Type type) {
 		__type = type;
 	}

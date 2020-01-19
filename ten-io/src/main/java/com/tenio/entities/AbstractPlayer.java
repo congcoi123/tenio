@@ -93,11 +93,6 @@ public abstract class AbstractPlayer {
 	 */
 	private boolean __hasSubConnection;
 
-	@SuppressWarnings("unchecked")
-	public static <T extends AbstractPlayer> T convert(Object object) {
-		return (T) object;
-	}
-
 	/**
 	 * Create a new player
 	 * 
