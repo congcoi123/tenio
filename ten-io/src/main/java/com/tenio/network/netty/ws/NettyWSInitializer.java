@@ -26,7 +26,6 @@ package com.tenio.network.netty.ws;
 import com.tenio.configuration.BaseConfiguration;
 
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 
@@ -49,7 +48,7 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 
 	@Override
 	protected void initChannel(SocketChannel channel) throws Exception {
-		ChannelPipeline pipeline = channel.pipeline();
+		var pipeline = channel.pipeline();
 
 		// add http-codec for TCP hand shaker
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());

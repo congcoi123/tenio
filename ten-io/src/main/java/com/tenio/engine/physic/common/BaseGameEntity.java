@@ -52,7 +52,7 @@ public abstract class BaseGameEntity extends AbstractEntity {
 	 * Using this vector for temporary calculation, so the change of this vector
 	 * does not effect to current instance
 	 */
-	private Vector2 __position = new Vector2();
+	private Vector2 __position = Vector2.newInstance();
 	// It's current scale rate
 	private float __scaleX;
 	private float __scaleY;
@@ -60,7 +60,7 @@ public abstract class BaseGameEntity extends AbstractEntity {
 	 * Using this vector for temporary calculation, so the change of this vector
 	 * does not effect to current instance
 	 */
-	private Vector2 __scale = new Vector2();
+	private Vector2 __scale = Vector2.newInstance();
 	/**
 	 * This object's bounding radius
 	 */

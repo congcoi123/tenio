@@ -42,15 +42,17 @@ public class InvertedAABBox2D implements IRender {
 	private float __top;
 	private float __right;
 	private float __bottom;
-
-	public InvertedAABBox2D() {
-		__left = 0;
-		__top = 0;
-		__right = 0;
-		__bottom = 0;
+	
+	public static InvertedAABBox2D newInstance() {
+		return valueOf(0, 0, 0, 0);
+	}
+	
+	public static InvertedAABBox2D valueOf(float left, float top, float right, float bottom) {
+		var invert = new InvertedAABBox2D(left, top, right, bottom);
+		return invert;
 	}
 
-	public InvertedAABBox2D(float left, float top, float right, float bottom) {
+	private InvertedAABBox2D(float left, float top, float right, float bottom) {
 		__left = left;
 		__top = top;
 		__right = right;

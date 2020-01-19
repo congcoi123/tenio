@@ -35,7 +35,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 	// vector smoothed over the last few frames
 	private float __smoothedHeadingX;
 	private float __smoothedHeadingY;
-	private Vector2 __smoothedHeading = new Vector2();
+	private Vector2 __smoothedHeading = Vector2.newInstance();
 	// when true, smoothing is active
 	private boolean __enableSmoothing;
 	// keeps a track of the most recent update time. (some of the
@@ -46,8 +46,9 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 	public Vehicle(World world, Vector2 position, float rotation, Vector2 velocity, float mass, float maxForce,
 			float maxSpeed, float maxTurnRate, float scale) {
-		super(position, scale, velocity, maxSpeed, new Vector2((float) Math.sin(rotation), (float) -Math.cos(rotation)),
-				mass, new Vector2(scale, scale), maxTurnRate, maxForce);
+		super(position, scale, velocity, maxSpeed,
+				Vector2.valueOf((float) Math.sin(rotation), (float) -Math.cos(rotation)), mass,
+				Vector2.valueOf(scale, scale), maxTurnRate, maxForce);
 
 		__world = world;
 		__smoothedHeadingX = 0;
@@ -62,7 +63,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 		// set up the smoother
 		__headingSmoother = new SmootherVector<Vector2>(ParamLoader.getInstance().NUM_SAMPLES_FOR_SMOOTHING,
-				new Vector2());
+				Vector2.newInstance());
 
 	}
 
@@ -72,7 +73,8 @@ public class Vehicle extends MoveableEntity implements IRender {
 	private void __createShape() {
 		final int numVehicleVerts = 3;
 
-		Vector2 vehicle[] = { new Vector2(-1.0f, 0.6f), new Vector2(1.0f, 0.0f), new Vector2(-1.0f, -0.6f) };
+		Vector2 vehicle[] = { Vector2.valueOf(-1.0f, 0.6f), Vector2.valueOf(1.0f, 0.0f),
+				Vector2.valueOf(-1.0f, -0.6f) };
 
 		// setup the vertex buffers and calculate the bounding radius
 		for (int vtx = 0; vtx < numVehicleVerts; ++vtx) {
@@ -131,25 +133,25 @@ public class Vehicle extends MoveableEntity implements IRender {
 
 		// keep a record of its old position so we can update its cell later
 		// in this method
-		Vector2 oldPos = getPosition();
+		var oldPos = getPosition();
 
 		// calculate the combined force from each steering behavior in the
 		// vehicle's list
-		Vector2 steeringForce = getBehavior().calculateAccumulate();
+		var steeringForce = getBehavior().calculateAccumulate();
 		// Vector2 steeringForce = new Vector2(1, 1);
 
 		// Acceleration = Force/Mass
-		Vector2 acceleration = steeringForce.div(getMass());
+		var acceleration = steeringForce.div(getMass());
 
 		// update velocity
-		Vector2 velocity = acceleration.mul(delta).add(getVelocity());
+		var velocity = acceleration.mul(delta).add(getVelocity());
 
 		// make sure vehicle does not exceed maximum velocity
 		velocity.truncate(getMaxSpeed());
 		setVelocity(velocity);
 
 		// update the position
-		Vector2 position = velocity.mul(delta).add(getPosition());
+		var position = velocity.mul(delta).add(getPosition());
 		setPosition(position);
 
 		// update the heading if the vehicle has a non zero velocity
@@ -158,7 +160,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 		}
 
 		// treat the screen as a endless screen
-		Vector2 around = Transformation.wrapAround(getPosition(), __world.getClientX(), __world.getClientY());
+		var around = Transformation.wrapAround(getPosition(), __world.getClientX(), __world.getClientY());
 		setPosition(around);
 
 		// update the vehicle's current cell if space partitioning is turned on

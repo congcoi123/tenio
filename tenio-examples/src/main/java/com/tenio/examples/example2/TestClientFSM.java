@@ -53,7 +53,7 @@ public final class TestClientFSM implements ISocketListener {
 		__tcp.receive(this);
 
 		// send a login request to the server
-		TObject message = new TObject();
+		var message = TObject.newInstance();
 		message.put("u", "kong");
 		__tcp.send(message);
 		System.err.println("Login Request -> " + message);

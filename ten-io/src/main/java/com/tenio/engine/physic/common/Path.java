@@ -133,7 +133,7 @@ public final class Path implements IRender {
 		for (int i = 0; i < numWaypoints; ++i) {
 			float radialDist = MathUtility.randInRange(smaller * 0.2f, smaller);
 
-			Vector2 temp = Transformation.vec2DRotateAroundOrigin(radialDist, 0, i * spacing);
+			var temp = Transformation.vec2DRotateAroundOrigin(radialDist, 0, i * spacing);
 
 			temp.x += midX;
 			temp.y += midY;
@@ -182,12 +182,12 @@ public final class Path implements IRender {
 	public void render(Paint paint) {
 		paint.setPenColor(Color.ORANGE);
 
-		ListIterator<Vector2> it = __wayPoints.listIterator();
+		var it = __wayPoints.listIterator();
 
-		Vector2 wp = it.next();
+		var wp = it.next();
 
 		while (it.hasNext()) {
-			Vector2 n = it.next();
+			var n = it.next();
 			paint.drawLine(wp, n);
 
 			wp = n;

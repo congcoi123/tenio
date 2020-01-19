@@ -48,9 +48,9 @@ public final class MessagePacker {
 	 */
 	public static byte[] pack(byte[] data) {
 		// Make bytes
-		byte[] length = shortToByte((short) data.length);
+		var length = shortToByte((short) data.length);
 		// HEADER_BYTES bytes for hold data's length
-		byte[] all = ByteBuffer.allocate(Constants.HEADER_BYTES + data.length).array();
+		var all = ByteBuffer.allocate(Constants.HEADER_BYTES + data.length).array();
 		// Done by native codes = "exceptional fast"
 		System.arraycopy(length, 0, all, 0, Constants.HEADER_BYTES);
 		System.arraycopy(data, 0, all, Constants.HEADER_BYTES, data.length);

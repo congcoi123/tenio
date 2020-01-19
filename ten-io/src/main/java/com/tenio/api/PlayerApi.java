@@ -139,9 +139,9 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return Returns all players' information data
 	 */
 	public List<List<Object>> getAllPlayerBaseInfos() {
-		List<List<Object>> list = new ArrayList<List<Object>>();
+		var list = new ArrayList<List<Object>>();
 		gets().values().forEach((player) -> {
-			List<Object> data = new ArrayList<Object>();
+			var data = new ArrayList<Object>();
 			data.add(player.getName());
 			if (player.getRoom() != null) {
 				data.add(player.getRoom().getName());

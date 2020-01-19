@@ -43,7 +43,11 @@ public final class LSubscriber {
 	 */
 	private ISubscriber __sub;
 
-	public LSubscriber(final LogicEvent type, final ISubscriber sub) {
+	public static LSubscriber newInstance(final LogicEvent type, final ISubscriber sub) {
+		return new LSubscriber(type, sub);
+	}
+
+	private LSubscriber(final LogicEvent type, final ISubscriber sub) {
 		__type = type;
 		__sub = sub;
 	}

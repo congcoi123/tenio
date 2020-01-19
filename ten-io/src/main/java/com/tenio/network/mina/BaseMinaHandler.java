@@ -64,7 +64,7 @@ public abstract class BaseMinaHandler extends IoHandlerAdapter {
 	 */
 	protected void _sessionClosed(IoSession session, boolean keepPlayerOnDisconnect) {
 		// get the connection first
-		Connection connection = _getConnection(session);
+		var connection = _getConnection(session);
 		EventManager.getLogic().emit(LogicEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
 		connection = null;
 	}
@@ -77,8 +77,8 @@ public abstract class BaseMinaHandler extends IoHandlerAdapter {
 	 */
 	protected void _exceptionCaught(IoSession session, Throwable cause) {
 		// get the connection first
-		Connection connection = _getConnection(session);
-		String id = String.valueOf(session.getId());
+		var connection = _getConnection(session);
+		var id = String.valueOf(session.getId());
 		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, id, connection, cause);
 	}
 	

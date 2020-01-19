@@ -76,7 +76,7 @@ public final class MessageDispatcher {
 	public void dispatchMessage(double delay, int sender, int receiver, int msgType, TObject info) {
 
 		// get pointers to the receiver
-		AbstractEntity pReceiver = __manager.get(receiver);
+		var pReceiver = __manager.get(receiver);
 
 		// make sure the receiver is valid
 		if (pReceiver == null) {
@@ -84,7 +84,7 @@ public final class MessageDispatcher {
 		}
 
 		// create the telegram
-		Telegram telegram = new Telegram(0, sender, receiver, msgType, info);
+		var telegram = new Telegram(0, sender, receiver, msgType, info);
 
 		// if there is no delay, route telegram immediately
 		if (delay <= Constants.SEND_MSG_IMMEDIATELY) {
@@ -92,7 +92,7 @@ public final class MessageDispatcher {
 			__discharge(pReceiver, telegram);
 		} // else calculate the time when the telegram should be dispatched
 		else {
-			telegram.setDelayDispatchTime(delay);
+			telegram.setDelayTime(delay);
 
 			// and put it in the queue
 			__telegrams.add(telegram);
@@ -112,14 +112,14 @@ public final class MessageDispatcher {
 		// now peek at the queue to see if any telegrams need dispatching.
 		// remove all telegrams from the front of the queue that have gone
 		// past their sell by date
-		while (!__telegrams.isEmpty() && (__telegrams.last().getDispatchTime() < currentTime)
-				&& (__telegrams.last().getDispatchTime() > 0)) {
+		while (!__telegrams.isEmpty() && (__telegrams.last().getDelayTime() < currentTime)
+				&& (__telegrams.last().getDelayTime() > 0)) {
 			// read the telegram from the front of the queue
 
-			final Telegram telegram = __telegrams.last();
+			var telegram = __telegrams.last();
 
 			// find the recipient
-			AbstractEntity pReceiver = __manager.get(telegram.getReceiver());
+			var pReceiver = __manager.get(telegram.getReceiver());
 
 			// send the telegram to the recipient
 			__discharge(pReceiver, telegram);

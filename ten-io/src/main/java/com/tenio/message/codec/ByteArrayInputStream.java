@@ -36,13 +36,13 @@ import java.nio.ByteBuffer;
  * {@link ByteBuffer#flip()} to set the source <code>byte[]</code>, offset and
  * length (respectively) to read the raw contents of a <code>ByteBuffer</code>
  * without incurring the cost of an array copy to get the bytes out of it.
- * <h3>Performance</h3>
- * The JDK already provides a {@link java.io.ByteArrayInputStream}
- * implementation, unfortunately it is not re-usable, requiring a new input
- * stream to be created to wrap any input <code>byte[]</code> every single time.
- * By allowing this class to be re-usable (see {@link #reset(byte[], int, int)})
- * this class can act as a simple, thin and reusable wrapper to any number of
- * <code>byte[]</code> that need to be read in.
+ * <h3>Performance</h3> The JDK already provides a
+ * {@link java.io.ByteArrayInputStream} implementation, unfortunately it is not
+ * re-usable, requiring a new input stream to be created to wrap any input
+ * <code>byte[]</code> every single time. By allowing this class to be re-usable
+ * (see {@link #reset(byte[], int, int)}) this class can act as a simple, thin
+ * and reusable wrapper to any number of <code>byte[]</code> that need to be
+ * read in.
  * <p/>
  * Utilizing this class avoids the performance burden caused by unnecessary
  * object creation and GC cleanup which can be significant in a high performance
@@ -58,23 +58,22 @@ import java.nio.ByteBuffer;
  * <p/>
  * It is because of the re-usability nature of this stream type that allows any
  * wrapping streams to be implicitly (and safely) re-usable as well.
- * <h3>Reuse</h3>
- * The different <code>reset</code> methods provide different approaches to
- * reusing an instance of this class. {@link #reset()} simply resets the current
- * position pointer for the existing underlying <code>byte[]</code> so it can be
- * re-read again if so desired. {@link #reset(byte[])} simply defers to
- * {@link #reset(byte[], int, int)} which replaces the underlying
- * <code>byte[]</code> as well as the current position offset of the stream and
- * the total length of bytes available in the newly set <code>byte[]</code>.
+ * <h3>Reuse</h3> The different <code>reset</code> methods provide different
+ * approaches to reusing an instance of this class. {@link #reset()} simply
+ * resets the current position pointer for the existing underlying
+ * <code>byte[]</code> so it can be re-read again if so desired.
+ * {@link #reset(byte[])} simply defers to {@link #reset(byte[], int, int)}
+ * which replaces the underlying <code>byte[]</code> as well as the current
+ * position offset of the stream and the total length of bytes available in the
+ * newly set <code>byte[]</code>.
  * <p/>
  * <strong>REMINDER</strong>: {@link #close()} is a no-op operations. You don't
  * need to worry about not being able to re-use instances of this class because
  * a wrapping stream type issued a close operation on it; the state of streams
  * of this type are not effected by that operation.
- * <h3>Usage</h3>
- * This class is designed such that you create an instance of this class, then
- * wrap it with a {@link UBJInputStream} and read any amount of Universal Binary
- * JSON from the underlying <code>byte[]</code> stream.
+ * <h3>Usage</h3> This class is designed such that you create an instance of
+ * this class, then wrap it with a {@link UBJInputStream} and read any amount of
+ * Universal Binary JSON from the underlying <code>byte[]</code> stream.
  * <p/>
  * When that operation is complete and a new set of UBJ bytes are ready to be
  * read, simply call {@link #reset(byte[])} or {@link #reset(byte[], int, int)}
@@ -133,22 +132,28 @@ import java.nio.ByteBuffer;
  * @see ByteArrayOutputStream
  */
 public class ByteArrayInputStream extends InputStream {
-	
+
 	private int __offset;
 	private int __length;
 	private byte[] __buffer;
-	
-	public ByteArrayInputStream() {
-		
+
+	private ByteArrayInputStream() {
 	}
 
-	public ByteArrayInputStream(byte[] data) throws IllegalArgumentException {
-		reset(data);
+	public static ByteArrayInputStream newInstance() {
+		return new ByteArrayInputStream();
 	}
 
-	public ByteArrayInputStream(byte[] data, int offset, int length)
-			throws IllegalArgumentException {
-		reset(data, offset, length);
+	public static ByteArrayInputStream valueOf(byte[] data) throws IllegalArgumentException {
+		var array = new ByteArrayInputStream();
+		array.reset(data);
+		return array;
+	}
+
+	public static ByteArrayInputStream valueOf(byte[] data, int offset, int length) throws IllegalArgumentException {
+		var array = new ByteArrayInputStream();
+		array.reset(data, offset, length);
+		return array;
 	}
 
 	@Override
@@ -180,32 +185,29 @@ public class ByteArrayInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] buffer, int offset, int length)
-			throws IllegalArgumentException, IOException {
+	public int read(byte[] buffer, int offset, int length) throws IllegalArgumentException, IOException {
 		if (buffer == null) {
 			throw new IllegalArgumentException("buffer cannot be null");
 		}
 		if (offset < 0 || length < 0 || (offset + length) > buffer.length) {
-			throw new IllegalArgumentException("offset [" + offset
-					+ "] and length [" + length
-					+ "] must be >= 0 and (offset + length)["
-					+ (offset + length) + "] must be <= buffer.length ["
-					+ buffer.length + "]");
+			throw new IllegalArgumentException(
+					"offset [" + offset + "] and length [" + length + "] must be >= 0 and (offset + length)["
+							+ (offset + length) + "] must be <= buffer.length [" + buffer.length + "]");
 		}
 
 		// Calculate bytes remaining in the stream.
 		int r = (__length - __offset);
 
 		/*
-		 * If no bytes are remaining, update the length we return to -1,
-		 * otherwise begin the copy operation on the remaining bytes.
+		 * If no bytes are remaining, update the length we return to -1, otherwise begin
+		 * the copy operation on the remaining bytes.
 		 */
 		if (r < 1) {
 			length = -1;
 		} else {
 			/*
-			 * Trim the copy length to the smaller of the two values: how many
-			 * bytes were requested or how many are left.
+			 * Trim the copy length to the smaller of the two values: how many bytes were
+			 * requested or how many are left.
 			 */
 			length = (length < r ? length : r);
 
@@ -237,9 +239,7 @@ public class ByteArrayInputStream extends InputStream {
 	public void reset(int offset) throws IllegalArgumentException {
 		if (offset < 0 || (offset + __length) > __buffer.length) {
 			throw new IllegalArgumentException(
-					"offset ["
-							+ offset
-							+ "] must be >= 0 and (offset + getLength()) must be <= getArray().length ["
+					"offset [" + offset + "] must be >= 0 and (offset + getLength()) must be <= getArray().length ["
 							+ __buffer.length + "]");
 		}
 
@@ -254,22 +254,19 @@ public class ByteArrayInputStream extends InputStream {
 		reset(data, 0, data.length);
 	}
 
-	public void reset(byte[] data, int offset, int length)
-			throws IllegalArgumentException {
+	public void reset(byte[] data, int offset, int length) throws IllegalArgumentException {
 		if (data == null) {
 			throw new IllegalArgumentException("data cannot be null");
 		}
 		if (offset < 0 || length < 0 || (offset + length) > data.length) {
-			throw new IllegalArgumentException("offset [" + offset
-					+ "] and length [" + length
-					+ "] must be >= 0 and (offset + length)["
-					+ (offset + length) + "] must be <= data.length ["
-					+ data.length + "]");
+			throw new IllegalArgumentException(
+					"offset [" + offset + "] and length [" + length + "] must be >= 0 and (offset + length)["
+							+ (offset + length) + "] must be <= data.length [" + data.length + "]");
 		}
 
-		this.__offset = 0;
-		this.__length = length;
-		this.__buffer = data;
+		__offset = 0;
+		__length = length;
+		__buffer = data;
 	}
 
 	public byte[] getArray() {
@@ -283,5 +280,5 @@ public class ByteArrayInputStream extends InputStream {
 	public int getLength() {
 		return __length;
 	}
-	
+
 }

@@ -2,7 +2,6 @@ package com.tenio.engine.physic.utility;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.tenio.engine.physic.common.BaseGameEntity;
 import com.tenio.engine.physic.math.Vector2;
@@ -17,7 +16,7 @@ import com.tenio.engine.physic.math.Vector2;
  */
 public final class EntitiesRelationship {
 
-	private static final Vector2 __temp1 = new Vector2();
+	private static final Vector2 __temp1 = Vector2.newInstance();
 
 	/**
 	 * Tests to see if an entity is overlapping any of a number of entities stored
@@ -29,9 +28,9 @@ public final class EntitiesRelationship {
 
 	public static <T extends BaseGameEntity, conT extends List<? extends T>> boolean isOverlapped(T ob, conT conOb,
 			float minDistBetweenObstacles) {
-		ListIterator<? extends T> it = conOb.listIterator();
+		var it = conOb.listIterator();
 		while (it.hasNext()) {
-			T tmp = it.next();
+			var tmp = it.next();
 			if (Geometry.isTwoCirclesOverlapped(ob.getPosition(), ob.getBoundingRadius() + minDistBetweenObstacles,
 					tmp.getPosition(), tmp.getBoundingRadius())) {
 				return true;
@@ -76,9 +75,9 @@ public final class EntitiesRelationship {
 	public static <T extends BaseGameEntity, conT extends List<T>> void enforceNonPenetrationConstraint(final T entity,
 			final conT containerOfEntities) {
 		// iterate through all entities checking for any overlap of bounding radius
-		ListIterator<T> it = containerOfEntities.listIterator();
+		var it = containerOfEntities.listIterator();
 		while (it.hasNext()) {
-			T curEntity = it.next();
+			var curEntity = it.next();
 			// make sure we don't check against the individual
 			if (curEntity == entity) {
 				continue;
@@ -121,12 +120,12 @@ public final class EntitiesRelationship {
 
 	public static <T extends BaseGameEntity, conT extends List<T>> List<T> getGetEntityLineSegmentIntersections(
 			final conT entities, int theOneToIgnore, Vector2 A, Vector2 B, float range) {
-		ListIterator<T> it = entities.listIterator();
-		List<T> hits = new LinkedList<T>();
+		var it = entities.listIterator();
+		var hits = new LinkedList<T>();
 
 		// iterate through all entities checking against the line segment AB
 		while (it.hasNext()) {
-			T curEntity = it.next();
+			var curEntity = it.next();
 			// if not within range or the entity being checked is the_one_to_ignore
 			// just continue with the next entity
 			float distance = __temp1.set(curEntity.getPosition()).getDistanceSqrValue(A);
@@ -160,7 +159,7 @@ public final class EntitiesRelationship {
 
 	public static <T extends BaseGameEntity, conT extends List<T>> T getClosestEntityLineSegmentIntersection(
 			final conT entities, int theOneToIgnore, Vector2 A, Vector2 B, float range) {
-		ListIterator<T> it = entities.listIterator();
+		var it = entities.listIterator();
 
 		T closestEntity = null;
 

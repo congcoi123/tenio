@@ -28,14 +28,12 @@ import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
 import com.tenio.network.netty.NettyConnection;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
@@ -66,7 +64,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		if (msg instanceof DatagramPacket) {
 			// get the packet and sender data, convert it to a bytes' array
 			datagram = (DatagramPacket) msg;
-			ByteBuf buffer = datagram.content();
+			var buffer = datagram.content();
 			int readableBytes = buffer.readableBytes();
 			content = new byte[readableBytes];
 			buffer.readBytes(content);
@@ -75,12 +73,12 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		}
 
 		// create a game object
-		TObject message = MsgPackConverter.unserialize(content);
+		var message = MsgPackConverter.unserialize(content);
 		if (message == null) {
 			return;
 		}
 
-		AbstractPlayer player = __getPlayer(ctx.channel(), datagram.sender().toString());
+		var player = __getPlayer(ctx.channel(), datagram.sender().toString());
 		// the condition for creating sub-connection
 		if (player == null) {
 			player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.ATTACH_UDP_REQUEST, message);
@@ -91,7 +89,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 				EventManager.getEvent().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				__savePlayerRemote(ctx.channel(), datagram.sender().toString(), player.getName());
-				NettyConnection connection = NettyConnection.create(Connection.Type.DATAGRAM, ctx.channel());
+				var connection = NettyConnection.newInstance(Connection.Type.DATAGRAM, ctx.channel());
 				connection.setSockAddress(datagram.sender());
 				player.setSubConnection(connection);
 				EventManager.getEvent().emit(TEvent.ATTACH_UDP_SUCCESS, player);

@@ -65,7 +65,7 @@ public final class LEventManager extends AbstractLogger {
 			info("EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(new LSubscriber(type, sub));
+		__subscribers.add(LSubscriber.newInstance(type, sub));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public final class LEventManager extends AbstractLogger {
 		__producer.clear(); // clear the old first
 
 		// only for log recording
-		List<LogicEvent> subs = new ArrayList<LogicEvent>();
+		var subs = new ArrayList<LogicEvent>();
 		// start handling
 		__subscribers.forEach(s -> {
 			subs.add(s.getType());
@@ -91,7 +91,7 @@ public final class LEventManager extends AbstractLogger {
 	 * @return Returns <code>true</code> if an event has any subscribers
 	 */
 	public boolean hasSubscriber(final LogicEvent type) {
-		for (LSubscriber subscriber : __subscribers) {
+		for (var subscriber : __subscribers) {
 			if (subscriber.getType() == type) {
 				return true;
 			}

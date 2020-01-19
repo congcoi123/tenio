@@ -67,7 +67,7 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	@Override
 	public void kill(String id) {
-		ScheduledFuture<?> task = __tasks.get(id);
+		var task = __tasks.get(id);
 		if (task != null) {
 			synchronized (__tasks) {
 				task.cancel(true);
@@ -79,7 +79,7 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	@Override
 	public int getRemainTime(String id) {
-		ScheduledFuture<?> task = __tasks.get(id);
+		var task = __tasks.get(id);
 		if (task != null) {
 			return (int) task.getDelay(TimeUnit.SECONDS);
 		}

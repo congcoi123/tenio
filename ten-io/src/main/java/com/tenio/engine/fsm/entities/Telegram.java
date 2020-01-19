@@ -62,7 +62,7 @@ public class Telegram implements Comparable {
 	/**
 	 * The message will be sent after an interval time
 	 */
-	private double __dispatchTime;
+	private double __delayTime;
 	/**
 	 * The extra information
 	 */
@@ -70,18 +70,18 @@ public class Telegram implements Comparable {
 
 	public Telegram() {
 		__createdTime = TimeUtility.currentTimeSeconds();
-		__dispatchTime = -1;
+		__delayTime = -1;
 		__sender = -1;
 		__receiver = -1;
 		__type = -1;
 	}
 
-	public Telegram(double dispatchTime, int sender, int receiver, int type) {
-		this(dispatchTime, sender, receiver, type, null);
+	public Telegram(double delayTime, int sender, int receiver, int type) {
+		this(delayTime, sender, receiver, type, null);
 	}
 
-	public Telegram(double dispatchTime, int sender, int receiver, int type, TObject info) {
-		__dispatchTime = dispatchTime;
+	public Telegram(double delayTime, int sender, int receiver, int type, TObject info) {
+		__delayTime = delayTime;
 		__sender = sender;
 		__receiver = receiver;
 		__type = type;
@@ -100,12 +100,12 @@ public class Telegram implements Comparable {
 		return __type;
 	}
 
-	public double getDispatchTime() {
-		return __dispatchTime;
+	public double getDelayTime() {
+		return __delayTime;
 	}
 
-	public void setDelayDispatchTime(double delay) {
-		__dispatchTime = TimeUtility.currentTimeSeconds() + delay;
+	public void setDelayTime(double delay) {
+		__delayTime = TimeUtility.currentTimeSeconds() + delay;
 	}
 
 	public double getCreatedTime() {
@@ -121,11 +121,10 @@ public class Telegram implements Comparable {
 		if (!(o instanceof Telegram)) {
 			return false;
 		}
-		Telegram t1 = this;
-		Telegram t2 = (Telegram) o;
-		return (Math.abs(t1.getDispatchTime() - t2.getDispatchTime()) < SMALLEST_DELAY)
-				&& (t1.getSender() == t2.getSender()) && (t1.getReceiver() == t2.getReceiver())
-				&& (t1.getType() == t2.getType());
+		var t1 = this;
+		var t2 = (Telegram) o;
+		return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY) && (t1.getSender() == t2.getSender())
+				&& (t1.getReceiver() == t2.getReceiver()) && (t1.getType() == t2.getType());
 	}
 
 	/**
@@ -148,20 +147,20 @@ public class Telegram implements Comparable {
 	 */
 	@Override
 	public int compareTo(Object o2) {
-		Telegram t1 = this;
-		Telegram t2 = (Telegram) o2;
+		var t1 = this;
+		var t2 = (Telegram) o2;
 		if (t1 == t2) {
 			return 0;
 		} else {
-			return (t1.getDispatchTime() > t2.getDispatchTime()) ? -1 : 1;
+			return (t1.getDelayTime() > t2.getDelayTime()) ? -1 : 1;
 		}
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("Time: ");
-		builder.append(__dispatchTime);
+		builder.append(__delayTime);
 		builder.append(", Sender: ");
 		builder.append(__sender);
 		builder.append(", Receiver: ");

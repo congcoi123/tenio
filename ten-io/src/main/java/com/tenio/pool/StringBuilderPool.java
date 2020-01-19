@@ -41,7 +41,7 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 	// preventing Singleton object instantiation from outside
 	// creates multiple instance if two thread access this method simultaneously
 	public static StringBuilderPool getInstance() {
-		StringBuilderPool ref = __instance;
+		var ref = __instance;
 		if (ref == null) {
 			synchronized (StringBuilderPool.class) {
 				ref = __instance;
@@ -78,11 +78,11 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 		// If we got here, then all the Elements are in use. We will
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
-		boolean[] oldUsed = __used;
+		var oldUsed = __used;
 		__used = new boolean[oldUsed.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
-		StringBuilder[] oldPool = __pool;
+		var oldPool = __pool;
 		__pool = new StringBuilder[oldPool.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
@@ -122,7 +122,7 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("[").append(tag).append("] ").append(msg);
 		__logger.info(builder.toString());
 	}
@@ -135,8 +135,8 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 	 * @return Returns a string
 	 */
 	private final String __strgen(final Object... objects) {
-		StringBuilder builder = new StringBuilder();
-		for (Object object : objects) {
+		var builder = new StringBuilder();
+		for (var object : objects) {
 			builder.append(object);
 		}
 		return builder.toString();

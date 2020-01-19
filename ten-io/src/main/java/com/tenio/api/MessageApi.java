@@ -64,7 +64,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value      the value of message
 	 */
 	public void sendToConnection(Connection connection, String key, Object value) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
 		connection.send(message);
 		__objectPool.repay(message);
@@ -86,7 +86,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param data       the main data of message @see {@link TArray}
 	 */
 	public void sendToConnection(Connection connection, String key, Object value, String keyData, TArray data) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		connection.send(message);
@@ -129,7 +129,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value the value of message
 	 */
 	private void __sendToPlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
 		__send(player, isSubConnection, message);
 		__objectPool.repay(message);
@@ -180,7 +180,7 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	private void __sendToPlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
 			String keyData, TArray data) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		__send(player, isSubConnection, message);
@@ -228,9 +228,9 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value           the value of message
 	 */
 	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
-		for (AbstractPlayer player : room.getPlayers().values()) {
+		for (var player : room.getPlayers().values()) {
 			__send(player, isSubConnection, message);
 		}
 		__objectPool.repay(message);
@@ -281,10 +281,10 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value, String keyData,
 			TArray data) {
-		TObject message = __objectPool.get();
+		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
-		for (AbstractPlayer player : room.getPlayers().values()) {
+		for (var player : room.getPlayers().values()) {
 			__send(player, isSubConnection, message);
 		}
 		__objectPool.repay(message);
@@ -331,10 +331,10 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value           the value of message
 	 */
 	private void __sendToRoomIgnorePlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value) {
-		AbstractRoom room = player.getRoom();
-		TObject message = __objectPool.get();
+		var room = player.getRoom();
+		var message = __objectPool.get();
 		message.put(key, value);
-		for (AbstractPlayer p : room.getPlayers().values()) {
+		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
 				__send(p, isSubConnection, message);
 			}
@@ -389,11 +389,11 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	private void __sendToRoomIgnorePlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
 			String keyData, TArray data) {
-		AbstractRoom room = player.getRoom();
-		TObject message = __objectPool.get();
+		var room = player.getRoom();
+		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
-		for (AbstractPlayer p : room.getPlayers().values()) {
+		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
 				__send(p, isSubConnection, message);
 			}

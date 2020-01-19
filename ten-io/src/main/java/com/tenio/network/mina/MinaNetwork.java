@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -120,9 +119,9 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 
 	private void __close(IoAcceptor acceptor) {
 		acceptor.setCloseOnDeactivation(true);
-		for (IoSession ss : acceptor.getManagedSessions().values()) {
-			ss.closeNow();
-		}
+		acceptor.getManagedSessions().values().forEach(session -> {
+			session.closeNow();
+		});
 		acceptor.unbind();
 		acceptor.dispose();
 	}

@@ -29,7 +29,6 @@ import com.tenio.configuration.BaseConfiguration;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
@@ -71,8 +70,8 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 		// check the request for handshake
 		if (msg instanceof HttpRequest) {
 
-			HttpRequest httpRequest = (HttpRequest) msg;
-			HttpHeaders headers = httpRequest.headers();
+			var httpRequest = (HttpRequest) msg;
+			var headers = httpRequest.headers();
 
 			if (headers.get("Connection").equalsIgnoreCase("Upgrade")
 					|| headers.get("Upgrade").equalsIgnoreCase("WebSocket")) {
@@ -97,8 +96,7 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	 * @throws URISyntaxException
 	 */
 	private void __handleHandshake(ChannelHandlerContext ctx, HttpRequest req) throws URISyntaxException {
-		WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(__getWebSocketURL(req), null,
-				true);
+		var wsFactory = new WebSocketServerHandshakerFactory(__getWebSocketURL(req), null, true);
 		__handshaker = wsFactory.newHandshaker(req);
 		if (__handshaker == null) {
 			WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());

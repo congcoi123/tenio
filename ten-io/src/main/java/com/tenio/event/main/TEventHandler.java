@@ -55,7 +55,7 @@ public final class TEventHandler<T> {
 			__delegate.get(type).add(event);
 		} else {
 			// create a new array of events
-			List<IEvent<T>> events = new ArrayList<IEvent<T>>();
+			var events = new ArrayList<IEvent<T>>();
 			// add the first event
 			events.add(event);
 			__delegate.put(type, events);

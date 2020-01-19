@@ -70,7 +70,7 @@ public final class TestClientLogin implements ISocketListener {
 		__tcp.receive(this);
 
 		// send a login request
-		TObject message = new TObject();
+		var message = TObject.newInstance();
 		message.put("u", __generateRandomString(5));
 		__tcp.send(message);
 		System.err.println("Login Request -> " + message);
@@ -87,7 +87,7 @@ public final class TestClientLogin implements ISocketListener {
 			throw new IllegalArgumentException();
 		}
 
-		StringBuilder sb = new StringBuilder(length);
+		var sb = new StringBuilder(length);
 		for (int i = 0; i < length; i++) {
 			// 0-62 (exclusive), random returns 0-61
 			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());

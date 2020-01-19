@@ -27,7 +27,6 @@ import org.apache.mina.core.session.IoSession;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
@@ -71,14 +70,14 @@ public class MinaSocketHandler extends BaseMinaHandler {
 	@Override
 	public void messageReceived(IoSession session, Object msg) throws Exception {
 		// convert to the game message
-		TObject message = MsgPackConverter.unserialize((byte[]) msg);
+		var message = MsgPackConverter.unserialize((byte[]) msg);
 		if (message == null) {
 			return;
 		}
 
-		Connection connection = _getConnection(session);
+		var connection = _getConnection(session);
 		if (connection == null) { // the new connection
-			connection = MinaConnection.create(Connection.Type.SOCKET, session);
+			connection = MinaConnection.newInstance(Connection.Type.SOCKET, session);
 			EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 					connection, message);
 		} else {

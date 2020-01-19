@@ -62,8 +62,12 @@ final class HMessage implements Comparable {
 	 * The main information
 	 */
 	private TObject __message;
+	
+	public static HMessage newInstance(TObject message, double delayTime) {
+		return new HMessage(message, delayTime);
+	}
 
-	public HMessage(TObject message, double delayTime) {
+	private HMessage(TObject message, double delayTime) {
 		__id = __atomic.incrementAndGet();
 		__setDelayTime(delayTime);
 		__message = message;
@@ -93,8 +97,8 @@ final class HMessage implements Comparable {
 		if (!(o instanceof HMessage)) {
 			return false;
 		}
-		HMessage t1 = this;
-		HMessage t2 = (HMessage) o;
+		var t1 = this;
+		var t2 = (HMessage) o;
 		return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY);
 	}
 
@@ -116,8 +120,8 @@ final class HMessage implements Comparable {
 	 */
 	@Override
 	public int compareTo(Object o2) {
-		HMessage t1 = this;
-		HMessage t2 = (HMessage) o2;
+		var t1 = this;
+		var t2 = (HMessage) o2;
 		if (t1 == t2) {
 			return 0;
 		} else {
@@ -127,7 +131,7 @@ final class HMessage implements Comparable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("Id: ");
 		builder.append(__id);
 		builder.append(", Time: ");

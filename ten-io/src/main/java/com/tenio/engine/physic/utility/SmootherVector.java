@@ -2,7 +2,6 @@ package com.tenio.engine.physic.utility;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.tenio.engine.physic.math.Vector2;
 
@@ -61,10 +60,10 @@ public class SmootherVector<T extends Vector2> {
 		// now to calculate the average of the history list
 		// c++ code make a copy here, I use Zero method instead.
 		// Another approach could be creating public clone() method in Vector2D ...
-		T sum = __zeroValue;
+		var sum = __zeroValue;
 		sum.zero();
 
-		ListIterator<T> it = __histories.listIterator();
+		var it = __histories.listIterator();
 
 		while (it.hasNext()) {
 			sum.add(it.next());

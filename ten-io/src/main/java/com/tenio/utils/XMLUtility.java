@@ -26,7 +26,6 @@ package com.tenio.utils;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -56,12 +55,12 @@ public final class XMLUtility {
 	 * @throws Exception
 	 */
 	public static Document parseFile(final File file) throws Exception {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		var dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		var db = dbf.newDocumentBuilder();
 		Document doc = db.parse(file);
 
-		XPathFactory factory = XPathFactory.newInstance();
+		var factory = XPathFactory.newInstance();
 		__oXpath = factory.newXPath();
 		return doc;
 	}
@@ -74,12 +73,12 @@ public final class XMLUtility {
 	 * @throws Exception
 	 */
 	public static Document parseStream(final InputStream in) throws Exception {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		var dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		var db = dbf.newDocumentBuilder();
 		Document doc = db.parse(in);
 
-		XPathFactory factory = XPathFactory.newInstance();
+		var factory = XPathFactory.newInstance();
 		__oXpath = factory.newXPath();
 		return doc;
 	}
@@ -104,7 +103,7 @@ public final class XMLUtility {
 	 * @throws XPathExpressionException
 	 */
 	public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
-		NodeList nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
+		var nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
 
 		return nodeList;
 	}
@@ -118,7 +117,7 @@ public final class XMLUtility {
 	 * @throws XPathExpressionException
 	 */
 	public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
-		Node nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
+		var nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
 
 		return nodeRet;
 	}
@@ -131,11 +130,9 @@ public final class XMLUtility {
 	 * @return Returns the value of node's attribute
 	 */
 	public static String getAttrVal(final Node node, final String name) {
-		String val = "";
-
-		Element eNode = (Element) node;
-		val = eNode.getAttribute(name);
-		return val;
+		var eNode = (Element) node;
+		
+		return eNode.getAttribute(name);
 	}
-	
+
 }

@@ -60,7 +60,7 @@ public abstract class AbstractPlayer {
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
-	private int __hookId;
+	private int __entityId;
 	/**
 	 * A reference to its contained room. This value may be set
 	 * <code>null</code> @see {@link AbstractRoom}
@@ -93,6 +93,11 @@ public abstract class AbstractPlayer {
 	 */
 	private boolean __hasSubConnection;
 
+	@SuppressWarnings("unchecked")
+	public static <T extends AbstractPlayer> T convert(Object object) {
+		return (T) object;
+	}
+
 	/**
 	 * Create a new player
 	 * 
@@ -104,12 +109,12 @@ public abstract class AbstractPlayer {
 		currentWriterTime();
 	}
 
-	public int getHookId() {
-		return __hookId;
+	public int getEntityId() {
+		return __entityId;
 	}
 
-	public void setHookId(int hookId) {
-		__hookId = hookId;
+	public void setEntityId(int entityId) {
+		__entityId = entityId;
 	}
 
 	public String getName() {

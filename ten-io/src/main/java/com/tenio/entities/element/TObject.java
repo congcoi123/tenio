@@ -37,6 +37,17 @@ public final class TObject extends HashMap<String, Object> {
 
 	private static final long serialVersionUID = 8818783476027583633L;
 
+	public static TObject newInstance() {
+		return new TObject();
+	}
+
+	public static TObject convert(Object object) {
+		return (TObject) object;
+	}
+
+	private TObject() {
+	}
+
 	public double getDouble(final String key) {
 		return (double) get(key);
 	}

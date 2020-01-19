@@ -25,7 +25,6 @@ package com.tenio.network.netty.socket;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
@@ -69,15 +68,15 @@ public final class NettySocketHandler extends BaseNettyHandler {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		// convert the bytes' array to a game message
-		TObject message = MsgPackConverter.unserialize((byte[]) msg);
+		var message = MsgPackConverter.unserialize((byte[]) msg);
 		if (message == null) {
 			return;
 		}
 
 		// get the connection first
-		Connection connection = _getConnection(ctx.channel());
+		var connection = _getConnection(ctx.channel());
 		if (connection == null) { // the new connection
-			connection = NettyConnection.create(Connection.Type.SOCKET, ctx.channel());
+			connection = NettyConnection.newInstance(Connection.Type.SOCKET, ctx.channel());
 			EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 					connection, message);
 		} else {

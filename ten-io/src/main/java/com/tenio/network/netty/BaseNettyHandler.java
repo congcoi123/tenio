@@ -65,7 +65,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 */
 	protected void _channelInactive(ChannelHandlerContext ctx, boolean keepPlayerOnDisconnect) {
 		// get the connection first
-		Connection connection = _getConnection(ctx.channel());
+		var connection = _getConnection(ctx.channel());
 		EventManager.getLogic().emit(LogicEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
 		connection = null;
 	}
@@ -78,7 +78,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 */
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// get the connection first
-		Connection connection = _getConnection(ctx.channel());
+		var connection = _getConnection(ctx.channel());
 		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection, cause);
 	}
 

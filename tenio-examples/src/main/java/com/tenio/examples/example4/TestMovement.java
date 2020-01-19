@@ -39,7 +39,7 @@ public class TestMovement {
 	 */
 	public static void main(String[] args) {
 		// Create a world
-		World world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+		var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 		// Enable debugger window
 		world.debug("[TenIO] Server Debugger : Movement Simulation");
 		Server.getInstance().getHeartBeatApi().initialize(1);

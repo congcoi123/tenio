@@ -25,7 +25,6 @@ package com.tenio.engine.heartbeat;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -198,10 +197,10 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 		__action2 = new JButton("Action 2");
 		__action3 = new JButton("Action 3");
 
-		Container cp = __frame.getContentPane();
+		var cp = __frame.getContentPane();
 		cp.setLayout(new BorderLayout());
 
-		JPanel p = new JPanel();
+		var p = new JPanel();
 		p.setLayout(new GridLayout(1, 2));
 		p.add(__action1);
 		p.add(__action2);
@@ -222,7 +221,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Object s = e.getSource();
+		var s = e.getSource();
 		if (s == __action1) {
 			_onAction1();
 		} else if (s == __action2) {
@@ -262,7 +261,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 				// past their sell by date
 				while (!__listener.isEmpty() && (__listener.last().getDelayTime() < currentTime)) {
 					// read the message from the front of the queue
-					final HMessage message = __listener.last();
+					var message = __listener.last();
 					// listening
 					_onMessage(message.getMessage());
 					// remove it from the queue

@@ -40,10 +40,10 @@ import com.tenio.engine.physic.math.Vector2;
 public final class Paint {
 
 	// These objects for temporary calculations
-	private final Vector2 __temp1 = new Vector2();
-	private final Vector2 __temp2 = new Vector2();
-	private final Vector2 __temp3 = new Vector2();
-	private final Vector2 __temp4 = new Vector2();
+	private final Vector2 __temp1 = Vector2.newInstance();
+	private final Vector2 __temp2 = Vector2.newInstance();
+	private final Vector2 __temp3 = Vector2.newInstance();
+	private final Vector2 __temp4 = Vector2.newInstance();
 
 	/**
 	 * It is used for rendering an object in shape
@@ -94,7 +94,7 @@ public final class Paint {
 	// ------------------ Draw Text ------------------
 	// -----------------------------------------------
 	public void drawTextAtPosition(int x, int y, String s) {
-		Color back = __brush.getColor();
+		var back = __brush.getColor();
 		y += getFontHeight() - 2;
 		if (__bgTextOpaque) {
 			FontMetrics fm = __brush.getFontMetrics();
@@ -167,7 +167,7 @@ public final class Paint {
 
 		__polygon.reset();
 
-		for (Vector2 v : points) {
+		for (var v : points) {
 			__polygon.addPoint((int) v.x, (int) v.y);
 		}
 		__brush.setColor(__penColor);
@@ -176,17 +176,17 @@ public final class Paint {
 
 	public void drawLineWithArrow(Vector2 from, Vector2 to, float size) {
 		__temp1.set(to).sub(from).normalize();
-		Vector2 norm = __temp1;
+		var norm = __temp1;
 
 		// calculate where the arrow is attached
 		__temp2.set(norm).mul(size);
 		__temp3.set(to).sub(__temp2);
-		Vector2 crossingPoint = __temp3;
+		var crossingPoint = __temp3;
 
 		// calculate the two extra points required to make the arrowhead
 		__temp4.set(norm.perpendicular()).mul(0.4f * size).add(crossingPoint);
-		Vector2 arrowPoint1 = __temp4;
-		Vector2 arrowPoint2 = __temp4;
+		var arrowPoint1 = __temp4;
+		var arrowPoint2 = __temp4;
 
 		// draw the line
 		__brush.setColor(__penColor);
@@ -215,7 +215,7 @@ public final class Paint {
 	// ------------------ Draw Geometry ------------------
 	// ---------------------------------------------------
 	public void fillRect(Color c, int left, int top, int width, int height) {
-		Color old = __brush.getColor();
+		var old = __brush.getColor();
 		__brush.setColor(c);
 		__brush.fillRect(left, top, width, height);
 		__brush.setColor(old);

@@ -65,7 +65,7 @@ public final class TEventManager extends AbstractLogger {
 			info("EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(new TSubscriber(type, sub));
+		__subscribers.add(TSubscriber.newInstance(type, sub));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public final class TEventManager extends AbstractLogger {
 		__producer.clear(); // clear the old first
 
 		// only for log recording
-		List<TEvent> subs = new ArrayList<TEvent>();
+		var subs = new ArrayList<TEvent>();
 		// start handling
 		__subscribers.forEach(s -> {
 			subs.add(s.getType());
@@ -91,12 +91,7 @@ public final class TEventManager extends AbstractLogger {
 	 * @return Returns <code>true</code> if an event has any subscribers
 	 */
 	public boolean hasSubscriber(final TEvent type) {
-		for (TSubscriber subscriber : __subscribers) {
-			if (subscriber.getType() == type) {
-				return true;
-			}
-		}
-		return false;
+		return __subscribers.stream().anyMatch(subscribe -> subscribe.isType(type));
 	}
 
 	/**

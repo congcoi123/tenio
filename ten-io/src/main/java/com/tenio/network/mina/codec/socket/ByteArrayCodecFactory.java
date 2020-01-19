@@ -76,8 +76,8 @@ public class ByteArrayCodecFactory implements ProtocolCodecFactory {
 		protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
 
 			if (in.prefixedDataAvailable(Constants.HEADER_BYTES)) {
-				int length = in.getShort();
-				byte[] bytes = new byte[length];
+				var length = in.getShort();
+				var bytes = new byte[length];
 				in.get(bytes);
 				out.write(bytes);
 				return true;
@@ -94,9 +94,9 @@ public class ByteArrayCodecFactory implements ProtocolCodecFactory {
 
 		@Override
 		public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-			byte[] data = (byte[]) message;
+			var data = (byte[]) message;
 			int capacity = Constants.HEADER_BYTES + data.length;
-			IoBuffer buffer = IoBuffer.allocate(capacity, false);
+			var buffer = IoBuffer.allocate(capacity, false);
 			buffer.setAutoExpand(true);
 			// add header
 			buffer.putShort((short) data.length);

@@ -44,7 +44,7 @@ public class TestFSM {
 		
 		// try to send messages immediately
 		for (int i = 1; i <= 5; i++) {
-			TObject message = new TObject();
+			var message = TObject.newInstance();
 			message.put("IMMEDIATELY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
 			System.out.println("SEND IMMEDIATELY: " + message);
 			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", message);
@@ -52,7 +52,7 @@ public class TestFSM {
 		
 		// try to send messages with delay time
 		for (int i = 1; i <= 5; i++) {
-			TObject mess = new TObject();
+			var mess = TObject.newInstance();
 			mess.put("DELAY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
 			System.out.println("SEND DELAY: " + mess);
 			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", mess, i * 10);
