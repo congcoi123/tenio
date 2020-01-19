@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TArray;
 import com.tenio.entities.element.TObject;
 import com.tenio.examples.server.Configuration;
@@ -94,7 +95,7 @@ public final class TestServerLogin extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// The player has login successful
-				var player = PlayerLogin.<PlayerLogin>convert(args[0]);
+				var player = AbstractPlayer.<PlayerLogin>convert(args[0]);
 
 				info("PLAYER IN", player.getName());
 
@@ -119,7 +120,7 @@ public final class TestServerLogin extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = PlayerLogin.<PlayerLogin>convert(args[0]);
+				var player = AbstractPlayer.<PlayerLogin>convert(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -127,7 +128,7 @@ public final class TestServerLogin extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = PlayerLogin.<PlayerLogin>convert(args[0]);
+				var player = AbstractPlayer.<PlayerLogin>convert(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 

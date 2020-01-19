@@ -44,20 +44,12 @@ public class InvertedAABBox2D implements IRender {
 	private float __bottom;
 	
 	public static InvertedAABBox2D newInstance() {
-		var invert = new InvertedAABBox2D();
-		return invert;
+		return valueOf(0, 0, 0, 0);
 	}
 	
 	public static InvertedAABBox2D valueOf(float left, float top, float right, float bottom) {
 		var invert = new InvertedAABBox2D(left, top, right, bottom);
 		return invert;
-	}
-
-	private InvertedAABBox2D() {
-		__left = 0;
-		__top = 0;
-		__right = 0;
-		__bottom = 0;
 	}
 
 	private InvertedAABBox2D(float left, float top, float right, float bottom) {

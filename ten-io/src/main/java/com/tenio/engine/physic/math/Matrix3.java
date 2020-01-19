@@ -67,9 +67,7 @@ public final class Matrix3 {
 	private final Matrix __temp = new Matrix();
 	
 	public static Matrix3 newInstance() {
-		var matrix = new Matrix3();
-		matrix.initialize();
-		return matrix;
+		return new Matrix3();
 	}
 
 	private Matrix3() {

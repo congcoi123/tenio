@@ -25,6 +25,7 @@ package com.tenio.examples.example2;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
 import com.tenio.examples.example2.entities.Inspector;
 import com.tenio.examples.server.Configuration;
@@ -91,7 +92,7 @@ public final class TestServerFSM extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// Login successful
-				var player = Inspector.<Inspector>convert(args[0]);
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("PLAYER IN", player.getName());
 
@@ -99,7 +100,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = Inspector.<Inspector>convert(args[0]);
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -107,7 +108,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = Inspector.<Inspector>convert(args[0]);
+				var player = AbstractPlayer.<Inspector>convert(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 

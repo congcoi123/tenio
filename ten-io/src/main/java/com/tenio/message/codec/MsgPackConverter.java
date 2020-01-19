@@ -62,14 +62,14 @@ public final class MsgPackConverter {
 	}
 
 	/**
-	 * Unserialize an array of bytes data to a {@link TObject}
+	 * Un-serialize an array of bytes data to a {@link TObject}
 	 * 
 	 * @param msg an array of bytes data
 	 * @return Returns an object in <code>TObject</code> type
 	 */
 	public static TObject unserialize(byte[] msg) {
 		var object = TObject.newInstance();
-		Map<String, Value> dstMap = MsgPackUtil.unpack(msg);
+		var dstMap = MsgPackUtil.unpack(msg);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
 		}
@@ -153,9 +153,9 @@ public final class MsgPackConverter {
 				// Convert value to list of objects (TArray)
 				var arr = value.asArrayValue();
 				var array = TArray.newInstance();
-				for (var element : arr) {
+				arr.forEach(element -> {
 					array.add(valueToObject(element));
-				}
+				});
 				return array;
 			} else if (value.isMapValue()) {
 				// FIXME: Temporary not support

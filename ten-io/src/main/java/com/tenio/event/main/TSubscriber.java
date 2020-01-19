@@ -60,6 +60,15 @@ public final class TSubscriber {
 	}
 
 	/**
+	 * @param type the comparison event value
+	 * @return Return <code>true</code> if they are equal, <code>false</code>
+	 *         otherwise
+	 */
+	public boolean isType(TEvent type) {
+		return __type == type;
+	}
+
+	/**
 	 * @return Returns @see {@link ISubscriber}
 	 */
 	public ISubscriber getSub() {

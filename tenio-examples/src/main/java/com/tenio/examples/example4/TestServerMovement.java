@@ -48,7 +48,7 @@ public final class TestServerMovement extends AbstractApp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		TestServerMovement game = new TestServerMovement();
+		var game = new TestServerMovement();
 		game.setup();
 	}
 

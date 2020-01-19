@@ -106,9 +106,9 @@ public class UDP {
 			while (true) {
 				try {
 					byte[] buffer = new byte[10240];
-					DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+					var response = new DatagramPacket(buffer, buffer.length);
 					__socket.receive(response);
-					TObject message = MsgPackConverter.unserialize(buffer);
+					var message = MsgPackConverter.unserialize(buffer);
 					listener.onReceivedUDP(message);
 				} catch (IOException e) {
 					e.printStackTrace();

@@ -119,9 +119,9 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 
 	private void __close(IoAcceptor acceptor) {
 		acceptor.setCloseOnDeactivation(true);
-		for (var ss : acceptor.getManagedSessions().values()) {
-			ss.closeNow();
-		}
+		acceptor.getManagedSessions().values().forEach(session -> {
+			session.closeNow();
+		});
 		acceptor.unbind();
 		acceptor.dispose();
 	}

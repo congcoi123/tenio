@@ -91,12 +91,7 @@ public final class TEventManager extends AbstractLogger {
 	 * @return Returns <code>true</code> if an event has any subscribers
 	 */
 	public boolean hasSubscriber(final TEvent type) {
-		for (var subscriber : __subscribers) {
-			if (subscriber.getType() == type) {
-				return true;
-			}
-		}
-		return false;
+		return __subscribers.stream().anyMatch(subscribe -> subscribe.isType(type));
 	}
 
 	/**

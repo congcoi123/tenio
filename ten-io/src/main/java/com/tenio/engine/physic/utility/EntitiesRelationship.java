@@ -30,7 +30,7 @@ public final class EntitiesRelationship {
 			float minDistBetweenObstacles) {
 		var it = conOb.listIterator();
 		while (it.hasNext()) {
-			T tmp = it.next();
+			var tmp = it.next();
 			if (Geometry.isTwoCirclesOverlapped(ob.getPosition(), ob.getBoundingRadius() + minDistBetweenObstacles,
 					tmp.getPosition(), tmp.getBoundingRadius())) {
 				return true;

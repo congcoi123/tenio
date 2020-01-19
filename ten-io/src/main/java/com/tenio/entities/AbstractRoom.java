@@ -77,7 +77,7 @@ public abstract class AbstractRoom {
 		if (isEmpty()) {
 			return null;
 		}
-		return (AbstractPlayer) __players.values().toArray()[0];
+		return (AbstractPlayer) __players.values().stream().findFirst().get();
 	}
 
 	/**
@@ -170,9 +170,9 @@ public abstract class AbstractRoom {
 	 * @param state the desired state
 	 */
 	public void setPlayersState(final int state) {
-		for (var player : __players.values()) {
+		__players.values().stream().forEach(player -> {
 			player.setState(state);
-		}
+		});
 	}
 
 }
