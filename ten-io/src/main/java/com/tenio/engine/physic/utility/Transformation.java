@@ -2,6 +2,7 @@ package com.tenio.engine.physic.utility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.tenio.engine.physic.math.Matrix3;
 import com.tenio.engine.physic.math.Vector2;
@@ -257,18 +258,8 @@ public final class Transformation {
 		return position;
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	private static <T extends Object> List<T> __clone(List<T> list) {
-		try {
-			var c = list.getClass().getDeclaredConstructor().newInstance();
-			for (var t : list) {
-				var copy = (T) t.getClass().getDeclaredConstructor(t.getClass()).newInstance(t);
-				c.add(copy);
-			}
-			return c;
-		} catch (Exception e) {
-			throw new RuntimeException("List cloning unsupported", e);
-		}
+	private static List<Vector2> __clone(List<Vector2> list) {
+		return list.stream().map(e -> e.clone()).collect(Collectors.toList());
 	}
 
 }

@@ -74,7 +74,7 @@ public class World extends AbstractHeartBeat {
 	private boolean __enableRenderNeighbors;
 	private boolean __enableViewKeys;
 	private boolean __enableShowCellSpaceInfo;
-	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, 0f);
+	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
 	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();

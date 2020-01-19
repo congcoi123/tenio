@@ -55,14 +55,6 @@ public class Vector2 {
 		zero();
 	}
 
-	private Vector2(float a, float b) {
-		set(a, b);
-	}
-
-	private Vector2(Vector2 vector) {
-		set(vector);
-	}
-
 	public Vector2 set(Vector2 vector) {
 		return set(vector.x, vector.y);
 	}
@@ -76,7 +68,7 @@ public class Vector2 {
 
 	@Override
 	public Vector2 clone() {
-		return new Vector2(this);
+		return valueOf(this);
 	}
 
 	public Vector2 zero() {
