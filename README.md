@@ -34,7 +34,7 @@ The TenIO project is currently available under the [MIT](https://github.com/TenM
 ## Installation
 The maven repository will come soon, now you can get the sources:
 ```
-git clone https://github.com/TenMei/tenio.git
+git clone https://github.com/congcoi123/tenio.git
 ```
 
 ## Examples
