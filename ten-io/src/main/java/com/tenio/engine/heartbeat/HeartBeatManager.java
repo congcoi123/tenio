@@ -55,7 +55,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public void initialize(final BaseConfiguration configuration) {
-		int maxHeartbeat = (int) configuration.get(BaseConfiguration.MAX_HEARTBEAT);
+		int maxHeartbeat = configuration.getInt(BaseConfiguration.MAX_HEARTBEAT);
 		initialize(maxHeartbeat);
 	}
 

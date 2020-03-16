@@ -62,13 +62,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 
-		if ((int) configuration.get(BaseConfiguration.SOCKET_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
 			__bindTCP(configuration);
 		}
-		if ((int) configuration.get(BaseConfiguration.DATAGRAM_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
 			__bindUDP(configuration);
 		}
-		if ((int) configuration.get(BaseConfiguration.WEBSOCKET_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.WEBSOCKET_PORT)) {
 			__bindWS(configuration);
 		}
 	}
@@ -87,9 +87,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
 				.handler(new NettyDatagramInitializer(configuration));
 
-		__udp = bootstrap.bind((int) configuration.get(BaseConfiguration.DATAGRAM_PORT)).sync().channel();
+		__udp = bootstrap.bind(configuration.getInt(BaseConfiguration.DATAGRAM_PORT)).sync().channel();
 
-		info("DATAGRAM", buildgen("Start at port: ", (int) configuration.get(BaseConfiguration.DATAGRAM_PORT)));
+		info("DATAGRAM", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.DATAGRAM_PORT)));
 	}
 
 	/**
@@ -107,9 +107,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
 				.childHandler(new NettySocketInitializer(configuration));
 
-		__tcp = bootstrap.bind((int) configuration.get(BaseConfiguration.SOCKET_PORT)).sync().channel();
+		__tcp = bootstrap.bind(configuration.getInt(BaseConfiguration.SOCKET_PORT)).sync().channel();
 
-		info("SOCKET", buildgen("Start at port: ", (int) configuration.get(BaseConfiguration.SOCKET_PORT)));
+		info("SOCKET", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.SOCKET_PORT)));
 	}
 
 	/**
@@ -128,9 +128,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)
 				.childHandler(new NettyWSInitializer(configuration));
 
-		__ws = bootstrap.bind((int) configuration.get(BaseConfiguration.WEBSOCKET_PORT)).sync().channel();
+		__ws = bootstrap.bind(configuration.getInt(BaseConfiguration.WEBSOCKET_PORT)).sync().channel();
 
-		info("WEB SOCKET", buildgen("Start at port: ", (int) configuration.get(BaseConfiguration.WEBSOCKET_PORT)));
+		info("WEB SOCKET", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.WEBSOCKET_PORT)));
 	}
 
 	@Override

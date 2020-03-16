@@ -60,15 +60,15 @@ public class Configuration extends BaseConfiguration {
 				break;
 
 			case "customValue2":
-				_put(CUSTOM_VALUE_2, Integer.parseInt(pDataNode.getTextContent()));
+				_put(CUSTOM_VALUE_2, pDataNode.getTextContent());
 				break;
 
 			case "customValue3":
-				_put(CUSTOM_VALUE_3, Float.parseFloat(pDataNode.getTextContent()));
+				_put(CUSTOM_VALUE_3, pDataNode.getTextContent());
 				break;
 
 			case "customValue4":
-				_put(CUSTOM_VALUE_4, Boolean.parseBoolean(pDataNode.getTextContent()));
+				_put(CUSTOM_VALUE_4, pDataNode.getTextContent());
 				break;
 			}
 		}

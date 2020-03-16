@@ -66,15 +66,15 @@ public final class Server extends AbstractLogger implements IServer {
 		__roomManager = new RoomManager();
 		__playerManager = new PlayerManager();
 		__taskManager = new TaskManager();
-		
+
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__heartbeatApi = new HeartBeatApi(__heartBeatManager);
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi();
-		
+
 		__logic = new ServerLogic(__playerManager, __roomManager);
-		
+
 	} // prevent creation manually
 
 	// preventing Singleton object instantiation from outside
@@ -90,7 +90,7 @@ public final class Server extends AbstractLogger implements IServer {
 	private IRoomManager __roomManager;
 	private IPlayerManager __playerManager;
 	private ITaskManager __taskManager;
-	
+
 	private PlayerApi __playerApi;
 	private RoomApi __roomApi;
 	private HeartBeatApi __heartbeatApi;
@@ -112,11 +112,11 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@Override
 	public void start(BaseConfiguration configuration) {
-		info("SERVER", (String) configuration.get(BaseConfiguration.SERVER_NAME), "Starting ...");
+		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Starting ...");
 		try {
 			// main server logic
 			__logic.init();
-			
+
 			// Datagram connection can not stand alone
 			__checkDefinedMainConnection(configuration);
 
@@ -152,7 +152,7 @@ public final class Server extends AbstractLogger implements IServer {
 				}
 			});
 
-			info("SERVER", (String) configuration.get(BaseConfiguration.SERVER_NAME), "Started!");
+			info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
 
 		} catch (Exception e) { // if any exception occur, shutdown system immediately
 			error("EXCEPTION START", "system", e);
@@ -161,7 +161,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
-		switch ((int) configuration.get(BaseConfiguration.NIO)) {
+		switch (configuration.getInt(BaseConfiguration.NIO)) {
 		case Constants.NETTY:
 			__network = new NettyNetwork();
 			break;
@@ -197,7 +197,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
-		if ((boolean) configuration.get(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
+		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
 			try {
 				if (!EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
 						|| !EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
@@ -234,11 +234,11 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
-		(new TimeOutScanTask(__playerApi, (int) configuration.get(BaseConfiguration.IDLE_READER),
-				(int) configuration.get(BaseConfiguration.IDLE_WRITER),
-				(int) configuration.get(BaseConfiguration.TIMEOUT_SCAN))).run();
-		(new EmptyRoomScanTask(__roomApi, (int) configuration.get(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
-		(new CCUScanTask(__playerApi, (int) configuration.get(BaseConfiguration.CCU_SCAN))).run();
+		(new TimeOutScanTask(__playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
+				configuration.getInt(BaseConfiguration.IDLE_WRITER),
+				configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run();
+		(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
+		(new CCUScanTask(__playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run();
 	}
 
 	@Override

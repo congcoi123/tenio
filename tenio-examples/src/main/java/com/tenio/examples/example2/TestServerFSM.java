@@ -25,13 +25,10 @@ package com.tenio.examples.example2;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.examples.example2.entities.Inspector;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.network.Connection;
 
 /**
  * This class is used to send to clients all the daily life of our miner and his
@@ -70,8 +67,8 @@ public final class TestServerFSM extends AbstractApp {
 		public void init() {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				var connection = Connection.convert(args[0]);
-				var message = TObject.convert(args[1]);
+				var connection = _getConnection(args[0]);
+				var message = _getTObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -83,7 +80,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = Connection.convert(args[0]);
+				var connection = _getConnection(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
 
@@ -92,7 +89,7 @@ public final class TestServerFSM extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// Login successful
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("PLAYER IN", player.getName());
 
@@ -100,7 +97,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -108,7 +105,7 @@ public final class TestServerFSM extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 

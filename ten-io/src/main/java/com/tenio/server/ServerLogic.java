@@ -63,7 +63,7 @@ final class ServerLogic extends AbstractLogger {
 	public void init() {
 
 		__on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
-			var player = AbstractPlayer.convert(args[0]);
+			var player = __getPlayer(args[0]);
 
 			__roomManager.playerLeaveRoom(player, true);
 
@@ -71,8 +71,8 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.CONNECTION_CLOSE, args -> {
-			var connection = Connection.convert(args[0]);
-			boolean keepPlayerOnDisconnect = (boolean) args[1];
+			var connection = __getConnection(args[0]);
+			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
 
 			if (connection != null) { // the connection has existed
 				String id = connection.getId();
@@ -95,9 +95,9 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.CONNECTION_EXCEPTION, args -> {
-			String channelId = (String) args[0];
-			var connection = Connection.convert(args[1]);
-			var cause = (Throwable) args[2];
+			String channelId = __getString(args[0]);
+			var connection = __getConnection(args[1]);
+			var cause = __getThrowable(args[2]);
 
 			if (connection != null) { // the old connection
 				String id = connection.getId();
@@ -116,7 +116,7 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
-			String name = (String) args[0];
+			String name = __getString(args[0]);
 
 			var player = __playerManager.get(name);
 			if (player != null) {
@@ -127,10 +127,10 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
-			int maxPlayer = (int) args[0];
-			boolean keepPlayerOnDisconnect = (boolean) args[1];
-			var connection = Connection.convert(args[2]);
-			var message = TObject.convert(args[3]);
+			int maxPlayer = __getInt(args[0]);
+			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
+			var connection = __getConnection(args[2]);
+			var message = __getTObject(args[3]);
 
 			// check the reconnection first
 			if (keepPlayerOnDisconnect) {
@@ -157,8 +157,8 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.SOCKET_HANDLE, args -> {
-			var connection = Connection.convert(args[0]);
-			var message = TObject.convert(args[1]);
+			var connection = __getConnection(args[0]);
+			var message = __getTObject(args[1]);
 
 			String id = connection.getId();
 			if (id != null) { // the player's identify
@@ -174,8 +174,8 @@ final class ServerLogic extends AbstractLogger {
 		});
 
 		__on(LogicEvent.DATAGRAM_HANDLE, args -> {
-			var player = AbstractPlayer.convert(args[0]);
-			var message = TObject.convert(args[1]);
+			var player = __getPlayer(args[0]);
+			var message = __getTObject(args[1]);
 
 			// UDP is only attach connection, so if the main connection not found, the UDP
 			// must be stop handled
@@ -195,6 +195,62 @@ final class ServerLogic extends AbstractLogger {
 
 	private void __on(final LogicEvent event, ISubscriber sub) {
 		EventManager.getLogic().on(event, sub);
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link TObject}
+	 */
+	private TObject __getTObject(Object object) {
+		return (TObject) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Connection}
+	 */
+	private Connection __getConnection(Object object) {
+		return (Connection) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link AbstractPlayer}
+	 */
+	private AbstractPlayer __getPlayer(Object object) {
+		return (AbstractPlayer) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Boolean}
+	 */
+	private boolean __getBoolean(Object object) {
+		return (boolean) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link String}
+	 */
+	private String __getString(Object object) {
+		return (String) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Integer}
+	 */
+	private int __getInt(Object object) {
+		return (int) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return Returns value in @see {@link Throwable}
+	 */
+	private Throwable __getThrowable(Object object) {
+		return (Throwable) object;
 	}
 
 	private void __handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
