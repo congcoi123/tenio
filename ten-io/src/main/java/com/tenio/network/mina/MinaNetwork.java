@@ -50,13 +50,13 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 
 	@Override
 	public void start(BaseConfiguration configuration) throws IOException, InterruptedException {
-		if ((int) configuration.get(BaseConfiguration.SOCKET_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
 			__bindTCP(configuration);
 		}
-		if ((int) configuration.get(BaseConfiguration.WEBSOCKET_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.WEBSOCKET_PORT)) {
 			__bindWS(configuration);
 		}
-		if ((int) configuration.get(BaseConfiguration.DATAGRAM_PORT) != -1) {
+		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
 			__bindUDP(configuration);
 		}
 	}
@@ -78,9 +78,9 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 
 		__tcp.getSessionConfig().setReadBufferSize(2048);
 
-		__tcp.bind(new InetSocketAddress((int) configuration.get(BaseConfiguration.SOCKET_PORT)));
+		__tcp.bind(new InetSocketAddress(configuration.getInt(BaseConfiguration.SOCKET_PORT)));
 
-		info("SOCKET", buildgen("Start at port: ", (int) configuration.get(BaseConfiguration.SOCKET_PORT)));
+		info("SOCKET", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.SOCKET_PORT)));
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 	// FIXME
 	private void __bindWS(BaseConfiguration configuration) throws IOException, InterruptedException {
 		info("[UNSUPPORTED] WEB SOCKET",
-				buildgen("Can not start at port: ", (int) configuration.get(BaseConfiguration.WEBSOCKET_PORT)));
+				buildgen("Can not start at port: ", configuration.getInt(BaseConfiguration.WEBSOCKET_PORT)));
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class MinaNetwork extends AbstractLogger implements INetwork {
 	// FIXME
 	private void __bindUDP(BaseConfiguration configuration) throws IOException, InterruptedException {
 		info("[UNSUPPORTED] DATAGRAM",
-				buildgen("Can not start at port: ", (int) configuration.get(BaseConfiguration.DATAGRAM_PORT)));
+				buildgen("Can not start at port: ", configuration.getInt(BaseConfiguration.DATAGRAM_PORT)));
 	}
 
 	@Override

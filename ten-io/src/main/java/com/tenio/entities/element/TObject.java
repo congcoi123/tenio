@@ -41,10 +41,6 @@ public final class TObject extends HashMap<String, Object> {
 		return new TObject();
 	}
 
-	public static TObject convert(Object object) {
-		return (TObject) object;
-	}
-
 	private TObject() {
 	}
 

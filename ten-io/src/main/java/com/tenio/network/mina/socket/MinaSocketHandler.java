@@ -58,8 +58,8 @@ public class MinaSocketHandler extends BaseMinaHandler {
 	private boolean __keepPlayerOnDisconnect;
 
 	public MinaSocketHandler(BaseConfiguration configuration) {
-		__maxPlayer = (int) configuration.get(BaseConfiguration.MAX_PLAYER) - 1;
-		__keepPlayerOnDisconnect = (boolean) configuration.get(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
+		__maxPlayer = configuration.getInt(BaseConfiguration.MAX_PLAYER) - 1;
+		__keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 	}
 
 	@Override

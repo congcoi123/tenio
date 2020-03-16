@@ -25,14 +25,11 @@ package com.tenio.examples.example4;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
 import com.tenio.examples.example4.constants.Constants;
 import com.tenio.examples.example4.entities.Inspector;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
-import com.tenio.network.Connection;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
@@ -72,8 +69,8 @@ public final class TestServerMovement extends AbstractApp {
 		public void init() {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
-				var connection = Connection.convert(args[0]);
-				var message = TObject.convert(args[1]);
+				var connection = _getConnection(args[0]);
+				var message = _getTObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -85,7 +82,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = Connection.convert(args[0]);
+				var connection = _getConnection(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
 
@@ -94,7 +91,7 @@ public final class TestServerMovement extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// the player has login successful
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 				player.isIgnoreTimeout();
 
 				info("PLAYER IN", player.getName());
@@ -106,7 +103,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -114,7 +111,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 
@@ -122,7 +119,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_REQUEST, args -> {
-				var message = TObject.convert(args[0]);
+				var message = _getTObject(args[0]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -134,7 +131,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_SUCCESS, args -> {
-				var player = AbstractPlayer.<Inspector>convert(args[0]);
+				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
 						+ player.getSubConnection().getAddress());
@@ -145,7 +142,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_UDP_FAILED, args -> {
-				String reason = (String) args[1];
+				String reason = _getString(args[1]);
 
 				info("ATTACH UDP FAILED", reason);
 
