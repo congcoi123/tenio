@@ -116,6 +116,12 @@ public final class TestServerLogin extends AbstractApp {
 					var data = _messageApi.getArrayPack();
 					_messageApi.sendToPlayer(player, "c", "message", "d", data.put("H").put("3").put("L").put("O")
 							.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
+					
+					try {
+						info("PLAYER BACKUP", EntityProcessAnnotation.exportToJSON(player));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 
 				}, 0, 1, TimeUnit.SECONDS));
 

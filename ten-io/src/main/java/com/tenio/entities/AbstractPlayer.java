@@ -84,11 +84,13 @@ public abstract class AbstractPlayer {
 	/**
 	 * For simple hold some states. Default value is <code>0</code>
 	 */
+	@Column(name = "state")
 	private int __state;
 	/**
 	 * This flag (enabled state) allows the player not affected by the system
 	 * timeouts rule. The default value is <code>false</code>
 	 */
+	@Column(name = "ignore_timeout")
 	private boolean __isIgnoreTimeout;
 	/**
 	 * To quickly determine the player contains a connection or not
