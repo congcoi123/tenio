@@ -40,7 +40,7 @@ public final class TaskApi extends AbstractLogger {
 	/**
 	 * @see {@link ITaskManager}
 	 */
-	private ITaskManager __taskManager;
+	private final ITaskManager __taskManager;
 
 	public TaskApi(ITaskManager taskManager) {
 		__taskManager = taskManager;

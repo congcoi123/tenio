@@ -47,11 +47,11 @@ public final class PlayerApi extends AbstractLogger {
 	/**
 	 * @see {@link IPlayerManager}
 	 */
-	private IPlayerManager __playerManager;
+	private final IPlayerManager __playerManager;
 	/**
 	 * @see {@link IRoomManager}
 	 */
-	private IRoomManager __roomManager;
+	private final IRoomManager __roomManager;
 
 	public PlayerApi(IPlayerManager playerManager, IRoomManager roomManager) {
 		__playerManager = playerManager;

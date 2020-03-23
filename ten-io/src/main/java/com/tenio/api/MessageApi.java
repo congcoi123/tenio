@@ -50,11 +50,11 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * @see ArrayPool
 	 */
-	private ArrayPool __arrayPool = new ArrayPool();
+	private final ArrayPool __arrayPool = new ArrayPool();
 	/**
 	 * @see ObjectPool
 	 */
-	private ObjectPool __objectPool = new ObjectPool();
+	private final ObjectPool __objectPool = new ObjectPool();
 
 	/**
 	 * Send a message for a connection
