@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.entities;
 
+import com.tenio.annotation.Column;
+import com.tenio.annotation.Entity;
 import com.tenio.network.Connection;
 
 /**
@@ -42,7 +44,8 @@ import com.tenio.network.Connection;
  * @author kong
  * 
  */
-public abstract class AbstractPlayer implements IBackup<AbstractPlayer> {
+@Entity
+public abstract class AbstractPlayer {
 
 	/**
 	 * The main connection (TCP). It will be established first
@@ -55,16 +58,19 @@ public abstract class AbstractPlayer implements IBackup<AbstractPlayer> {
 	/**
 	 * The unique name in the server
 	 */
+	@Column(name = "name")
 	private String __name;
 	/**
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
+	@Column(name = "entity_id")
 	private int __entityId;
 	/**
 	 * A reference to its contained room. This value may be set
 	 * <code>null</code> @see {@link AbstractRoom}
 	 */
+	@Column(name = "room")
 	private AbstractRoom __room;
 	/**
 	 * The current system time when a new message from the client comes
