@@ -40,7 +40,7 @@ import com.tenio.entities.manager.PlayerManager;
  * @author kong
  * 
  */
-public abstract class AbstractRoom {
+public abstract class AbstractRoom implements IBackup<AbstractRoom> {
 
 	/**
 	 * List of reference players

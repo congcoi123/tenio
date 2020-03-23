@@ -25,6 +25,9 @@ package com.tenio.entities.manager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LogicEvent;
@@ -47,37 +50,46 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
-	private Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
+	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 
 	@Override
 	public int count() {
-		return __players.size();
+		synchronized (__players) {
+			return __players.size();
+		}
 	}
 
 	@Override
 	public int countPlayers() {
-		return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
+		synchronized (__players) {
+			return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
+		}
 	}
 
 	@Override
 	public Map<String, AbstractPlayer> gets() {
-		return __players;
+		return __deepCopy();
 	}
 
 	@Override
 	public void clear() {
-		__players.clear();
-		__players = null;
+		synchronized (__players) {
+			__players.clear();
+		}
 	}
 
 	@Override
 	public boolean contain(final String name) {
-		return __players.containsKey(name);
+		synchronized (__players) {
+			return __players.containsKey(name);
+		}
 	}
 
 	@Override
 	public AbstractPlayer get(final String name) {
-		return __players.get(name);
+		synchronized (__players) {
+			return __players.get(name);
+		}
 	}
 
 	@Override
@@ -177,6 +189,13 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			__players.remove(player.getName());
 		}
 
+	}
+
+	private Map<String, AbstractPlayer> __deepCopy() {
+		Set<Entry<String, AbstractPlayer>> entries = __players.entrySet();
+		HashMap<String, AbstractPlayer> shallowCopy = (HashMap<String, AbstractPlayer>) entries.stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return shallowCopy;
 	}
 
 }

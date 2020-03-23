@@ -42,7 +42,7 @@ import com.tenio.network.Connection;
  * @author kong
  * 
  */
-public abstract class AbstractPlayer {
+public abstract class AbstractPlayer implements IBackup<AbstractPlayer> {
 
 	/**
 	 * The main connection (TCP). It will be established first

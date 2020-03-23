@@ -25,6 +25,9 @@ package com.tenio.entities.manager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
@@ -46,32 +49,39 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	/**
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
-	private Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
+	private final Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
 
 	@Override
 	public int count() {
-		return __rooms.size();
+		synchronized (__rooms) {
+			return __rooms.size();
+		}
 	}
 
 	@Override
 	public Map<String, AbstractRoom> gets() {
-		return __rooms;
+		return __deepCopy();
 	}
 
 	@Override
 	public void clear() {
-		__rooms.clear();
-		__rooms = null;
+		synchronized (__rooms) {
+			__rooms.clear();
+		}
 	}
 
 	@Override
 	public AbstractRoom get(final String roomId) {
-		return __rooms.get(roomId);
+		synchronized (__rooms) {
+			return __rooms.get(roomId);
+		}
 	}
 
 	@Override
 	public boolean contain(final String roomId) {
-		return __rooms.containsKey(roomId);
+		synchronized (__rooms) {
+			return __rooms.containsKey(roomId);
+		}
 	}
 
 	@Override
@@ -81,7 +91,6 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.CREATED_ROOM, room);
 		}
-
 	}
 
 	@Override
@@ -153,6 +162,13 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		player.setRoom(null);
 		// fire an event
 		EventManager.getEvent().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
+	}
+	
+	private Map<String, AbstractRoom> __deepCopy() {
+		Set<Entry<String, AbstractRoom>> entries = __rooms.entrySet();
+		HashMap<String, AbstractRoom> shallowCopy = (HashMap<String, AbstractRoom>) entries.stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return shallowCopy;
 	}
 
 }
