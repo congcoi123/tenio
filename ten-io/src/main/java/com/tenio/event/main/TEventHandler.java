@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.IEvent;
 
@@ -42,7 +44,8 @@ public final class TEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
+	@GuardedBy("this")
+	private final Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.
@@ -50,7 +53,7 @@ public final class TEventHandler<T> {
 	 * @param type  @see {@link TEvent}
 	 * @param event @see {@link IEvent}
 	 */
-	public void subscribe(final TEvent type, final IEvent<T> event) {
+	public synchronized void subscribe(final TEvent type, final IEvent<T> event) {
 		if (__delegate.containsKey(type)) {
 			__delegate.get(type).add(event);
 		} else {
@@ -70,7 +73,7 @@ public final class TEventHandler<T> {
 	 * @return Returns the event result (the response of its subscribers) @see
 	 *         {@link Object} or <code>null</code>
 	 */
-	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public synchronized Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (!__delegate.isEmpty()) {
 			Object obj = null;
 			if (__delegate.containsKey(type)) {
@@ -87,7 +90,7 @@ public final class TEventHandler<T> {
 	/**
 	 * Clear all events and these handlers.
 	 */
-	public void clear() {
+	public synchronized void clear() {
 		if (!__delegate.isEmpty()) {
 			__delegate.clear();
 		}

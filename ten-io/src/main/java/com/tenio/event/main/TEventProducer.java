@@ -36,7 +36,7 @@ public final class TEventProducer {
 	/**
 	 * @see TEventHandler
 	 */
-	private TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
+	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
 
 	/**
 	 * @return Returns @see {@link TEventHandler}

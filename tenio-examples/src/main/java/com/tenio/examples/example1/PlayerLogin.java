@@ -26,7 +26,7 @@ package com.tenio.examples.example1;
 import com.tenio.annotation.Column;
 import com.tenio.annotation.Entity;
 import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.IBackup;
+import com.tenio.entities.annotation.IBackup;
 
 /**
  * The player in server

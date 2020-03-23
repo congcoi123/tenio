@@ -41,11 +41,11 @@ public final class LEventManager extends AbstractLogger {
 	/**
 	 * A list of subscribers
 	 */
-	private List<LSubscriber> __subscribers = new ArrayList<LSubscriber>();
+	private final List<LSubscriber> __subscribers = new ArrayList<LSubscriber>();
 	/**
 	 * @see LEventProducer
 	 */
-	private LEventProducer __producer = new LEventProducer();
+	private final LEventProducer __producer = new LEventProducer();
 
 	/**
 	 * @see LEventProducer#emit(LogicEvent, Object...)

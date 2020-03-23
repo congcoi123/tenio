@@ -46,11 +46,11 @@ final class ServerLogic extends AbstractLogger {
 	/**
 	 * @see IPlayerManager
 	 */
-	private IPlayerManager __playerManager;
+	private final IPlayerManager __playerManager;
 	/**
 	 * @see IRoomManager
 	 */
-	private IRoomManager __roomManager;
+	private final IRoomManager __roomManager;
 
 	public ServerLogic(IPlayerManager playerManager, IRoomManager roomManager) {
 		__playerManager = playerManager;

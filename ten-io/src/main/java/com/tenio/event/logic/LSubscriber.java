@@ -37,11 +37,11 @@ public final class LSubscriber {
 	/**
 	 * @see LogicEvent
 	 */
-	private LogicEvent __type;
+	private final LogicEvent __type;
 	/**
 	 * @see ISubscriber
 	 */
-	private ISubscriber __sub;
+	private final ISubscriber __sub;
 
 	public static LSubscriber newInstance(final LogicEvent type, final ISubscriber sub) {
 		return new LSubscriber(type, sub);
