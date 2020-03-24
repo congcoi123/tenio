@@ -81,32 +81,28 @@ public final class TimeOutScanTask extends AbstractLogger {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			long currentTime = System.currentTimeMillis();
 
-			for (AbstractPlayer player : __playerApi.gets().values()) {
+			for (var player : __playerApi.gets().values()) {
 				// normal state, can check time out
 				if (!player.isIgnoreTimeout()) {
-					synchronized (__removeables) {
-						long writerTime = player.getWriterTime();
-						if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
+					long writerTime = player.getWriterTime();
+					if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
+						__removeables.add(player);
+						continue;
+					} else { // check reader time
+						long readerTime = player.getReaderTime();
+						if (currentTime - readerTime >= (__idleReader * 1000)) {
 							__removeables.add(player);
-							continue;
-						} else { // check reader time
-							long readerTime = player.getReaderTime();
-							if (currentTime - readerTime >= (__idleReader * 1000)) {
-								__removeables.add(player);
-							}
 						}
 					}
 				}
 			}
 
-			synchronized (__removeables) {
-				__removeables.forEach((player) -> {
-					EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);
-					__playerApi.logOut(player);
-				});
+			__removeables.forEach((player) -> {
+				EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);
+				__playerApi.logOut(player);
+			});
 
-				__removeables.clear();
-			}
+			__removeables.clear();
 
 		}, 0, __timeoutScanPeriod, TimeUnit.SECONDS);
 	}
