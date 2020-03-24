@@ -142,8 +142,7 @@ public final class Server extends AbstractLogger implements IServer {
 			__checkSubscriberReconnection(configuration);
 
 			// collect all subscribers, listen all the events
-			EventManager.getEvent().subscribe();
-			EventManager.getLogic().subscribe();
+			EventManager.subscribe();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
@@ -182,8 +181,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__heartBeatManager.clear();
 		__roomManager.clear();
 		__playerManager.clear();
-		EventManager.getEvent().clear();
-		EventManager.getLogic().clear();
+		EventManager.clear();
 	}
 
 	@Override

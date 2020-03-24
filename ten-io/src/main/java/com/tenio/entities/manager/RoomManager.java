@@ -25,9 +25,6 @@ package com.tenio.entities.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
@@ -60,7 +57,9 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 
 	@Override
 	public Map<String, AbstractRoom> gets() {
-		return __deepCopy();
+		synchronized (__rooms) {
+			return __rooms;
+		}
 	}
 
 	@Override
@@ -95,16 +94,16 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 
 	@Override
 	public void remove(final AbstractRoom room) {
-		try {
-			if (!contain(room.getId())) {
-				throw new NullRoomException();
-			}
-		} catch (NullRoomException e) {
-			error("REMOVE ROOM", room.getName(), e);
-			return;
-		}
-
 		synchronized (__rooms) {
+			try {
+				if (!__rooms.containsKey(room.getId())) {
+					throw new NullRoomException();
+				}
+			} catch (NullRoomException e) {
+				error("REMOVE ROOM", room.getName(), e);
+				return;
+			}
+			
 			// fire an event
 			EventManager.getEvent().emit(TEvent.REMOVE_ROOM, room);
 			// force all players leave this room
@@ -162,13 +161,6 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		player.setRoom(null);
 		// fire an event
 		EventManager.getEvent().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
-	}
-	
-	private Map<String, AbstractRoom> __deepCopy() {
-		Set<Entry<String, AbstractRoom>> entries = __rooms.entrySet();
-		HashMap<String, AbstractRoom> shallowCopy = (HashMap<String, AbstractRoom>) entries.stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		return shallowCopy;
 	}
 
 }

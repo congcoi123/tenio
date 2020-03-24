@@ -25,9 +25,6 @@ package com.tenio.entities.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LogicEvent;
@@ -68,7 +65,9 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public Map<String, AbstractPlayer> gets() {
-		return __deepCopy();
+		synchronized (__players) {
+			return __players;
+		}
 	}
 
 	@Override
@@ -98,14 +97,6 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			if (player.getName() == null) {
 				throw new NullPlayerException();
 			}
-			if (contain(player.getName())) {
-				throw new DuplicatedPlayerException();
-			}
-		} catch (DuplicatedPlayerException e) {
-			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-			error("ADD PLAYER CONNECTION", player.getName(), e);
-			return;
 		} catch (NullPlayerException e) {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
@@ -114,6 +105,17 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		}
 
 		synchronized (__players) {
+			try {
+				if (__players.containsKey(player.getName())) {
+					throw new DuplicatedPlayerException();
+				}
+			} catch (DuplicatedPlayerException e) {
+				// fire an event
+				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				error("ADD PLAYER CONNECTION", player.getName(), e);
+				return;
+			}
+
 			// add the main connection
 			connection.setId(player.getName());
 			player.setConnection(connection);
@@ -128,18 +130,18 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void add(final AbstractPlayer player) {
-		try {
-			if (contain(player.getName())) {
-				throw new DuplicatedPlayerException();
-			}
-		} catch (DuplicatedPlayerException e) {
-			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-			error("ADD PLAYER", player.getName(), e);
-			return;
-		}
-
 		synchronized (__players) {
+			try {
+				if (__players.containsKey(player.getName())) {
+					throw new DuplicatedPlayerException();
+				}
+			} catch (DuplicatedPlayerException e) {
+				// fire an event
+				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				error("ADD PLAYER", player.getName(), e);
+				return;
+			}
+
 			__players.put(player.getName(), player);
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
@@ -149,11 +151,15 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void remove(final AbstractPlayer player) {
-		if (player == null || !contain(player.getName())) {
+		if (player == null) {
 			return;
 		}
 
 		synchronized (__players) {
+			if (!__players.containsKey(player.getName())) {
+				return;
+			}
+
 			// force player leave room, fire a logic event
 			EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
@@ -181,21 +187,18 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void clean(final AbstractPlayer player) {
-		if (player == null || !contain(player.getName())) {
+		if (player == null) {
 			return;
 		}
 
 		synchronized (__players) {
+			if (!__players.containsKey(player.getName())) {
+				return;
+			}
+
 			__players.remove(player.getName());
 		}
 
-	}
-
-	private Map<String, AbstractPlayer> __deepCopy() {
-		Set<Entry<String, AbstractPlayer>> entries = __players.entrySet();
-		HashMap<String, AbstractPlayer> shallowCopy = (HashMap<String, AbstractPlayer>) entries.stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		return shallowCopy;
 	}
 
 }

@@ -26,8 +26,6 @@ package com.tenio.event.logic;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.concurrent.GuardedBy;
-
 import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.event.IEvent;
 
@@ -42,7 +40,6 @@ public final class LEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	@GuardedBy("this")
 	private final Map<LogicEvent, IEvent<T>> __delegate = new HashMap<LogicEvent, IEvent<T>>();
 
 	/**
@@ -51,7 +48,7 @@ public final class LEventHandler<T> {
 	 * @param type  @see {@link LogicEvent}
 	 * @param event @see {@link IEvent}
 	 */
-	public synchronized void subscribe(final LogicEvent type, final IEvent<T> event) {
+	public void subscribe(final LogicEvent type, final IEvent<T> event) {
 		__delegate.put(type, event);
 	}
 
@@ -63,7 +60,7 @@ public final class LEventHandler<T> {
 	 * @return Returns the event result (the response of its subscribers) @see
 	 *         {@link Object} or <code>null</code>
 	 */
-	public synchronized Object emit(final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public Object emit(final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (__delegate.containsKey(type)) {
 			return __delegate.get(type).emit(args);
 		}
@@ -73,7 +70,7 @@ public final class LEventHandler<T> {
 	/**
 	 * Clear all events and these handlers
 	 */
-	public synchronized void clear() {
+	public void clear() {
 		if (!__delegate.isEmpty()) {
 			__delegate.clear();
 		}

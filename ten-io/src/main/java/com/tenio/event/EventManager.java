@@ -51,5 +51,15 @@ public final class EventManager extends AbstractLogger {
 	public static LEventManager getLogic() {
 		return __lEvent;
 	}
+	
+	public static void subscribe() {
+		__tEvent.subscribe();
+		__lEvent.subscribe();
+	}
+	
+	public static void clear() {
+		__tEvent.clear();
+		__lEvent.clear();
+	}
 
 }
