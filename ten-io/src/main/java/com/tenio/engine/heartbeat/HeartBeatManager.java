@@ -48,13 +48,14 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@GuardedBy("this")
 	private final Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
-	private ExecutorService __executorService;
 	/**
 	 * A Set is used as the container for the delayed messages because of the
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
 	 * by their dispatch time. @see {@link HMessage}
 	 */
+	@GuardedBy("this")
 	private final Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
+	private ExecutorService __executorService;
 
 	@Override
 	public void initialize(final BaseConfiguration configuration) {
@@ -129,11 +130,9 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	}
 
 	@Override
-	public void sendMessage(String id, TObject message, double delayTime) {
-		synchronized (__listeners) {
-			var container = HMessage.newInstance(message, delayTime);
-			__listeners.get(id).add(container);
-		}
+	public synchronized void sendMessage(String id, TObject message, double delayTime) {
+		var container = HMessage.newInstance(message, delayTime);
+		__listeners.get(id).add(container);
 	}
 
 	@Override
