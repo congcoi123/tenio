@@ -38,11 +38,11 @@ public final class EventManager extends AbstractLogger {
 	/**
 	 * @see TEventManager
 	 */
-	private static volatile TEventManager __tEvent = new TEventManager();
+	private static TEventManager __tEvent = new TEventManager();
 	/**
 	 * @see LEventManager
 	 */
-	private static volatile LEventManager __lEvent = new LEventManager();
+	private static LEventManager __lEvent = new LEventManager();
 
 	public static TEventManager getEvent() {
 		return __tEvent;
@@ -50,6 +50,16 @@ public final class EventManager extends AbstractLogger {
 
 	public static LEventManager getLogic() {
 		return __lEvent;
+	}
+	
+	public static void subscribe() {
+		__tEvent.subscribe();
+		__lEvent.subscribe();
+	}
+	
+	public static void clear() {
+		__tEvent.clear();
+		__lEvent.clear();
 	}
 
 }

@@ -86,21 +86,21 @@ public final class Server extends AbstractLogger implements IServer {
 		return __instance;
 	}
 
-	private IHeartBeatManager __heartBeatManager;
-	private IRoomManager __roomManager;
-	private IPlayerManager __playerManager;
-	private ITaskManager __taskManager;
+	private final IHeartBeatManager __heartBeatManager;
+	private final IRoomManager __roomManager;
+	private final IPlayerManager __playerManager;
+	private final ITaskManager __taskManager;
 
-	private PlayerApi __playerApi;
-	private RoomApi __roomApi;
-	private HeartBeatApi __heartbeatApi;
-	private TaskApi __taskApi;
-	private MessageApi __messageApi;
+	private final PlayerApi __playerApi;
+	private final RoomApi __roomApi;
+	private final HeartBeatApi __heartbeatApi;
+	private final TaskApi __taskApi;
+	private final MessageApi __messageApi;
 
 	/**
 	 * @see {@link ServerLogic}
 	 */
-	private ServerLogic __logic;
+	private final ServerLogic __logic;
 	/**
 	 * @see {@link IExtension}
 	 */
@@ -142,8 +142,7 @@ public final class Server extends AbstractLogger implements IServer {
 			__checkSubscriberReconnection(configuration);
 
 			// collect all subscribers, listen all the events
-			EventManager.getEvent().subscribe();
-			EventManager.getLogic().subscribe();
+			EventManager.subscribe();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
@@ -182,8 +181,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__heartBeatManager.clear();
 		__roomManager.clear();
 		__playerManager.clear();
-		EventManager.getEvent().clear();
-		EventManager.getLogic().clear();
+		EventManager.clear();
 	}
 
 	@Override

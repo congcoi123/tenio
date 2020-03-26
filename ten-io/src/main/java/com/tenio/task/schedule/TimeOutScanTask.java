@@ -49,25 +49,25 @@ public final class TimeOutScanTask extends AbstractLogger {
 	/**
 	 * @see PlayerApi
 	 */
-	private PlayerApi __playerApi;
+	private final PlayerApi __playerApi;
 	/**
 	 * The removable list of players
 	 */
-	private List<AbstractPlayer> __removeables = new ArrayList<AbstractPlayer>();
+	private final List<AbstractPlayer> __removeables = new ArrayList<AbstractPlayer>();
 	/**
 	 * After a number of seconds without any message from the client. It can be
 	 * configured in your configurations @see {@link BaseConfiguration}
 	 */
-	private int __idleReader;
+	private final int __idleReader;
 	/**
 	 * After a number of seconds without any message is sent to the client. It can
 	 * be configured in your configurations @see {@link BaseConfiguration}
 	 */
-	private int __idleWriter;
+	private final int __idleWriter;
 	/**
 	 * The period time for scanning IDLE players and log out those
 	 */
-	private int __timeoutScanPeriod;
+	private final int __timeoutScanPeriod;
 
 	public TimeOutScanTask(PlayerApi playerApi, int idleReader, int idleWriter, int timeoutScanPeriod) {
 		__playerApi = playerApi;
@@ -81,26 +81,21 @@ public final class TimeOutScanTask extends AbstractLogger {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			long currentTime = System.currentTimeMillis();
 
-			__playerApi.gets().forEach((key, value) -> {
+			for (var player : __playerApi.gets().values()) {
 				// normal state, can check time out
-				if (!value.isIgnoreTimeout()) {
-					long writerTime = value.getWriterTime();
+				if (!player.isIgnoreTimeout()) {
+					long writerTime = player.getWriterTime();
 					if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
-						synchronized (__removeables) {
-							__removeables.add(value);
-						}
-						return;
+						__removeables.add(player);
+						continue;
 					} else { // check reader time
-						long readerTime = value.getReaderTime();
+						long readerTime = player.getReaderTime();
 						if (currentTime - readerTime >= (__idleReader * 1000)) {
-							synchronized (__removeables) {
-								__removeables.add(value);
-							}
-							return;
+							__removeables.add(player);
 						}
 					}
 				}
-			});
+			}
 
 			__removeables.forEach((player) -> {
 				EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);

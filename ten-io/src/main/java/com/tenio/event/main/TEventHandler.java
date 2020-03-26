@@ -42,7 +42,7 @@ public final class TEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
+	private final Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.

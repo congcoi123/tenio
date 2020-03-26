@@ -23,7 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example1;
 
+import com.tenio.annotation.Column;
+import com.tenio.annotation.Entity;
 import com.tenio.entities.AbstractPlayer;
+import com.tenio.entities.annotation.IBackup;
 
 /**
  * The player in server
@@ -31,17 +34,30 @@ import com.tenio.entities.AbstractPlayer;
  * @author kong
  *
  */
-public class PlayerLogin extends AbstractPlayer {
+@Entity
+public class PlayerLogin extends AbstractPlayer implements IBackup<PlayerLogin> {
 
 	/**
 	 * For counting the number of messages that sent to this player
 	 */
+	
+	@Column(name = "counter")
 	public int counter;
 
 	public PlayerLogin(String name) {
 		super(name);
 		
 		counter = 0;
+	}
+
+	@Override
+	public boolean backup() {
+		return false;
+	}
+
+	@Override
+	public PlayerLogin restore() {
+		return null;
 	}
 
 }

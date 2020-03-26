@@ -26,6 +26,8 @@ package com.tenio.entities;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenio.annotation.Column;
+import com.tenio.annotation.Entity;
 import com.tenio.entities.manager.PlayerManager;
 
 /**
@@ -40,27 +42,33 @@ import com.tenio.entities.manager.PlayerManager;
  * @author kong
  * 
  */
+@Entity
 public abstract class AbstractRoom {
 
 	/**
 	 * List of reference players
 	 */
+	@Column(name = "players")
 	private Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 	/**
 	 * Each room has its own unique id
 	 */
+	@Column(name = "id")
 	private String __id;
 	/**
 	 * Should be set a human-readable name
 	 */
+	@Column(name = "name")
 	private String __name;
 	/**
 	 * The maximum of players that this room can handle
 	 */
+	@Column(name = "capacity")
 	private int __capacity;
 	/**
 	 * To simple hold some states
 	 */
+	@Column(name = "state")
 	private int __state;
 
 	public AbstractRoom(final String id, final String name, final int capacity) {

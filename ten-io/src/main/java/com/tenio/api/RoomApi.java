@@ -44,7 +44,7 @@ public final class RoomApi extends AbstractLogger {
 	/**
 	 * @see {@link IRoomManager}
 	 */
-	private IRoomManager __roomManager;
+	private final IRoomManager __roomManager;
 
 	public RoomApi(IRoomManager roomManager) {
 		__roomManager = roomManager;

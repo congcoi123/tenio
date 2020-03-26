@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.entities;
 
+import com.tenio.annotation.Column;
+import com.tenio.annotation.Entity;
 import com.tenio.network.Connection;
 
 /**
@@ -42,6 +44,7 @@ import com.tenio.network.Connection;
  * @author kong
  * 
  */
+@Entity
 public abstract class AbstractPlayer {
 
 	/**
@@ -55,16 +58,19 @@ public abstract class AbstractPlayer {
 	/**
 	 * The unique name in the server
 	 */
+	@Column(name = "name")
 	private String __name;
 	/**
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
+	@Column(name = "entity_id")
 	private int __entityId;
 	/**
 	 * A reference to its contained room. This value may be set
 	 * <code>null</code> @see {@link AbstractRoom}
 	 */
+	@Column(name = "room")
 	private AbstractRoom __room;
 	/**
 	 * The current system time when a new message from the client comes
@@ -78,11 +84,13 @@ public abstract class AbstractPlayer {
 	/**
 	 * For simple hold some states. Default value is <code>0</code>
 	 */
+	@Column(name = "state")
 	private int __state;
 	/**
 	 * This flag (enabled state) allows the player not affected by the system
 	 * timeouts rule. The default value is <code>false</code>
 	 */
+	@Column(name = "ignore_timeout")
 	private boolean __isIgnoreTimeout;
 	/**
 	 * To quickly determine the player contains a connection or not

@@ -41,11 +41,11 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * A list of subscribers.
 	 */
-	private List<TSubscriber> __subscribers = new ArrayList<TSubscriber>();
+	private final List<TSubscriber> __subscribers = new ArrayList<TSubscriber>();
 	/**
 	 * @see TEventProducer
 	 */
-	private TEventProducer __producer = new TEventProducer();
+	private final TEventProducer __producer = new TEventProducer();
 
 	/**
 	 * @see TEventProducer#emit(TEvent, Object...)

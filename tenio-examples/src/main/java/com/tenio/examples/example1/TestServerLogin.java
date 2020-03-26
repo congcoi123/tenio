@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entities.annotation.EntityProcess;
 import com.tenio.entities.element.TArray;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
@@ -95,6 +96,11 @@ public final class TestServerLogin extends AbstractApp {
 				var player = this.<PlayerLogin>_getPlayer(args[0]);
 
 				info("PLAYER IN", player.getName());
+				try {
+					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				// Now you can send messages to the client
 				_taskApi.run(player.getName(), Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -110,6 +116,12 @@ public final class TestServerLogin extends AbstractApp {
 					var data = _messageApi.getArrayPack();
 					_messageApi.sendToPlayer(player, "c", "message", "d", data.put("H").put("3").put("L").put("O")
 							.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
+					
+					try {
+						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 
 				}, 0, 1, TimeUnit.SECONDS));
 

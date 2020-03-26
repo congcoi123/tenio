@@ -30,6 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.entities.element.TObject;
 import com.tenio.exception.HeartbeatNotFoundException;
@@ -44,13 +46,15 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class HeartBeatManager extends AbstractLogger implements IHeartBeatManager {
 
+	@GuardedBy("this")
+	private final Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
 	/**
 	 * A Set is used as the container for the delayed messages because of the
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
 	 * by their dispatch time. @see {@link HMessage}
 	 */
-	private Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
-	private Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
+	@GuardedBy("this")
+	private final Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
 	private ExecutorService __executorService;
 
 	@Override
@@ -114,16 +118,15 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	}
 
 	@Override
-	public boolean contains(final String id) {
+	public synchronized boolean contains(final String id) {
 		return __pool.containsKey(id);
 	}
 
 	@Override
-	public void clear() {
+	public synchronized void clear() {
 		__executorService.shutdownNow();
 		__executorService = null;
 		__pool.clear();
-		__pool = null;
 	}
 
 	@Override

@@ -46,32 +46,41 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	/**
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
-	private Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
+	private final Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
 
 	@Override
 	public int count() {
-		return __rooms.size();
+		synchronized (__rooms) {
+			return __rooms.size();
+		}
 	}
 
 	@Override
 	public Map<String, AbstractRoom> gets() {
-		return __rooms;
+		synchronized (__rooms) {
+			return __rooms;
+		}
 	}
 
 	@Override
 	public void clear() {
-		__rooms.clear();
-		__rooms = null;
+		synchronized (__rooms) {
+			__rooms.clear();
+		}
 	}
 
 	@Override
 	public AbstractRoom get(final String roomId) {
-		return __rooms.get(roomId);
+		synchronized (__rooms) {
+			return __rooms.get(roomId);
+		}
 	}
 
 	@Override
 	public boolean contain(final String roomId) {
-		return __rooms.containsKey(roomId);
+		synchronized (__rooms) {
+			return __rooms.containsKey(roomId);
+		}
 	}
 
 	@Override
@@ -81,21 +90,20 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.CREATED_ROOM, room);
 		}
-
 	}
 
 	@Override
 	public void remove(final AbstractRoom room) {
-		try {
-			if (!contain(room.getId())) {
-				throw new NullRoomException();
-			}
-		} catch (NullRoomException e) {
-			error("REMOVE ROOM", room.getName(), e);
-			return;
-		}
-
 		synchronized (__rooms) {
+			try {
+				if (!__rooms.containsKey(room.getId())) {
+					throw new NullRoomException();
+				}
+			} catch (NullRoomException e) {
+				error("REMOVE ROOM", room.getName(), e);
+				return;
+			}
+			
 			// fire an event
 			EventManager.getEvent().emit(TEvent.REMOVE_ROOM, room);
 			// force all players leave this room
