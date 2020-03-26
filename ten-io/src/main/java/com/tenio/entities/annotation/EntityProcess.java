@@ -73,10 +73,10 @@ public class EntityProcess {
 
 	public static String exportToJSON(Object object) throws Exception {
 		Class<?> clazz = object.getClass();
-		Map<String, String> jsonMap = new HashMap<>();
+		Map<String, String> jsonMap = new HashMap<String, String>();
 
 		try {
-			__checkEntity((object));
+			__checkEntity(object);
 			__sanitizerObject(object);
 
 			// Declare map attributes
@@ -96,9 +96,9 @@ public class EntityProcess {
 
 			// Convert Map data to JSON string
 			String jsonString = jsonMap.entrySet().stream()
-					.map(entry -> "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"")
+					.map(entry -> String.format("\"%s\":\"%s\"", entry.getKey(), entry.getValue()))
 					.collect(Collectors.joining(","));
-			return "{" + jsonString + "}";
+			return String.format("{%s}", jsonString);
 
 		} catch (Exception e) {
 			throw e;
