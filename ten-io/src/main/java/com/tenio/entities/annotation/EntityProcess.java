@@ -37,7 +37,7 @@ import com.tenio.annotation.Column;
 import com.tenio.annotation.Entity;
 import com.tenio.annotation.Sanitizer;
 
-public class EntityProcessAnnotation {
+public class EntityProcess {
 
 	private static void __sanitizerObject(Object object) throws Exception {
 		Class<?> clazz = object.getClass();

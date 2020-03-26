@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.annotation.EntityProcessAnnotation;
+import com.tenio.entities.annotation.EntityProcess;
 import com.tenio.entities.element.TArray;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
@@ -97,7 +97,7 @@ public final class TestServerLogin extends AbstractApp {
 
 				info("PLAYER IN", player.getName());
 				try {
-					info("PLAYER BACKUP", EntityProcessAnnotation.exportToJSON(player));
+					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -118,7 +118,7 @@ public final class TestServerLogin extends AbstractApp {
 							.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
 					
 					try {
-						info("PLAYER BACKUP", EntityProcessAnnotation.exportToJSON(player));
+						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
