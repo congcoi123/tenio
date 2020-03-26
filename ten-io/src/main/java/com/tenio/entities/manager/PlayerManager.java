@@ -47,37 +47,48 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
-	private Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
+	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 
 	@Override
 	public int count() {
-		return __players.size();
+		synchronized (__players) {
+			return __players.size();
+		}
 	}
 
 	@Override
 	public int countPlayers() {
-		return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
+		synchronized (__players) {
+			return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
+		}
 	}
 
 	@Override
 	public Map<String, AbstractPlayer> gets() {
-		return __players;
+		synchronized (__players) {
+			return __players;
+		}
 	}
 
 	@Override
 	public void clear() {
-		__players.clear();
-		__players = null;
+		synchronized (__players) {
+			__players.clear();
+		}
 	}
 
 	@Override
 	public boolean contain(final String name) {
-		return __players.containsKey(name);
+		synchronized (__players) {
+			return __players.containsKey(name);
+		}
 	}
 
 	@Override
 	public AbstractPlayer get(final String name) {
-		return __players.get(name);
+		synchronized (__players) {
+			return __players.get(name);
+		}
 	}
 
 	@Override
@@ -86,14 +97,6 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			if (player.getName() == null) {
 				throw new NullPlayerException();
 			}
-			if (contain(player.getName())) {
-				throw new DuplicatedPlayerException();
-			}
-		} catch (DuplicatedPlayerException e) {
-			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-			error("ADD PLAYER CONNECTION", player.getName(), e);
-			return;
 		} catch (NullPlayerException e) {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
@@ -102,6 +105,17 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		}
 
 		synchronized (__players) {
+			try {
+				if (__players.containsKey(player.getName())) {
+					throw new DuplicatedPlayerException();
+				}
+			} catch (DuplicatedPlayerException e) {
+				// fire an event
+				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				error("ADD PLAYER CONNECTION", player.getName(), e);
+				return;
+			}
+
 			// add the main connection
 			connection.setId(player.getName());
 			player.setConnection(connection);
@@ -116,18 +130,18 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void add(final AbstractPlayer player) {
-		try {
-			if (contain(player.getName())) {
-				throw new DuplicatedPlayerException();
-			}
-		} catch (DuplicatedPlayerException e) {
-			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-			error("ADD PLAYER", player.getName(), e);
-			return;
-		}
-
 		synchronized (__players) {
+			try {
+				if (__players.containsKey(player.getName())) {
+					throw new DuplicatedPlayerException();
+				}
+			} catch (DuplicatedPlayerException e) {
+				// fire an event
+				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				error("ADD PLAYER", player.getName(), e);
+				return;
+			}
+
 			__players.put(player.getName(), player);
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
@@ -137,11 +151,15 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void remove(final AbstractPlayer player) {
-		if (player == null || !contain(player.getName())) {
+		if (player == null) {
 			return;
 		}
 
 		synchronized (__players) {
+			if (!__players.containsKey(player.getName())) {
+				return;
+			}
+
 			// force player leave room, fire a logic event
 			EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
@@ -169,11 +187,15 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void clean(final AbstractPlayer player) {
-		if (player == null || !contain(player.getName())) {
+		if (player == null) {
 			return;
 		}
 
 		synchronized (__players) {
+			if (!__players.containsKey(player.getName())) {
+				return;
+			}
+
 			__players.remove(player.getName());
 		}
 

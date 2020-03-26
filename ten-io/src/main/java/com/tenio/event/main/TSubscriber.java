@@ -37,11 +37,11 @@ public final class TSubscriber {
 	/**
 	 * @see TEvent
 	 */
-	private TEvent __type;
+	private final TEvent __type;
 	/**
 	 * @see ISubscriber
 	 */
-	private ISubscriber __sub;
+	private final ISubscriber __sub;
 
 	public static TSubscriber newInstance(final TEvent type, final ISubscriber sub) {
 		return new TSubscriber(type, sub);

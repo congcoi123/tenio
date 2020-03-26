@@ -42,7 +42,7 @@ public final class HeartBeatApi extends AbstractLogger {
 	/**
 	 * @see IHeartBeatManager
 	 */
-	private IHeartBeatManager __heartBeatManager;
+	private final IHeartBeatManager __heartBeatManager;
 
 	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
 		__heartBeatManager = heartBeatManager;

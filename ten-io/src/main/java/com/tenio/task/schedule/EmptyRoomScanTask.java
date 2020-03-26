@@ -46,15 +46,15 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	/**
 	 * @see {@link RoomApi}
 	 */
-	private RoomApi __roomApi;
+	private final RoomApi __roomApi;
 	/**
 	 * The current list of rooms
 	 */
-	private Map<String, AbstractRoom> __rooms;
+	private final Map<String, AbstractRoom> __rooms;
 	/**
 	 * Removable list of rooms
 	 */
-	private List<AbstractRoom> __removables = new ArrayList<AbstractRoom>();
+	private final List<AbstractRoom> __removables = new ArrayList<AbstractRoom>();
 	/**
 	 * The period time for scanning empty rooms and delete those
 	 */

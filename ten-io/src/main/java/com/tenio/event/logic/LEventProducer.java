@@ -36,7 +36,7 @@ public final class LEventProducer {
 	/**
 	 * @see LEventHandler
 	 */
-	private LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
+	private final LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
 
 	/**
 	 * @return Returns @see {@link LEventHandler}

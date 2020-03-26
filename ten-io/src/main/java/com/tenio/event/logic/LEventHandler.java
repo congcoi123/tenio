@@ -40,7 +40,7 @@ public final class LEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private Map<LogicEvent, IEvent<T>> __delegate = new HashMap<LogicEvent, IEvent<T>>();
+	private final Map<LogicEvent, IEvent<T>> __delegate = new HashMap<LogicEvent, IEvent<T>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.

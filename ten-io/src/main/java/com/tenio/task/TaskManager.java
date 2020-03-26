@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.exception.RunningScheduledTaskException;
 import com.tenio.logger.AbstractLogger;
 
@@ -43,10 +45,11 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 	/**
 	 * A list of tasks in the server
 	 */
-	private Map<String, ScheduledFuture<?>> __tasks = new HashMap<String, ScheduledFuture<?>>();
+	@GuardedBy("this")
+	private final Map<String, ScheduledFuture<?>> __tasks = new HashMap<String, ScheduledFuture<?>>();
 
 	@Override
-	public void create(String id, ScheduledFuture<?> task) {
+	public synchronized void create(String id, ScheduledFuture<?> task) {
 		if (__tasks.containsKey(id)) {
 			try {
 				if (!__tasks.get(id).isDone() || !__tasks.get(id).isCancelled()) {
@@ -58,27 +61,22 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 			}
 		}
 
-		synchronized (__tasks) {
-			__tasks.put(id, task);
-			info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
-		}
-
+		__tasks.put(id, task);
+		info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
 	}
 
 	@Override
-	public void kill(String id) {
+	public synchronized void kill(String id) {
 		var task = __tasks.get(id);
 		if (task != null) {
-			synchronized (__tasks) {
-				task.cancel(true);
-				info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
-				__tasks.remove(id);
-			}
+			task.cancel(true);
+			info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+			__tasks.remove(id);
 		}
 	}
 
 	@Override
-	public int getRemainTime(String id) {
+	public synchronized int getRemainTime(String id) {
 		var task = __tasks.get(id);
 		if (task != null) {
 			return (int) task.getDelay(TimeUnit.SECONDS);
