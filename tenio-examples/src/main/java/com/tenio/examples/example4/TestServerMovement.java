@@ -92,7 +92,7 @@ public final class TestServerMovement extends AbstractApp {
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// the player has login successful
 				var player = this.<Inspector>_getPlayer(args[0]);
-				player.isIgnoreTimeout();
+				player.setIgnoreTimeout(true);
 
 				info("PLAYER IN", player.getName());
 

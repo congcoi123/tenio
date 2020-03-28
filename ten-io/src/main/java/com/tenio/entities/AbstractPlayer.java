@@ -203,7 +203,7 @@ public abstract class AbstractPlayer {
 		return __isIgnoreTimeout;
 	}
 
-	public void enableIgnoreTimeout(final boolean isIgnoreTimeout) {
+	public void setIgnoreTimeout(final boolean isIgnoreTimeout) {
 		__isIgnoreTimeout = isIgnoreTimeout;
 		currentReaderTime();
 		currentWriterTime();
