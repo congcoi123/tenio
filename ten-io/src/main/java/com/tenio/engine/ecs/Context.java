@@ -39,7 +39,7 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	private final List<TEntity> __entities;
 	private final ContextInfo __contextInfo;
 	
-	private Context(ContextInfo contextInfo) {
+	public Context(ContextInfo contextInfo) {
 		__contextInfo = contextInfo;
 		__entities = new ArrayList<TEntity>();
 	}
@@ -47,7 +47,7 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	@Override
 	public TEntity createEntity() {
 		@SuppressWarnings("unchecked")
-		TEntity entity = (TEntity) Entity.newInstance(__contextInfo);
+		TEntity entity = (TEntity) new Entity(__contextInfo);
 		__entities.add(entity);
 		return entity;
 	}

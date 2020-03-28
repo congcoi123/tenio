@@ -381,9 +381,9 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called every frame in a game loop
 	 * 
-	 * @param delta the time between two frames
+	 * @param deltaTime the time between two frames
 	 */
-	protected abstract void _onUpdate(float delta);
+	protected abstract void _onUpdate(float deltaTime);
 
 	/**
 	 * It is called every frame after {@link #_onUpdate(float)}

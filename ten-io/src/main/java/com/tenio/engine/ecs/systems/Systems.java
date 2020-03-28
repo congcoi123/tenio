@@ -43,6 +43,8 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	private final List<IRenderSystem> __renderSystems;
 	private final List<ITearDownSystem> __tearDownSystems;
 
+	private boolean __running = true;
+
 	/**
 	 * Creates a new Systems instance.
 	 */
@@ -94,8 +96,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 * @param deltaTime
 	 */
 	public void execute(float deltaTime) {
-		for (IExecuteSystem system : __executeSystems) {
-			system.execute(deltaTime);
+		if (__running) {
+			for (IExecuteSystem system : __executeSystems) {
+				system.execute(deltaTime);
+			}
 		}
 	}
 
@@ -105,8 +109,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 */
 	@Override
 	public void render(Paint paint) {
-		for (IRenderSystem system : __renderSystems) {
-			system.render(paint);
+		if (__running) {
+			for (IRenderSystem system : __renderSystems) {
+				system.render(paint);
+			}
 		}
 	}
 
@@ -125,6 +131,14 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 		__executeSystems.clear();
 		__renderSystems.clear();
 		__tearDownSystems.clear();
+	}
+
+	public void paused(boolean flag) {
+		__running = !flag;
+	}
+
+	public boolean isRunning() {
+		return __running;
 	}
 
 	@Override

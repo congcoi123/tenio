@@ -51,14 +51,10 @@ public class Entity implements IEntity {
 	private final ContextInfo __contextInfo;
 	private boolean __enabled;
 
-	private Entity(ContextInfo contextInfo) {
+	public Entity(ContextInfo contextInfo) {
 		__id = __nextId.getAndIncrement();
 		__contextInfo = contextInfo;
 		__components = new IComponent[__contextInfo.getComponentNames().length];
-	}
-
-	public static IEntity newInstance(ContextInfo contextInfo) {
-		return new Entity(contextInfo);
 	}
 	
 	/**
