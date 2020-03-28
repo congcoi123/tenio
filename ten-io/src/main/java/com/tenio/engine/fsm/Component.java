@@ -37,7 +37,7 @@ public abstract class Component<T> {
 	/**
 	 * A pointer to the agent that owns this instance
 	 */
-	protected T _entity;
+	protected final T _entity;
 
 	public Component(T entity) {
 		_entity = entity;

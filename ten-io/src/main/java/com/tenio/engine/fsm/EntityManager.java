@@ -41,7 +41,7 @@ public final class EntityManager extends AbstractLogger {
 	/**
 	 * The list of entities
 	 */
-	private Map<Integer, AbstractEntity> __entities = new HashMap<Integer, AbstractEntity>();
+	private final Map<Integer, AbstractEntity> __entities = new HashMap<Integer, AbstractEntity>();
 
 	/**
 	 * Register an entity to this management
