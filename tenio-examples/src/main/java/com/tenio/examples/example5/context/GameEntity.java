@@ -25,9 +25,8 @@ package com.tenio.examples.example5.context;
 
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.Entity;
-import com.tenio.examples.example5.components.Animation;
+import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.examples.example5.components.GameComponents;
-import com.tenio.examples.example5.components.Motion;
 import com.tenio.examples.example5.components.Position;
 
 /**
@@ -35,11 +34,14 @@ import com.tenio.examples.example5.components.Position;
  */
 public class GameEntity extends Entity {
 
-	private Animation __animationComponent = new Animation();
-	private Motion __motionComponent = new Motion();
+	private final ComponentPool[] __componentPools;
 
 	public GameEntity(ContextInfo contextInfo) {
 		super(contextInfo);
+		__componentPools = new ComponentPool[contextInfo.getNumberComponents()];
+		for (int i = 0; i < contextInfo.getNumberComponents(); i++) {
+			__componentPools[i] = new ComponentPool();
+		}
 	}
 
 	public boolean isAnimation() {
@@ -49,8 +51,9 @@ public class GameEntity extends Entity {
 	public GameEntity setAnimation(boolean value) {
 		if (value != hasComponent(GameComponents.ANIMATION)) {
 			if (value) {
-				addComponent(GameComponents.ANIMATION, __animationComponent);
+				addComponent(GameComponents.ANIMATION, __componentPools[GameComponents.ANIMATION].get());
 			} else {
+				__componentPools[GameComponents.ANIMATION].repay(getComponent(GameComponents.ANIMATION));
 				removeComponent(GameComponents.ANIMATION);
 			}
 		}
@@ -64,8 +67,9 @@ public class GameEntity extends Entity {
 	public GameEntity setMotion(boolean value) {
 		if (value != hasComponent(GameComponents.MOTION)) {
 			if (value) {
-				addComponent(GameComponents.MOTION, __motionComponent);
+				addComponent(GameComponents.MOTION, __componentPools[GameComponents.MOTION].get());
 			} else {
+				__componentPools[GameComponents.MOTION].repay(getComponent(GameComponents.MOTION));
 				removeComponent(GameComponents.MOTION);
 			}
 		}
@@ -77,18 +81,23 @@ public class GameEntity extends Entity {
 	}
 
 	public GameEntity addPosition(float x, float y) {
-		var component = new Position(x, y);
+		var component = (Position) __componentPools[GameComponents.POSITION].get();
+		component.x = x;
+		component.y = y;
 		addComponent(GameComponents.POSITION, component);
 		return this;
 	}
 
 	public GameEntity replacePosition(float x, float y) {
-		var component = new Position(x, y);
+		var component = (Position) __componentPools[GameComponents.POSITION].get();
+		component.x = x;
+		component.y = y;
 		replaceComponent(GameComponents.POSITION, component);
 		return this;
 	}
 
 	public GameEntity removePosition() {
+		__componentPools[GameComponents.POSITION].repay(getComponent(GameComponents.POSITION));
 		removeComponent(GameComponents.POSITION);
 		return this;
 	}

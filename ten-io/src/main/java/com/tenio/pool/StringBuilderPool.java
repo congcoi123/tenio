@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.pool;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,7 +56,9 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 	}
 	
 	private Logger __logger = LogManager.getLogger(getClass());
+	@GuardedBy("this")
 	private StringBuilder[] __pool;
+	@GuardedBy("this")
 	private boolean[] __used;
 
 	public StringBuilderPool() {

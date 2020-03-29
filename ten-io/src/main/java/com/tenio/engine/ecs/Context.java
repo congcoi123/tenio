@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.pool.EntityPool;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
@@ -38,18 +39,17 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	
 	private final List<TEntity> __entities;
 	private final ContextInfo __contextInfo;
+	private final EntityPool __entityPool;
 	
 	public Context(ContextInfo contextInfo) {
 		__contextInfo = contextInfo;
 		__entities = new ArrayList<TEntity>();
+		__entityPool = new EntityPool();
 	}
 
 	@Override
 	public TEntity createEntity() {
-		@SuppressWarnings("unchecked")
-		TEntity entity = (TEntity) new Entity(__contextInfo);
-		__entities.add(entity);
-		return entity;
+		return null;
 	}
 
 	@Override
@@ -63,9 +63,13 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	}
 
 	@Override
-	public TEntity[] getEntities() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<TEntity> getEntities() {
+		return __entities;
+	}
+	
+	@Override
+	public EntityPool getEntityPool() {
+		return __entityPool;
 	}
 
 	@Override

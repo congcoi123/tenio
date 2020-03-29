@@ -24,15 +24,21 @@ THE SOFTWARE.
 package com.tenio.examples.example5.systems;
 
 import com.tenio.engine.ecs.systems.IExecuteSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
 
 /**
  * @author kong
  */
-public class MoveSystem implements IExecuteSystem {
+public class MoveSystem implements IInitializeSystem, IExecuteSystem {
+
+	@Override
+	public void initialize() {
+
+	}
 
 	@Override
 	public void execute(float deltaTime) {
-		
+
 	}
 
 }

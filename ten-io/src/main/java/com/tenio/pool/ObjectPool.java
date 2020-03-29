@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.pool;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.constant.Constants;
 import com.tenio.entities.element.TObject;
 import com.tenio.exception.NullElementPoolException;
@@ -36,7 +38,9 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class ObjectPool extends AbstractLogger implements IElementPool<TObject> {
 
+	@GuardedBy("this")
 	private TObject[] __pool;
+	@GuardedBy("this")
 	private boolean[] __used;
 
 	public ObjectPool() {

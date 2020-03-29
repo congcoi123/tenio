@@ -21,49 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs;
+package com.tenio.examples.example5;
 
-import java.util.Arrays;
+import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
+import com.tenio.examples.example5.systems.InitializeSystem;
+import com.tenio.examples.example5.systems.MoveSystem;
+import com.tenio.examples.example5.systems.RenderSystem;
+import com.tenio.examples.example5.systems.TeardownSystem;
 
 /**
- * @author Kong
+ * @author kong
  */
-public class ContextInfo {
-
-	@SuppressWarnings("rawtypes")
-	private final Class[] __componentTypes;
-	private final String[] __componentNames;
-	private final String __name;
-	private final int __numberComponents;
-
-	public ContextInfo(String name, String[] componentNames, @SuppressWarnings("rawtypes") Class[] componentTypes, int numberComponents) {
-		__name = name;
-		__componentNames = componentNames;
-		__componentTypes = componentTypes;
-		__numberComponents = numberComponents;
-	}
-
-	@Override
-	public String toString() {
-		return "ContextInfo{" + "name='" + __name + '\'' + ", componentNames=" + Arrays.toString(__componentNames)
-				+ '}';
+public class ECS extends ECSHeartBeat {
+	
+	public ECS() {
+		addSystem(new InitializeSystem());
+		addSystem(new MoveSystem());
+		addSystem(new RenderSystem());
+		addSystem(new TeardownSystem());
 	}
 	
-	public String getName() {
-		return __name;
-	}
-	
-	public String[] getComponentNames() {
-		return __componentNames;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public Class[] getComponentTypes() {
-		return __componentTypes;
-	}
-	
-	public int getNumberComponents() {
-		return __numberComponents;
-	}
-
 }

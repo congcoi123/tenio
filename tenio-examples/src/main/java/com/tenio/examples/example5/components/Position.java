@@ -32,9 +32,4 @@ public class Position implements IComponent {
 
 	public float x, y;
 
-	public Position(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-
 }

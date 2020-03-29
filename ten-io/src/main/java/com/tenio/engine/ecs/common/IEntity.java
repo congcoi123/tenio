@@ -34,6 +34,8 @@ package com.tenio.engine.ecs.common;
  */
 public interface IEntity {
 	
+	void setEnabled(boolean enabled);
+	
 	boolean isEnabled();
 
 	void addComponent(int index, IComponent component);
@@ -53,5 +55,7 @@ public interface IEntity {
 	boolean hasAnyComponent(int... indices);
 
 	void removeAllComponents();
+	
+	void reset();
 
 }

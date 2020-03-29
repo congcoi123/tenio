@@ -259,4 +259,14 @@ public class Entity implements IEntity {
 				+ ", components=" + __components + '}';
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		
+	}
+
+	@Override
+	public void reset() {
+		
+	}
+
 }
