@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.pool;
+package com.tenio.logger.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.tenio.configuration.constant.Constants;
+import com.tenio.pool.IElementPool;
 
 /**
  * @see {@link IElementPool}

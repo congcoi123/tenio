@@ -21,14 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.pool;
+package com.tenio.api.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TObject;
+import com.tenio.entities.element.TArray;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.pool.IElementPool;
 
 /**
  * @see {@link IElementPool}
@@ -36,25 +37,25 @@ import com.tenio.logger.AbstractLogger;
  * @author kong
  * 
  */
-public final class ObjectPool extends AbstractLogger implements IElementPool<TObject> {
+public final class ArrayPool extends AbstractLogger implements IElementPool<TArray> {
 
 	@GuardedBy("this")
-	private TObject[] __pool;
+	private TArray[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public ObjectPool() {
-		__pool = new TObject[Constants.BASE_ELEMENT_POOL];
+	public ArrayPool() {
+		__pool = new TArray[Constants.BASE_ELEMENT_POOL];
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = TObject.newInstance();
+			__pool[i] = TArray.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized TObject get() {
+	public synchronized TArray get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -69,15 +70,15 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new TObject[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new TArray[oldPool.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = TObject.newInstance();
+			__pool[i] = TArray.newInstance();
 			__used[i] = false;
 		}
 
-		info("OBJECT POOL",
+		info("ARRAY POOL",
 				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
@@ -86,19 +87,20 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 	}
 
 	@Override
-	public synchronized void repay(TObject element) {
+	public synchronized void repay(TArray element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {
 					__used[i] = false;
-					// Clear object
+					// Clear array
 					element.clear();
 					return;
 				}
 			}
-			throw new NullElementPoolException();
+			throw new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
 		} catch (NullElementPoolException e) {
-			error("EXCEPTION REPAY", "object", e);
+			error("EXCEPTION REPAY", "array", e);
 		}
 	}
+
 }

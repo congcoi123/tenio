@@ -21,14 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.pool;
+package com.tenio.api.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
+import com.tenio.entities.element.TObject;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.message.codec.ByteArrayInputStream;
+import com.tenio.pool.IElementPool;
 
 /**
  * @see {@link IElementPool}
@@ -36,25 +37,25 @@ import com.tenio.message.codec.ByteArrayInputStream;
  * @author kong
  * 
  */
-public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementPool<ByteArrayInputStream> {
+public final class ObjectPool extends AbstractLogger implements IElementPool<TObject> {
 
 	@GuardedBy("this")
-	private ByteArrayInputStream[] __pool;
+	private TObject[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public ByteArrayInputStreamPool() {
-		__pool = new ByteArrayInputStream[Constants.BASE_ELEMENT_POOL];
+	public ObjectPool() {
+		__pool = new TObject[Constants.BASE_ELEMENT_POOL];
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance();
+			__pool[i] = TObject.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized ByteArrayInputStream get() {
+	public synchronized TObject get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -69,15 +70,15 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new ByteArrayInputStream[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new TObject[oldPool.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance();
+			__pool[i] = TObject.newInstance();
 			__used[i] = false;
 		}
 
-		info("BYTE ARRAY POOL",
+		info("OBJECT POOL",
 				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
@@ -86,18 +87,19 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 	}
 
 	@Override
-	public synchronized void repay(ByteArrayInputStream element) {
+	public synchronized void repay(TObject element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {
 					__used[i] = false;
+					// Clear object
+					element.clear();
 					return;
 				}
 			}
 			throw new NullElementPoolException();
 		} catch (NullElementPoolException e) {
-			error("EXCEPTION REPAY", "byte", e);
+			error("EXCEPTION REPAY", "object", e);
 		}
 	}
-
 }

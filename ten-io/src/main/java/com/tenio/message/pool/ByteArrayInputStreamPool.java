@@ -21,14 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.pool;
+package com.tenio.message.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TArray;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.message.codec.ByteArrayInputStream;
+import com.tenio.pool.IElementPool;
 
 /**
  * @see {@link IElementPool}
@@ -36,25 +37,25 @@ import com.tenio.logger.AbstractLogger;
  * @author kong
  * 
  */
-public final class ArrayPool extends AbstractLogger implements IElementPool<TArray> {
+public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementPool<ByteArrayInputStream> {
 
 	@GuardedBy("this")
-	private TArray[] __pool;
+	private ByteArrayInputStream[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public ArrayPool() {
-		__pool = new TArray[Constants.BASE_ELEMENT_POOL];
+	public ByteArrayInputStreamPool() {
+		__pool = new ByteArrayInputStream[Constants.BASE_ELEMENT_POOL];
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = TArray.newInstance();
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized TArray get() {
+	public synchronized ByteArrayInputStream get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -69,15 +70,15 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new TArray[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new ByteArrayInputStream[oldPool.length + Constants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = TArray.newInstance();
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 
-		info("ARRAY POOL",
+		info("BYTE ARRAY POOL",
 				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
@@ -86,19 +87,17 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 	}
 
 	@Override
-	public synchronized void repay(TArray element) {
+	public synchronized void repay(ByteArrayInputStream element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {
 					__used[i] = false;
-					// Clear array
-					element.clear();
 					return;
 				}
 			}
-			throw new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
+			throw new NullElementPoolException();
 		} catch (NullElementPoolException e) {
-			error("EXCEPTION REPAY", "array", e);
+			error("EXCEPTION REPAY", "byte", e);
 		}
 	}
 
