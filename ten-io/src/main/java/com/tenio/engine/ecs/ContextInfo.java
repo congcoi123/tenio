@@ -30,40 +30,32 @@ import java.util.Arrays;
  */
 public class ContextInfo {
 
-	@SuppressWarnings("rawtypes")
-	private final Class[] __componentTypes;
 	private final String[] __componentNames;
 	private final String __name;
 	private final int __numberComponents;
 
-	public ContextInfo(String name, String[] componentNames, @SuppressWarnings("rawtypes") Class[] componentTypes, int numberComponents) {
+	public ContextInfo(String name, String[] componentNames, int numberComponents) {
 		__name = name;
 		__componentNames = componentNames;
-		__componentTypes = componentTypes;
 		__numberComponents = numberComponents;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public String[] getComponentNames() {
+		return __componentNames;
+	}
+
+	public int getNumberComponents() {
+		return __numberComponents;
 	}
 
 	@Override
 	public String toString() {
-		return "ContextInfo{" + "name='" + __name + '\'' + ", componentNames=" + Arrays.toString(__componentNames)
-				+ '}';
-	}
-	
-	public String getName() {
-		return __name;
-	}
-	
-	public String[] getComponentNames() {
-		return __componentNames;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public Class[] getComponentTypes() {
-		return __componentTypes;
-	}
-	
-	public int getNumberComponents() {
-		return __numberComponents;
+		return String.format("ContextInfo{name=%s, numberComponents=%d, componentNames=%s}", __name, __numberComponents,
+				Arrays.toString(__componentNames));
 	}
 
 }

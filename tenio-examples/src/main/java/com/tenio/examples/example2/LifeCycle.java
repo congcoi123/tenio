@@ -54,21 +54,21 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	/**
 	 * @see EntityManager
 	 */
-	private EntityManager __entities;
+	private final EntityManager __entities;
 	/**
 	 * @see MessageDispatcher
 	 */
-	private MessageDispatcher __dispatcher;
+	private final MessageDispatcher __dispatcher;
 
 	/**
 	 * @see PlayerApi#gets()
 	 */
-	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	private final Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
 	
 	/**
 	 * @see MessageApi
 	 */
-	private MessageApi __messageApi = Server.getInstance().getMessageApi();
+	private final MessageApi __messageApi = Server.getInstance().getMessageApi();
 
 	/**
 	 * Making slow steps to inspect what happening

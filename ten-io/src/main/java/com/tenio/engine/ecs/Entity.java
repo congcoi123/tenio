@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tenio.engine.ecs.common.IComponent;
@@ -56,7 +57,7 @@ public class Entity implements IEntity {
 		__contextInfo = contextInfo;
 		__components = new IComponent[__contextInfo.getComponentNames().length];
 	}
-	
+
 	/**
 	 * Use with recreating id counter
 	 */
@@ -255,18 +256,18 @@ public class Entity implements IEntity {
 
 	@Override
 	public String toString() {
-		return "Entity{" + "Index=" + __id + ", enabled=" + __enabled + ", contextName=" + __contextInfo.getName()
-				+ ", components=" + __components + '}';
+		return String.format("Entity{Index=%d, enabled=%b, contextName=%d, components=%s}", __id, __enabled,
+				__contextInfo.getName(), Arrays.toString(__components));
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		
+
 	}
 
 	@Override
 	public void reset() {
-		
+
 	}
 
 }
