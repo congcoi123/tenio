@@ -39,7 +39,7 @@ public abstract class AbstractEntity extends AbstractLogger {
 	/**
 	 * Every entity must have a unique identifying number
 	 */
-	private int __id;
+	private final int __id;
 
 	/**
 	 * This is the next valid ID. Each time a BaseGameEntity is instantiated this
@@ -83,11 +83,11 @@ public abstract class AbstractEntity extends AbstractLogger {
 
 	/**
 	 * All entities can communicate using messages. They are sent by using the
-	 * {@link MessageDispatcher} singleton class
+	 * {@link MessageDispatcher} class
 	 * 
 	 * @param msg @see {@link Telegram}
 	 * @return Returns <code>true</code> if the message was sent successful
 	 */
-	public abstract boolean handleMessage(Telegram msg);
+	public abstract boolean handleMessage(final Telegram msg);
 
 }

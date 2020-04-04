@@ -46,15 +46,15 @@ public final class MessageDispatcher {
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
 	 * by their dispatch time. @see {@link Telegram}
 	 */
-	private TreeSet<Telegram> __telegrams;
+	private final TreeSet<Telegram> __telegrams;
 	/**
 	 * @see EntityManager
 	 */
-	private EntityManager __manager;
+	private final EntityManager __manager;
 	/**
 	 * @see IMessageListener
 	 */
-	private List<IMessageListener> __listeners;
+	private final List<IMessageListener> __listeners;
 
 	public MessageDispatcher(EntityManager manager) {
 		__manager = manager;

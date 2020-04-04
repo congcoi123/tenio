@@ -21,33 +21,47 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.fsm;
+package com.tenio.engine.ecs;
+
+import java.util.Arrays;
 
 /**
- * An Entity represents a single object in your world. Component represents one
- * aspect of an object. For example, a bottle of water has a shape, a volume, a
- * color and is made of a material (usually plastic). In this example, the
- * bottle is the entity, and the properties are components.
- * 
  * @author kong
- *
  */
-public abstract class Component<T> {
+public class ContextInfo {
 
-	/**
-	 * A pointer to the agent that owns this instance
-	 */
-	protected final T _entity;
+	private final String[] __componentNames;
+	private final Class<?>[] __componentTypes;
+	private final String __name;
+	private final int __numberComponents;
 
-	public Component(T entity) {
-		_entity = entity;
+	public ContextInfo(String name, String[] componentNames, Class<?>[] componentTypes, int numberComponents) {
+		__name = name;
+		__componentNames = componentNames;
+		__componentTypes = componentTypes;
+		__numberComponents = numberComponents;
 	}
 
-	/**
-	 * This method is called every frames
-	 * 
-	 * @param delta the time between two consecutive frames
-	 */
-	public abstract void update(double delta);
+	public String getName() {
+		return __name;
+	}
+
+	public String[] getComponentNames() {
+		return __componentNames;
+	}
+	
+	public Class<?>[] getComponentTypes() {
+		return __componentTypes;
+	}
+
+	public int getNumberComponents() {
+		return __numberComponents;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("ContextInfo{name=%s, numberComponents=%d, componentNames=%s}", __name, __numberComponents,
+				Arrays.toString(__componentNames));
+	}
 
 }

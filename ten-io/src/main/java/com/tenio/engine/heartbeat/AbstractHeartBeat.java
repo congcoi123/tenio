@@ -359,6 +359,21 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 		}
 
 	}
+	
+	public void setTextAction1(String text, Color color) {
+		__action1.setText(text);
+		__action1.setBackground(color);
+	}
+	
+	public void setTextAction2(String text, Color color) {
+		__action2.setText(text);
+		__action2.setBackground(color);
+	}
+	
+	public void setTextAction3(String text, Color color) {
+		__action3.setText(text);
+		__action3.setBackground(color);
+	}
 
 	@Override
 	public Void call() throws Exception {
@@ -381,9 +396,9 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called every frame in a game loop
 	 * 
-	 * @param delta the time between two frames
+	 * @param deltaTime the time between two frames
 	 */
-	protected abstract void _onUpdate(float delta);
+	protected abstract void _onUpdate(float deltaTime);
 
 	/**
 	 * It is called every frame after {@link #_onUpdate(float)}
