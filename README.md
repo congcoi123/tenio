@@ -12,6 +12,7 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 ## First glimpse
 ![Simple Movement Simulation](https://github.com/congcoi123/tenio/blob/master/assets/movement-simulation-example-4.gif)
 ![Communication](https://github.com/congcoi123/tenio/blob/master/assets/login-example-1.gif)
+![ECS](https://github.com/congcoi123/tenio/blob/feature/fsm_refactoring/assets/ecs-example-5.gif)
 
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use TenIO might have about it.
