@@ -115,6 +115,15 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 			}
 		}
 	}
+	
+	@Override
+	public synchronized void cleanup() {
+		for (int i = 0; i < __pool.length; i++) {
+			__pool[i] = null;
+		}
+		__used = null;
+		__pool = null;
+	}
 
 	/**
 	 * Only use for {@link StringBuilderPool}. It might cause out of memory, so be

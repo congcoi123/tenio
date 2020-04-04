@@ -100,5 +100,14 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 			error("EXCEPTION REPAY", "byte", e);
 		}
 	}
+	
+	@Override
+	public synchronized void cleanup() {
+		for (int i = 0; i < __pool.length; i++) {
+			__pool[i] = null;
+		}
+		__used = null;
+		__pool = null;
+	}
 
 }

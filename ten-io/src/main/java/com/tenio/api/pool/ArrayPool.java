@@ -103,4 +103,13 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		}
 	}
 
+	@Override
+	public synchronized void cleanup() {
+		for (int i = 0; i < __pool.length; i++) {
+			__pool[i] = null;
+		}
+		__used = null;
+		__pool = null;
+	}
+
 }

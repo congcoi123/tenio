@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
 
 /**
@@ -41,17 +42,25 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	private final Map<UUID, TEntity> __entities;
 	private final ContextInfo __contextInfo;
 	private final EntityPool __entityPool;
+	private final ComponentPool[] __componentPools;
 
 	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;
 		__entities = new HashMap<UUID, TEntity>();
 		__entityPool = new EntityPool(clazz, __contextInfo);
+		__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
+		for (int i = 0; i < __contextInfo.getNumberComponents(); i++) {
+			if (__contextInfo.getComponentTypes()[i] != null) {
+				__componentPools[i] = new ComponentPool(__contextInfo.getComponentTypes()[i]);
+			}
+		}
 	}
 
 	@Override
 	public TEntity createEntity() {
 		@SuppressWarnings("unchecked")
 		var entity = (TEntity) __entityPool.get();
+		entity.setComponentPools(__componentPools);
 		__entities.put(entity.getId(), entity);
 		return entity;
 	}
@@ -94,6 +103,7 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	@Override
 	public void reset() {
 		destroyAllEntities();
+		__entityPool.cleanup();
 	}
 
 }

@@ -26,6 +26,7 @@ package com.tenio.engine.ecs.common;
 import java.util.UUID;
 
 import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.engine.ecs.pool.ComponentPool;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is
@@ -43,6 +44,10 @@ public interface IEntity {
 	UUID getId();
 	
 	void setContextInfo(ContextInfo contextInfo);
+	
+	void setComponentPools(ComponentPool[] __componentPools);
+
+	ComponentPool[] getComponentPools();
 	
 	ContextInfo getContextInfo();
 	

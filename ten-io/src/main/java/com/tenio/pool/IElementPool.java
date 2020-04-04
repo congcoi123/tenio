@@ -46,5 +46,10 @@ public interface IElementPool<Element> {
 	 * @param element the finished using element
 	 */
 	void repay(Element element);
+	
+	/**
+	 * Clean up
+	 */
+	void cleanup();
 
 }

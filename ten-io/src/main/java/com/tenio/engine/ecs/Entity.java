@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import com.tenio.engine.ecs.common.IComponent;
 import com.tenio.engine.ecs.common.IEntity;
+import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -34,6 +35,7 @@ import com.tenio.logger.AbstractLogger;
  **/
 public class Entity extends AbstractLogger implements IEntity {
 
+	private ComponentPool[] __componentPools = null;
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
 	private UUID __id = null;
@@ -57,6 +59,18 @@ public class Entity extends AbstractLogger implements IEntity {
 		if (__components == null) {
 			__components = new IComponent[contextInfo.getNumberComponents()];
 		}
+	}
+	
+	@Override
+	public void setComponentPools(ComponentPool[] componentPools) {
+		if (__componentPools == null) {
+			__componentPools = componentPools;
+		}
+	}
+	
+	@Override
+	public ComponentPool[] getComponentPools() {
+		return __componentPools;
 	}
 
 	@Override

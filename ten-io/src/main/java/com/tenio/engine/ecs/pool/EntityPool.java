@@ -122,5 +122,14 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 			error("EXCEPTION REPAY", "component", e);
 		}
 	}
+	
+	@Override
+	public void cleanup() {
+		for (int i = 0; i < __pool.length; i++) {
+			__pool[i] = null;
+		}
+		__used = null;
+		__pool = null;
+	}
 
 }

@@ -111,5 +111,14 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 			error("EXCEPTION REPAY", "component", e);
 		}
 	}
+	
+	@Override
+	public void cleanup() {
+		for (int i = 0; i < __pool.length; i++) {
+			__pool[i] = null;
+		}
+		__used = null;
+		__pool = null;
+	}
 
 }
