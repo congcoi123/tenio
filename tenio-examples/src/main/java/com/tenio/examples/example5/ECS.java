@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5;
 
+import java.awt.Color;
+
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
 import com.tenio.examples.example5.components.GameComponents;
@@ -37,16 +39,48 @@ import com.tenio.examples.example5.systems.TeardownSystem;
  */
 public class ECS extends ECSHeartBeat {
 	
+	private GameContext __context;
+	private boolean __toggleMotion = true;
+	private boolean __toggleAnimation = true;
+	private boolean __toggleView = true;
+	
 	public ECS(int cx, int cy) {
 		super(cx, cy);
 		
 		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(), GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
-		GameContext context = new GameContext(info);
+		__context = new GameContext(info);
 		
-		addSystem(new InitializeSystem(context));
-		addSystem(new MoveSystem(context));
-		addSystem(new RenderSystem(context));
-		addSystem(new TeardownSystem(context));
+		addSystem(new InitializeSystem(__context));
+		addSystem(new MoveSystem(__context));
+		addSystem(new RenderSystem(__context));
+		addSystem(new TeardownSystem(__context));
+	}
+	
+	@Override
+	protected void _onAction1() {
+		__toggleMotion = !__toggleMotion;
+		setTextAction1(__toggleMotion ? "On motion" : "Off motion" , Color.LIGHT_GRAY);
+		for (var entity : __context.getEntities()) {
+			entity.setMotion(__toggleMotion);
+		}
+	}
+	
+	@Override
+	protected void _onAction2() {
+		__toggleAnimation = !__toggleAnimation;
+		setTextAction2(__toggleAnimation ? "On animation" : "Off animation" , Color.LIGHT_GRAY);
+		for (var entity : __context.getEntities()) {
+			entity.setAnimation(__toggleAnimation);
+		}
+	}
+	
+	@Override
+	protected void _onAction3() {
+		__toggleView = !__toggleView;
+		setTextAction3(__toggleView ? "On view" : "Off view" , Color.LIGHT_GRAY);
+		for (var entity : __context.getEntities()) {
+			entity.setView(__toggleView);
+		}
 	}
 	
 }

@@ -35,12 +35,12 @@ public class TestECS {
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		// Create a world
+		// Create a ecs
 		var ecs = new ECS(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 		// Enable debugger window
 		ecs.debug("[TenIO] Server Debugger : ECS");
 		Server.getInstance().getHeartBeatApi().initialize(1);
 		Server.getInstance().getHeartBeatApi().create("ecs", ecs);
 	}
-
+	
 }

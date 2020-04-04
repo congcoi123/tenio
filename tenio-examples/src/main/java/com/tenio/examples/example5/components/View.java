@@ -21,31 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.systems;
+package com.tenio.examples.example5.components;
 
-import com.tenio.engine.ecs.common.IContext;
-import com.tenio.engine.ecs.systems.AbstractSystem;
-import com.tenio.engine.ecs.systems.IInitializeSystem;
-import com.tenio.examples.example5.constants.Constants;
-import com.tenio.examples.example5.context.GameEntity;
+import com.tenio.engine.ecs.common.IComponent;
 
 /**
  * @author kong
  */
-public class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
-
-	public InitializeSystem(IContext<GameEntity> context) {
-		super(context);
-	}
-
-	@Override
-	public void initialize() {
-		var entity = (GameEntity) getContext().createEntity();
-		entity.setEnabled(true);
-		entity.setAnimation(true);
-		entity.setMotion(true);
-		entity.setView(true);
-		entity.addPosition(Constants.DESIGN_WIDTH / 2, Constants.DESIGN_HEIGHT / 2);
-	}
-
+public class View implements IComponent {
+	
 }

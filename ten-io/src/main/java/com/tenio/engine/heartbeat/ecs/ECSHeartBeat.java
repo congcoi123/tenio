@@ -33,12 +33,12 @@ import com.tenio.entities.element.TObject;
  * @author kong
  */
 public class ECSHeartBeat extends AbstractHeartBeat {
-	
+
 	/**
 	 * @see {@link Systems}
 	 */
 	private final Systems __systems = new Systems();
-	
+
 	public ECSHeartBeat(int viewWidth, int viewHeight) {
 		super(viewWidth, viewHeight);
 	}
@@ -58,8 +58,6 @@ public class ECSHeartBeat extends AbstractHeartBeat {
 
 	@Override
 	protected void _onMessage(TObject message) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -89,20 +87,14 @@ public class ECSHeartBeat extends AbstractHeartBeat {
 
 	@Override
 	protected void _onAction1() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	protected void _onAction2() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	protected void _onAction3() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

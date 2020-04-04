@@ -48,17 +48,17 @@ public class Entity implements IEntity {
 	 */
 	private static AtomicInteger __nextId = new AtomicInteger();
 
-	private final IComponent[] __components;
+	private IComponent[] __components;
 	private ContextInfo __contextInfo;
 	private boolean __enabled;
 
 	public Entity() {
 		__id = __nextId.getAndIncrement();
-		__components = new IComponent[5];
 	}
 	
 	public void setInfo(ContextInfo contextInfo) {
 		__contextInfo = contextInfo;
+		__components = new IComponent[contextInfo.getNumberComponents()];
 	}
 	
 	public ContextInfo getContextInfo() {

@@ -81,6 +81,22 @@ public class GameEntity extends Entity {
 		}
 		return this;
 	}
+	
+	public boolean isView() {
+		return hasComponent(GameComponents.VIEW);
+	}
+
+	public GameEntity setView(boolean value) {
+		if (value != hasComponent(GameComponents.VIEW)) {
+			if (value) {
+				addComponent(GameComponents.VIEW, __componentPools[GameComponents.VIEW].get());
+			} else {
+				__componentPools[GameComponents.VIEW].repay(getComponent(GameComponents.VIEW));
+				removeComponent(GameComponents.VIEW);
+			}
+		}
+		return this;
+	}
 
 	public boolean hasPosition() {
 		return hasComponent(GameComponents.POSITION);
