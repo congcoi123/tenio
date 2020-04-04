@@ -84,7 +84,7 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 * instances in the order you added them.
 	 */
 	public void initialize() {
-		for (IInitializeSystem system : __initializeSystems) {
+		for (var system : __initializeSystems) {
 			system.initialize();
 		}
 	}
@@ -97,7 +97,7 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 */
 	public void execute(float deltaTime) {
 		if (__running) {
-			for (IExecuteSystem system : __executeSystems) {
+			for (var system : __executeSystems) {
 				system.execute(deltaTime);
 			}
 		}
@@ -110,7 +110,7 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	@Override
 	public void render(Paint paint) {
 		if (__running) {
-			for (IRenderSystem system : __renderSystems) {
+			for (var system : __renderSystems) {
 				system.render(paint);
 			}
 		}
@@ -121,7 +121,7 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 * the order you added them.
 	 */
 	public void tearDown() {
-		for (ITearDownSystem system : __tearDownSystems) {
+		for (var system : __tearDownSystems) {
 			system.tearDown();
 		}
 	}
@@ -133,8 +133,8 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 		__tearDownSystems.clear();
 	}
 
-	public void paused(boolean flag) {
-		__running = !flag;
+	public void paused(boolean running) {
+		__running = !running;
 	}
 
 	public boolean isRunning() {

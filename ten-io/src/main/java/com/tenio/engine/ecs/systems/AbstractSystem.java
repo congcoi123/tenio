@@ -29,15 +29,15 @@ import com.tenio.engine.ecs.common.IEntity;
 /**
  * @author kong
  */
-public abstract class AbstractSystem<T extends IEntity> {
+public abstract class AbstractSystem<TEntity extends IEntity> {
 
-	private IContext<T> __context;
+	private IContext<TEntity> __context;
 	
-	public AbstractSystem(IContext<T> context) {
+	public AbstractSystem(IContext<TEntity> context) {
 		__context = context;
 	}
 	
-	public IContext<T> getContext() {
+	public IContext<TEntity> getContext() {
 		return __context;
 	}
 	
