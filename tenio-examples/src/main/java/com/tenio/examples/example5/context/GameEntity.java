@@ -26,7 +26,6 @@ package com.tenio.examples.example5.context;
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.Entity;
 import com.tenio.engine.ecs.pool.ComponentPool;
-import com.tenio.examples.example5.components.GameComponents;
 import com.tenio.examples.example5.components.Position;
 
 /**
@@ -34,18 +33,17 @@ import com.tenio.examples.example5.components.Position;
  */
 public class GameEntity extends Entity {
 
-	private ComponentPool[] __componentPools;
+	private ComponentPool[] __componentPools = null;
 
-	public GameEntity() {
-		super();
-	}
-	
-	public void setInfo(ContextInfo contextInfo) {
-		super.setInfo(contextInfo);
-		__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
-		for (int i = 0; i < getContextInfo().getNumberComponents(); i++) {
-			if (getContextInfo().getComponentTypes()[i] != null) {
-				__componentPools[i] = new ComponentPool(getContextInfo().getComponentTypes()[i]);
+	@Override
+	public void setContextInfo(ContextInfo contextInfo) {
+		super.setContextInfo(contextInfo);
+		if (__componentPools == null) {
+			__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
+			for (int i = 0; i < getContextInfo().getNumberComponents(); i++) {
+				if (getContextInfo().getComponentTypes()[i] != null) {
+					__componentPools[i] = new ComponentPool(getContextInfo().getComponentTypes()[i]);
+				}
 			}
 		}
 	}
@@ -59,8 +57,8 @@ public class GameEntity extends Entity {
 			if (value) {
 				addComponent(GameComponents.ANIMATION, __componentPools[GameComponents.ANIMATION].get());
 			} else {
-				__componentPools[GameComponents.ANIMATION].repay(getComponent(GameComponents.ANIMATION));
 				removeComponent(GameComponents.ANIMATION);
+				__componentPools[GameComponents.ANIMATION].repay(getComponent(GameComponents.ANIMATION));
 			}
 		}
 		return this;
@@ -75,13 +73,13 @@ public class GameEntity extends Entity {
 			if (value) {
 				addComponent(GameComponents.MOTION, __componentPools[GameComponents.MOTION].get());
 			} else {
-				__componentPools[GameComponents.MOTION].repay(getComponent(GameComponents.MOTION));
 				removeComponent(GameComponents.MOTION);
+				__componentPools[GameComponents.MOTION].repay(getComponent(GameComponents.MOTION));
 			}
 		}
 		return this;
 	}
-	
+
 	public boolean isView() {
 		return hasComponent(GameComponents.VIEW);
 	}
@@ -91,8 +89,8 @@ public class GameEntity extends Entity {
 			if (value) {
 				addComponent(GameComponents.VIEW, __componentPools[GameComponents.VIEW].get());
 			} else {
-				__componentPools[GameComponents.VIEW].repay(getComponent(GameComponents.VIEW));
 				removeComponent(GameComponents.VIEW);
+				__componentPools[GameComponents.VIEW].repay(getComponent(GameComponents.VIEW));
 			}
 		}
 		return this;

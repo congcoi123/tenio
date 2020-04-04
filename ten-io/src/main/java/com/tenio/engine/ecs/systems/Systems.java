@@ -141,10 +141,4 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 		return __running;
 	}
 
-	@Override
-	public String toString() {
-		return "Systems{" + "initializeSystems=" + __initializeSystems + ", executeSystems=" + __executeSystems
-				+ ", renderSystems=" + __renderSystems + ", tearDownSystems=" + __tearDownSystems + '}';
-	}
-
 }

@@ -23,8 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import com.tenio.engine.ecs.common.IContext;
 import com.tenio.engine.ecs.pool.EntityPool;
@@ -36,50 +37,45 @@ import com.tenio.engine.ecs.pool.EntityPool;
  * @author Kong
  */
 public class Context<TEntity extends Entity> implements IContext<TEntity> {
-	
-	private final List<TEntity> __entities;
+
+	private final Map<UUID, TEntity> __entities;
 	private final ContextInfo __contextInfo;
 	private final EntityPool __entityPool;
-	
+
 	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;
-		__entities = new ArrayList<TEntity>();
+		__entities = new HashMap<UUID, TEntity>();
 		__entityPool = new EntityPool(clazz, __contextInfo);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public TEntity createEntity() {
+		@SuppressWarnings("unchecked")
 		var entity = (TEntity) __entityPool.get();
-		__entities.add(entity);
+		__entities.put(entity.getId(), entity);
 		return entity;
 	}
 
 	@Override
 	public void destroyEntity(TEntity entity) {
 		entity.reset();
-		__entities.remove(entity);
+		__entities.remove(entity.getId());
 		__entityPool.repay(entity);
 	}
 
 	@Override
 	public boolean hasEntity(TEntity entity) {
-		return __entities.contains(entity);
+		return __entities.containsKey(entity.getId());
 	}
 
 	@Override
-	public List<TEntity> getEntities() {
+	public Map<UUID, TEntity> getEntities() {
 		return __entities;
 	}
-	
-	@Override
-	public EntityPool getEntityPool() {
-		return __entityPool;
-	}
 
 	@Override
-	public int getTotalComponents() {
-		return 0;
+	public ContextInfo getContextInfo() {
+		return __contextInfo;
 	}
 
 	@Override
@@ -89,19 +85,15 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 
 	@Override
 	public void destroyAllEntities() {
-		// TODO Auto-generated method stub
-
+		__entities.values().forEach(entity -> {
+			entity.reset();
+		});
+		__entities.clear();
 	}
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String toString() {
-		return "Context{" + "}";
+		destroyAllEntities();
 	}
 
 }

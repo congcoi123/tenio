@@ -23,26 +23,25 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.common;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import com.tenio.engine.ecs.pool.EntityPool;
+import com.tenio.engine.ecs.ContextInfo;
 
 /**
  * @author Kong
  */
-public interface IContext<T extends IEntity> {
+public interface IContext<TEntity extends IEntity> {
 
-	T createEntity();
+	TEntity createEntity();
 
-	void destroyEntity(T entity);
+	boolean hasEntity(TEntity entity);
+	
+	void destroyEntity(TEntity entity);
 
-	boolean hasEntity(T entity);
+	Map<UUID, TEntity> getEntities();
 
-	List<T> getEntities();
-
-	EntityPool getEntityPool();
-
-	int getTotalComponents();
+	ContextInfo getContextInfo();
 
 	int getEntitesCount();
 

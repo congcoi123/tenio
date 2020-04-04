@@ -23,53 +23,45 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import com.tenio.engine.ecs.common.IComponent;
 import com.tenio.engine.ecs.common.IEntity;
-import com.tenio.engine.ecs.exceptions.EntityAlreadyHasComponentException;
-import com.tenio.engine.ecs.exceptions.EntityDoesNotHaveComponentException;
-import com.tenio.engine.ecs.exceptions.EntityIsNotEnabledException;
+import com.tenio.logger.AbstractLogger;
 
 /**
  * @author Kong
  **/
-public class Entity implements IEntity {
+public class Entity extends AbstractLogger implements IEntity {
 
-	/**
-	 * Every entity must have a unique identifying number
-	 */
-	private final int __id;
+	private IComponent[] __components = null;
+	private ContextInfo __contextInfo = null;
+	private UUID __id = null;
+	private boolean __enabled = false;
 
-	/**
-	 * This is the next valid ID. Each time a BaseGameEntity is instantiated this
-	 * value is updated
-	 */
-	private static AtomicInteger __nextId = new AtomicInteger();
-
-	private IComponent[] __components;
-	private ContextInfo __contextInfo;
-	private boolean __enabled;
-
-	public Entity() {
-		__id = __nextId.getAndIncrement();
+	@Override
+	public void setId(UUID id) {
+		__id = id;
 	}
-	
-	public void setInfo(ContextInfo contextInfo) {
-		__contextInfo = contextInfo;
-		__components = new IComponent[contextInfo.getNumberComponents()];
+
+	@Override
+	public UUID getId() {
+		return __id;
 	}
-	
+
+	@Override
+	public void setContextInfo(ContextInfo contextInfo) {
+		if (__contextInfo == null) {
+			__contextInfo = contextInfo;
+		}
+		if (__components == null) {
+			__components = new IComponent[contextInfo.getNumberComponents()];
+		}
+	}
+
+	@Override
 	public ContextInfo getContextInfo() {
 		return __contextInfo;
-	}
-
-	/**
-	 * Use with recreating id counter
-	 */
-	public static void resetValidID() {
-		__nextId = new AtomicInteger();
 	}
 
 	/**
@@ -93,23 +85,16 @@ public class Entity implements IEntity {
 	 */
 	@Override
 	public void addComponent(int index, IComponent component) {
-		
 		if (!__enabled) {
-			
-			System.err.println("Cannot add component1 '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
-			
-			throw new EntityIsNotEnabledException(
-					"Cannot add component '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
+			info("Entity", "entity is not enabled",
+					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return;
 		}
 
 		if (hasComponent(index)) {
-			
-			System.err.println("Cannot add component2 '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
-			
-			throw new EntityAlreadyHasComponentException(index,
-					"Cannot add component '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!",
-					"You should check if an entity already has the component "
-							+ "before adding it or use entity.ReplaceComponent().");
+			info("Entity", "entity had a same component",
+					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return;
 		}
 
 		__components[index] = component;
@@ -125,15 +110,17 @@ public class Entity implements IEntity {
 	@Override
 	public void removeComponent(int index) {
 		if (!__enabled) {
-			throw new EntityIsNotEnabledException(
-					"Cannot remove component!" + __contextInfo.getComponentNames()[index] + "' from " + this + "!");
+			info("Entity", "entity is not enabled",
+					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return;
 		}
 
 		if (!hasComponent(index)) {
-			String errorMsg = "Cannot remove component " + __contextInfo.getComponentNames()[index] + "' from " + this
-					+ "You should check if an entity has the component before removing it.";
-			throw new EntityDoesNotHaveComponentException(errorMsg, index);
+			info("Entity", "entity does not has the component",
+					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return;
 		}
+
 		__replaceComponentInternal(index, null);
 	}
 
@@ -148,8 +135,9 @@ public class Entity implements IEntity {
 	@Override
 	public void replaceComponent(int index, IComponent component) {
 		if (!__enabled) {
-			throw new EntityIsNotEnabledException(
-					"Cannot replace component!" + __contextInfo.getComponentNames()[index] + "' on " + this + "!");
+			info("Entity", "entity is not enabled",
+					strgen("Cannot replace component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return;
 		}
 
 		if (hasComponent(index)) {
@@ -180,9 +168,9 @@ public class Entity implements IEntity {
 	@Override
 	public IComponent getComponent(int index) {
 		if (!hasComponent(index)) {
-			String errorMsg = "Cannot get component " + __contextInfo.getComponentNames()[index] + "' from " + this
-					+ "!  You should check if an entity has the component before getting it.";
-			throw new EntityDoesNotHaveComponentException(errorMsg, index);
+			info("Entity", "entity does not have the component",
+					strgen("Cannot get component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
+			return null;
 		}
 		return __components[index];
 	}
@@ -265,12 +253,7 @@ public class Entity implements IEntity {
 
 	@Override
 	public int hashCode() {
-		return __id;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Entity{Index=%d, enabled=%b}", __id, __enabled);
+		return __id.hashCode();
 	}
 
 	@Override
@@ -280,7 +263,7 @@ public class Entity implements IEntity {
 
 	@Override
 	public void reset() {
-
+		removeAllComponents();
 	}
 
 }

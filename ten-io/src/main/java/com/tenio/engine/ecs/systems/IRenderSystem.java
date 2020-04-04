@@ -32,6 +32,6 @@ import com.tenio.engine.physic.graphic.Paint;
  */
 public interface IRenderSystem extends ISystem {
 
-	void render(Paint paint);
+	void render(final Paint paint);
 
 }

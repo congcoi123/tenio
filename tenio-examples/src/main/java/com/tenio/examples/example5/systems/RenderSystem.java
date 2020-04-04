@@ -31,8 +31,8 @@ import com.tenio.engine.ecs.systems.IInitializeSystem;
 import com.tenio.engine.ecs.systems.IRenderSystem;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.utility.MathUtility;
-import com.tenio.examples.example5.components.GameComponents;
 import com.tenio.examples.example5.components.Position;
+import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameEntity;
 
 /**
@@ -50,8 +50,8 @@ public class RenderSystem extends AbstractSystem<GameEntity> implements IInitial
 	}
 
 	@Override
-	public void render(Paint paint) {
-		for (var entity : getContext().getEntities()) {
+	public void render(final Paint paint) {
+		for (var entity : getContext().getEntities().values()) {
 			if (entity.hasComponent(GameComponents.POSITION)) {
 				if (entity.hasComponent(GameComponents.VIEW)) {
 					if (entity.hasComponent(GameComponents.ANIMATION)) {

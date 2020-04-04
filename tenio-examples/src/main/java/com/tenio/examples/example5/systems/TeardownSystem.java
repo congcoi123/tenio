@@ -39,7 +39,7 @@ public class TeardownSystem extends AbstractSystem<GameEntity> implements ITearD
 
 	@Override
 	public void tearDown() {
-		
+		getContext().reset();
 	}
 
 }

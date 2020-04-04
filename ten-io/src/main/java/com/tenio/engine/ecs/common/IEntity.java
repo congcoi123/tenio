@@ -23,6 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.common;
 
+import java.util.UUID;
+
+import com.tenio.engine.ecs.ContextInfo;
+
 /**
  * An entity is something that exists in your game world. Again, an entity is
  * little more than a list of components. Because they are so simple, most
@@ -33,6 +37,14 @@ package com.tenio.engine.ecs.common;
  * @author Kong
  */
 public interface IEntity {
+	
+	void setId(UUID id);
+	
+	UUID getId();
+	
+	void setContextInfo(ContextInfo contextInfo);
+	
+	ContextInfo getContextInfo();
 	
 	void setEnabled(boolean enabled);
 	

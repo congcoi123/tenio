@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.pool;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.ContextInfo;
@@ -55,8 +56,9 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = 0; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setInfo(__contextInfo);
-				__pool[i] = entity; 
+				entity.setId(UUID.randomUUID());
+				entity.setContextInfo(__contextInfo);
+				__pool[i] = entity;
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -87,7 +89,8 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setInfo(__contextInfo);
+				entity.setId(UUID.randomUUID());
+				entity.setContextInfo(__contextInfo);
 				__pool[i] = entity;
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException

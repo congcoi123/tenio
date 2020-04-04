@@ -25,8 +25,6 @@ package com.tenio.engine.ecs.pool;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.annotation.concurrent.GuardedBy;
-
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.common.IComponent;
 import com.tenio.exception.NullElementPoolException;

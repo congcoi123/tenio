@@ -21,24 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.exceptions;
+package com.tenio.examples.example5.context;
 
-import com.tenio.engine.ecs.Context;
+import com.tenio.examples.example5.components.Animation;
+import com.tenio.examples.example5.components.Motion;
+import com.tenio.examples.example5.components.Position;
+import com.tenio.examples.example5.components.View;
 
 /**
- * @author Kong
+ * @author kong
  */
-public class ContextEntityIndexDoesAlreadyExistException extends ECSException {
+public class GameComponents {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -322224614683161509L;
+	public static byte ANIMATION = 0;
+	public static byte MOTION = 1;
+	public static byte POSITION = 3;
+	public static byte VIEW = 4;
 
-	@SuppressWarnings("rawtypes")
-	public ContextEntityIndexDoesAlreadyExistException(Context pool, String name) {
-		super("Cannot add EntityIndex '" + name + "' to pool '" + pool + "'!",
-				"An EntityIndex with this name has already been added.");
+	private static int __numberComponents = 5;
+	private static String __componentNames[] = { "Animation", "Motion", null, "Position", "View" };
+	private static Class<?> __componentTypes[] = { Animation.class, Motion.class, null, Position.class, View.class };
+
+	public static int getNumberComponents() {
+		return __numberComponents;
+	}
+
+	public static String[] getComponentNames() {
+		return __componentNames;
+	}
+
+	public static Class<?>[] getComponentTypes() {
+		return __componentTypes;
 	}
 
 }

@@ -27,9 +27,9 @@ import com.tenio.engine.ecs.common.IContext;
 import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IExecuteSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
-import com.tenio.examples.example5.components.GameComponents;
 import com.tenio.examples.example5.components.Position;
 import com.tenio.examples.example5.constants.Constants;
+import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameEntity;
 
 /**
@@ -48,7 +48,7 @@ public class MoveSystem extends AbstractSystem<GameEntity> implements IInitializ
 
 	@Override
 	public void execute(float deltaTime) {
-		for (var entity : getContext().getEntities()) {
+		for (var entity : getContext().getEntities().values()) {
 			if (entity.hasComponents(GameComponents.POSITION, GameComponents.MOTION)) {
 				var position = (Position) entity.getComponent(GameComponents.POSITION);
 				if (position.x < Constants.DESIGN_WIDTH) {

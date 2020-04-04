@@ -30,6 +30,7 @@ import com.tenio.engine.ecs.common.IComponent;
  */
 public class Position implements IComponent {
 
-	public float x, y;
+	public float x;
+	public float y;
 
 }

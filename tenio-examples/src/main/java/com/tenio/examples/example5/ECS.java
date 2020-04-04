@@ -27,7 +27,7 @@ import java.awt.Color;
 
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
-import com.tenio.examples.example5.components.GameComponents;
+import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameContext;
 import com.tenio.examples.example5.systems.InitializeSystem;
 import com.tenio.examples.example5.systems.MoveSystem;
@@ -60,7 +60,7 @@ public class ECS extends ECSHeartBeat {
 	protected void _onAction1() {
 		__toggleMotion = !__toggleMotion;
 		setTextAction1(__toggleMotion ? "On motion" : "Off motion" , Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities()) {
+		for (var entity : __context.getEntities().values()) {
 			entity.setMotion(__toggleMotion);
 		}
 	}
@@ -69,7 +69,7 @@ public class ECS extends ECSHeartBeat {
 	protected void _onAction2() {
 		__toggleAnimation = !__toggleAnimation;
 		setTextAction2(__toggleAnimation ? "On animation" : "Off animation" , Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities()) {
+		for (var entity : __context.getEntities().values()) {
 			entity.setAnimation(__toggleAnimation);
 		}
 	}
@@ -78,7 +78,7 @@ public class ECS extends ECSHeartBeat {
 	protected void _onAction3() {
 		__toggleView = !__toggleView;
 		setTextAction3(__toggleView ? "On view" : "Off view" , Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities()) {
+		for (var entity : __context.getEntities().values()) {
 			entity.setView(__toggleView);
 		}
 	}
