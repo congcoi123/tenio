@@ -33,10 +33,6 @@
 			<AppenderRef ref="${target}" />
 		</Logger>
 
-		<Logger name="org.apache" level="warn" additivity="false">
-			<AppenderRef ref="${target}" />
-		</Logger>
-
 		<Root level="${level}">
 			<AppenderRef ref="${target}" />
 		</Root>

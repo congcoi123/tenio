@@ -31,7 +31,6 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
@@ -43,7 +42,6 @@ import com.tenio.event.EventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
-import com.tenio.network.mina.MinaNetwork;
 import com.tenio.network.netty.NettyNetwork;
 import com.tenio.task.ITaskManager;
 import com.tenio.task.TaskManager;
@@ -160,17 +158,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
-		switch (configuration.getInt(BaseConfiguration.NIO)) {
-		case Constants.NETTY:
-			__network = new NettyNetwork();
-			break;
-		case Constants.MINA:
-			__network = new MinaNetwork();
-			break;
-		default:
-			__network = new NettyNetwork();
-			break;
-		}
+		__network = new NettyNetwork();
 		__network.start(configuration);
 	}
 

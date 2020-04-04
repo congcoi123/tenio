@@ -35,16 +35,6 @@ import com.tenio.pool.IElementPool;
 public final class Constants {
 
 	/**
-	 * Use <a href="https://netty.io/">Netty</a> for high speed network
-	 * transmission.
-	 */
-	public static final int NETTY = 1;
-	/**
-	 * Use <a href="https://mina.apache.org/">Apache Mina</a> for high speed network
-	 * transmission.
-	 */
-	public static final int MINA = 2;
-	/**
 	 * In TCP, because of the stream transmission, it's necessary to know a data
 	 * package's length for extracting the number of bytes of its content (divide
 	 * stream data into smaller package data). Therefore, we need a data length
