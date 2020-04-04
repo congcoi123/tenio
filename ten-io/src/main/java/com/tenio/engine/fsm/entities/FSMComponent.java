@@ -51,9 +51,9 @@ public final class FSMComponent<T> extends Component<T> {
 	/**
 	 * @see MessageDispatcher
 	 */
-	private MessageDispatcher __dispatcher;
+	private final MessageDispatcher __dispatcher;
 
-	public FSMComponent(MessageDispatcher dispatcher, T entity) {
+	public FSMComponent(final MessageDispatcher dispatcher, T entity) {
 		super(entity);
 		__dispatcher = dispatcher;
 		__currentState = null;

@@ -21,33 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.fsm;
+package com.tenio.examples.example5.context;
+
+import com.tenio.engine.ecs.Context;
+import com.tenio.engine.ecs.ContextInfo;
 
 /**
- * An Entity represents a single object in your world. Component represents one
- * aspect of an object. For example, a bottle of water has a shape, a volume, a
- * color and is made of a material (usually plastic). In this example, the
- * bottle is the entity, and the properties are components.
- * 
  * @author kong
- *
  */
-public abstract class Component<T> {
+public class GameContext extends Context<GameEntity> {
 
-	/**
-	 * A pointer to the agent that owns this instance
-	 */
-	protected final T _entity;
-
-	public Component(T entity) {
-		_entity = entity;
+	public GameContext(ContextInfo contextInfo) {
+		super(contextInfo, GameEntity.class);
 	}
-
-	/**
-	 * This method is called every frames
-	 * 
-	 * @param delta the time between two consecutive frames
-	 */
-	public abstract void update(double delta);
 
 }

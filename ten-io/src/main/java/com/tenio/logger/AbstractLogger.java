@@ -27,8 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Throwables;
+import com.tenio.logger.pool.StringBuilderPool;
 import com.tenio.pool.IElementPool;
-import com.tenio.pool.StringBuilderPool;
 
 /**
  * The recording logs of a developer is important for every system. This class

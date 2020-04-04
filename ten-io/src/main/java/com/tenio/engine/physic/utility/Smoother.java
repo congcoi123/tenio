@@ -19,7 +19,7 @@ public class Smoother<T extends Number> {
 	/**
 	 * This holds the history
 	 */
-	private List<T> __histories;
+	private  final List<T> __histories;
 	private int __nextUpdateSlot;
 	/**
 	 * an example of the 'zero' value of the type to be smoothed. This would be

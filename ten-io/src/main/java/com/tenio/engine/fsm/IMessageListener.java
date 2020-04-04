@@ -40,6 +40,6 @@ public interface IMessageListener {
 	 * @param msg       @see {@link Telegram}
 	 * @param isHandled set <code>true</code> if you want the message can be handled
 	 */
-	void onListen(Telegram msg, boolean isHandled);
+	void onListen(final Telegram msg, boolean isHandled);
 
 }

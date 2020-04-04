@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.api;
 
+import com.tenio.api.pool.ArrayPool;
+import com.tenio.api.pool.ObjectPool;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.AbstractRoom;
@@ -31,8 +33,6 @@ import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
-import com.tenio.pool.ArrayPool;
-import com.tenio.pool.ObjectPool;
 
 /**
  * This class provides you a necessary interface for sending messages from the
