@@ -12,11 +12,6 @@
 		<Property name="versionName">1.0</Property>
 	</Properties>
 
-	<!-- Select NIO library: Netty (1) / Apache Mina (2) -->
-	<Network>
-		<Nio>1</Nio>
-	</Network>
-
 	<Port>
 		<!-- TCP port -->
 		<Socket>8031</Socket>		<!-- Null with value -1 -->

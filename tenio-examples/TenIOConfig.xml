@@ -8,11 +8,6 @@
 		<Property name="versionName">1.0</Property>
 	</Properties>
 
-	<!-- Netty: 1, Apache Mina: 2 -->
-	<Network>
-		<Nio>1</Nio>
-	</Network>
-
 	<Port>
 		<Socket>8032</Socket>		<!-- Null with value -1 -->
 		<Datagram>-1</Datagram>	<!-- Null with value -1 -->

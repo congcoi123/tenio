@@ -1,6 +1,6 @@
 # TenIO
 
-TenIO is a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games. It supports UDP and TCP transports which are handled by [Netty](https://netty.io/) or [Apache Mina](https://mina.apache.org/) for high-speed network transmission. It uses [MsgPack](https://msgpack.org/index.html) for compressing data so that can be transferred quickly through the network. This framework can help you quickly create a game server or integrate it into your system.
+TenIO is a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games. It supports UDP and TCP transports which are handled by [Netty](https://netty.io/) for high-speed network transmission. It uses [MsgPack](https://msgpack.org/index.html) for compressing data so that can be transferred quickly through the network. This framework can help you quickly create a game server or integrate it into your system.
 
 ## Features
 - Easy-to-use, OOP design.
@@ -24,7 +24,6 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 
 ## Dependencies
 - netty-all 4.1.42.Final
-- mina-core 2.0.19
 - msgpack 0.6.12
 - guava 25.1-jre
 - log4j-core 2.11.1

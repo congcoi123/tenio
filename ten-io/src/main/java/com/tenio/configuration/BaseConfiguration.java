@@ -43,7 +43,6 @@ import com.tenio.utils.XMLUtility;
  * configuration values.
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
- * + <i>nio:</i> Select NIO library: Netty (1) / Apache Mina (2) <br>
  * + <i>webSocketPort:</i> WebSocket port <br>
  * + <i>socketPort:</i> TCP port <br>
  * + <i>datagramPort:</i> UDP port <br>
@@ -71,7 +70,6 @@ import com.tenio.utils.XMLUtility;
  */
 public abstract class BaseConfiguration extends AbstractLogger {
 
-	public static final String NIO = "t.nio";
 	public static final String WEBSOCKET_PORT = "t.webSocketPort";
 	public static final String SOCKET_PORT = "t.socketPort";
 	public static final String DATAGRAM_PORT = "t.datagramPort";
@@ -143,17 +141,6 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 				case "versionCode":
 					configuration.put(VERSION_CODE, pDataNode.getTextContent());
-					break;
-				}
-			}
-
-			// Network
-			var attrRootNetwork = attrNode.getChildNodes();
-			for (int j = 0; j < attrRootNetwork.getLength(); j++) {
-				var pDataNode = attrRootNetwork.item(j);
-				switch (pDataNode.getNodeName()) {
-				case "Nio":
-					configuration.put(NIO, pDataNode.getTextContent());
 					break;
 				}
 			}
