@@ -104,6 +104,10 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	public void reset() {
 		destroyAllEntities();
 		__entityPool.cleanup();
+		for (var componentPool : __componentPools) {
+			componentPool.cleanup();
+			componentPool = null;
+		}
 	}
 
 }
