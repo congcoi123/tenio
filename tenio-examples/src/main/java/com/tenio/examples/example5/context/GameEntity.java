@@ -34,13 +34,19 @@ import com.tenio.examples.example5.components.Position;
  */
 public class GameEntity extends Entity {
 
-	private final ComponentPool[] __componentPools;
+	private ComponentPool[] __componentPools;
 
-	public GameEntity(ContextInfo contextInfo) {
-		super(contextInfo);
-		__componentPools = new ComponentPool[contextInfo.getNumberComponents()];
-		for (int i = 0; i < contextInfo.getNumberComponents(); i++) {
-			__componentPools[i] = new ComponentPool();
+	public GameEntity() {
+		super();
+	}
+	
+	public void setInfo(ContextInfo contextInfo) {
+		super.setInfo(contextInfo);
+		__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
+		for (int i = 0; i < getContextInfo().getNumberComponents(); i++) {
+			if (getContextInfo().getComponentTypes()[i] != null) {
+				__componentPools[i] = new ComponentPool(getContextInfo().getComponentTypes()[i]);
+			}
 		}
 	}
 

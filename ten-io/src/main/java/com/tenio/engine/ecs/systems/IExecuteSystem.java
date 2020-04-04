@@ -29,7 +29,6 @@ package com.tenio.engine.ecs.systems;
  * 
  * @author Kong
  */
-@FunctionalInterface
 public interface IExecuteSystem extends ISystem {
 
 	void execute(float deltaTime);

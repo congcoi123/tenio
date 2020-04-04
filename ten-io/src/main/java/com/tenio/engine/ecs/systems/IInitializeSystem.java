@@ -28,7 +28,6 @@ package com.tenio.engine.ecs.systems;
  * 
  * @author Kong
  */
-@FunctionalInterface
 public interface IInitializeSystem extends ISystem {
 
 	void initialize();

@@ -23,15 +23,22 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.systems;
 
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.common.IEntity;
 
 /**
- * Display simple shapes for debugging.
- * 
  * @author Kong
  */
-public interface IRenderSystem extends ISystem {
+public abstract class AbstractSystem<T extends IEntity> {
 
-	void render(Paint paint);
-
+	private IContext<T> __context;
+	
+	public AbstractSystem(IContext<T> context) {
+		__context = context;
+	}
+	
+	public IContext<T> getContext() {
+		return __context;
+	}
+	
 }

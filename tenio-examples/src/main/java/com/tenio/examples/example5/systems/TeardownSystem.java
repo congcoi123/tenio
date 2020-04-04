@@ -23,12 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.systems;
 
+import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.ITearDownSystem;
+import com.tenio.examples.example5.context.GameEntity;
 
 /**
  * @author kong
  */
-public class TeardownSystem implements ITearDownSystem {
+public class TeardownSystem extends AbstractSystem<GameEntity> implements ITearDownSystem {
+
+	public TeardownSystem(IContext<GameEntity> context) {
+		super(context);
+	}
 
 	@Override
 	public void tearDown() {

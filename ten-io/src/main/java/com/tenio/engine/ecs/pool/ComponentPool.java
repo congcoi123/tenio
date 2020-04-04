@@ -41,18 +41,19 @@ import com.tenio.pool.IElementPool;
  */
 public final class ComponentPool extends AbstractLogger implements IElementPool<IComponent> {
 
-	@GuardedBy("this")
 	private IComponent[] __pool;
-	@GuardedBy("this")
 	private boolean[] __used;
+	private Class<?> __clazz;
 
-	public ComponentPool() {
+	public ComponentPool(Class<?> clazz) {
+		__clazz = clazz;
 		__pool = new IComponent[Constants.BASE_ELEMENT_POOL];
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
-				__pool[i] = IComponent.class.getDeclaredConstructor().newInstance();
+				var component = (IComponent) __clazz.getDeclaredConstructor().newInstance();
+				__pool[i] = component;
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -62,7 +63,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	}
 
 	@Override
-	public synchronized IComponent get() {
+	public IComponent get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -82,7 +83,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
-				__pool[i] = IComponent.class.getDeclaredConstructor().newInstance();
+				__pool[i] = (IComponent) __clazz.getDeclaredConstructor().newInstance();
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -99,7 +100,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	}
 
 	@Override
-	public synchronized void repay(IComponent element) {
+	public void repay(IComponent element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {

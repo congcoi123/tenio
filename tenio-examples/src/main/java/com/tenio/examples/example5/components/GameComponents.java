@@ -34,8 +34,7 @@ public class GameComponents {
 
 	private static int __numberComponents = 5;
 	private static String __componentNames[] = { "Animation", "Motion", null, "Position", null };
-	@SuppressWarnings("rawtypes")
-	private static Class __componentTypes[] = { Animation.class, Motion.class, null, Position.class, null };
+	private static Class<?> __componentTypes[] = { Animation.class, Motion.class, null, Position.class, null };
 
 	public static int getNumberComponents() {
 		return __numberComponents;
@@ -45,8 +44,7 @@ public class GameComponents {
 		return __componentNames;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static Class[] getComponentTypes() {
+	public static Class<?>[] getComponentTypes() {
 		return __componentTypes;
 	}
 

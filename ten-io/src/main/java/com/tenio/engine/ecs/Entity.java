@@ -49,13 +49,20 @@ public class Entity implements IEntity {
 	private static AtomicInteger __nextId = new AtomicInteger();
 
 	private final IComponent[] __components;
-	private final ContextInfo __contextInfo;
+	private ContextInfo __contextInfo;
 	private boolean __enabled;
 
-	public Entity(ContextInfo contextInfo) {
+	public Entity() {
 		__id = __nextId.getAndIncrement();
+		__components = new IComponent[5];
+	}
+	
+	public void setInfo(ContextInfo contextInfo) {
 		__contextInfo = contextInfo;
-		__components = new IComponent[__contextInfo.getComponentNames().length];
+	}
+	
+	public ContextInfo getContextInfo() {
+		return __contextInfo;
 	}
 
 	/**
@@ -86,12 +93,19 @@ public class Entity implements IEntity {
 	 */
 	@Override
 	public void addComponent(int index, IComponent component) {
+		
 		if (!__enabled) {
+			
+			System.err.println("Cannot add component1 '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
+			
 			throw new EntityIsNotEnabledException(
 					"Cannot add component '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
 		}
 
 		if (hasComponent(index)) {
+			
+			System.err.println("Cannot add component2 '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!");
+			
 			throw new EntityAlreadyHasComponentException(index,
 					"Cannot add component '" + __contextInfo.getComponentNames()[index] + "' to " + this + "!",
 					"You should check if an entity already has the component "
@@ -256,13 +270,12 @@ public class Entity implements IEntity {
 
 	@Override
 	public String toString() {
-		return String.format("Entity{Index=%d, enabled=%b, contextName=%d, components=%s}", __id, __enabled,
-				__contextInfo.getName(), Arrays.toString(__components));
+		return String.format("Entity{Index=%d, enabled=%b}", __id, __enabled);
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
-
+		__enabled = enabled;
 	}
 
 	@Override

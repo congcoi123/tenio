@@ -31,12 +31,14 @@ import java.util.Arrays;
 public class ContextInfo {
 
 	private final String[] __componentNames;
+	private final Class<?>[] __componentTypes;
 	private final String __name;
 	private final int __numberComponents;
 
-	public ContextInfo(String name, String[] componentNames, int numberComponents) {
+	public ContextInfo(String name, String[] componentNames, Class<?>[] componentTypes, int numberComponents) {
 		__name = name;
 		__componentNames = componentNames;
+		__componentTypes = componentTypes;
 		__numberComponents = numberComponents;
 	}
 
@@ -46,6 +48,10 @@ public class ContextInfo {
 
 	public String[] getComponentNames() {
 		return __componentNames;
+	}
+	
+	public Class<?>[] getComponentTypes() {
+		return __componentTypes;
 	}
 
 	public int getNumberComponents() {

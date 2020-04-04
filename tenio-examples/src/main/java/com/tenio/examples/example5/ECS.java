@@ -23,7 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5;
 
+import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
+import com.tenio.examples.example5.components.GameComponents;
+import com.tenio.examples.example5.context.GameContext;
 import com.tenio.examples.example5.systems.InitializeSystem;
 import com.tenio.examples.example5.systems.MoveSystem;
 import com.tenio.examples.example5.systems.RenderSystem;
@@ -34,11 +37,16 @@ import com.tenio.examples.example5.systems.TeardownSystem;
  */
 public class ECS extends ECSHeartBeat {
 	
-	public ECS() {
-		addSystem(new InitializeSystem());
-		addSystem(new MoveSystem());
-		addSystem(new RenderSystem());
-		addSystem(new TeardownSystem());
+	public ECS(int cx, int cy) {
+		super(cx, cy);
+		
+		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(), GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
+		GameContext context = new GameContext(info);
+		
+		addSystem(new InitializeSystem(context));
+		addSystem(new MoveSystem(context));
+		addSystem(new RenderSystem(context));
+		addSystem(new TeardownSystem(context));
 	}
 	
 }

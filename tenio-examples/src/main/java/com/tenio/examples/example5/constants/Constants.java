@@ -21,26 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5;
-
-import com.tenio.examples.example5.constants.Constants;
-import com.tenio.server.Server;
+package com.tenio.examples.example5.constants;
 
 /**
+ * 
  * @author kong
+ *
  */
-public class TestECS {
+public final class Constants {
 
-	/**
-	 * The entry point
-	 */
-	public static void main(String[] args) {
-		// Create a world
-		var ecs = new ECS(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-		// Enable debugger window
-		ecs.debug("[TenIO] Server Debugger : ECS");
-		Server.getInstance().getHeartBeatApi().initialize(1);
-		Server.getInstance().getHeartBeatApi().create("ecs", ecs);
-	}
+	public static final int DESIGN_WIDTH = 500;
+	public static final int DESIGN_HEIGHT = 500;
 
 }

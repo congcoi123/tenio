@@ -33,11 +33,15 @@ import com.tenio.entities.element.TObject;
  * @author kong
  */
 public class ECSHeartBeat extends AbstractHeartBeat {
-
+	
 	/**
 	 * @see {@link Systems}
 	 */
 	private final Systems __systems = new Systems();
+	
+	public ECSHeartBeat(int viewWidth, int viewHeight) {
+		super(viewWidth, viewHeight);
+	}
 
 	public void addSystem(ISystem system) {
 		__systems.add(system);

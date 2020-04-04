@@ -32,8 +32,7 @@ import com.tenio.engine.ecs.ContextInfo;
 public class GameContext extends Context<GameEntity> {
 
 	public GameContext(ContextInfo contextInfo) {
-		super(contextInfo);
-		// TODO Auto-generated constructor stub
+		super(contextInfo, GameEntity.class);
 	}
 
 }

@@ -23,17 +23,40 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.systems;
 
+import java.awt.Color;
+
+import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
 import com.tenio.engine.ecs.systems.IRenderSystem;
 import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.examples.example5.components.GameComponents;
+import com.tenio.examples.example5.components.Position;
+import com.tenio.examples.example5.context.GameEntity;
 
 /**
  * @author kong
  */
-public class RenderSystem implements IRenderSystem {
+public class RenderSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IRenderSystem {
+
+	public RenderSystem(IContext<GameEntity> context) {
+		super(context);
+	}
+	
+	@Override
+	public void initialize() {
+		
+	}
 
 	@Override
 	public void render(Paint paint) {
-		
+		for (var entity : getContext().getEntities()) {
+			if (entity.hasComponent(GameComponents.POSITION)) {
+				paint.setPenColor(Color.RED);
+				var position = (Position) entity.getComponent(GameComponents.POSITION);
+				paint.drawCircle(position.x, position.y, 5);
+			}
+		}
 	}
 
 }

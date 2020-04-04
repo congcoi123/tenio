@@ -23,13 +23,20 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.systems;
 
+import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IExecuteSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.examples.example5.context.GameEntity;
 
 /**
  * @author kong
  */
-public class MoveSystem implements IInitializeSystem, IExecuteSystem {
+public class MoveSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
+
+	public MoveSystem(IContext<GameEntity> context) {
+		super(context);
+	}
 
 	@Override
 	public void initialize() {

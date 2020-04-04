@@ -41,20 +41,25 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	private final ContextInfo __contextInfo;
 	private final EntityPool __entityPool;
 	
-	public Context(ContextInfo contextInfo) {
+	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;
 		__entities = new ArrayList<TEntity>();
-		__entityPool = new EntityPool();
+		__entityPool = new EntityPool(clazz, __contextInfo);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public TEntity createEntity() {
-		return null;
+		var entity = (TEntity) __entityPool.get();
+		__entities.add(entity);
+		return entity;
 	}
 
 	@Override
 	public void destroyEntity(TEntity entity) {
-		
+		entity.reset();
+		__entities.remove(entity);
+		__entityPool.repay(entity);
 	}
 
 	@Override
@@ -74,14 +79,12 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 
 	@Override
 	public int getTotalComponents() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int getEntitesCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return __entities.size();
 	}
 
 	@Override

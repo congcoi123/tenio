@@ -25,9 +25,9 @@ package com.tenio.engine.ecs.pool;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.annotation.concurrent.GuardedBy;
-
 import com.tenio.configuration.constant.Constants;
+import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.engine.ecs.Entity;
 import com.tenio.engine.ecs.common.IEntity;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
@@ -41,18 +41,22 @@ import com.tenio.pool.IElementPool;
  */
 public final class EntityPool extends AbstractLogger implements IElementPool<IEntity> {
 
-	@GuardedBy("this")
 	private IEntity[] __pool;
-	@GuardedBy("this")
 	private boolean[] __used;
+	private Class<? extends Entity> __clazz;
+	private ContextInfo __contextInfo;
 
-	public EntityPool() {
+	public EntityPool(Class<? extends Entity> clazz, ContextInfo contextInfo) {
+		__clazz = clazz;
+		__contextInfo = contextInfo;
 		__pool = new IEntity[Constants.BASE_ELEMENT_POOL];
 		__used = new boolean[Constants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
-				__pool[i] = IEntity.class.getDeclaredConstructor().newInstance();
+				var entity = __clazz.getDeclaredConstructor().newInstance();
+				entity.setInfo(__contextInfo);
+				__pool[i] = entity; 
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -62,7 +66,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public synchronized IEntity get() {
+	public IEntity get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -82,7 +86,9 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
-				__pool[i] = IEntity.class.getDeclaredConstructor().newInstance();
+				var entity = __clazz.getDeclaredConstructor().newInstance();
+				entity.setInfo(__contextInfo);
+				__pool[i] = entity;
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -99,7 +105,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public synchronized void repay(IEntity element) {
+	public void repay(IEntity element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {

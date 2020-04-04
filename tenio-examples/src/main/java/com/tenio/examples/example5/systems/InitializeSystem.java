@@ -23,16 +23,29 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.systems;
 
+import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.examples.example5.constants.Constants;
+import com.tenio.examples.example5.context.GameEntity;
 
 /**
  * @author kong
  */
-public class InitializeSystem implements IInitializeSystem {
+public class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
+
+	public InitializeSystem(IContext<GameEntity> context) {
+		super(context);
+	}
 
 	@Override
 	public void initialize() {
-
+		var entity = (GameEntity) getContext().createEntity();
+		entity.setEnabled(true);
+		entity.setAnimation(true);
+		entity.setMotion(true);
+		System.err.println(entity);
+		entity.addPosition(Constants.DESIGN_WIDTH / 2, Constants.DESIGN_HEIGHT / 2);
 	}
 
 }
