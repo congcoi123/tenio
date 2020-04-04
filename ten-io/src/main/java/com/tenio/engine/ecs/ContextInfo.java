@@ -26,7 +26,7 @@ package com.tenio.engine.ecs;
 import java.util.Arrays;
 
 /**
- * @author Kong
+ * @author kong
  */
 public class ContextInfo {
 

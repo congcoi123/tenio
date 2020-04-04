@@ -35,7 +35,7 @@ import com.tenio.engine.ecs.pool.ComponentPool;
  * an entity is a unique ID, and all components that make up an entity will be
  * tagged with that ID.
  * 
- * @author Kong
+ * @author kong
  */
 public interface IEntity {
 	

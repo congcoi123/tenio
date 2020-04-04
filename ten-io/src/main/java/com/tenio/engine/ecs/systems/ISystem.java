@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.systems;
 
 /**
- * @author Kong
+ * @author kong
  */
 public interface ISystem {
 

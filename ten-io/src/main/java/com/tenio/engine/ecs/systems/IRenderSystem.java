@@ -28,7 +28,7 @@ import com.tenio.engine.physic.graphic.Paint;
 /**
  * Display simple shapes for debugging.
  * 
- * @author Kong
+ * @author kong
  */
 public interface IRenderSystem extends ISystem {
 

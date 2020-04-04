@@ -27,7 +27,7 @@ package com.tenio.engine.ecs.common;
  * A component can be likened to a C struct. It has no methods and is only
  * capable of storing data, not acting upon it.
  * 
- * @author Kong
+ * @author kong
  */
 public interface IComponent {
 

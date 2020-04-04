@@ -27,7 +27,7 @@ package com.tenio.engine.ecs.systems;
  * Execute systems run once per frame. This is where you put code that needs to
  * run every frame.
  * 
- * @author Kong
+ * @author kong
  */
 public interface IExecuteSystem extends ISystem {
 

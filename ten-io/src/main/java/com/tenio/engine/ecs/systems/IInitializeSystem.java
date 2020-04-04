@@ -26,7 +26,7 @@ package com.tenio.engine.ecs.systems;
 /**
  * Initialize systems run once at the start of your program.
  * 
- * @author Kong
+ * @author kong
  */
 public interface IInitializeSystem extends ISystem {
 

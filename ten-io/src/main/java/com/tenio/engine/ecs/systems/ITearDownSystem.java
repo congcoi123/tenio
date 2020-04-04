@@ -27,7 +27,7 @@ package com.tenio.engine.ecs.systems;
  * Teardown systems run once at the end of your program. This is where you can
  * clean up all resources acquired throughout the lifetime of your game.
  * 
- * @author Kong
+ * @author kong
  */
 public interface ITearDownSystem extends ISystem {
 

@@ -34,7 +34,7 @@ import com.tenio.engine.physic.graphic.Paint;
  * {@link ITearDownSystem}, initialized and executed based on the order you
  * added them.
  * 
- * @author Kong
+ * @author kong
  */
 public final class Systems implements IInitializeSystem, IExecuteSystem, IRenderSystem, ITearDownSystem {
 

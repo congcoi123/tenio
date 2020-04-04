@@ -27,7 +27,7 @@ import com.tenio.engine.ecs.common.IContext;
 import com.tenio.engine.ecs.common.IEntity;
 
 /**
- * @author Kong
+ * @author kong
  */
 public abstract class AbstractSystem<T extends IEntity> {
 

@@ -29,7 +29,7 @@ import java.util.UUID;
 import com.tenio.engine.ecs.ContextInfo;
 
 /**
- * @author Kong
+ * @author kong
  */
 public interface IContext<TEntity extends IEntity> {
 

@@ -31,7 +31,7 @@ import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.logger.AbstractLogger;
 
 /**
- * @author Kong
+ * @author kong
  **/
 public class Entity extends AbstractLogger implements IEntity {
 
