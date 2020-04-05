@@ -55,7 +55,7 @@ public interface IEntity {
 	
 	boolean isEnabled();
 
-	void addComponent(int index, IComponent component);
+	void setComponent(int index, IComponent component);
 
 	void removeComponent(int index);
 

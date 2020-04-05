@@ -28,6 +28,9 @@ import java.util.UUID;
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.engine.ecs.pool.ComponentPool;
+import com.tenio.exception.ComponentIsNotExistedException;
+import com.tenio.exception.DuplicatedComponentException;
+import com.tenio.exception.EntityIsNotEnabledException;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -60,14 +63,14 @@ public class Entity extends AbstractLogger implements IEntity {
 			__components = new IComponent[contextInfo.getNumberComponents()];
 		}
 	}
-	
+
 	@Override
 	public void setComponentPools(ComponentPool[] componentPools) {
 		if (__componentPools == null) {
 			__componentPools = componentPools;
 		}
 	}
-	
+
 	@Override
 	public ComponentPool[] getComponentPools() {
 		return __componentPools;
@@ -98,17 +101,15 @@ public class Entity extends AbstractLogger implements IEntity {
 	 * @param component
 	 */
 	@Override
-	public void addComponent(int index, IComponent component) {
+	public void setComponent(int index, IComponent component) {
 		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "set component", new EntityIsNotEnabledException());
+			throw new EntityIsNotEnabledException();
 		}
 
 		if (hasComponent(index)) {
-			info("Entity", "entity had a same component",
-					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "set component", new DuplicatedComponentException());
+			throw new DuplicatedComponentException();
 		}
 
 		__components[index] = component;
@@ -124,15 +125,13 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public void removeComponent(int index) {
 		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "remove component", new EntityIsNotEnabledException());
+			throw new EntityIsNotEnabledException();
 		}
 
 		if (!hasComponent(index)) {
-			info("Entity", "entity does not has the component",
-					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "remove component", new ComponentIsNotExistedException());
+			throw new ComponentIsNotExistedException();
 		}
 
 		__replaceComponentInternal(index, null);
@@ -149,16 +148,15 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public void replaceComponent(int index, IComponent component) {
 		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot replace component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "replace component", new EntityIsNotEnabledException());
+			throw new EntityIsNotEnabledException();
 		}
 
 		if (hasComponent(index)) {
 			__replaceComponentInternal(index, component);
 		} else {
 			if (component != null) {
-				addComponent(index, component);
+				setComponent(index, component);
 			}
 		}
 	}
@@ -182,9 +180,8 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public IComponent getComponent(int index) {
 		if (!hasComponent(index)) {
-			info("Entity", "entity does not have the component",
-					strgen("Cannot get component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return null;
+			error("Entity", "get component", new EntityIsNotEnabledException());
+			throw new EntityIsNotEnabledException();
 		}
 		return __components[index];
 	}

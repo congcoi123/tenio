@@ -66,15 +66,32 @@ public final class ECSSystemTest {
 
 	@Test
 	public void allTestSytemMethodsShouldBeRun() {
-		__testSystem.initialize();
-		__testSystem.execute(1);
-		__testSystem.render(null);
-		__testSystem.tearDown();
+		__systems.initialize();
+		__systems.execute(1);
+		__systems.render(null);
+		__systems.tearDown();
 
 		assertAll("runTestSystemMethods", () -> assertEquals(true, __testSystem.isInitialized()),
 				() -> assertEquals(true, __testSystem.isExecuted()),
 				() -> assertEquals(true, __testSystem.isRendered()),
 				() -> assertEquals(true, __testSystem.isTearDown()));
+	}
+
+	@Test
+	public void pauseSystemShouldReturnTrueValue() {
+		__systems.initialize();
+
+		__systems.paused(true);
+
+		__systems.execute(1);
+		__systems.render(null);
+		__systems.tearDown();
+
+		assertAll("pauseSystem", () -> assertEquals(true, __testSystem.isInitialized()),
+				() -> assertEquals(false, __testSystem.isExecuted()),
+				() -> assertEquals(false, __testSystem.isRendered()),
+				() -> assertEquals(true, __testSystem.isTearDown()));
+
 	}
 
 }

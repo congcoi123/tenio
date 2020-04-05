@@ -21,31 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.systems;
-
-import com.tenio.engine.ecs.api.IContext;
-import com.tenio.engine.ecs.systems.AbstractSystem;
-import com.tenio.engine.ecs.systems.IInitializeSystem;
-import com.tenio.examples.example5.constants.Constants;
-import com.tenio.examples.example5.context.GameEntity;
+package com.tenio.exception;
 
 /**
+ * 
  * @author kong
+ * 
  */
-public class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
-
-	public InitializeSystem(IContext<GameEntity> context) {
-		super(context);
-	}
-
-	@Override
-	public void initialize() {
-		var entity = (GameEntity) getContext().createEntity();
-		entity.setEnabled(true);
-		entity.setAnimation(true);
-		entity.setMotion(true);
-		entity.setView(true);
-		entity.setPosition(Constants.DESIGN_WIDTH / 2, Constants.DESIGN_HEIGHT / 2);
-	}
+public class EntityIsNotEnabledException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8379563605237793969L;
 
 }
