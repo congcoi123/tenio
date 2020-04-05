@@ -26,7 +26,7 @@ package com.tenio.engine.ecs.pool;
 import java.lang.reflect.InvocationTargetException;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.engine.ecs.common.IComponent;
+import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;

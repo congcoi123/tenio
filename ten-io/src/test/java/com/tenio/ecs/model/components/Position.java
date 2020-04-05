@@ -21,13 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.components;
+package com.tenio.ecs.model.components;
 
 import com.tenio.engine.ecs.api.IComponent;
 
 /**
  * @author kong
  */
-public class Motion implements IComponent {
+public class Position implements IComponent {
+
+	public float x;
+	public float y;
 
 }

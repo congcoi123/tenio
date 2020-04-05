@@ -21,14 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.common;
+package com.tenio.engine.ecs.api;
+
+import java.util.Map;
+import java.util.UUID;
+
+import com.tenio.engine.ecs.ContextInfo;
 
 /**
- * A component can be likened to a C struct. It has no methods and is only
- * capable of storing data, not acting upon it.
- * 
  * @author kong
  */
-public interface IComponent {
+public interface IContext<TEntity extends IEntity> {
+
+	TEntity createEntity();
+
+	boolean hasEntity(TEntity entity);
+	
+	void destroyEntity(TEntity entity);
+
+	Map<UUID, TEntity> getEntities();
+
+	ContextInfo getContextInfo();
+
+	int getEntitesCount();
+
+	void destroyAllEntities();
+
+	void reset();
 
 }

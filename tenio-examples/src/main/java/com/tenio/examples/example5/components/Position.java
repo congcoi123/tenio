@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.components;
 
-import com.tenio.engine.ecs.common.IComponent;
+import com.tenio.engine.ecs.api.IComponent;
 
 /**
  * @author kong

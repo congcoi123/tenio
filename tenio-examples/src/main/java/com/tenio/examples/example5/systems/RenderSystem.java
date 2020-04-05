@@ -25,7 +25,7 @@ package com.tenio.examples.example5.systems;
 
 import java.awt.Color;
 
-import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.api.IContext;
 import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
 import com.tenio.engine.ecs.systems.IRenderSystem;

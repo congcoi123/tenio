@@ -21,13 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.components;
+package com.tenio.ecs.model;
 
-import com.tenio.engine.ecs.api.IComponent;
+import com.tenio.ecs.model.components.Animation;
+import com.tenio.ecs.model.components.Motion;
+import com.tenio.ecs.model.components.Position;
+import com.tenio.ecs.model.components.View;
 
 /**
  * @author kong
  */
-public class Motion implements IComponent {
+public class GameComponents {
+
+	public static byte ANIMATION = 0;
+	public static byte MOTION = 1;
+	public static byte POSITION = 3;
+	public static byte VIEW = 4;
+
+	private static int __numberComponents = 5;
+	private static String __componentNames[] = { "Animation", "Motion", null, "Position", "View" };
+	private static Class<?> __componentTypes[] = { Animation.class, Motion.class, null, Position.class, View.class };
+
+	public static int getNumberComponents() {
+		return __numberComponents;
+	}
+
+	public static String[] getComponentNames() {
+		return __componentNames;
+	}
+
+	public static Class<?>[] getComponentTypes() {
+		return __componentTypes;
+	}
 
 }

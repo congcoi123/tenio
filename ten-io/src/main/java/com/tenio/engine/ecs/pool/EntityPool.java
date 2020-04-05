@@ -29,7 +29,7 @@ import java.util.UUID;
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.Entity;
-import com.tenio.engine.ecs.common.IEntity;
+import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;

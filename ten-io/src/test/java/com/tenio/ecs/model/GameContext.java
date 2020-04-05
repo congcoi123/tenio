@@ -21,13 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.components;
+package com.tenio.ecs.model;
 
-import com.tenio.engine.ecs.api.IComponent;
+import com.tenio.engine.ecs.Context;
+import com.tenio.engine.ecs.ContextInfo;
 
 /**
  * @author kong
  */
-public class Motion implements IComponent {
+public class GameContext extends Context<GameEntity> {
+
+	public GameContext(ContextInfo contextInfo) {
+		super(contextInfo, GameEntity.class);
+	}
 
 }
