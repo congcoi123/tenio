@@ -21,25 +21,71 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.systems;
+package com.tenio.ecs.model.systems;
 
+import com.tenio.ecs.model.GameEntity;
 import com.tenio.engine.ecs.api.IContext;
 import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.IExecuteSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.engine.ecs.systems.IRenderSystem;
 import com.tenio.engine.ecs.systems.ITearDownSystem;
-import com.tenio.examples.example5.context.GameEntity;
+import com.tenio.engine.physic.graphic.Paint;
 
 /**
  * @author kong
  */
-public class TeardownSystem extends AbstractSystem<GameEntity> implements ITearDownSystem {
+public class TestSystem extends AbstractSystem<GameEntity>
+		implements IInitializeSystem, IExecuteSystem, IRenderSystem, ITearDownSystem {
 
-	public TeardownSystem(IContext<GameEntity> context) {
+	private boolean __flagInitialize;
+	private boolean __flagExecute;
+	private boolean __flagRender;
+	private boolean __flagTearDown;
+
+	public TestSystem(IContext<GameEntity> context) {
 		super(context);
+
+		__flagInitialize = false;
+		__flagExecute = false;
+		__flagRender = false;
+		__flagTearDown = false;
+	}
+
+	@Override
+	public void initialize() {
+		__flagInitialize = true;
+	}
+
+	@Override
+	public void execute(float deltaTime) {
+		__flagExecute = true;
+	}
+
+	@Override
+	public void render(Paint paint) {
+		__flagRender = true;
 	}
 
 	@Override
 	public void tearDown() {
-		getContext().reset();
+		__flagTearDown = true;
+	}
+
+	public boolean isInitialized() {
+		return __flagInitialize;
+	}
+
+	public boolean isExecuted() {
+		return __flagExecute;
+	}
+
+	public boolean isRendered() {
+		return __flagRender;
+	}
+
+	public boolean isTearDown() {
+		return __flagTearDown;
 	}
 
 }

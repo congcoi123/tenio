@@ -21,13 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.components;
+package com.tenio.models;
 
-import com.tenio.engine.ecs.api.IComponent;
+import com.tenio.entities.AbstractRoom;
 
 /**
+ * 
  * @author kong
+ *
  */
-public class Motion implements IComponent {
+public final class RoomModel extends AbstractRoom {
+
+	public RoomModel(String id, String name, int capacity) {
+		super(id, name, capacity);
+	}
 
 }

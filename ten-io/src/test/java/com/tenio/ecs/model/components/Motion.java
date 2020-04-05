@@ -21,17 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.exception;
+package com.tenio.ecs.model.components;
+
+import com.tenio.engine.ecs.api.IComponent;
 
 /**
- * 
  * @author kong
- * 
  */
-public class NullPlayerException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1303721781114060707L;
+public class Motion implements IComponent {
 
 }

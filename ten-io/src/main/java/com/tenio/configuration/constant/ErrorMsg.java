@@ -47,10 +47,19 @@ public final class ErrorMsg {
 	 */
 	public static final String PLAYER_WAS_IN_ROOM = "player_was_in_room";
 	/**
+	 * When you try to remove a player from his room, but he has already leave.
+	 */
+	public static final String PLAYER_ALREADY_LEAVE_ROOM = "player_already_leave_room";
+	/**
 	 * When you try to add a player in one room and that exceeds the room's
 	 * capacity.
 	 */
 	public static final String ROOM_IS_FULL = "room_is_full";
+	/**
+	 * When you try to add a room that has the same id with one appeared on the
+	 * server.
+	 */
+	public static final String ROOM_IS_EXISTED = "room_is_existed";
 	/**
 	 * When you try to create a new connection and that exceeds the number of
 	 * allowed connections.

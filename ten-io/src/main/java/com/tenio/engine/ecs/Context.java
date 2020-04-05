@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.api.IContext;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
 
@@ -105,8 +105,10 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 		destroyAllEntities();
 		__entityPool.cleanup();
 		for (var componentPool : __componentPools) {
-			componentPool.cleanup();
-			componentPool = null;
+			if (componentPool != null) {
+				componentPool.cleanup();
+				componentPool = null;
+			}
 		}
 	}
 

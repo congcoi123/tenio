@@ -25,8 +25,8 @@ package com.tenio.engine.ecs;
 
 import java.util.UUID;
 
-import com.tenio.engine.ecs.common.IComponent;
-import com.tenio.engine.ecs.common.IEntity;
+import com.tenio.engine.ecs.api.IComponent;
+import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.logger.AbstractLogger;
 

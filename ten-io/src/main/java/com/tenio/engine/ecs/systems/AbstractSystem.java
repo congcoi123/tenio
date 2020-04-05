@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.systems;
 
-import com.tenio.engine.ecs.common.IContext;
-import com.tenio.engine.ecs.common.IEntity;
+import com.tenio.engine.ecs.api.IContext;
+import com.tenio.engine.ecs.api.IEntity;
 
 /**
  * @author kong

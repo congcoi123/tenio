@@ -21,13 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.components;
+package com.tenio;
 
-import com.tenio.engine.ecs.api.IComponent;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.SuiteDisplayName;
+import org.junit.runner.RunWith;
 
 /**
+ * 
  * @author kong
+ *
  */
-public class Motion implements IComponent {
+@RunWith(JUnitPlatform.class)
+@SuiteDisplayName("Test all unit test cases for TenIO")
+@SelectPackages("com.tenio")
+public class TenIOTest {
 
 }

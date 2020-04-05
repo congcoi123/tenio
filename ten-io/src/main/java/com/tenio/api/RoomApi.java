@@ -63,6 +63,20 @@ public final class RoomApi extends AbstractLogger {
 	public void add(final AbstractRoom room) {
 		__roomManager.add(room);
 	}
+	
+	/**
+	 * @see IRoomManager#contain(String)
+	 */
+	public boolean contain(final String roomId) {
+		return __roomManager.contain(roomId);
+	}
+	
+	/**
+	 * @see IRoomManager#get(String)
+	 */
+	public AbstractRoom get(final String roomId) {
+		return __roomManager.get(roomId);
+	}
 
 	/**
 	 * @see IRoomManager#remove(AbstractRoom)

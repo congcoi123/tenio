@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.systems;
 
-import com.tenio.engine.ecs.common.IContext;
+import com.tenio.engine.ecs.api.IContext;
 import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
 import com.tenio.examples.example5.constants.Constants;
