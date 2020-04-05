@@ -110,15 +110,15 @@ public final class PlayerApi extends AbstractLogger {
 	/**
 	 * @see IRoomManager#playerJoinRoom(AbstractRoom, AbstractPlayer)
 	 */
-	public void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
-		__roomManager.playerJoinRoom(room, player);
+	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+		return __roomManager.playerJoinRoom(room, player);
 	}
 
 	/**
 	 * @see IRoomManager#playerLeaveRoom(AbstractPlayer, boolean)
 	 */
-	public void playerLeaveRoom(final AbstractPlayer player, final boolean force) {
-		__roomManager.playerLeaveRoom(player, force);
+	public String playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+		return __roomManager.playerLeaveRoom(player, force);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public final class PlayerApi extends AbstractLogger {
 	public void logOut(final AbstractPlayer player) {
 		__playerManager.remove(player);
 	}
-
+	
 	/**
 	 * @return Returns all players' information data
 	 */

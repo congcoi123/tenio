@@ -32,7 +32,7 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
 import com.tenio.exception.DuplicatedPlayerException;
-import com.tenio.exception.NullPlayerException;
+import com.tenio.exception.NullPlayerNameException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 
@@ -93,27 +93,19 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void add(final AbstractPlayer player, final Connection connection) {
-		try {
-			if (player.getName() == null) {
-				throw new NullPlayerException();
-			}
-		} catch (NullPlayerException e) {
+		if (player.getName() == null) {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
-			error("ADD PLAYER CONNECTION", player.getName(), e);
-			return;
+			error("ADD PLAYER CONNECTION", player.getName(), new NullPlayerNameException());
+			throw new NullPlayerNameException();
 		}
 
 		synchronized (__players) {
-			try {
-				if (__players.containsKey(player.getName())) {
-					throw new DuplicatedPlayerException();
-				}
-			} catch (DuplicatedPlayerException e) {
+			if (__players.containsKey(player.getName())) {
 				// fire an event
 				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-				error("ADD PLAYER CONNECTION", player.getName(), e);
-				return;
+				error("ADD PLAYER CONNECTION", player.getName(), new DuplicatedPlayerException());
+				throw new DuplicatedPlayerException();
 			}
 
 			// add the main connection
@@ -131,15 +123,11 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	@Override
 	public void add(final AbstractPlayer player) {
 		synchronized (__players) {
-			try {
-				if (__players.containsKey(player.getName())) {
-					throw new DuplicatedPlayerException();
-				}
-			} catch (DuplicatedPlayerException e) {
+			if (__players.containsKey(player.getName())) {
 				// fire an event
 				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-				error("ADD PLAYER", player.getName(), e);
-				return;
+				error("ADD PLAYER", player.getName(), new DuplicatedPlayerException());
+				throw new DuplicatedPlayerException();
 			}
 
 			__players.put(player.getName(), player);

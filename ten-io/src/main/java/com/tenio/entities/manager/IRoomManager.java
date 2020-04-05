@@ -92,8 +92,10 @@ public interface IRoomManager {
 	 * 
 	 * @param room   the desired room @see {@link AbstractRoom}
 	 * @param player the current player @see {@link AbstractPlayer}
+	 * @return Returns the action' result if it existed in @see {@link String},
+	 *         <code>null</code> otherwise
 	 */
-	void playerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
+	String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
 
 	/**
 	 * Allow a player to leave his current room. You can handle your own logic in
@@ -102,7 +104,9 @@ public interface IRoomManager {
 	 * @param player that will be left his current room @see {@link AbstractPlayer}
 	 * @param force  it's set <code>true</code> if you want to force the player
 	 *               leave. Otherwise, it's set <code>false</code>
+	 * @return Returns the action' result if it existed in @see {@link String},
+	 *         <code>null</code> otherwise
 	 */
-	void playerLeaveRoom(final AbstractPlayer player, final boolean force);
+	String playerLeaveRoom(final AbstractPlayer player, final boolean force);
 
 }

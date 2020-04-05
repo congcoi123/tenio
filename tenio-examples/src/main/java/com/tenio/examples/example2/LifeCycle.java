@@ -102,7 +102,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	@Override
 	protected void _onUpdate(float delta) {
 		if (tick >= PERIOD_STEPS_IN_SECONDS) {
-			__entities.gets().forEach((id, entity) -> {
+			__entities.gets().values().forEach(entity -> {
 				var base = (BaseEntity) entity;
 				if (base.getMood() != null) {
 					// send to all inspectors

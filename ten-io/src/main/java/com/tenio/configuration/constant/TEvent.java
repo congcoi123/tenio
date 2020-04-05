@@ -181,6 +181,8 @@ public enum TEvent {
 	 * Created a new room. A room is a group of some players.
 	 * 
 	 * @parameter [0] a new created room @see {@link AbstractRoom}
+	 * @parameter [1] a reason why it was refused. It was defined in
+	 *            {@link ErrorMsg} class in string type
 	 * 
 	 * @return <code>null</code>
 	 */
