@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.entity.models;
+package com.tenio.models;
 
 import com.tenio.entities.AbstractRoom;
 
@@ -30,7 +30,7 @@ import com.tenio.entities.AbstractRoom;
  * @author kong
  *
  */
-public class RoomModel extends AbstractRoom {
+public final class RoomModel extends AbstractRoom {
 
 	public RoomModel(String id, String name, int capacity) {
 		super(id, name, capacity);
