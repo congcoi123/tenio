@@ -43,11 +43,11 @@ import com.tenio.entities.manager.IPlayerManager;
 import com.tenio.entities.manager.IRoomManager;
 import com.tenio.entities.manager.PlayerManager;
 import com.tenio.entities.manager.RoomManager;
-import com.tenio.entity.models.PlayerModel;
-import com.tenio.entity.models.RoomModel;
 import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.DuplicatedRoomException;
 import com.tenio.exception.NullPlayerNameException;
+import com.tenio.models.PlayerModel;
+import com.tenio.models.RoomModel;
 
 /**
  * 
