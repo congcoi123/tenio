@@ -7,6 +7,17 @@
 	<version>2.0.0-SNAPSHOT</version>
 
 	<modelVersion>4.0.0</modelVersion>
+	
+	<url>https://github.com/congcoi123/tenio.git</url>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/congcoi123/tenio/blob/develop/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
