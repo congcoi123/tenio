@@ -1,0 +1,8 @@
+# Language
+language: java
+# Use Java 11
+jdk:
+- oraclejdk11
+
+# Command
+script: ant build
