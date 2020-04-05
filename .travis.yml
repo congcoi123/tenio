@@ -1,6 +1,9 @@
 language: java
 jdk:
-- openjdk11
+  - openjdk11
 
 script:
-- mvn test -B
+  - mvn clean test coveralls:report
+
+after_success:
+  - mvn clean test coveralls:report
