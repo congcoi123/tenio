@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk11
+  - openjdk11
 
 script:
-- mvn test -B
+  - mvn test -B
