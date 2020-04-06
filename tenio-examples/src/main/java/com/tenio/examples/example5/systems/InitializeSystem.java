@@ -41,7 +41,6 @@ public class InitializeSystem extends AbstractSystem<GameEntity> implements IIni
 	@Override
 	public void initialize() {
 		var entity = (GameEntity) getContext().createEntity();
-		entity.setEnabled(true);
 		entity.setAnimation(true);
 		entity.setMotion(true);
 		entity.setView(true);

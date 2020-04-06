@@ -30,7 +30,6 @@ import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.exception.ComponentIsNotExistedException;
 import com.tenio.exception.DuplicatedComponentException;
-import com.tenio.exception.EntityIsNotEnabledException;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -42,7 +41,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
 	private UUID __id = null;
-	private boolean __enabled = false;
 
 	@Override
 	public void setId(UUID id) {
@@ -82,17 +80,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	}
 
 	/**
-	 * The context manages the state of an entity. Active entities are enabled,
-	 * destroyed entities are not.
-	 * 
-	 * @return {@link Boolean}
-	 */
-	@Override
-	public boolean isEnabled() {
-		return __enabled;
-	}
-
-	/**
 	 * Adds a component at the specified index. You can only have one component at
 	 * an index. Each component type must have its own constant index. The preferred
 	 * way is to use the generated methods from the code generator.
@@ -102,11 +89,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public void setComponent(int index, IComponent component) {
-		if (!__enabled) {
-			error("Entity", "set component", new EntityIsNotEnabledException());
-			throw new EntityIsNotEnabledException();
-		}
-
 		if (hasComponent(index)) {
 			error("Entity", "set component", new DuplicatedComponentException());
 			throw new DuplicatedComponentException();
@@ -124,11 +106,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public void removeComponent(int index) {
-		if (!__enabled) {
-			error("Entity", "remove component", new EntityIsNotEnabledException());
-			throw new EntityIsNotEnabledException();
-		}
-
 		if (!hasComponent(index)) {
 			error("Entity", "remove component", new ComponentIsNotExistedException());
 			throw new ComponentIsNotExistedException();
@@ -147,11 +124,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public void replaceComponent(int index, IComponent component) {
-		if (!__enabled) {
-			error("Entity", "replace component", new EntityIsNotEnabledException());
-			throw new EntityIsNotEnabledException();
-		}
-
 		if (hasComponent(index)) {
 			__replaceComponentInternal(index, component);
 		} else {
@@ -179,10 +151,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public IComponent getComponent(int index) {
-		if (!hasComponent(index)) {
-			error("Entity", "get component", new EntityIsNotEnabledException());
-			throw new EntityIsNotEnabledException();
-		}
 		return __components[index];
 	}
 
@@ -265,11 +233,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public int hashCode() {
 		return __id.hashCode();
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		__enabled = enabled;
 	}
 
 	@Override

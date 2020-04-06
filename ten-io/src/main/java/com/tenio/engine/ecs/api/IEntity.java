@@ -50,10 +50,6 @@ public interface IEntity {
 	ComponentPool[] getComponentPools();
 	
 	ContextInfo getContextInfo();
-	
-	void setEnabled(boolean enabled);
-	
-	boolean isEnabled();
 
 	void setComponent(int index, IComponent component);
 

@@ -37,7 +37,6 @@ import com.tenio.ecs.model.GameEntity;
 import com.tenio.ecs.model.components.Position;
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.exception.DuplicatedComponentException;
-import com.tenio.exception.EntityIsNotEnabledException;
 
 /**
  * @author kong
@@ -54,7 +53,6 @@ public final class ECSContextTest {
 		__context = new GameContext(info);
 
 		__entity = __context.createEntity();
-		__entity.setEnabled(true);
 		__entity.setAnimation(true);
 		__entity.setMotion(true);
 		__entity.setView(false);
@@ -119,14 +117,6 @@ public final class ECSContextTest {
 		assertAll("replacePosition",
 				() -> assertEquals(position.x, ((Position) __entity.getComponent(GameComponents.POSITION)).x),
 				() -> assertEquals(position.y, ((Position) __entity.getComponent(GameComponents.POSITION)).y));
-	}
-
-	@Test
-	public void setViewForUnEnabledEntityShouldCauseException() {
-		assertThrows(EntityIsNotEnabledException.class, () -> {
-			__entity.setEnabled(false);
-			__entity.setView(true);
-		});
 	}
 
 	@Test

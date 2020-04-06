@@ -66,6 +66,11 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	}
 
 	@Override
+	public TEntity getEntity(UUID entityId) {
+		return __entities.get(entityId);
+	}
+
+	@Override
 	public void destroyEntity(TEntity entity) {
 		entity.reset();
 		__entities.remove(entity.getId());
