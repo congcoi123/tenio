@@ -103,19 +103,20 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 
 	@Override
 	public synchronized void repay(IComponent element) {
-		try {
-			for (int i = 0; i < __pool.length; i++) {
-				if (__pool[i] == element) {
-					__used[i] = false;
-					return;
-				}
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				flagFound = true;
+				break;
 			}
+		}
+		if (!flagFound) {
+			error("EXCEPTION REPAY", "component", new NullElementPoolException());
 			throw new NullElementPoolException();
-		} catch (NullElementPoolException e) {
-			error("EXCEPTION REPAY", "component", e);
 		}
 	}
-	
+
 	@Override
 	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
@@ -124,7 +125,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 		__used = null;
 		__pool = null;
 	}
-	
+
 	@Override
 	public synchronized int getPoolSize() {
 		return (__pool.length == __used.length) ? __pool.length : -1;
