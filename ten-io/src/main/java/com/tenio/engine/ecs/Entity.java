@@ -27,17 +27,17 @@ import java.util.UUID;
 
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IEntity;
-import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.exception.ComponentIsNotExistedException;
 import com.tenio.exception.DuplicatedComponentException;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.pool.IElementPool;
 
 /**
  * @author kong
  **/
 public class Entity extends AbstractLogger implements IEntity {
 
-	private ComponentPool[] __componentPools = null;
+	private IElementPool<IComponent>[] __componentPools = null;
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
 	private UUID __id = null;
@@ -63,14 +63,14 @@ public class Entity extends AbstractLogger implements IEntity {
 	}
 
 	@Override
-	public void setComponentPools(ComponentPool[] componentPools) {
+	public void setComponentPools(IElementPool<IComponent>[] componentPools) {
 		if (__componentPools == null) {
 			__componentPools = componentPools;
 		}
 	}
 
 	@Override
-	public ComponentPool[] getComponentPools() {
+	public IElementPool<IComponent>[] getComponentPools() {
 		return __componentPools;
 	}
 

@@ -33,56 +33,58 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.api.pool.ArrayPool;
+import com.tenio.api.pool.ObjectPool;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TArray;
+import com.tenio.entities.element.TObject;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;
 
 /**
  * @author kong
  */
-public final class ArrayPoolTest {
+public final class ObjectPoolTest {
 
-	private IElementPool<TArray> __arrayPool;
+	private IElementPool<TObject> __objectPool;
 
 	@BeforeEach
 	public void initialize() {
-		__arrayPool = new ArrayPool();
+		__objectPool = new ObjectPool();
 	}
 
 	@AfterEach
 	public void tearDown() {
-		__arrayPool.cleanup();
+		__objectPool.cleanup();
 	}
 
 	@Test
-	public void createNewTArrayShouldReturnSuccess() {
-		TArray array = __arrayPool.get();
-		assertNotEquals(null, array);
+	public void createNewTObjectShouldReturnSuccess() {
+		TObject object = __objectPool.get();
+		assertNotEquals(null, object);
 	}
 
 	@Test
-	public void repayAnArrayWithoutGetShouldCauseException() {
+	public void repayAnObjectWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			TArray array = TArray.newInstance();
-			__arrayPool.repay(array);
+			TObject object = TObject.newInstance();
+			__objectPool.repay(object);
 		});
 	}
 
 	@Test
-	public void afterReplayArrayShouldBeClearedAllData() {
-		TArray array = __arrayPool.get();
-		array.put(10).put(20).put(30);
-		__arrayPool.repay(array);
-		assertTrue(array.isEmpty());
+	public void afterReplayObjectShouldBeClearedAllData() {
+		TObject object = __objectPool.get();
+		object.put("key1", "value1");
+		object.put("key2", "value2");
+		object.put("key3", "value3");
+		__objectPool.repay(object);
+		assertTrue(object.isEmpty());
 	}
 
 	@Test
 	public void createNumberOfElementsShouldLessThanPoolSize() {
 		int numberElement = 100;
 		for (int i = 0; i < numberElement; i++) {
-			__arrayPool.get();
+			__objectPool.get();
 		}
 		int expectedPoolSize = 0;
 		if (numberElement <= Constants.BASE_ELEMENT_POOL) {
@@ -93,8 +95,8 @@ public final class ArrayPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
-		assertAll("createNumberOfElements", () -> assertEquals(expected, __arrayPool.getPoolSize()),
-				() -> assertTrue(__arrayPool.getPoolSize() > numberElement));
+		assertAll("createNumberOfElements", () -> assertEquals(expected, __objectPool.getPoolSize()),
+				() -> assertTrue(__objectPool.getPoolSize() > numberElement));
 	}
 
 }

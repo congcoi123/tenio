@@ -48,13 +48,13 @@ public interface IElementPool<Element> {
 	void repay(Element element);
 
 	/**
-	 * Clean up
+	 * Clean up, after that all arrays will be set to <code>null</code>
 	 */
 	void cleanup();
 
 	/**
-	 * @return Returns the total number of element or <code>-1</code> if any
-	 *         exceptions caused
+	 * @return Returns the total number of element or <code>-1</code> if exceptions
+	 *         caused
 	 */
 	int getPoolSize();
 

@@ -50,7 +50,7 @@ public abstract class AbstractLogger {
 	 * An object creation pool instance, which is used for re-use string
 	 * objects @see {@link IElementPool}
 	 */
-	private StringBuilderPool __stringPool = StringBuilderPool.getInstance();
+	private IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
 	 * Always use @see {@link #buildgen(Object...)} for creating
