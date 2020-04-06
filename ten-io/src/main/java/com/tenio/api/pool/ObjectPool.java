@@ -102,7 +102,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 			error("EXCEPTION REPAY", "object", e);
 		}
 	}
-	
+
 	@Override
 	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
@@ -111,5 +111,10 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		__used = null;
 		__pool = null;
 	}
-	
+
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
+	}
+
 }

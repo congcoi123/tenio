@@ -23,8 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.ecs;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,10 +70,10 @@ public final class ECSSystemTest {
 		__systems.render(null);
 		__systems.tearDown();
 
-		assertAll("runTestSystemMethods", () -> assertEquals(true, __testSystem.isInitialized()),
-				() -> assertEquals(true, __testSystem.isExecuted()),
-				() -> assertEquals(true, __testSystem.isRendered()),
-				() -> assertEquals(true, __testSystem.isTearDown()));
+		assertAll("runTestSystemMethods", () -> assertTrue(__testSystem.isInitialized()),
+				() -> assertTrue(__testSystem.isExecuted()),
+				() -> assertTrue(__testSystem.isRendered()),
+				() -> assertTrue(__testSystem.isTearDown()));
 	}
 
 	@Test
@@ -85,10 +86,10 @@ public final class ECSSystemTest {
 		__systems.render(null);
 		__systems.tearDown();
 
-		assertAll("pauseSystem", () -> assertEquals(true, __testSystem.isInitialized()),
-				() -> assertEquals(false, __testSystem.isExecuted()),
-				() -> assertEquals(false, __testSystem.isRendered()),
-				() -> assertEquals(true, __testSystem.isTearDown()));
+		assertAll("pauseSystem", () -> assertTrue(__testSystem.isInitialized()),
+				() -> assertFalse(__testSystem.isExecuted()),
+				() -> assertFalse(__testSystem.isRendered()),
+				() -> assertTrue(__testSystem.isTearDown()));
 
 	}
 

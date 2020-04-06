@@ -88,18 +88,19 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 
 	@Override
 	public synchronized void repay(TArray element) {
-		try {
-			for (int i = 0; i < __pool.length; i++) {
-				if (__pool[i] == element) {
-					__used[i] = false;
-					// Clear array
-					element.clear();
-					return;
-				}
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				// Clear array
+				element.clear();
+				flagFound = true;
+				break;
 			}
+		}
+		if (!flagFound) {
+			error("EXCEPTION REPAY", "array", new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!"));
 			throw new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
-		} catch (NullElementPoolException e) {
-			error("EXCEPTION REPAY", "array", e);
 		}
 	}
 
@@ -110,6 +111,11 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		}
 		__used = null;
 		__pool = null;
+	}
+
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
 	}
 
 }

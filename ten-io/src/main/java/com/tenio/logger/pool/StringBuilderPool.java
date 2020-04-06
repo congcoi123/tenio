@@ -124,6 +124,11 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 		__used = null;
 		__pool = null;
 	}
+	
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
+	}
 
 	/**
 	 * Only use for {@link StringBuilderPool}. It might cause out of memory, so be

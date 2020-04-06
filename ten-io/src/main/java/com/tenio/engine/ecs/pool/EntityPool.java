@@ -26,6 +26,8 @@ package com.tenio.engine.ecs.pool;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.Entity;
@@ -42,7 +44,9 @@ import com.tenio.pool.IElementPool;
  */
 public final class EntityPool extends AbstractLogger implements IElementPool<IEntity> {
 
+	@GuardedBy("this")
 	private IEntity[] __pool;
+	@GuardedBy("this")
 	private boolean[] __used;
 	private Class<? extends Entity> __clazz;
 	private ContextInfo __contextInfo;
@@ -68,7 +72,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public IEntity get() {
+	public synchronized IEntity get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -108,7 +112,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public void repay(IEntity element) {
+	public synchronized void repay(IEntity element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {
@@ -124,12 +128,17 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 	
 	@Override
-	public void cleanup() {
+	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = null;
 		}
 		__used = null;
 		__pool = null;
+	}
+	
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
 	}
 
 }

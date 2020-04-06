@@ -25,6 +25,8 @@ package com.tenio.engine.ecs.pool;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.exception.NullElementPoolException;
@@ -39,7 +41,9 @@ import com.tenio.pool.IElementPool;
  */
 public final class ComponentPool extends AbstractLogger implements IElementPool<IComponent> {
 
+	@GuardedBy("this")
 	private IComponent[] __pool;
+	@GuardedBy("this")
 	private boolean[] __used;
 	private Class<?> __clazz;
 
@@ -61,7 +65,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	}
 
 	@Override
-	public IComponent get() {
+	public synchronized IComponent get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -98,7 +102,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	}
 
 	@Override
-	public void repay(IComponent element) {
+	public synchronized void repay(IComponent element) {
 		try {
 			for (int i = 0; i < __pool.length; i++) {
 				if (__pool[i] == element) {
@@ -113,12 +117,17 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	}
 	
 	@Override
-	public void cleanup() {
+	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = null;
 		}
 		__used = null;
 		__pool = null;
+	}
+	
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
 	}
 
 }

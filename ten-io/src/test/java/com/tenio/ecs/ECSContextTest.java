@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.ecs;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -66,13 +68,13 @@ public final class ECSContextTest {
 
 	@Test
 	public void findEntityShouldReturnTrue() {
-		assertEquals(true, __context.hasEntity(__entity));
+		assertTrue(__context.hasEntity(__entity));
 	}
 
 	@Test
 	public void removeEntityShouldReturnSuccess() {
 		__context.destroyEntity(__entity);
-		assertEquals(false, __context.hasEntity(__entity));
+		assertFalse(__context.hasEntity(__entity));
 	}
 
 	@Test

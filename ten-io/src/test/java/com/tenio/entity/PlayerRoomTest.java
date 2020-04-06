@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.entity;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -111,7 +113,7 @@ public final class PlayerRoomTest {
 	@Test
 	@Order(4)
 	public void checkContainPlayerShouldReturnSuccess() {
-		assertEquals(true, __playerApi.contain(__testPlayerName));
+		assertTrue(__playerApi.contain(__testPlayerName));
 	}
 
 	@Test
@@ -142,7 +144,7 @@ public final class PlayerRoomTest {
 	public void createNewRoomShouldReturnSuccess() {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		assertEquals(true, __roomApi.contain(__testRoomId));
+		assertTrue(__roomApi.contain(__testRoomId));
 	}
 
 	@Test
@@ -173,7 +175,7 @@ public final class PlayerRoomTest {
 	@Order(12)
 	public void playerLeaveRoomShouldReturnSuccess() {
 		__playerApi.playerLeaveRoom(__playerApi.get(__testPlayerName), true);
-		assertAll("playerLeaveRoom", () -> assertEquals(false, __roomApi.get(__testRoomId).contain(__testPlayerName)),
+		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).contain(__testPlayerName)),
 				() -> assertEquals(null, __playerApi.get(__testPlayerName).getRoom()));
 	}
 
@@ -210,8 +212,8 @@ public final class PlayerRoomTest {
 			}
 		}
 		final boolean removedResult = allRemoved;
-		assertAll("removeRoom", () -> assertEquals(false, __roomApi.contain(__testRoomId)),
-				() -> assertEquals(true, removedResult));
+		assertAll("removeRoom", () -> assertFalse(__roomApi.contain(__testRoomId)),
+				() -> assertTrue(removedResult));
 	}
 
 }

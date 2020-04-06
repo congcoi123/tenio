@@ -109,5 +109,10 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		__used = null;
 		__pool = null;
 	}
+	
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
+	}
 
 }

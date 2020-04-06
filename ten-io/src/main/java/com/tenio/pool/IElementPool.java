@@ -46,10 +46,16 @@ public interface IElementPool<Element> {
 	 * @param element the finished using element
 	 */
 	void repay(Element element);
-	
+
 	/**
 	 * Clean up
 	 */
 	void cleanup();
+
+	/**
+	 * @return Returns the total number of element or <code>-1</code> if any
+	 *         exceptions caused
+	 */
+	int getPoolSize();
 
 }

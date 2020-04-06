@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.event;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -79,12 +81,12 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertEquals(true, EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		assertTrue(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void hasLogicEventSubscribeShouldReturnTrue() {
-		assertEquals(true, EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		assertTrue(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 
 	@Test
@@ -100,13 +102,13 @@ public final class EventTest {
 	@Test
 	public void clearAllTEventShouldReturnZero() {
 		EventManager.getEvent().clear();
-		assertEquals(false, EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		assertFalse(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void clearAllLogicEventShouldReturnZero() {
 		EventManager.getLogic().clear();
-		assertEquals(false, EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		assertFalse(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 
 }
