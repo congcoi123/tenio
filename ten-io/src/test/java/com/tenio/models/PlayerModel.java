@@ -26,9 +26,7 @@ package com.tenio.models;
 import com.tenio.entities.AbstractPlayer;
 
 /**
- * 
  * @author kong
- *
  */
 public final class PlayerModel extends AbstractPlayer {
 

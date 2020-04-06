@@ -37,9 +37,7 @@ import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.systems.Systems;
 
 /**
- * 
  * @author kong
- *
  */
 public final class ECSSystemTest {
 

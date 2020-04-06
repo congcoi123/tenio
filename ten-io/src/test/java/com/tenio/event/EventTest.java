@@ -37,9 +37,7 @@ import com.tenio.entities.manager.PlayerManager;
 import com.tenio.models.PlayerModel;
 
 /**
- * 
  * @author kong
- *
  */
 public final class EventTest {
 

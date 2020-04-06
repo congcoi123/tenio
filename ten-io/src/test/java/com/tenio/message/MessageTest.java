@@ -36,9 +36,7 @@ import com.tenio.message.codec.MessagePacker;
 import com.tenio.message.codec.MsgPackConverter;
 
 /**
- * 
  * @author kong
- *
  */
 public final class MessageTest {
 

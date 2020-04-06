@@ -40,9 +40,7 @@ import com.tenio.exception.DuplicatedComponentException;
 import com.tenio.exception.EntityIsNotEnabledException;
 
 /**
- * 
  * @author kong
- *
  */
 public final class ECSContextTest {
 
