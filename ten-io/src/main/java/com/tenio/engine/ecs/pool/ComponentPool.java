@@ -112,8 +112,9 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 			}
 		}
 		if (!flagFound) {
-			error("EXCEPTION REPAY", "component", new NullElementPoolException());
-			throw new NullElementPoolException();
+			var e = new NullElementPoolException();
+			error("EXCEPTION REPAY", "component", e);
+			throw e;
 		}
 	}
 
