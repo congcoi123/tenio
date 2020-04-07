@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.exception;
 
 /**
- * 
  * @author kong
- * 
  */
 public class RunningScheduledTaskException extends RuntimeException {
 	/**

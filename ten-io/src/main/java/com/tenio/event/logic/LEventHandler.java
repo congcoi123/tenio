@@ -30,9 +30,7 @@ import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.event.IEvent;
 
 /**
- * 
  * @author kong
- * 
  */
 public final class LEventHandler<T> {
 
