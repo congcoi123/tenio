@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.tenio.configuration.constant.Constants;
+import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;
 
 /**
@@ -55,7 +56,7 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 		}
 		return ref;
 	}
-	
+
 	private Logger __logger = LogManager.getLogger(getClass());
 	@GuardedBy("this")
 	private StringBuilder[] __pool;
@@ -106,16 +107,21 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 
 	@Override
 	public synchronized void repay(StringBuilder element) {
+		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {
 				__used[i] = false;
 				// Clear
 				element.setLength(0);
-				return;
+				flagFound = true;
+				break;
 			}
 		}
+		if (!flagFound) {
+			throw new NullElementPoolException();
+		}
 	}
-	
+
 	@Override
 	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
@@ -124,7 +130,7 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 		__used = null;
 		__pool = null;
 	}
-	
+
 	@Override
 	public synchronized int getPoolSize() {
 		return (__pool.length == __used.length) ? __pool.length : -1;
