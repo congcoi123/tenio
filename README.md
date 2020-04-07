@@ -12,11 +12,11 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 - Have simple existing game clients for rapid development.
 
 ## First glimpse
-- Simple Movement Simulation
+- Simple Movement Simulation  
 ![Simple Movement Simulation](https://github.com/congcoi123/tenio/blob/master/assets/movement-simulation-example-4.gif)
-- Communication Simulation
+- Communication Simulation  
 ![Communication](https://github.com/congcoi123/tenio/blob/master/assets/login-example-1.gif)
-- Simple ECS (Entity Component System) Simulation
+- Simple ECS (Entity Component System) Simulation  
 ![ECS](https://github.com/congcoi123/tenio/blob/master/assets/ecs-example-5.gif)
 
 ## Wiki
