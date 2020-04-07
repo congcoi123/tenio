@@ -60,6 +60,7 @@ public final class ComponentPoolTest {
 	@Test
 	public void createNewComponentShouldReturnSuccess() {
 		View view = (View) __componentPool.get();
+		
 		assertNotEquals(null, view);
 	}
 
@@ -86,6 +87,7 @@ public final class ComponentPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __componentPool.getPoolSize()),
 				() -> assertTrue(__componentPool.getPoolSize() > numberElement));
 	}

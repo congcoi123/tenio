@@ -102,12 +102,14 @@ public final class EventTest {
 	@Test
 	public void clearAllTEventShouldReturnZero() {
 		EventManager.getEvent().clear();
+		
 		assertFalse(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void clearAllLogicEventShouldReturnZero() {
 		EventManager.getLogic().clear();
+		
 		assertFalse(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 

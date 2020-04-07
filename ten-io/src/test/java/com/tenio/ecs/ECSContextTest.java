@@ -74,6 +74,7 @@ public final class ECSContextTest {
 	@Test
 	public void removeEntityShouldReturnSuccess() {
 		__context.destroyEntity(__entity);
+		
 		assertFalse(__context.hasEntity(__entity));
 	}
 
@@ -124,6 +125,7 @@ public final class ECSContextTest {
 	@Test
 	public void removeAllEntitiesShouldReturnSucess() {
 		__context.destroyAllEntities();
+		
 		assertEquals(0, __context.getEntitesCount());
 	}
 

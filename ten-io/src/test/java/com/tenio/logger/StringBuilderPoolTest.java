@@ -58,6 +58,7 @@ public final class StringBuilderPoolTest {
 	@Test
 	public void createNewStringBuilderShouldReturnSuccess() {
 		StringBuilder string = __stringPool.get();
+		
 		assertNotEquals(null, string);
 	}
 
@@ -74,6 +75,7 @@ public final class StringBuilderPoolTest {
 		StringBuilder string = __stringPool.get();
 		string.append("a").append("b").append("c");
 		__stringPool.repay(string);
+		
 		assertEquals(0, string.length());
 	}
 
@@ -92,6 +94,7 @@ public final class StringBuilderPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __stringPool.getPoolSize()),
 				() -> assertTrue(__stringPool.getPoolSize() > numberElement));
 	}

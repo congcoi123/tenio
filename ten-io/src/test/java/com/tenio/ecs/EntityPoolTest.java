@@ -64,6 +64,7 @@ public final class EntityPoolTest {
 	@Test
 	public void createNewEntityShouldReturnSuccess() {
 		IEntity entity = __entityPool.get();
+		
 		assertNotEquals(null, entity);
 	}
 
@@ -90,6 +91,7 @@ public final class EntityPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __entityPool.getPoolSize()),
 				() -> assertTrue(__entityPool.getPoolSize() > numberElement));
 	}

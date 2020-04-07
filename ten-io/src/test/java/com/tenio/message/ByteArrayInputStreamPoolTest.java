@@ -59,6 +59,7 @@ public final class ByteArrayInputStreamPoolTest {
 	@Test
 	public void createNewByteArrayShouldReturnSuccess() {
 		ByteArrayInputStream array = __byteArrayPool.get();
+		
 		assertNotEquals(null, array);
 	}
 
@@ -85,6 +86,7 @@ public final class ByteArrayInputStreamPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __byteArrayPool.getPoolSize()),
 				() -> assertTrue(__byteArrayPool.getPoolSize() > numberElement));
 	}

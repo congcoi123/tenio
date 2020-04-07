@@ -59,6 +59,7 @@ public final class ArrayPoolTest {
 	@Test
 	public void createNewTArrayShouldReturnSuccess() {
 		TArray array = __arrayPool.get();
+		
 		assertNotEquals(null, array);
 	}
 
@@ -75,6 +76,7 @@ public final class ArrayPoolTest {
 		TArray array = __arrayPool.get();
 		array.put(10).put(20).put(30);
 		__arrayPool.repay(array);
+		
 		assertTrue(array.isEmpty());
 	}
 
@@ -93,6 +95,7 @@ public final class ArrayPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __arrayPool.getPoolSize()),
 				() -> assertTrue(__arrayPool.getPoolSize() > numberElement));
 	}

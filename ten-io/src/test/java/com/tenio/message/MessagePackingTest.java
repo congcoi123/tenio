@@ -54,6 +54,7 @@ public final class MessagePackingTest {
 	public void messageSerializeAndUnserializeShouldReturnTrue() {
 		// Convert TObject message to byte array
 		var bytes = MsgPackConverter.serialize(__message);
+		
 		// Revert the byte array to TObject message
 		assertEquals(__message, MsgPackConverter.unserialize(bytes));
 	}
@@ -66,6 +67,7 @@ public final class MessagePackingTest {
 		var packWithHeader = MessagePacker.pack(bytes);
 		// Slide message, keep only the message content
 		var packWithContent = Arrays.copyOfRange(packWithHeader, Constants.HEADER_BYTES, packWithHeader.length);
+		
 		// Revert the byte array to TObject message
 		assertEquals(__message, MsgPackConverter.unserialize(packWithContent));
 	}
