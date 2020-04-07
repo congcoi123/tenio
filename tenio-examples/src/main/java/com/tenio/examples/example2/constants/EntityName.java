@@ -32,24 +32,24 @@ package com.tenio.examples.example2.constants;
  */
 public enum EntityName {
 
-	MINER(0), WIFE(1);
+	MINER("miner"), WIFE("wife");
 
-	private int __name;
+	private String __name;
 
-	EntityName(int name) {
+	EntityName(String name) {
 		__name = name;
 	}
 
-	public int get() {
+	public String get() {
 		return __name;
 	}
 
-	public static String getName(int name) {
+	public static String getName(String name) {
 		switch (name) {
-		case 0:
+		case "miner":
 			return "Miner Bob";
 
-		case 1:
+		case "wife":
 			return "Wife Elsa";
 
 		default:

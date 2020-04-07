@@ -25,7 +25,6 @@ package com.tenio.engine.ecs;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IContext;
@@ -42,14 +41,14 @@ import com.tenio.pool.IElementPool;
  */
 public class Context<TEntity extends Entity> implements IContext<TEntity> {
 
-	private final Map<UUID, TEntity> __entities;
+	private final Map<String, TEntity> __entities;
 	private final ContextInfo __contextInfo;
 	private final IElementPool<IEntity> __entityPool;
 	private final IElementPool<IComponent>[] __componentPools;
 
 	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;
-		__entities = new HashMap<UUID, TEntity>();
+		__entities = new HashMap<String, TEntity>();
 		__entityPool = new EntityPool(clazz, __contextInfo);
 		__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
 		for (int i = 0; i < __contextInfo.getNumberComponents(); i++) {
@@ -69,7 +68,7 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	}
 
 	@Override
-	public TEntity getEntity(UUID entityId) {
+	public TEntity getEntity(String entityId) {
 		return __entities.get(entityId);
 	}
 
@@ -86,7 +85,7 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 	}
 
 	@Override
-	public Map<UUID, TEntity> getEntities() {
+	public Map<String, TEntity> getEntities() {
 		return __entities;
 	}
 

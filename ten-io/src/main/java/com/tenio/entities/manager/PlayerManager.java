@@ -96,16 +96,18 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		if (player.getName() == null) {
 			// fire an event
 			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
-			error("ADD PLAYER CONNECTION", player.getName(), new NullPlayerNameException());
-			throw new NullPlayerNameException();
+			var e = new NullPlayerNameException();
+			error("ADD PLAYER CONNECTION", player.getName(), e);
+			throw e;
 		}
 
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
 				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-				error("ADD PLAYER CONNECTION", player.getName(), new DuplicatedPlayerException());
-				throw new DuplicatedPlayerException();
+				var e = new DuplicatedPlayerException();
+				error("ADD PLAYER CONNECTION", player.getName(), e);
+				throw e;
 			}
 
 			// add the main connection
@@ -126,8 +128,9 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			if (__players.containsKey(player.getName())) {
 				// fire an event
 				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
-				error("ADD PLAYER", player.getName(), new DuplicatedPlayerException());
-				throw new DuplicatedPlayerException();
+				var e = new DuplicatedPlayerException();
+				error("ADD PLAYER", player.getName(), e);
+				throw e;
 			}
 
 			__players.put(player.getName(), player);

@@ -31,7 +31,7 @@ import com.tenio.examples.example5.context.GameEntity;
 /**
  * @author kong
  */
-public class TeardownSystem extends AbstractSystem<GameEntity> implements ITearDownSystem {
+public final class TeardownSystem extends AbstractSystem<GameEntity> implements ITearDownSystem {
 
 	public TeardownSystem(IContext<GameEntity> context) {
 		super(context);

@@ -28,6 +28,6 @@ import com.tenio.engine.ecs.api.IComponent;
 /**
  * @author kong
  */
-public class Animation implements IComponent {
+public final class Animation implements IComponent {
 	
 }

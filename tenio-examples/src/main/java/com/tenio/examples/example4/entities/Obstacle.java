@@ -36,7 +36,7 @@ import com.tenio.engine.physic.graphic.Paint;
  * @author kong
  *
  */
-public class Obstacle extends BaseGameEntity implements IRender {
+public final class Obstacle extends BaseGameEntity implements IRender {
 
 	public Obstacle(float x, float y, float radius) {
 		super(0, x, y, radius);

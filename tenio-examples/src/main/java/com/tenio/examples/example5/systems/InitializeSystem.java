@@ -32,7 +32,7 @@ import com.tenio.examples.example5.context.GameEntity;
 /**
  * @author kong
  */
-public class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
+public final class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
 
 	public InitializeSystem(IContext<GameEntity> context) {
 		super(context);

@@ -16,7 +16,6 @@ import com.tenio.engine.physic.math.Vector2;
 import com.tenio.engine.physic.utility.CellSpacePartition;
 import com.tenio.engine.physic.utility.EntitiesRelationship;
 import com.tenio.engine.physic.utility.Geometry;
-import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.engine.physic.utility.Smoother;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TArray;
@@ -27,6 +26,7 @@ import com.tenio.examples.example4.entities.Obstacle;
 import com.tenio.examples.example4.entities.Vehicle;
 import com.tenio.examples.example4.entities.Wall;
 import com.tenio.server.Server;
+import com.tenio.utils.MathUtility;
 
 /**
  * All the environment data and methods for the Steering Behavior projects. This
@@ -36,7 +36,7 @@ import com.tenio.server.Server;
  * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
  *
  */
-public class World extends AbstractHeartBeat {
+public final class World extends AbstractHeartBeat {
 
 	public final static int SAMPLE_RATE = 10;
 
@@ -46,11 +46,11 @@ public class World extends AbstractHeartBeat {
 	private final InvertedAABBox2D __aabb = InvertedAABBox2D.newInstance();
 
 	// a container of all the moving entities
-	private List<Vehicle> __vehicles = new ArrayList<Vehicle>(__paramLoader.NUM_AGENTS);
+	private final List<Vehicle> __vehicles = new ArrayList<Vehicle>(__paramLoader.NUM_AGENTS);
 	// any obstacles
-	private List<BaseGameEntity> __obstacles = new ArrayList<BaseGameEntity>(__paramLoader.NUM_OBSTACLES);
+	private final List<BaseGameEntity> __obstacles = new ArrayList<BaseGameEntity>(__paramLoader.NUM_OBSTACLES);
 	// container containing any walls in the environment
-	private List<Wall> __walls = new ArrayList<Wall>();
+	private final List<Wall> __walls = new ArrayList<Wall>();
 	private CellSpacePartition<Vehicle> __cellSpace;
 	// any path we may create for the vehicles to follow
 	private Path __path;
@@ -111,7 +111,6 @@ public class World extends AbstractHeartBeat {
 		float border = 30;
 		__path = new Path(5, border, border, cx - border, cy - border, true);
 
-		BaseGameEntity.resetValidID();
 		for (int a = 0; a < __paramLoader.NUM_AGENTS; ++a) {
 			// determine a random starting position
 			var SpawnPos = Vector2.valueOf(cx / 2 + MathUtility.randomClamped() * cx / 2,
@@ -125,6 +124,11 @@ public class World extends AbstractHeartBeat {
 					__paramLoader.MAX_SPEED, // max velocity
 					__paramLoader.MAX_TURN_RATE_PER_SECOND, // max turn rate
 					__paramLoader.VEHICLE_SCALE); // scale
+
+			// Set the unique id for the big guy
+			if (a == 0) {
+				pVehicle.setId("dragon");
+			}
 
 			pVehicle.getBehavior().setFlockingOn();
 

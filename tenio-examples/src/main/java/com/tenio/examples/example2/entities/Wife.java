@@ -37,7 +37,7 @@ import com.tenio.examples.example2.state.wife.WifesGlobalState;
  * @author kong
  *
  */
-public class Wife extends BaseEntity {
+public final class Wife extends BaseEntity {
 
 	/**
 	 * @see FSMComponent
@@ -50,7 +50,7 @@ public class Wife extends BaseEntity {
 	/**
 	 * Is she cooking?
 	 */
-	private boolean __cooking = false;
+	private boolean __flagCooking = false;
 
 	public Wife(MessageDispatcher dispatcher, EntityName name) {
 		super(name);
@@ -73,16 +73,16 @@ public class Wife extends BaseEntity {
 	}
 
 	public boolean isCooking() {
-		return __cooking;
+		return __flagCooking;
 	}
 
-	public void setCooking(boolean cooking) {
-		__cooking = cooking;
+	public void setCooking(boolean flagCooking) {
+		__flagCooking = flagCooking;
 	}
 
 	@Override
-	public void update(float delta) {
-		__state.update(delta);
+	public void update(float deltaTime) {
+		__state.update(deltaTime);
 	}
 
 	@Override

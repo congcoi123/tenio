@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.heartbeat;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import com.tenio.entities.element.TObject;
 import com.tenio.utils.TimeUtility;
@@ -47,13 +47,9 @@ final class HMessage implements Comparable {
 	public final static double SMALLEST_DELAY = 0.25f;
 
 	/**
-	 * For creating a unique id value
-	 */
-	private static AtomicInteger __atomic = new AtomicInteger(0);
-	/**
 	 * The unique id of message
 	 */
-	private int __id;
+	private String __id;
 	/**
 	 * The message will be sent after an interval time
 	 */
@@ -62,13 +58,13 @@ final class HMessage implements Comparable {
 	 * The main information
 	 */
 	private TObject __message;
-	
+
 	public static HMessage newInstance(TObject message, double delayTime) {
 		return new HMessage(message, delayTime);
 	}
 
 	private HMessage(TObject message, double delayTime) {
-		__id = __atomic.incrementAndGet();
+		__id = UUID.randomUUID().toString();
 		__setDelayTime(delayTime);
 		__message = message;
 	}
@@ -84,7 +80,7 @@ final class HMessage implements Comparable {
 		__delayTime = TimeUtility.currentTimeSeconds() + delayTime;
 	}
 
-	public int getId() {
+	public String getId() {
 		return __id;
 	}
 
@@ -111,7 +107,7 @@ final class HMessage implements Comparable {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 89 * hash + __id;
+		hash = 89 * hash + __id.hashCode();
 		return hash;
 	}
 

@@ -41,7 +41,7 @@ public final class EntityManager extends AbstractLogger {
 	/**
 	 * The list of entities
 	 */
-	private final Map<Integer, AbstractEntity> __entities = new HashMap<Integer, AbstractEntity>();
+	private final Map<String, AbstractEntity> __entities = new HashMap<String, AbstractEntity>();
 
 	/**
 	 * Register an entity to this management
@@ -62,7 +62,7 @@ public final class EntityManager extends AbstractLogger {
 		__entities.put(entity.getId(), entity);
 	}
 
-	public boolean contain(int id) {
+	public boolean contain(String id) {
 		return __entities.containsKey(id);
 	}
 
@@ -70,29 +70,29 @@ public final class EntityManager extends AbstractLogger {
 		return __entities.size();
 	}
 
-	public AbstractEntity get(int id) {
+	public AbstractEntity get(String id) {
 		return __entities.get(id);
 	}
 
 	/**
 	 * Need to call update every frame
 	 * 
-	 * @param delta the time between two consecutive frames
+	 * @param deltaTime the time between two consecutive frames
 	 */
-	public void update(float delta) {
+	public void update(float deltaTime) {
 		for (var entity : __entities.values()) {
-			entity.update(delta);
+			entity.update(deltaTime);
 		}
 	}
 
 	/**
 	 * @return Returns the list of entities in this manager
 	 */
-	public Map<Integer, AbstractEntity> gets() {
+	public Map<String, AbstractEntity> gets() {
 		return __entities;
 	}
 
-	public void remove(int id) {
+	public void remove(String id) {
 		__entities.remove(id);
 	}
 

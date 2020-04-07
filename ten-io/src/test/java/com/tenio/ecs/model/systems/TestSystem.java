@@ -35,7 +35,7 @@ import com.tenio.engine.physic.graphic.Paint;
 /**
  * @author kong
  */
-public class TestSystem extends AbstractSystem<GameEntity>
+public final class TestSystem extends AbstractSystem<GameEntity>
 		implements IInitializeSystem, IExecuteSystem, IRenderSystem, ITearDownSystem {
 
 	private boolean __flagInitialize;

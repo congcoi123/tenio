@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs;
 
-import java.util.UUID;
-
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.exception.ComponentIsNotExistedException;
@@ -40,15 +38,15 @@ public class Entity extends AbstractLogger implements IEntity {
 	private IElementPool<IComponent>[] __componentPools = null;
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
-	private UUID __id = null;
+	private String __id = null;
 
 	@Override
-	public void setId(UUID id) {
+	public void setId(String id) {
 		__id = id;
 	}
 
 	@Override
-	public UUID getId() {
+	public String getId() {
 		return __id;
 	}
 
@@ -90,8 +88,9 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public void setComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
-			error("Entity", "set component", new DuplicatedComponentException());
-			throw new DuplicatedComponentException();
+			var e = new DuplicatedComponentException();
+			error("Entity", "set component", e);
+			throw e;
 		}
 
 		__components[index] = component;
@@ -107,8 +106,9 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public void removeComponent(int index) {
 		if (!hasComponent(index)) {
-			error("Entity", "remove component", new ComponentIsNotExistedException());
-			throw new ComponentIsNotExistedException();
+			var e = new ComponentIsNotExistedException();
+			error("Entity", "remove component", e);
+			throw e;
 		}
 
 		__replaceComponentInternal(index, null);

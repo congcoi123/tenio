@@ -90,7 +90,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private Map<String, String> configuration = new HashMap<String, String>();
+	private final Map<String, String> __configuration = new HashMap<String, String>();
 
 	/**
 	 * The constructor
@@ -128,19 +128,19 @@ public abstract class BaseConfiguration extends AbstractLogger {
 				var pDataNode = attrRootProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 				case "name":
-					configuration.put(SERVER_NAME, pDataNode.getTextContent());
+					__configuration.put(SERVER_NAME, pDataNode.getTextContent());
 					break;
 
 				case "id":
-					configuration.put(SERVER_ID, pDataNode.getTextContent());
+					__configuration.put(SERVER_ID, pDataNode.getTextContent());
 					break;
 
 				case "versionName":
-					configuration.put(VERSION_NAME, pDataNode.getTextContent());
+					__configuration.put(VERSION_NAME, pDataNode.getTextContent());
 					break;
 
 				case "versionCode":
-					configuration.put(VERSION_CODE, pDataNode.getTextContent());
+					__configuration.put(VERSION_CODE, pDataNode.getTextContent());
 					break;
 				}
 			}
@@ -151,13 +151,13 @@ public abstract class BaseConfiguration extends AbstractLogger {
 				var pDataNode = attrRootPort.item(j);
 				switch (pDataNode.getNodeName()) {
 				case "Socket":
-					configuration.put(SOCKET_PORT, pDataNode.getTextContent());
+					__configuration.put(SOCKET_PORT, pDataNode.getTextContent());
 					break;
 				case "Datagram":
-					configuration.put(DATAGRAM_PORT, pDataNode.getTextContent());
+					__configuration.put(DATAGRAM_PORT, pDataNode.getTextContent());
 					break;
 				case "WebSocket":
-					configuration.put(WEBSOCKET_PORT, pDataNode.getTextContent());
+					__configuration.put(WEBSOCKET_PORT, pDataNode.getTextContent());
 					break;
 				}
 			}
@@ -169,35 +169,35 @@ public abstract class BaseConfiguration extends AbstractLogger {
 				var pDataNode = attrConfigurationProperties.item(j);
 				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 				case "keepPlayerOnDisconnect":
-					configuration.put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
+					__configuration.put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
 					break;
 
 				case "maxHeartbeat":
-					configuration.put(MAX_HEARTBEAT, pDataNode.getTextContent());
+					__configuration.put(MAX_HEARTBEAT, pDataNode.getTextContent());
 					break;
 
 				case "maxPlayer":
-					configuration.put(MAX_PLAYER, pDataNode.getTextContent());
+					__configuration.put(MAX_PLAYER, pDataNode.getTextContent());
 					break;
 
 				case "idleReader":
-					configuration.put(IDLE_READER, pDataNode.getTextContent());
+					__configuration.put(IDLE_READER, pDataNode.getTextContent());
 					break;
 
 				case "idleWriter":
-					configuration.put(IDLE_WRITER, pDataNode.getTextContent());
+					__configuration.put(IDLE_WRITER, pDataNode.getTextContent());
 					break;
 
 				case "emptyRoomScan":
-					configuration.put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
+					__configuration.put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
 					break;
 
 				case "timeoutScan":
-					configuration.put(TIMEOUT_SCAN, pDataNode.getTextContent());
+					__configuration.put(TIMEOUT_SCAN, pDataNode.getTextContent());
 					break;
 
 				case "ccuScan":
-					configuration.put(CCU_SCAN, pDataNode.getTextContent());
+					__configuration.put(CCU_SCAN, pDataNode.getTextContent());
 					break;
 				}
 			}
@@ -213,7 +213,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	}
 
 	protected void _put(final String key, final String value) {
-		configuration.put(key, value);
+		__configuration.put(key, value);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * @return Returns the value in @see {@link Boolean}
 	 */
 	public boolean getBoolean(final String key) {
-		return Boolean.parseBoolean(configuration.get(key));
+		return Boolean.parseBoolean(__configuration.get(key));
 	}
 
 	/**
@@ -229,7 +229,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * @return Returns the value in @see {@link Integer}
 	 */
 	public int getInt(final String key) {
-		return Integer.parseInt(configuration.get(key));
+		return Integer.parseInt(__configuration.get(key));
 	}
 
 	/**
@@ -237,7 +237,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * @return Returns the value in @see {@link Float}
 	 */
 	public float getFloat(final String key) {
-		return Float.parseFloat(configuration.get(key));
+		return Float.parseFloat(__configuration.get(key));
 	}
 
 	/**
@@ -245,7 +245,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * @return Returns the value in @see {@link String}
 	 */
 	public String getString(final String key) {
-		return configuration.get(key);
+		return __configuration.get(key);
 	}
 
 	/**
@@ -258,12 +258,12 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 *         otherwise return <code>false</code>
 	 */
 	public boolean isDefined(final String key) {
-		return configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
+		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
 	}
 
 	@Override
 	public String toString() {
-		return configuration.toString();
+		return __configuration.toString();
 	}
 
 	/**

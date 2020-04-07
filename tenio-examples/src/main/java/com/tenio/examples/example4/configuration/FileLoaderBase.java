@@ -19,17 +19,17 @@ public class FileLoaderBase {
 
 	private BufferedReader __file;
 	private String __line = "";
-	private boolean __enableGoodFile;
+	private boolean __flagGoodFile;
 
 	public FileLoaderBase(URL filename) {
 		__line = "";
-		__enableGoodFile = true;
+		__flagGoodFile = true;
 		try {
 			__file = new BufferedReader(new FileReader(new File(filename.toURI())));
 		} catch (FileNotFoundException ex) {
-			__enableGoodFile = false;
+			__flagGoodFile = false;
 		} catch (URISyntaxException ex) {
-			__enableGoodFile = false;
+			__flagGoodFile = false;
 		}
 	}
 
@@ -104,70 +104,70 @@ public class FileLoaderBase {
 	// helper methods. They convert the next parameter value found into the
 	// relevant type
 	public double getNextParameterDouble() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Double.valueOf(__getNextParameter());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public float getNextParameterFloat() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Float.valueOf(__getNextParameter());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public int getNextParameterInt() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Integer.valueOf(__getNextParameter());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public boolean getNextParameterBool() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return 0 != Integer.valueOf(__getNextParameter());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public double getNextTokenAsDouble() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Double.valueOf(__getNextToken());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public float getNextTokenAsFloat() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Float.valueOf(__getNextToken());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public int getNextTokenAsInt() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return Integer.valueOf(__getNextToken());
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public String getNextTokenAsString() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return __getNextToken();
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public boolean isEOF() throws IOException {
-		if (__enableGoodFile) {
+		if (__flagGoodFile) {
 			return !__file.ready();
 		}
 		throw new RuntimeException("bad file");
 	}
 
 	public boolean isFileIsGood() {
-		return __enableGoodFile;
+		return __flagGoodFile;
 	}
 
 	// removes any commenting from a line of text

@@ -49,12 +49,12 @@ public class NettyWSHandler extends BaseNettyHandler {
 	/**
 	 * The maximum number of players that the server can handle
 	 */
-	private int __maxPlayer;
+	private final int __maxPlayer;
 	/**
 	 * Allow a client can be re-connected or not @see
 	 * {@link #_channelInactive(ChannelHandlerContext, boolean)}
 	 */
-	private boolean __keepPlayerOnDisconnect;
+	private final boolean __keepPlayerOnDisconnect;
 
 	public NettyWSHandler(BaseConfiguration configuration) {
 		__maxPlayer = configuration.getInt(BaseConfiguration.MAX_PLAYER) - 1;

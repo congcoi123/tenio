@@ -43,12 +43,16 @@ import com.tenio.models.PlayerModel;
  */
 public final class EventTest {
 
-	private final PlayerManager __playerManager = new PlayerManager();
-	private final int __testCCU[] = new int[2];
-	private PlayerModel __testPlayer = null;
+	private PlayerManager __playerManager;
+	private int[] __testCCU;
+	private PlayerModel __testPlayer;
 
 	@BeforeEach
 	public void initialize() {
+		 __playerManager = new PlayerManager();
+		 __testCCU = new int[2];
+		 __testPlayer = null;
+		 
 		// Create new player
 		var player = new PlayerModel("kong");
 		__playerManager.add(player);
@@ -102,12 +106,14 @@ public final class EventTest {
 	@Test
 	public void clearAllTEventShouldReturnZero() {
 		EventManager.getEvent().clear();
+		
 		assertFalse(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void clearAllLogicEventShouldReturnZero() {
 		EventManager.getLogic().clear();
+		
 		assertFalse(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 

@@ -59,6 +59,7 @@ public final class ObjectPoolTest {
 	@Test
 	public void createNewTObjectShouldReturnSuccess() {
 		TObject object = __objectPool.get();
+		
 		assertNotEquals(null, object);
 	}
 
@@ -77,6 +78,7 @@ public final class ObjectPoolTest {
 		object.put("key2", "value2");
 		object.put("key3", "value3");
 		__objectPool.repay(object);
+		
 		assertTrue(object.isEmpty());
 	}
 
@@ -95,6 +97,7 @@ public final class ObjectPoolTest {
 			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
+		
 		assertAll("createNumberOfElements", () -> assertEquals(expected, __objectPool.getPoolSize()),
 				() -> assertTrue(__objectPool.getPoolSize() > numberElement));
 	}

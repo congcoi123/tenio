@@ -43,7 +43,7 @@ import com.tenio.message.codec.MsgPackConverter;
  * @author kong
  * 
  */
-public class TCP {
+public final class TCP {
 
 	/**
 	 * @see ISocketListener
@@ -73,7 +73,7 @@ public class TCP {
 	 * This flag is used to determine how many numbers of received bytes can be used
 	 * for one packet's header (that contains the packet's length)
 	 */
-	private boolean __recvHeader = true;
+	private boolean __flagRecvHeader = true;
 
 	/**
 	 * Listen in a port on the local machine
@@ -134,7 +134,7 @@ public class TCP {
 			return;
 		}
 
-		if (__recvHeader) {
+		if (__flagRecvHeader) {
 			__updateRecvHeaderData(bytes);
 		} else {
 			__updateRecvData(bytes);
@@ -145,7 +145,7 @@ public class TCP {
 		if (bytes.length >= Constants.HEADER_BYTES) { // header length
 			var header = Arrays.copyOfRange(bytes, 0, Constants.HEADER_BYTES);
 			__dataSize = MessagePacker.byteToShort(header); // network to host short
-			__recvHeader = false;
+			__flagRecvHeader = false;
 			// package = |2 bytes header| <content bytes> |
 			var data = Arrays.copyOfRange(bytes, Constants.HEADER_BYTES, __dataSize + Constants.HEADER_BYTES);
 			__onRecvData(data); // recursion
@@ -155,7 +155,7 @@ public class TCP {
 	private void __updateRecvData(byte[] bytes) {
 		if (bytes.length >= __dataSize) {
 			__onRecvMessage(bytes);
-			__recvHeader = true; // reset header count
+			__flagRecvHeader = true; // reset header count
 		}
 	}
 

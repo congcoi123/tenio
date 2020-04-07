@@ -21,7 +21,7 @@ import com.tenio.examples.example4.configuration.ParamLoader;
  * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
  *
  */
-public class Vehicle extends MoveableEntity implements IRender {
+public final class Vehicle extends MoveableEntity implements IRender {
 
 	// a pointer to the world data. So a vehicle can access any obstacle,
 	// path, wall or agent data
@@ -178,7 +178,7 @@ public class Vehicle extends MoveableEntity implements IRender {
 	public void render(Paint paint) {
 		// render neighboring vehicles in different colors if requested
 		if (__world.isRenderNeighbors()) {
-			if (getId() == 0) {
+			if (getId() == "dragon") {
 				paint.setPenColor(Color.RED);
 			} else if (isTagged()) {
 				paint.setPenColor(Color.GREEN);

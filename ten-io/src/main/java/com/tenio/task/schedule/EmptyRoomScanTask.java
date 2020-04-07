@@ -58,7 +58,7 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 	/**
 	 * The period time for scanning empty rooms and delete those
 	 */
-	private int __emptyRoomScanPeriod;
+	private final int __emptyRoomScanPeriod;
 
 	public EmptyRoomScanTask(RoomApi roomApi, int emptyRoomScanPeriod) {
 		__roomApi = roomApi;

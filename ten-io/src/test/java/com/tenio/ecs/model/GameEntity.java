@@ -29,7 +29,7 @@ import com.tenio.engine.ecs.Entity;
 /**
  * @author kong
  */
-public class GameEntity extends Entity {
+public final class GameEntity extends Entity {
 
 	public boolean isAnimation() {
 		return hasComponent(GameComponents.ANIMATION);

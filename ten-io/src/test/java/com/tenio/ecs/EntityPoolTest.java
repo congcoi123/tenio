@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.message;
+package com.tenio.ecs;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,58 +33,54 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.api.pool.ArrayPool;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TArray;
+import com.tenio.ecs.model.GameComponents;
+import com.tenio.ecs.model.GameEntity;
+import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.engine.ecs.api.IEntity;
+import com.tenio.engine.ecs.pool.EntityPool;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;
 
 /**
  * @author kong
  */
-public final class ArrayPoolTest {
+public final class EntityPoolTest {
 
-	private IElementPool<TArray> __arrayPool;
+	private IElementPool<IEntity> __entityPool;
 
 	@BeforeEach
 	public void initialize() {
-		__arrayPool = new ArrayPool();
+		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(),
+				GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
+		__entityPool = new EntityPool(GameEntity.class, info);
 	}
 
 	@AfterEach
 	public void tearDown() {
-		__arrayPool.cleanup();
+		__entityPool.cleanup();
 	}
 
 	@Test
-	public void createNewTArrayShouldReturnSuccess() {
-		TArray array = __arrayPool.get();
+	public void createNewEntityShouldReturnSuccess() {
+		IEntity entity = __entityPool.get();
 		
-		assertNotEquals(null, array);
+		assertNotEquals(null, entity);
 	}
 
 	@Test
-	public void repayAnArrayWithoutGetShouldCauseException() {
+	public void repayAnEntityWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			TArray array = TArray.newInstance();
-			__arrayPool.repay(array);
+			IEntity entity = new GameEntity();
+			__entityPool.repay(entity);
 		});
-	}
-
-	@Test
-	public void afterReplayArrayShouldBeClearedAllData() {
-		TArray array = __arrayPool.get();
-		array.put(10).put(20).put(30);
-		__arrayPool.repay(array);
-		
-		assertTrue(array.isEmpty());
 	}
 
 	@Test
 	public void createNumberOfElementsShouldLessThanPoolSize() {
 		int numberElement = 100;
 		for (int i = 0; i < numberElement; i++) {
-			__arrayPool.get();
+			__entityPool.get();
 		}
 		int expectedPoolSize = 0;
 		if (numberElement <= Constants.BASE_ELEMENT_POOL) {
@@ -96,8 +92,8 @@ public final class ArrayPoolTest {
 		}
 		final int expected = expectedPoolSize;
 		
-		assertAll("createNumberOfElements", () -> assertEquals(expected, __arrayPool.getPoolSize()),
-				() -> assertTrue(__arrayPool.getPoolSize() > numberElement));
+		assertAll("createNumberOfElements", () -> assertEquals(expected, __entityPool.getPoolSize()),
+				() -> assertTrue(__entityPool.getPoolSize() > numberElement));
 	}
 
 }

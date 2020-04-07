@@ -73,7 +73,7 @@ public final class MessageDispatcher {
 	 * @param msgType  the message's type
 	 * @param info     the message extra information
 	 */
-	public void dispatchMessage(double delay, int sender, int receiver, int msgType, TObject info) {
+	public void dispatchMessage(double delay, String sender, String receiver, int msgType, TObject info) {
 
 		// get pointers to the receiver
 		var pReceiver = __manager.get(receiver);

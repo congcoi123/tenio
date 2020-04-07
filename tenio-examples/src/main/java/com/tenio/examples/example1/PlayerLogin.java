@@ -35,7 +35,7 @@ import com.tenio.entities.annotation.IBackup;
  *
  */
 @Entity
-public class PlayerLogin extends AbstractPlayer implements IBackup<PlayerLogin> {
+public final class PlayerLogin extends AbstractPlayer implements IBackup<PlayerLogin> {
 
 	/**
 	 * For counting the number of messages that sent to this player

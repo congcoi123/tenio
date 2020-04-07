@@ -35,7 +35,7 @@ import com.tenio.examples.example5.context.GameEntity;
 /**
  * @author kong
  */
-public class MoveSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
+public final class MoveSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
 
 	public MoveSystem(IContext<GameEntity> context) {
 		super(context);
