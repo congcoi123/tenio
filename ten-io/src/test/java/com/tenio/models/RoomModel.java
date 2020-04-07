@@ -26,9 +26,7 @@ package com.tenio.models;
 import com.tenio.entities.AbstractRoom;
 
 /**
- * 
  * @author kong
- *
  */
 public final class RoomModel extends AbstractRoom {
 

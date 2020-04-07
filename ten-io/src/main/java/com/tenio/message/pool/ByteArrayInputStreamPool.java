@@ -88,19 +88,21 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 
 	@Override
 	public synchronized void repay(ByteArrayInputStream element) {
-		try {
-			for (int i = 0; i < __pool.length; i++) {
-				if (__pool[i] == element) {
-					__used[i] = false;
-					return;
-				}
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				flagFound = true;
+				break;
 			}
-			throw new NullElementPoolException();
-		} catch (NullElementPoolException e) {
+		}
+		if (!flagFound) {
+			var e = new NullElementPoolException();
 			error("EXCEPTION REPAY", "byte", e);
+			throw e;
 		}
 	}
-	
+
 	@Override
 	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
@@ -108,6 +110,11 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		}
 		__used = null;
 		__pool = null;
+	}
+
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
 	}
 
 }

@@ -33,6 +33,7 @@ import com.tenio.entities.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
+import com.tenio.pool.IElementPool;
 
 /**
  * This class provides you a necessary interface for sending messages from the
@@ -50,11 +51,11 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * @see ArrayPool
 	 */
-	private final ArrayPool __arrayPool = new ArrayPool();
+	private final IElementPool<TArray> __arrayPool = new ArrayPool();
 	/**
 	 * @see ObjectPool
 	 */
-	private final ObjectPool __objectPool = new ObjectPool();
+	private final IElementPool<TObject> __objectPool = new ObjectPool();
 
 	/**
 	 * Send a message for a connection

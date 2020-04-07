@@ -36,11 +36,9 @@ import com.tenio.message.codec.MessagePacker;
 import com.tenio.message.codec.MsgPackConverter;
 
 /**
- * 
  * @author kong
- *
  */
-public final class MessageTest {
+public final class MessagePackingTest {
 
 	private final TObject __message = TObject.newInstance();
 

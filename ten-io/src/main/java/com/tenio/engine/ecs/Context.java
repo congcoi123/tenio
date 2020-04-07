@@ -27,9 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IContext;
+import com.tenio.engine.ecs.api.IEntity;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
+import com.tenio.pool.IElementPool;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
@@ -41,8 +44,8 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 
 	private final Map<UUID, TEntity> __entities;
 	private final ContextInfo __contextInfo;
-	private final EntityPool __entityPool;
-	private final ComponentPool[] __componentPools;
+	private final IElementPool<IEntity> __entityPool;
+	private final IElementPool<IComponent>[] __componentPools;
 
 	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;
@@ -63,6 +66,11 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 		entity.setComponentPools(__componentPools);
 		__entities.put(entity.getId(), entity);
 		return entity;
+	}
+
+	@Override
+	public TEntity getEntity(UUID entityId) {
+		return __entities.get(entityId);
 	}
 
 	@Override

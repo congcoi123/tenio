@@ -26,9 +26,7 @@ package com.tenio.engine.physic.utility;
 import java.util.Random;
 
 /**
- * 
  * @author kong
- *
  */
 public final class MathUtility {
 

@@ -26,18 +26,10 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class NullElementPoolException extends RuntimeException {
+public class DuplicatedComponentException extends RuntimeException {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1702807220957046354L;
-
-	public NullElementPoolException() {
-
-	}
-
-	public NullElementPoolException(final String message) {
-		super(message);
-	}
+	private static final long serialVersionUID = -1735259692237213378L;
 
 }

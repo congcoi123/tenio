@@ -32,9 +32,7 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.IEvent;
 
 /**
- * 
  * @author kong
- * 
  */
 public final class TEventHandler<T> {
 

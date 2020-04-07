@@ -89,7 +89,7 @@ public final class MsgPackConverter {
 		 * An object creation pool instance, which is used for re-use byte objects @see
 		 * {@link IElementPool}
 		 */
-		private static final ByteArrayInputStreamPool __bytesPool = new ByteArrayInputStreamPool();
+		private static final IElementPool<ByteArrayInputStream> __bytesPool = new ByteArrayInputStreamPool();
 
 		/**
 		 * Converting an object @see {@link TObject} to array of bytes data

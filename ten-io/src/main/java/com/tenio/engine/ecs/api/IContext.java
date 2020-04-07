@@ -34,6 +34,8 @@ import com.tenio.engine.ecs.ContextInfo;
 public interface IContext<TEntity extends IEntity> {
 
 	TEntity createEntity();
+	
+	TEntity getEntity(UUID entityId);
 
 	boolean hasEntity(TEntity entity);
 	

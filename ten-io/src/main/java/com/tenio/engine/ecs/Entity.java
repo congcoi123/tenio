@@ -27,19 +27,20 @@ import java.util.UUID;
 
 import com.tenio.engine.ecs.api.IComponent;
 import com.tenio.engine.ecs.api.IEntity;
-import com.tenio.engine.ecs.pool.ComponentPool;
+import com.tenio.exception.ComponentIsNotExistedException;
+import com.tenio.exception.DuplicatedComponentException;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.pool.IElementPool;
 
 /**
  * @author kong
  **/
 public class Entity extends AbstractLogger implements IEntity {
 
-	private ComponentPool[] __componentPools = null;
+	private IElementPool<IComponent>[] __componentPools = null;
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
 	private UUID __id = null;
-	private boolean __enabled = false;
 
 	@Override
 	public void setId(UUID id) {
@@ -60,33 +61,22 @@ public class Entity extends AbstractLogger implements IEntity {
 			__components = new IComponent[contextInfo.getNumberComponents()];
 		}
 	}
-	
+
 	@Override
-	public void setComponentPools(ComponentPool[] componentPools) {
+	public void setComponentPools(IElementPool<IComponent>[] componentPools) {
 		if (__componentPools == null) {
 			__componentPools = componentPools;
 		}
 	}
-	
+
 	@Override
-	public ComponentPool[] getComponentPools() {
+	public IElementPool<IComponent>[] getComponentPools() {
 		return __componentPools;
 	}
 
 	@Override
 	public ContextInfo getContextInfo() {
 		return __contextInfo;
-	}
-
-	/**
-	 * The context manages the state of an entity. Active entities are enabled,
-	 * destroyed entities are not.
-	 * 
-	 * @return {@link Boolean}
-	 */
-	@Override
-	public boolean isEnabled() {
-		return __enabled;
 	}
 
 	/**
@@ -98,17 +88,10 @@ public class Entity extends AbstractLogger implements IEntity {
 	 * @param component
 	 */
 	@Override
-	public void addComponent(int index, IComponent component) {
-		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
-		}
-
+	public void setComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
-			info("Entity", "entity had a same component",
-					strgen("Cannot add component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "set component", new DuplicatedComponentException());
+			throw new DuplicatedComponentException();
 		}
 
 		__components[index] = component;
@@ -123,16 +106,9 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public void removeComponent(int index) {
-		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
-		}
-
 		if (!hasComponent(index)) {
-			info("Entity", "entity does not has the component",
-					strgen("Cannot remove component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
+			error("Entity", "remove component", new ComponentIsNotExistedException());
+			throw new ComponentIsNotExistedException();
 		}
 
 		__replaceComponentInternal(index, null);
@@ -148,17 +124,11 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public void replaceComponent(int index, IComponent component) {
-		if (!__enabled) {
-			info("Entity", "entity is not enabled",
-					strgen("Cannot replace component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return;
-		}
-
 		if (hasComponent(index)) {
 			__replaceComponentInternal(index, component);
 		} else {
 			if (component != null) {
-				addComponent(index, component);
+				setComponent(index, component);
 			}
 		}
 	}
@@ -181,11 +151,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	 */
 	@Override
 	public IComponent getComponent(int index) {
-		if (!hasComponent(index)) {
-			info("Entity", "entity does not have the component",
-					strgen("Cannot get component", __contextInfo.getComponentNames()[index], " to ", this, " !"));
-			return null;
-		}
 		return __components[index];
 	}
 
@@ -268,11 +233,6 @@ public class Entity extends AbstractLogger implements IEntity {
 	@Override
 	public int hashCode() {
 		return __id.hashCode();
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		__enabled = enabled;
 	}
 
 	@Override

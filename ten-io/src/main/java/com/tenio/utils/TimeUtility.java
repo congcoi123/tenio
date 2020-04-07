@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.utils;
 
 /**
- * 
  * @author kong
- *
  */
 public final class TimeUtility {
 

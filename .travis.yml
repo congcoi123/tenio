@@ -1,6 +1,14 @@
+# language and version
 language: java
 jdk:
   - openjdk11
 
+# run
 script:
   - mvn test -B
+
+# safelist
+branches:
+  only:
+    - master
+    - develop
