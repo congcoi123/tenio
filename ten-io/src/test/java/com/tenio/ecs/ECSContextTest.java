@@ -23,8 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.ecs;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +38,10 @@ import com.tenio.ecs.model.GameContext;
 import com.tenio.ecs.model.GameEntity;
 import com.tenio.ecs.model.components.Position;
 import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.exception.DuplicatedComponentException;
 
 /**
- * 
  * @author kong
- *
  */
 public final class ECSContextTest {
 
@@ -53,11 +55,10 @@ public final class ECSContextTest {
 		__context = new GameContext(info);
 
 		__entity = __context.createEntity();
-		__entity.setEnabled(true);
 		__entity.setAnimation(true);
 		__entity.setMotion(true);
-		__entity.setView(true);
-		__entity.addPosition(0, 0);
+		__entity.setView(false);
+		__entity.setPosition(0, 0);
 	}
 
 	@AfterEach
@@ -67,13 +68,14 @@ public final class ECSContextTest {
 
 	@Test
 	public void findEntityShouldReturnTrue() {
-		assertEquals(true, __context.hasEntity(__entity));
+		assertTrue(__context.hasEntity(__entity));
 	}
 
 	@Test
 	public void removeEntityShouldReturnSuccess() {
 		__context.destroyEntity(__entity);
-		assertEquals(false, __context.hasEntity(__entity));
+		
+		assertFalse(__context.hasEntity(__entity));
 	}
 
 	@Test
@@ -83,19 +85,32 @@ public final class ECSContextTest {
 	}
 
 	@Test
-	public void reAddEntityPositionShouldTakeNoEffect() {
-		Position position = new Position();
-		position.x = 10;
-		position.y = 10;
+	public void reAddEntityPositionShouldCauseException() {
+		assertThrows(DuplicatedComponentException.class, () -> {
+			Position position = new Position();
+			position.x = 10;
+			position.y = 10;
 
-		__entity.addPosition(position.x, position.y);
-
-		assertAll("addPosition", () -> assertEquals(0, ((Position) __entity.getComponent(GameComponents.POSITION)).x),
-				() -> assertEquals(0, ((Position) __entity.getComponent(GameComponents.POSITION)).y));
+			__entity.setPosition(position.x, position.y);
+		});
 	}
 
 	@Test
 	public void changeEntityPositionShouldMatchValue() {
+		Position position = new Position();
+		position.x = 10;
+		position.y = 10;
+
+		((Position) __entity.getComponent(GameComponents.POSITION)).x = position.x;
+		((Position) __entity.getComponent(GameComponents.POSITION)).y = position.y;
+
+		assertAll("replacePosition",
+				() -> assertEquals(position.x, ((Position) __entity.getComponent(GameComponents.POSITION)).x),
+				() -> assertEquals(position.y, ((Position) __entity.getComponent(GameComponents.POSITION)).y));
+	}
+
+	@Test
+	public void replaceEntityPositionShouldMatchValue() {
 		Position position = new Position();
 		position.x = 10;
 		position.y = 10;
@@ -110,6 +125,7 @@ public final class ECSContextTest {
 	@Test
 	public void removeAllEntitiesShouldReturnSucess() {
 		__context.destroyAllEntities();
+		
 		assertEquals(0, __context.getEntitesCount());
 	}
 

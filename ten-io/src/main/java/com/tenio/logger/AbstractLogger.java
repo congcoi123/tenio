@@ -45,12 +45,12 @@ public abstract class AbstractLogger {
 	/**
 	 * A Log4j object
 	 */
-	private Logger __logger = LogManager.getLogger(getClass());
+	private final Logger __logger = LogManager.getLogger(getClass());
 	/**
 	 * An object creation pool instance, which is used for re-use string
 	 * objects @see {@link IElementPool}
 	 */
-	private StringBuilderPool __stringPool = StringBuilderPool.getInstance();
+	private final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
 	 * Always use @see {@link #buildgen(Object...)} for creating

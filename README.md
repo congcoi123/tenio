@@ -12,8 +12,11 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 - Have simple existing game clients for rapid development.
 
 ## First glimpse
+- Simple Movement Simulation  
 ![Simple Movement Simulation](https://github.com/congcoi123/tenio/blob/master/assets/movement-simulation-example-4.gif)
+- Communication Simulation  
 ![Communication](https://github.com/congcoi123/tenio/blob/master/assets/login-example-1.gif)
+- Simple ECS (Entity Component System) Simulation  
 ![ECS](https://github.com/congcoi123/tenio/blob/master/assets/ecs-example-5.gif)
 
 ## Wiki
@@ -32,6 +35,9 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 
 ## License
 The TenIO project is currently available under the [MIT](https://github.com/congcoi123/tenio/blob/master/LICENSE) License.
+
+## Changelog
+Please check out the [changelog](https://github.com/congcoi123/tenio/blob/master/CHANGELOG.md) for more details.
 
 ## Installation
 The maven repository will come soon, now you can get the sources:

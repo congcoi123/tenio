@@ -73,7 +73,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	/**
 	 * Making slow steps to inspect what happening
 	 */
-	private float tick = 0;
+	private float __tick = 0;
 
 	public LifeCycle() {
 		// create a manager
@@ -101,7 +101,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 
 	@Override
 	protected void _onUpdate(float delta) {
-		if (tick >= PERIOD_STEPS_IN_SECONDS) {
+		if (__tick >= PERIOD_STEPS_IN_SECONDS) {
 			__entities.gets().values().forEach(entity -> {
 				var base = (BaseEntity) entity;
 				if (base.getMood() != null) {
@@ -115,9 +115,9 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 			__entities.update(delta);
 			__dispatcher.update(delta);
 
-			tick = 0;
+			__tick = 0;
 		}
-		tick += delta;
+		__tick += delta;
 	}
 
 	@Override

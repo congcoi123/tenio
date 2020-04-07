@@ -32,7 +32,7 @@ import com.tenio.server.Server;
  * @author kong
  * 
  */
-public class TestMovement {
+public final class TestMovement {
 
 	/**
 	 * The entry point

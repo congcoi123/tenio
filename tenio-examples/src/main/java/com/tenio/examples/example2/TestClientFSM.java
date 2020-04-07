@@ -46,7 +46,7 @@ public final class TestClientFSM implements ISocketListener {
 	/**
 	 * @see TCP
 	 */
-	private TCP __tcp;
+	private final TCP __tcp;
 
 	public TestClientFSM() {
 		__tcp = new TCP(8032);

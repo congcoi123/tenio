@@ -29,7 +29,7 @@ import com.tenio.engine.ecs.ContextInfo;
 /**
  * @author kong
  */
-public class GameContext extends Context<GameEntity> {
+public final class GameContext extends Context<GameEntity> {
 
 	public GameContext(ContextInfo contextInfo) {
 		super(contextInfo, GameEntity.class);

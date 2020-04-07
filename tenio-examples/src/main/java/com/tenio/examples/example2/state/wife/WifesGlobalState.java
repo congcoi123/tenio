@@ -25,9 +25,9 @@ package com.tenio.examples.example2.state.wife;
 
 import com.tenio.engine.fsm.entities.State;
 import com.tenio.engine.fsm.entities.Telegram;
-import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.examples.example2.constants.MessageType;
 import com.tenio.examples.example2.entities.Wife;
+import com.tenio.utils.MathUtility;
 
 /**
  * This is a global state, which means the miner's wife will check it every

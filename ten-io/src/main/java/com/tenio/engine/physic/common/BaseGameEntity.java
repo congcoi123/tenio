@@ -25,7 +25,7 @@ package com.tenio.engine.physic.common;
 
 import com.tenio.engine.fsm.entities.AbstractEntity;
 import com.tenio.engine.physic.math.Vector2;
-import com.tenio.engine.physic.utility.MathUtility;
+import com.tenio.utils.MathUtility;
 
 /**
  * The base game entity class, it aims for creating movable objects.

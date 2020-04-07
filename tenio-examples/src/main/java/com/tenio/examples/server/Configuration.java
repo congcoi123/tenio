@@ -38,7 +38,7 @@ import com.tenio.utils.XMLUtility;
  * @author kong
  *
  */
-public class Configuration extends BaseConfiguration {
+public final class Configuration extends BaseConfiguration {
 
 	public static final String CUSTOM_VALUE_1 = "c_customvalue_1";
 	public static final String CUSTOM_VALUE_2 = "c_customvalue_2";

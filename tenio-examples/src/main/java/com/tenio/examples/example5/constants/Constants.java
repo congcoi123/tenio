@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example5.constants;
 
 /**
- * 
  * @author kong
- *
  */
 public final class Constants {
 

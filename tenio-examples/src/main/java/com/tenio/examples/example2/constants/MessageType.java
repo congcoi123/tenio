@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example2.constants;
 
 /**
- * 
  * @author kong
- *
  */
 public enum MessageType {
 

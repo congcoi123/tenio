@@ -24,7 +24,6 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.api;
 
 import java.util.Map;
-import java.util.UUID;
 
 import com.tenio.engine.ecs.ContextInfo;
 
@@ -34,12 +33,14 @@ import com.tenio.engine.ecs.ContextInfo;
 public interface IContext<TEntity extends IEntity> {
 
 	TEntity createEntity();
+	
+	TEntity getEntity(String entityId);
 
 	boolean hasEntity(TEntity entity);
 	
 	void destroyEntity(TEntity entity);
 
-	Map<UUID, TEntity> getEntities();
+	Map<String, TEntity> getEntities();
 
 	ContextInfo getContextInfo();
 

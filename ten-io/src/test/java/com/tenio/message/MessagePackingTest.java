@@ -36,16 +36,15 @@ import com.tenio.message.codec.MessagePacker;
 import com.tenio.message.codec.MsgPackConverter;
 
 /**
- * 
  * @author kong
- *
  */
-public final class MessageTest {
+public final class MessagePackingTest {
 
-	private final TObject __message = TObject.newInstance();
+	private TObject __message;
 
 	@BeforeEach
 	public void initialize() {
+		__message = TObject.newInstance();
 		__message.put("string", "String");
 		__message.put("integer", 1993);
 		__message.put("float", 1.0);
@@ -56,6 +55,7 @@ public final class MessageTest {
 	public void messageSerializeAndUnserializeShouldReturnTrue() {
 		// Convert TObject message to byte array
 		var bytes = MsgPackConverter.serialize(__message);
+		
 		// Revert the byte array to TObject message
 		assertEquals(__message, MsgPackConverter.unserialize(bytes));
 	}
@@ -68,6 +68,7 @@ public final class MessageTest {
 		var packWithHeader = MessagePacker.pack(bytes);
 		// Slide message, keep only the message content
 		var packWithContent = Arrays.copyOfRange(packWithHeader, Constants.HEADER_BYTES, packWithHeader.length);
+		
 		// Revert the byte array to TObject message
 		assertEquals(__message, MsgPackConverter.unserialize(packWithContent));
 	}

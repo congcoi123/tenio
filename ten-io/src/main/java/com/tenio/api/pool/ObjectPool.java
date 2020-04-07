@@ -88,21 +88,23 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 
 	@Override
 	public synchronized void repay(TObject element) {
-		try {
-			for (int i = 0; i < __pool.length; i++) {
-				if (__pool[i] == element) {
-					__used[i] = false;
-					// Clear object
-					element.clear();
-					return;
-				}
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				// Clear object
+				element.clear();
+				flagFound = true;
+				break;
 			}
-			throw new NullElementPoolException();
-		} catch (NullElementPoolException e) {
+		}
+		if (!flagFound) {
+			var e = new NullElementPoolException();
 			error("EXCEPTION REPAY", "object", e);
+			throw e;
 		}
 	}
-	
+
 	@Override
 	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
@@ -111,5 +113,10 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		__used = null;
 		__pool = null;
 	}
-	
+
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
+	}
+
 }

@@ -37,7 +37,7 @@ public abstract class BaseEntity extends AbstractEntity {
 	/**
 	 * @see EntityName
 	 */
-	private EntityName __name;
+	private final EntityName __name;
 	/**
 	 * An extra information
 	 */

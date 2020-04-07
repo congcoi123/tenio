@@ -36,7 +36,7 @@ import com.tenio.examples.example2.state.miner.GoHomeAndSleepTilRested;
  * @author kong
  *
  */
-public class Miner extends BaseEntity {
+public final class Miner extends BaseEntity {
 	/**
 	 * The amount of gold a miner must have before he feels comfortable
 	 */

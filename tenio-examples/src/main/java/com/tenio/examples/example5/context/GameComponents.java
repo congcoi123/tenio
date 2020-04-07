@@ -31,7 +31,7 @@ import com.tenio.examples.example5.components.View;
 /**
  * @author kong
  */
-public class GameComponents {
+public final class GameComponents {
 
 	public static byte ANIMATION = 0;
 	public static byte MOTION = 1;

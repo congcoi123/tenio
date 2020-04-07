@@ -30,9 +30,7 @@ import java.awt.geom.Point2D;
 import java.net.URL;
 
 /**
- * 
  * @author kong
- *
  */
 public final class Windows {
 

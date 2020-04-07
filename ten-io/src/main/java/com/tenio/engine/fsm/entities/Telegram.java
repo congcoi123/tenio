@@ -46,11 +46,11 @@ public class Telegram implements Comparable {
 	/**
 	 * The id of the sender
 	 */
-	private int __sender;
+	private String __sender;
 	/**
 	 * The id of the receiver
 	 */
-	private int __receiver;
+	private String __receiver;
 	/**
 	 * The type of this message
 	 */
@@ -71,16 +71,16 @@ public class Telegram implements Comparable {
 	public Telegram() {
 		__createdTime = TimeUtility.currentTimeSeconds();
 		__delayTime = -1;
-		__sender = -1;
-		__receiver = -1;
+		__sender = null;
+		__receiver = null;
 		__type = -1;
 	}
 
-	public Telegram(double delayTime, int sender, int receiver, int type) {
+	public Telegram(double delayTime, String sender, String receiver, int type) {
 		this(delayTime, sender, receiver, type, null);
 	}
 
-	public Telegram(double delayTime, int sender, int receiver, int type, TObject info) {
+	public Telegram(double delayTime, String sender, String receiver, int type, TObject info) {
 		__delayTime = delayTime;
 		__sender = sender;
 		__receiver = receiver;
@@ -88,11 +88,11 @@ public class Telegram implements Comparable {
 		__info = info;
 	}
 
-	public int getSender() {
+	public String getSender() {
 		return __sender;
 	}
 
-	public int getReceiver() {
+	public String getReceiver() {
 		return __receiver;
 	}
 
@@ -136,8 +136,8 @@ public class Telegram implements Comparable {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 89 * hash + __sender;
-		hash = 89 * hash + __receiver;
+		hash = 89 * hash + __sender.hashCode();
+		hash = 89 * hash + __receiver.hashCode();
 		hash = 89 * hash + __type;
 		return hash;
 	}

@@ -29,13 +29,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 import org.junit.runner.RunWith;
 
 /**
- * 
  * @author kong
- *
  */
 @RunWith(JUnitPlatform.class)
 @SuiteDisplayName("Test all unit test cases for TenIO")
 @SelectPackages("com.tenio")
-public class TenIOTest {
+public final class TenIOTest {
 
 }

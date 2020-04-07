@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.event;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,18 +39,20 @@ import com.tenio.entities.manager.PlayerManager;
 import com.tenio.models.PlayerModel;
 
 /**
- * 
  * @author kong
- *
  */
 public final class EventTest {
 
-	private final PlayerManager __playerManager = new PlayerManager();
-	private final int __testCCU[] = new int[2];
-	private PlayerModel __testPlayer = null;
+	private PlayerManager __playerManager;
+	private int[] __testCCU;
+	private PlayerModel __testPlayer;
 
 	@BeforeEach
 	public void initialize() {
+		 __playerManager = new PlayerManager();
+		 __testCCU = new int[2];
+		 __testPlayer = null;
+		 
 		// Create new player
 		var player = new PlayerModel("kong");
 		__playerManager.add(player);
@@ -81,12 +85,12 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertEquals(true, EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		assertTrue(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void hasLogicEventSubscribeShouldReturnTrue() {
-		assertEquals(true, EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		assertTrue(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 
 	@Test
@@ -102,13 +106,15 @@ public final class EventTest {
 	@Test
 	public void clearAllTEventShouldReturnZero() {
 		EventManager.getEvent().clear();
-		assertEquals(false, EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		
+		assertFalse(EventManager.getEvent().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void clearAllLogicEventShouldReturnZero() {
 		EventManager.getLogic().clear();
-		assertEquals(false, EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		
+		assertFalse(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
 	}
 
 }

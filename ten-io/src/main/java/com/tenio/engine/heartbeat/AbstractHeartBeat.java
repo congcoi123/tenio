@@ -37,9 +37,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.utils.MathUtility;
 import com.tenio.utils.TimeUtility;
 
 /**

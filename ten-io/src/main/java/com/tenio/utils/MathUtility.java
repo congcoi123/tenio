@@ -21,14 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.physic.utility;
+package com.tenio.utils;
 
 import java.util.Random;
 
 /**
- * 
  * @author kong
- *
  */
 public final class MathUtility {
 

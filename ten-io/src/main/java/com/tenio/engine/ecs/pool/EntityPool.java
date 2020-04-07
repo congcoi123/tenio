@@ -26,6 +26,8 @@ package com.tenio.engine.ecs.pool;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import com.tenio.configuration.constant.Constants;
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.engine.ecs.Entity;
@@ -42,7 +44,9 @@ import com.tenio.pool.IElementPool;
  */
 public final class EntityPool extends AbstractLogger implements IElementPool<IEntity> {
 
+	@GuardedBy("this")
 	private IEntity[] __pool;
+	@GuardedBy("this")
 	private boolean[] __used;
 	private Class<? extends Entity> __clazz;
 	private ContextInfo __contextInfo;
@@ -56,7 +60,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = 0; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setId(UUID.randomUUID());
+				entity.setId(UUID.randomUUID().toString());
 				entity.setContextInfo(__contextInfo);
 				__pool[i] = entity;
 				__used[i] = false;
@@ -68,7 +72,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public IEntity get() {
+	public synchronized IEntity get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -89,7 +93,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setId(UUID.randomUUID());
+				entity.setId(UUID.randomUUID().toString());
 				entity.setContextInfo(__contextInfo);
 				__pool[i] = entity;
 				__used[i] = false;
@@ -108,28 +112,35 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	}
 
 	@Override
-	public void repay(IEntity element) {
-		try {
-			for (int i = 0; i < __pool.length; i++) {
-				if (__pool[i] == element) {
-					__used[i] = false;
-					element.reset();
-					return;
-				}
+	public synchronized void repay(IEntity element) {
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				element.reset();
+				flagFound = true;
+				break;
 			}
-			throw new NullElementPoolException();
-		} catch (NullElementPoolException e) {
+		}
+		if (!flagFound) {
+			var e = new NullElementPoolException();
 			error("EXCEPTION REPAY", "component", e);
+			throw e;
 		}
 	}
-	
+
 	@Override
-	public void cleanup() {
+	public synchronized void cleanup() {
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = null;
 		}
 		__used = null;
 		__pool = null;
+	}
+
+	@Override
+	public synchronized int getPoolSize() {
+		return (__pool.length == __used.length) ? __pool.length : -1;
 	}
 
 }

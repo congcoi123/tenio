@@ -28,7 +28,7 @@ import com.tenio.engine.ecs.api.IComponent;
 /**
  * @author kong
  */
-public class Position implements IComponent {
+public final class Position implements IComponent {
 
 	public float x;
 	public float y;

@@ -3,6 +3,7 @@ package com.tenio.engine.physic.utility;
 import java.util.List;
 
 import com.tenio.engine.physic.math.Vector2;
+import com.tenio.utils.MathUtility;
 
 /**
  * Some useful 2D geometry functions

@@ -29,7 +29,7 @@ import com.tenio.engine.ecs.Entity;
 /**
  * @author kong
  */
-public class GameEntity extends Entity {
+public final class GameEntity extends Entity {
 
 	public boolean isAnimation() {
 		return hasComponent(GameComponents.ANIMATION);
@@ -38,7 +38,7 @@ public class GameEntity extends Entity {
 	public GameEntity setAnimation(boolean value) {
 		if (value != hasComponent(GameComponents.ANIMATION)) {
 			if (value) {
-				addComponent(GameComponents.ANIMATION, getComponentPools()[GameComponents.ANIMATION].get());
+				setComponent(GameComponents.ANIMATION, getComponentPools()[GameComponents.ANIMATION].get());
 			} else {
 				getComponentPools()[GameComponents.ANIMATION].repay(getComponent(GameComponents.ANIMATION));
 				removeComponent(GameComponents.ANIMATION);
@@ -54,7 +54,7 @@ public class GameEntity extends Entity {
 	public GameEntity setMotion(boolean value) {
 		if (value != hasComponent(GameComponents.MOTION)) {
 			if (value) {
-				addComponent(GameComponents.MOTION, getComponentPools()[GameComponents.MOTION].get());
+				setComponent(GameComponents.MOTION, getComponentPools()[GameComponents.MOTION].get());
 			} else {
 				getComponentPools()[GameComponents.MOTION].repay(getComponent(GameComponents.MOTION));
 				removeComponent(GameComponents.MOTION);
@@ -70,7 +70,7 @@ public class GameEntity extends Entity {
 	public GameEntity setView(boolean value) {
 		if (value != hasComponent(GameComponents.VIEW)) {
 			if (value) {
-				addComponent(GameComponents.VIEW, getComponentPools()[GameComponents.VIEW].get());
+				setComponent(GameComponents.VIEW, getComponentPools()[GameComponents.VIEW].get());
 			} else {
 				getComponentPools()[GameComponents.VIEW].repay(getComponent(GameComponents.VIEW));
 				removeComponent(GameComponents.VIEW);
@@ -83,11 +83,11 @@ public class GameEntity extends Entity {
 		return hasComponent(GameComponents.POSITION);
 	}
 
-	public GameEntity addPosition(float x, float y) {
+	public GameEntity setPosition(float x, float y) {
 		var component = (Position) getComponentPools()[GameComponents.POSITION].get();
 		component.x = x;
 		component.y = y;
-		addComponent(GameComponents.POSITION, component);
+		setComponent(GameComponents.POSITION, component);
 		return this;
 	}
 
