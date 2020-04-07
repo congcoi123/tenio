@@ -60,7 +60,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = 0; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setId(UUID.randomUUID());
+				entity.setId(UUID.randomUUID().toString());
 				entity.setContextInfo(__contextInfo);
 				__pool[i] = entity;
 				__used[i] = false;
@@ -93,7 +93,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
 				var entity = __clazz.getDeclaredConstructor().newInstance();
-				entity.setId(UUID.randomUUID());
+				entity.setId(UUID.randomUUID().toString());
 				entity.setContextInfo(__contextInfo);
 				__pool[i] = entity;
 				__used[i] = false;

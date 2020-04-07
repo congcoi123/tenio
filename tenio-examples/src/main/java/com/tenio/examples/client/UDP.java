@@ -42,7 +42,7 @@ import com.tenio.message.codec.MsgPackConverter;
  * @author kong
  * 
  */
-public class UDP {
+public final class UDP {
 
 	/**
 	 * @see Future

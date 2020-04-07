@@ -29,7 +29,7 @@ import com.tenio.server.Server;
 /**
  * @author kong
  */
-public class TestECS {
+public final class TestECS {
 
 	/**
 	 * The entry point

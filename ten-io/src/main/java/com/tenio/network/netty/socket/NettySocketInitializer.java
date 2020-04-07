@@ -44,7 +44,7 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 	/**
 	 * @see {@link BaseConfiguration}
 	 */
-	private BaseConfiguration __configuration;
+	private final BaseConfiguration __configuration;
 
 	public NettySocketInitializer(BaseConfiguration configuration) {
 		__configuration = configuration;

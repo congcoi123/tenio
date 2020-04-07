@@ -30,15 +30,15 @@ import com.tenio.engine.ecs.systems.AbstractSystem;
 import com.tenio.engine.ecs.systems.IInitializeSystem;
 import com.tenio.engine.ecs.systems.IRenderSystem;
 import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.examples.example5.components.Position;
 import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameEntity;
+import com.tenio.utils.MathUtility;
 
 /**
  * @author kong
  */
-public class RenderSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IRenderSystem {
+public final class RenderSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IRenderSystem {
 
 	public RenderSystem(IContext<GameEntity> context) {
 		super(context);

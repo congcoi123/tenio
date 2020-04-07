@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.fsm.entities;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import com.tenio.engine.fsm.MessageDispatcher;
 import com.tenio.logger.AbstractLogger;
@@ -39,39 +39,35 @@ public abstract class AbstractEntity extends AbstractLogger {
 	/**
 	 * Every entity must have a unique identifying number
 	 */
-	private final int __id;
-
-	/**
-	 * This is the next valid ID. Each time a BaseGameEntity is instantiated this
-	 * value is updated
-	 */
-	private static AtomicInteger __nextId = new AtomicInteger();
+	private String __id;
 
 	public AbstractEntity() {
-		__id = __nextId.incrementAndGet();
+		__id = UUID.randomUUID().toString();
 	}
 
 	/**
-	 * Create own entity. It can be caused a duplicate creating
+	 * Create own entity. It can be caused a duplicate creating.
 	 * 
 	 * @param id the unique id
 	 */
-	public AbstractEntity(int id) {
+	public AbstractEntity(String id) {
+		setId(id);
+	}
+	
+	/**
+	 * Create own entity. It can be caused a duplicate creating.
+	 * 
+	 * @param id the unique id
+	 */
+	public void setId(String id) {
 		__id = id;
 	}
 
 	/**
 	 * @return Returns its id
 	 */
-	public int getId() {
+	public String getId() {
 		return __id;
-	}
-
-	/**
-	 * Use with recreating id counter
-	 */
-	public static void resetValidID() {
-		__nextId = new AtomicInteger();
 	}
 
 	/**

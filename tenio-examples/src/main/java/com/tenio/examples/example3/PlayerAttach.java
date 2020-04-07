@@ -31,7 +31,7 @@ import com.tenio.entities.AbstractPlayer;
  * @author kong
  *
  */
-public class PlayerAttach extends AbstractPlayer {
+public final class PlayerAttach extends AbstractPlayer {
 
 	public PlayerAttach(String name) {
 		super(name);

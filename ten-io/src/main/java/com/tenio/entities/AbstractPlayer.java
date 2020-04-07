@@ -65,7 +65,7 @@ public abstract class AbstractPlayer {
 	 * one game
 	 */
 	@Column(name = "entity_id")
-	private int __entityId;
+	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set
 	 * <code>null</code> @see {@link AbstractRoom}
@@ -91,15 +91,15 @@ public abstract class AbstractPlayer {
 	 * timeouts rule. The default value is <code>false</code>
 	 */
 	@Column(name = "ignore_timeout")
-	private boolean __isIgnoreTimeout;
+	private boolean __flagIgnoreTimeout;
 	/**
 	 * To quickly determine the player contains a connection or not
 	 */
-	private boolean __hasConnection;
+	private boolean __flagConnection;
 	/**
 	 * To quickly determine the player contains a sub-connection or not
 	 */
-	private boolean __hasSubConnection;
+	private boolean __flagSubConnection;
 
 	/**
 	 * Create a new player
@@ -112,11 +112,11 @@ public abstract class AbstractPlayer {
 		currentWriterTime();
 	}
 
-	public int getEntityId() {
+	public String getEntityId() {
 		return __entityId;
 	}
 
-	public void setEntityId(int entityId) {
+	public void setEntityId(String entityId) {
 		__entityId = entityId;
 	}
 
@@ -142,11 +142,11 @@ public abstract class AbstractPlayer {
 	 *         connection
 	 */
 	public boolean isNPC() {
-		return !__hasConnection;
+		return !__flagConnection;
 	}
 
 	public boolean hasConnection() {
-		return __hasConnection;
+		return __flagConnection;
 	}
 
 	public Connection getConnection() {
@@ -155,11 +155,11 @@ public abstract class AbstractPlayer {
 
 	public void setConnection(final Connection connection) {
 		__connection = connection;
-		__hasConnection = (__connection != null);
+		__flagConnection = (__connection != null);
 	}
 
 	public boolean hasSubConnection() {
-		return __hasSubConnection;
+		return __flagSubConnection;
 	}
 
 	public Connection getSubConnection() {
@@ -167,12 +167,12 @@ public abstract class AbstractPlayer {
 	}
 
 	public void setSubConnection(final Connection subConnection) {
-		if (__hasSubConnection && subConnection == null) {
+		if (__flagSubConnection && subConnection == null) {
 			// need to clear key in UDP channel
 			__subConnection.setAttr(__subConnection.getAddress(), null);
 		}
 		__subConnection = subConnection;
-		__hasSubConnection = (__subConnection != null);
+		__flagSubConnection = (__subConnection != null);
 	}
 
 	public AbstractRoom getRoom() {
@@ -200,11 +200,11 @@ public abstract class AbstractPlayer {
 	}
 
 	public boolean isIgnoreTimeout() {
-		return __isIgnoreTimeout;
+		return __flagIgnoreTimeout;
 	}
 
-	public void setIgnoreTimeout(final boolean isIgnoreTimeout) {
-		__isIgnoreTimeout = isIgnoreTimeout;
+	public void setIgnoreTimeout(final boolean flagIgnoreTimeout) {
+		__flagIgnoreTimeout = flagIgnoreTimeout;
 		currentReaderTime();
 		currentWriterTime();
 	}

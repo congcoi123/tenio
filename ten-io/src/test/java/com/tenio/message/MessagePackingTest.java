@@ -40,10 +40,11 @@ import com.tenio.message.codec.MsgPackConverter;
  */
 public final class MessagePackingTest {
 
-	private final TObject __message = TObject.newInstance();
+	private TObject __message;
 
 	@BeforeEach
 	public void initialize() {
+		__message = TObject.newInstance();
 		__message.put("string", "String");
 		__message.put("integer", 1993);
 		__message.put("float", 1.0);

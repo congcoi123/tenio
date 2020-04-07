@@ -28,6 +28,6 @@ import com.tenio.engine.ecs.api.IComponent;
 /**
  * @author kong
  */
-public class View implements IComponent {
+public final class View implements IComponent {
 	
 }

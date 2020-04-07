@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.physic.math;
 
-import com.tenio.engine.physic.utility.MathUtility;
+import com.tenio.utils.MathUtility;
 
 /**
  * A 2D Vector. Allows chaining methods by returning a reference to itself

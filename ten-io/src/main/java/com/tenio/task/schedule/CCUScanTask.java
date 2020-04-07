@@ -44,7 +44,7 @@ public final class CCUScanTask extends AbstractLogger {
 	/**
 	 * The period time for retrieving CCU
 	 */
-	private int __ccuScanPeriod;
+	private final int __ccuScanPeriod;
 	
 	private final PlayerApi __playerApi;
 

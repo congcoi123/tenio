@@ -31,7 +31,7 @@ import com.tenio.entities.AbstractPlayer;
  * @author kong
  *
  */
-public class Inspector extends AbstractPlayer {
+public final class Inspector extends AbstractPlayer {
 
 	public Inspector(String name) {
 		super(name);

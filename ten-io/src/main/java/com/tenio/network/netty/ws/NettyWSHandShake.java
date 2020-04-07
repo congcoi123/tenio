@@ -58,7 +58,7 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	/**
 	 * @see {@link BaseConfiguration}
 	 */
-	private BaseConfiguration __configuration;
+	private final BaseConfiguration __configuration;
 
 	public NettyWSHandShake(BaseConfiguration configuration) {
 		__configuration = configuration;

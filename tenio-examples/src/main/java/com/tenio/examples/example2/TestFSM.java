@@ -32,7 +32,7 @@ import com.tenio.server.Server;
  * @author kong
  *
  */
-public class TestFSM {
+public final class TestFSM {
 
 	/**
 	 * The entry point

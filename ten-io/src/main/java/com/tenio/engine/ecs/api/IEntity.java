@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.api;
 
-import java.util.UUID;
-
 import com.tenio.engine.ecs.ContextInfo;
 import com.tenio.pool.IElementPool;
 
@@ -39,9 +37,9 @@ import com.tenio.pool.IElementPool;
  */
 public interface IEntity {
 
-	void setId(UUID id);
+	void setId(String id);
 
-	UUID getId();
+	String getId();
 
 	void setContextInfo(ContextInfo contextInfo);
 

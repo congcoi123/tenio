@@ -37,7 +37,7 @@ import com.tenio.examples.example5.systems.TeardownSystem;
 /**
  * @author kong
  */
-public class ECS extends ECSHeartBeat {
+public final class ECS extends ECSHeartBeat {
 	
 	private GameContext __context;
 	private boolean __toggleMotion = true;

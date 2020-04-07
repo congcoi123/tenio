@@ -34,6 +34,6 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitPlatform.class)
 @SuiteDisplayName("Test all unit test cases for TenIO")
 @SelectPackages("com.tenio")
-public class TenIOTest {
+public final class TenIOTest {
 
 }

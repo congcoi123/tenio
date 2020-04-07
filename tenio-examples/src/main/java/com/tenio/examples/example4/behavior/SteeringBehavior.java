@@ -10,7 +10,6 @@ import com.tenio.engine.physic.graphic.IRender;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.math.Vector2;
 import com.tenio.engine.physic.utility.Geometry;
-import com.tenio.engine.physic.utility.MathUtility;
 import com.tenio.engine.physic.utility.Transformation;
 import com.tenio.examples.example4.configuration.ParamLoader;
 import com.tenio.examples.example4.constants.Behavior;
@@ -18,6 +17,7 @@ import com.tenio.examples.example4.constants.Deceleration;
 import com.tenio.examples.example4.constants.SummingMethod;
 import com.tenio.examples.example4.entities.Vehicle;
 import com.tenio.examples.example4.entities.Wall;
+import com.tenio.utils.MathUtility;
 
 /**
  * This class is used to encapsulate steering behaviors for a vehicle @see
@@ -828,13 +828,13 @@ public class SteeringBehavior implements IRender {
 			__vehicle.setMaxSpeed(0.0f);
 		}
 
-		if (__vehicle.getId() == 0) {
+		if (__vehicle.getId() == "dragon") {
 			paint.drawTextAtPosition(5, nextSlot, "MaxForce(Ins/Del):");
 			paint.drawTextAtPosition(160, nextSlot,
 					String.valueOf(__vehicle.getMaxForce() / __paramLoader.STEERING_FORCE_TWEAKER));
 			nextSlot += slotSize;
 		}
-		if (__vehicle.getId() == 0) {
+		if (__vehicle.getId() == "dragon") {
 			paint.drawTextAtPosition(5, nextSlot, "MaxSpeed(Home/End):");
 			paint.drawTextAtPosition(160, nextSlot, String.valueOf(__vehicle.getMaxSpeed()));
 			nextSlot += slotSize;
@@ -851,17 +851,17 @@ public class SteeringBehavior implements IRender {
 		// render wander stuff if relevant
 		if (__isBehavior(Behavior.WANDER) && __vehicle.getWorld().isRenderWanderCircle()) {
 
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Jitter(F/V): ");
 				paint.drawTextAtPosition(160, nextSlot, String.valueOf(__wanderJitter));
 				nextSlot += slotSize;
 			}
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Distance(G/B): ");
 				paint.drawTextAtPosition(160, nextSlot, String.valueOf(__wanderDistance));
 				nextSlot += slotSize;
 			}
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Radius(H/N): ");
 				paint.drawTextAtPosition(160, nextSlot, String.valueOf(__wanderRadius));
 				nextSlot += slotSize;
@@ -954,7 +954,7 @@ public class SteeringBehavior implements IRender {
 		}
 
 		if (__isBehavior(Behavior.SEPARATION)) {
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Separation(S/X):");
 				paint.drawTextAtPosition(160, nextSlot,
 						String.valueOf(__weightSeparation / __paramLoader.STEERING_FORCE_TWEAKER));
@@ -963,7 +963,7 @@ public class SteeringBehavior implements IRender {
 		}
 
 		if (__isBehavior(Behavior.ALLIGNMENT)) {
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Alignment(A/Z):");
 				paint.drawTextAtPosition(160, nextSlot,
 						String.valueOf(__weightAlignment / __paramLoader.STEERING_FORCE_TWEAKER));
@@ -972,7 +972,7 @@ public class SteeringBehavior implements IRender {
 		}
 
 		if (__isBehavior(Behavior.COHESION)) {
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "Cohesion(D/C):");
 				paint.drawTextAtPosition(160, nextSlot,
 						String.valueOf(__weightCohesion / __paramLoader.STEERING_FORCE_TWEAKER));
@@ -982,7 +982,7 @@ public class SteeringBehavior implements IRender {
 
 		if (__isBehavior(Behavior.FOLLOW_PATH)) {
 			float sd = (float) Math.sqrt(__waypointSeekDistanceSqr);
-			if (__vehicle.getId() == 0) {
+			if (__vehicle.getId() == "dragon") {
 				paint.drawTextAtPosition(5, nextSlot, "SeekDistance(D/C):");
 				paint.drawTextAtPosition(160, nextSlot, String.valueOf(sd));
 				nextSlot += slotSize;
