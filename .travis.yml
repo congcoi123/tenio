@@ -5,6 +5,8 @@ jdk:
 
 # run
 script:
+  - cd ten-io
+  - mvn clean install
   - mvn test -B
 
 # safelist
