@@ -51,14 +51,17 @@ public final class Constants {
 	public static final double SEND_MSG_IMMEDIATELY = 0;
 
 	/**
-	 * The number of elements in a bulk those created for the first time. @see
-	 * {@link IElementPool}
+	 * The number of elements in a bulk those created for the first time.
+	 * 
+	 * @see IElementPool
 	 */
 	public static final int BASE_ELEMENT_POOL = 32;
 
 	/**
 	 * When the desired number of elements exceeded the first configuration. The new
-	 * number of elements will be added. @see {@link IElementPool}
+	 * number of elements will be added.
+	 * 
+	 * @see IElementPool
 	 */
 	public static final int ADD_ELEMENT_POOL = 10;
 

@@ -29,7 +29,7 @@ import com.tenio.network.Connection;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should
- * be handled in <code>ServerLogic</code> class.
+ * be handled in {@link ServerLogic} class.
  * 
  * @author kong
  *
@@ -38,94 +38,105 @@ public enum LogicEvent {
 
 	/**
 	 * When a player is forced to leave his current room. It means this player was
-	 * kicked by the host or the entire room was removed.
+	 * kicked by the host or the entire room was removed. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> a player who was forced to leave, see
+	 * {@link AbstractPlayer}</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] a player who was forced to leave @see {@link AbstractPlayer}
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	FORCE_PLAYER_LEAVE_ROOM,
 
 	/**
 	 * When a client is disconnected from your server for any reason, you can handle
-	 * it in this event.
+	 * it in this event. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
+	 * <li><b>parameter[1]</b> If the value is set to <b>true</b>, when the client
+	 * is disconnected, it's player can be held for an interval time (you can
+	 * configure this interval time in your configurations)</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the connection @see {@link Connection}
-	 * @parameter [1] If the value is set to <code>true</code>, when the client is
-	 *            disconnected, it's player can be held for an interval time (you
-	 *            can configure this interval time in your configurations)
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	CONNECTION_CLOSE,
 
 	/**
-	 * The exceptions occur when the server handles messages from a client.
+	 * The exceptions occur when the server handles messages from a client. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the connection's id in string</li>
+	 * <li><b>parameter[1]</b> the connection, see {@link Connection}</li>
+	 * <li><b>parameter[2]</b> the exception will occur, see {@link Throwable}</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the connection's id in string
-	 * @parameter [1] the connection @see {@link Connection}
-	 * @parameter [2] the exception will occur @see {@link Throwable}
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	CONNECTION_EXCEPTION,
 
 	/**
-	 * This event is called when you let the player leave by his desire.
+	 * This event is called when you let the player leave by his desire. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the player's name, see
+	 * {@link AbstractPlayer#getName()}</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the player's name @see {@link AbstractPlayer#getName()}
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	MANUALY_CLOSE_CONNECTION,
 
 	/**
 	 * When a new connection is created. This connection's type must be TCP or
-	 * WebSocket (The main connection).
+	 * WebSocket (The main connection). <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the maximum of players count that your server can
+	 * handle</li>
+	 * <li><b>parameter[1]</b> if the value is set to <code>true</code>, when the
+	 * client is disconnected, it's player can be held for an interval time (you can
+	 * configure this interval time in your configurations)</li>
+	 * <li><b>parameter[2]</b> the new connection, see {@link Connection}</li>
+	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by the
+	 * first times from its new connection</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the maximum of players count that your server can handle
-	 * @parameter [1] If the value is set to <code>true</code>, when the client is
-	 *            disconnected, it's player can be held for an interval time (you
-	 *            can configure this interval time in your configurations)
-	 * @parameter [2] the new connection @see {@link Connection}
-	 * @parameter [3] the message @see {@link TObject} which is sent by the first
-	 *            times from its new connection
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	CREATE_NEW_CONNECTION,
 
 	/**
 	 * You can handle the message sent from a connection here. This connection's
-	 * type is TCP or WebSocket.
+	 * type is TCP or WebSocket. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
+	 * <li><b>parameter[1]</b> the message, see {@link TObject} which is sent by its
+	 * corresponding connection</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the connection @see {@link Connection}
-	 * @parameter [1] the message @see {@link TObject} which is sent by its
-	 *            corresponding connection
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	SOCKET_HANDLE,
 
 	/**
 	 * You can handle the message sent from a player here. This connection's type is
-	 * UDP.
+	 * UDP. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the player, see {@link AbstractPlayer}</li>
+	 * <li><b>parameter[1]</b> the message, see {@link TObject} which is sent by its
+	 * corresponding player</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the player @see {@link AbstractPlayer}
-	 * @parameter [1] the message @see {@link TObject} which is sent by its
-	 *            corresponding player
-	 * 
-	 * @return <code>null</code>
+	 * Return <b>null</b>
 	 */
 	DATAGRAM_HANDLE,
 
 	/**
-	 * Retrieve a player by his name.
+	 * Retrieve a player by his name. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the player's name (unique)</li>
+	 * </ul>
 	 * 
-	 * @parameter [0] the player's name (unique)
-	 * 
-	 * @return Returns a player @see {@link AbstractPlayer} if he has existed,
-	 *         <code>null</code> otherwise
+	 * Return a player, see {@link AbstractPlayer} if he has existed, <b>null</b>
+	 * otherwise
 	 */
 	GET_PLAYER,
 
