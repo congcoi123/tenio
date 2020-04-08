@@ -30,7 +30,7 @@ import com.tenio.entities.element.TObject;
  * The Java ExecutorService is a construct that allows you to pass a task to be
  * executed by a thread asynchronously. The executor service creates and
  * maintains a reusable pool of threads for executing submitted tasks. This
- * class helps you create and manage your HeartBeats @see
+ * class helps you create and manage your HeartBeats. See:
  * {@link AbstractHeartBeat}
  * 
  * @author kong
@@ -46,6 +46,8 @@ public interface IHeartBeatManager {
 	void initialize(final BaseConfiguration configuration);
 
 	/**
+	 * The number of maximum heart-beats that the server can handle.
+	 * 
 	 * @param maxHeartbeat The number of maximum heart-beats that the server can
 	 *                     handle
 	 */
@@ -70,7 +72,7 @@ public interface IHeartBeatManager {
 	 * Check if a heart-beat is existed or not.
 	 * 
 	 * @param id the unique id
-	 * @return Returns <code>true</code> if the corresponding heart-beat has existed
+	 * @return <b>true</b> if the corresponding heart-beat has existed
 	 */
 	boolean contains(final String id);
 

@@ -41,7 +41,7 @@ public interface ITaskManager {
 	 * Create a new task.
 	 * 
 	 * @param id   the unique id for management
-	 * @param task the running task @see {@link ScheduledFuture}
+	 * @param task the running task, see {@link ScheduledFuture}
 	 */
 	void create(String id, ScheduledFuture<?> task);
 
@@ -56,7 +56,7 @@ public interface ITaskManager {
 	 * Retrieve the remain time of one task.
 	 * 
 	 * @param id the unique for retrieving the desired task
-	 * @return Returns the left time
+	 * @return the left time
 	 */
 	int getRemainTime(String id);
 

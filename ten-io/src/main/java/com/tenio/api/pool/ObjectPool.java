@@ -32,7 +32,7 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
 
 /**
- * See {@link IElementPool}
+ * The object pool mechanism for {@link TObject}.
  * 
  * @author kong
  * 

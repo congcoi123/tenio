@@ -45,7 +45,7 @@ public interface IRoomManager {
 	int count();
 
 	/**
-	 * @return Returns all the current rooms in your server
+	 * @return all the current rooms in your server
 	 */
 	Map<String, AbstractRoom> gets();
 
@@ -58,8 +58,7 @@ public interface IRoomManager {
 	 * Retrieve a room by its ID.
 	 * 
 	 * @param roomId the unique ID
-	 * @return Returns a room's instance if it has existed, <code>null</code>
-	 *         otherwise
+	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
 	 */
 	AbstractRoom get(final String roomId);
 
@@ -67,22 +66,21 @@ public interface IRoomManager {
 	 * Determine if the room has existed or not.
 	 * 
 	 * @param roomId the unique ID
-	 * @return Returns <code>true</code> if the room has existed, <code>null</code>
-	 *         otherwise
+	 * @return Returns <b>true</b> if the room has existed, <b>null</b> otherwise
 	 */
 	boolean contain(final String roomId);
 
 	/**
 	 * Add a new room to your server. You need create your own room first.
 	 * 
-	 * @param room that is added @see {@link AbstractRoom}
+	 * @param room that is added, see {@link AbstractRoom}
 	 */
 	void add(final AbstractRoom room);
 
 	/**
 	 * Remove a room from your server.
 	 * 
-	 * @param room that is removed @see {@link AbstractRoom}
+	 * @param room that is removed, see {@link AbstractRoom}
 	 */
 	void remove(final AbstractRoom room);
 
@@ -90,10 +88,10 @@ public interface IRoomManager {
 	 * Request one player to join a room. This request can be refused with some
 	 * reason. You can handle these results in the corresponding events.
 	 * 
-	 * @param room   the desired room @see {@link AbstractRoom}
-	 * @param player the current player @see {@link AbstractPlayer}
-	 * @return Returns the action' result if it existed in @see {@link String},
-	 *         <code>null</code> otherwise
+	 * @param room   the desired room, see: {@link AbstractRoom}
+	 * @param player the current player, see: {@link AbstractPlayer}
+	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 *         otherwise
 	 */
 	String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
 
@@ -101,11 +99,11 @@ public interface IRoomManager {
 	 * Allow a player to leave his current room. You can handle your own logic in
 	 * the corresponding events.
 	 * 
-	 * @param player that will be left his current room @see {@link AbstractPlayer}
-	 * @param force  it's set <code>true</code> if you want to force the player
-	 *               leave. Otherwise, it's set <code>false</code>
-	 * @return Returns the action' result if it existed in @see {@link String},
-	 *         <code>null</code> otherwise
+	 * @param player that will be left his current room, see {@link AbstractPlayer}
+	 * @param force  it's set <b>true</b> if you want to force the player leave.
+	 *               Otherwise, it's set <b>false</b>
+	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 *         otherwise
 	 */
 	String playerLeaveRoom(final AbstractPlayer player, final boolean force);
 

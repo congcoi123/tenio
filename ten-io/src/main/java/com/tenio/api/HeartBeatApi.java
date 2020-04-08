@@ -31,38 +31,65 @@ import com.tenio.logger.AbstractLogger;
 /**
  * This class provides you a necessary interface for managing heart beats.
  * 
- * See {@link IHeartBeatManager}
+ * @see IHeartBeatManager
  * 
  * @author kong
  * 
  */
 public final class HeartBeatApi extends AbstractLogger {
 
-	/**
-	 * @see IHeartBeatManager
-	 */
 	private final IHeartBeatManager __heartBeatManager;
 
 	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
 		__heartBeatManager = heartBeatManager;
 	}
-	
+
+	/**
+	 * The number of maximum heart-beats that the server can handle.
+	 * 
+	 * @param maxHeartbeat The number of maximum heart-beats that the server can
+	 *                     handle
+	 */
 	public void initialize(int maxHeartbeat) {
 		__heartBeatManager.initialize(maxHeartbeat);
 	}
 
+	/**
+	 * Create a new heart-beat.
+	 * 
+	 * @param id        the unique id
+	 * @param heartbeat See {@link AbstractHeartBeat}
+	 */
 	public void create(final String id, final AbstractHeartBeat heartbeat) {
 		__heartBeatManager.create(id, heartbeat);
 	}
 
+	/**
+	 * Dispose a heart-beat.
+	 * 
+	 * @param id the unique id
+	 */
 	public void dispose(final String id) {
 		__heartBeatManager.dispose(id);
 	}
-	
+
+	/**
+	 * Send a message to a particular heart-beat with a delay time
+	 * 
+	 * @param id        the unique id
+	 * @param message   the message content
+	 * @param delayTime the delay time in seconds
+	 */
 	public void sendMessage(final String id, final TObject message, final double delayTime) {
 		__heartBeatManager.sendMessage(id, message, delayTime);
 	}
 
+	/**
+	 * Send a message to a particular heart-beat with no delay time
+	 * 
+	 * @param id      the unique id
+	 * @param message the message content
+	 */
 	public void sendMessage(final String id, final TObject message) {
 		__heartBeatManager.sendMessage(id, message);
 	}

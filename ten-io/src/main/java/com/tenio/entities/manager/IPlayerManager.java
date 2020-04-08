@@ -40,19 +40,19 @@ import com.tenio.network.Connection;
 public interface IPlayerManager {
 
 	/**
-	 * @return Returns the number of all current players' instance (include NPC or
+	 * @return the number of all current players' instance (include NPC or
 	 *         BOT)
 	 */
 	int count();
 
 	/**
-	 * @return Returns the number of all current players that have connections
+	 * @return the number of all current players that have connections
 	 *         (without NPC or BOT)
 	 */
 	int countPlayers();
 
 	/**
-	 * @return Returns all current players
+	 * @return all current players
 	 */
 	Map<String, AbstractPlayer> gets();
 
@@ -65,8 +65,7 @@ public interface IPlayerManager {
 	 * Determine if the player has existed or not.
 	 * 
 	 * @param name the player's name (unique ID)
-	 * @return Returns <code>true</code> if the player has existed,
-	 *         <code>false</code> otherwise
+	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
 	 */
 	boolean contain(final String name);
 
@@ -74,8 +73,8 @@ public interface IPlayerManager {
 	 * Retrieve a player by the player's name.
 	 * 
 	 * @param name the player's name (unique ID)
-	 * @return Returns the player's instance if that player has existed,
-	 *         <code>null</code> otherwise
+	 * @return the player's instance if that player has existed, <b>null</b>
+	 *         otherwise
 	 */
 	AbstractPlayer get(final String name);
 
@@ -83,9 +82,9 @@ public interface IPlayerManager {
 	 * Add a new player to your server (this player was upgraded from one
 	 * connection).
 	 * 
-	 * @param player     that is created from your server @see
+	 * @param player     that is created from your server, see:
 	 *                   {@link AbstractPlayer}
-	 * @param connection the corresponding connection @see {@link Connection}
+	 * @param connection the corresponding connection, see: {@link Connection}
 	 */
 	void add(final AbstractPlayer player, final Connection connection);
 
@@ -93,14 +92,14 @@ public interface IPlayerManager {
 	 * Add a new player to your server (this player is known as one NCP or a BOT)
 	 * without a attached connection.
 	 * 
-	 * @param player that is created from your server @see {@link AbstractPlayer}
+	 * @param player that is created from your server, see: {@link AbstractPlayer}
 	 */
 	void add(final AbstractPlayer player);
 
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
+	 * @param player that is removed, see {@link AbstractPlayer}
 	 */
 	void remove(final AbstractPlayer player);
 
