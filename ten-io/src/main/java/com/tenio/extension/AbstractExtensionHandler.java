@@ -55,23 +55,23 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	private Server __server = Server.getInstance();
 
 	/**
-	 * @see {@link MessageApi}
+	 * @see MessageApi
 	 */
 	protected MessageApi _messageApi = __server.getMessageApi();
 	/**
-	 * @see {@link PlayerApi}
+	 * @see PlayerApi
 	 */
 	protected PlayerApi _playerApi = __server.getPlayerApi();
 	/**
-	 * @see {@link RoomApi}
+	 * @see RoomApi
 	 */
 	protected RoomApi _roomApi = __server.getRoomApi();
 	/**
-	 * @see {@link TaskApi}
+	 * @see TaskApi
 	 */
 	protected TaskApi _taskApi = __server.getTaskApi();
 	/**
-	 * @see {@link HeartBeatApi}
+	 * @see HeartBeatApi
 	 */
 	protected HeartBeatApi _heartbeatApi = __server.getHeartBeatApi();
 
@@ -88,7 +88,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link TObject}
+	 * @return a value in {@link TObject} type
 	 */
 	protected TObject _getTObject(Object object) {
 		return (TObject) object;
@@ -96,7 +96,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Connection}
+	 * @return a value in {@link Connection} type
 	 */
 	protected Connection _getConnection(Object object) {
 		return (Connection) object;
@@ -106,7 +106,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link AbstractPlayer}
+	 * @return a value in {@link AbstractPlayer} type
 	 */
 	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
 		return (T) object;
@@ -114,7 +114,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Boolean}
+	 * @return a value in {@link Boolean} type
 	 */
 	protected boolean _getBoolean(Object object) {
 		return (boolean) object;
@@ -122,7 +122,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link String}
+	 * @return value in {@link String} type
 	 */
 	protected String _getString(Object object) {
 		return (String) object;
@@ -130,7 +130,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Integer}
+	 * @return a value in {@link Integer} type
 	 */
 	protected int _getInt(Object object) {
 		return (int) object;
@@ -138,7 +138,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Throwable}
+	 * @return a value in {@link Throwable} type
 	 */
 	protected Throwable _getThrowable(Object object) {
 		return (Throwable) object;

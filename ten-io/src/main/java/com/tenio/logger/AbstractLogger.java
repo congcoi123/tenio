@@ -47,14 +47,14 @@ public abstract class AbstractLogger {
 	 */
 	private final Logger __logger = LogManager.getLogger(getClass());
 	/**
-	 * An object creation pool instance, which is used for re-use string
-	 * objects @see {@link IElementPool}
+	 * An object creation pool instance, which is used for re-use string objects,
+	 * see {@link IElementPool}
 	 */
 	private final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -77,8 +77,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -99,8 +99,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -121,8 +121,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -141,8 +141,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -159,8 +159,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -180,8 +180,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -199,8 +199,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use @see {@link #buildgen(Object...)} for creating
-	 * {@code StringBuilder} to avoid memory leak. Generate log in 'info' level
+	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -256,8 +256,8 @@ public abstract class AbstractLogger {
 	 * To generate {@code StringBuilder} for logging information by the
 	 * corresponding objects
 	 * 
-	 * @param objects the corresponding objects @see {@link Object}
-	 * @return Returns an instance of the <code>StringBuilder</code>
+	 * @param objects the corresponding objects, see {@link Object}
+	 * @return an instance of the <b>StringBuilder</b>
 	 */
 	public final StringBuilder buildgen(final Object... objects) {
 		StringBuilder builder = __stringPool.get();
@@ -271,8 +271,8 @@ public abstract class AbstractLogger {
 	 * To generate {@code String} for logging information by the corresponding
 	 * objects
 	 * 
-	 * @param objects the corresponding objects @see {@link Object}
-	 * @return Returns a string
+	 * @param objects the corresponding objects, {@link Object}
+	 * @return a string value
 	 */
 	public final String strgen(final Object... objects) {
 		StringBuilder builder = new StringBuilder();
