@@ -54,7 +54,7 @@ public enum LogicEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> If the value is set to <b>true</b>, when the client
-	 * is disconnected, it's player can be held for an interval time (you can
+	 * is disconnected, its player can be held for an interval time (you can
 	 * configure this interval time in your configurations)</li>
 	 * </ul>
 	 * 
@@ -92,7 +92,7 @@ public enum LogicEvent {
 	 * <li><b>parameter[0]</b> the maximum of players count that your server can
 	 * handle</li>
 	 * <li><b>parameter[1]</b> if the value is set to <code>true</code>, when the
-	 * client is disconnected, it's player can be held for an interval time (you can
+	 * client is disconnected, its player can be held for an interval time (you can
 	 * configure this interval time in your configurations)</li>
 	 * <li><b>parameter[2]</b> the new connection, see {@link Connection}</li>
 	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by the

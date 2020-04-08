@@ -137,7 +137,7 @@ final class ServerLogic extends AbstractLogger {
 				var player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
 						message);
 				if (player != null) {
-					player.currentReaderTime();
+					player.setCurrentReaderTime();
 					connection.setId(player.getName());
 					player.setConnection(connection);
 
@@ -259,7 +259,7 @@ final class ServerLogic extends AbstractLogger {
 		} else {
 			debug("RECV PLAYER", player.getName(), message.toString());
 		}
-		player.currentReaderTime();
+		player.setCurrentReaderTime();
 		EventManager.getEvent().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
 	}
 

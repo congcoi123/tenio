@@ -59,7 +59,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param keepPlayerOnDisconnect this value can be configured in your
 	 *                               configurations @see {@link BaseConfiguration}.
 	 *                               If the value is set to true, when the client is
-	 *                               disconnected, it's player can be held for an
+	 *                               disconnected, its player can be held for an
 	 *                               interval time (you can configure this interval
 	 *                               time in your configurations)
 	 */

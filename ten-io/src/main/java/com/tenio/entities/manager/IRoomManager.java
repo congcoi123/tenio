@@ -30,9 +30,9 @@ import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.AbstractRoom;
 
 /**
- * Manage all your rooms @see {@link AbstractRoom} on the server. It is a
- * singleton pattern class, which can be called anywhere. But it's better that
- * you use the {@link RoomApi} interface for easy management.
+ * Manage all your rooms ({@link AbstractRoom}) on the server. It is a singleton
+ * pattern class, which can be called anywhere. But it's better that you use the
+ * {@link RoomApi} interface for easy management.
  * 
  * @author kong
  * 
@@ -40,7 +40,7 @@ import com.tenio.entities.AbstractRoom;
 public interface IRoomManager {
 
 	/**
-	 * @return Returns the number of rooms in your server
+	 * @return the number of rooms in your server
 	 */
 	int count();
 
@@ -58,7 +58,7 @@ public interface IRoomManager {
 	 * Retrieve a room by its ID.
 	 * 
 	 * @param roomId the unique ID
-	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
+	 * @return a room's instance if it has existed, <b>null</b> otherwise
 	 */
 	AbstractRoom get(final String roomId);
 
@@ -66,7 +66,7 @@ public interface IRoomManager {
 	 * Determine if the room has existed or not.
 	 * 
 	 * @param roomId the unique ID
-	 * @return Returns <b>true</b> if the room has existed, <b>null</b> otherwise
+	 * @return <b>true</b> if the room has existed, <b>null</b> otherwise
 	 */
 	boolean contain(final String roomId);
 
@@ -88,8 +88,8 @@ public interface IRoomManager {
 	 * Request one player to join a room. This request can be refused with some
 	 * reason. You can handle these results in the corresponding events.
 	 * 
-	 * @param room   the desired room, see: {@link AbstractRoom}
-	 * @param player the current player, see: {@link AbstractPlayer}
+	 * @param room   the desired room, see {@link AbstractRoom}
+	 * @param player the current player, see {@link AbstractPlayer}
 	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
 	 *         otherwise
 	 */

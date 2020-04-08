@@ -31,7 +31,7 @@ import com.tenio.annotation.Entity;
 import com.tenio.entities.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players @see {@link AbstractPlayer}.
+ * A room or simpler is a group of related players, see {@link AbstractPlayer}.
  * These players can be played in the same game or in the same location. This
  * class is only for logic handling. You can manage a list of players in a room
  * as well as hold the players' common data for sharing. For simple handling,
@@ -92,8 +92,7 @@ public abstract class AbstractRoom {
 	 * Add a player to this room, this action was handled by system logic. Be
 	 * careful when handling it yourself. You are warned!
 	 * 
-	 * @param player the player @see {@link AbstractPlayer} who wants to join this
-	 *               room
+	 * @param player the player ({@link AbstractPlayer}) who wants to join this room
 	 */
 	public void add(final AbstractPlayer player) {
 		__players.put(player.getName(), player);
@@ -103,7 +102,7 @@ public abstract class AbstractRoom {
 	 * Remove a player from this room, this action was handled by system logic. Be
 	 * careful when handling it yourself. You are warned!
 	 * 
-	 * @param player the player @see {@link AbstractPlayer} who wants to leave or be
+	 * @param player the player ({@link AbstractPlayer}) who wants to leave or be
 	 *               forced to leave this room
 	 */
 	public void remove(final AbstractPlayer player) {
@@ -150,7 +149,7 @@ public abstract class AbstractRoom {
 	}
 
 	/**
-	 * @return Returns the number of players in this room
+	 * @return the number of players in this room
 	 */
 	public int count() {
 		return __players.size();
@@ -161,7 +160,7 @@ public abstract class AbstractRoom {
 	}
 
 	/**
-	 * @return Returns <code>true</code> if this room is full
+	 * @return <b>true</b> if this room is full, <b>false</b> otherwise
 	 */
 	public boolean isFull() {
 		// the counter starts from element 0, remember it

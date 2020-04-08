@@ -228,7 +228,7 @@ public enum TEvent {
 	 * <b>false</b></li>
 	 * 
 	 * <li><b>parameter[3]</b> if the player can not join his desired room, the
-	 * reason can be found here, see {@link ErrorMsg}. It's value can be
+	 * reason can be found here, see {@link ErrorMsg}. Its value can be
 	 * <b>null</b></li>
 	 * </ul>
 	 * 

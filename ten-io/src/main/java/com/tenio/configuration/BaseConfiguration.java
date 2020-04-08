@@ -48,7 +48,7 @@ import com.tenio.utils.XMLUtility;
  * <li><i>socketPort:</i> TCP port</li>
  * <li><i>datagramPort:</i> UDP port</li>
  * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
- * client, can be hold it's player instance until timeout</li>
+ * client, can be hold its player instance until timeout</li>
  * <li><i>maxHeartbeat:</i> The maximum number of heartbeats which game can
  * handle</li>
  * <li><i>maxPlayer:</i> The maximum number of players which game can handle

@@ -27,14 +27,26 @@ package com.tenio.entities.annotation;
  * This interface is used for backing up and restoring an object. The object is
  * serialized to a JSON string and can be saved somewhere. Otherwise, a JSON
  * object can be established to the corresponding one.
+ *
+ * @param <T> the template class
  * 
  * @author kong
  * 
  */
 public interface IBackup<T> {
 
+	/**
+	 * Convert an object data to a JSON data
+	 * 
+	 * @return <b>true</b> if it's success, <b>false</b> otherwise
+	 */
 	boolean backup();
 
+	/**
+	 * Convert a JSON data to an object data
+	 * 
+	 * @return an object or <b>null</b> in failed cases
+	 */
 	T restore();
 
 }

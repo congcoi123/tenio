@@ -30,7 +30,7 @@ import com.tenio.entities.AbstractPlayer;
 import com.tenio.network.Connection;
 
 /**
- * Manage all your players @see {@link AbstractPlayer} on the server. It is a
+ * Manage all your players ({@link AbstractPlayer}) on the server. It is a
  * singleton pattern class, which can be called anywhere. But it's better that
  * you use the {@link PlayerApi} interface for easy management.
  * 
@@ -40,14 +40,13 @@ import com.tenio.network.Connection;
 public interface IPlayerManager {
 
 	/**
-	 * @return the number of all current players' instance (include NPC or
-	 *         BOT)
+	 * @return the number of all current players' instance (include NPC or BOT)
 	 */
 	int count();
 
 	/**
-	 * @return the number of all current players that have connections
-	 *         (without NPC or BOT)
+	 * @return the number of all current players that have connections (without NPC
+	 *         or BOT)
 	 */
 	int countPlayers();
 
@@ -107,7 +106,7 @@ public interface IPlayerManager {
 	 * When a player is disconnected, all the related connections need to be deleted
 	 * too.
 	 * 
-	 * @param player the corresponding player @see {@link AbstractPlayer}
+	 * @param player the corresponding player, see {@link AbstractPlayer}
 	 */
 	void removeAllConnections(final AbstractPlayer player);
 
@@ -116,7 +115,7 @@ public interface IPlayerManager {
 	 * server). It is used when you don't want your player can re-connect with any
 	 * interruption's reason.
 	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
+	 * @param player that is removed, see {@link AbstractPlayer}
 	 */
 	void clean(final AbstractPlayer player);
 

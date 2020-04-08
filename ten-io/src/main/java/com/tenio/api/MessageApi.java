@@ -98,7 +98,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param message         the sending message
 	 */
 	private void __send(AbstractPlayer player, boolean isSubConnection, TObject message) {
-		player.currentWriterTime(); // update time to check TIMEOUT
+		player.setCurrentWriterTime(); // update time to check TIMEOUT
 		if (!isSubConnection) {
 			if (player.hasConnection()) { // send to CLIENT (connection)
 				player.getConnection().send(message);
