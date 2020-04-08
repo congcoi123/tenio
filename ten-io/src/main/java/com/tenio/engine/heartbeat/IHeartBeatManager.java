@@ -41,7 +41,7 @@ public interface IHeartBeatManager {
 	/**
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
-	 * @param configuration @see {@link BaseConfiguration}
+	 * @param configuration See {@link BaseConfiguration}
 	 */
 	void initialize(final BaseConfiguration configuration);
 
@@ -55,7 +55,7 @@ public interface IHeartBeatManager {
 	 * Create a new heart-beat.
 	 * 
 	 * @param id        the unique id
-	 * @param heartbeat @see {@link AbstractHeartBeat}
+	 * @param heartbeat See {@link AbstractHeartBeat}
 	 */
 	void create(final String id, final AbstractHeartBeat heartbeat);
 

@@ -24,7 +24,6 @@ THE SOFTWARE.
 package com.tenio.api;
 
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
 import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
@@ -32,7 +31,7 @@ import com.tenio.logger.AbstractLogger;
 /**
  * This class provides you a necessary interface for managing heart beats.
  * 
- * @see {@link IHeartBeatManager}
+ * See {@link IHeartBeatManager}
  * 
  * @author kong
  * 
@@ -48,37 +47,22 @@ public final class HeartBeatApi extends AbstractLogger {
 		__heartBeatManager = heartBeatManager;
 	}
 	
-	/**
-	 * @see HeartBeatManager#initialize(int)
-	 */
 	public void initialize(int maxHeartbeat) {
 		__heartBeatManager.initialize(maxHeartbeat);
 	}
 
-	/**
-	 * @see IHeartBeatManager#create(String, AbstractHeartBeat)
-	 */
 	public void create(final String id, final AbstractHeartBeat heartbeat) {
 		__heartBeatManager.create(id, heartbeat);
 	}
 
-	/**
-	 * @see IHeartBeatManager#dispose(String)
-	 */
 	public void dispose(final String id) {
 		__heartBeatManager.dispose(id);
 	}
 	
-	/**
-	 * @see IHeartBeatManager#sendMessage(String, TObject, double)
-	 */
 	public void sendMessage(final String id, final TObject message, final double delayTime) {
 		__heartBeatManager.sendMessage(id, message, delayTime);
 	}
 
-	/**
-	 * @see IHeartBeatManager#sendMessage(String, TObject)
-	 */
 	public void sendMessage(final String id, final TObject message) {
 		__heartBeatManager.sendMessage(id, message);
 	}

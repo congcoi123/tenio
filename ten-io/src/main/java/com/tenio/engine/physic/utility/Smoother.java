@@ -12,7 +12,7 @@ import com.tenio.engine.physic.math.Vector2;
  *
  * Example: Used to smooth frame rate calculations.
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class Smoother<T extends Number> {

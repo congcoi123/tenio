@@ -48,19 +48,13 @@ import com.tenio.pool.IElementPool;
  */
 public final class MessageApi extends AbstractLogger {
 
-	/**
-	 * @see ArrayPool
-	 */
 	private final IElementPool<TArray> __arrayPool = new ArrayPool();
-	/**
-	 * @see ObjectPool
-	 */
 	private final IElementPool<TObject> __objectPool = new ObjectPool();
 
 	/**
 	 * Send a message for a connection
 	 * 
-	 * @param connection @see {@link Connection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 */
@@ -77,10 +71,10 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a connection
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
-	 * @param connection @see {@link Connection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
@@ -98,7 +92,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player          @see {@link AbstractPlayer}
+	 * @param player          See {@link AbstractPlayer}
 	 * @param isSubConnection set <code>true</code> is you want to send to your
 	 *                        client a message in sub-connection (UDP)
 	 * @param message         the sending message
@@ -168,8 +162,8 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a player
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param player          the desired player
 	 * @param isSubConnection set <code>true</code> is you want to send to your
@@ -269,8 +263,8 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players on one room
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param room            the desired room
 	 * @param isSubConnection set <code>true</code> is you want to send to your
@@ -377,8 +371,8 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param player          the desired player
 	 * @param isSubConnection set <code>true</code> is you want to send to your
@@ -439,7 +433,7 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
-	 * @return Returns a @see {@link TArray} object from the pooling mechanism
+	 * @return Returns a {@link TArray} object from the pooling mechanism
 	 */
 	public TArray getArrayPack() {
 		return __arrayPool.get();

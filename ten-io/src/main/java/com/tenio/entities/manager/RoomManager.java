@@ -39,7 +39,7 @@ import com.tenio.logger.AbstractLogger;
 
 /**
  * 
- * @see {@link IRoomManager}
+ * See {@link IRoomManager}
  * 
  * @author kong
  * 

@@ -37,7 +37,7 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 
 /**
- * @see {@link IPlayerManager}
+ * See {@link IPlayerManager}
  * 
  * @author kong
  * 

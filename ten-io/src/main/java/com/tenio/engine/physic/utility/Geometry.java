@@ -8,7 +8,7 @@ import com.tenio.utils.MathUtility;
 /**
  * Some useful 2D geometry functions
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public final class Geometry {

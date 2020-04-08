@@ -34,53 +34,35 @@ import com.tenio.logger.AbstractLogger;
 /**
  * This class provides you a necessary interface for managing rooms.
  * 
- * @see {@link IRoomManager}
+ * See {@link IRoomManager}
  * 
  * @author kong
  * 
  */
 public final class RoomApi extends AbstractLogger {
 
-	/**
-	 * @see {@link IRoomManager}
-	 */
 	private final IRoomManager __roomManager;
 
 	public RoomApi(IRoomManager roomManager) {
 		__roomManager = roomManager;
 	}
 
-	/**
-	 * @see IRoomManager#gets()
-	 */
 	public Map<String, AbstractRoom> gets() {
 		return __roomManager.gets();
 	}
 
-	/**
-	 * @see IRoomManager#add(AbstractRoom)
-	 */
 	public void add(final AbstractRoom room) {
 		__roomManager.add(room);
 	}
-	
-	/**
-	 * @see IRoomManager#contain(String)
-	 */
+
 	public boolean contain(final String roomId) {
 		return __roomManager.contain(roomId);
 	}
-	
-	/**
-	 * @see IRoomManager#get(String)
-	 */
+
 	public AbstractRoom get(final String roomId) {
 		return __roomManager.get(roomId);
 	}
 
-	/**
-	 * @see IRoomManager#remove(AbstractRoom)
-	 */
 	public void remove(final AbstractRoom room) {
 		__roomManager.remove(room);
 	}

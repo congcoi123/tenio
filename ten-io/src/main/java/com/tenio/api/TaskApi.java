@@ -31,31 +31,23 @@ import com.tenio.task.ITaskManager;
 /**
  * This class provides you a necessary interface for managing tasks.
  * 
- * @see {@link ITaskManager}
+ * See {@link ITaskManager}
+ * 
  * @author kong
  * 
  */
 public final class TaskApi extends AbstractLogger {
 
-	/**
-	 * @see {@link ITaskManager}
-	 */
 	private final ITaskManager __taskManager;
 
 	public TaskApi(ITaskManager taskManager) {
 		__taskManager = taskManager;
 	}
 
-	/**
-	 * @see ITaskManager#create(String, ScheduledFuture)
-	 */
 	public void run(String id, ScheduledFuture<?> task) {
 		__taskManager.create(id, task);
 	}
 
-	/**
-	 * @see ITaskManager#kill(String)
-	 */
 	public void kill(String id) {
 		__taskManager.kill(id);
 	}
@@ -70,9 +62,6 @@ public final class TaskApi extends AbstractLogger {
 		return getTaskRemainTime(id) > 0 ? true : false;
 	}
 
-	/**
-	 * @see ITaskManager#getRemainTime(String)
-	 */
 	public int getTaskRemainTime(String id) {
 		return __taskManager.getRemainTime(id);
 	}

@@ -34,7 +34,7 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
 
 /**
- * @see {@link IElementPool}
+ * See {@link IElementPool}
  * 
  * @author kong
  * 

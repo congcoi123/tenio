@@ -39,7 +39,7 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  * system's object for convenience and easy to use. It also handles the logic
  * for the processing of players and connections.
  * 
- * @see {@link BaseNettyHandler}
+ * See {@link BaseNettyHandler}
  * 
  * @author kong
  * 

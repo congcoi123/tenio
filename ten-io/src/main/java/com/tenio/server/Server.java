@@ -50,7 +50,7 @@ import com.tenio.task.schedule.EmptyRoomScanTask;
 import com.tenio.task.schedule.TimeOutScanTask;
 
 /**
- * @see {@link IServer}
+ * See {@link IServer}
  * 
  * @author kong
  * 

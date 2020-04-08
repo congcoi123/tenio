@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used for configuration loader
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class FileLoaderBase {

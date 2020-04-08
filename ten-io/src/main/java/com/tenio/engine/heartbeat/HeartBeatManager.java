@@ -39,7 +39,7 @@ import com.tenio.logger.AbstractLogger;
 
 /**
  * 
- * @see {@link IHeartBeatManager}
+ * See {@link IHeartBeatManager}
  * 
  * @author kong
  *

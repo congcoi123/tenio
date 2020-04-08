@@ -45,7 +45,7 @@ import io.netty.util.AttributeKey;
  * first (a TCP connection). When it's finished, that client can send a request
  * for making a link.
  * 
- * @see {@link BaseNettyHandler}
+ * See {@link BaseNettyHandler}
  * 
  * @author kong
  * 

@@ -35,7 +35,7 @@ import com.tenio.logger.AbstractLogger;
 
 /**
  * 
- * @see {@link ITaskManager}
+ * See {@link ITaskManager}
  * 
  * @author kong
  * 

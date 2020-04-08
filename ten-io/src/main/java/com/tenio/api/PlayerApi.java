@@ -37,20 +37,14 @@ import com.tenio.network.Connection;
 /**
  * This class provides you a necessary interface for managing players.
  * 
- * @see {@link IPlayerManager}
+ * See {@link IPlayerManager}
  * 
  * @author kong
  * 
  */
 public final class PlayerApi extends AbstractLogger {
 
-	/**
-	 * @see {@link IPlayerManager}
-	 */
 	private final IPlayerManager __playerManager;
-	/**
-	 * @see {@link IRoomManager}
-	 */
 	private final IRoomManager __roomManager;
 
 	public PlayerApi(IPlayerManager playerManager, IRoomManager roomManager) {
@@ -58,83 +52,54 @@ public final class PlayerApi extends AbstractLogger {
 		__roomManager = roomManager;
 	}
 
-	/**
-	 * @see IPlayerManager#contain(String)
-	 */
 	public boolean contain(final String userName) {
 		return __playerManager.contain(userName);
 	}
 
-	/**
-	 * @see IPlayerManager#get(String)
-	 */
 	public AbstractPlayer get(final String userName) {
 		return __playerManager.get(userName);
 	}
 
-	/**
-	 * @see IPlayerManager#count()
-	 */
 	public int count() {
 		return __playerManager.count();
 	}
 
-	/**
-	 * @see IPlayerManager#countPlayers()
-	 */
 	public int countPlayers() {
 		return __playerManager.countPlayers();
 	}
 
-	/**
-	 * @see IPlayerManager#gets()
-	 */
 	public Map<String, AbstractPlayer> gets() {
 		return __playerManager.gets();
 	}
 
-	/**
-	 * @see IPlayerManager#add(AbstractPlayer, Connection)
-	 */
 	public void login(final AbstractPlayer player, final Connection connection) {
 		__playerManager.add(player, connection);
 	}
 
-	/**
-	 * @see IPlayerManager#add(AbstractPlayer)
-	 */
 	public void login(final AbstractPlayer player) {
 		__playerManager.add(player);
 	}
 
-	/**
-	 * @see IRoomManager#playerJoinRoom(AbstractRoom, AbstractPlayer)
-	 */
 	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		return __roomManager.playerJoinRoom(room, player);
 	}
 
-	/**
-	 * @see IRoomManager#playerLeaveRoom(AbstractPlayer, boolean)
-	 */
 	public String playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		return __roomManager.playerLeaveRoom(player, force);
 	}
 
-	/**
-	 * @see #logOut(AbstractPlayer)
-	 */
 	public void logOut(final String userName) {
 		logOut(get(userName));
 	}
 
-	/**
-	 * @see IPlayerManager#remove(AbstractPlayer)
-	 */
 	public void logOut(final AbstractPlayer player) {
 		__playerManager.remove(player);
 	}
-	
+
+	public int getCCU() {
+		return count();
+	}
+
 	/**
 	 * @return Returns all players' information data
 	 */
@@ -152,13 +117,6 @@ public final class PlayerApi extends AbstractLogger {
 			list.add(data);
 		});
 		return list;
-	}
-
-	/**
-	 * @see #count()
-	 */
-	public int getCCU() {
-		return count();
 	}
 
 }

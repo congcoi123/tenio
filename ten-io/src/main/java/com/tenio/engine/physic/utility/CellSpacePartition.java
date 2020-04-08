@@ -15,7 +15,7 @@ import com.tenio.engine.physic.math.Vector2;
  * This class is used to defines a cell containing a list of pointers to
  * entities
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  * 
  */
 class Cell<E extends Object> {
@@ -45,7 +45,7 @@ class Cell<E extends Object> {
  * cells, the Update method should be called each update-cycle to synchronize
  * the entity and the cell space it occupies
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class CellSpacePartition<E extends BaseGameEntity> implements IRender {

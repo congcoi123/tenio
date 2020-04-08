@@ -33,7 +33,7 @@ import com.tenio.utils.MathUtility;
  * class is the root of the project's update and render calls (excluding main of
  * course)
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public final class World extends AbstractHeartBeat {
