@@ -46,9 +46,6 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class TimeOutScanTask extends AbstractLogger {
 
-	/**
-	 * @see PlayerApi
-	 */
 	private final PlayerApi __playerApi;
 	/**
 	 * The removable list of players
@@ -56,12 +53,12 @@ public final class TimeOutScanTask extends AbstractLogger {
 	private final List<AbstractPlayer> __removeables = new ArrayList<AbstractPlayer>();
 	/**
 	 * After a number of seconds without any message from the client. It can be
-	 * configured in your configurations @see {@link BaseConfiguration}
+	 * configured in your configurations, see {@link BaseConfiguration}
 	 */
 	private final int __idleReader;
 	/**
 	 * After a number of seconds without any message is sent to the client. It can
-	 * be configured in your configurations @see {@link BaseConfiguration}
+	 * be configured in your configurations, see {@link BaseConfiguration}
 	 */
 	private final int __idleWriter;
 	/**

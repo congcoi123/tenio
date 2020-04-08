@@ -53,7 +53,7 @@ public interface IElementPool<Element> {
 	void cleanup();
 
 	/**
-	 * @return Returns the total number of element or <b>-1</b> if any exceptions
+	 * @return the total number of element or <b>-1</b> if any exceptions
 	 *         caused
 	 */
 	int getPoolSize();

@@ -24,12 +24,14 @@ THE SOFTWARE.
 package com.tenio.utils;
 
 /**
+ * A collection of utility methods for time.
+ * 
  * @author kong
  */
 public final class TimeUtility {
 
 	/**
-	 * @return Returns the current time in seconds
+	 * @return the current time in seconds
 	 */
 	public static double currentTimeSeconds() {
 		return System.currentTimeMillis() * 0.001;

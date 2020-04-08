@@ -36,16 +36,13 @@ import com.tenio.logger.AbstractLogger;
 
 /**
  * To remove the empty room (a room without any players) in period time. You can
- * configure this time in your own configurations @see {@link BaseConfiguration}
+ * configure this time in your own configurations, see {@link BaseConfiguration}
  * 
  * @author kong
  * 
  */
 public final class EmptyRoomScanTask extends AbstractLogger {
 
-	/**
-	 * @see {@link RoomApi}
-	 */
 	private final RoomApi __roomApi;
 	/**
 	 * The current list of rooms

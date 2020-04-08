@@ -52,16 +52,16 @@ public class NettyConnection extends Connection {
 	 */
 	public static final AttributeKey<Connection> KEY_THIS = AttributeKey.valueOf("this");
 	/**
-	 * Save the player's name @see {@link AbstractPlayer#getName()} to its channel
+	 * Save the player's name, see {@link AbstractPlayer#getName()} to its channel
 	 */
 	public static final AttributeKey<String> KEY_ID = AttributeKey.valueOf("id");
 
 	/**
-	 * @see {@link Channel}
+	 * @see Channel
 	 */
 	private Channel __channel;
 	/**
-	 * @see {@link AbstractPlayer#getName()}
+	 * @see AbstractPlayer#getName()
 	 */
 	private String __id;
 	/**

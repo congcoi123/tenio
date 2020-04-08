@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.systems;
 
 /**
+ * The base system.
+ * 
  * @author kong
  */
 public interface ISystem {

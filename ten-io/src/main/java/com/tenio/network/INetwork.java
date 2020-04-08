@@ -30,7 +30,7 @@ import com.tenio.configuration.BaseConfiguration;
 /**
  * A network is one of the most important parts of this server for the main
  * purpose of communication. This class help create a new network instance by
- * your own configurations @see {@link BaseConfiguration}.
+ * your own configurations, see {@link BaseConfiguration}.
  * 
  * @author kong
  * 

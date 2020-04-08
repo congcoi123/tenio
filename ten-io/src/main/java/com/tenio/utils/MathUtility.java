@@ -26,6 +26,8 @@ package com.tenio.utils;
 import java.util.Random;
 
 /**
+ * A collection of utility methods for calculations.
+ * 
  * @author kong
  */
 public final class MathUtility {
@@ -41,7 +43,7 @@ public final class MathUtility {
 	public static final float EPSILON_FLOAT = Float.MIN_NORMAL;
 
 	/**
-	 * @return Returns <code>true</code> if the value is a <code>NaN</code>
+	 * @return <b>true</b> if the value is a <b>NaN</b>
 	 */
 	public static <T> boolean isNaN(T val) {
 		return !(val != null);
@@ -54,9 +56,9 @@ public final class MathUtility {
 	/**
 	 * Compares two real numbers
 	 * 
-	 * @param a
-	 * @param b
-	 * @return Returns <code>true</code> if they are equal
+	 * @param a a value
+	 * @param b b value
+	 * @return Returns <b>true</b> if they are equal
 	 */
 	public static boolean isEqual(float a, float b) {
 		if (Math.abs(a - b) < 1E-12) {
@@ -67,9 +69,9 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @param a
-	 * @param b
-	 * @return Returns the maximum of two values
+	 * @param a a value
+	 * @param b b value
+	 * @return the maximum of two values
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T extends Comparable> T maxOf(T a, T b) {
@@ -80,9 +82,9 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @param a
-	 * @param b
-	 * @return Returns the minimum of two values
+	 * @param a a value
+	 * @param b b value
+	 * @return the minimum of two values
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T extends Comparable> T minOf(T a, T b) {
@@ -100,39 +102,39 @@ public final class MathUtility {
 	/**
 	 * Initialize seed
 	 * 
-	 * @param seed
+	 * @param seed seed value
 	 */
 	public static void setSeed(long seed) {
 		__rand.setSeed(seed);
 	}
 
 	/**
-	 * @param x
-	 * @param y
-	 * @return Returns a random integer between x and y
+	 * @param x x value
+	 * @param y y value
+	 * @return a random integer between x and y
 	 */
 	public static int randInt(int x, int y) {
 		return __rand.nextInt() % (y - x + 1) + x;
 	}
 
 	/**
-	 * @return Returns a random float between zero and 1
+	 * @return a random float between <b>zero</b> and <b>1</b>
 	 */
 	public static float randFloat() {
 		return __rand.nextFloat();
 	}
 
 	/**
-	 * @param x
-	 * @param y
-	 * @return Returns a random float between x and y
+	 * @param x x value
+	 * @param y y value
+	 * @return a random float between x and y
 	 */
 	public static float randInRange(float x, float y) {
 		return x + randFloat() * (y - x);
 	}
 
 	/**
-	 * @return Returns a random boolean
+	 * @return a random boolean
 	 */
 	public static boolean randBool() {
 		if (randFloat() > 0.5f) {
@@ -143,14 +145,14 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @return Returns a random float in the range -1 < n < 1
+	 * @return a random float in the range <b>-1 < n < 1</b>
 	 */
 	public static float randomClamped() {
 		return randFloat() - randFloat();
 	}
 
 	/**
-	 * @return Returns a random number with a normal distribution. More details
+	 * @return a random number with a normal distribution. More details
 	 *         <a href="http://www.taygeta.com/random/gaussian.html">here</a>
 	 */
 	public static float randGaussian() {

@@ -26,7 +26,7 @@ package com.tenio.task;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * This class uses Java scheduler @see {@link ScheduledFuture} to manage your
+ * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
  * tasks. The scheduler is used to schedule a thread or task that executes at a
  * certain period of time or periodically at a fixed interval. It's useful when
  * you want to create a time counter before starting a match or send messages

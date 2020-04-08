@@ -43,13 +43,7 @@ import com.tenio.network.Connection;
  */
 final class ServerLogic extends AbstractLogger {
 
-	/**
-	 * @see IPlayerManager
-	 */
 	private final IPlayerManager __playerManager;
-	/**
-	 * @see IRoomManager
-	 */
 	private final IRoomManager __roomManager;
 
 	public ServerLogic(IPlayerManager playerManager, IRoomManager roomManager) {
@@ -199,7 +193,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link TObject}
+	 * @return a value in, see {@link TObject}
 	 */
 	private TObject __getTObject(Object object) {
 		return (TObject) object;
@@ -207,7 +201,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Connection}
+	 * @return a value in ,see {@link Connection}
 	 */
 	private Connection __getConnection(Object object) {
 		return (Connection) object;
@@ -215,7 +209,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link AbstractPlayer}
+	 * @return a value in, see {@link AbstractPlayer}
 	 */
 	private AbstractPlayer __getPlayer(Object object) {
 		return (AbstractPlayer) object;
@@ -223,7 +217,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Boolean}
+	 * @return a value in, see {@link Boolean}
 	 */
 	private boolean __getBoolean(Object object) {
 		return (boolean) object;
@@ -231,7 +225,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link String}
+	 * @return a value in, see {@link String}
 	 */
 	private String __getString(Object object) {
 		return (String) object;
@@ -239,7 +233,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Integer}
+	 * @return a value in, see {@link Integer}
 	 */
 	private int __getInt(Object object) {
 		return (int) object;
@@ -247,7 +241,7 @@ final class ServerLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return Returns value in @see {@link Throwable}
+	 * @return value in, see {@link Throwable}
 	 */
 	private Throwable __getThrowable(Object object) {
 		return (Throwable) object;

@@ -31,6 +31,14 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
 
 /**
+ * An entity is something that exists in your game world. Again, an entity is
+ * little more than a list of components. Because they are so simple, most
+ * implementations won't define an entity as a concrete piece of data. Instead,
+ * an entity is a unique ID, and all components that make up an entity will be
+ * tagged with that ID.
+ * 
+ * @see IEntity
+ * 
  * @author kong
  **/
 public class Entity extends AbstractLogger implements IEntity {

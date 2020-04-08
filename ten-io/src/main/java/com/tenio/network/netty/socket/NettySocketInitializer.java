@@ -41,9 +41,6 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
  */
 public final class NettySocketInitializer extends ChannelInitializer<SocketChannel> {
 
-	/**
-	 * @see {@link BaseConfiguration}
-	 */
 	private final BaseConfiguration __configuration;
 
 	public NettySocketInitializer(BaseConfiguration configuration) {

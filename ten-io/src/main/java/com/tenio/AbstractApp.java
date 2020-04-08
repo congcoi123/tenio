@@ -46,15 +46,14 @@ public abstract class AbstractApp extends AbstractLogger {
 	}
 
 	/**
-	 * @return Returns an extension for handling your own logic class
+	 * @return an extension for handling your own logic class
 	 */
 	public abstract IExtension getExtension();
 
 	/**
 	 * 
 	 * @param <T> The derived class of {@link BaseConfiguration}
-	 * @return Returns your own class that derived from {@link BaseConfiguration}
-	 *         class
+	 * @return your own class that derived from {@link BaseConfiguration} class
 	 */
 	public abstract <T extends BaseConfiguration> T getConfiguration();
 
