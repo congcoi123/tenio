@@ -48,6 +48,12 @@ public final class TEventManager extends AbstractLogger {
 	private final TEventProducer __producer = new TEventProducer();
 
 	/**
+	 * Emit an event with its parameters.
+	 * 
+	 * @param type see {@link TEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
 	 * @see TEventProducer#emit(TEvent, Object...)
 	 */
 	public Object emit(final TEvent type, final Object... args) {
@@ -57,8 +63,8 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type @see {@link TEvent}
-	 * @param sub  @see {@link ISubscriber}
+	 * @param type see {@link TEvent}
+	 * @param sub  see {@link ISubscriber}
 	 */
 	public void on(final TEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
@@ -87,8 +93,8 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type @see {@link TEvent}
-	 * @return Returns <code>true</code> if an event has any subscribers
+	 * @param type see {@link TEvent}
+	 * @return <b>true</b> if an event has any subscribers
 	 */
 	public boolean hasSubscriber(final TEvent type) {
 		return __subscribers.stream().anyMatch(subscribe -> subscribe.isType(type));

@@ -26,7 +26,7 @@ package com.tenio.event.main;
 import com.tenio.configuration.constant.TEvent;
 
 /**
- * Only for creating an event handler object @see {@link TEventHandler}
+ * Only for creating an event handler object, see {@link TEventHandler}
  * 
  * @author kong
  * 
@@ -39,13 +39,21 @@ public final class TEventProducer {
 	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
 
 	/**
-	 * @return Returns @see {@link TEventHandler}
+	 * Retrieves an event handler
+	 * 
+	 * @return see {@link TEventHandler}
 	 */
 	public TEventHandler<Object> getEventHandler() {
 		return __eventHandler;
 	}
 
 	/**
+	 * Emit an event with its parameters.
+	 * 
+	 * @param type see {@link TEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
 	 * @see TEventHandler#emit(Object, TEvent, Object...)
 	 */
 	public Object emit(final TEvent type, final Object... args) {
@@ -53,6 +61,8 @@ public final class TEventProducer {
 	}
 
 	/**
+	 * Clear all events and these handlers.
+	 * 
 	 * @see TEventHandler#clear()
 	 */
 	public void clear() {

@@ -53,14 +53,14 @@ public final class LSubscriber {
 	}
 
 	/**
-	 * @return Returns @see {@link LogicEvent}
+	 * @return see {@link LogicEvent}
 	 */
 	public LogicEvent getType() {
 		return __type;
 	}
 
 	/**
-	 * @return Returns @see {@link ISubscriber}
+	 * @return see {@link ISubscriber}
 	 */
 	public ISubscriber getSub() {
 		return __sub;
