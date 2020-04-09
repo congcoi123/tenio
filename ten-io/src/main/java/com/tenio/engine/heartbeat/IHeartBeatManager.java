@@ -41,14 +41,14 @@ public interface IHeartBeatManager {
 	/**
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
-	 * @param configuration See {@link BaseConfiguration}
+	 * @param configuration see {@link BaseConfiguration}
 	 */
 	void initialize(final BaseConfiguration configuration);
 
 	/**
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
-	 * @param maxHeartbeat The number of maximum heart-beats that the server can
+	 * @param maxHeartbeat the number of maximum heart-beats that the server can
 	 *                     handle
 	 */
 	void initialize(final int maxHeartbeat);
@@ -57,7 +57,7 @@ public interface IHeartBeatManager {
 	 * Create a new heart-beat.
 	 * 
 	 * @param id        the unique id
-	 * @param heartbeat See {@link AbstractHeartBeat}
+	 * @param heartbeat see {@link AbstractHeartBeat}
 	 */
 	void create(final String id, final AbstractHeartBeat heartbeat);
 
@@ -85,7 +85,7 @@ public interface IHeartBeatManager {
 	 * Send a message to a particular heart-beat with a delay time
 	 * 
 	 * @param id        the unique id
-	 * @param message   the message content
+	 * @param message   the message content, see {@link TObject}
 	 * @param delayTime the delay time in seconds
 	 */
 	void sendMessage(final String id, final TObject message, final double delayTime);
@@ -94,7 +94,7 @@ public interface IHeartBeatManager {
 	 * Send a message to a particular heart-beat with no delay time
 	 * 
 	 * @param id      the unique id
-	 * @param message the message content
+	 * @param message the message content, see {@link TObject}
 	 */
 	void sendMessage(final String id, final TObject message);
 

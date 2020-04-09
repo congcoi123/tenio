@@ -72,7 +72,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * A Set is used as the container for the delayed messages because of the
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
-	 * by their dispatch time. @see {@link HMessage}
+	 * by their dispatch time. See {@link HMessage}
 	 */
 	private TreeSet<HMessage> __listener;
 
@@ -120,7 +120,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	private boolean __debugging = false;
 
 	/**
-	 * Create a new instance with default FPS value @see {@value #TARGET_FPS}
+	 * Create a new instance with default FPS value, see {@value #TARGET_FPS}
 	 */
 	public AbstractHeartBeat() {
 		__fps = TARGET_FPS;
@@ -163,7 +163,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * Pause game loop
 	 * 
-	 * @param pause set <code>true</code> if you want to pause the current game loop
+	 * @param pause set <b>true</b> if you want to pause the current game loop
 	 */
 	protected void _pause(final boolean pause) {
 		if (pause) { // pause
@@ -176,7 +176,9 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	}
 
 	/**
-	 * @return Returns the FPS
+	 * Retrieves the FPS
+	 * 
+	 * @return the FPS
 	 */
 	protected int _getFPS() {
 		return __fps;
@@ -359,17 +361,17 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 		}
 
 	}
-	
+
 	public void setTextAction1(String text, Color color) {
 		__action1.setText(text);
 		__action1.setBackground(color);
 	}
-	
+
 	public void setTextAction2(String text, Color color) {
 		__action2.setText(text);
 		__action2.setBackground(color);
 	}
-	
+
 	public void setTextAction3(String text, Color color) {
 		__action3.setText(text);
 		__action3.setBackground(color);
@@ -389,7 +391,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called when the heart-beat receives a message from outside
 	 * 
-	 * @param message the coming message @see {@link TObject}
+	 * @param message the coming message, see {@link TObject}
 	 */
 	protected abstract void _onMessage(TObject message);
 
@@ -408,13 +410,13 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	protected abstract void _onRender(Paint paint);
 
 	/**
-	 * It is called when you call {@link #_pause(boolean)} with <code>true</code>
+	 * It is called when you call {@link #_pause(boolean)} with <b>true</b>
 	 * parameter
 	 */
 	protected abstract void _onPause();
 
 	/**
-	 * It is called when you call {@link #_pause(boolean)} with <code>false</code>
+	 * It is called when you call {@link #_pause(boolean)} with <b>false</b>
 	 * parameter
 	 */
 	protected abstract void _onResume();
