@@ -34,7 +34,7 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
 
 /**
- * @see {@link IElementPool}
+ * The object pool mechanism for {@link IComponent}.
  * 
  * @author kong
  * 

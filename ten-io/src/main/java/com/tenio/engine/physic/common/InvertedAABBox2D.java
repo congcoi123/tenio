@@ -42,11 +42,11 @@ public class InvertedAABBox2D implements IRender {
 	private float __top;
 	private float __right;
 	private float __bottom;
-	
+
 	public static InvertedAABBox2D newInstance() {
 		return valueOf(0, 0, 0, 0);
 	}
-	
+
 	public static InvertedAABBox2D valueOf(float left, float top, float right, float bottom) {
 		var invert = new InvertedAABBox2D(left, top, right, bottom);
 		return invert;
@@ -60,9 +60,9 @@ public class InvertedAABBox2D implements IRender {
 	}
 
 	/**
-	 * @param other the other BBox @see {@link InvertedAABBox2D}
-	 * @return Returns <code>true</code> if the <code>BBox</code> described by other
-	 *         intersects with this one
+	 * @param other the other BBox, see {@link InvertedAABBox2D}
+	 * @return <b>true</b> if the <b>BBox</b> described by other intersects with
+	 *         this one
 	 */
 	public boolean isOverlappedWith(InvertedAABBox2D other) {
 		return !((other.getTop() > getBottom()) || (other.getBottom() < getTop()) || (other.getLeft() > getRight())

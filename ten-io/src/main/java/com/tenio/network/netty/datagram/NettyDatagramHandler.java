@@ -45,7 +45,7 @@ import io.netty.util.AttributeKey;
  * first (a TCP connection). When it's finished, that client can send a request
  * for making a link.
  * 
- * @see {@link BaseNettyHandler}
+ * @see BaseNettyHandler
  * 
  * @author kong
  * 
@@ -104,9 +104,9 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 	/**
 	 * Retrieve a player by special credentials.
 	 * 
-	 * @param channel a channel @see {@link Channel}
+	 * @param channel a channel, see {@link Channel}
 	 * @param remote  the remote's address
-	 * @return Returns a player @see {@link AbstractPlayer}
+	 * @return a player, see {@link AbstractPlayer}
 	 */
 	private AbstractPlayer __getPlayer(Channel channel, String remote) {
 		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) EventManager.getLogic()
@@ -116,9 +116,9 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 	/**
 	 * Save a player to one channel by special credentials.
 	 * 
-	 * @param channel a channel @see {@link Channel}
+	 * @param channel a channel, see {@link Channel}
 	 * @param remote  the remote's address
-	 * @param name    the player's name @see {@link AbstractPlayer#getName()}}
+	 * @param name    the player's name, see {@link AbstractPlayer#getName()}}
 	 */
 	private void __savePlayerRemote(Channel channel, String remote, String name) {
 		channel.attr(AttributeKey.valueOf(remote)).set(name);

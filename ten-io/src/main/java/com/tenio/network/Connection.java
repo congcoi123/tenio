@@ -70,7 +70,7 @@ public abstract class Connection {
 	/**
 	 * Send a message to the client
 	 * 
-	 * @param message the message content @see {@link TObject}
+	 * @param message the message content, see {@link TObject}
 	 */
 	public abstract void send(TObject message);
 
@@ -89,27 +89,27 @@ public abstract class Connection {
 	/**
 	 * Set the current address for your "connection" (only need for Socket type)
 	 * 
-	 * @param sockAddress @see {@link InetSocketAddress}
+	 * @param sockAddress, see {@link InetSocketAddress}
 	 */
 	public abstract void setSockAddress(InetSocketAddress sockAddress);
 
 	/**
 	 * Retrieve the "connection" address in string type
 	 * 
-	 * @return Returns the address
+	 * @return the address
 	 */
 	public abstract String getAddress();
 
 	/**
-	 * Retrieve the "connection" id, this id is player's name @see
+	 * Retrieve the "connection" id, this id is player's name, see
 	 * {@link AbstractPlayer#getName()}
 	 * 
-	 * @return Returns the id
+	 * @return the id
 	 */
 	public abstract String getId();
 
 	/**
-	 * Set id for the "connection", this id is player's name @see
+	 * Set id for the "connection", this id is player's name, see
 	 * {@link AbstractPlayer#getName()}
 	 * 
 	 * @param id the identify of this connection
@@ -120,7 +120,7 @@ public abstract class Connection {
 	 * Retrieve value by key
 	 * 
 	 * @param key the desired key
-	 * @return Returns the corresponding object
+	 * @return the corresponding object
 	 */
 	public abstract Object getAttr(String key);
 

@@ -85,7 +85,7 @@ public final class Paint {
 	/**
 	 * Call this before drawing
 	 * 
-	 * @param graphic @see {@link Graphics}
+	 * @param graphic see {@link Graphics}
 	 */
 	public void startDrawing(Graphics graphic) {
 		__brush = graphic;

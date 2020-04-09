@@ -13,11 +13,11 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 
 ## First glimpse
 - Simple Movement Simulation  
-![Simple Movement Simulation](https://github.com/congcoi123/tenio/blob/master/assets/movement-simulation-example-4.gif)
+![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 - Communication Simulation  
-![Communication](https://github.com/congcoi123/tenio/blob/master/assets/login-example-1.gif)
+![Communication](assets/login-example-1.gif)
 - Simple ECS (Entity Component System) Simulation  
-![ECS](https://github.com/congcoi123/tenio/blob/master/assets/ecs-example-5.gif)
+![ECS](assets/ecs-example-5.gif)
 
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use TenIO might have about it.
@@ -34,10 +34,10 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - log4j-core 2.11.1
 
 ## License
-The TenIO project is currently available under the [MIT](https://github.com/congcoi123/tenio/blob/master/LICENSE) License.
+The TenIO project is currently available under the [MIT](LICENSE) License.
 
 ## Changelog
-Please check out the [changelog](https://github.com/congcoi123/tenio/blob/master/CHANGELOG.md) for more details.
+Please check out the [changelog](CHANGELOG.md) for more details.
 
 ## Installation
 The maven repository will come soon, now you can get the sources:
@@ -47,6 +47,6 @@ git clone https://github.com/congcoi123/tenio.git
 
 ## Examples
 Please start the server before its corresponding client in each example package.
-![Examples](https://github.com/congcoi123/tenio/blob/master/assets/tenio-examples.png)
+![Examples](assets/tenio-examples.png)
 
 > Happy coding !

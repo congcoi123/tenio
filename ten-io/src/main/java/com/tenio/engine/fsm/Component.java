@@ -46,8 +46,8 @@ public abstract class Component<T> {
 	/**
 	 * This method is called every frames
 	 * 
-	 * @param delta the time between two consecutive frames
+	 * @param deltaTime the time between two consecutive frames
 	 */
-	public abstract void update(double delta);
+	public abstract void update(double deltaTime);
 
 }

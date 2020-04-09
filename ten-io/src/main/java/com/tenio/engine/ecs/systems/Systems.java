@@ -43,10 +43,13 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	private final List<IRenderSystem> __renderSystems;
 	private final List<ITearDownSystem> __tearDownSystems;
 
-	private boolean __running = true;
+	/**
+	 * Check if systems is running or not
+	 */
+	private boolean __flagRunning = true;
 
 	/**
-	 * Creates a new Systems instance.
+	 * Creates a new systems instance.
 	 */
 	public Systems() {
 		__initializeSystems = new ArrayList<IInitializeSystem>();
@@ -58,8 +61,8 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	/**
 	 * Adds the system instance to the systems list.
 	 * 
-	 * @param new adding system
-	 * @return Returns the current instance
+	 * @param system new adding system
+	 * @return the current system instance
 	 */
 	public Systems add(ISystem system) {
 		if (system != null) {
@@ -80,8 +83,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls initialize() on all IInitializeSystem and other nested systems
-	 * instances in the order you added them.
+	 * Calls {@code initialize()} on all {@link IInitializeSystem} and other nested
+	 * systems instances in the order you added them.
+	 * 
+	 * @see IInitializeSystem#initialize()
 	 */
 	public void initialize() {
 		for (var system : __initializeSystems) {
@@ -90,13 +95,15 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls execute() on all IExecuteSystem and other nested systems instances in
-	 * the order you added them.
+	 * Calls {@code execute()} on all {@link IExecuteSystem} and other nested
+	 * systems instances in the order you added them.
 	 * 
-	 * @param deltaTime
+	 * @see IExecuteSystem#execute(float)
+	 * 
+	 * @param deltaTime the delta time
 	 */
 	public void execute(float deltaTime) {
-		if (__running) {
+		if (__flagRunning) {
 			for (var system : __executeSystems) {
 				system.execute(deltaTime);
 			}
@@ -104,12 +111,16 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls render() on all IRenderSystem and other nested systems instances in the
-	 * order you added them.
+	 * Calls {@code render()} on all {@link IRenderSystem} and other nested systems
+	 * instances in the order you added them.
+	 * 
+	 * @see IRenderSystem#render(Paint)
+	 * 
+	 * @param paint the renderer object
 	 */
 	@Override
 	public void render(Paint paint) {
-		if (__running) {
+		if (__flagRunning) {
 			for (var system : __renderSystems) {
 				system.render(paint);
 			}
@@ -117,8 +128,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls tearDown() on all ITearDownSystem and other nested Systems instances in
-	 * the order you added them.
+	 * Calls {@code tearDown()} on all {@link ITearDownSystem} and other nested
+	 * Systems instances in the order you added them.
+	 * 
+	 * @see ITearDownSystem#tearDown()
 	 */
 	public void tearDown() {
 		for (var system : __tearDownSystems) {
@@ -126,6 +139,9 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 		}
 	}
 
+	/**
+	 * Remove all systems
+	 */
 	public void clearSystems() {
 		__initializeSystems.clear();
 		__executeSystems.clear();
@@ -133,12 +149,25 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 		__tearDownSystems.clear();
 	}
 
-	public void paused(boolean running) {
-		__running = !running;
+	/**
+	 * Pause the systems running
+	 * 
+	 * @see #__executeSystems
+	 * @see #__renderSystems
+	 * 
+	 * @param flagPause <b>true</b> for pausing, <b>false</b> otherwise
+	 */
+	public void paused(boolean flagPause) {
+		__flagRunning = !flagPause;
 	}
 
+	/**
+	 * Retrieves the systems status
+	 * 
+	 * @return <b>true</b> if systems are running, <b>false</b> otherwise
+	 */
 	public boolean isRunning() {
-		return __running;
+		return __flagRunning;
 	}
 
 }

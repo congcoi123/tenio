@@ -38,9 +38,6 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
  */
 public final class NettyDatagramInitializer extends ChannelInitializer<DatagramChannel> {
 
-	/**
-	 * @see {@link BaseConfiguration}
-	 */
 	private BaseConfiguration __configuration;
 
 	public NettyDatagramInitializer(BaseConfiguration configuration) {

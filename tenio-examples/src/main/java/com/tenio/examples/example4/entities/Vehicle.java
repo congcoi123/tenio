@@ -18,7 +18,7 @@ import com.tenio.examples.example4.configuration.ParamLoader;
 /**
  * Definition of a simple vehicle that uses steering behaviors
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public final class Vehicle extends MoveableEntity implements IRender {

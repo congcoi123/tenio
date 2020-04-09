@@ -50,7 +50,11 @@ import com.tenio.task.schedule.EmptyRoomScanTask;
 import com.tenio.task.schedule.TimeOutScanTask;
 
 /**
- * @see {@link IServer}
+ * This class manages the workflow of the current server. The instruction's
+ * orders are important, event subscribes must be set last and all configuration
+ * values should be confirmed.
+ * 
+ * @see IServer
  * 
  * @author kong
  * 
@@ -95,17 +99,8 @@ public final class Server extends AbstractLogger implements IServer {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	/**
-	 * @see {@link ServerLogic}
-	 */
 	private final ServerLogic __logic;
-	/**
-	 * @see {@link IExtension}
-	 */
 	private IExtension __extension;
-	/**
-	 * @see {@link INetwork}
-	 */
 	private INetwork __network;
 
 	@Override

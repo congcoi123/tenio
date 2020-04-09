@@ -30,13 +30,14 @@ import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.entities.element.TObject;
 
 /**
+ * The ECS system base on heart-beat
+ * 
+ * @see AbstractHeartBeat
+ * 
  * @author kong
  */
 public class ECSHeartBeat extends AbstractHeartBeat {
 
-	/**
-	 * @see {@link Systems}
-	 */
 	private final Systems __systems = new Systems();
 
 	public ECSHeartBeat(int viewWidth, int viewHeight) {

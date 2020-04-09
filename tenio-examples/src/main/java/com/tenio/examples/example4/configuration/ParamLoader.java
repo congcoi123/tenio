@@ -7,7 +7,7 @@ import com.tenio.utils.MathUtility;
 /**
  * Class to configuration
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class ParamLoader extends FileLoaderBase {

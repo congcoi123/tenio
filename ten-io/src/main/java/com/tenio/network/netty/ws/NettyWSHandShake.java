@@ -55,9 +55,7 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	 * binary protocol which does not conform to the HTTP protocol.
 	 */
 	private WebSocketServerHandshaker __handshaker;
-	/**
-	 * @see {@link BaseConfiguration}
-	 */
+
 	private final BaseConfiguration __configuration;
 
 	public NettyWSHandShake(BaseConfiguration configuration) {
@@ -91,9 +89,9 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	/**
 	 * Do the handshaking for WebSocket request.
 	 * 
-	 * @param ctx the channel @see {@link ChannelHandlerContext}
-	 * @param req the request @see {@link HttpRequest}
-	 * @throws URISyntaxException
+	 * @param ctx the channel, see {@link ChannelHandlerContext}
+	 * @param req the request, see {@link HttpRequest}
+	 * @throws URISyntaxException the exception
 	 */
 	private void __handleHandshake(ChannelHandlerContext ctx, HttpRequest req) throws URISyntaxException {
 		var wsFactory = new WebSocketServerHandshakerFactory(__getWebSocketURL(req), null, true);

@@ -50,9 +50,9 @@ public final class XMLUtility {
 	/**
 	 * To parse an XML file
 	 * 
-	 * @param file the XML file @see {@link File}
-	 * @return Returns a document object to easy use @see {@link Document}
-	 * @throws Exception
+	 * @param file the XML file, see {@link File}
+	 * @return Returns a document object to easy use, see {@link Document}
+	 * @throws Exception the exception
 	 */
 	public static Document parseFile(final File file) throws Exception {
 		var dbf = DocumentBuilderFactory.newInstance();
@@ -68,9 +68,9 @@ public final class XMLUtility {
 	/**
 	 * To parse a stream
 	 * 
-	 * @param in the stream @see {@link InputStream}
-	 * @return Returns a document object to easy use @see {@link Document}
-	 * @throws Exception
+	 * @param in the stream, see {@link InputStream}
+	 * @return Returns a document object to easy use, see {@link Document}
+	 * @throws Exception the exception
 	 */
 	public static Document parseStream(final InputStream in) throws Exception {
 		var dbf = DocumentBuilderFactory.newInstance();
@@ -87,7 +87,7 @@ public final class XMLUtility {
 	 * Get the node content
 	 * 
 	 * @param node the current node
-	 * @return Returns its content in string value
+	 * @return its content in string value
 	 */
 	public static String getNodeValue(final Node node) {
 		String dataValue = node.getTextContent();
@@ -99,8 +99,8 @@ public final class XMLUtility {
 	 * 
 	 * @param node  the current node
 	 * @param xpath the current xpath in string value
-	 * @return Returns a list of nodes
-	 * @throws XPathExpressionException
+	 * @return a list of nodes
+	 * @throws XPathExpressionException the exception
 	 */
 	public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
 		var nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
@@ -113,8 +113,8 @@ public final class XMLUtility {
 	 * 
 	 * @param node  the current node
 	 * @param xpath the current xpath in string value
-	 * @return Returns the children node
-	 * @throws XPathExpressionException
+	 * @return the children node
+	 * @throws XPathExpressionException the exception
 	 */
 	public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
 		var nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
@@ -127,11 +127,11 @@ public final class XMLUtility {
 	 * 
 	 * @param node the current node
 	 * @param name the current attribute name
-	 * @return Returns the value of node's attribute
+	 * @return the value of node's attribute
 	 */
 	public static String getAttrVal(final Node node, final String name) {
 		var eNode = (Element) node;
-		
+
 		return eNode.getAttribute(name);
 	}
 

@@ -24,7 +24,6 @@ THE SOFTWARE.
 package com.tenio.api;
 
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
 import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
@@ -32,52 +31,64 @@ import com.tenio.logger.AbstractLogger;
 /**
  * This class provides you a necessary interface for managing heart beats.
  * 
- * @see {@link IHeartBeatManager}
+ * @see IHeartBeatManager
  * 
  * @author kong
  * 
  */
 public final class HeartBeatApi extends AbstractLogger {
 
-	/**
-	 * @see IHeartBeatManager
-	 */
 	private final IHeartBeatManager __heartBeatManager;
 
 	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
 		__heartBeatManager = heartBeatManager;
 	}
-	
+
 	/**
-	 * @see HeartBeatManager#initialize(int)
+	 * The number of maximum heart-beats that the server can handle.
+	 * 
+	 * @param maxHeartbeat The number of maximum heart-beats that the server can
+	 *                     handle
 	 */
 	public void initialize(int maxHeartbeat) {
 		__heartBeatManager.initialize(maxHeartbeat);
 	}
 
 	/**
-	 * @see IHeartBeatManager#create(String, AbstractHeartBeat)
+	 * Create a new heart-beat.
+	 * 
+	 * @param id        the unique id
+	 * @param heartbeat See {@link AbstractHeartBeat}
 	 */
 	public void create(final String id, final AbstractHeartBeat heartbeat) {
 		__heartBeatManager.create(id, heartbeat);
 	}
 
 	/**
-	 * @see IHeartBeatManager#dispose(String)
+	 * Dispose a heart-beat.
+	 * 
+	 * @param id the unique id
 	 */
 	public void dispose(final String id) {
 		__heartBeatManager.dispose(id);
 	}
-	
+
 	/**
-	 * @see IHeartBeatManager#sendMessage(String, TObject, double)
+	 * Send a message to a particular heart-beat with a delay time
+	 * 
+	 * @param id        the unique id
+	 * @param message   the message content
+	 * @param delayTime the delay time in seconds
 	 */
 	public void sendMessage(final String id, final TObject message, final double delayTime) {
 		__heartBeatManager.sendMessage(id, message, delayTime);
 	}
 
 	/**
-	 * @see IHeartBeatManager#sendMessage(String, TObject)
+	 * Send a message to a particular heart-beat with no delay time
+	 * 
+	 * @param id      the unique id
+	 * @param message the message content
 	 */
 	public void sendMessage(final String id, final TObject message) {
 		__heartBeatManager.sendMessage(id, message);

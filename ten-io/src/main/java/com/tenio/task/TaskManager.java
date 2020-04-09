@@ -34,8 +34,13 @@ import com.tenio.exception.RunningScheduledTaskException;
 import com.tenio.logger.AbstractLogger;
 
 /**
+ * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
+ * tasks. The scheduler is used to schedule a thread or task that executes at a
+ * certain period of time or periodically at a fixed interval. It's useful when
+ * you want to create a time counter before starting a match or send messages
+ * periodically for one player.
  * 
- * @see {@link ITaskManager}
+ * @see ITaskManager
  * 
  * @author kong
  * 

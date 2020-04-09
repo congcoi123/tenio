@@ -31,15 +31,13 @@ import com.tenio.task.ITaskManager;
 /**
  * This class provides you a necessary interface for managing tasks.
  * 
- * @see {@link ITaskManager}
+ * @see ITaskManager
+ * 
  * @author kong
  * 
  */
 public final class TaskApi extends AbstractLogger {
 
-	/**
-	 * @see {@link ITaskManager}
-	 */
 	private final ITaskManager __taskManager;
 
 	public TaskApi(ITaskManager taskManager) {
@@ -47,14 +45,19 @@ public final class TaskApi extends AbstractLogger {
 	}
 
 	/**
-	 * @see ITaskManager#create(String, ScheduledFuture)
+	 * Create a new task.
+	 * 
+	 * @param id   the unique id for management
+	 * @param task the running task, see {@link ScheduledFuture}
 	 */
 	public void run(String id, ScheduledFuture<?> task) {
 		__taskManager.create(id, task);
 	}
 
 	/**
-	 * @see ITaskManager#kill(String)
+	 * Kill or stop a running task.
+	 * 
+	 * @param id the unique id
 	 */
 	public void kill(String id) {
 		__taskManager.kill(id);
@@ -64,14 +67,17 @@ public final class TaskApi extends AbstractLogger {
 	 * Check if the desired task is running or not.
 	 * 
 	 * @param id the task's id
-	 * @return Returns <code>true</code> if this task is running
+	 * @return <b>true</b> if this task is running
 	 */
 	public boolean isRunningTask(String id) {
 		return getTaskRemainTime(id) > 0 ? true : false;
 	}
 
 	/**
-	 * @see ITaskManager#getRemainTime(String)
+	 * Retrieve the remain time of one task.
+	 * 
+	 * @param id the unique for retrieving the desired task
+	 * @return the left time
 	 */
 	public int getTaskRemainTime(String id) {
 		return __taskManager.getRemainTime(id);

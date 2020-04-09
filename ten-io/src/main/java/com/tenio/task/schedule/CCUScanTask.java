@@ -34,7 +34,7 @@ import com.tenio.logger.AbstractLogger;
 
 /**
  * To retrieve the CCU in period time. You can configure this time in your own
- * configurations @see {@link BaseConfiguration}
+ * configurations, see {@link BaseConfiguration}
  * 
  * @author kong
  * 

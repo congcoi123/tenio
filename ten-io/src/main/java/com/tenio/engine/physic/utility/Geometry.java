@@ -8,7 +8,7 @@ import com.tenio.utils.MathUtility;
 /**
  * Some useful 2D geometry functions
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public final class Geometry {
@@ -22,12 +22,8 @@ public final class Geometry {
 		PLANE_BACKSIDE, PLANE_FRONT, ON_PLANE
 	}
 
-	/**
-	 * Given a plane and a ray. This function determine how far along the ray an
-	 * interaction occurs. Returns negative if the ray is parallel
-	 * 
-	 * @param planePoint any point on the plane
-	 */
+	// Given a plane and a ray. This function determine how far along the ray an
+	// interaction occurs. Returns negative if the ray is parallel
 	public static float getDistanceRayPlaneIntersection(Vector2 rayOrigin, Vector2 rayHeading, Vector2 planePoint,
 			Vector2 planeNormal) {
 
@@ -43,9 +39,6 @@ public final class Geometry {
 		return -(numer / denom);
 	}
 
-	/**
-	 * @param planeNormal any point on the plane
-	 */
 	public static SpanType getWhereIsPoint(Vector2 point, Vector2 pointOnPlane, Vector2 planeNormal) {
 		__temp1.set(pointOnPlane).sub(point);
 
@@ -89,15 +82,13 @@ public final class Geometry {
 		return !(d < 0);
 	}
 
-	/**
-	 * Given a point P and a circle of radius R centered at C This function
-	 * determines the two points on the circle that intersect with the tangents from
-	 * P to the circle.
-	 * 
-	 * Returns false if P is within the circle.
-	 *
-	 * Thanks to Dave Eberly for this one.
-	 */
+	// Given a point P and a circle of radius R centered at C This function
+	// determines the two points on the circle that intersect with the tangents from
+	// P to the circle.
+
+	// Returns false if P is within the circle.
+	//
+	// Thanks to Dave Eberly for this one.
 	public static float[] getTangentPoints(Vector2 C, float r, Vector2 P) {
 		__temp1.set(P).sub(C);
 
@@ -120,10 +111,9 @@ public final class Geometry {
 		return points;
 	}
 
-	/**
-	 * Given a line segment AB and a point P This function calculates the
-	 * perpendicular distance between them
-	 */
+	// Given a line segment AB and a point P This function calculates the
+	// perpendicular distance between them
+
 	public static float getDistancePointSegment(Vector2 A, Vector2 B, Vector2 P) {
 		// if the angle is obtuse between PA and AB is obtuse then the closest
 		// vertex must be A
@@ -174,10 +164,9 @@ public final class Geometry {
 		return __temp1.getDistanceSqrValue(P);
 	}
 
-	/**
-	 * Given 2 lines segment in 2D space AB, CD This returns true if an intersection
-	 * occurs.
-	 */
+	// Given 2 lines segment in 2D space AB, CD This returns true if an intersection
+	// occurs.
+
 	public static boolean isTwoSegmentIntersect(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
 		float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
 		float sTop = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
@@ -202,11 +191,9 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Given 2 lines segment in 2D space AB, CD this returns true if an intersection
-	 * occurs and sets dist as parameter to the distance the intersection occurs
-	 * along AB. Also sets the 2d vector point to the point of intersection
-	 */
+	// Given 2 lines segment in 2D space AB, CD this returns true if an intersection
+	// occurs and sets dist as parameter to the distance the intersection occurs
+	// along AB. Also sets the 2d vector point to the point of intersection
 	public static Vector2 getPointTwoSegmentIntersect(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
 
 		float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
@@ -232,11 +219,9 @@ public final class Geometry {
 		return null;
 	}
 
-	/**
-	 * Given 2 lines segment in 2D space AB, CD this returns true if an intersection
-	 * occurs and sets dist as parameter to the distance the intersection occurs
-	 * along AB
-	 */
+	// Given 2 lines segment in 2D space AB, CD this returns true if an intersection
+	// occurs and sets dist as parameter to the distance the intersection occurs
+	// along AB
 	public static float getDistanceTwoSegmentIntersect(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
 
 		float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
@@ -261,9 +246,7 @@ public final class Geometry {
 		return -1;
 	}
 
-	/**
-	 * Tests two polygons for intersection. Does not check for enclosure!
-	 */
+	// Tests two polygons for intersection. Does not check for enclosure!
 	public static boolean isTwoObjectsIntersect(List<Vector2> object1, List<Vector2> object2) {
 		// test each line segment of object1 against each segment of object2
 		for (int r = 0; r < object1.size() - 1; ++r) {
@@ -277,10 +260,8 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Tests a line segment against a polygon for intersection Does not check for
-	 * enclosure!
-	 */
+	// Tests a line segment against a polygon for intersection Does not check for
+	// enclosure!
 	public static boolean isSegmentObjectIntersect(final Vector2 A, final Vector2 B, final List<Vector2> object) {
 		// test AB against each segment of object
 		for (int r = 0; r < object.size() - 1; ++r) {
@@ -292,10 +273,8 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Returns true if the two circles overlap {center (x,y) round r} Include
-	 * enclosed case
-	 */
+	// Returns true if the two circles overlap {center (x,y) round r} Include
+	// enclosed case
 	public static boolean isTwoCirclesOverlapped(float x1, float y1, float r1, float x2, float y2, float r2) {
 		float distBetweenCenters = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
@@ -306,10 +285,8 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Returns true if the two circles overlap {center (x,y) round r} Include
-	 * enclosed case
-	 */
+	// Returns true if the two circles overlap {center (x,y) round r} Include
+	// enclosed case
 	public static boolean isTwoCirclesOverlapped(Vector2 C1, float r1, Vector2 C2, float r2) {
 		float distBetweenCenters = (float) Math.sqrt((C1.x - C2.x) * (C1.x - C2.x) + (C1.y - C2.y) * (C1.y - C2.y));
 
@@ -320,9 +297,7 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Returns true if one circle encloses the other {center (x,y) round r}
-	 */
+	// Returns true if one circle encloses the other {center (x,y) round r}
 	public static boolean isTwoCirclesEnclosed(float x1, float y1, float r1, float x2, float y2, float r2) {
 		float distBetweenCenters = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
@@ -333,14 +308,10 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Given two circles This function calculates the intersection points of any
-	 * overlap.
-	 *
-	 * returns false if no overlap found
-	 *
-	 * see http://astronomy.swin.edu.au/~pbourke/geometry/2circle/
-	 */
+	// Given two circles This function calculates the intersection points of any
+	// overlap.
+	// returns false if no overlap found
+	// see http://astronomy.swin.edu.au/~pbourke/geometry/2circle/
 	public static float[] getTwoCirclesIntersectionPoints(float x1, float y1, float r1, float x2, float y2, float r2) {
 		// first check to see if they overlap
 		if (!isTwoCirclesOverlapped(x1, y1, r1, x2, y2, r2)) {
@@ -379,12 +350,9 @@ public final class Geometry {
 		return points;
 	}
 
-	/**
-	 * Tests to see if two circles overlap and if so calculates the area defined by
-	 * the union
-	 *
-	 * see http://mathforum.org/library/drmath/view/54785.html
-	 */
+	// Tests to see if two circles overlap and if so calculates the area defined by
+	// the union
+	// see http://mathforum.org/library/drmath/view/54785.html
 	public static float getTwoCirclesIntersectionArea(float x1, float y1, float r1, float x2, float y2, float r2) {
 		// first calculate the intersection points
 		if (getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2) == null) {
@@ -411,16 +379,12 @@ public final class Geometry {
 		return area;
 	}
 
-	/**
-	 * Given the radius, calculates the area of a circle
-	 */
+	// Given the radius, calculates the area of a circle
 	public static float getCircleArea(float radius) {
 		return (float) (MathUtility.PI * radius * radius);
 	}
 
-	/**
-	 * Returns true if the point p is within the radius of the given circle
-	 */
+	// Returns true if the point p is within the radius of the given circle
 	public static boolean isPointInCircle(Vector2 C, float radius, Vector2 P) {
 		__temp1.set(P).sub(C);
 		float distFromCenterSquared = __temp1.getLengthSqr();
@@ -432,10 +396,8 @@ public final class Geometry {
 		return false;
 	}
 
-	/**
-	 * Returns true if the line segment AB intersects with a circle at position P
-	 * with radius radius
-	 */
+	// Returns true if the line segment AB intersects with a circle at position P
+	// with radius radius
 	public static boolean isSegmentCircleIntersectAtPoint(Vector2 A, Vector2 B, Vector2 P, float radius) {
 		// first determine the distance from the center of the circle to
 		// the line segment (working in distance squared space)
@@ -448,13 +410,10 @@ public final class Geometry {
 		}
 	}
 
-	/**
-	 * Given a line segment AB and a circle position and radius, This function
-	 * determines if there is an intersection and stores the position of the closest
-	 * intersection in the reference IntersectionPoint
-	 *
-	 * returns false if no intersection point is found
-	 */
+	// Given a line segment AB and a circle position and radius, This function
+	// determines if there is an intersection and stores the position of the closest
+	// intersection in the reference IntersectionPoint
+	// returns false if no intersection point is found
 	public static boolean isSegmentCircleClosestIntersectPoint(Vector2 A, Vector2 B, Vector2 C, float radius,
 			Vector2 intersectionPoint) {
 		__temp1.set(B).sub(A).normalize();
@@ -497,16 +456,8 @@ public final class Geometry {
 		return ipFound;
 	}
 
-	/**
-	 * Returns true if the point p is not inside the region defined by top left and
-	 * bottom right
-	 * 
-	 * @param point
-	 * @param topLeft
-	 * @param botRight
-	 * 
-	 * @return boolean
-	 */
+	// Returns true if the point p is not inside the region defined by top left and
+	// bottom right
 	public static boolean notInsideRegion(Vector2 point, Vector2 topLeft, Vector2 botRight) {
 		return !insideRegion(point, topLeft, botRight);
 	}
@@ -519,10 +470,8 @@ public final class Geometry {
 		return !((point.x < left) || (point.x > right) || (point.y < top) || (point.y > bottom));
 	}
 
-	/**
-	 * @return true if the target position is in the field of view of the entity
-	 *         positioned at posFirst facing in facingFirst
-	 */
+	// Returns true if the target position is in the field of view of the entity
+	// positioned at posFirst facing in facingFirst
 	public static boolean isSecondInFOVOfFirst(Vector2 posFirst, Vector2 facingFirst, Vector2 posSecond, float fov) {
 		__temp1.set(posSecond).sub(posFirst).normalize();
 		return facingFirst.getDotProductValue(__temp1) >= Math.cos(fov / 2);

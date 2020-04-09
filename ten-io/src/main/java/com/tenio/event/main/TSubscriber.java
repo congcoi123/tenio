@@ -53,7 +53,7 @@ public final class TSubscriber {
 	}
 
 	/**
-	 * @return Returns @see {@link TEvent}
+	 * @return see {@link TEvent}
 	 */
 	public TEvent getType() {
 		return __type;
@@ -61,15 +61,14 @@ public final class TSubscriber {
 
 	/**
 	 * @param type the comparison event value
-	 * @return Return <code>true</code> if they are equal, <code>false</code>
-	 *         otherwise
+	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
 	 */
 	public boolean isType(TEvent type) {
 		return __type == type;
 	}
 
 	/**
-	 * @return Returns @see {@link ISubscriber}
+	 * @return see {@link ISubscriber}
 	 */
 	public ISubscriber getSub() {
 		return __sub;

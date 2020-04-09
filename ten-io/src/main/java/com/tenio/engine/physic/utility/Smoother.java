@@ -12,25 +12,23 @@ import com.tenio.engine.physic.math.Vector2;
  *
  * Example: Used to smooth frame rate calculations.
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class Smoother<T extends Number> {
 	/**
 	 * This holds the history
 	 */
-	private  final List<T> __histories;
+	private final List<T> __histories;
 	private int __nextUpdateSlot;
 	/**
 	 * an example of the 'zero' value of the type to be smoothed. This would be
-	 * something like Vector2D(0,0) @see {@link Vector2}
+	 * something like Vector2D(0,0), see {@link Vector2}
 	 */
 	private T __zeroValue;
 
-	/**
-	 * To instantiate a Smoother pass it the number of samples you want to use in
-	 * the smoothing, and an example of a 'zero' type
-	 */
+	// To instantiate a Smoother pass it the number of samples you want to use in
+	// the smoothing, and an example of a 'zero' type
 	public Smoother(int sampleSize, T zeroValue) {
 		__histories = new ArrayList<T>(sampleSize);
 		for (int i = 0; i < sampleSize; i++)
@@ -43,8 +41,8 @@ public class Smoother<T extends Number> {
 	 * Each time you want to get a new average, feed it the most recent value and
 	 * this method will return an average over the last SampleSize updates
 	 * 
-	 * @param mostRecentValue
-	 * @return Returns an average over the last SampleSize updates
+	 * @param mostRecentValue the most recent value
+	 * @return an average over the last SampleSize updates
 	 */
 	//
 	@SuppressWarnings("unchecked")

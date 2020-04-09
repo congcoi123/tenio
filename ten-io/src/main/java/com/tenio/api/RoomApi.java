@@ -34,16 +34,13 @@ import com.tenio.logger.AbstractLogger;
 /**
  * This class provides you a necessary interface for managing rooms.
  * 
- * @see {@link IRoomManager}
+ * @see IRoomManager
  * 
  * @author kong
  * 
  */
 public final class RoomApi extends AbstractLogger {
 
-	/**
-	 * @see {@link IRoomManager}
-	 */
 	private final IRoomManager __roomManager;
 
 	public RoomApi(IRoomManager roomManager) {
@@ -51,42 +48,52 @@ public final class RoomApi extends AbstractLogger {
 	}
 
 	/**
-	 * @see IRoomManager#gets()
+	 * @return all the current rooms in your server
 	 */
 	public Map<String, AbstractRoom> gets() {
 		return __roomManager.gets();
 	}
 
 	/**
-	 * @see IRoomManager#add(AbstractRoom)
+	 * Add a new room to your server. You need create your own room first.
+	 * 
+	 * @param room that is added, see {@link AbstractRoom}
 	 */
 	public void add(final AbstractRoom room) {
 		__roomManager.add(room);
 	}
-	
+
 	/**
-	 * @see IRoomManager#contain(String)
+	 * Determine if the room has existed or not.
+	 * 
+	 * @param roomId the unique ID
+	 * @return Returns <b>true</b> if the room has existed, <b>null</b> otherwise
 	 */
 	public boolean contain(final String roomId) {
 		return __roomManager.contain(roomId);
 	}
-	
+
 	/**
-	 * @see IRoomManager#get(String)
+	 * Retrieve a room by its ID.
+	 * 
+	 * @param roomId the unique ID
+	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
 	 */
 	public AbstractRoom get(final String roomId) {
 		return __roomManager.get(roomId);
 	}
 
 	/**
-	 * @see IRoomManager#remove(AbstractRoom)
+	 * Remove a room from your server.
+	 * 
+	 * @param room that is removed, see {@link AbstractRoom}
 	 */
 	public void remove(final AbstractRoom room) {
 		__roomManager.remove(room);
 	}
 
 	/**
-	 * @return Returns all rooms' information data
+	 * @return all rooms' information data
 	 */
 	public List<List<Object>> getAllRoomInfos() {
 		var list = new ArrayList<List<Object>>();

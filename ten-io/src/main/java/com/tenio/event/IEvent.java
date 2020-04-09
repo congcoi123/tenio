@@ -36,7 +36,7 @@ public interface IEvent<T extends Object> {
 	 * To invoke an event.
 	 * 
 	 * @param args the parameters those will be sent to subscribers
-	 * @return Returns the subsribe's result
+	 * @return the subsribe's result
 	 */
 	Object emit(@SuppressWarnings("unchecked") T... args);
 

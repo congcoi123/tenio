@@ -37,9 +37,6 @@ import io.netty.handler.codec.http.HttpServerCodec;
  */
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
-	/**
-	 * @see {@link BaseConfiguration}
-	 */
 	private final BaseConfiguration __configuration;
 
 	public NettyWSInitializer(BaseConfiguration configuration) {

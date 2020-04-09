@@ -48,6 +48,12 @@ public final class LEventManager extends AbstractLogger {
 	private final LEventProducer __producer = new LEventProducer();
 
 	/**
+	 * Emit an event with its parameters
+	 * 
+	 * @param type see {@link LogicEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
 	 * @see LEventProducer#emit(LogicEvent, Object...)
 	 */
 	public Object emit(final LogicEvent type, final Object... args) {
@@ -57,8 +63,8 @@ public final class LEventManager extends AbstractLogger {
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type @see {@link LogicEvent}
-	 * @param sub  @see {@link ISubscriber}
+	 * @param type see {@link LogicEvent}
+	 * @param sub  see {@link ISubscriber}
 	 */
 	public void on(final LogicEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
@@ -87,8 +93,8 @@ public final class LEventManager extends AbstractLogger {
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type @see {@link LogicEvent}
-	 * @return Returns <code>true</code> if an event has any subscribers
+	 * @param type see {@link LogicEvent}
+	 * @return <b>true</b> if an event has any subscribers
 	 */
 	public boolean hasSubscriber(final LogicEvent type) {
 		for (var subscriber : __subscribers) {

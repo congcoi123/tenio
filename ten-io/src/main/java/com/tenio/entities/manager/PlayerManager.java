@@ -26,6 +26,7 @@ package com.tenio.entities.manager;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenio.api.PlayerApi;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.configuration.constant.TEvent;
@@ -37,7 +38,11 @@ import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 
 /**
- * @see {@link IPlayerManager}
+ * Manage all your players ({@link AbstractPlayer}) on the server. It is a
+ * singleton pattern class, which can be called anywhere. But it's better that
+ * you use the {@link PlayerApi} interface for easy management.
+ * 
+ * @see IPlayerManager
  * 
  * @author kong
  * 

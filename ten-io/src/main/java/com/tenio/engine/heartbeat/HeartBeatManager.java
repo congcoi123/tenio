@@ -38,8 +38,13 @@ import com.tenio.exception.HeartbeatNotFoundException;
 import com.tenio.logger.AbstractLogger;
 
 /**
+ * The Java ExecutorService is a construct that allows you to pass a task to be
+ * executed by a thread asynchronously. The executor service creates and
+ * maintains a reusable pool of threads for executing submitted tasks. This
+ * class helps you create and manage your HeartBeats. See:
+ * {@link AbstractHeartBeat}
  * 
- * @see {@link IHeartBeatManager}
+ * @see IHeartBeatManager
  * 
  * @author kong
  *
