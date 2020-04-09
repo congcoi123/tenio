@@ -54,7 +54,7 @@ public interface IContext<TEntity extends IEntity> {
 	/**
 	 * Check if the entity is existed by entity id
 	 * 
-	 * @param entityId the entity id
+	 * @param entity the entity
 	 * @return <b>true</b> if this entity is existed in the current context,
 	 *         <b>false</b> otherwise
 	 */

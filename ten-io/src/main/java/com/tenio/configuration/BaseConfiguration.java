@@ -115,7 +115,8 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * 
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
-	 * @throws some exceptions, which can be occurred in reading or parsing the file
+	 * @throws Exception some exceptions, which can be occurred in reading or
+	 *                   parsing the file
 	 */
 	public void load(final String file) throws Exception {
 
@@ -281,7 +282,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * about how to use it.
 	 * 
 	 * @param attrNode one node in the XML structure
-	 * @throws some exceptions when reading node values, see {@link XPathException}
+	 * @throws XPathException some exceptions when reading node values
 	 */
 	protected abstract void _extend(Node attrNode) throws XPathException;
 

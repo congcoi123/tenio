@@ -54,7 +54,7 @@ public final class LEventProducer {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
+	 * @see LEventHandler#emit(LogicEvent, Object...)
 	 */
 	public Object emit(final LogicEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);

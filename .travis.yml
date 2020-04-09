@@ -7,7 +7,7 @@ jdk:
 script:
   - cd ten-io
   - mvn clean install
-  - mvn test -B
+  - mvn test
 
 # safelist
 branches:

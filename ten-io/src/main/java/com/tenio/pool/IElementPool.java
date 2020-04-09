@@ -36,6 +36,8 @@ package com.tenio.pool;
 public interface IElementPool<Element> {
 
 	/**
+	 * Retrieves an element in the current pool
+	 * 
 	 * @return an element in the pool
 	 */
 	Element get();
@@ -53,8 +55,9 @@ public interface IElementPool<Element> {
 	void cleanup();
 
 	/**
-	 * @return the total number of element or <b>-1</b> if any exceptions
-	 *         caused
+	 * Retrieves the pool size
+	 * 
+	 * @return the total number of element or <b>-1</b> if any exceptions caused
 	 */
 	int getPoolSize();
 

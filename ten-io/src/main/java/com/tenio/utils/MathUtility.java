@@ -145,7 +145,7 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @return a random float in the range <b>-1 < n < 1</b>
+	 * @return a random float in the range <b>[-1, 1]</b>
 	 */
 	public static float randomClamped() {
 		return randFloat() - randFloat();

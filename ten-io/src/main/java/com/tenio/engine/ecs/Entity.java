@@ -85,14 +85,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		return __contextInfo;
 	}
 
-	/**
-	 * Adds a component at the specified index. You can only have one component at
-	 * an index. Each component type must have its own constant index. The preferred
-	 * way is to use the generated methods from the code generator.
-	 *
-	 * @param index
-	 * @param component
-	 */
 	@Override
 	public void setComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
@@ -104,13 +96,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		__components[index] = component;
 	}
 
-	/**
-	 * Removes a component at the specified index. You can only remove a component
-	 * at an index if it exists. The preferred way is to use the generated methods
-	 * from the code generator.
-	 *
-	 * @param index
-	 */
 	@Override
 	public void removeComponent(int index) {
 		if (!hasComponent(index)) {
@@ -122,14 +107,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		__replaceComponentInternal(index, null);
 	}
 
-	/**
-	 * Replaces an existing component at the specified index or adds it if it
-	 * doesn't exist yet. The preferred way is to use the generated methods from the
-	 * code generator.
-	 *
-	 * @param index
-	 * @param component
-	 */
 	@Override
 	public void replaceComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
@@ -149,33 +126,16 @@ public class Entity extends AbstractLogger implements IEntity {
 		}
 	}
 
-	/**
-	 * Returns a component at the specified index. You can only get a component at
-	 * an index if it exists. The preferred way is to use the generated methods from
-	 * the code generator.
-	 *
-	 * @param index
-	 * @return {@link IComponent}
-	 */
 	@Override
 	public IComponent getComponent(int index) {
 		return __components[index];
 	}
 
-	/**
-	 * @return {@link IComponent}[] Returns all added components.
-	 */
 	@Override
 	public IComponent[] getComponents() {
 		return __components;
 	}
 
-	/**
-	 * Determines whether this entity has a component at the specified index.
-	 *
-	 * @param index
-	 * @return {@link Boolean}
-	 */
 	@Override
 	public boolean hasComponent(int index) {
 		if (index < __components.length) {
@@ -185,12 +145,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		}
 	}
 
-	/**
-	 * Determines whether this entity has components at all the specified indices.
-	 *
-	 * @param indices
-	 * @return {@link Boolean}
-	 */
 	@Override
 	public boolean hasComponents(int... indices) {
 		for (int index : indices) {
@@ -201,13 +155,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		return true;
 	}
 
-	/**
-	 * Determines whether this entity has a component at any of the specified
-	 * indices.
-	 *
-	 * @param indices
-	 * @return {@link Boolean}
-	 */
 	@Override
 	public boolean hasAnyComponent(int... indices) {
 		for (int index : indices) {
@@ -218,9 +165,6 @@ public class Entity extends AbstractLogger implements IEntity {
 		return false;
 	}
 
-	/**
-	 * Removes all components.
-	 */
 	@Override
 	public void removeAllComponents() {
 		for (int i = 0; i < __components.length; i++) {

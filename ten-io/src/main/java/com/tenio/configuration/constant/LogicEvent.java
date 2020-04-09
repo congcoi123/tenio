@@ -29,7 +29,7 @@ import com.tenio.network.Connection;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should
- * be handled in {@link ServerLogic} class.
+ * be handled in <b>ServerLogic</b> class.
  * 
  * @author kong
  *

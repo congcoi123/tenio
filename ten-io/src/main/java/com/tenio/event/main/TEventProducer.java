@@ -54,7 +54,7 @@ public final class TEventProducer {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventHandler#emit(Object, TEvent, Object...)
+	 * @see TEventHandler#emit(TEvent, Object...)
 	 */
 	public Object emit(final TEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
