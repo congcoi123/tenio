@@ -77,7 +77,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a Datagram socket and binds it to the specified port on the local
 	 * host machine.
 	 * 
-	 * @param configuration your own configuration @see {@link BaseConfiguration}
+	 * @param configuration your own configuration, see {@link BaseConfiguration}
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
@@ -96,7 +96,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
-	 * @param configuration your own configuration @see {@link BaseConfiguration}
+	 * @param configuration your own configuration, see {@link BaseConfiguration}
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
@@ -116,7 +116,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a web socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
-	 * @param configuration configuration your own configuration @see
+	 * @param configuration configuration your own configuration, see
 	 *                      {@link BaseConfiguration}
 	 * @throws IOException
 	 * @throws InterruptedException
@@ -148,11 +148,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	}
 
 	/**
-	 * Close a channel @see {@link Channel}
+	 * Close a channel, see {@link Channel}
 	 * 
 	 * @param channel the closed channel
-	 * @return Returns <code>true</code> if the channel is closed without any
-	 *         exceptions
+	 * @return <b>true</b> if the channel is closed without any exceptions
 	 */
 	private boolean __close(Channel channel) {
 		if (channel == null) {

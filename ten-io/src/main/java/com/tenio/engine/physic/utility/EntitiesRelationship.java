@@ -10,19 +10,19 @@ import com.tenio.utils.MathUtility;
 /**
  * Some useful entities functions
  * 
- * @link https://medium.com/swlh/understanding-3d-matrix-transforms-with-pixijs-c76da3f8bd8
+ * <a
+ * href=https://medium.com/swlh/understanding-3d-matrix-transforms-with-pixijs-c76da3f8bd8>3D
+ * Matrix Transforms</a>
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public final class EntitiesRelationship {
 
 	private static final Vector2 __temp1 = Vector2.newInstance();
 
-	/**
-	 * Tests to see if an entity is overlapping any of a number of entities stored
-	 * in a list container
-	 */
+	// Tests to see if an entity is overlapping any of a number of entities stored
+	// in a list container
 	public static <T extends BaseGameEntity, conT extends List<? extends T>> boolean isOverlapped(T ob, conT conOb) {
 		return isOverlapped(ob, conOb, 40);
 	}
@@ -41,10 +41,8 @@ public final class EntitiesRelationship {
 		return false;
 	}
 
-	/**
-	 * Tags any entities contained in a list container that are within the radius of
-	 * the single entity parameter
-	 */
+	// Tags any entities contained in a list container that are within the radius of
+	// the single entity parameter
 	public static <T extends BaseGameEntity, conT extends List<? extends T>> void tagNeighbors(final T entity,
 			conT containerOfEntities, float radius) {
 		// iterate through all entities checking for range
@@ -68,11 +66,9 @@ public final class EntitiesRelationship {
 		});
 	}
 
-	/**
-	 * Given a pointer to an entity and a list container of pointers to nearby
-	 * entities, this function checks to see if there is an overlap between
-	 * entities. If there is, then the entities are moved away from each other
-	 */
+	// Given a pointer to an entity and a list container of pointers to nearby
+	// entities, this function checks to see if there is an overlap between
+	// entities. If there is, then the entities are moved away from each other
 	public static <T extends BaseGameEntity, conT extends List<T>> void enforceNonPenetrationConstraint(final T entity,
 			final conT containerOfEntities) {
 		// iterate through all entities checking for any overlap of bounding radius
@@ -106,14 +102,12 @@ public final class EntitiesRelationship {
 		} // next entity
 	}
 
-	/**
-	 * Tests a line segment AB against a container of entities. First of all a test
-	 * is made to confirm that the entity is within a specified range of the
-	 * one_to_ignore (positioned at A). If within range the intersection test is
-	 * made.
-	 *
-	 * returns a list of all the entities that tested positive for intersection
-	 */
+	// Tests a line segment AB against a container of entities. First of all a test
+	// is made to confirm that the entity is within a specified range of the
+	// one_to_ignore (positioned at A). If within range the intersection test is
+	// made.
+	//
+	// returns a list of all the entities that tested positive for intersection
 	public static <T extends BaseGameEntity, conT extends List<T>> List<T> getEntityLineSegmentIntersections(
 			final conT entities, String theOneToIgnore, Vector2 A, Vector2 B) {
 		return getGetEntityLineSegmentIntersections(entities, theOneToIgnore, A, B, MathUtility.MAX_FLOAT);
@@ -144,15 +138,12 @@ public final class EntitiesRelationship {
 		return hits;
 	}
 
-	/**
-	 * Tests a line segment AB against a container of entities. First of all a test
-	 * is made to confirm that the entity is within a specified range of the
-	 * one_to_ignore (positioned at A). If within range the intersection test is
-	 * made.
-	 *
-	 * returns the closest entity that tested positive for intersection or NULL if
-	 * none found
-	 */
+	// Tests a line segment AB against a container of entities. First of all a test
+	// is made to confirm that the entity is within a specified range of the
+	// one_to_ignore (positioned at A). If within range the intersection test is
+	// made.
+	// returns the closest entity that tested positive for intersection or NULL if
+	// none found
 	public static <T extends BaseGameEntity, conT extends List<T>> T getClosestEntityLineSegmentIntersection(
 			final conT entities, String theOneToIgnore, Vector2 A, Vector2 B) {
 		return getClosestEntityLineSegmentIntersection(entities, theOneToIgnore, A, B, MathUtility.MAX_FLOAT);

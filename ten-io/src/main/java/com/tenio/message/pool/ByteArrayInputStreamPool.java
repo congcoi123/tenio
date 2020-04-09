@@ -32,7 +32,7 @@ import com.tenio.message.codec.ByteArrayInputStream;
 import com.tenio.pool.IElementPool;
 
 /**
- * @see {@link IElementPool}
+ * The object pool mechanism for {@link ByteArrayInputStream}.
  * 
  * @author kong
  * 

@@ -27,18 +27,27 @@ import com.tenio.engine.ecs.api.IContext;
 import com.tenio.engine.ecs.api.IEntity;
 
 /**
+ * The base system.
+ * 
+ * @param <TEntity> the entity template
+ * 
  * @author kong
  */
 public abstract class AbstractSystem<TEntity extends IEntity> {
 
 	private IContext<TEntity> __context;
-	
+
 	public AbstractSystem(IContext<TEntity> context) {
 		__context = context;
 	}
-	
+
+	/**
+	 * Retrieves the current context
+	 * 
+	 * @return the corresponding context
+	 */
 	public IContext<TEntity> getContext() {
 		return __context;
 	}
-	
+
 }

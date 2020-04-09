@@ -128,10 +128,9 @@ public class Telegram implements Comparable {
 	}
 
 	/**
-	 * It is generally necessary to override the <code>hashCode</code> method
-	 * whenever equals method is overridden, so as to maintain the general contract
-	 * for the hashCode method, which states that equal objects must have equal hash
-	 * codes.
+	 * It is generally necessary to override the <b>hashCode</b> method whenever
+	 * equals method is overridden, so as to maintain the general contract for the
+	 * hashCode method, which states that equal objects must have equal hash codes.
 	 */
 	@Override
 	public int hashCode() {
@@ -142,9 +141,6 @@ public class Telegram implements Comparable {
 		return hash;
 	}
 
-	/**
-	 * "overloads" < and > operators
-	 */
 	@Override
 	public int compareTo(Object o2) {
 		var t1 = this;

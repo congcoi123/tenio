@@ -39,7 +39,7 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  * system's object for convenience and easy to use. It also handles the logic
  * for the processing of players and connections.
  * 
- * @see {@link BaseNettyHandler}
+ * @see BaseNettyHandler
  * 
  * @author kong
  * 
@@ -51,7 +51,7 @@ public class NettyWSHandler extends BaseNettyHandler {
 	 */
 	private final int __maxPlayer;
 	/**
-	 * Allow a client can be re-connected or not @see
+	 * Allow a client can be re-connected or not, see
 	 * {@link #_channelInactive(ChannelHandlerContext, boolean)}
 	 */
 	private final boolean __keepPlayerOnDisconnect;

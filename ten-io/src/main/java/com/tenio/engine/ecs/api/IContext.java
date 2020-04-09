@@ -28,26 +28,74 @@ import java.util.Map;
 import com.tenio.engine.ecs.ContextInfo;
 
 /**
+ * A context is used to manage all relative entities and components.
+ * 
+ * @param <TEntity> the entity template
+ * 
  * @author kong
  */
 public interface IContext<TEntity extends IEntity> {
 
+	/**
+	 * Create new entity
+	 * 
+	 * @return the entity by the corresponding entity template
+	 */
 	TEntity createEntity();
-	
+
+	/**
+	 * Retrieves an entity by entity id
+	 * 
+	 * @param entityId the entity id
+	 * @return the corresponding entity
+	 */
 	TEntity getEntity(String entityId);
 
+	/**
+	 * Check if the entity is existed by entity id
+	 * 
+	 * @param entity the entity
+	 * @return <b>true</b> if this entity is existed in the current context,
+	 *         <b>false</b> otherwise
+	 */
 	boolean hasEntity(TEntity entity);
-	
+
+	/**
+	 * Remove this entity from the current context
+	 * 
+	 * @param entity the corresponding entity
+	 */
 	void destroyEntity(TEntity entity);
 
+	/**
+	 * Retrieves all entities of the current context
+	 * 
+	 * @return the map of entities
+	 */
 	Map<String, TEntity> getEntities();
 
+	/**
+	 * Retrieves the context information
+	 * 
+	 * @return see {@link ContextInfo}
+	 */
 	ContextInfo getContextInfo();
 
+	/**
+	 * Retrieves the number of entities
+	 * 
+	 * @return the entities count
+	 */
 	int getEntitesCount();
 
+	/**
+	 * Remove all context's entities
+	 */
 	void destroyAllEntities();
 
+	/**
+	 * Reset the current context
+	 */
 	void reset();
 
 }

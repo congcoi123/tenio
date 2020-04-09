@@ -43,27 +43,31 @@ import com.tenio.utils.XMLUtility;
  * configuration values.
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
- * + <i>webSocketPort:</i> WebSocket port <br>
- * + <i>socketPort:</i> TCP port <br>
- * + <i>datagramPort:</i> UDP port <br>
- * + <i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
- * client, can be hold it's player instance until timeout <br>
- * + <i>maxHeartbeat:</i> The maximum number of heartbeats which game can handle
- * <br>
- * + <i>maxPlayer:</i> The maximum number of players which game can handle <br>
- * + <i>idleReader:</i> The max IDLE time in seconds which server can wait from
- * the last getting message from client <br>
- * + <i>idleWriter:</i> The max IDLE time in seconds which server can wait from
- * the last sending message to client <br>
- * + <i>emptyRoomScan:</i> Get the period checking in seconds which server can
- * keep the empty room <br>
- * + <i>timeoutScan:</i> The period checking player time out in seconds <br>
- * + <i>ccuScan:</i> The period checking CCU in seconds <br>
- * + <i>serverName:</i> The server name <br>
- * + <i>serverId:</i> The server id (module name) + + <i>versionName:</i> This
- * current version name of your server in string type <br>
- * + <i>versionCode:</i> This current version code of your server in integer
- * type (can be compared)
+ * <ul>
+ * <li><i>webSocketPort:</i> WebSocket port</li>
+ * <li><i>socketPort:</i> TCP port</li>
+ * <li><i>datagramPort:</i> UDP port</li>
+ * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
+ * client, can be hold its player instance until timeout</li>
+ * <li><i>maxHeartbeat:</i> The maximum number of heartbeats which game can
+ * handle</li>
+ * <li><i>maxPlayer:</i> The maximum number of players which game can handle
+ * </li>
+ * <li><i>idleReader:</i> The max IDLE time in seconds which server can wait
+ * from the last getting message from client</li>
+ * <li><i>idleWriter:</i> The max IDLE time in seconds which server can wait
+ * from the last sending message to client</li>
+ * <li><i>emptyRoomScan:</i> Get the period checking in seconds which server can
+ * keep the empty room</li>
+ * <li><i>timeoutScan:</i> The period checking player time out in seconds</li>
+ * <li><i>ccuScan:</i> The period checking CCU in seconds</li>
+ * <li><i>serverName:</i> The server name</li>
+ * <li><i>serverId:</i> The server id (module name)</li>
+ * <li><i>versionName:</i> This current version name of your server in string
+ * type</li>
+ * <li><i>versionCode:</i> This current version code of your server in integer
+ * type (can be compared)</li>
+ * </ul>
  * 
  * @author kong
  * 
@@ -111,7 +115,8 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * 
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
-	 * @throws some exceptions, which can be occurred in reading or parsing the file
+	 * @throws Exception some exceptions, which can be occurred in reading or
+	 *                   parsing the file
 	 */
 	public void load(final String file) throws Exception {
 
@@ -212,13 +217,19 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	}
 
+	/**
+	 * Put new configuration
+	 * 
+	 * @param key   key
+	 * @param value value
+	 */
 	protected void _put(final String key, final String value) {
 		__configuration.put(key, value);
 	}
 
 	/**
 	 * @param key the configuration's key
-	 * @return Returns the value in @see {@link Boolean}
+	 * @return the value in {@link Boolean}
 	 */
 	public boolean getBoolean(final String key) {
 		return Boolean.parseBoolean(__configuration.get(key));
@@ -226,7 +237,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	/**
 	 * @param key the configuration's key
-	 * @return Returns the value in @see {@link Integer}
+	 * @return the value in {@link Integer}
 	 */
 	public int getInt(final String key) {
 		return Integer.parseInt(__configuration.get(key));
@@ -234,7 +245,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	/**
 	 * @param key the configuration's key
-	 * @return Returns the value in @see {@link Float}
+	 * @return the value in {@link Float}
 	 */
 	public float getFloat(final String key) {
 		return Float.parseFloat(__configuration.get(key));
@@ -242,7 +253,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	/**
 	 * @param key the configuration's key
-	 * @return Returns the value in @see {@link String}
+	 * @return the value in {@link String}
 	 */
 	public String getString(final String key) {
 		return __configuration.get(key);
@@ -254,8 +265,8 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * "-1".
 	 * 
 	 * @param key The desired configuration's key
-	 * @return Return <code>true</code> if the configuration is defined and
-	 *         otherwise return <code>false</code>
+	 * @return <b>true</b> if the configuration is defined and otherwise return
+	 *         <b>false</b>
 	 */
 	public boolean isDefined(final String key) {
 		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
@@ -271,7 +282,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * about how to use it.
 	 * 
 	 * @param attrNode one node in the XML structure
-	 * @throws some exceptions when reading node values @see {@link XPathException}
+	 * @throws XPathException some exceptions when reading node values
 	 */
 	protected abstract void _extend(Node attrNode) throws XPathException;
 

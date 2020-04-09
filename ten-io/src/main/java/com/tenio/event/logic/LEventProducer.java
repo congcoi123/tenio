@@ -26,7 +26,7 @@ package com.tenio.event.logic;
 import com.tenio.configuration.constant.LogicEvent;
 
 /**
- * Only for creating an event handler object @see {@link LEventHandler}
+ * Only for creating an event handler object, see {@link LEventHandler}
  * 
  * @author kong
  * 
@@ -39,20 +39,30 @@ public final class LEventProducer {
 	private final LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
 
 	/**
-	 * @return Returns @see {@link LEventHandler}
+	 * Retrieves an event handler
+	 * 
+	 * @return see {@link LEventHandler}
 	 */
 	public LEventHandler<Object> getEventHandler() {
 		return __eventHandler;
 	}
 
 	/**
-	 * @see LEventHandler#emit(Object, LogicEvent, Object...)
+	 * Emit an event with its parameters
+	 * 
+	 * @param type see {@link LogicEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
+	 * @see LEventHandler#emit(LogicEvent, Object...)
 	 */
 	public Object emit(final LogicEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
 	}
 
 	/**
+	 * Clear all events and these handlers
+	 * 
 	 * @see LEventHandler#clear()
 	 */
 	public void clear() {

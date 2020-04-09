@@ -30,7 +30,7 @@ import com.tenio.entities.element.TObject;
  * The Java ExecutorService is a construct that allows you to pass a task to be
  * executed by a thread asynchronously. The executor service creates and
  * maintains a reusable pool of threads for executing submitted tasks. This
- * class helps you create and manage your HeartBeats @see
+ * class helps you create and manage your HeartBeats. See:
  * {@link AbstractHeartBeat}
  * 
  * @author kong
@@ -41,12 +41,14 @@ public interface IHeartBeatManager {
 	/**
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
-	 * @param configuration @see {@link BaseConfiguration}
+	 * @param configuration see {@link BaseConfiguration}
 	 */
 	void initialize(final BaseConfiguration configuration);
 
 	/**
-	 * @param maxHeartbeat The number of maximum heart-beats that the server can
+	 * The number of maximum heart-beats that the server can handle.
+	 * 
+	 * @param maxHeartbeat the number of maximum heart-beats that the server can
 	 *                     handle
 	 */
 	void initialize(final int maxHeartbeat);
@@ -55,7 +57,7 @@ public interface IHeartBeatManager {
 	 * Create a new heart-beat.
 	 * 
 	 * @param id        the unique id
-	 * @param heartbeat @see {@link AbstractHeartBeat}
+	 * @param heartbeat see {@link AbstractHeartBeat}
 	 */
 	void create(final String id, final AbstractHeartBeat heartbeat);
 
@@ -70,7 +72,7 @@ public interface IHeartBeatManager {
 	 * Check if a heart-beat is existed or not.
 	 * 
 	 * @param id the unique id
-	 * @return Returns <code>true</code> if the corresponding heart-beat has existed
+	 * @return <b>true</b> if the corresponding heart-beat has existed
 	 */
 	boolean contains(final String id);
 
@@ -83,7 +85,7 @@ public interface IHeartBeatManager {
 	 * Send a message to a particular heart-beat with a delay time
 	 * 
 	 * @param id        the unique id
-	 * @param message   the message content
+	 * @param message   the message content, see {@link TObject}
 	 * @param delayTime the delay time in seconds
 	 */
 	void sendMessage(final String id, final TObject message, final double delayTime);
@@ -92,7 +94,7 @@ public interface IHeartBeatManager {
 	 * Send a message to a particular heart-beat with no delay time
 	 * 
 	 * @param id      the unique id
-	 * @param message the message content
+	 * @param message the message content, see {@link TObject}
 	 */
 	void sendMessage(final String id, final TObject message);
 

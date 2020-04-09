@@ -48,19 +48,13 @@ import com.tenio.pool.IElementPool;
  */
 public final class MessageApi extends AbstractLogger {
 
-	/**
-	 * @see ArrayPool
-	 */
 	private final IElementPool<TArray> __arrayPool = new ArrayPool();
-	/**
-	 * @see ObjectPool
-	 */
 	private final IElementPool<TObject> __objectPool = new ObjectPool();
 
 	/**
 	 * Send a message for a connection
 	 * 
-	 * @param connection @see {@link Connection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 */
@@ -77,14 +71,14 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a connection
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
-	 * @param connection @see {@link Connection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
-	 * @param data       the main data of message @see {@link TArray}
+	 * @param data       the main data of message, see: {@link TArray}
 	 */
 	public void sendToConnection(Connection connection, String key, Object value, String keyData, TArray data) {
 		var message = __objectPool.get();
@@ -98,13 +92,13 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player          @see {@link AbstractPlayer}
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param player          See {@link AbstractPlayer}
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param message         the sending message
 	 */
 	private void __send(AbstractPlayer player, boolean isSubConnection, TObject message) {
-		player.currentWriterTime(); // update time to check TIMEOUT
+		player.setCurrentWriterTime(); // update time to check TIMEOUT
 		if (!isSubConnection) {
 			if (player.hasConnection()) { // send to CLIENT (connection)
 				player.getConnection().send(message);
@@ -124,6 +118,8 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
+	 * Send a message to player via his connection
+	 * 
 	 * @see #__send(AbstractPlayer, boolean, TObject)
 	 * 
 	 * @param key   the key of message
@@ -168,16 +164,16 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a player
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param player          the desired player
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 * @param keyData         the key of message's data
-	 * @param data            the message data @see {@link TArray}
+	 * @param data            the message data, see: {@link TArray}
 	 */
 	private void __sendToPlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
 			String keyData, TArray data) {
@@ -198,7 +194,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data @see {@link TArray}
+	 * @param data    the message's data, see: {@link TArray}
 	 */
 	public void sendToPlayer(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
 		__sendToPlayer(player, false, key, value, keyData, data);
@@ -213,7 +209,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data @see {@link TArray}
+	 * @param data    the message's data, see: {@link TArray}
 	 */
 	public void sendToPlayerSub(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
 		__sendToPlayer(player, true, key, value, keyData, data);
@@ -223,8 +219,8 @@ public final class MessageApi extends AbstractLogger {
 	 * Send a message to all players of one room
 	 * 
 	 * @param room            the desired room
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
@@ -269,16 +265,16 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players on one room
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param room            the desired room
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 * @param keyData         the key of message's data
-	 * @param data            the message's data @see {@link TArray}
+	 * @param data            the message's data, see: {@link TArray}
 	 */
 	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value, String keyData,
 			TArray data) {
@@ -301,7 +297,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the messate's data @see {@link TArray}
+	 * @param data    the messate's data, see: {@link TArray}
 	 */
 	public void sendToRoom(AbstractRoom room, String key, Object value, String keyData, TArray data) {
 		__sendToRoom(room, false, key, value, keyData, data);
@@ -316,7 +312,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the messate's data @see {@link TArray}
+	 * @param data    the messate's data, see: {@link TArray}
 	 */
 	public void sendToRoomSub(AbstractRoom room, String key, Object value, String keyData, TArray data) {
 		__sendToRoom(room, true, key, value, keyData, data);
@@ -326,8 +322,8 @@ public final class MessageApi extends AbstractLogger {
 	 * Send a message to all players in one room except the desired player
 	 * 
 	 * @param player          the desired player
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
@@ -377,16 +373,16 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * Must use @see {@link #getArrayPack()} to create data array package for
-	 * avoiding memory leak.
+	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * memory leak.
 	 * 
 	 * @param player          the desired player
-	 * @param isSubConnection set <code>true</code> is you want to send to your
-	 *                        client a message in sub-connection (UDP)
+	 * @param isSubConnection set <b>true</b> is you want to send to your client a
+	 *                        message in sub-connection (UDP)
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 * @param keyData         the key of message's data
-	 * @param data            the message's data @see {@link TArray}
+	 * @param data            the message's data, see: {@link TArray}
 	 */
 	private void __sendToRoomIgnorePlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
 			String keyData, TArray data) {
@@ -414,7 +410,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data @see {@link TArray}
+	 * @param data    the message's data, see: {@link TArray}
 	 */
 	public void sendToRoomIgnorePlayer(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
 		__sendToRoomIgnorePlayer(player, false, key, value, keyData, data);
@@ -431,7 +427,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data @see {@link TArray}
+	 * @param data    the message's data, see: {@link TArray}
 	 */
 	public void sendToRoomIgnorePlayerSub(AbstractPlayer player, String key, Object value, String keyData,
 			TArray data) {
@@ -439,7 +435,7 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
-	 * @return Returns a @see {@link TArray} object from the pooling mechanism
+	 * @return a {@link TArray} object from the pooling mechanism
 	 */
 	public TArray getArrayPack() {
 		return __arrayPool.get();

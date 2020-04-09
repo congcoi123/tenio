@@ -32,7 +32,12 @@ import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.IEvent;
 
 /**
+ * This class for handling events and these subscribers.
+ * 
+ * @param <T> the template
+ * 
  * @author kong
+ * 
  */
 public final class TEventHandler<T> {
 
@@ -45,8 +50,8 @@ public final class TEventHandler<T> {
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  @see {@link TEvent}
-	 * @param event @see {@link IEvent}
+	 * @param type  see {@link TEvent}
+	 * @param event see {@link IEvent}
 	 */
 	public void subscribe(final TEvent type, final IEvent<T> event) {
 		if (__delegate.containsKey(type)) {
@@ -63,10 +68,10 @@ public final class TEventHandler<T> {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type @see {@link TEvent}
+	 * @param type see {@link TEvent}
 	 * @param args a list parameters of this event
-	 * @return Returns the event result (the response of its subscribers) @see
-	 *         {@link Object} or <code>null</code>
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
 	 */
 	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (!__delegate.isEmpty()) {

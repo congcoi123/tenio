@@ -44,7 +44,7 @@ import com.tenio.pool.IElementPool;
  * languages like JSON. But it's faster and smaller. Small integers are encoded
  * into a single byte, and typical short strings require only one extra byte in
  * addition to the strings themselves. This class helps you convert one system
- * object @see {@link TObject} to MsgPack data and vice versa.
+ * object ({@link TObject}) to MsgPack data and vice versa.
  * 
  * @author kong
  * 
@@ -55,7 +55,7 @@ public final class MsgPackConverter {
 	 * Serialize an object to an array of bytes data
 	 * 
 	 * @param object a {@link Map} type object
-	 * @return Returns an array of bytes data
+	 * @return an array of bytes data
 	 */
 	public static byte[] serialize(Map<String, Object> object) {
 		return MsgPackUtil.pack(object);
@@ -65,7 +65,7 @@ public final class MsgPackConverter {
 	 * Un-serialize an array of bytes data to a {@link TObject}
 	 * 
 	 * @param msg an array of bytes data
-	 * @return Returns an object in <code>TObject</code> type
+	 * @return an object in <b>TObject</b> type
 	 */
 	public static TObject unserialize(byte[] msg) {
 		var object = TObject.newInstance();
@@ -86,16 +86,16 @@ public final class MsgPackConverter {
 		 */
 		private static final MessagePack __packer = new MessagePack();
 		/**
-		 * An object creation pool instance, which is used for re-use byte objects @see
+		 * An object creation pool instance, which is used for re-use byte objects, see
 		 * {@link IElementPool}
 		 */
 		private static final IElementPool<ByteArrayInputStream> __bytesPool = new ByteArrayInputStreamPool();
 
 		/**
-		 * Converting an object @see {@link TObject} to array of bytes data
+		 * Converting an object ({@link TObject}) to array of bytes data
 		 * 
 		 * @param map an object in {@link Map} type
-		 * @return Returns an array of bytes data
+		 * @return an array of bytes data
 		 */
 		public static byte[] pack(Map<String, Object> map) {
 			try {
@@ -110,7 +110,7 @@ public final class MsgPackConverter {
 		 * Converting an array of bytes data to a {@link Map} object
 		 * 
 		 * @param msg an array of bytes
-		 * @return Returns a object in map type
+		 * @return a object in map type
 		 */
 		public static Map<String, Value> unpack(byte[] msg) {
 			var mapTmpl = tMap(TString, TValue);
@@ -132,7 +132,7 @@ public final class MsgPackConverter {
 		 * Converting value in MsgPack type to its corresponding in Java type
 		 * 
 		 * @param value the value in {@link Value} type
-		 * @return Returns an object in Java type
+		 * @return an object in Java type
 		 */
 		public static Object valueToObject(Value value) {
 			if (value.isNilValue()) {

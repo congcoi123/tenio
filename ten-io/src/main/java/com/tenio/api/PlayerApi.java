@@ -37,20 +37,14 @@ import com.tenio.network.Connection;
 /**
  * This class provides you a necessary interface for managing players.
  * 
- * @see {@link IPlayerManager}
+ * @see IPlayerManager
  * 
  * @author kong
  * 
  */
 public final class PlayerApi extends AbstractLogger {
 
-	/**
-	 * @see {@link IPlayerManager}
-	 */
 	private final IPlayerManager __playerManager;
-	/**
-	 * @see {@link IRoomManager}
-	 */
 	private final IRoomManager __roomManager;
 
 	public PlayerApi(IPlayerManager playerManager, IRoomManager roomManager) {
@@ -59,84 +53,125 @@ public final class PlayerApi extends AbstractLogger {
 	}
 
 	/**
-	 * @see IPlayerManager#contain(String)
+	 * Determine if the player has existed or not.
+	 * 
+	 * @param name the player's name (unique ID)
+	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
 	 */
-	public boolean contain(final String userName) {
-		return __playerManager.contain(userName);
+	public boolean contain(final String name) {
+		return __playerManager.contain(name);
 	}
 
 	/**
-	 * @see IPlayerManager#get(String)
+	 * Retrieve a player by the player's name.
+	 * 
+	 * @param name the player's name (unique ID)
+	 * @return the player's instance if that player has existed, <b>null</b>
+	 *         otherwise
 	 */
-	public AbstractPlayer get(final String userName) {
-		return __playerManager.get(userName);
+	public AbstractPlayer get(final String name) {
+		return __playerManager.get(name);
 	}
 
 	/**
-	 * @see IPlayerManager#count()
+	 * @return the number of all current players' instance (include NPC or BOT)
 	 */
 	public int count() {
 		return __playerManager.count();
 	}
 
 	/**
-	 * @see IPlayerManager#countPlayers()
+	 * @return the number of all current players that have connections (without NPC
+	 *         or BOT)
 	 */
 	public int countPlayers() {
 		return __playerManager.countPlayers();
 	}
 
 	/**
-	 * @see IPlayerManager#gets()
+	 * @return all current players
 	 */
 	public Map<String, AbstractPlayer> gets() {
 		return __playerManager.gets();
 	}
 
 	/**
-	 * @see IPlayerManager#add(AbstractPlayer, Connection)
+	 * Add a new player to your server (this player was upgraded from one
+	 * connection).
+	 * 
+	 * @param player     that is created from your server, see:
+	 *                   {@link AbstractPlayer}
+	 * @param connection the corresponding connection, see: {@link Connection}
 	 */
 	public void login(final AbstractPlayer player, final Connection connection) {
 		__playerManager.add(player, connection);
 	}
 
 	/**
-	 * @see IPlayerManager#add(AbstractPlayer)
+	 * Add a new player to your server (this player is known as one NCP or a BOT)
+	 * without a attached connection.
+	 * 
+	 * @param player that is created from your server, see: {@link AbstractPlayer}
 	 */
 	public void login(final AbstractPlayer player) {
 		__playerManager.add(player);
 	}
 
 	/**
-	 * @see IRoomManager#playerJoinRoom(AbstractRoom, AbstractPlayer)
+	 * Request one player to join a room. This request can be refused with some
+	 * reason. You can handle these results in the corresponding events.
+	 * 
+	 * @param room   the desired room, see: {@link AbstractRoom}
+	 * @param player the current player, see: {@link AbstractPlayer}
+	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 *         otherwise
 	 */
 	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		return __roomManager.playerJoinRoom(room, player);
 	}
 
 	/**
-	 * @see IRoomManager#playerLeaveRoom(AbstractPlayer, boolean)
+	 * Allow a player to leave his current room. You can handle your own logic in
+	 * the corresponding events.
+	 * 
+	 * @param player that will be left his current room, see {@link AbstractPlayer}
+	 * @param force  it's set <b>true</b> if you want to force the player leave.
+	 *               Otherwise, it's set <b>false</b>
+	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 *         otherwise
 	 */
 	public String playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		return __roomManager.playerLeaveRoom(player, force);
 	}
 
 	/**
-	 * @see #logOut(AbstractPlayer)
+	 * Remove a player from your server.
+	 * 
+	 * @param name the player with this name that is removed, see
+	 *             {@link AbstractPlayer}
 	 */
-	public void logOut(final String userName) {
-		logOut(get(userName));
+	public void logOut(final String name) {
+		logOut(get(name));
 	}
 
 	/**
-	 * @see IPlayerManager#remove(AbstractPlayer)
+	 * Remove a player from your server.
+	 * 
+	 * @param player that is removed, see {@link AbstractPlayer}
 	 */
 	public void logOut(final AbstractPlayer player) {
 		__playerManager.remove(player);
 	}
-	
+
 	/**
-	 * @return Returns all players' information data
+	 * @return the number of all current players' instance (include NPC or BOT)
+	 */
+	public int getCCU() {
+		return count();
+	}
+
+	/**
+	 * @return all players' information data
 	 */
 	public List<List<Object>> getAllPlayerBaseInfos() {
 		var list = new ArrayList<List<Object>>();
@@ -152,13 +187,6 @@ public final class PlayerApi extends AbstractLogger {
 			list.add(data);
 		});
 		return list;
-	}
-
-	/**
-	 * @see #count()
-	 */
-	public int getCCU() {
-		return count();
 	}
 
 }

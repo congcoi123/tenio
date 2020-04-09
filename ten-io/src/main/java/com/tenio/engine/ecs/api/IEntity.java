@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.api;
 
 import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.pool.IElementPool;
 
 /**
@@ -37,36 +38,120 @@ import com.tenio.pool.IElementPool;
  */
 public interface IEntity {
 
+	/**
+	 * Set new id
+	 * 
+	 * @param id the desired id
+	 */
 	void setId(String id);
 
+	/**
+	 * Retrieves the entity's id
+	 * 
+	 * @return entity's id
+	 */
 	String getId();
 
+	/**
+	 * Set context information
+	 * 
+	 * @param contextInfo see {@link ContextInfo}
+	 */
 	void setContextInfo(ContextInfo contextInfo);
 
+	/**
+	 * Set list of component pools, each component pool manages specific component
+	 * type
+	 * 
+	 * @param __componentPools an array of {@link ComponentPool}
+	 */
 	void setComponentPools(IElementPool<IComponent>[] __componentPools);
 
+	/**
+	 * Retrieves the list of component pools
+	 * 
+	 * @return an array of {@link ComponentPool}
+	 */
 	IElementPool<IComponent>[] getComponentPools();
 
+	/**
+	 * Retrieves the context information
+	 * 
+	 * @return see {@link ContextInfo}
+	 */
 	ContextInfo getContextInfo();
 
+	/**
+	 * Set new component
+	 * 
+	 * @param index     the component index
+	 * @param component the component object
+	 */
 	void setComponent(int index, IComponent component);
 
+	/**
+	 * Remove component by index
+	 * 
+	 * @param index the component index
+	 */
 	void removeComponent(int index);
 
+	/**
+	 * Replace old component by new component by index
+	 * 
+	 * @param index     the component index
+	 * @param component the component object
+	 */
 	void replaceComponent(int index, IComponent component);
 
+	/**
+	 * Retrieves the component by index
+	 * 
+	 * @param index the component index
+	 * @return the corresponding component
+	 */
 	IComponent getComponent(int index);
 
+	/**
+	 * Retrieves a list of the current entity
+	 * 
+	 * @return list of components
+	 */
 	IComponent[] getComponents();
 
+	/**
+	 * Check if the component is existed or not
+	 * 
+	 * @param index component index
+	 * @return <b>true</b> if the component is existed, <b>false</b> otherwise
+	 */
 	boolean hasComponent(int index);
 
+	/**
+	 * Check if all the components in list are existed or not
+	 * 
+	 * @param indices list of component indices
+	 * @return <b>true</b> if the all components are existed, <b>false</b> otherwise
+	 */
 	boolean hasComponents(int... indices);
 
+	/**
+	 * Check if one of components in list are existed or not
+	 * 
+	 * @param indices list of component indices
+	 * @return <b>true</b> if the one of components in list is existed, <b>false</b>
+	 *         otherwise
+	 */
 	boolean hasAnyComponent(int... indices);
 
+	/**
+	 * Remove all components
+	 */
 	void removeAllComponents();
 
+	/**
+	 * Reset entity
+	 */
 	void reset();
 
 }

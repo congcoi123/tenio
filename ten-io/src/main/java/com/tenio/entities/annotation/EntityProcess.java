@@ -37,8 +37,25 @@ import com.tenio.annotation.Column;
 import com.tenio.annotation.Entity;
 import com.tenio.annotation.Sanitizer;
 
+/**
+ * This class is used to export game objects with supported annotation to JSON
+ * data (backup) or create game objects from JSON data (restore).
+ * 
+ * @see Column
+ * @see Entity
+ * @see Sanitizer
+ * 
+ * @author kong
+ *
+ */
 public final class EntityProcess {
 
+	/**
+	 * Execute an object method (included private level access)
+	 * 
+	 * @param object the desired object
+	 * @throws Exception the exception
+	 */
 	private static void __sanitizerObject(Object object) throws Exception {
 		Class<?> clazz = object.getClass();
 		for (Method method : clazz.getDeclaredMethods()) {
@@ -50,6 +67,12 @@ public final class EntityProcess {
 		}
 	}
 
+	/**
+	 * Check if the corresponding object has necessary annotation or not
+	 * 
+	 * @param object the desired object
+	 * @throws Exception the exception
+	 */
 	private static void __checkEntity(Object object) throws Exception {
 		if (Objects.isNull(object)) {
 			throw new Exception("The object to serialize is null");
@@ -62,6 +85,13 @@ public final class EntityProcess {
 		}
 	}
 
+	/**
+	 * Use recursion method to get all fields of an object (included its parent's
+	 * fields)
+	 * 
+	 * @param clazz the class type
+	 * @return the list of fields
+	 */
 	private static Field[] __getAllFields(Class<?> clazz) {
 		List<Field> fields = new ArrayList<Field>();
 		fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
@@ -71,6 +101,13 @@ public final class EntityProcess {
 		return fields.toArray(new Field[] {});
 	}
 
+	/**
+	 * Convert the desired object to JSON data
+	 * 
+	 * @param object the desired object
+	 * @return the JSON data in string, see {@link String}
+	 * @throws Exception the exception
+	 */
 	public static String exportToJSON(Object object) throws Exception {
 		Class<?> clazz = object.getClass();
 		Map<String, String> jsonMap = new HashMap<String, String>();

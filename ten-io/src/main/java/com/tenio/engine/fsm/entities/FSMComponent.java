@@ -31,21 +31,23 @@ import com.tenio.engine.fsm.MessageDispatcher;
  * <a href="https://en.wikipedia.org/wiki/Finite-state_machine#State/">FSM</a>
  * for more details.
  * 
+ * @param <T> the state template
+ * 
  * @author kong
  * 
  */
 public final class FSMComponent<T> extends Component<T> {
 
 	/**
-	 * The current state @see {@link State}
+	 * The current state, see {@link State}
 	 */
 	private State<T> __currentState;
 	/**
-	 * A record of the last state the agent was in @see {@link State}
+	 * A record of the last state the agent was in, see {@link State}
 	 */
 	private State<T> __previousState;
 	/**
-	 * This is called every time the FSM is updated @see {@link State}
+	 * This is called every time the FSM is updated, see {@link State}
 	 */
 	private State<T> __globalState;
 	/**
@@ -70,10 +72,20 @@ public final class FSMComponent<T> extends Component<T> {
 		__currentState = state;
 	}
 
+	/**
+	 * The global state is called in every processing
+	 * 
+	 * @param state the corresponding state
+	 */
 	public void setGlobalState(State<T> state) {
 		__globalState = state;
 	}
 
+	/**
+	 * Set the previous state
+	 * 
+	 * @param state the corresponding state
+	 */
 	public void setPreviousState(State<T> state) {
 		__previousState = state;
 	}
@@ -137,8 +149,8 @@ public final class FSMComponent<T> extends Component<T> {
 
 	/**
 	 * @param state the confirming state
-	 * @return Returns <code>true</code> if the current state's type is equal to the
-	 *         type of the class passed as a parameter
+	 * @return <b>true</b> if the current state's type is equal to the type of the
+	 *         class passed as a parameter
 	 */
 	public boolean isInState(State<T> state) {
 		return __currentState.getClass() == state.getClass();
@@ -159,7 +171,7 @@ public final class FSMComponent<T> extends Component<T> {
 	/**
 	 * Only be used during debugging to grab the name of the current state
 	 * 
-	 * @return Returns the name of current state
+	 * @return the name of current state
 	 */
 	public String getNameOfCurrentState() {
 		return __currentState.getClass().getName();

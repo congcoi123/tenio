@@ -26,13 +26,27 @@ package com.tenio.engine.ecs;
 import java.util.Arrays;
 
 /**
+ * The context information
+ * 
  * @author kong
  */
 public class ContextInfo {
 
+	/**
+	 * List of component names of an entity
+	 */
 	private final String[] __componentNames;
+	/**
+	 * List of component classes of an entity
+	 */
 	private final Class<?>[] __componentTypes;
+	/**
+	 * The context's name
+	 */
 	private final String __name;
+	/**
+	 * The number of component for each entity
+	 */
 	private final int __numberComponents;
 
 	public ContextInfo(String name, String[] componentNames, Class<?>[] componentTypes, int numberComponents) {
@@ -49,7 +63,7 @@ public class ContextInfo {
 	public String[] getComponentNames() {
 		return __componentNames;
 	}
-	
+
 	public Class<?>[] getComponentTypes() {
 		return __componentTypes;
 	}

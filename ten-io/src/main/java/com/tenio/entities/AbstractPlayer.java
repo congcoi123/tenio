@@ -108,8 +108,8 @@ public abstract class AbstractPlayer {
 	 */
 	public AbstractPlayer(final String name) {
 		__name = name;
-		currentReaderTime();
-		currentWriterTime();
+		setCurrentReaderTime();
+		setCurrentWriterTime();
 	}
 
 	public String getEntityId() {
@@ -137,9 +137,10 @@ public abstract class AbstractPlayer {
 	}
 
 	/**
-	 * @return <code>true</code> if the player is a NPC (non player character),
-	 *         otherwise return <code>false</code>. A NPC is a player without a
-	 *         connection
+	 * Check the player's role
+	 * 
+	 * @return <b>true</b> if the player is a NPC (non player character), otherwise
+	 *         return <b>false</b>. A NPC is a player without a connection
 	 */
 	public boolean isNPC() {
 		return !__flagConnection;
@@ -187,7 +188,7 @@ public abstract class AbstractPlayer {
 		return __readerTime;
 	}
 
-	public void currentReaderTime() {
+	public void setCurrentReaderTime() {
 		__readerTime = System.currentTimeMillis();
 	}
 
@@ -195,7 +196,7 @@ public abstract class AbstractPlayer {
 		return __writerTime;
 	}
 
-	public void currentWriterTime() {
+	public void setCurrentWriterTime() {
 		__writerTime = System.currentTimeMillis();
 	}
 
@@ -205,8 +206,8 @@ public abstract class AbstractPlayer {
 
 	public void setIgnoreTimeout(final boolean flagIgnoreTimeout) {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
-		currentReaderTime();
-		currentWriterTime();
+		setCurrentReaderTime();
+		setCurrentWriterTime();
 	}
 
 }

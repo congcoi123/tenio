@@ -44,7 +44,7 @@ interface IServer {
 	/**
 	 * Start the server base on your own configurations
 	 * 
-	 * @param configuration @see {@link BaseConfiguration}
+	 * @param configuration, see {@link BaseConfiguration}
 	 */
 	void start(BaseConfiguration configuration);
 
@@ -66,27 +66,27 @@ interface IServer {
 	void setExtension(IExtension extension);
 
 	/**
-	 * @return Returns @see {@link PlayerApi}
+	 * @return see {@link PlayerApi}
 	 */
 	PlayerApi getPlayerApi();
 
 	/**
-	 * @return Returns @see {@link RoomApi}
+	 * @return see {@link RoomApi}
 	 */
 	RoomApi getRoomApi();
 
 	/**
-	 * @return Returns @see {@link MessageApi}
+	 * @return see {@link MessageApi}
 	 */
 	MessageApi getMessageApi();
 
 	/**
-	 * @return Returns @see {@link HeartBeatApi}
+	 * @return see {@link HeartBeatApi}
 	 */
 	HeartBeatApi getHeartBeatApi();
 
 	/**
-	 * @return Returns @see {@link TaskApi}
+	 * @return see {@link TaskApi}
 	 */
 	TaskApi getTaskApi();
 

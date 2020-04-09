@@ -34,7 +34,7 @@ public interface IRender {
 	/**
 	 * To render objects to screen
 	 * 
-	 * @param paint @see {@link Paint}
+	 * @param paint see {@link Paint}
 	 */
 	void render(Paint paint);
 

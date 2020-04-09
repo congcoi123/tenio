@@ -33,7 +33,7 @@ import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;
 
 /**
- * @see {@link IElementPool}
+ * The object pool mechanism for {@link StringBuilder}.
  * 
  * @author kong
  * 
@@ -156,8 +156,8 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 	 * To generate {@code String} for logging information by the corresponding
 	 * objects
 	 * 
-	 * @param objects the corresponding objects @see {@link Object}
-	 * @return Returns a string
+	 * @param objects the corresponding objects, see {@link Object}
+	 * @return a string value
 	 */
 	private final String __strgen(final Object... objects) {
 		var builder = new StringBuilder();

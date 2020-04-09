@@ -2,7 +2,7 @@ package com.tenio.examples.example4.constants;
 
 /**
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public enum Deceleration {

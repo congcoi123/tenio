@@ -30,7 +30,7 @@ import com.tenio.entities.AbstractPlayer;
 import com.tenio.network.Connection;
 
 /**
- * Manage all your players @see {@link AbstractPlayer} on the server. It is a
+ * Manage all your players ({@link AbstractPlayer}) on the server. It is a
  * singleton pattern class, which can be called anywhere. But it's better that
  * you use the {@link PlayerApi} interface for easy management.
  * 
@@ -40,19 +40,18 @@ import com.tenio.network.Connection;
 public interface IPlayerManager {
 
 	/**
-	 * @return Returns the number of all current players' instance (include NPC or
-	 *         BOT)
+	 * @return the number of all current players' instance (include NPC or BOT)
 	 */
 	int count();
 
 	/**
-	 * @return Returns the number of all current players that have connections
-	 *         (without NPC or BOT)
+	 * @return the number of all current players that have connections (without NPC
+	 *         or BOT)
 	 */
 	int countPlayers();
 
 	/**
-	 * @return Returns all current players
+	 * @return all current players
 	 */
 	Map<String, AbstractPlayer> gets();
 
@@ -65,8 +64,7 @@ public interface IPlayerManager {
 	 * Determine if the player has existed or not.
 	 * 
 	 * @param name the player's name (unique ID)
-	 * @return Returns <code>true</code> if the player has existed,
-	 *         <code>false</code> otherwise
+	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
 	 */
 	boolean contain(final String name);
 
@@ -74,8 +72,8 @@ public interface IPlayerManager {
 	 * Retrieve a player by the player's name.
 	 * 
 	 * @param name the player's name (unique ID)
-	 * @return Returns the player's instance if that player has existed,
-	 *         <code>null</code> otherwise
+	 * @return the player's instance if that player has existed, <b>null</b>
+	 *         otherwise
 	 */
 	AbstractPlayer get(final String name);
 
@@ -83,9 +81,9 @@ public interface IPlayerManager {
 	 * Add a new player to your server (this player was upgraded from one
 	 * connection).
 	 * 
-	 * @param player     that is created from your server @see
+	 * @param player     that is created from your server, see:
 	 *                   {@link AbstractPlayer}
-	 * @param connection the corresponding connection @see {@link Connection}
+	 * @param connection the corresponding connection, see: {@link Connection}
 	 */
 	void add(final AbstractPlayer player, final Connection connection);
 
@@ -93,14 +91,14 @@ public interface IPlayerManager {
 	 * Add a new player to your server (this player is known as one NCP or a BOT)
 	 * without a attached connection.
 	 * 
-	 * @param player that is created from your server @see {@link AbstractPlayer}
+	 * @param player that is created from your server, see: {@link AbstractPlayer}
 	 */
 	void add(final AbstractPlayer player);
 
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
+	 * @param player that is removed, see {@link AbstractPlayer}
 	 */
 	void remove(final AbstractPlayer player);
 
@@ -108,7 +106,7 @@ public interface IPlayerManager {
 	 * When a player is disconnected, all the related connections need to be deleted
 	 * too.
 	 * 
-	 * @param player the corresponding player @see {@link AbstractPlayer}
+	 * @param player the corresponding player, see {@link AbstractPlayer}
 	 */
 	void removeAllConnections(final AbstractPlayer player);
 
@@ -117,7 +115,7 @@ public interface IPlayerManager {
 	 * server). It is used when you don't want your player can re-connect with any
 	 * interruption's reason.
 	 * 
-	 * @param player that is removed @see {@link AbstractPlayer}
+	 * @param player that is removed, see {@link AbstractPlayer}
 	 */
 	void clean(final AbstractPlayer player);
 

@@ -44,19 +44,31 @@ public final class EventManager extends AbstractLogger {
 	 */
 	private static LEventManager __lEvent = new LEventManager();
 
+	/**
+	 * @return see {@link TEventManager}
+	 */
 	public static TEventManager getEvent() {
 		return __tEvent;
 	}
 
+	/**
+	 * @return see {@link LEventManager}
+	 */
 	public static LEventManager getLogic() {
 		return __lEvent;
 	}
-	
+
+	/**
+	 * Collect all subscribers and these corresponding events.
+	 */
 	public static void subscribe() {
 		__tEvent.subscribe();
 		__lEvent.subscribe();
 	}
-	
+
+	/**
+	 * Clear all subscribers and these corresponding events.
+	 */
 	public static void clear() {
 		__tEvent.clear();
 		__lEvent.clear();

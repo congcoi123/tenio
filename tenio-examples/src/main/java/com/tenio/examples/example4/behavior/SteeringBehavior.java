@@ -23,7 +23,7 @@ import com.tenio.utils.MathUtility;
  * This class is used to encapsulate steering behaviors for a vehicle @see
  * {@link Vehicle}
  * 
- * @author sallyx <https://www.sallyx.org/sally/en/game-ai/>
+ * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
 public class SteeringBehavior implements IRender {

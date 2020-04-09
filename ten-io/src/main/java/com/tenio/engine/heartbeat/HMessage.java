@@ -69,21 +69,38 @@ final class HMessage implements Comparable {
 		__message = message;
 	}
 
+	/**
+	 * Retrieves the delay time
+	 * 
+	 * @return the delay time
+	 */
 	public double getDelayTime() {
 		return __delayTime;
 	}
 
 	/**
+	 * Set the delay time
+	 * 
 	 * @param delayTime the delay time in seconds
 	 */
 	private void __setDelayTime(double delayTime) {
 		__delayTime = TimeUtility.currentTimeSeconds() + delayTime;
 	}
 
+	/**
+	 * Retrieves the message id
+	 * 
+	 * @return the message id
+	 */
 	public String getId() {
 		return __id;
 	}
 
+	/**
+	 * Retrieves the message
+	 * 
+	 * @return see {@link TObject}
+	 */
 	public TObject getMessage() {
 		return __message;
 	}
@@ -99,10 +116,9 @@ final class HMessage implements Comparable {
 	}
 
 	/**
-	 * It is generally necessary to override the <code>hashCode</code> method
-	 * whenever equals method is overridden, so as to maintain the general contract
-	 * for the hashCode method, which states that equal objects must have equal hash
-	 * codes.
+	 * It is generally necessary to override the <b>hashCode</b> method whenever
+	 * equals method is overridden, so as to maintain the general contract for the
+	 * hashCode method, which states that equal objects must have equal hash codes.
 	 */
 	@Override
 	public int hashCode() {
@@ -111,9 +127,6 @@ final class HMessage implements Comparable {
 		return hash;
 	}
 
-	/**
-	 * "overloads" < and > operators
-	 */
 	@Override
 	public int compareTo(Object o2) {
 		var t1 = this;

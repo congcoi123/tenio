@@ -43,8 +43,8 @@ public final class MessagePacker {
 	 * Add the header-length value to the package's header
 	 * 
 	 * @param data your sending data in an array of bytes
-	 * @return Returns a new array of bytes data with a header-length value at the
-	 *         package's header
+	 * @return a new array of bytes data with a header-length value at the package's
+	 *         header
 	 */
 	public static byte[] pack(byte[] data) {
 		// Make bytes
@@ -60,10 +60,10 @@ public final class MessagePacker {
 
 	/**
 	 * Convert a value in short type to its corresponding array of bytes. This
-	 * convert by <code>BIG_EDIAN</code> byte's order
+	 * convert by <b>BIG_EDIAN</b> byte's order
 	 * 
 	 * @param value the value in short type
-	 * @return Returns an array of bytes
+	 * @return an array of bytes
 	 */
 	public static byte[] shortToByte(short value) {
 		return ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putShort(value).array();
@@ -71,10 +71,10 @@ public final class MessagePacker {
 
 	/**
 	 * Convert an array of bytes to its corresponding value in short type. This
-	 * convert by <code>BIG_EDIAN</code> byte's order
+	 * convert by <b>BIG_EDIAN</b> byte's order
 	 * 
 	 * @param value the array of bytes
-	 * @return Returns a value in short type
+	 * @return a value in short type
 	 */
 	public static short byteToShort(byte[] value) {
 		return ByteBuffer.wrap(value).order(ByteOrder.BIG_ENDIAN).getShort();

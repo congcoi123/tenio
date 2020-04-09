@@ -37,6 +37,8 @@ import com.tenio.pool.IElementPool;
  * A context manages the life-cycle of entities and groups. You can create and
  * destroy entities and get groups of entities.
  * 
+ * @see IContext
+ * 
  * @author kong
  */
 public class Context<TEntity extends Entity> implements IContext<TEntity> {

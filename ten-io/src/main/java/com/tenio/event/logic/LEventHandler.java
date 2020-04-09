@@ -30,7 +30,12 @@ import com.tenio.configuration.constant.LogicEvent;
 import com.tenio.event.IEvent;
 
 /**
+ * This class for handling events and these subscribers.
+ * 
+ * @param <T> the template
+ * 
  * @author kong
+ * 
  */
 public final class LEventHandler<T> {
 
@@ -43,8 +48,8 @@ public final class LEventHandler<T> {
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  @see {@link LogicEvent}
-	 * @param event @see {@link IEvent}
+	 * @param type  see {@link LogicEvent}
+	 * @param event see {@link IEvent}
 	 */
 	public void subscribe(final LogicEvent type, final IEvent<T> event) {
 		__delegate.put(type, event);
@@ -53,10 +58,10 @@ public final class LEventHandler<T> {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type @see {@link LogicEvent}
+	 * @param type see {@link LogicEvent}
 	 * @param args a list parameters of this event
-	 * @return Returns the event result (the response of its subscribers) @see
-	 *         {@link Object} or <code>null</code>
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
 	 */
 	public Object emit(final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (__delegate.containsKey(type)) {

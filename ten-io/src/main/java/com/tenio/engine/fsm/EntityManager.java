@@ -46,7 +46,7 @@ public final class EntityManager extends AbstractLogger {
 	/**
 	 * Register an entity to this management
 	 * 
-	 * @param entity the desired entity @see {@link AbstractEntity}
+	 * @param entity the desired entity, see {@link AbstractEntity}
 	 */
 	public void register(AbstractEntity entity) {
 		try {
@@ -86,7 +86,9 @@ public final class EntityManager extends AbstractLogger {
 	}
 
 	/**
-	 * @return Returns the list of entities in this manager
+	 * Retrieves the list of entities
+	 * 
+	 * @return the list of entities in this manager
 	 */
 	public Map<String, AbstractEntity> gets() {
 		return __entities;
