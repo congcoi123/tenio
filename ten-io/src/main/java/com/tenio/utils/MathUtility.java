@@ -43,6 +43,8 @@ public final class MathUtility {
 	public static final float EPSILON_FLOAT = Float.MIN_NORMAL;
 
 	/**
+	 * @param <T> the number template
+	 * @param val the number value
 	 * @return <b>true</b> if the value is a <b>NaN</b>
 	 */
 	public static <T> boolean isNaN(T val) {
@@ -69,8 +71,9 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @param a a value
-	 * @param b b value
+	 * @param <T> comparable template
+	 * @param a   a value
+	 * @param b   b value
 	 * @return the maximum of two values
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -82,8 +85,9 @@ public final class MathUtility {
 	}
 
 	/**
-	 * @param a a value
-	 * @param b b value
+	 * @param <T> comparable template
+	 * @param a   a value
+	 * @param b   b value
 	 * @return the minimum of two values
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -186,9 +190,7 @@ public final class MathUtility {
 		return (mean + y1 * standardDeviation);
 	}
 
-	/**
-	 * Clamps the first argument between the second two
-	 */
+	// Clamps the first argument between the second two
 	public static <T extends Number> T clamp(final T arg, final T minVal, final T maxVal) {
 		if (arg.doubleValue() < minVal.doubleValue()) {
 			return minVal;

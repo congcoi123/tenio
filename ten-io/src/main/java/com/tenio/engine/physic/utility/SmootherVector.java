@@ -27,13 +27,8 @@ public class SmootherVector<T extends Vector2> {
 	 */
 	private T __zeroValue;
 
-	/**
-	 * To instantiate a Smoother pass it the number of samples you want to use in
-	 * the smoothing, and an example of a 'zero' type
-	 * 
-	 * @param SampleSize
-	 * @param ZeroValue
-	 */
+	// To instantiate a Smoother pass it the number of samples you want to use in
+	// the smoothing, and an example of a 'zero' type
 	public SmootherVector(int SampleSize, T ZeroValue) {
 		__histories = new ArrayList<T>(SampleSize);
 		for (int i = 0; i < SampleSize; i++)
@@ -46,7 +41,7 @@ public class SmootherVector<T extends Vector2> {
 	 * Each time you want to get a new average, feed it the most recent value and
 	 * this method will return an average over the last SampleSize updates
 	 * 
-	 * @param mostRecentValue
+	 * @param mostRecentValue the most recent value
 	 * @return an average over the last SampleSize updates
 	 */
 	public T update(T mostRecentValue) {

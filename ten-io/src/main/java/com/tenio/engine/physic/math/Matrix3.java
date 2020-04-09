@@ -236,8 +236,8 @@ public final class Matrix3 {
 	/**
 	 * Create a rotation matrix from a 2D vector
 	 * 
-	 * @param forward
-	 * @param side
+	 * @param forward forward vector
+	 * @param side side vector
 	 */
 	public void rotate(Vector2 forward, Vector2 side) {
 		/*

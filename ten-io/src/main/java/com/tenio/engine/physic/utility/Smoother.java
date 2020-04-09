@@ -27,10 +27,8 @@ public class Smoother<T extends Number> {
 	 */
 	private T __zeroValue;
 
-	/**
-	 * To instantiate a Smoother pass it the number of samples you want to use in
-	 * the smoothing, and an example of a 'zero' type
-	 */
+	// To instantiate a Smoother pass it the number of samples you want to use in
+	// the smoothing, and an example of a 'zero' type
 	public Smoother(int sampleSize, T zeroValue) {
 		__histories = new ArrayList<T>(sampleSize);
 		for (int i = 0; i < sampleSize; i++)
@@ -43,7 +41,7 @@ public class Smoother<T extends Number> {
 	 * Each time you want to get a new average, feed it the most recent value and
 	 * this method will return an average over the last SampleSize updates
 	 * 
-	 * @param mostRecentValue
+	 * @param mostRecentValue the most recent value
 	 * @return an average over the last SampleSize updates
 	 */
 	//

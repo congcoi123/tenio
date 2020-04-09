@@ -201,6 +201,8 @@ public abstract class MoveableEntity extends BaseGameEntity {
 	 * vectors by an amount not greater than m_dMaxTurnRate until it directly faces
 	 * the target.
 	 *
+	 * @param target the new target vector
+	 * 
 	 * @return <b>true</b> when the heading is facing in the desired direction
 	 */
 	public boolean isRotatedHeadingToFacePosition(Vector2 target) {

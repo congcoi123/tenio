@@ -45,6 +45,8 @@ class Cell<E extends Object> {
  * cells, the Update method should be called each update-cycle to synchronize
  * the entity and the cell space it occupies
  * 
+ * @param <E> the game entity template
+ * 
  * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
@@ -135,7 +137,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * Used to add the entities to the data structure adds entities to the class by
 	 * allocating them to the appropriate cell
 	 * 
-	 * @param an entity
+	 * @param entity an entity
 	 */
 	public void addEntity(E entity) {
 		int idx = getIndexByPosition(entity.getPosition());
@@ -177,7 +179,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * through the vector.
 	 * 
 	 * @param targetPos   see {@link Vector2}
-	 * @param queryRadius
+	 * @param queryRadius radius value
 	 */
 	public void calculateNeighbors(Vector2 targetPos, float queryRadius) {
 		__neighbors.clear();

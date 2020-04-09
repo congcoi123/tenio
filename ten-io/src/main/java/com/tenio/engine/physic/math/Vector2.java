@@ -98,8 +98,8 @@ public class Vector2 {
 	 * <h3>Normalize a 2D Vector</h3> <br>
 	 * Detail <a href=
 	 * "https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-vectors/a/vector-magnitude-normalization#targetText=To%20normalize%20a%20vector%2C%20therefore,is%20called%20a%20unit%20vector">normalize</a>.
-	 * Vector and how to use <a href="@link
-	 * https://www.stdio.vn/articles/vector-va-ung-dung-cua-chung-45">vector</a>
+	 * Vector and how to use <a href=
+	 * "https://www.stdio.vn/articles/vector-va-ung-dung-cua-chung-45">vector</a>
 	 * <br>
 	 * <p>
 	 * Normalizing refers to the process of making something “standard” or, well,
@@ -124,7 +124,6 @@ public class Vector2 {
 
 	/**
 	 * <h3>Calculates the dot product</h3> <br>
-	 * <ul>
 	 * Since the only way a negative number can be introduced to this equation is
 	 * the cosine function, the result of the dot product is negative if and only if
 	 * the vectors point in a direction greater than pi/2 radians (90 degrees) apart
@@ -134,9 +133,7 @@ public class Vector2 {
 	 * <i>+ If the dot product is zero the two vectors are orthogonal
 	 * (perpendicular)</i> <br>
 	 * <i>+ If the vectors are unit length and the result of the dot product is 1,
-	 * the vectors are equal</i>
-	 * </ul>
-	 * <br>
+	 * the vectors are equal</i> <br>
 	 * 
 	 * How to use <a href=
 	 * "https://hackernoon.com/applications-of-the-vector-dot-product-for-game-programming-12443ac91f16#targetText=Typically%20you'll%20see%20the,angle%20between%20the%20two%20vectors">dot
@@ -174,9 +171,9 @@ public class Vector2 {
 	 * <br>
 	 * 
 	 * @param vector see {@link Vector2}
-	 * @returns positive if v2 is clockwise of this vector, negative if
-	 *          anti-clockwise (assuming the Y axis is POINTING DOWN, X axis to
-	 *          RIGHT in Graphic System)
+	 * @return positive if v2 is clockwise of this vector, negative if
+	 *         anti-clockwise (assuming the Y axis is POINTING DOWN, X axis to RIGHT
+	 *         in Graphic System)
 	 */
 	public int getSignValue(Vector2 vector) {
 		if (y * vector.x > x * vector.y) {
@@ -203,7 +200,7 @@ public class Vector2 {
 	 * Adjusts x and y so that the length of the vector does not exceed max
 	 * truncates a vector so that its length does not exceed max
 	 * 
-	 * @param max
+	 * @param max the max value
 	 * @return a new truncated vector, see {@link Vector2}
 	 */
 	public Vector2 truncate(float max) {

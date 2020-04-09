@@ -61,16 +61,7 @@ public final class Path implements IRender {
 		__looped = false;
 	}
 
-	/**
-	 * This constructor for creating a path with initial random way-points
-	 * 
-	 * @param numWaypoints
-	 * @param minX
-	 * @param minY
-	 * @param maxX
-	 * @param maxY
-	 * @param looped
-	 */
+	// This constructor for creating a path with initial random way-points
 	public Path(int numWaypoints, float minX, float minY, float maxX, float maxY, boolean looped) {
 		this();
 		__looped = looped;
@@ -110,17 +101,8 @@ public final class Path implements IRender {
 		}
 	}
 
-	/**
-	 * Creates a random path which is bound by rectangle described by the <b>min or
-	 * max</b> values
-	 * 
-	 * @param numWaypoints
-	 * @param minX
-	 * @param minY
-	 * @param maxX
-	 * @param maxY
-	 * @return the list of vectors, see {@link Vector2}
-	 */
+	// Creates a random path which is bound by rectangle described by the <b>min or
+	// max</b> values
 	public List<Vector2> createRandomPath(int numWaypoints, float minX, float minY, float maxX, float maxY) {
 		__wayPoints.clear();
 
@@ -159,7 +141,7 @@ public final class Path implements IRender {
 	 * Adds a way-point to the end of the path methods for setting the path with
 	 * either another path or a list of vectors
 	 * 
-	 * @param wayPoints
+	 * @param wayPoints list of way-points
 	 */
 	public void setWayPoints(List<Vector2> wayPoints) {
 		__wayPoints = wayPoints;

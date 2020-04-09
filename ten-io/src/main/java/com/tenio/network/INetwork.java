@@ -41,8 +41,8 @@ public interface INetwork {
 	 * Start a new network for communication
 	 * 
 	 * @param configuration your own configuration
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws IOException          the exception
+	 * @throws InterruptedException the exception
 	 */
 	void start(BaseConfiguration configuration) throws IOException, InterruptedException;
 
