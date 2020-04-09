@@ -44,7 +44,7 @@ public final class MessageDispatcher {
 	/**
 	 * A Set is used as the container for the delayed messages because of the
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
-	 * by their dispatch time. @see {@link Telegram}
+	 * by their dispatch time. See {@link Telegram}
 	 */
 	private final TreeSet<Telegram> __telegrams;
 	/**
@@ -102,9 +102,9 @@ public final class MessageDispatcher {
 	/**
 	 * This method is called each time through the main game loop.
 	 * 
-	 * @param delta the time between consecutive frames
+	 * @param deltaTime the time between consecutive frames
 	 */
-	public void update(double delta) {
+	public void update(float deltaTime) {
 
 		// get current time
 		double currentTime = TimeUtility.currentTimeSeconds();
@@ -133,8 +133,8 @@ public final class MessageDispatcher {
 	 * This method calls the message handling member function of the receiving
 	 * entity, with the newly created telegram
 	 * 
-	 * @param receiver the receiver @see {@link AbstractEntity}
-	 * @param msg      the message content @see {@link Telegram}
+	 * @param receiver the receiver, see {@link AbstractEntity}
+	 * @param msg      the message content, see {@link Telegram}
 	 */
 	private void __discharge(AbstractEntity receiver, Telegram msg) {
 		if (!receiver.handleMessage(msg)) {

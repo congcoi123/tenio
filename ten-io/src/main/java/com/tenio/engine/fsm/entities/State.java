@@ -30,6 +30,8 @@ import com.tenio.engine.fsm.MessageDispatcher;
  * "https://en.wikipedia.org/wiki/Finite-state_machine#State/Event_table">State</a>
  * for more details
  * 
+ * @param <T> the entity template
+ * 
  * @author kong
  * 
  */
@@ -57,12 +59,13 @@ public abstract class State<T> {
 	public abstract void exit(T entity);
 
 	/**
-	 * This executes if the agent receives a message from the message
-	 * dispatcher @see {@link MessageDispatcher}
+	 * This executes if the agent receives a message from the message dispatcher,
+	 * see {@link MessageDispatcher}
 	 * 
 	 * @param entity the current entity
 	 * @param msg    the message that sent to this current entity
-	 * @return Returns <code>true</code> if the message was sent successful
+	 * @return <b>true</b> if the message was sent successful, <b>false</b>
+	 *         otherwise
 	 */
 	public abstract boolean onMessage(T entity, Telegram msg);
 

@@ -53,7 +53,7 @@ public abstract class AbstractEntity extends AbstractLogger {
 	public AbstractEntity(String id) {
 		setId(id);
 	}
-	
+
 	/**
 	 * Create own entity. It can be caused a duplicate creating.
 	 * 
@@ -64,7 +64,9 @@ public abstract class AbstractEntity extends AbstractLogger {
 	}
 
 	/**
-	 * @return Returns its id
+	 * Retrieves the entity id
+	 * 
+	 * @return entity id
 	 */
 	public String getId() {
 		return __id;
@@ -73,16 +75,17 @@ public abstract class AbstractEntity extends AbstractLogger {
 	/**
 	 * All entities must implement an update function
 	 * 
-	 * @param delta the time between two frames
+	 * @param deltaTime the time between two frames
 	 */
-	public abstract void update(float delta);
+	public abstract void update(float deltaTime);
 
 	/**
 	 * All entities can communicate using messages. They are sent by using the
 	 * {@link MessageDispatcher} class
 	 * 
-	 * @param msg @see {@link Telegram}
-	 * @return Returns <code>true</code> if the message was sent successful
+	 * @param msg see {@link Telegram}
+	 * @return <b>true</b> if the message was sent successful, <b>false</b>
+	 *         otherwise
 	 */
 	public abstract boolean handleMessage(final Telegram msg);
 
