@@ -78,14 +78,15 @@ public final class Path implements IRender {
 	}
 
 	/**
-	 * @return Returns the current way-point @see {@link Vector2}
+	 * @return the current way-point, see {@link Vector2}
 	 */
 	public Vector2 getCurrentWayPoint() {
 		return __currWayPoint;
 	}
 
 	/**
-	 * @return Returns <code>true</code> if the end of the list has been reached
+	 * @return <b>true</b> if the end of the list has been reached, <b>false</b>
+	 *         otherwise
 	 */
 	public boolean isEndOfWayPoints() {
 		return !(__currWayPoints.hasNext());
@@ -110,15 +111,15 @@ public final class Path implements IRender {
 	}
 
 	/**
-	 * Creates a random path which is bound by rectangle described by the min/max
-	 * values
+	 * Creates a random path which is bound by rectangle described by the <b>min or
+	 * max</b> values
 	 * 
 	 * @param numWaypoints
 	 * @param minX
 	 * @param minY
 	 * @param maxX
 	 * @param maxY
-	 * @return Returns the list of vectors @see {@link Vector2}
+	 * @return the list of vectors, see {@link Vector2}
 	 */
 	public List<Vector2> createRandomPath(int numWaypoints, float minX, float minY, float maxX, float maxY) {
 		__wayPoints.clear();

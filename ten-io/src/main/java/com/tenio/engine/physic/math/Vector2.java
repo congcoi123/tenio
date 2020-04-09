@@ -26,7 +26,7 @@ package com.tenio.engine.physic.math;
 import com.tenio.utils.MathUtility;
 
 /**
- * A 2D Vector. Allows chaining methods by returning a reference to itself
+ * A 2D Vector. Allows chaining methods by returning a reference to itself.
  * 
  * @author kong
  *
@@ -81,14 +81,14 @@ public class Vector2 {
 	}
 
 	/**
-	 * @return Returns the length of a 2D vector
+	 * @return the length of a 2D vector
 	 */
 	public float getLength() {
 		return (float) Math.sqrt(getLengthSqr());
 	}
 
 	/**
-	 * @return Returns the squared length of the vector (thereby avoiding the sqrt)
+	 * @return the squared length of the vector (thereby avoiding the sqrt)
 	 */
 	public float getLengthSqr() {
 		return (x * x + y * y);
@@ -109,7 +109,7 @@ public class Vector2 {
 	 * its length to 1, turning it into what is called a unit vector.
 	 * </p>
 	 * 
-	 * @return Returns a new normalized vector @see {@link Vector2}
+	 * @return a new normalized vector, see {@link Vector2}
 	 */
 	public Vector2 normalize() {
 		float length = getLength();
@@ -145,8 +145,8 @@ public class Vector2 {
 	 * product</a> <br>
 	 * <br>
 	 * 
-	 * @param vector @see {@link Vector2}
-	 * @return Returns dot product value
+	 * @param vector see {@link Vector2}
+	 * @return dot product value
 	 */
 	public float getDotProductValue(Vector2 vector) {
 		return x * vector.x + y * vector.y;
@@ -173,8 +173,8 @@ public class Vector2 {
 	 * </p>
 	 * <br>
 	 * 
-	 * @param vector @see {@link Vector2}
-	 * @returns Returns positive if v2 is clockwise of this vector, negative if
+	 * @param vector see {@link Vector2}
+	 * @returns positive if v2 is clockwise of this vector, negative if
 	 *          anti-clockwise (assuming the Y axis is POINTING DOWN, X axis to
 	 *          RIGHT in Graphic System)
 	 */
@@ -187,10 +187,8 @@ public class Vector2 {
 	}
 
 	/**
-	 * @return Returns the vector @see {@link Vector2} that is perpendicular to this
-	 *         one. <br>
-	 *         At an angle of 90° to a given line, plane, or surface or to the
-	 *         ground.
+	 * @return the vector ({@link Vector2}) that is perpendicular to this one. At an
+	 *         angle of 90° to a given line, plane, or surface or to the ground.
 	 */
 	public Vector2 perpendicular() {
 		// swap
@@ -202,11 +200,11 @@ public class Vector2 {
 	}
 
 	/**
-	 * Adjusts x and y so that the length of the vector does not exceed max <br>
+	 * Adjusts x and y so that the length of the vector does not exceed max
 	 * truncates a vector so that its length does not exceed max
 	 * 
 	 * @param max
-	 * @return Returns a new truncated vector @see {@link Vector2}
+	 * @return a new truncated vector, see {@link Vector2}
 	 */
 	public Vector2 truncate(float max) {
 		if (getLength() > max) {
@@ -219,9 +217,8 @@ public class Vector2 {
 	/**
 	 * Calculates the Euclidean distance between two vectors
 	 * 
-	 * @param vector @see {@link Vector2}
-	 * @return Returns the distance between this vector and the one passed as a
-	 *         parameter
+	 * @param vector see {@link Vector2}
+	 * @return the distance between this vector and the one passed as a parameter
 	 */
 	public float getDistanceValue(Vector2 vector) {
 		return (float) Math.sqrt(getDistanceSqrValue(vector));
@@ -231,8 +228,8 @@ public class Vector2 {
 	 * Squared version of distance: Calculates the Euclidean distance squared
 	 * between two vectors
 	 * 
-	 * @param vector @see {@link Vector2}
-	 * @return Returns the distance sqr between this vector and the one passed as a
+	 * @param vector see {@link Vector2}
+	 * @return the distance sqr between this vector and the one passed as a
 	 *         parameter
 	 */
 	public float getDistanceSqrValue(Vector2 vector) {
@@ -243,7 +240,7 @@ public class Vector2 {
 	}
 
 	/**
-	 * @return Return the new vector that is the reverse of this vector @see
+	 * @return the new vector that is the reverse of this vector, see
 	 *         {@link Vector2}
 	 */
 	public Vector2 reverse() {

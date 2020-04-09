@@ -47,7 +47,7 @@ public class SmootherVector<T extends Vector2> {
 	 * this method will return an average over the last SampleSize updates
 	 * 
 	 * @param mostRecentValue
-	 * @return Returns an average over the last SampleSize updates
+	 * @return an average over the last SampleSize updates
 	 */
 	public T update(T mostRecentValue) {
 		// overwrite the oldest value with the newest

@@ -28,7 +28,7 @@ import com.tenio.engine.physic.math.Vector2;
 
 /**
  * A base class defining an entity that moves. The entity has a local coordinate
- * system {root(0, 0)} and members for defining its mass and velocity.
+ * system <b>root(0, 0)</b> and members for defining its mass and velocity.
  * 
  * @author kong
  *
@@ -201,8 +201,7 @@ public abstract class MoveableEntity extends BaseGameEntity {
 	 * vectors by an amount not greater than m_dMaxTurnRate until it directly faces
 	 * the target.
 	 *
-	 * @return Return <code>true</code> when the heading is facing in the desired
-	 *         direction
+	 * @return <b>true</b> when the heading is facing in the desired direction
 	 */
 	public boolean isRotatedHeadingToFacePosition(Vector2 target) {
 		// get direction between 2 vectors

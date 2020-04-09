@@ -123,7 +123,7 @@ public final class Matrix3 {
 	/**
 	 * Multiply two matrices together by rows
 	 * 
-	 * @param matrix @see {@link Matrix}
+	 * @param matrix see {@link Matrix}
 	 */
 	private void __mul(final Matrix matrix) {
 		// first
@@ -147,7 +147,7 @@ public final class Matrix3 {
 	/**
 	 * Applies a 2D transformation matrix to a list of Vector2Ds
 	 * 
-	 * @param points @see {@link Vector2}
+	 * @param points see {@link Vector2}
 	 */
 	public void transformVector2Ds(List<Vector2> points) {
 		points.forEach(vector -> {
@@ -161,7 +161,7 @@ public final class Matrix3 {
 	/**
 	 * Applies a 2D transformation matrix to a single Vector2D
 	 * 
-	 * @param point @see {@link Vector2}
+	 * @param point see {@link Vector2}
 	 */
 	public void transformVector2D(Vector2 point) {
 		float tempX = (__matrix._11 * point.x) + (__matrix._21 * point.y) + (__matrix._31);
@@ -174,8 +174,8 @@ public final class Matrix3 {
 	/**
 	 * Create a transformation matrix
 	 * 
-	 * @param x
-	 * @param y
+	 * @param x new x value
+	 * @param y new y value
 	 */
 	public void translate(float x, float y) {
 		/*
@@ -194,8 +194,8 @@ public final class Matrix3 {
 	/**
 	 * Create a scale matrix
 	 * 
-	 * @param xScale
-	 * @param yScale
+	 * @param xScale scale horizon
+	 * @param yScale scale vertical
 	 */
 	public void scale(float xScale, float yScale) {
 		/*
@@ -214,7 +214,7 @@ public final class Matrix3 {
 	/**
 	 * Create a rotation matrix
 	 * 
-	 * @param rotation
+	 * @param rotation rotation value
 	 */
 	public void rotate(float rotation) {
 		float sin = (float) Math.sin(rotation);

@@ -19,11 +19,11 @@ public class Smoother<T extends Number> {
 	/**
 	 * This holds the history
 	 */
-	private  final List<T> __histories;
+	private final List<T> __histories;
 	private int __nextUpdateSlot;
 	/**
 	 * an example of the 'zero' value of the type to be smoothed. This would be
-	 * something like Vector2D(0,0) @see {@link Vector2}
+	 * something like Vector2D(0,0), see {@link Vector2}
 	 */
 	private T __zeroValue;
 
@@ -44,7 +44,7 @@ public class Smoother<T extends Number> {
 	 * this method will return an average over the last SampleSize updates
 	 * 
 	 * @param mostRecentValue
-	 * @return Returns an average over the last SampleSize updates
+	 * @return an average over the last SampleSize updates
 	 */
 	//
 	@SuppressWarnings("unchecked")

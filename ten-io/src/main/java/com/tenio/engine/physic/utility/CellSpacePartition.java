@@ -116,7 +116,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * calculates an index into its appropriate cell
 	 * 
 	 * @param position the desired position
-	 * @return Returns the index
+	 * @return the index
 	 */
 	private int getIndexByPosition(Vector2 position) {
 		int idx = (int) (__numCellsX * position.x / __spaceWidth)
@@ -148,7 +148,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * updated accordingly
 	 * 
 	 * @param entity      an entity
-	 * @param oldPosition @see {@link Vector2}
+	 * @param oldPosition see {@link Vector2}
 	 */
 	public void updateEntity(E entity, Vector2 oldPosition) {
 		// if the index for the old position and the new position are not equal then
@@ -176,7 +176,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	 * have called this method use the begin, next and end methods to iterate
 	 * through the vector.
 	 * 
-	 * @param targetPos   @see {@link Vector2}
+	 * @param targetPos   see {@link Vector2}
 	 * @param queryRadius
 	 */
 	public void calculateNeighbors(Vector2 targetPos, float queryRadius) {
@@ -213,7 +213,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	}
 
 	/**
-	 * @return Returns a reference to the entity at the front of the neighbor vector
+	 * @return a reference to the entity at the front of the neighbor vector
 	 */
 	public E getFrontOfNeighbor() {
 		__currNeighbor = __neighbors.listIterator();
@@ -224,7 +224,7 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	}
 
 	/**
-	 * @return Returns the next entity in the neighbor vector
+	 * @return the next entity in the neighbor vector
 	 */
 	public E getNextOfNeighbor() {
 		if (__currNeighbor == null || !__currNeighbor.hasNext()) {
@@ -234,8 +234,8 @@ public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
 	}
 
 	/**
-	 * @return Returns <code>true</code> if the end of the vector is found (a zero
-	 *         value marks the end)
+	 * @return <b>true</b> if the end of the vector is found (a zero value marks the
+	 *         end)
 	 */
 	public boolean isEndOfNeighbors() {
 		return (__currNeighbor == null || (!__currNeighbor.hasNext()));
