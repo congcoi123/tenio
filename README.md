@@ -1,4 +1,6 @@
 # TenIO
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg)](https://mvnrepository.com/artifact/io.github.congcoi123/tenio)
+[![Javadocs](https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg)](https://javadoc.io/doc/io.github.congcoi123/tenio)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/congcoi123/tenio.svg?branch=master)](https://travis-ci.org/github/congcoi123/tenio)
 
@@ -40,7 +42,15 @@ The TenIO project is currently available under the [MIT](LICENSE) License.
 Please check out the [changelog](CHANGELOG.md) for more details.
 
 ## Installation
-The maven repository will come soon, now you can get the sources:
+Maven
+```xml
+<dependency>
+    <groupId>io.github.congcoi123</groupId>
+    <artifactId>tenio</artifactId>
+    <version><!--see above--></version>
+</dependency>
+```
+Or you can get the sources
 ```
 git clone https://github.com/congcoi123/tenio.git
 ```
