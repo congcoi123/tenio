@@ -21,9 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1;
+package com.tenio.examples.example6;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.tenio.entities.element.TObject;
 import com.tenio.examples.client.ISocketListener;
@@ -34,15 +36,16 @@ import com.tenio.examples.client.TCP;
  * 1. Create connections.<br>
  * 2. Send a login request.<br>
  * 3. Receive messages via TCP connection from the server.<br>
- * 4. Be logout by server. <br>
- * <br>
- * <b>[NOTE]</b> The client test is also available on <b>C++</b> and
- * <b>JavaScript</b> language, please see the <b>README.md</b> for more details
+ * 4. Be logout by server.
+ * 
+ * [NOTE] The client test is also available on <code>C++</code> and
+ * <code>JavaScript</code> language, please see the <code>README.md</code> for
+ * more details
  * 
  * @author kong
  *
  */
-public final class TestClientLogin implements ISocketListener {
+public final class TestClientStress implements ISocketListener {
 
 	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
 	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
@@ -55,27 +58,39 @@ public final class TestClientLogin implements ISocketListener {
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		new TestClientLogin();
+		new TestClientStress();
 	}
 
-	private TCP __tcp;
+	/**
+	 * List of TCP clients
+	 */
+	private Map<String, TCP> __tcps;
 
-	public TestClientLogin() {
-		// create a new TCP object and listen for this port
-		__tcp = new TCP(8032);
-		__tcp.receive(this);
+	public TestClientStress() {
+		__tcps = new HashMap<String, TCP>();
+		// create a list of TCP objects and listen for this port
+		for (int i = 0; i < 1000; i++) {
+			var name = __generateRandomString(5);
+			var tcp = new TCP(8032);
+			tcp.receive(this);
+			__tcps.put(name, tcp);
 
-		// send a login request
-		var message = TObject.newInstance();
-		message.put("u", __generateRandomString(5));
-		__tcp.send(message);
-		System.err.println("Login Request -> " + message);
+			// send a login request
+			var message = TObject.newInstance();
+			message.put("u", name);
+			tcp.send(message);
+			System.err.println("Login Request -> " + message);
+		}
 
 	}
 
 	@Override
 	public void onReceivedTCP(TObject message) {
 		System.out.println("[RECV FROM SERVER TCP] -> " + message);
+
+		var msg = TObject.newInstance();
+		msg.put("m", __generateRandomString(5));
+		__tcps.get(message.get("p")).send(msg);
 	}
 
 	private String __generateRandomString(int length) {

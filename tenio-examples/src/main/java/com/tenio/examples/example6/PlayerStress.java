@@ -21,44 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.examples.example6;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.EventManager;
-import com.tenio.logger.AbstractLogger;
+import com.tenio.annotation.Entity;
+import com.tenio.entities.AbstractPlayer;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link BaseConfiguration}
+ * The player in server
  * 
  * @author kong
- * 
+ *
  */
-public final class CCUScanTask extends AbstractLogger {
+@Entity
+public final class PlayerStress extends AbstractPlayer {
 
-	/**
-	 * The period time for retrieving CCU
-	 */
-	private final int __ccuScanPeriod;
-
-	private final PlayerApi __playerApi;
-
-	public CCUScanTask(PlayerApi playerApi, int ccuScanPeriod) {
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
-	}
-
-	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			EventManager.getEvent().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+	public PlayerStress(String name) {
+		super(name);
 	}
 
 }

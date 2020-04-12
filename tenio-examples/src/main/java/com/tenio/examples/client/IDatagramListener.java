@@ -37,7 +37,7 @@ public interface IDatagramListener {
 	/**
 	 * Listen for a new message
 	 * 
-	 * @param message the received message @see {@link TObject}
+	 * @param message the received message, see {@link TObject}
 	 */
 	void onReceivedUDP(TObject message);
 

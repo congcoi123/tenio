@@ -65,4 +65,19 @@ public final class Constants {
 	 */
 	public static final int ADD_ELEMENT_POOL = 10;
 
+	/**
+	 * A unique key for the CCU scan schedule.
+	 */
+	public static final String KEY_SCHEDULE_CCU_SCAN = "t.schedule.ccu.scan";
+
+	/**
+	 * A unique key for the Empty Room scan schedule.
+	 */
+	public static final String KEY_SCHEDULE_EMPTY_ROOM_SCAN = "t.schedule.empty.room.scan";
+
+	/**
+	 * A unique key for the Time Out scan schedule.
+	 */
+	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
+
 }

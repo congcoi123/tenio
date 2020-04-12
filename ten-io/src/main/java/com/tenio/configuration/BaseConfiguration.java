@@ -27,12 +27,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.xpath.XPathException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.tenio.entities.element.TObject;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.utils.XMLUtility;
 
@@ -208,7 +207,15 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			}
 
 			// Extension
-			_extend(attrNode);
+			var attrExtensionProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
+			var extProperties = TObject.newInstance();
+			for (int j = 0; j < attrExtensionProperties.getLength(); j++) {
+				var pDataNode = attrExtensionProperties.item(j);
+				var key = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+				var value = pDataNode.getTextContent();
+				extProperties.put(key, value);
+			}
+			_extend(extProperties);
 
 		}
 
@@ -281,9 +288,9 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * Your extension part can be handled here. Check the examples for more details
 	 * about how to use it.
 	 * 
-	 * @param attrNode one node in the XML structure
-	 * @throws XPathException some exceptions when reading node values
+	 * @param extProperties the extension data in key-value format (see
+	 *                      {@link TObject})
 	 */
-	protected abstract void _extend(Node attrNode) throws XPathException;
+	protected abstract void _extend(TObject extProperties);
 
 }

@@ -53,6 +53,11 @@ public interface ITaskManager {
 	void kill(String id);
 
 	/**
+	 * Kill or stop all running tasks.
+	 */
+	void clear();
+
+	/**
 	 * Retrieve the remain time of one task.
 	 * 
 	 * @param id the unique for retrieving the desired task

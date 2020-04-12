@@ -51,13 +51,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 
 	private static final float PERIOD_STEPS_IN_SECONDS = 1.0f;
 	
-	/**
-	 * @see EntityManager
-	 */
 	private final EntityManager __entities;
-	/**
-	 * @see MessageDispatcher
-	 */
 	private final MessageDispatcher __dispatcher;
 
 	/**

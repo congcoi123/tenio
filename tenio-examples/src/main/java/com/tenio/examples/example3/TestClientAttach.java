@@ -52,13 +52,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		new TestClientAttach();
 	}
 
-	/**
-	 * @see TCP
-	 */
 	private final TCP __tcp;
-	/**
-	 * @see UDP
-	 */
 	private final UDP __udp;
 
 	public TestClientAttach() {

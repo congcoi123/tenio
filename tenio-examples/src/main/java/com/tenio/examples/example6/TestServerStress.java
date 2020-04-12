@@ -21,32 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+package com.tenio.examples.example6;
 
 import com.tenio.AbstractApp;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.annotation.EntityProcess;
 import com.tenio.entities.element.TArray;
 import com.tenio.examples.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
+import com.tenio.utils.MathUtility;
 
 /**
- * This class shows how a server handle messages that came from a client
+ * This class shows how a server handle 1000 players and communications
  * 
  * @author kong
  *
  */
-public final class TestServerLogin extends AbstractApp {
+public final class TestServerStress extends AbstractApp {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		var game = new TestServerLogin();
+		var game = new TestServerStress();
 		game.setup();
 	}
 
@@ -78,7 +75,7 @@ public final class TestServerLogin extends AbstractApp {
 				String username = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
 				// is only for testing
-				_playerApi.login(new PlayerLogin(username), connection);
+				_playerApi.login(new PlayerStress(username), connection);
 
 				return null;
 			});
@@ -93,43 +90,37 @@ public final class TestServerLogin extends AbstractApp {
 
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
+				var player = this.<PlayerStress>_getPlayer(args[0]);
+				player.setIgnoreTimeout(true);
 
-				info("PLAYER IN", player.getName());
-				try {
-					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				info("PLAYER_IN_SUCCESS", player.getName());
 
 				// Now you can send messages to the client
-				_taskApi.run(player.getName(), Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-					// Only sent 10 messages
-					if (player.counter >= 10) {
-						_taskApi.kill(player.getName());
-						_playerApi.logOut(player);
-					}
+				// Sending, the data need to be packed
+				var data = _messageApi.getArrayPack();
+				_messageApi.sendToPlayer(player, "p", player.getName(), "d", data.put("H").put("3").put("L").put("O")
+						.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
 
-					player.counter++;
+				return null;
+			});
 
-					// Sending, the data need to be packed
-					var data = _messageApi.getArrayPack();
-					_messageApi.sendToPlayer(player, "c", "message", "d", data.put("H").put("3").put("L").put("O")
-							.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
+			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
+				var player = this.<PlayerStress>_getPlayer(args[0]);
 
-					try {
-						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				var pack = __getSortRandomNumberArray();
+				// Sending, the data need to be packed
+				var data = _messageApi.getArrayPack();
+				for (int i = 0; i < pack.length; i++) {
+					data.put(pack[i]);
+				}
 
-				}, 0, 1, TimeUnit.SECONDS));
+				_messageApi.sendToPlayer(player, "p", player.getName(), "d", data);
 
 				return null;
 			});
 
 			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
+				var player = this.<PlayerStress>_getPlayer(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
 
@@ -137,21 +128,44 @@ public final class TestServerLogin extends AbstractApp {
 			});
 
 			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
+				var player = this.<PlayerStress>_getPlayer(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());
 
 				return null;
 			});
 
-			_on(TEvent.SEND_TO_PLAYER, args -> {
-				var message = _getTObject(args[2]);
+			_on(TEvent.CCU, args -> {
+				var ccu = _getInt(args[0]);
 
-				info("SEND_TO_PLAYER", message.toString());
+				info("CCU", ccu);
 
 				return null;
 			});
 
+		}
+
+		private int[] __getSortRandomNumberArray() {
+			int[] arr = new int[10];
+			for (int i = 0; i < arr.length; i++) {
+				// storing random integers in an array
+				arr[i] = MathUtility.randInt(0, 100);
+			}
+			// bubble sort
+			int n = arr.length;
+			int temp = 0;
+			for (int i = 0; i < n; i++) {
+				for (int j = 1; j < (n - i); j++) {
+					if (arr[j - 1] > arr[j]) {
+						// swap elements
+						temp = arr[j - 1];
+						arr[j - 1] = arr[j];
+						arr[j] = temp;
+					}
+				}
+			}
+
+			return arr;
 		}
 
 	}

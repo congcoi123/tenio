@@ -1,5 +1,8 @@
 # CHANGELOG
 
+#### 1.0.1 2020-04-12 Bug fix release, Update recommended
+- Fixed bug in extension configuration
+
 ## 1.0.0 2020-04-08 Feature release
 Initial release
 - NIO mechanism

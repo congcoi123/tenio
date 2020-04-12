@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.api.RoomApi;
@@ -63,9 +64,9 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 		__rooms = __roomApi.gets();
 	}
 
-	public void run() {
+	public ScheduledFuture<?> run() {
 		info("EMPTY ROOM TASK", "Running ...");
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			__rooms.forEach((key, value) -> {
 				if (value.isEmpty()) {

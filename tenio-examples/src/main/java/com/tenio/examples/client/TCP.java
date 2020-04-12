@@ -45,26 +45,12 @@ import com.tenio.message.codec.MsgPackConverter;
  */
 public final class TCP {
 
-	/**
-	 * @see ISocketListener
-	 */
 	private ISocketListener __listener;
-	/**
-	 * @see Future
-	 */
 	private Future<?> __future;
-	/**
-	 * @see Socket
-	 */
 	private Socket __socket;
-	/**
-	 * @see DataOutputStream
-	 */
 	private DataOutputStream __out;
-	/**
-	 * @see DataInputStream
-	 */
 	private DataInputStream __in;
+
 	/**
 	 * The size of the received packet
 	 */
@@ -93,7 +79,7 @@ public final class TCP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message @see {@link TObject}
+	 * @param message the desired message, see {@link TObject}
 	 */
 	public void send(TObject message) {
 		// convert message object to bytes data
@@ -111,7 +97,7 @@ public final class TCP {
 	/**
 	 * Listen for messages that came from the server
 	 * 
-	 * @param listener @see {@link ISocketListener}
+	 * @param listener, see {@link ISocketListener}
 	 */
 	public void receive(ISocketListener listener) {
 		__listener = listener;

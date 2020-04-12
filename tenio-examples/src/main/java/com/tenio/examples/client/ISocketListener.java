@@ -37,7 +37,7 @@ public interface ISocketListener {
 	/**
 	 * Listen for a new message
 	 * 
-	 * @param message the received message @see {@link TObject}
+	 * @param message the received message, see {@link TObject}
 	 */
 	void onReceivedTCP(TObject message);
 

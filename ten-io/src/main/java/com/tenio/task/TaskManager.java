@@ -81,6 +81,15 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 	}
 
 	@Override
+	public synchronized void clear() {
+		__tasks.forEach((id, task) -> {
+			task.cancel(true);
+			info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		});
+		__tasks.clear();
+	}
+
+	@Override
 	public synchronized int getRemainTime(String id) {
 		var task = __tasks.get(id);
 		if (task != null) {
