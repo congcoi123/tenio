@@ -21,44 +21,53 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.configuration;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.EventManager;
-import com.tenio.logger.AbstractLogger;
+import com.tenio.entities.element.TObject;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link BaseConfiguration}
+ * Create your own configurations
+ * 
+ * @see BaseConfiguration
  * 
  * @author kong
- * 
+ *
  */
-public final class CCUScanTask extends AbstractLogger {
+public final class Configuration extends BaseConfiguration {
 
-	/**
-	 * The period time for retrieving CCU
-	 */
-	private final int __ccuScanPeriod;
+	public static final String CUSTOM_VALUE_1 = "c_customvalue_1";
+	public static final String CUSTOM_VALUE_2 = "c_customvalue_2";
+	public static final String CUSTOM_VALUE_3 = "c_customvalue_3";
+	public static final String CUSTOM_VALUE_4 = "c_customvalue_4";
 
-	private final PlayerApi __playerApi;
-
-	public CCUScanTask(PlayerApi playerApi, int ccuScanPeriod) {
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
+	public Configuration(final String file) {
+		super(file);
 	}
 
-	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			EventManager.getEvent().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+	@Override
+	protected void _extend(TObject extProperties) {
+		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
+			switch (entry.getKey()) {
+			case "customValue1":
+				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
+				break;
+
+			case "customValue2":
+				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
+				break;
+
+			case "customValue3":
+				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
+				break;
+
+			case "customValue4":
+				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
+				break;
+			}
+		}
 	}
 
 }

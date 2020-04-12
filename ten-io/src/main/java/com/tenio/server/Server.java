@@ -31,6 +31,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
@@ -164,6 +165,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__heartBeatManager.clear();
 		__roomManager.clear();
 		__playerManager.clear();
+		__taskManager.clear();
 		EventManager.clear();
 	}
 
@@ -215,11 +217,14 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
-		(new TimeOutScanTask(__playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
-				configuration.getInt(BaseConfiguration.IDLE_WRITER),
-				configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run();
-		(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run();
-		(new CCUScanTask(__playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run();
+		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
+				(new TimeOutScanTask(__playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
+						configuration.getInt(BaseConfiguration.IDLE_WRITER),
+						configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run());
+		__taskManager.create(Constants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
+		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
+				(new CCUScanTask(__playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
 	}
 
 	@Override

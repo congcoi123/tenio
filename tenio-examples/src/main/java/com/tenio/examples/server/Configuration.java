@@ -23,12 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.examples.server;
 
-import javax.xml.xpath.XPathExpressionException;
-
-import org.w3c.dom.Node;
+import java.util.Map;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.utils.XMLUtility;
+import com.tenio.entities.element.TObject;
 
 /**
  * Create your own configurations
@@ -50,25 +48,23 @@ public final class Configuration extends BaseConfiguration {
 	}
 
 	@Override
-	protected void _extend(Node attrNode) throws XPathExpressionException {
-		var attrConfigurationProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
-		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
-			Node pDataNode = attrConfigurationProperties.item(j);
-			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
+	protected void _extend(TObject extProperties) {
+		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
+			switch (entry.getKey()) {
 			case "customValue1":
-				_put(CUSTOM_VALUE_1, pDataNode.getTextContent());
+				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue2":
-				_put(CUSTOM_VALUE_2, pDataNode.getTextContent());
+				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue3":
-				_put(CUSTOM_VALUE_3, pDataNode.getTextContent());
+				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue4":
-				_put(CUSTOM_VALUE_4, pDataNode.getTextContent());
+				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
 				break;
 			}
 		}
