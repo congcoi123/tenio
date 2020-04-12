@@ -4,6 +4,7 @@
 		<Property name="logdir">/Users/kong/Downloads/logs</Property>
 		<Property name="logfile">tenio-examples</Property>
 		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
+		<!-- Logging level: debug > info > error -->
 		<Property name="target">Console</Property>
 		<Property name="level">info</Property>
 	</Properties>

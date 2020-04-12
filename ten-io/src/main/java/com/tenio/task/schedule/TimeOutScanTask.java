@@ -26,6 +26,7 @@ package com.tenio.task.schedule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.api.PlayerApi;
@@ -73,9 +74,9 @@ public final class TimeOutScanTask extends AbstractLogger {
 		__timeoutScanPeriod = timeoutScanPeriod;
 	}
 
-	public void run() {
+	public ScheduledFuture<?> run() {
 		info("TIME OUT TASK", "Running ...");
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			long currentTime = System.currentTimeMillis();
 
 			for (var player : __playerApi.gets().values()) {

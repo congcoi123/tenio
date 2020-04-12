@@ -21,44 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.configuration;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.EventManager;
-import com.tenio.logger.AbstractLogger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link BaseConfiguration}
- * 
  * @author kong
- * 
  */
-public final class CCUScanTask extends AbstractLogger {
+public final class ConfigurationTest {
 
-	/**
-	 * The period time for retrieving CCU
-	 */
-	private final int __ccuScanPeriod;
+	private Configuration __configuration;
 
-	private final PlayerApi __playerApi;
-
-	public CCUScanTask(PlayerApi playerApi, int ccuScanPeriod) {
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
+	@BeforeEach
+	public void initialize() {
+		__configuration = new Configuration("TenIOConfig.example.xml");
 	}
 
-	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			EventManager.getEvent().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+	@Test
+	public void getConfigurationExtensionShouldReturnTrueValue() {
+		assertAll("getExtensionConfiguration",
+				() -> assertEquals("String", __configuration.getString(Configuration.CUSTOM_VALUE_1)),
+				() -> assertEquals("1", __configuration.getString(Configuration.CUSTOM_VALUE_2)),
+				() -> assertEquals("1.5", __configuration.getString(Configuration.CUSTOM_VALUE_3)),
+				() -> assertEquals("True", __configuration.getString(Configuration.CUSTOM_VALUE_4)));
+	}
+
+	@AfterEach
+	public void tearDown() {
+		// do nothing
 	}
 
 }
