@@ -34,11 +34,10 @@ import com.tenio.examples.client.TCP;
  * 1. Create connections.<br>
  * 2. Send a login request.<br>
  * 3. Receive messages via TCP connection from the server.<br>
- * 4. Be logout by server.
- * 
- * [NOTE] The client test is also available on <code>C++</code> and
- * <code>JavaScript</code> language, please see the <code>README.md</code> for
- * more details
+ * 4. Be logout by server. <br>
+ * <br>
+ * <b>[NOTE]</b> The client test is also available on <b>C++</b> and
+ * <b>JavaScript</b> language, please see the <b>README.md</b> for more details
  * 
  * @author kong
  *
@@ -59,9 +58,6 @@ public final class TestClientLogin implements ISocketListener {
 		new TestClientLogin();
 	}
 
-	/**
-	 * @see TCP
-	 */
 	private TCP __tcp;
 
 	public TestClientLogin() {

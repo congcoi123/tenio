@@ -44,17 +44,8 @@ import com.tenio.message.codec.MsgPackConverter;
  */
 public final class UDP {
 
-	/**
-	 * @see Future
-	 */
 	private Future<?> __future;
-	/**
-	 * @see DatagramSocket
-	 */
 	private DatagramSocket __socket;
-	/**
-	 * @see InetAddress
-	 */
 	private InetAddress __address;
 	/**
 	 * The desired port for listening
@@ -83,7 +74,7 @@ public final class UDP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message @see {@link TObject}
+	 * @param message the desired message, see {@link TObject}
 	 */
 	public void send(TObject message) {
 		var pack = MsgPackConverter.serialize(message);
@@ -98,7 +89,7 @@ public final class UDP {
 	/**
 	 * Listen for messages that came from the server
 	 * 
-	 * @param listener @see {@link IDatagramListener}
+	 * @param listener, see {@link IDatagramListener}
 	 */
 	public void receive(IDatagramListener listener) {
 		var executorService = Executors.newSingleThreadExecutor();

@@ -39,13 +39,7 @@ import com.tenio.examples.example2.state.wife.WifesGlobalState;
  */
 public final class Wife extends BaseEntity {
 
-	/**
-	 * @see FSMComponent
-	 */
 	private FSMComponent<Wife> __state;
-	/**
-	 * @see Location
-	 */
 	private Location __location;
 	/**
 	 * Is she cooking?

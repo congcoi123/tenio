@@ -54,11 +54,11 @@ public final class Miner extends BaseEntity {
 	 */
 	public static final int TIREDNESS_THRESHOLD = 5;
 	/**
-	 * @see FSMComponent
+	 * see FSMComponent
 	 */
 	private FSMComponent<Miner> __state;
 	/**
-	 * @see Location
+	 * see Location
 	 */
 	private Location __location;
 	/**
@@ -66,7 +66,7 @@ public final class Miner extends BaseEntity {
 	 */
 	private int __numberGoldCarried;
 	/**
-	 * The amount of money the miner has in his bank accout
+	 * The amount of money the miner has in his bank account
 	 */
 	private int __numberMoneyInBank;
 	/**

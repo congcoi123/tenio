@@ -32,7 +32,7 @@ import com.tenio.extension.IExtension;
 import com.tenio.utils.MathUtility;
 
 /**
- * This class shows how a server handle messages that came from a client
+ * This class shows how a server handle 1000 players and communications
  * 
  * @author kong
  *

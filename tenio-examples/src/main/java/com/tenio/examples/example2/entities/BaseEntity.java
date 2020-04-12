@@ -34,9 +34,6 @@ import com.tenio.examples.example2.constants.EntityName;
  */
 public abstract class BaseEntity extends AbstractEntity {
 
-	/**
-	 * @see EntityName
-	 */
 	private final EntityName __name;
 	/**
 	 * An extra information

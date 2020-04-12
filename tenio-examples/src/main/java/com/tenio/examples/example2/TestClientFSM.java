@@ -43,9 +43,6 @@ public final class TestClientFSM implements ISocketListener {
 		new TestClientFSM();
 	}
 
-	/**
-	 * @see TCP
-	 */
 	private final TCP __tcp;
 
 	public TestClientFSM() {
