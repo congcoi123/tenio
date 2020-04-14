@@ -57,6 +57,94 @@ git clone https://github.com/congcoi123/tenio.git
 
 ## Examples
 Please start the server before its corresponding client in each example package.
-![Examples](assets/tenio-examples.png)
+
+```txt
+|-- examples
+    |-- client
+    |   |-- IDatagramListener.java
+    |   |-- ISocketListener.java
+    |   |-- TCP.java
+    |   |-- UDP.java
+    |-- example1
+    |   |-- PlayerLogin.java
+    |   |-- TestClientLogin.java
+    |   |-- TestServerLogin.java
+    |-- example2
+    |   |-- LifeCycle.java
+    |   |-- TestClientFSM.java
+    |   |-- TestFSM.java
+    |   |-- TestServerFSM.java
+    |   |-- constants
+    |   |   |-- EntityName.java
+    |   |   |-- Location.java
+    |   |   |-- MessageType.java
+    |   |-- entities
+    |   |   |-- BaseEntity.java
+    |   |   |-- Inspector.java
+    |   |   |-- Miner.java
+    |   |   |-- Wife.java
+    |   |-- state
+    |       |-- miner
+    |       |   |-- EatStew.java
+    |       |   |-- EnterMineAndDigForNugget.java
+    |       |   |-- GoHomeAndSleepTilRested.java
+    |       |   |-- QuenchThirsty.java
+    |       |   |-- VisitBankAndDepositGold.java
+    |       |-- wife
+    |           |-- CookStew.java
+    |           |-- DoHouseWork.java
+    |           |-- VisitBathroom.java
+    |           |-- WifesGlobalState.java
+    |-- example3
+    |   |-- PlayerAttach.java
+    |   |-- TestClientAttach.java
+    |   |-- TestServerAttach.java
+    |-- example4
+    |   |-- TestClientMovement.java
+    |   |-- TestMovement.java
+    |   |-- TestServerMovement.java
+    |   |-- World.java
+    |   |-- behavior
+    |   |   |-- SteeringBehavior.java
+    |   |-- configuration
+    |   |   |-- FileLoaderBase.java
+    |   |   |-- ParamLoader.java
+    |   |   |-- params.ini
+    |   |-- constants
+    |   |   |-- Behavior.java
+    |   |   |-- Constants.java
+    |   |   |-- Deceleration.java
+    |   |   |-- SummingMethod.java
+    |   |-- entities
+    |       |-- Inspector.java
+    |       |-- Obstacle.java
+    |       |-- Vehicle.java
+    |       |-- Wall.java
+    |-- example5
+    |   |-- ECS.java
+    |   |-- TestECS.java
+    |   |-- components
+    |   |   |-- Animation.java
+    |   |   |-- Motion.java
+    |   |   |-- Position.java
+    |   |   |-- View.java
+    |   |-- constants
+    |   |   |-- Constants.java
+    |   |-- context
+    |   |   |-- GameComponents.java
+    |   |   |-- GameContext.java
+    |   |   |-- GameEntity.java
+    |   |-- systems
+    |       |-- InitializeSystem.java
+    |       |-- MoveSystem.java
+    |       |-- RenderSystem.java
+    |       |-- TeardownSystem.java
+    |-- example6
+    |   |-- PlayerStress.java
+    |   |-- TestClientStress.java
+    |   |-- TestServerStress.java
+    |-- server
+        |-- Configuration.java
+```
 
 > Happy coding !
