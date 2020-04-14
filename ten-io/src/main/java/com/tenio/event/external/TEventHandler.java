@@ -21,12 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.logic;
+package com.tenio.event.external;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.IEvent;
 
 /**
@@ -37,41 +39,56 @@ import com.tenio.event.IEvent;
  * @author kong
  * 
  */
-public final class LEventHandler<T> {
+public final class TEventHandler<T> {
 
 	/**
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<LogicEvent, IEvent<T>> __delegate = new HashMap<LogicEvent, IEvent<T>>();
+	private final Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  see {@link LogicEvent}
+	 * @param type  see {@link TEvent}
 	 * @param event see {@link IEvent}
 	 */
-	public void subscribe(final LogicEvent type, final IEvent<T> event) {
-		__delegate.put(type, event);
+	public void subscribe(final TEvent type, final IEvent<T> event) {
+		if (__delegate.containsKey(type)) {
+			__delegate.get(type).add(event);
+		} else {
+			// create a new array of events
+			var events = new ArrayList<IEvent<T>>();
+			// add the first event
+			events.add(event);
+			__delegate.put(type, events);
+		}
 	}
 
 	/**
-	 * Emit an event with its parameters
+	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link LogicEvent}
+	 * @param type see {@link TEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final LogicEvent type, final @SuppressWarnings("unchecked") T... args) {
-		if (__delegate.containsKey(type)) {
-			return __delegate.get(type).emit(args);
+	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
+		if (!__delegate.isEmpty()) {
+			Object obj = null;
+			if (__delegate.containsKey(type)) {
+				for (IEvent<T> event : __delegate.get(type)) {
+					obj = event.emit(args);
+				}
+			}
+			// return the last event's result
+			return obj;
 		}
 		return null;
 	}
 
 	/**
-	 * Clear all events and these handlers
+	 * Clear all events and these handlers.
 	 */
 	public void clear() {
 		if (!__delegate.isEmpty()) {

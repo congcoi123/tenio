@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.event;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
+import com.tenio.event.external.TEventManager;
+import com.tenio.event.internal.LEventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -47,14 +47,14 @@ public final class EventManager extends AbstractLogger {
 	/**
 	 * @return see {@link TEventManager}
 	 */
-	public static TEventManager getEvent() {
+	public static TEventManager getExternal() {
 		return __tEvent;
 	}
 
 	/**
 	 * @return see {@link LEventManager}
 	 */
-	public static LEventManager getLogic() {
+	public static LEventManager getInternal() {
 		return __lEvent;
 	}
 

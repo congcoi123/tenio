@@ -21,9 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.logic;
+package com.tenio.event.internal;
 
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.event.ISubscriber;
 
 /**
@@ -35,27 +35,27 @@ import com.tenio.event.ISubscriber;
 public final class LSubscriber {
 
 	/**
-	 * @see LogicEvent
+	 * @see LEvent
 	 */
-	private final LogicEvent __type;
+	private final LEvent __type;
 	/**
 	 * @see ISubscriber
 	 */
 	private final ISubscriber __sub;
 
-	public static LSubscriber newInstance(final LogicEvent type, final ISubscriber sub) {
+	public static LSubscriber newInstance(final LEvent type, final ISubscriber sub) {
 		return new LSubscriber(type, sub);
 	}
 
-	private LSubscriber(final LogicEvent type, final ISubscriber sub) {
+	private LSubscriber(final LEvent type, final ISubscriber sub) {
 		__type = type;
 		__sub = sub;
 	}
 
 	/**
-	 * @return see {@link LogicEvent}
+	 * @return see {@link LEvent}
 	 */
-	public LogicEvent getType() {
+	public LEvent getType() {
 		return __type;
 	}
 

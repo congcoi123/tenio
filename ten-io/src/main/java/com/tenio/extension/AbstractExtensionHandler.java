@@ -83,7 +83,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @param sub  your own subscriber-class handler
 	 */
 	protected void _on(final TEvent type, final ISubscriber sub) {
-		EventManager.getEvent().on(type, sub);
+		EventManager.getExternal().on(type, sub);
 	}
 
 	/**

@@ -28,7 +28,7 @@ import java.util.Map;
 
 import com.tenio.api.PlayerApi;
 import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
@@ -100,7 +100,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	public void add(final AbstractPlayer player, final Connection connection) {
 		if (player.getName() == null) {
 			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
+			EventManager.getExternal().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_INVALID);
 			var e = new NullPlayerNameException();
 			error("ADD PLAYER CONNECTION", player.getName(), e);
 			throw e;
@@ -109,7 +109,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				EventManager.getExternal().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error("ADD PLAYER CONNECTION", player.getName(), e);
 				throw e;
@@ -122,7 +122,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			__players.put(player.getName(), player);
 
 			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+			EventManager.getExternal().emit(TEvent.PLAYER_IN_SUCCESS, player);
 		}
 
 	}
@@ -132,7 +132,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				EventManager.getEvent().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
+				EventManager.getExternal().emit(TEvent.PLAYER_IN_FAILED, player, ErrorMsg.PLAYER_IS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error("ADD PLAYER", player.getName(), e);
 				throw e;
@@ -140,7 +140,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 			__players.put(player.getName(), player);
 			// fire an event
-			EventManager.getEvent().emit(TEvent.PLAYER_IN_SUCCESS, player);
+			EventManager.getExternal().emit(TEvent.PLAYER_IN_SUCCESS, player);
 		}
 
 	}
@@ -157,7 +157,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			}
 
 			// force player leave room, fire a logic event
-			EventManager.getLogic().emit(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, player);
+			EventManager.getInternal().emit(LEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
 			// remove connection, player
 			if (player.hasConnection()) {

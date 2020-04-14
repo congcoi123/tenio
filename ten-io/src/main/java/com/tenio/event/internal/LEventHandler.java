@@ -21,52 +21,62 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.main;
+package com.tenio.event.internal;
 
-import com.tenio.configuration.constant.TEvent;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.tenio.configuration.constant.LEvent;
+import com.tenio.event.IEvent;
 
 /**
- * Only for creating an event handler object, see {@link TEventHandler}
+ * This class for handling events and these subscribers.
+ * 
+ * @param <T> the template
  * 
  * @author kong
  * 
  */
-public final class TEventProducer {
+public final class LEventHandler<T> {
 
 	/**
-	 * @see TEventHandler
+	 * An instance creates a mapping between an event with its list of event
+	 * handlers.
 	 */
-	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
+	private final Map<LEvent, IEvent<T>> __delegate = new HashMap<LEvent, IEvent<T>>();
 
 	/**
-	 * Retrieves an event handler
+	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @return see {@link TEventHandler}
+	 * @param type  see {@link LEvent}
+	 * @param event see {@link IEvent}
 	 */
-	public TEventHandler<Object> getEventHandler() {
-		return __eventHandler;
+	public void subscribe(final LEvent type, final IEvent<T> event) {
+		__delegate.put(type, event);
 	}
 
 	/**
-	 * Emit an event with its parameters.
+	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link LEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventHandler#emit(TEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public Object emit(final LEvent type, final @SuppressWarnings("unchecked") T... args) {
+		if (__delegate.containsKey(type)) {
+			return __delegate.get(type).emit(args);
+		}
+		return null;
 	}
 
 	/**
-	 * Clear all events and these handlers.
-	 * 
-	 * @see TEventHandler#clear()
+	 * Clear all events and these handlers
 	 */
 	public void clear() {
-		__eventHandler.clear();
+		if (!__delegate.isEmpty()) {
+			__delegate.clear();
+		}
 	}
 
 }

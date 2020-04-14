@@ -21,48 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.main;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package com.tenio.event.external;
 
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.event.IEvent;
 
 /**
- * This class for handling events and these subscribers.
- * 
- * @param <T> the template
+ * Only for creating an event handler object, see {@link TEventHandler}
  * 
  * @author kong
  * 
  */
-public final class TEventHandler<T> {
+public final class TEventProducer {
 
 	/**
-	 * An instance creates a mapping between an event with its list of event
-	 * handlers.
+	 * @see TEventHandler
 	 */
-	private final Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
+	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
 
 	/**
-	 * Create a link between an event and its list of event handlers.
+	 * Retrieves an event handler
 	 * 
-	 * @param type  see {@link TEvent}
-	 * @param event see {@link IEvent}
+	 * @return see {@link TEventHandler}
 	 */
-	public void subscribe(final TEvent type, final IEvent<T> event) {
-		if (__delegate.containsKey(type)) {
-			__delegate.get(type).add(event);
-		} else {
-			// create a new array of events
-			var events = new ArrayList<IEvent<T>>();
-			// add the first event
-			events.add(event);
-			__delegate.put(type, events);
-		}
+	public TEventHandler<Object> getEventHandler() {
+		return __eventHandler;
 	}
 
 	/**
@@ -72,28 +54,19 @@ public final class TEventHandler<T> {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
+	 * @see TEventHandler#emit(TEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
-		if (!__delegate.isEmpty()) {
-			Object obj = null;
-			if (__delegate.containsKey(type)) {
-				for (IEvent<T> event : __delegate.get(type)) {
-					obj = event.emit(args);
-				}
-			}
-			// return the last event's result
-			return obj;
-		}
-		return null;
+	public Object emit(final TEvent type, final Object... args) {
+		return __eventHandler.emit(type, args);
 	}
 
 	/**
 	 * Clear all events and these handlers.
+	 * 
+	 * @see TEventHandler#clear()
 	 */
 	public void clear() {
-		if (!__delegate.isEmpty()) {
-			__delegate.clear();
-		}
+		__eventHandler.clear();
 	}
 
 }

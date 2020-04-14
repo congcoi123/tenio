@@ -114,7 +114,7 @@ public final class MessageApi extends AbstractLogger {
 				debug("SENT SUB NPC", player.getName(), message.toString());
 			}
 		}
-		EventManager.getEvent().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
+		EventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
 	}
 
 	/**

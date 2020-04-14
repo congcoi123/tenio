@@ -96,7 +96,7 @@ public final class TimeOutScanTask extends AbstractLogger {
 			}
 
 			__removeables.forEach((player) -> {
-				EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);
+				EventManager.getExternal().emit(TEvent.PLAYER_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 

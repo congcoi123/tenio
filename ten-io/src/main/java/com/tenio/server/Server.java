@@ -182,8 +182,8 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
 			try {
-				if (!EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
+				if (!EventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
+						|| !EventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
 					throw new Exception(
 							new Throwable("Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
 				}
@@ -196,9 +196,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
 			try {
-				if (!EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
+				if (!EventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
+						|| !EventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
+						|| !EventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
 					throw new Exception(new Throwable(
 							"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
 				}

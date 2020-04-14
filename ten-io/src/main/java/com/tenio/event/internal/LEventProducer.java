@@ -21,9 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.event.logic;
+package com.tenio.event.internal;
 
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 
 /**
  * Only for creating an event handler object, see {@link LEventHandler}
@@ -50,13 +50,13 @@ public final class LEventProducer {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link LogicEvent}
+	 * @param type see {@link LEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventHandler#emit(LogicEvent, Object...)
+	 * @see LEventHandler#emit(LEvent, Object...)
 	 */
-	public Object emit(final LogicEvent type, final Object... args) {
+	public Object emit(final LEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
 	}
 

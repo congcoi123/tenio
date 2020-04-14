@@ -25,7 +25,7 @@ package com.tenio.network.netty.datagram;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.event.EventManager;
@@ -81,22 +81,22 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		var player = __getPlayer(ctx.channel(), datagram.sender().toString());
 		// the condition for creating sub-connection
 		if (player == null) {
-			player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.ATTACH_UDP_REQUEST, message);
+			player = (AbstractPlayer) EventManager.getExternal().emit(TEvent.ATTACH_UDP_REQUEST, message);
 
 			if (player == null) {
-				EventManager.getEvent().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
+				EventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection()) {
-				EventManager.getEvent().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
+				EventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				__savePlayerRemote(ctx.channel(), datagram.sender().toString(), player.getName());
 				var connection = NettyConnection.newInstance(Connection.Type.DATAGRAM, ctx.channel());
 				connection.setSockAddress(datagram.sender());
 				player.setSubConnection(connection);
-				EventManager.getEvent().emit(TEvent.ATTACH_UDP_SUCCESS, player);
+				EventManager.getExternal().emit(TEvent.ATTACH_UDP_SUCCESS, player);
 			}
 
 		} else {
-			EventManager.getLogic().emit(LogicEvent.DATAGRAM_HANDLE, player, message);
+			EventManager.getInternal().emit(LEvent.DATAGRAM_HANDLE, player, message);
 		}
 
 	}
@@ -109,8 +109,8 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 	 * @return a player, see {@link AbstractPlayer}
 	 */
 	private AbstractPlayer __getPlayer(Channel channel, String remote) {
-		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) EventManager.getLogic()
-				.emit(LogicEvent.GET_PLAYER, (String) channel.attr(AttributeKey.valueOf(remote)).get()) : null;
+		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) EventManager.getInternal()
+				.emit(LEvent.GET_PLAYER, (String) channel.attr(AttributeKey.valueOf(remote)).get()) : null;
 	}
 
 	/**

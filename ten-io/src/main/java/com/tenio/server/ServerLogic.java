@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.server;
 
 import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entities.AbstractPlayer;
 import com.tenio.entities.element.TObject;
@@ -56,7 +56,7 @@ final class ServerLogic extends AbstractLogger {
 	 */
 	public void init() {
 
-		__on(LogicEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
+		__on(LEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
 			var player = __getPlayer(args[0]);
 
 			__roomManager.playerLeaveRoom(player, true);
@@ -64,7 +64,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		__on(LogicEvent.CONNECTION_CLOSE, args -> {
+		__on(LEvent.CONNECTION_CLOSE, args -> {
 			var connection = __getConnection(args[0]);
 			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
 
@@ -73,14 +73,14 @@ final class ServerLogic extends AbstractLogger {
 				if (id != null) { // the player maybe exist
 					var player = __playerManager.get(id);
 					if (player != null) { // the player has existed
-						EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
+						EventManager.getExternal().emit(TEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
 						if (!keepPlayerOnDisconnect) {
 							__playerManager.clean(player);
 						}
 					}
 				} else { // the free connection (without a corresponding player)
-					EventManager.getEvent().emit(TEvent.DISCONNECT_CONNECTION, connection);
+					EventManager.getExternal().emit(TEvent.DISCONNECT_CONNECTION, connection);
 				}
 				connection.clean();
 			}
@@ -88,7 +88,7 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		__on(LogicEvent.CONNECTION_EXCEPTION, args -> {
+		__on(LEvent.CONNECTION_EXCEPTION, args -> {
 			String channelId = __getString(args[0]);
 			var connection = __getConnection(args[1]);
 			var cause = __getThrowable(args[2]);
@@ -109,18 +109,18 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		__on(LogicEvent.MANUALY_CLOSE_CONNECTION, args -> {
+		__on(LEvent.MANUALY_CLOSE_CONNECTION, args -> {
 			String name = __getString(args[0]);
 
 			var player = __playerManager.get(name);
 			if (player != null) {
-				EventManager.getEvent().emit(TEvent.DISCONNECT_PLAYER, player);
+				EventManager.getExternal().emit(TEvent.DISCONNECT_PLAYER, player);
 			}
 
 			return null;
 		});
 
-		__on(LogicEvent.CREATE_NEW_CONNECTION, args -> {
+		__on(LEvent.CREATE_NEW_CONNECTION, args -> {
 			int maxPlayer = __getInt(args[0]);
 			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
 			var connection = __getConnection(args[2]);
@@ -128,29 +128,29 @@ final class ServerLogic extends AbstractLogger {
 
 			// check the reconnection first
 			if (keepPlayerOnDisconnect) {
-				var player = (AbstractPlayer) EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
+				var player = (AbstractPlayer) EventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
 						message);
 				if (player != null) {
 					player.setCurrentReaderTime();
 					connection.setId(player.getName());
 					player.setConnection(connection);
 
-					EventManager.getEvent().emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
+					EventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
 					return null;
 				}
 			}
 			// check the number of current players
 			if (__playerManager.count() > maxPlayer) {
-				EventManager.getEvent().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
+				EventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
 				connection.close();
 			} else {
-				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+				EventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
 			}
 
 			return null;
 		});
 
-		__on(LogicEvent.SOCKET_HANDLE, args -> {
+		__on(LEvent.SOCKET_HANDLE, args -> {
 			var connection = __getConnection(args[0]);
 			var message = __getTObject(args[1]);
 
@@ -161,13 +161,13 @@ final class ServerLogic extends AbstractLogger {
 					__handle(player, false, message);
 				}
 			} else { // a new connection
-				EventManager.getEvent().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+				EventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
 			}
 
 			return null;
 		});
 
-		__on(LogicEvent.DATAGRAM_HANDLE, args -> {
+		__on(LEvent.DATAGRAM_HANDLE, args -> {
 			var player = __getPlayer(args[0]);
 			var message = __getTObject(args[1]);
 
@@ -180,15 +180,15 @@ final class ServerLogic extends AbstractLogger {
 			return null;
 		});
 
-		__on(LogicEvent.GET_PLAYER, args -> {
+		__on(LEvent.GET_PLAYER, args -> {
 			String name = (String) args[0];
 			return __playerManager.get(name);
 		});
 
 	}
 
-	private void __on(final LogicEvent event, ISubscriber sub) {
-		EventManager.getLogic().on(event, sub);
+	private void __on(final LEvent event, ISubscriber sub) {
+		EventManager.getInternal().on(event, sub);
 	}
 
 	/**
@@ -254,7 +254,7 @@ final class ServerLogic extends AbstractLogger {
 			debug("RECV PLAYER", player.getName(), message.toString());
 		}
 		player.setCurrentReaderTime();
-		EventManager.getEvent().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
+		EventManager.getExternal().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
 	}
 
 	private void __exception(AbstractPlayer player, Throwable cause) {

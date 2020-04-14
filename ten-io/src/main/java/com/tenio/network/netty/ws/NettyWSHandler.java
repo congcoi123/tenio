@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.network.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
@@ -85,10 +85,10 @@ public class NettyWSHandler extends BaseNettyHandler {
 			var connection = _getConnection(ctx.channel());
 			if (connection == null) { // the new connection
 				connection = NettyConnection.newInstance(Connection.Type.WEB_SOCKET, ctx.channel());
-				EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
+				EventManager.getInternal().emit(LEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 						connection, message);
 			} else {
-				EventManager.getLogic().emit(LogicEvent.SOCKET_HANDLE, connection, message);
+				EventManager.getInternal().emit(LEvent.SOCKET_HANDLE, connection, message);
 			}
 
 		}

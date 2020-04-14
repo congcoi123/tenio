@@ -34,7 +34,7 @@ import com.tenio.network.Connection;
  * @author kong
  *
  */
-public enum LogicEvent {
+public enum LEvent {
 
 	/**
 	 * When a player is forced to leave his current room. It means this player was
