@@ -26,8 +26,8 @@ package com.tenio.network.netty;
 import java.net.InetSocketAddress;
 
 import com.tenio.configuration.constant.LEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.element.TObject;
 import com.tenio.event.EventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;

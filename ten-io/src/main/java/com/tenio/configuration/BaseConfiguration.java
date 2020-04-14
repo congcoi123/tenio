@@ -31,9 +31,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.utils.XMLUtility;
+import com.tenio.utility.XMLUtility;
 
 /**
  * This server needs some basic configuration to start running. The

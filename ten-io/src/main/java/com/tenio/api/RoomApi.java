@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.manager.IRoomManager;
+import com.tenio.entity.AbstractRoom;
+import com.tenio.entity.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
 
 /**

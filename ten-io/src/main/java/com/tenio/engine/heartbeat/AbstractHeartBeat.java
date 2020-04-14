@@ -37,10 +37,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.utils.MathUtility;
-import com.tenio.utils.TimeUtility;
+import com.tenio.utility.MathUtility;
+import com.tenio.utility.TimeUtility;
 
 /**
  * The game loop is the overall flow control for the entire game program. It's a

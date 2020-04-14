@@ -33,8 +33,8 @@ import java.util.Map;
 import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
-import com.tenio.entities.element.TArray;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TArray;
+import com.tenio.entity.element.TObject;
 import com.tenio.message.pool.ByteArrayInputStreamPool;
 import com.tenio.pool.IElementPool;
 

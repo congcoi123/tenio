@@ -26,7 +26,7 @@ package com.tenio.configuration;
 import java.util.Map;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 
 /**
  * Create your own configurations

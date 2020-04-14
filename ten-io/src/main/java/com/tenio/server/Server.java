@@ -35,10 +35,10 @@ import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
-import com.tenio.entities.manager.IPlayerManager;
-import com.tenio.entities.manager.IRoomManager;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entity.manager.IPlayerManager;
+import com.tenio.entity.manager.IRoomManager;
+import com.tenio.entity.manager.PlayerManager;
+import com.tenio.entity.manager.RoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
@@ -76,7 +76,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi();
 
-		__logic = new ServerLogic(__playerManager, __roomManager);
+		__logic = new InternalLogic(__playerManager, __roomManager);
 
 	} // prevent creation manually
 
@@ -100,7 +100,7 @@ public final class Server extends AbstractLogger implements IServer {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final ServerLogic __logic;
+	private final InternalLogic __logic;
 	private IExtension __extension;
 	private INetwork __network;
 

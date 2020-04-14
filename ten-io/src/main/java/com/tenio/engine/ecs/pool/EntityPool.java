@@ -29,9 +29,9 @@ import java.util.UUID;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.engine.ecs.ContextInfo;
-import com.tenio.engine.ecs.Entity;
-import com.tenio.engine.ecs.api.IEntity;
+import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.base.Entity;
+import com.tenio.engine.ecs.base.IEntity;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;

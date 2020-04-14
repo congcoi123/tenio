@@ -24,9 +24,9 @@ THE SOFTWARE.
 package com.tenio.configuration.constant;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.AbstractRoom;
+import com.tenio.entity.element.TObject;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
 import com.tenio.network.Connection;

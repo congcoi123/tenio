@@ -38,15 +38,15 @@ import org.junit.jupiter.api.Test;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.entities.manager.IPlayerManager;
-import com.tenio.entities.manager.IRoomManager;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entity.manager.IPlayerManager;
+import com.tenio.entity.manager.IRoomManager;
+import com.tenio.entity.manager.PlayerManager;
+import com.tenio.entity.manager.RoomManager;
 import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.DuplicatedRoomException;
 import com.tenio.exception.NullPlayerNameException;
-import com.tenio.models.PlayerModel;
-import com.tenio.models.RoomModel;
+import com.tenio.model.PlayerModel;
+import com.tenio.model.RoomModel;
 
 /**
  * @author kong

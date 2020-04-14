@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.api.pool.ArrayPool;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TArray;
+import com.tenio.entity.element.TArray;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;
 

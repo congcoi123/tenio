@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.exception.HeartbeatNotFoundException;
 import com.tenio.logger.AbstractLogger;
 

@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.api.RoomApi;
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.AbstractRoom;
+import com.tenio.entity.AbstractRoom;
 import com.tenio.logger.AbstractLogger;
 
 /**

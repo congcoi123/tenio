@@ -34,9 +34,9 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.models.PlayerModel;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.manager.PlayerManager;
+import com.tenio.model.PlayerModel;
 
 /**
  * @author kong
