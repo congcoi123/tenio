@@ -47,7 +47,7 @@ public final class TestServerLogin extends AbstractApp {
 	 */
 	public static void main(String[] args) {
 		var game = new TestServerLogin();
-		game.setup();
+		game.start();
 	}
 
 	@Override

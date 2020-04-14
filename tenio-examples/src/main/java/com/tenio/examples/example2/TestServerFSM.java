@@ -44,7 +44,7 @@ public final class TestServerFSM extends AbstractApp {
 	 */
 	public static void main(String[] args) {
 		var game = new TestServerFSM();
-		game.setup();
+		game.start();
 	}
 
 	@Override

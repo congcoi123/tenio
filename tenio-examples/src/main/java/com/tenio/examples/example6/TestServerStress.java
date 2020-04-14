@@ -44,7 +44,7 @@ public final class TestServerStress extends AbstractApp {
 	 */
 	public static void main(String[] args) {
 		var game = new TestServerStress();
-		game.setup();
+		game.start();
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public final class TestServerMovement extends AbstractApp {
 	 */
 	public static void main(String[] args) {
 		var game = new TestServerMovement();
-		game.setup();
+		game.start();
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public final class TestServerAttach extends AbstractApp {
 	 */
 	public static void main(String[] args) {
 		var game = new TestServerAttach();
-		game.setup();
+		game.start();
 	}
 
 	@Override
