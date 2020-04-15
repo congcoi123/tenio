@@ -73,20 +73,68 @@ import com.tenio.utility.XMLUtility;
  */
 public abstract class BaseConfiguration extends AbstractLogger {
 
+	/**
+	 * WebSocket port
+	 */
 	public static final String WEBSOCKET_PORT = "t.webSocketPort";
+	/**
+	 * TCP port
+	 */
 	public static final String SOCKET_PORT = "t.socketPort";
+	/**
+	 * UDP port
+	 */
 	public static final String DATAGRAM_PORT = "t.datagramPort";
+	/**
+	 * When the server get disconnection of one client, can be hold its player
+	 * instance until timeout
+	 */
 	public static final String KEEP_PLAYER_ON_DISCONNECT = "t.keepPlayerOnDisconnect";
+	/**
+	 * The maximum number of heartbeats which game can handle
+	 */
 	public static final String MAX_HEARTBEAT = "t.maxHeartbeat";
+	/**
+	 * The maximum number of players which game can handle
+	 */
 	public static final String MAX_PLAYER = "t.maxPlayer";
+	/**
+	 * The max IDLE time in seconds which server can wait from the last getting
+	 * message from client
+	 */
 	public static final String IDLE_READER = "t.idleReader";
+	/**
+	 * The max IDLE time in seconds which server can wait from the last sending
+	 * message to client
+	 */
 	public static final String IDLE_WRITER = "t.idleWriter";
+	/**
+	 * Get the period checking in seconds which server can keep the empty room
+	 */
 	public static final String EMPTY_ROOM_SCAN = "t.emptyRoomScan";
+	/**
+	 * The period checking player time out in seconds
+	 */
 	public static final String TIMEOUT_SCAN = "t.timeoutScan";
+	/**
+	 * The period checking CCU in seconds
+	 */
 	public static final String CCU_SCAN = "t.ccuScan";
+	/**
+	 * The server name
+	 */
 	public static final String SERVER_NAME = "t.serverName";
+	/**
+	 * The server id (module name)
+	 */
 	public static final String SERVER_ID = "t.serverId";
+	/**
+	 * This current version name of your server in string type
+	 */
 	public static final String VERSION_NAME = "t.versionName";
+	/**
+	 * This current version code of your server in integer type (can be compared)
+	 */
 	public static final String VERSION_CODE = "t.versionCode";
 
 	/**
