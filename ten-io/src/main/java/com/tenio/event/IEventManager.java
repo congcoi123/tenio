@@ -25,47 +25,33 @@ package com.tenio.event;
 
 import com.tenio.event.external.TEventManager;
 import com.tenio.event.internal.LEventManager;
-import com.tenio.logger.AbstractLogger;
 
 /**
  * Manage all events in the server
  * 
- * @see IEventManager
- * 
  * @author kong
  *
  */
-public final class EventManager extends AbstractLogger implements IEventManager {
+public interface IEventManager {
 
 	/**
-	 * @see TEventManager
+	 * @return see {@link TEventManager}
 	 */
-	private TEventManager __tEvent = new TEventManager();
+	public TEventManager getExternal();
+
 	/**
-	 * @see LEventManager
+	 * @return see {@link LEventManager}
 	 */
-	private LEventManager __lEvent = new LEventManager();
+	public LEventManager getInternal();
 
-	@Override
-	public TEventManager getExternal() {
-		return __tEvent;
-	}
+	/**
+	 * Collect all subscribers and these corresponding events.
+	 */
+	public void subscribe();
 
-	@Override
-	public LEventManager getInternal() {
-		return __lEvent;
-	}
-
-	@Override
-	public void subscribe() {
-		__tEvent.subscribe();
-		__lEvent.subscribe();
-	}
-
-	@Override
-	public void clear() {
-		__tEvent.clear();
-		__lEvent.clear();
-	}
+	/**
+	 * Clear all subscribers and these corresponding events.
+	 */
+	public void clear();
 
 }

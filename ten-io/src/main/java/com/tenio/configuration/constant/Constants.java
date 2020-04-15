@@ -80,4 +80,20 @@ public final class Constants {
 	 */
 	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
 
+	/**
+	 * 0 or a limit in bytes/s
+	 */
+	public static final long TRAFFIC_COUNTER_WRITE_LIMIT = 0L;
+
+	/**
+	 * 0 or a limit in bytes/s
+	 */
+	public static final long TRAFFIC_COUNTER_READ_LIMIT = 0L;
+
+	/**
+	 * The delay between two computations of performances for channels or 0 if no
+	 * stats are to be computed.
+	 */
+	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
+
 }

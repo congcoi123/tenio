@@ -143,6 +143,24 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
+			_on(TEvent.BANDWIDTH, args -> {
+				long lastReadThroughput = _getLong(args[0]);
+				long lastWriteThroughput = _getLong(args[1]);
+				long realWriteThroughput = _getLong(args[2]);
+				long currentReadBytes = _getLong(args[3]);
+				long currentWrittenBytes = _getLong(args[4]);
+				long realWrittenBytes = _getLong(args[5]);
+
+				var bandwidth = String.format(
+						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						currentWrittenBytes, realWrittenBytes);
+
+				info("BANDWIDTH", bandwidth);
+
+				return null;
+			});
+
 		}
 
 		private int[] __getSortRandomNumberArray() {

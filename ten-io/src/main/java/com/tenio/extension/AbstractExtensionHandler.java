@@ -31,7 +31,6 @@ import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.element.TObject;
-import com.tenio.event.EventManager;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
@@ -83,7 +82,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @param sub  your own subscriber-class handler
 	 */
 	protected void _on(final TEvent type, final ISubscriber sub) {
-		EventManager.getExternal().on(type, sub);
+		__server.getEventManager().getExternal().on(type, sub);
 	}
 
 	/**
@@ -134,6 +133,14 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 */
 	protected int _getInt(Object object) {
 		return (int) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Long} type
+	 */
+	protected long _getLong(Object object) {
+		return (long) object;
 	}
 
 	/**

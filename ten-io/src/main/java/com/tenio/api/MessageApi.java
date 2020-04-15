@@ -30,7 +30,7 @@ import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.AbstractRoom;
 import com.tenio.entity.element.TArray;
 import com.tenio.entity.element.TObject;
-import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 import com.tenio.pool.IElementPool;
@@ -50,6 +50,11 @@ public final class MessageApi extends AbstractLogger {
 
 	private final IElementPool<TArray> __arrayPool = new ArrayPool();
 	private final IElementPool<TObject> __objectPool = new ObjectPool();
+	private final IEventManager __eventManager;
+
+	public MessageApi(IEventManager eventManager) {
+		__eventManager = eventManager;
+	}
 
 	/**
 	 * Send a message for a connection
@@ -114,7 +119,7 @@ public final class MessageApi extends AbstractLogger {
 				debug("SENT SUB NPC", player.getName(), message.toString());
 			}
 		}
-		EventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
+		__eventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
 	}
 
 	/**

@@ -42,6 +42,8 @@ import com.tenio.entity.manager.IPlayerManager;
 import com.tenio.entity.manager.IRoomManager;
 import com.tenio.entity.manager.PlayerManager;
 import com.tenio.entity.manager.RoomManager;
+import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.DuplicatedRoomException;
 import com.tenio.exception.NullPlayerNameException;
@@ -53,6 +55,8 @@ import com.tenio.model.RoomModel;
  */
 public final class PlayerRoomTest {
 
+	private IEventManager __eventManager;
+
 	private IPlayerManager __playerManager;
 	private IRoomManager __roomManager;
 	private PlayerApi __playerApi;
@@ -63,8 +67,9 @@ public final class PlayerRoomTest {
 
 	@BeforeEach
 	public void initialize() {
-		__playerManager = new PlayerManager();
-		__roomManager = new RoomManager();
+		__eventManager = new EventManager();
+		__playerManager = new PlayerManager(__eventManager);
+		__roomManager = new RoomManager(__eventManager);
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__testPlayerName = "kong";
@@ -75,6 +80,7 @@ public final class PlayerRoomTest {
 	public void tearDown() {
 		__playerManager.clear();
 		__roomManager.clear();
+		__eventManager.clear();
 	}
 
 	@Test
@@ -82,7 +88,7 @@ public final class PlayerRoomTest {
 		var player = new PlayerModel(__testPlayerName);
 		__playerApi.login(player);
 		var result = __playerApi.get(__testPlayerName);
-		
+
 		assertEquals(player, result);
 	}
 
@@ -107,7 +113,7 @@ public final class PlayerRoomTest {
 	public void checkContainPlayerShouldReturnSuccess() {
 		var player = new PlayerModel(__testPlayerName);
 		__playerApi.login(player);
-		
+
 		assertTrue(__playerApi.contain(__testPlayerName));
 	}
 
@@ -117,7 +123,7 @@ public final class PlayerRoomTest {
 			var player = new PlayerModel(UUID.randomUUID().toString());
 			__playerApi.login(player);
 		}
-		
+
 		assertEquals(10, __playerApi.count());
 	}
 
@@ -127,7 +133,7 @@ public final class PlayerRoomTest {
 			var player = new PlayerModel(UUID.randomUUID().toString());
 			__playerApi.login(player);
 		}
-		
+
 		assertEquals(0, __playerApi.countPlayers());
 	}
 
@@ -136,7 +142,7 @@ public final class PlayerRoomTest {
 		var player = new PlayerModel(__testPlayerName);
 		__playerApi.login(player);
 		__playerApi.logOut(__testPlayerName);
-		
+
 		assertEquals(0, __playerApi.count());
 	}
 
@@ -144,7 +150,7 @@ public final class PlayerRoomTest {
 	public void createNewRoomShouldReturnSuccess() {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		assertTrue(__roomApi.contain(__testRoomId));
 	}
 
@@ -163,7 +169,7 @@ public final class PlayerRoomTest {
 		__playerApi.login(player);
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
 
@@ -173,9 +179,9 @@ public final class PlayerRoomTest {
 		__playerApi.login(player);
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
-		
+
 		assertEquals(ErrorMsg.PLAYER_WAS_IN_ROOM,
 				__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
@@ -186,10 +192,10 @@ public final class PlayerRoomTest {
 		__playerApi.login(player);
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
 		__playerApi.playerLeaveRoom(__playerApi.get(__testPlayerName), true);
-		
+
 		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).contain(__testPlayerName)),
 				() -> assertEquals(null, __playerApi.get(__testPlayerName).getRoom()));
 	}
@@ -200,10 +206,10 @@ public final class PlayerRoomTest {
 			var player = new PlayerModel(UUID.randomUUID().toString());
 			__playerApi.login(player);
 		}
-		
+
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		int capacity = __roomApi.get(__testRoomId).getCapacity();
 		PlayerModel[] players = new PlayerModel[capacity + 1];
 		int counter = 0;
@@ -214,7 +220,7 @@ public final class PlayerRoomTest {
 			players[counter] = (PlayerModel) player;
 			counter++;
 		}
-		
+
 		assertAll("playerJoinRoom", () -> assertEquals(3, capacity),
 				() -> assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[0])),
 				() -> assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[1])),
@@ -227,13 +233,13 @@ public final class PlayerRoomTest {
 	public void removeRoomShouldReturnSuccess() {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
-		
+
 		for (int i = 0; i < 3; i++) {
 			var player = new PlayerModel(UUID.randomUUID().toString());
 			__playerApi.login(player);
 			__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), player);
 		}
-		
+
 		__roomApi.remove(__roomApi.get(__testRoomId));
 		boolean allRemoved = true;
 		for (var player : __playerApi.gets().values()) {
@@ -243,7 +249,7 @@ public final class PlayerRoomTest {
 			}
 		}
 		final boolean removedResult = allRemoved;
-		
+
 		assertAll("removeRoom", () -> assertFalse(__roomApi.contain(__testRoomId)), () -> assertTrue(removedResult));
 	}
 

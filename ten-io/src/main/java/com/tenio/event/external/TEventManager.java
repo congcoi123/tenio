@@ -68,7 +68,7 @@ public final class TEventManager extends AbstractLogger {
 	 */
 	public void on(final TEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
-			info("EVENT WARNING", "Duplicated", type);
+			info("EXTERNAL EVENT WARNING", "Duplicated", type);
 		}
 
 		__subscribers.add(TSubscriber.newInstance(type, sub));
@@ -87,7 +87,7 @@ public final class TEventManager extends AbstractLogger {
 			subs.add(s.getType());
 			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
 		});
-		info("EVENT UPDATED", "Subscribers", subs.toString());
+		info("EXTERNAL EVENT UPDATED", "Subscribers", subs.toString());
 	}
 
 	/**

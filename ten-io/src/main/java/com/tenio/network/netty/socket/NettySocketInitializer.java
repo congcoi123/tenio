@@ -25,6 +25,8 @@ package com.tenio.network.netty.socket;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
+import com.tenio.event.IEventManager;
+import com.tenio.network.netty.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -41,15 +43,23 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
  */
 public final class NettySocketInitializer extends ChannelInitializer<SocketChannel> {
 
+	private final IEventManager __eventManager;
+	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final BaseConfiguration __configuration;
 
-	public NettySocketInitializer(BaseConfiguration configuration) {
+	public NettySocketInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
+			BaseConfiguration configuration) {
+		__eventManager = eventManager;
+		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
 
 	@Override
 	protected void initChannel(SocketChannel channel) throws Exception {
 		var pipeline = channel.pipeline();
+
+		// traffic counter
+		pipeline.addLast("traffic-counter", __trafficCounter);
 
 		// break each data chunk by newlines (read-up)
 		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, Constants.HEADER_BYTES,
@@ -62,7 +72,8 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
 		// the logic handler
-		pipeline.addLast("handler", new NettySocketHandler(__configuration));
+		pipeline.addLast("handler", new NettySocketHandler(__eventManager, __configuration));
+
 	}
 
 }

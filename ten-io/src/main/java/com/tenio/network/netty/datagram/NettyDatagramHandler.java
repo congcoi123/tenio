@@ -28,7 +28,7 @@ import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
-import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
@@ -52,8 +52,8 @@ import io.netty.util.AttributeKey;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(BaseConfiguration configuration) {
-		// No need to handle here
+	public NettyDatagramHandler(IEventManager eventManager, BaseConfiguration configuration) {
+		super(eventManager);
 	}
 
 	@Override
@@ -81,22 +81,22 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		var player = __getPlayer(ctx.channel(), datagram.sender().toString());
 		// the condition for creating sub-connection
 		if (player == null) {
-			player = (AbstractPlayer) EventManager.getExternal().emit(TEvent.ATTACH_UDP_REQUEST, message);
+			player = (AbstractPlayer) _eventManager.getExternal().emit(TEvent.ATTACH_UDP_REQUEST, message);
 
 			if (player == null) {
-				EventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
+				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection()) {
-				EventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
+				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				__savePlayerRemote(ctx.channel(), datagram.sender().toString(), player.getName());
-				var connection = NettyConnection.newInstance(Connection.Type.DATAGRAM, ctx.channel());
+				var connection = NettyConnection.newInstance(_eventManager, Connection.Type.DATAGRAM, ctx.channel());
 				connection.setSockAddress(datagram.sender());
 				player.setSubConnection(connection);
-				EventManager.getExternal().emit(TEvent.ATTACH_UDP_SUCCESS, player);
+				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_SUCCESS, player);
 			}
 
 		} else {
-			EventManager.getInternal().emit(LEvent.DATAGRAM_HANDLE, player, message);
+			_eventManager.getInternal().emit(LEvent.DATAGRAM_HANDLE, player, message);
 		}
 
 	}
@@ -109,7 +109,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 	 * @return a player, see {@link AbstractPlayer}
 	 */
 	private AbstractPlayer __getPlayer(Channel channel, String remote) {
-		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) EventManager.getInternal()
+		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) _eventManager.getInternal()
 				.emit(LEvent.GET_PLAYER, (String) channel.attr(AttributeKey.valueOf(remote)).get()) : null;
 	}
 

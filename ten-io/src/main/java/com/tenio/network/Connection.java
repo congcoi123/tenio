@@ -27,6 +27,7 @@ import java.net.InetSocketAddress;
 
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.element.TObject;
+import com.tenio.event.IEventManager;
 
 /**
  * A connection is created when the first request from client reach and pass in
@@ -42,6 +43,8 @@ import com.tenio.entity.element.TObject;
  */
 public abstract class Connection {
 
+	protected final IEventManager _eventManager;
+
 	/**
 	 * Save the connection address
 	 */
@@ -55,7 +58,8 @@ public abstract class Connection {
 		SOCKET, DATAGRAM, WEB_SOCKET
 	}
 
-	public Connection(Type type) {
+	public Connection(IEventManager eventManager, Type type) {
+		_eventManager = eventManager;
 		__type = type;
 	}
 

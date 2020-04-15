@@ -33,7 +33,7 @@ import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.AbstractRoom;
-import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.exception.DuplicatedRoomException;
 import com.tenio.exception.NullRoomException;
 import com.tenio.logger.AbstractLogger;
@@ -54,6 +54,11 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
 	private final Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
+	private final IEventManager __eventManager;
+
+	public RoomManager(IEventManager eventManager) {
+		__eventManager = eventManager;
+	}
 
 	@Override
 	public int count() {
@@ -95,14 +100,14 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
-				EventManager.getExternal().emit(TEvent.CREATED_ROOM, room, ErrorMsg.ROOM_IS_EXISTED);
+				__eventManager.getExternal().emit(TEvent.CREATED_ROOM, room, ErrorMsg.ROOM_IS_EXISTED);
 				var e = new DuplicatedRoomException();
 				error("ADD ROOM", room.getName(), e);
 				throw e;
 			}
 			__rooms.put(room.getId(), room);
 			// fire an event
-			EventManager.getExternal().emit(TEvent.CREATED_ROOM, room);
+			__eventManager.getExternal().emit(TEvent.CREATED_ROOM, room);
 		}
 	}
 
@@ -116,7 +121,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			}
 
 			// fire an event
-			EventManager.getExternal().emit(TEvent.REMOVE_ROOM, room);
+			__eventManager.getExternal().emit(TEvent.REMOVE_ROOM, room);
 			// force all players leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
@@ -146,12 +151,13 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	@Override
 	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
-			EventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.PLAYER_WAS_IN_ROOM);
+			__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false,
+					ErrorMsg.PLAYER_WAS_IN_ROOM);
 			return ErrorMsg.PLAYER_WAS_IN_ROOM;
 		}
 
 		if (room.isFull()) {
-			EventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
+			__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
 			return ErrorMsg.ROOM_IS_FULL;
 		}
 
@@ -161,7 +167,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		room.add(player);
 		player.setRoom(room);
 		// fire an event
-		EventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
+		__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
 
 		return null;
 	}
@@ -174,11 +180,11 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		}
 
 		// fire an event
-		EventManager.getExternal().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		__eventManager.getExternal().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
 		// fire an event
-		EventManager.getExternal().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
+		__eventManager.getExternal().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
 
 		return null;
 	}
