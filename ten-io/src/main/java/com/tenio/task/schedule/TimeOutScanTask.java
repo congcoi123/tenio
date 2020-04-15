@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.event.EventManager;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
@@ -47,6 +47,7 @@ import com.tenio.logger.AbstractLogger;
  */
 public final class TimeOutScanTask extends AbstractLogger {
 
+	private final IEventManager __eventManager;
 	private final PlayerApi __playerApi;
 	/**
 	 * The removable list of players
@@ -67,7 +68,9 @@ public final class TimeOutScanTask extends AbstractLogger {
 	 */
 	private final int __timeoutScanPeriod;
 
-	public TimeOutScanTask(PlayerApi playerApi, int idleReader, int idleWriter, int timeoutScanPeriod) {
+	public TimeOutScanTask(IEventManager eventManager, PlayerApi playerApi, int idleReader, int idleWriter,
+			int timeoutScanPeriod) {
+		__eventManager = eventManager;
 		__playerApi = playerApi;
 		__idleReader = idleReader;
 		__idleWriter = idleWriter;
@@ -96,7 +99,7 @@ public final class TimeOutScanTask extends AbstractLogger {
 			}
 
 			__removeables.forEach((player) -> {
-				EventManager.getEvent().emit(TEvent.PLAYER_TIMEOUT, player);
+				__eventManager.getExternal().emit(TEvent.PLAYER_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 

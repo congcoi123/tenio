@@ -26,7 +26,7 @@ package com.tenio.api.pool;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TArray;
+import com.tenio.entity.element.TArray;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
@@ -100,7 +100,7 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
-			error("EXCEPTION REPAY", "array", e);
+			error(e);
 			throw e;
 		}
 	}

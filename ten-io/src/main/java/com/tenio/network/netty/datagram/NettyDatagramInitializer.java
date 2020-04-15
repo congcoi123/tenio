@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.network.netty.datagram;
 
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.event.IEventManager;
+import com.tenio.network.netty.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.DatagramChannel;
@@ -38,9 +40,14 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
  */
 public final class NettyDatagramInitializer extends ChannelInitializer<DatagramChannel> {
 
-	private BaseConfiguration __configuration;
+	private final IEventManager __eventManager;
+	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
+	private final BaseConfiguration __configuration;
 
-	public NettyDatagramInitializer(BaseConfiguration configuration) {
+	public NettyDatagramInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
+			BaseConfiguration configuration) {
+		__eventManager = eventManager;
+		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
 
@@ -53,8 +60,11 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 		// converts bytes' array to data chunk (write-down)
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
+		// traffic counter
+		pipeline.addLast("traffic-counter", __trafficCounter);
+
 		// the logic handler
-		pipeline.addLast("handler", new NettyDatagramHandler(__configuration));
+		pipeline.addLast("handler", new NettyDatagramHandler(__eventManager, __configuration));
 	}
 
 }

@@ -25,8 +25,8 @@ package com.tenio.engine.heartbeat;
 
 import java.util.UUID;
 
-import com.tenio.entities.element.TObject;
-import com.tenio.utils.TimeUtility;
+import com.tenio.entity.element.TObject;
+import com.tenio.utility.TimeUtility;
 
 /**
  * The message which is used for communication between one heart-beat and

@@ -61,7 +61,7 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 					throw new RunningScheduledTaskException();
 				}
 			} catch (RunningScheduledTaskException e) {
-				error("TASK", id, e);
+				error(e, "task id: ", id);
 				return;
 			}
 		}

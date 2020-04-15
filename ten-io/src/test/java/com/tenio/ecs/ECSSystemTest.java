@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.ecs.model.GameComponents;
 import com.tenio.ecs.model.GameContext;
-import com.tenio.ecs.model.systems.TestSystem;
-import com.tenio.engine.ecs.ContextInfo;
-import com.tenio.engine.ecs.systems.Systems;
+import com.tenio.ecs.model.system.TestSystem;
+import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.system.Systems;
 
 /**
  * @author kong

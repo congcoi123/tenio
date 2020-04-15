@@ -25,10 +25,10 @@ package com.tenio.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.element.TObject;
-import com.tenio.event.EventManager;
+import com.tenio.configuration.constant.LEvent;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.element.TObject;
+import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 
@@ -70,8 +70,8 @@ public class NettyConnection extends Connection {
 	private String __address;
 	private boolean __hasRemoteAddress;
 
-	private NettyConnection(Type type, Channel channel) {
-		super(type);
+	private NettyConnection(IEventManager eventManager, Type type, Channel channel) {
+		super(eventManager, type);
 		__hasRemoteAddress = false;
 		__channel = channel;
 		// Fix address in a TCP and WebSocket instance
@@ -84,8 +84,8 @@ public class NettyConnection extends Connection {
 		__id = null;
 	}
 
-	public static NettyConnection newInstance(Type type, Channel channel) {
-		return new NettyConnection(type, channel);
+	public static NettyConnection newInstance(IEventManager eventManager, Type type, Channel channel) {
+		return new NettyConnection(eventManager, type, channel);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class NettyConnection extends Connection {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
-		EventManager.getLogic().emit(LogicEvent.MANUALY_CLOSE_CONNECTION, __id);
+		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, __id);
 	}
 
 	@Override

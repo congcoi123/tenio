@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.engine.heartbeat.ecs;
 
-import com.tenio.engine.ecs.systems.ISystem;
-import com.tenio.engine.ecs.systems.Systems;
+import com.tenio.engine.ecs.system.ISystem;
+import com.tenio.engine.ecs.system.Systems;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 
 /**
  * The ECS system base on heart-beat

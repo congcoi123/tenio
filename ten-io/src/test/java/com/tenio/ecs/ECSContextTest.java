@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import com.tenio.ecs.model.GameComponents;
 import com.tenio.ecs.model.GameContext;
 import com.tenio.ecs.model.GameEntity;
-import com.tenio.ecs.model.components.Position;
-import com.tenio.engine.ecs.ContextInfo;
+import com.tenio.ecs.model.component.Position;
+import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.exception.DuplicatedComponentException;
 
 /**

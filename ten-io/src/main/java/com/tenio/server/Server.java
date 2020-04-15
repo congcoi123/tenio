@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
-import java.io.IOException;
-
 import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
@@ -35,11 +33,14 @@ import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
-import com.tenio.entities.manager.IPlayerManager;
-import com.tenio.entities.manager.IRoomManager;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.entities.manager.RoomManager;
+import com.tenio.entity.manager.IPlayerManager;
+import com.tenio.entity.manager.IRoomManager;
+import com.tenio.entity.manager.PlayerManager;
+import com.tenio.entity.manager.RoomManager;
 import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
+import com.tenio.exception.NotDefinedSocketConnectionException;
+import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
@@ -65,18 +66,20 @@ public final class Server extends AbstractLogger implements IServer {
 	private static Server __instance;
 
 	private Server() {
+		__eventManager = new EventManager();
+
 		__heartBeatManager = new HeartBeatManager();
-		__roomManager = new RoomManager();
-		__playerManager = new PlayerManager();
+		__roomManager = new RoomManager(__eventManager);
+		__playerManager = new PlayerManager(__eventManager);
 		__taskManager = new TaskManager();
 
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__heartbeatApi = new HeartBeatApi(__heartBeatManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi();
+		__messageApi = new MessageApi(__eventManager);
 
-		__logic = new ServerLogic(__playerManager, __roomManager);
+		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
 
 	} // prevent creation manually
 
@@ -89,6 +92,8 @@ public final class Server extends AbstractLogger implements IServer {
 		return __instance;
 	}
 
+	private final IEventManager __eventManager;
+
 	private final IHeartBeatManager __heartBeatManager;
 	private final IRoomManager __roomManager;
 	private final IPlayerManager __playerManager;
@@ -100,73 +105,74 @@ public final class Server extends AbstractLogger implements IServer {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final ServerLogic __logic;
+	private final InternalLogic __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
 	@Override
-	public void start(BaseConfiguration configuration) {
+	public boolean start(BaseConfiguration configuration) {
 		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Starting ...");
-		try {
-			// main server logic
-			__logic.init();
 
-			// Datagram connection can not stand alone
-			__checkDefinedMainConnection(configuration);
+		// main server logic
+		__internalLogic.init();
 
-			// schedules
-			__createAllSchedules(configuration);
-
-			// start network
-			__startNetwork(configuration);
-
-			// initialize heart-beat
-			if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
-				__heartBeatManager.initialize(configuration);
-			}
-
-			// initialize the subscribers
-			getExtension().init();
-
-			// check subscribers
-			// must handle subscribers for UDP attachment
-			__checkSubscriberUDPAttach(configuration);
-
-			// must handle subscribers for reconnection
-			__checkSubscriberReconnection(configuration);
-
-			// collect all subscribers, listen all the events
-			EventManager.subscribe();
-
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					shutdown();
-				}
-			});
-
-			info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
-
-		} catch (Exception e) { // if any exception occur, shutdown system immediately
-			error("EXCEPTION START", "system", e);
-			System.exit(1); // exit with error
+		// datagram connection can not stand alone
+		if (!__checkDefinedMainConnection(configuration)) {
+			return false;
 		}
+
+		// schedules
+		__createAllSchedules(configuration);
+
+		// start network
+		if (!__startNetwork(configuration)) {
+			return false;
+		}
+
+		// initialize heart-beat
+		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
+			__heartBeatManager.initialize(configuration);
+		}
+
+		// initialize the subscribers
+		getExtension().init();
+
+		// check subscribers must handle subscribers for UDP attachment
+		if (!__checkSubscriberUDPAttach(configuration)) {
+			return false;
+		}
+
+		// must handle subscribers for reconnection
+		if (!__checkSubscriberReconnection(configuration)) {
+			return false;
+		}
+
+		// collect all subscribers, listen all the events
+		__eventManager.subscribe();
+
+		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
+
+		return true;
 	}
 
-	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
+	private boolean __startNetwork(BaseConfiguration configuration) {
 		__network = new NettyNetwork();
-		__network.start(configuration);
+		return __network.start(__eventManager, configuration);
 	}
 
 	@Override
 	public void shutdown() {
-		__network.shutdown();
+		if (__network != null) {
+			__network.shutdown();
+		}
 		// clear all objects
 		__heartBeatManager.clear();
 		__roomManager.clear();
 		__playerManager.clear();
 		__taskManager.clear();
-		EventManager.clear();
+		__eventManager.clear();
+		// exit
+		System.exit(0);
 	}
 
 	@Override
@@ -179,52 +185,52 @@ public final class Server extends AbstractLogger implements IServer {
 		__extension = extension;
 	}
 
-	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
+	private boolean __checkSubscriberReconnection(BaseConfiguration configuration) {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-			try {
-				if (!EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-					throw new Exception(
-							new Throwable("Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
-				}
-			} catch (Exception e) {
-				error("EXCEPTION EVENT", "system", e.getCause());
+			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
+				var e = new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
+						TEvent.PLAYER_RECONNECT_SUCCESS);
+				error(e);
+				return false;
 			}
 		}
+		return true;
 	}
 
-	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
+	private boolean __checkSubscriberUDPAttach(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
-			try {
-				if (!EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
-						|| !EventManager.getEvent().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
-					throw new Exception(new Throwable(
-							"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
-				}
-			} catch (Exception e) {
-				error("EXCEPTION EVENT", "system", e.getCause());
+			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
+				var e = new NotDefinedSubscribersException(TEvent.ATTACH_UDP_REQUEST, TEvent.ATTACH_UDP_SUCCESS,
+						TEvent.ATTACH_UDP_FAILED);
+				error(e);
+				return false;
 			}
 		}
+		return true;
 	}
 
-	private void __checkDefinedMainConnection(BaseConfiguration configuration) throws Exception {
+	private boolean __checkDefinedMainConnection(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
 				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
-			throw new Exception(
-					new Throwable("Datagram connection can not stand alone, please define the Socket connection too"));
+			var e = new NotDefinedSocketConnectionException();
+			error(e);
+			return false;
 		}
+		return true;
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
 		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new TimeOutScanTask(__playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
+				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
 						configuration.getInt(BaseConfiguration.IDLE_WRITER),
 						configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run());
 		__taskManager.create(Constants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
 		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
+				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
 	}
 
 	@Override
@@ -250,6 +256,11 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public TaskApi getTaskApi() {
 		return __taskApi;
+	}
+
+	@Override
+	public IEventManager getEventManager() {
+		return __eventManager;
 	}
 
 }

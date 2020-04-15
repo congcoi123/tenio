@@ -13,3 +13,9 @@ branches:
   only:
     - master
     - develop
+
+notifications:
+  email:
+    recipients:
+      - congcoi123@gmail.com
+      

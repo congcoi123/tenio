@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.ecs.model.components.View;
-import com.tenio.engine.ecs.api.IComponent;
+import com.tenio.ecs.model.component.View;
+import com.tenio.engine.ecs.base.IComponent;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.pool.IElementPool;

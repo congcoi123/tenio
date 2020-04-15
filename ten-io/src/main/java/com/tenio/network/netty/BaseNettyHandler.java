@@ -24,8 +24,8 @@ THE SOFTWARE.
 package com.tenio.network.netty;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.event.EventManager;
+import com.tenio.configuration.constant.LEvent;
+import com.tenio.event.IEventManager;
 import com.tenio.network.Connection;
 
 import io.netty.channel.Channel;
@@ -40,6 +40,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * 
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
+
+	protected IEventManager _eventManager;
+
+	public BaseNettyHandler(IEventManager eventManager) {
+		_eventManager = eventManager;
+	}
 
 	/**
 	 * Retrieve a connection by its channel
@@ -66,7 +72,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _channelInactive(ChannelHandlerContext ctx, boolean keepPlayerOnDisconnect) {
 		// get the connection first
 		var connection = _getConnection(ctx.channel());
-		EventManager.getLogic().emit(LogicEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
+		_eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
 		connection = null;
 	}
 
@@ -79,7 +85,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// get the connection first
 		var connection = _getConnection(ctx.channel());
-		EventManager.getLogic().emit(LogicEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
+		_eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
 				cause);
 	}
 

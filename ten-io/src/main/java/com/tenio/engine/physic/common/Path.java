@@ -32,7 +32,7 @@ import com.tenio.engine.physic.graphic.IRender;
 import com.tenio.engine.physic.graphic.Paint;
 import com.tenio.engine.physic.math.Vector2;
 import com.tenio.engine.physic.utility.Transformation;
-import com.tenio.utils.MathUtility;
+import com.tenio.utility.MathUtility;
 
 /**
  * This class is used to define, manage, and traverse a path (defined by a
