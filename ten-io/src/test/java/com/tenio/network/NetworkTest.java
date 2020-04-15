@@ -21,41 +21,51 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration;
+package com.tenio.network;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.model.Configuration;
+import com.tenio.network.netty.NettyNetwork;
 
 /**
  * @author kong
  */
-public final class ConfigurationTest {
+public final class NetworkTest {
 
+	private INetwork __network;
+	private IEventManager __eventManager;
 	private Configuration __configuration;
 
 	@BeforeEach
 	public void initialize() {
+		__network = new NettyNetwork();
+		__eventManager = new EventManager();
 		__configuration = new Configuration("TenIOConfig.example.xml");
 	}
 
 	@Test
-	public void getConfigurationExtensionShouldReturnTrueValue() {
-		assertAll("getExtensionConfiguration",
-				() -> assertEquals("String", __configuration.getString(Configuration.CUSTOM_VALUE_1)),
-				() -> assertEquals("1", __configuration.getString(Configuration.CUSTOM_VALUE_2)),
-				() -> assertEquals("1.5", __configuration.getString(Configuration.CUSTOM_VALUE_3)),
-				() -> assertEquals("True", __configuration.getString(Configuration.CUSTOM_VALUE_4)));
+	public void startNetworkShouldReturnTrue() {
+		assertTrue(__network.start(__eventManager, __configuration));
+	}
+
+	@Test
+	public void bindPortAlreadyInUseShouldReturnFalse() {
+		__network.start(__eventManager, __configuration);
+		assertFalse(__network.start(__eventManager, __configuration));
 	}
 
 	@AfterEach
 	public void tearDown() {
-		// do nothing
+		__network.shutdown();
+		__eventManager.clear();
 	}
 
 }
