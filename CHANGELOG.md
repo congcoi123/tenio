@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.0.0 2020-04-15 Feature release
+Feature release
+- Standardized package names and class names
+- Added a new event for showing the current bandwidth
+- Added a Unit Test for the network package
+- Changed the way of using the event manager
+
 #### 1.0.1 2020-04-12 Bugfix release, Update recommended
 Bugfix release
 - Fixed bug in extension configuration

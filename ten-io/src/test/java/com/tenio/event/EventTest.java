@@ -32,65 +32,68 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.configuration.constant.LogicEvent;
+import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.manager.PlayerManager;
-import com.tenio.models.PlayerModel;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.manager.PlayerManager;
+import com.tenio.model.PlayerModel;
 
 /**
  * @author kong
  */
 public final class EventTest {
 
+	private IEventManager __eventManager;
 	private PlayerManager __playerManager;
 	private int[] __testCCU;
 	private PlayerModel __testPlayer;
 
 	@BeforeEach
 	public void initialize() {
-		 __playerManager = new PlayerManager();
-		 __testCCU = new int[2];
-		 __testPlayer = null;
-		 
+		__eventManager = new EventManager();
+		__playerManager = new PlayerManager(__eventManager);
+		__testCCU = new int[2];
+		__testPlayer = null;
+
 		// Create new player
 		var player = new PlayerModel("kong");
 		__playerManager.add(player);
 
 		// Handle events
-		EventManager.getEvent().on(TEvent.CCU, args -> {
+		__eventManager.getExternal().on(TEvent.CCU, args -> {
 			__testCCU[0] = (int) args[0];
 			__testCCU[1] = (int) args[1];
 			return null;
 		});
 
-		EventManager.getLogic().on(LogicEvent.GET_PLAYER, args -> {
+		__eventManager.getInternal().on(LEvent.GET_PLAYER, args -> {
 			return (AbstractPlayer) args[0];
 		});
 
 		// Start to subscribe
-		EventManager.subscribe();
+		__eventManager.subscribe();
 
 		// Make events listener
-		EventManager.getEvent().emit(TEvent.CCU, __playerManager.countPlayers(), __playerManager.count());
-		__testPlayer = (PlayerModel) EventManager.getLogic().emit(LogicEvent.GET_PLAYER,
+		__eventManager.getExternal().emit(TEvent.CCU, __playerManager.countPlayers(), __playerManager.count());
+		__testPlayer = (PlayerModel) __eventManager.getInternal().emit(LEvent.GET_PLAYER,
 				__playerManager.get(player.getName()));
 
 	}
 
 	@AfterEach
 	public void tearDown() {
-		EventManager.clear();
+		__playerManager.clear();
+		__eventManager.clear();
 	}
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertTrue(EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		assertTrue(__eventManager.getExternal().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void hasLogicEventSubscribeShouldReturnTrue() {
-		assertTrue(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		assertTrue(__eventManager.getInternal().hasSubscriber(LEvent.GET_PLAYER));
 	}
 
 	@Test
@@ -105,16 +108,16 @@ public final class EventTest {
 
 	@Test
 	public void clearAllTEventShouldReturnZero() {
-		EventManager.getEvent().clear();
-		
-		assertFalse(EventManager.getEvent().hasSubscriber(TEvent.CCU));
+		__eventManager.getExternal().clear();
+
+		assertFalse(__eventManager.getExternal().hasSubscriber(TEvent.CCU));
 	}
 
 	@Test
 	public void clearAllLogicEventShouldReturnZero() {
-		EventManager.getLogic().clear();
-		
-		assertFalse(EventManager.getLogic().hasSubscriber(LogicEvent.GET_PLAYER));
+		__eventManager.getInternal().clear();
+
+		assertFalse(__eventManager.getInternal().hasSubscriber(LEvent.GET_PLAYER));
 	}
 
 }

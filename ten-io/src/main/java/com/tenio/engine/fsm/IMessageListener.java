@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.fsm;
 
-import com.tenio.engine.fsm.entities.Telegram;
+import com.tenio.engine.fsm.entity.Telegram;
 
 /**
  * 

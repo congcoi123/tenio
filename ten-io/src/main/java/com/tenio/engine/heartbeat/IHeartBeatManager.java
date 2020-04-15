@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.heartbeat;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 
 /**
  * The Java ExecutorService is a construct that allows you to pass a task to be

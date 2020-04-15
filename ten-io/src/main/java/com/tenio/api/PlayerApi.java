@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.manager.IPlayerManager;
-import com.tenio.entities.manager.IRoomManager;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.AbstractRoom;
+import com.tenio.entity.manager.IPlayerManager;
+import com.tenio.entity.manager.IRoomManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
 

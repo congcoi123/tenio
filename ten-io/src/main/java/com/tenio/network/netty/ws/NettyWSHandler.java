@@ -24,8 +24,8 @@ THE SOFTWARE.
 package com.tenio.network.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.LogicEvent;
-import com.tenio.event.EventManager;
+import com.tenio.configuration.constant.LEvent;
+import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
@@ -56,7 +56,8 @@ public class NettyWSHandler extends BaseNettyHandler {
 	 */
 	private final boolean __keepPlayerOnDisconnect;
 
-	public NettyWSHandler(BaseConfiguration configuration) {
+	public NettyWSHandler(IEventManager eventManager, BaseConfiguration configuration) {
+		super(eventManager);
 		__maxPlayer = configuration.getInt(BaseConfiguration.MAX_PLAYER) - 1;
 		__keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 	}
@@ -84,11 +85,11 @@ public class NettyWSHandler extends BaseNettyHandler {
 			// get the connection first
 			var connection = _getConnection(ctx.channel());
 			if (connection == null) { // the new connection
-				connection = NettyConnection.newInstance(Connection.Type.WEB_SOCKET, ctx.channel());
-				EventManager.getLogic().emit(LogicEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
+				connection = NettyConnection.newInstance(_eventManager, Connection.Type.WEB_SOCKET, ctx.channel());
+				_eventManager.getInternal().emit(LEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
 						connection, message);
 			} else {
-				EventManager.getLogic().emit(LogicEvent.SOCKET_HANDLE, connection, message);
+				_eventManager.getInternal().emit(LEvent.SOCKET_HANDLE, connection, message);
 			}
 
 		}

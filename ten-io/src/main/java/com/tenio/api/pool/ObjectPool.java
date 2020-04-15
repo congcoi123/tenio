@@ -26,7 +26,7 @@ package com.tenio.api.pool;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
@@ -100,7 +100,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error("EXCEPTION REPAY", "object", e);
+			error(e);
 			throw e;
 		}
 	}

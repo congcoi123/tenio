@@ -29,6 +29,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.event.IEventManager;
 import com.tenio.extension.IExtension;
 
 /**
@@ -45,8 +46,10 @@ interface IServer {
 	 * Start the server base on your own configurations
 	 * 
 	 * @param configuration, see {@link BaseConfiguration}
+	 * 
+	 * @return <b>true</b> if the network can start normally, <b>false<b> otherwise
 	 */
-	void start(BaseConfiguration configuration);
+	boolean start(BaseConfiguration configuration);
 
 	/**
 	 * Shut down the server and close all services
@@ -64,6 +67,11 @@ interface IServer {
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
 	void setExtension(IExtension extension);
+
+	/**
+	 * @return see {@link IEventManager}
+	 */
+	IEventManager getEventManager();
 
 	/**
 	 * @return see {@link PlayerApi}

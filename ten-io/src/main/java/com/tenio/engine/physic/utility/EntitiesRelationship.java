@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.tenio.engine.physic.common.BaseGameEntity;
 import com.tenio.engine.physic.math.Vector2;
-import com.tenio.utils.MathUtility;
+import com.tenio.utility.MathUtility;
 
 /**
  * Some useful entities functions

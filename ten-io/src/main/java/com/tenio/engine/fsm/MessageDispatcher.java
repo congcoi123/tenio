@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.TreeSet;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.engine.fsm.entities.AbstractEntity;
-import com.tenio.engine.fsm.entities.Telegram;
-import com.tenio.entities.element.TObject;
-import com.tenio.utils.TimeUtility;
+import com.tenio.engine.fsm.entity.AbstractEntity;
+import com.tenio.engine.fsm.entity.Telegram;
+import com.tenio.entity.element.TObject;
+import com.tenio.utility.TimeUtility;
 
 /**
  * This class is used for sending messages between entities

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.message.codec.MessagePacker;
 import com.tenio.message.codec.MsgPackConverter;
 

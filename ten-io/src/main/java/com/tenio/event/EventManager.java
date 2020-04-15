@@ -23,53 +23,47 @@ THE SOFTWARE.
 */
 package com.tenio.event;
 
-import com.tenio.event.logic.LEventManager;
-import com.tenio.event.main.TEventManager;
+import com.tenio.event.external.TEventManager;
+import com.tenio.event.internal.LEventManager;
 import com.tenio.logger.AbstractLogger;
 
 /**
  * Manage all events in the server
  * 
+ * @see IEventManager
+ * 
  * @author kong
  *
  */
-public final class EventManager extends AbstractLogger {
+public final class EventManager extends AbstractLogger implements IEventManager {
 
 	/**
 	 * @see TEventManager
 	 */
-	private static TEventManager __tEvent = new TEventManager();
+	private TEventManager __tEvent = new TEventManager();
 	/**
 	 * @see LEventManager
 	 */
-	private static LEventManager __lEvent = new LEventManager();
+	private LEventManager __lEvent = new LEventManager();
 
-	/**
-	 * @return see {@link TEventManager}
-	 */
-	public static TEventManager getEvent() {
+	@Override
+	public TEventManager getExternal() {
 		return __tEvent;
 	}
 
-	/**
-	 * @return see {@link LEventManager}
-	 */
-	public static LEventManager getLogic() {
+	@Override
+	public LEventManager getInternal() {
 		return __lEvent;
 	}
 
-	/**
-	 * Collect all subscribers and these corresponding events.
-	 */
-	public static void subscribe() {
+	@Override
+	public void subscribe() {
 		__tEvent.subscribe();
 		__lEvent.subscribe();
 	}
 
-	/**
-	 * Clear all subscribers and these corresponding events.
-	 */
-	public static void clear() {
+	@Override
+	public void clear() {
 		__tEvent.clear();
 		__lEvent.clear();
 	}

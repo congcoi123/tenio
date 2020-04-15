@@ -24,9 +24,9 @@ THE SOFTWARE.
 package com.tenio.configuration.constant;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.AbstractPlayer;
-import com.tenio.entities.AbstractRoom;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.AbstractRoom;
+import com.tenio.entity.element.TObject;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
 import com.tenio.network.Connection;
@@ -348,6 +348,21 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_UDP_FAILED
+	ATTACH_UDP_FAILED,
+
+	/**
+	 * The amount of data that can be transmitted in a fixed amount of time. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> Last reading bandwidth (KB/s)</li>
+	 * <li><b>parameter[1]</b> Last writing bandwidth (KB/s)</li>
+	 * <li><b>parameter[2]</b> Real writing bandwidth (KB/s)</li>
+	 * <li><b>parameter[3]</b> Current read bytes (KB)</li>
+	 * <li><b>parameter[4]</b> Current written bytes (KB)</li>
+	 * <li><b>parameter[5]</b> Real written bytes (KB)</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	BANDWIDTH
 
 }

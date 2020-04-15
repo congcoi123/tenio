@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.ecs.model;
 
-import com.tenio.ecs.model.components.Animation;
-import com.tenio.ecs.model.components.Motion;
-import com.tenio.ecs.model.components.Position;
-import com.tenio.ecs.model.components.View;
+import com.tenio.ecs.model.component.Animation;
+import com.tenio.ecs.model.component.Motion;
+import com.tenio.ecs.model.component.Position;
+import com.tenio.ecs.model.component.View;
 
 /**
  * @author kong

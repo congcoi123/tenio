@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.network.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.event.IEventManager;
+import com.tenio.network.netty.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -37,9 +39,14 @@ import io.netty.handler.codec.http.HttpServerCodec;
  */
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
+	private final IEventManager __eventManager;
+	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final BaseConfiguration __configuration;
 
-	public NettyWSInitializer(BaseConfiguration configuration) {
+	public NettyWSInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
+			BaseConfiguration configuration) {
+		__eventManager = eventManager;
+		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
 
@@ -47,11 +54,14 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 	protected void initChannel(SocketChannel channel) throws Exception {
 		var pipeline = channel.pipeline();
 
+		// traffic counter
+		pipeline.addLast("traffic-counter", __trafficCounter);
+
 		// add http-codec for TCP hand shaker
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());
 
 		// the logic handler
-		pipeline.addLast("http-handshake", new NettyWSHandShake(__configuration));
+		pipeline.addLast("http-handshake", new NettyWSHandShake(__eventManager, __configuration));
 	}
 
 }

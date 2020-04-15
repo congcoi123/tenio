@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entities.element.TObject;
+import com.tenio.entity.element.TObject;
 import com.tenio.exception.HeartbeatNotFoundException;
 import com.tenio.logger.AbstractLogger;
 
@@ -74,7 +74,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			__executorService = Executors.newFixedThreadPool(maxHeartbeat);
 			info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
 		} catch (Exception e) {
-			error("HEART BEAT", String.valueOf(maxHeartbeat), e.getCause());
+			error(e);
 		}
 	}
 
@@ -90,7 +90,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			var future = __executorService.submit(heartbeat);
 			__pool.put(id, future);
 		} catch (Exception e) {
-			error("HEART BEAT", id, e.getCause());
+			error(e, "id: ", id);
 		}
 	}
 
@@ -118,7 +118,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			future = null;
 
 		} catch (Exception e) {
-			error("HEART BEAT", id, e.getCause());
+			error(e, "id: ", id);
 		}
 	}
 
@@ -129,7 +129,9 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public synchronized void clear() {
-		__executorService.shutdownNow();
+		if (__executorService != null) {
+			__executorService.shutdownNow();
+		}
 		__executorService = null;
 		__pool.clear();
 	}

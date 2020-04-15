@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.engine.physic.common;
 
-import com.tenio.engine.fsm.entities.AbstractEntity;
+import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.physic.math.Vector2;
-import com.tenio.utils.MathUtility;
+import com.tenio.utility.MathUtility;
 
 /**
  * The base game entity class, it aims for creating movable objects.

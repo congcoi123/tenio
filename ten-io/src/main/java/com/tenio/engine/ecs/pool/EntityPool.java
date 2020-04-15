@@ -29,9 +29,9 @@ import java.util.UUID;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.configuration.constant.Constants;
-import com.tenio.engine.ecs.ContextInfo;
-import com.tenio.engine.ecs.Entity;
-import com.tenio.engine.ecs.api.IEntity;
+import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.base.Entity;
+import com.tenio.engine.ecs.base.IEntity;
 import com.tenio.exception.NullElementPoolException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.pool.IElementPool;
@@ -66,7 +66,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				error("EXCEPTION CREATE", "component", e);
+				error(e);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				error("EXCEPTION CREATE", "component", e);
+				error(e);
 			}
 		}
 
@@ -124,7 +124,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error("EXCEPTION REPAY", "component", e);
+			error(e);
 			throw e;
 		}
 	}
