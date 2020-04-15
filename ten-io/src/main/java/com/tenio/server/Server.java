@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
-import java.io.IOException;
-
 import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
@@ -112,57 +110,54 @@ public final class Server extends AbstractLogger implements IServer {
 	private INetwork __network;
 
 	@Override
-	public void start(BaseConfiguration configuration) {
+	public boolean start(BaseConfiguration configuration) {
 		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Starting ...");
-		try {
-			// main server logic
-			__internalLogic.init();
 
-			// Datagram connection can not stand alone
-			__checkDefinedMainConnection(configuration);
+		// main server logic
+		__internalLogic.init();
 
-			// schedules
-			__createAllSchedules(configuration);
-
-			// start network
-			__startNetwork(configuration);
-
-			// initialize heart-beat
-			if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
-				__heartBeatManager.initialize(configuration);
-			}
-
-			// initialize the subscribers
-			getExtension().init();
-
-			// check subscribers
-			// must handle subscribers for UDP attachment
-			__checkSubscriberUDPAttach(configuration);
-
-			// must handle subscribers for reconnection
-			__checkSubscriberReconnection(configuration);
-
-			// collect all subscribers, listen all the events
-			__eventManager.subscribe();
-
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					shutdown();
-				}
-			});
-
-			info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
-
-		} catch (Exception e) { // if any exception occur, shutdown system immediately
-			error("EXCEPTION START", "system", e);
-			System.exit(1); // exit with error
+		// datagram connection can not stand alone
+		if (!__checkDefinedMainConnection(configuration)) {
+			return false;
 		}
+
+		// schedules
+		__createAllSchedules(configuration);
+
+		// start network
+		if (!__startNetwork(configuration)) {
+			return false;
+		}
+
+		// initialize heart-beat
+		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
+			__heartBeatManager.initialize(configuration);
+		}
+
+		// initialize the subscribers
+		getExtension().init();
+
+		// check subscribers must handle subscribers for UDP attachment
+		if (!__checkSubscriberUDPAttach(configuration)) {
+			return false;
+		}
+
+		// must handle subscribers for reconnection
+		if (!__checkSubscriberReconnection(configuration)) {
+			return false;
+		}
+
+		// collect all subscribers, listen all the events
+		__eventManager.subscribe();
+
+		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
+
+		return true;
 	}
 
-	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
+	private boolean __startNetwork(BaseConfiguration configuration) {
 		__network = new NettyNetwork();
-		__network.start(__eventManager, configuration);
+		return __network.start(__eventManager, configuration);
 	}
 
 	@Override
@@ -174,6 +169,8 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerManager.clear();
 		__taskManager.clear();
 		__eventManager.clear();
+		// exit
+		System.exit(0);
 	}
 
 	@Override
@@ -186,19 +183,20 @@ public final class Server extends AbstractLogger implements IServer {
 		__extension = extension;
 	}
 
-	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
+	private boolean __checkSubscriberReconnection(BaseConfiguration configuration) {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
 			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
 				var e = new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
 						TEvent.PLAYER_RECONNECT_SUCCESS);
 				error("EXCEPTION SEVER", "event", e.getCause());
-				throw e;
+				return false;
 			}
 		}
+		return true;
 	}
 
-	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
+	private boolean __checkSubscriberUDPAttach(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
 			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
@@ -206,18 +204,20 @@ public final class Server extends AbstractLogger implements IServer {
 				var e = new NotDefinedSubscribersException(TEvent.ATTACH_UDP_REQUEST, TEvent.ATTACH_UDP_SUCCESS,
 						TEvent.ATTACH_UDP_FAILED);
 				error("EXCEPTION SERVER", "event", e.getCause());
-				throw e;
+				return false;
 			}
 		}
+		return true;
 	}
 
-	private void __checkDefinedMainConnection(BaseConfiguration configuration) throws Exception {
+	private boolean __checkDefinedMainConnection(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
 				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
 			var e = new NotDefinedSocketConnectionException();
 			error("EXCEPTION SERVER", "socket", e.getCause());
-			throw e;
+			return false;
 		}
+		return true;
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {

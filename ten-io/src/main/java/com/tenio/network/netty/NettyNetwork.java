@@ -61,8 +61,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private Channel __ws;
 
 	@Override
-	public void start(IEventManager eventManager, BaseConfiguration configuration)
-			throws IOException, InterruptedException {
+	public boolean start(IEventManager eventManager, BaseConfiguration configuration) {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 
@@ -71,14 +70,40 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				Constants.TRAFFIC_COUNTER_CHECK_INTERVAL);
 
 		if (configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
-			__bindTCP(eventManager, configuration);
+			try {
+				__bindTCP(eventManager, configuration);
+			} catch (IOException e) {
+				error("", "", e.getCause());
+				return false;
+			} catch (InterruptedException e) {
+				error("", "", e.getCause());
+				return false;
+			}
 		}
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
-			__bindUDP(eventManager, configuration);
+			try {
+				__bindUDP(eventManager, configuration);
+			} catch (IOException e) {
+				error("", "", e.getCause());
+				return false;
+			} catch (InterruptedException e) {
+				error("", "", e.getCause());
+				return false;
+			}
 		}
 		if (configuration.isDefined(BaseConfiguration.WEBSOCKET_PORT)) {
-			__bindWS(eventManager, configuration);
+			try {
+				__bindWS(eventManager, configuration);
+			} catch (IOException e) {
+				error("", "", e.getCause());
+				return false;
+			} catch (InterruptedException e) {
+				error("", "", e.getCause());
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	/**

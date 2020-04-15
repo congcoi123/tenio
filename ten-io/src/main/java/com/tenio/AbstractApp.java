@@ -42,7 +42,9 @@ public abstract class AbstractApp extends AbstractLogger {
 	public void start() {
 		var server = Server.getInstance();
 		server.setExtension(getExtension());
-		server.start(getConfiguration());
+		if (!server.start(getConfiguration())) {
+			server.shutdown();
+		}
 	}
 
 	/**

@@ -46,8 +46,10 @@ interface IServer {
 	 * Start the server base on your own configurations
 	 * 
 	 * @param configuration, see {@link BaseConfiguration}
+	 * 
+	 * @return <b>true</b> if the network can start normally, <b>false<b> otherwise
 	 */
-	void start(BaseConfiguration configuration);
+	boolean start(BaseConfiguration configuration);
 
 	/**
 	 * Shut down the server and close all services

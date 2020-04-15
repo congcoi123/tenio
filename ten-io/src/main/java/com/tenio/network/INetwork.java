@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.network;
 
-import java.io.IOException;
-
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.event.IEventManager;
 
@@ -43,10 +41,10 @@ public interface INetwork {
 	 * 
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
-	 * @throws IOException          the exception
-	 * @throws InterruptedException the exception
+	 * 
+	 * @return <b>true</b> if the network can start normally, <b>false<b> otherwise
 	 */
-	void start(IEventManager eventManager, BaseConfiguration configuration) throws IOException, InterruptedException;
+	boolean start(IEventManager eventManager, BaseConfiguration configuration);
 
 	/**
 	 * Shutdown the network
