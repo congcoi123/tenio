@@ -260,11 +260,11 @@ final class InternalLogic extends AbstractLogger {
 	}
 
 	private void __exception(AbstractPlayer player, Throwable cause) {
-		error("EXCEPTION PLAYER", player.getName(), cause);
+		error(cause, "player name: ", player.getName());
 	}
 
 	private void __exception(String identify, Throwable cause) {
-		error("EXCEPTION CONNECTION CHANNEL", identify, cause);
+		error(cause, "identify: ", identify);
 	}
 
 }

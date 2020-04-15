@@ -59,7 +59,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				error("EXCEPTION CREATE", "component", e);
+				error(e);
 			}
 		}
 	}
@@ -89,7 +89,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				error("EXCEPTION CREATE", "component", e);
+				error(e);
 			}
 		}
 
@@ -113,7 +113,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error("EXCEPTION REPAY", "component", e);
+			error(e);
 			throw e;
 		}
 	}

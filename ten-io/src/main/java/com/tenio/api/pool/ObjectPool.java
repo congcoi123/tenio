@@ -100,7 +100,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error("EXCEPTION REPAY", "object", e);
+			error(e);
 			throw e;
 		}
 	}

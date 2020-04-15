@@ -105,7 +105,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		try {
 			load(file);
 		} catch (Exception e) {
-			error("EXCEPTION CONFIGURATION", file, e);
+			error(e, "file: ", file);
 		}
 	}
 

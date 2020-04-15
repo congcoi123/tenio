@@ -189,7 +189,7 @@ public final class Server extends AbstractLogger implements IServer {
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
 				var e = new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
 						TEvent.PLAYER_RECONNECT_SUCCESS);
-				error("EXCEPTION SEVER", "event", e.getCause());
+				error(e);
 				return false;
 			}
 		}
@@ -203,7 +203,7 @@ public final class Server extends AbstractLogger implements IServer {
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
 				var e = new NotDefinedSubscribersException(TEvent.ATTACH_UDP_REQUEST, TEvent.ATTACH_UDP_SUCCESS,
 						TEvent.ATTACH_UDP_FAILED);
-				error("EXCEPTION SERVER", "event", e.getCause());
+				error(e);
 				return false;
 			}
 		}
@@ -214,7 +214,7 @@ public final class Server extends AbstractLogger implements IServer {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
 				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
 			var e = new NotDefinedSocketConnectionException();
-			error("EXCEPTION SERVER", "socket", e.getCause());
+			error(e);
 			return false;
 		}
 		return true;

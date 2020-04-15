@@ -100,7 +100,7 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
-			error("EXCEPTION REPAY", "array", e);
+			error(e);
 			throw e;
 		}
 	}

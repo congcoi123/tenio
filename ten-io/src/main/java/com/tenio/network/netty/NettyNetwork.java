@@ -73,10 +73,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			try {
 				__bindTCP(eventManager, configuration);
 			} catch (IOException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.SOCKET_PORT));
 				return false;
 			} catch (InterruptedException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.SOCKET_PORT));
 				return false;
 			}
 		}
@@ -84,10 +84,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			try {
 				__bindUDP(eventManager, configuration);
 			} catch (IOException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.DATAGRAM_PORT));
 				return false;
 			} catch (InterruptedException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.DATAGRAM_PORT));
 				return false;
 			}
 		}
@@ -95,10 +95,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			try {
 				__bindWS(eventManager, configuration);
 			} catch (IOException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.WEBSOCKET_PORT));
 				return false;
 			} catch (InterruptedException e) {
-				error("", "", e.getCause());
+				error(e, "port: ", configuration.getString(BaseConfiguration.WEBSOCKET_PORT));
 				return false;
 			}
 		}
@@ -201,7 +201,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			channel.close().sync();
 			return true;
 		} catch (InterruptedException e) {
-			error("EXCEPTION CLOSE", "network", e);
+			error(e);
 			return false;
 		}
 	}

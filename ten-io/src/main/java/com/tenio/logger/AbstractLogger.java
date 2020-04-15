@@ -237,17 +237,20 @@ public abstract class AbstractLogger {
 	 * Only use for EXCEPTION detection in the server system. Be careful when using
 	 * it yourself. You are warned!
 	 * 
-	 * @param where where you put this log
-	 * @param tag   the tag type
 	 * @param cause the reason for this exception
+	 * @param extra the extra information
 	 */
-	public final void error(final String where, final String tag, final Throwable cause) {
+	public final void error(final Throwable cause, final Object... extra) {
 		if (!__logger.isErrorEnabled()) {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(">").append("[").append(tag).append("] ")
-				.append(Throwables.getStackTraceAsString(cause));
+		builder.append(Throwables.getStackTraceAsString(cause));
+		builder.append("=========== BEGIN INFORMATION ===========\n");
+		for (var e : extra) {
+			builder.append(e);
+		}
+		builder.append("\n============ END INFORMATION ============\n");
 		__logger.error(builder.toString());
 		__stringPool.repay(builder);
 	}
