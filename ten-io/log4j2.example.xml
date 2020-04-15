@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration status="info">
 	<Properties>
-		<!-- Please change your own path of log file here -->
+		<!-- Please change your own path of the log file here -->
 		<Property name="logdir">/Users/kong/Downloads/logs</Property>
 		<Property name="logfile">tenio</Property>
 		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
-		<!-- Log data can be displayed in console or save to file -->
+		<!-- Log data can be displayed in the console or save to a file -->
 		<Property name="target">Console</Property>
 		<!-- Logging level: debug > info > error -->
 		<Property name="level">debug</Property>

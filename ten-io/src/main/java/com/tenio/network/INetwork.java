@@ -42,7 +42,7 @@ public interface INetwork {
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
 	 * 
-	 * @return <b>true</b> if the network can start normally, <b>false<b> otherwise
+	 * @return <b>true</b> if the network can start normally, <b>false</b> otherwise
 	 */
 	boolean start(IEventManager eventManager, BaseConfiguration configuration);
 

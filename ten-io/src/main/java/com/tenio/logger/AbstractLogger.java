@@ -246,11 +246,13 @@ public abstract class AbstractLogger {
 		}
 		StringBuilder builder = __stringPool.get();
 		builder.append(Throwables.getStackTraceAsString(cause));
-		builder.append("=========== BEGIN INFORMATION ===========\n");
-		for (var e : extra) {
-			builder.append(e);
+		if (extra.length > 0) {
+			builder.append("=========== BEGIN INFORMATION ===========\n");
+			for (var e : extra) {
+				builder.append(e);
+			}
+			builder.append("\n============ END INFORMATION ============\n");
 		}
-		builder.append("\n============ END INFORMATION ============\n");
 		__logger.error(builder.toString());
 		__stringPool.repay(builder);
 	}

@@ -162,7 +162,9 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@Override
 	public void shutdown() {
-		__network.shutdown();
+		if (__network != null) {
+			__network.shutdown();
+		}
 		// clear all objects
 		__heartBeatManager.clear();
 		__roomManager.clear();

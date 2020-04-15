@@ -129,7 +129,9 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public synchronized void clear() {
-		__executorService.shutdownNow();
+		if (__executorService != null) {
+			__executorService.shutdownNow();
+		}
 		__executorService = null;
 		__pool.clear();
 	}
