@@ -41,6 +41,8 @@ import com.tenio.entity.manager.PlayerManager;
 import com.tenio.entity.manager.RoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.event.IEventManager;
+import com.tenio.exception.NotDefinedSocketConnectionException;
+import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
@@ -186,29 +188,25 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-			try {
-				if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-						|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-					throw new Exception(
-							new Throwable("Need to implement subscribers: PLAYER_RECONNECT, PLAYER_RECONNECT_SUCCESS"));
-				}
-			} catch (Exception e) {
-				error("EXCEPTION EVENT", "system", e.getCause());
+			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
+				var e = new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
+						TEvent.PLAYER_RECONNECT_SUCCESS);
+				error("EXCEPTION SEVER", "event", e.getCause());
+				throw e;
 			}
 		}
 	}
 
 	private void __checkSubscriberUDPAttach(BaseConfiguration configuration) {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
-			try {
-				if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
-						|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
-						|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
-					throw new Exception(new Throwable(
-							"Need to implement subscribers: ATTACH_UDP_CONDITION, ATTACH_UDP_SUCCESS, ATTACH_UDP_FAILED"));
-				}
-			} catch (Exception e) {
-				error("EXCEPTION EVENT", "system", e.getCause());
+			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_REQUEST)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_SUCCESS)
+					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_UDP_FAILED)) {
+				var e = new NotDefinedSubscribersException(TEvent.ATTACH_UDP_REQUEST, TEvent.ATTACH_UDP_SUCCESS,
+						TEvent.ATTACH_UDP_FAILED);
+				error("EXCEPTION SERVER", "event", e.getCause());
+				throw e;
 			}
 		}
 	}
@@ -216,8 +214,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkDefinedMainConnection(BaseConfiguration configuration) throws Exception {
 		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
 				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
-			throw new Exception(
-					new Throwable("Datagram connection can not stand alone, please define the Socket connection too"));
+			var e = new NotDefinedSocketConnectionException();
+			error("EXCEPTION SERVER", "socket", e.getCause());
+			throw e;
 		}
 	}
 
