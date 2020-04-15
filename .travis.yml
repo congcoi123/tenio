@@ -7,9 +7,18 @@ jdk:
 script:
   - cd ten-io
   - mvn test
+  - sbt clean coverage test
+
+after_success:
+  - sbt coveralls
 
 # safelist
-branches:
-  only:
-    - master
-    - develop
+# branches:
+#   only:
+#     - master
+#     - develop
+
+notifications:
+  email:
+    recipients:
+      - congcoi123@gmail.com
