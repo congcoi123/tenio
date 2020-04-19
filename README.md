@@ -27,6 +27,7 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 ### Clients
 - [TenIOCocos2dx](https://github.com/congcoi123/tenio-cocos2dx.git)
 - [TenIOLibgdx](https://github.com/congcoi123/tenio-libgdx.git)
+- [TenIOUnity](https://github.com/congcoi123/tenio-unity.git)
 - [TenIOJs](https://github.com/congcoi123/tenio-js.git)
 
 ## Dependencies
@@ -34,6 +35,9 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - msgpack 0.6.12
 - guava 25.1-jre
 - log4j-core 2.11.1
+
+## Requirements
+- Java 11
 
 ## License
 The TenIO project is currently available under the [MIT](LICENSE) License.
