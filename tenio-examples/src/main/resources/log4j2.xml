@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration status="info">
 	<Properties>
-		<Property name="logdir">/Users/kong/Downloads/logs</Property>
+		<Property name="logdir">./logs</Property>
 		<Property name="logfile">tenio-examples</Property>
 		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
 		<!-- Logging level: debug > info > error -->
-		<Property name="target">Console</Property>
+		<Property name="target">File</Property>
 		<Property name="level">info</Property>
 	</Properties>
 
