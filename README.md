@@ -61,8 +61,8 @@ Maven
 </dependency>
 ```
 Or you can get the sources
-```
-git clone https://github.com/congcoi123/tenio.git
+```sh
+$ git clone https://github.com/congcoi123/tenio.git
 ```
 
 ## Examples

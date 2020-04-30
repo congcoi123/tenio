@@ -31,12 +31,12 @@ $ git commit -m "fix: can not found the configuration file"
 ```
 
 ##### Allowed `type` values:
-- **feat** new feature, not a new feature for build script.
-- **fix** bug fix, not a fix to a build script.
-- **docs** changes to the documentation.
-- **meta** formatting, missing semi colons, etc; no production code change.
-- **refactor** refactoring production code, eg. renaming a variable.
-- **test** adding missing tests, refactoring tests, no production code change.
-- **chore** updating grunt tasks etc, no production code change.
-- **ci** ci configure.
-- **perf** a code change that improves performance.
+- **feat** - new feature, not a new feature for build script.
+- **fix** - bug fix, not a fix to a build script.
+- **docs** - changes to the documentation.
+- **meta** - formatting, missing semi colons, etc; no production code change.
+- **refactor** - refactoring production code, eg. renaming a variable.
+- **test** - adding missing tests, refactoring tests, no production code change.
+- **chore** - updating grunt tasks etc, no production code change.
+- **ci** - ci configure.
+- **perf** - a code change that improves performance.
