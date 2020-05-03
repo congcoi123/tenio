@@ -3,11 +3,11 @@
 [![Javadocs](https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg)](https://javadoc.io/doc/io.github.congcoi123/tenio)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/congcoi123/tenio.svg?branch=master)](https://travis-ci.org/github/congcoi123/tenio)
-![GitHub last commit](https://img.shields.io/github/last-commit/congcoi123/tenio)
+[![GitHub last commit](https://img.shields.io/github/last-commit/congcoi123/tenio)](#)
 [![GitHub issues](https://img.shields.io/github/issues/congcoi123/tenio)](https://github.com/congcoi123/tenio/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-TenIO is a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games. It supports UDP and TCP transports which are handled by [Netty](https://netty.io/) for high-speed network transmission. It uses [MsgPack](https://msgpack.org/index.html) for compressing data so that can be transferred quickly through the network. This framework can help you quickly create a game server or integrate it into your system.
+`TenIO` is a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games. It supports UDP and TCP transports which are handled by [Netty](https://netty.io/) for high-speed network transmission. It uses [MsgPack](https://msgpack.org/index.html) for compressing data so that can be transferred quickly through the network. This framework can help you quickly create a game server or integrate it into your system.
 
 ## Features
 - Easy-to-use, OOP design.
@@ -25,7 +25,7 @@ TenIO is a java NIO (Non-blocking I/O) based server specifically designed for mu
 ![ECS](assets/ecs-example-5.gif)
 
 ## Wiki
-The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use TenIO might have about it.
+The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
 ### Clients
 - [TenIO Cocos2dx](https://github.com/congcoi123/tenio-cocos2dx.git)
@@ -43,7 +43,7 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - Java 11
 
 ## License
-The TenIO project is currently available under the [MIT](LICENSE) License.
+The `TenIO` project is currently available under the [MIT](LICENSE) License.
 
 ## Changelog
 Please check out the [changelog](CHANGELOG.md) for more details.

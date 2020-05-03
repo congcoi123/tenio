@@ -4,11 +4,11 @@ We are happy with your help in making the `TenIO` project better. Please read th
 ## Project roles
 ### Reviewer
 If you having submit a pull request, you can assign a reviewer is any members below to review and merge your pull request.
-- [@Kong](https://github.com/congcoi123)
+- [Kong](https://github.com/congcoi123)
 
 ### Core Committer
 The contributors with commit access and release to `TenIO` project. If you want to become a core committer please start writing Pull Requests.
-- [@Kong](https://github.com/congcoi123)
+- [Kong](https://github.com/congcoi123)
 
 ## Submitting pull requests
 Once you've come up with a good design, go ahead and submit a pull request (PR). When submitting a PR, please follow these guidelines:
