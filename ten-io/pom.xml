@@ -52,9 +52,19 @@
 		<maven.source.plugin.version>3.0.1</maven.source.plugin.version>
 		<maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
 		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+		<jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
+		<coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
+
+		<!-- Sonar -->
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.outputDirectory>${project.reporting.outputEncoding}</sonar.jacoco.outputDirectory>
+		<sonar.language>java</sonar.language>
+
 	</properties>
 
 	<dependencies>
@@ -188,6 +198,51 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<!-- jacoco report -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.maven.plugin.version}</version>
+				<configuration>
+					<outputDirectory>${sonar.jacoco.outputDirectory}</outputDirectory>
+					<dataFile>${sonar.jacoco.reportPath}</dataFile>
+					<destFile>${sonar.jacoco.reportPath}</destFile>
+					<append>true</append>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- coveralls service -->
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>${coveralls.maven.plugin.version}</version>
+				<configuration>
+					<jacocoReports>
+						<jacocoReport>${sonar.jacoco.reportPath}</jacocoReport>
+					</jacocoReports>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+						<version>2.2.3</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

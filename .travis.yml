@@ -3,10 +3,16 @@ language: java
 jdk:
   - openjdk11
 
+install:
+  - mvn test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
 # run
 script:
   - cd ten-io
-  - mvn test
+  - mvn test jacoco:report
+after_success:
+  - cd ten-io
+  - mvn coveralls:report  
 
 # safelist
 branches:
