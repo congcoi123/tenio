@@ -10,7 +10,7 @@ script:
 
 after_success:
   - cd ten-io
-  - mvn jacoco:report coveralls:report -DrepoToken=repoToken
+  - mvn clean -DrepoToken=$repoToken jacoco:report coveralls:report
 
 # safelist
 branches:

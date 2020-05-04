@@ -219,7 +219,7 @@
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>${coveralls.maven.plugin.version}</version>
 				<configuration>
-					<repoToken>repoToken</repoToken>
+					<repoToken>${env.repoToken}</repoToken>
 				</configuration>
 				<dependencies>
 					<dependency>
