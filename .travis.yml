@@ -6,10 +6,10 @@ jdk:
 # run
 script:
   - cd ten-io
-  - mvn test jacoco:report
+  - mvn test jacoco:report -DrepoToken=repoToken
 after_success:
   - cd ten-io
-  - mvn coveralls:report  
+  - mvn coveralls:report -DrepoToken=repoToken
 
 # safelist
 branches:
