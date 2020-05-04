@@ -3,10 +3,6 @@ language: java
 jdk:
   - openjdk11
 
-install:
-  - cd ten-io
-  - mvn test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
 # run
 script:
   - cd ten-io
