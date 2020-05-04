@@ -6,10 +6,11 @@ jdk:
 # run
 script:
   - cd ten-io
-  - mvn test jacoco:report -DrepoToken=repoToken
+  - mvn clean test
+
 after_success:
   - cd ten-io
-  - mvn coveralls:report -DrepoToken=repoToken
+  - mvn jacoco:report coveralls:report -DrepoToken=repoToken
 
 # safelist
 branches:
@@ -21,4 +22,3 @@ notifications:
   email:
     recipients:
       - congcoi123@gmail.com
-      
