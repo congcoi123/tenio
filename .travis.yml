@@ -6,7 +6,10 @@ jdk:
 # run
 script:
   - cd ten-io
-  - mvn test
+  - mvn test jacoco:report
+after_success:
+  - cd ten-io
+  - mvn coveralls:report  
 
 # safelist
 branches:
