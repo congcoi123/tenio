@@ -6,11 +6,11 @@ jdk:
 # run
 script:
   - cd ten-io
-  - mvn clean test
+  - mvn clean test jacoco:report
 
 after_success:
   - cd ten-io
-  - mvn clean -DrepoToken=$repoToken jacoco:report coveralls:report
+  - mvn clean -DrepoToken=$repoToken coveralls:report
 
 # safelist
 branches:
