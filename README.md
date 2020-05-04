@@ -3,6 +3,7 @@
 [![Javadocs](https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg)](https://javadoc.io/doc/io.github.congcoi123/tenio)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/congcoi123/tenio.svg?branch=master)](https://travis-ci.org/github/congcoi123/tenio)
+[![Coverage Status](https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master)](https://coveralls.io/github/congcoi123/tenio)
 [![GitHub last commit](https://img.shields.io/github/last-commit/congcoi123/tenio)](#)
 [![GitHub issues](https://img.shields.io/github/issues/congcoi123/tenio)](https://github.com/congcoi123/tenio/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
