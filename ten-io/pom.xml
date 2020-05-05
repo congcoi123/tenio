@@ -238,13 +238,6 @@
 						<jacocoReport>${sonar.jacoco.reportPath}</jacocoReport>
 					</jacocoReports>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>javax.xml.bind</groupId>
-						<artifactId>jaxb-api</artifactId>
-						<version>2.3.0</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
