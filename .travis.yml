@@ -1,4 +1,5 @@
-sudo: false
+dist: xenial
+os: linux
 
 # language and version
 language: java
@@ -16,11 +17,6 @@ after_success:
   - mvn jacoco:report
   # get the token decrypted by travis, and call coveralls-plugin to upload the report
   - mvn coveralls:report -DrepoToken="${COVERALLS_TOKEN}"
-
-# encrypted the token string
-env:
-  global:
-    - secure: "..............................."
 
 # safelist
 branches:

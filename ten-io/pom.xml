@@ -206,6 +206,12 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.maven.plugin.version}</version>
+				<configuration>
+					<outputDirectory>${sonar.jacoco.outputDirectory}</outputDirectory>
+					<dataFile>${sonar.jacoco.reportPath}</dataFile>
+					<destFile>${sonar.jacoco.reportPath}</destFile>
+					<append>true</append>
+				</configuration>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
@@ -227,6 +233,18 @@
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>${coveralls.maven.plugin.version}</version>
+				<configuration>
+					<jacocoReports>
+						<jacocoReport>${sonar.jacoco.reportPath}</jacocoReport>
+					</jacocoReports>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+						<version>2.3.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
