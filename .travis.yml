@@ -4,6 +4,7 @@ os: linux
 # language and version
 language: java
 jdk:
+  - openjdk8
   - openjdk11
 
 script:
