@@ -3,14 +3,22 @@ language: java
 jdk:
   - openjdk11
 
-# run
-script:
+script: 
   - cd ten-io
-  - mvn clean test
+  - mvn clean verify
 
 after_success:
-  - cd ten-io
-  - mvn clean -DrepoToken=$repoToken jacoco:report coveralls:report
+  # run all unit test cases
+  - mvn clean test
+  # generate the test report
+  - mvn jacoco:report
+  # get the token decrypted by travis, and call coveralls-plugin to upload the report
+  - mvn coveralls:report -DrepoToken="${COVERALLS_TOKEN}"
+
+# encrypted the token string
+env:
+  global:
+    - secure: "..............................."
 
 # safelist
 branches:
