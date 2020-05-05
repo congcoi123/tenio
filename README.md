@@ -22,8 +22,6 @@
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 - Communication Simulation  
 ![Communication](assets/login-example-1.gif)
-- Simple ECS (Entity Component System) Simulation  
-![ECS](assets/ecs-example-5.gif)
 
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
