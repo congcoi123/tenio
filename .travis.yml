@@ -1,15 +1,23 @@
+dist: xenial
+os:
+  - linux
+
 # language and version
 language: java
 jdk:
   - openjdk11
 
-# run
 script:
   - cd ten-io
-  - mvn test jacoco:report
+  - mvn clean verify -Dgpg.skip=true
+  # run all unit test cases
+  - mvn clean test
+
 after_success:
-  - cd ten-io
-  - mvn coveralls:report  
+  # generate the test report
+  - mvn jacoco:report
+  # get the token decrypted by travis, and call coveralls-plugin to upload the report
+  - mvn coveralls:report -DrepoToken="${COVERALLS_TOKEN}"
 
 # safelist
 branches:
@@ -21,4 +29,3 @@ notifications:
   email:
     recipients:
       - congcoi123@gmail.com
-      
