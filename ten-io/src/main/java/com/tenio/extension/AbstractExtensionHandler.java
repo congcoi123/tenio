@@ -30,6 +30,7 @@ import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
+import com.tenio.entity.AbstractRoom;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.ISubscriber;
 import com.tenio.logger.AbstractLogger;
@@ -108,6 +109,16 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link AbstractPlayer} type
 	 */
 	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
+		return (T) object;
+	}
+	
+	@SuppressWarnings("unchecked")
+	/**
+	 * @param <T>    the corresponding return type
+	 * @param object the corresponding object
+	 * @return a value in {@link AbstractRoom} type
+	 */
+	protected <T extends AbstractRoom> T _getRoom(Object object) {
 		return (T) object;
 	}
 
