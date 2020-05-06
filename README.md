@@ -30,7 +30,7 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - [TenIO Cocos2dx](https://github.com/congcoi123/tenio-cocos2dx.git)
 - [TenIO Libgdx](https://github.com/congcoi123/tenio-libgdx.git)
 - [TenIO Unity](https://github.com/congcoi123/tenio-unity.git)
-- [TenIO Phaserjs](https://github.com/congcoi123/tenio-js.git)
+- [TenIO Phaserjs](https://github.com/congcoi123/tenio-phaserjs.git)
 
 ## Dependencies
 - netty-all 4.1.42.Final
