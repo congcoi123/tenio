@@ -88,6 +88,8 @@ Please start the server before its corresponding client in each example package.
     |-- example6
     |   |-- TestClientStress.java
     |   |-- TestServerStress.java
+    |-- example7
+    |   |-- TestServerPhaserjs.java
 ```
 
 > Happy coding !

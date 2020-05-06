@@ -94,6 +94,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 				// The player has login successful
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
+				// create the initial position
+				int x = MathUtility.randInt(100, 400);
+				int y = MathUtility.randInt(100, 400);
+				player.setPosition(x, y);
 				
 				info("PLAYER_IN_SUCCESS", player.getName());
 				
@@ -111,14 +115,11 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var pack = _messageApi.getArrayPack();
 				var players = room.getPlayers();
 				for (var p : players.values()) {
-					// Send back the initial position
-					int x = MathUtility.randInt(100, 400);
-					int y = MathUtility.randInt(100, 400);
-					
+					var pjs = (PlayerPhaserjs) p;
 					var data = TArray.newInstance();
-					data.add(p.getName());
-					data.add(x);
-					data.add(y);
+					data.add(pjs.getName());
+					data.add(pjs.getX());
+					data.add(pjs.getY());
 					pack.add(data);
 				}				
 				_messageApi.sendToRoom(room, "c", "i", "d", pack);
@@ -130,6 +131,8 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				var message = _getTObject(args[2]);
 				var move = message.getTArray("d");
+				
+				player.setPosition(move.getInt(0), move.getInt(1));
 				
 				info("RECEIVED_FROM_PLAYER", message);
 				

@@ -34,9 +34,25 @@ import com.tenio.entity.AbstractPlayer;
  */
 @Entity
 public final class PlayerPhaserjs extends AbstractPlayer {
+	
+	private int __x;
+	private int __y;
 
 	public PlayerPhaserjs(String name) {
 		super(name);
+	}
+	
+	public int getX() {
+		return __x;
+	}
+	
+	public int getY() {
+		return __y;
+	}
+	
+	public void setPosition(int x, int y) {
+		__x = x;
+		__y = y;
 	}
 
 }
