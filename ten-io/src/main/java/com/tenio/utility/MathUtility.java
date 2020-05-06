@@ -118,7 +118,7 @@ public final class MathUtility {
 	 * @return a random integer between x and y
 	 */
 	public static int randInt(int x, int y) {
-		return __rand.nextInt() % (y - x + 1) + x;
+		return x + (int)(Math.random() * ((y - x) + 1));
 	}
 
 	/**
