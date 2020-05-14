@@ -48,13 +48,9 @@ import com.tenio.network.Connection;
 public abstract class AbstractPlayer {
 
 	/**
-	 * The main connection (TCP). It will be established first
+	 * The list of socket/web socket connections
 	 */
-	private Connection __connection;
-	/**
-	 * The UDP sub-connection. It can be set or set to <code>null</code>
-	 */
-	private Connection __subConnection;
+	private Connection[] __connections;
 	/**
 	 * The unique name in the server
 	 */
@@ -68,7 +64,7 @@ public abstract class AbstractPlayer {
 	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set
-	 * <code>null</code> @see {@link AbstractRoom}
+	 * <b>null</b> @see {@link AbstractRoom}
 	 */
 	@Column(name = "room")
 	private AbstractRoom __room;
@@ -82,24 +78,22 @@ public abstract class AbstractPlayer {
 	 */
 	private long __writerTime;
 	/**
-	 * For simple hold some states. Default value is <code>0</code>
+	 * For simple hold some states. Default value is <b>0</b>
 	 */
 	@Column(name = "state")
 	private int __state;
 	/**
 	 * This flag (enabled state) allows the player not affected by the system
-	 * timeouts rule. The default value is <code>false</code>
+	 * timeouts rule. The default value is <b>false</b>
 	 */
 	@Column(name = "ignore_timeout")
 	private boolean __flagIgnoreTimeout;
+
 	/**
-	 * To quickly determine the player contains a connection or not
+	 * This flag for quick checking if a player is a NPC or not
 	 */
-	private boolean __flagConnection;
-	/**
-	 * To quickly determine the player contains a sub-connection or not
-	 */
-	private boolean __flagSubConnection;
+	@Column(name = "flag_npc")
+	private boolean __flagNPC;
 
 	/**
 	 * Create a new player
@@ -108,6 +102,7 @@ public abstract class AbstractPlayer {
 	 */
 	public AbstractPlayer(final String name) {
 		__name = name;
+		__flagNPC = true;
 		setCurrentReaderTime();
 		setCurrentWriterTime();
 	}
@@ -143,37 +138,33 @@ public abstract class AbstractPlayer {
 	 *         return <b>false</b>. A NPC is a player without a connection
 	 */
 	public boolean isNPC() {
-		return !__flagConnection;
+		return __flagNPC;
 	}
 
-	public boolean hasConnection() {
-		return __flagConnection;
+	public boolean hasConnection(int index) {
+		return (__connections[index] != null);
 	}
 
-	public Connection getConnection() {
-		return __connection;
+	public Connection getConnection(int index) {
+		return __connections[index];
 	}
 
-	public void setConnection(final Connection connection) {
-		__connection = connection;
-		__flagConnection = (__connection != null);
+	public void setConnection(final Connection connection, int index) {
+		__connections[index] = connection;
+		__flagNPC = false;
 	}
-
-	public boolean hasSubConnection() {
-		return __flagSubConnection;
-	}
-
-	public Connection getSubConnection() {
-		return __subConnection;
-	}
-
-	public void setSubConnection(final Connection subConnection) {
-		if (__flagSubConnection && subConnection == null) {
-			// need to clear key in UDP channel
-			__subConnection.setAttr(__subConnection.getAddress(), null);
+	
+	public void closeConnection(int index) {
+		if (hasConnection(index)) {
+			__connections[index].close();
+			setConnection(null, index);
 		}
-		__subConnection = subConnection;
-		__flagSubConnection = (__subConnection != null);
+	}
+	
+	public void closeAllConnections() {
+		for (int i = 0; i < __connections.length; i++) {
+			closeConnection(i);
+		}
 	}
 
 	public AbstractRoom getRoom() {

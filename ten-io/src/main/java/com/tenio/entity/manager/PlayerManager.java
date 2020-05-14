@@ -121,8 +121,8 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			}
 
 			// add the main connection
-			connection.setId(player.getName());
-			player.setConnection(connection);
+			connection.setId(player.getName(), 0);
+			player.setConnection(connection, 0);
 
 			__players.put(player.getName(), player);
 
@@ -164,17 +164,9 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			// force player leave room, fire a logic event
 			__eventManager.getInternal().emit(LEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
-			// remove connection, player
-			if (player.hasConnection()) {
-				player.getConnection().close();
-			}
-			// remove sub-connection (no need to close, because of the UDP behavior)
-			/*
-			 * if (player.hasSubConnection()) {
-			 * 
-			 * }
-			 */
+			// remove all player's connections, player
 			removeAllConnections(player);
+			
 			__players.remove(player.getName());
 		}
 
@@ -182,8 +174,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void removeAllConnections(final AbstractPlayer player) {
-		player.setConnection(null);
-		player.setSubConnection(null);
+		player.closeAllConnections();
 	}
 
 	@Override

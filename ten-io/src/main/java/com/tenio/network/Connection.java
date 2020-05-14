@@ -117,8 +117,9 @@ public abstract class Connection {
 	 * {@link AbstractPlayer#getName()}
 	 * 
 	 * @param id the identify of this connection
+	 * @param index the order of connection
 	 */
-	public abstract void setId(String id);
+	public abstract void setId(String id, int index);
 
 	/**
 	 * Retrieve value by key

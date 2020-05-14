@@ -83,7 +83,7 @@ public interface IPlayerManager {
 	 * 
 	 * @param player     that is created from your server, see:
 	 *                   {@link AbstractPlayer}
-	 * @param connection the corresponding connection, see: {@link Connection}
+	 * @param connection the main corresponding connection, see: {@link Connection}
 	 */
 	void add(final AbstractPlayer player, final Connection connection);
 

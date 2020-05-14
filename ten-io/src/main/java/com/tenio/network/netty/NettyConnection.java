@@ -117,9 +117,9 @@ public class NettyConnection extends Connection {
 	}
 
 	@Override
-	public void setId(String id) {
-		__id = id;
-		__channel.attr(KEY_ID).set(id);
+	public void setId(String id, int index) {
+		__id = (new StringBuilder()).append(id).append(index).toString();
+		__channel.attr(KEY_ID).set(__id);
 	}
 
 	@Override
