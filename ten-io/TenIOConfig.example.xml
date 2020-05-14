@@ -12,14 +12,18 @@
 		<Property name="versionName">1.0</Property>
 	</Properties>
 
-	<Port>
-		<!-- TCP port -->
-		<Socket>8031</Socket>		<!-- Null with value -1 -->
-		<!-- UDP port -->
-		<Datagram>8032</Datagram>	<!-- Null with value -1 -->
-		<!-- WebSocket port -->
-		<WebSocket>8030</WebSocket>	<!-- Null with value -1 -->
-	</Port>
+	<Network>
+		<Sockets>
+			<Port type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
+			<Port type="udp">8033</Port>
+			<Port type="tcp">8034</Port>
+		</Sockets>
+		<WebSockets>
+			<Port>8035</Port> <!-- The first element is always treated the main connection -->
+			<Port>8036</Port>
+			<Port>8037</Port>
+		</WebSockets>
+	</Network>
 
 	<Configuration>
 		<Properties>

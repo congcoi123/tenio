@@ -24,7 +24,9 @@ THE SOFTWARE.
 package com.tenio.configuration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -33,6 +35,7 @@ import org.w3c.dom.NodeList;
 
 import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.network.Connection;
 import com.tenio.utility.XMLUtility;
 
 /**
@@ -43,8 +46,8 @@ import com.tenio.utility.XMLUtility;
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
  * <ul>
- * <li><i>webSocketPort:</i> WebSocket port</li>
- * <li><i>socketPort:</i> TCP port</li>
+ * <li><i>Network>Sockets:</i> Sockets zone</li>
+ * <li><i>Network>WebSockets:</i> WebSockets zone</li>
  * <li><i>datagramPort:</i> UDP port</li>
  * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
  * client, can be hold its player instance until timeout</li>
@@ -74,17 +77,13 @@ import com.tenio.utility.XMLUtility;
 public abstract class BaseConfiguration extends AbstractLogger {
 
 	/**
-	 * WebSocket port
+	 * WebSockets zone
 	 */
-	public static final String WEBSOCKET_PORT = "t.webSocketPort";
+	public static final String WEBSOCKETS_ZONE = "t.webSocketsZone";
 	/**
-	 * TCP port
+	 * Sockets zone
 	 */
-	public static final String SOCKET_PORT = "t.socketPort";
-	/**
-	 * UDP port
-	 */
-	public static final String DATAGRAM_PORT = "t.datagramPort";
+	public static final String SOCKETS_ZONE = "t.socketsZone";
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout
@@ -144,6 +143,16 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	private final Map<String, String> __configuration = new HashMap<String, String>();
 
 	/**
+	 * All ports in sockets zone
+	 */
+	private final List<PortInfo> __socketPorts = new ArrayList<PortInfo>();
+
+	/**
+	 * All ports in web sockets zone
+	 */
+	private final List<PortInfo> __webSocketPorts = new ArrayList<PortInfo>();
+
+	/**
 	 * The constructor
 	 * 
 	 * @param file The name of your configuration file and this file needs to be put
@@ -197,21 +206,20 @@ public abstract class BaseConfiguration extends AbstractLogger {
 				}
 			}
 
-			// Port
-			var attrRootPort = attrNode.getChildNodes();
-			for (int j = 0; j < attrRootPort.getLength(); j++) {
-				var pDataNode = attrRootPort.item(j);
-				switch (pDataNode.getNodeName()) {
-				case "Socket":
-					__configuration.put(SOCKET_PORT, pDataNode.getTextContent());
-					break;
-				case "Datagram":
-					__configuration.put(DATAGRAM_PORT, pDataNode.getTextContent());
-					break;
-				case "WebSocket":
-					__configuration.put(WEBSOCKET_PORT, pDataNode.getTextContent());
-					break;
-				}
+			// Network
+			var attrNetworkSockets = XMLUtility.getNodeList(attrNode, "//Server/Network/Sockets");
+			for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
+				var pDataNode = attrNetworkSockets.item(j);
+				var port = new PortInfo(
+						__getConnectionType(pDataNode.getAttributes().getNamedItem("name").getTextContent()),
+						pDataNode.getTextContent());
+				__socketPorts.add(port);
+			}
+			var attrNetworkWebSockets = XMLUtility.getNodeList(attrNode, "//Server/Network/WebSockets");
+			for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
+				var pDataNode = attrNetworkWebSockets.item(j);
+				var port = new PortInfo(Connection.Type.WEB_SOCKET, pDataNode.getTextContent());
+				__webSocketPorts.add(port);
 			}
 
 			// Configuration
@@ -270,6 +278,26 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		// Put the current configurations to the logger
 		info("Configuration", toString());
 
+	}
+
+	private Connection.Type __getConnectionType(final String type) {
+		switch (type.toLowerCase()) {
+		case "tcp":
+			return Connection.Type.SOCKET;
+		case "udp":
+			return Connection.Type.DATAGRAM;
+		case "ws":
+			return Connection.Type.WEB_SOCKET;
+		}
+		return null;
+	}
+
+	public List<PortInfo> getSocketPorts() {
+		return __socketPorts;
+	}
+
+	public List<PortInfo> getWebSocketPorts() {
+		return __webSocketPorts;
 	}
 
 	/**

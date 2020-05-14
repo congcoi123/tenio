@@ -212,9 +212,17 @@ public final class Server extends AbstractLogger implements IServer {
 		return true;
 	}
 
-	private boolean __checkDefinedMainConnection(BaseConfiguration configuration) {
-		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)
-				&& !configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
+	private boolean __checkDefinedMainSocketConnection(BaseConfiguration configuration) {
+		if (!configuration.isDefined(configuration.getSocketPorts().get(0).getPort())) {
+			var e = new NotDefinedSocketConnectionException();
+			error(e);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean __checkDefinedMainWebSocketConnection(BaseConfiguration configuration) {
+		if (!configuration.isDefined(configuration.getWebSocketPorts().get(0).getPort())) {
 			var e = new NotDefinedSocketConnectionException();
 			error(e);
 			return false;
