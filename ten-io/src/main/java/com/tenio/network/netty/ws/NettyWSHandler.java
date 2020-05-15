@@ -26,6 +26,7 @@ package com.tenio.network.netty.ws;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
+import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -43,20 +44,18 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  */
 public class NettyWSHandler extends BaseNettyHandler {
 
-	/**
-	 * Allow a client can be re-connected or not, see
-	 * {@link #_channelInactive(ChannelHandlerContext, boolean)}
-	 */
-	private final boolean __keepPlayerOnDisconnect;
-
 	public NettyWSHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
-		super(eventManager, index);
-		__keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
+		super(eventManager, index, Connection.Type.WEB_SOCKET);
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		_channelActive(ctx);
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		_channelInactive(ctx, __keepPlayerOnDisconnect);
+		_channelInactive(ctx);
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public class NettyWSHandler extends BaseNettyHandler {
 				return;
 			}
 
-			_channelRead(ctx, message);
+			_channelRead(ctx, message, null);
 		}
 
 	}

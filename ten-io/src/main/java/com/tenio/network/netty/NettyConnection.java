@@ -57,8 +57,8 @@ public class NettyConnection extends Connection {
 	 */
 	public static final AttributeKey<String> KEY_USERNAME = AttributeKey.valueOf(KEY_STR_USERNAME);
 
-	private static final String PREFIX_CONNECTION = "c_";
-	private static final String PREFIX_USERNAME = "u_";
+	public static final String PREFIX_CONNECTION = "c_";
+	public static final String PREFIX_USERNAME = "u_";
 
 	/**
 	 * @see Channel

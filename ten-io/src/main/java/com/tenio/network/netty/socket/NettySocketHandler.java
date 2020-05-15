@@ -65,7 +65,7 @@ public final class NettySocketHandler extends BaseNettyHandler {
 			return;
 		}
 
-		_channelRead(ctx, message);
+		_channelRead(ctx, message, null);
 	}
 
 	@Override
