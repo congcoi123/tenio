@@ -42,10 +42,9 @@ import com.tenio.event.IEventManager;
  * 
  */
 public abstract class Connection {
-	
-	public static final String KEY_CONNECTION = "key_connection";
-	public static final String KEY_USERNAME = "key_username";
-	public static final String KEY_CONNECTION_INDEX = "key_connection_index";
+
+	public static final String KEY_STR_CONNECTION = "key_connection";
+	public static final String KEY_STR_USERNAME = "key_username";
 
 	protected final IEventManager _eventManager;
 
@@ -57,14 +56,19 @@ public abstract class Connection {
 	 * Type of the connection
 	 */
 	private Type __type;
+	/**
+	 * The order of connection in one player
+	 */
+	private int __index;
 
 	public enum Type {
 		SOCKET, DATAGRAM, WEB_SOCKET
 	}
 
-	public Connection(IEventManager eventManager, Type type) {
+	public Connection(IEventManager eventManager, Type type, int index) {
 		_eventManager = eventManager;
 		__type = type;
+		__index = index;
 	}
 
 	public Type getType() {
@@ -73,6 +77,10 @@ public abstract class Connection {
 
 	public boolean isType(Type type) {
 		return (__type == type);
+	}
+
+	public int getIndex() {
+		return __index;
 	}
 
 	/**
@@ -120,27 +128,32 @@ public abstract class Connection {
 	 * Set id for the "connection", this id is player's name, see
 	 * {@link AbstractPlayer#getName()}
 	 * 
-	 * @param username    the identify of this connection
-	 * @param index the order of connection (in case of 0, the index is not in use)
+	 * @param username the identify of this connection
 	 */
-	public abstract void setUsername(String username, int index);
+	public abstract void setUsername(String username);
 
 	/**
-	 * Retrieve value by key
-	 * 
-	 * @param key the desired key
-	 * @return the corresponding object
+	 * Remove the username value from channel cache
 	 */
-	public abstract Object getAttr(String key);
+	public abstract void removeUsername();
 
 	/**
-	 * Set value for one key. You can set your custom data to one connection to
-	 * quick access. These keys and values should be saved to channel (which is
-	 * defined by NIO mechanism)
+	 * Retrieve this connection itself by channel
 	 * 
-	 * @param key   the desired key
-	 * @param value the desired value
+	 * @return the current connection
 	 */
-	public abstract void setAttr(String key, Object value);
+	public abstract Connection getThis();
+
+	/**
+	 * Set this connection into current channel Note: Set value for one key. You can
+	 * set your custom data to one connection to quick access. These keys and values
+	 * should be saved to channel (which is defined by NIO mechanism)
+	 */
+	public abstract void setThis();
+
+	/**
+	 * Remove the connection object from channel cache
+	 */
+	public abstract void removeThis();
 
 }

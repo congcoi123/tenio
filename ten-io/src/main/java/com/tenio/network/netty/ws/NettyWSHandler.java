@@ -24,12 +24,9 @@ THE SOFTWARE.
 package com.tenio.network.netty.ws;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.LEvent;
 import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
-import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
-import com.tenio.network.netty.NettyConnection;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -47,10 +44,6 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 public class NettyWSHandler extends BaseNettyHandler {
 
 	/**
-	 * The maximum number of players that the server can handle
-	 */
-	private final int __maxPlayer;
-	/**
 	 * Allow a client can be re-connected or not, see
 	 * {@link #_channelInactive(ChannelHandlerContext, boolean)}
 	 */
@@ -58,7 +51,6 @@ public class NettyWSHandler extends BaseNettyHandler {
 
 	public NettyWSHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
 		super(eventManager, index);
-		__maxPlayer = configuration.getInt(BaseConfiguration.MAX_PLAYER) - 1;
 		__keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 	}
 
@@ -77,21 +69,13 @@ public class NettyWSHandler extends BaseNettyHandler {
 			buffer.getBytes(buffer.readerIndex(), bytes);
 			buffer.release();
 
+			// create a new message
 			var message = MsgPackConverter.unserialize(bytes);
 			if (message == null) {
 				return;
 			}
 
-			// get the connection first
-			var connection = _getConnection(ctx.channel());
-			if (connection == null) { // the new connection
-				connection = NettyConnection.newInstance(_eventManager, Connection.Type.WEB_SOCKET, ctx.channel());
-				_eventManager.getInternal().emit(LEvent.CREATE_NEW_CONNECTION, __maxPlayer, __keepPlayerOnDisconnect,
-						connection, message);
-			} else {
-				_eventManager.getInternal().emit(LEvent.SOCKET_HANDLE, connection, message);
-			}
-
+			_channelRead(ctx, message);
 		}
 
 	}

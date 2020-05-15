@@ -23,14 +23,16 @@ THE SOFTWARE.
 */
 package com.tenio.network.netty;
 
-import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.LEvent;
+import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
 import com.tenio.network.Connection;
+import com.tenio.network.Connection.Type;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
 
 /**
  * Use <a href="https://netty.io/">Netty</a> to handle message. Base on the
@@ -41,40 +43,62 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	protected IEventManager _eventManager;
-	protected int _index;
+	private IEventManager __eventManager;
+	private Connection __connection;
+	private Connection.Type __type;
+	private int __index;
 
-	public BaseNettyHandler(IEventManager eventManager, int index) {
-		_eventManager = eventManager;
-		_index = index;
+	public BaseNettyHandler(IEventManager eventManager, int index, Connection.Type type) {
+		__eventManager = eventManager;
+		__index = index;
+		__type = type;
 	}
 
 	/**
 	 * Retrieve a connection by its channel
 	 * 
-	 * @param channel, see {@link Channel}
+	 * @param channel,      see {@link Channel}
+	 * @param remoteAddress the current address (in use for Datagram channel)
 	 * @return a connection
 	 */
-	protected Connection _getConnection(Channel channel) {
-		return channel.attr(NettyConnection.KEY_THIS).get();
+	protected Connection __getConnection(Channel channel, String remoteAddress) {
+		if (remoteAddress == null) {
+			return channel.attr(NettyConnection.KEY_CONNECTION).get();
+		}
+		return (Connection) channel.attr(AttributeKey.valueOf(remoteAddress)).get();
+	}
+
+	/**
+	 * When a client is first connect to your server for any reason, you can create
+	 * a new connection here. But in case of Datagram, this channel is only active
+	 * once time
+	 * 
+	 * @param ctx the channel, see {@link ChannelHandlerContext}
+	 */
+	protected void _channelActive(ChannelHandlerContext ctx) {
+		__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
+	}
+
+	/**
+	 * Handle in-comming messages for the channel
+	 * 
+	 * @param ctx     the channel, see {@link ChannelHandlerContext}
+	 * @param message the message, see {@link TObject}
+	 */
+	protected void _channelRead(ChannelHandlerContext ctx, TObject message) {
+
 	}
 
 	/**
 	 * When a client is disconnected from your server for any reason, you can handle
 	 * it in this event
 	 * 
-	 * @param ctx                    the channel, see {@link ChannelHandlerContext}
-	 * @param keepPlayerOnDisconnect this value can be configured in your
-	 *                               configurations, see {@link BaseConfiguration}.
-	 *                               If the value is set to true, when the client is
-	 *                               disconnected, its player can be held for an
-	 *                               interval time (you can configure this interval
-	 *                               time in your configurations)
+	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
-	protected void _channelInactive(ChannelHandlerContext ctx, boolean keepPlayerOnDisconnect) {
+	protected void _channelInactive(ChannelHandlerContext ctx) {
 		// get the connection first
 		var connection = _getConnection(ctx.channel());
-		_eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
+		__eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection);
 		connection = null;
 	}
 
@@ -87,7 +111,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// get the connection first
 		var connection = _getConnection(ctx.channel());
-		_eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
+		__eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
 				cause);
 	}
 

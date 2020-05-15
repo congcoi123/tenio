@@ -48,13 +48,17 @@ import io.netty.util.AttributeKey;
 public class NettyConnection extends Connection {
 
 	/**
-	 * Save this connection itself to its channel
+	 * Save this connection itself to its channel. In case of Datagram channel, we
+	 * use {@link #__address} as a key for the current connection
 	 */
-	public static final AttributeKey<Connection> KEY_THIS = AttributeKey.valueOf("this");
+	public static final AttributeKey<Connection> KEY_CONNECTION = AttributeKey.valueOf(KEY_STR_CONNECTION);
 	/**
 	 * Save the player's name, see {@link AbstractPlayer#getName()} to its channel
 	 */
-	public static final AttributeKey<String> KEY_ID = AttributeKey.valueOf("id");
+	public static final AttributeKey<String> KEY_USERNAME = AttributeKey.valueOf(KEY_STR_USERNAME);
+
+	private static final String PREFIX_CONNECTION = "c_";
+	private static final String PREFIX_USERNAME = "u_";
 
 	/**
 	 * @see Channel
@@ -63,29 +67,38 @@ public class NettyConnection extends Connection {
 	/**
 	 * @see AbstractPlayer#getName()
 	 */
-	private String __id;
+	private String __username;
 	/**
-	 * Used for TCP/WS connection, save the client's address
+	 * Save the client's address, in Datagram connection it is used for saving as a
+	 * key of the {@link #__username}
 	 */
 	private String __address;
+	/**
+	 * Determine if the remote address was assigned or not (only use for the
+	 * Datagram connection)
+	 */
 	private boolean __hasRemoteAddress;
 
-	private NettyConnection(IEventManager eventManager, Type type, Channel channel) {
-		super(eventManager, type);
+	private StringBuilder __stringHelper;
+
+	private NettyConnection(int index, IEventManager eventManager, Type type, Channel channel) {
+		super(eventManager, type, index);
+		__stringHelper = new StringBuilder();
 		__hasRemoteAddress = false;
 		__channel = channel;
-		// Fix address in a TCP and WebSocket instance
-		// and no need to save channel in Datagram connection, because of only one
-		// channel existed
+		// set fix address in a TCP and WebSocket instance
+		// in case of Datagram connection, this value will be set later (when you
+		// receive a message from client)
 		if (!isType(Type.DATAGRAM)) {
-			__channel.attr(KEY_THIS).set(this);
 			__address = ((InetSocketAddress) __channel.remoteAddress()).toString();
 		}
-		__id = null;
+		// in the Datagram connection there is only one channel existed
+		setThis();
+		__username = null;
 	}
 
-	public static NettyConnection newInstance(IEventManager eventManager, Type type, Channel channel) {
-		return new NettyConnection(eventManager, type, channel);
+	public static NettyConnection newInstance(int index, IEventManager eventManager, Type type, Channel channel) {
+		return new NettyConnection(index, eventManager, type, channel);
 	}
 
 	@Override
@@ -108,18 +121,80 @@ public class NettyConnection extends Connection {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
-		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, __id);
+		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, __username);
 	}
 
 	@Override
 	public String getUsername() {
-		return __id;
+		if (isType(Type.DATAGRAM)) {
+			synchronized (__stringHelper) {
+				__stringHelper.delete(0, __stringHelper.length());
+				return (String) __channel
+						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
+						.get();
+			}
+		}
+		return __username;
 	}
 
 	@Override
-	public void setUsername(String id, int index) {
-		__id = index == 0 ? id : (new StringBuilder()).append(id).append(index).toString();
-		__channel.attr(KEY_ID).set(__id);
+	public void setUsername(String username) {
+		__username = username;
+		if (isType(Type.DATAGRAM)) {
+			synchronized (__stringHelper) {
+				__stringHelper.delete(0, __stringHelper.length());
+				__channel
+						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
+						.set(__username);
+			}
+		} else {
+			__channel.attr(KEY_USERNAME).set(__username);
+		}
+	}
+
+	@Override
+	public void removeUsername() {
+		__username = null;
+		if (isType(Type.DATAGRAM)) {
+			synchronized (__stringHelper) {
+				__stringHelper.delete(0, __stringHelper.length());
+				__channel
+						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
+						.set(__username);
+			}
+		} else {
+			__channel.attr(KEY_USERNAME).set(__username);
+		}
+	}
+
+	@Override
+	public Connection getThis() {
+		if (isType(Type.DATAGRAM)) {
+			return (Connection) __channel
+					.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
+					.get();
+		}
+		return __channel.attr(KEY_CONNECTION).get();
+	}
+
+	@Override
+	public void setThis() {
+		if (isType(Type.DATAGRAM)) {
+			__channel.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
+					.set(this);
+		} else {
+			__channel.attr(KEY_CONNECTION).set(this);
+		}
+	}
+
+	@Override
+	public void removeThis() {
+		if (isType(Type.DATAGRAM)) {
+			__channel.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
+					.set(null);
+		} else {
+			__channel.attr(KEY_CONNECTION).set(null);
+		}
 	}
 
 	@Override
@@ -129,27 +204,20 @@ public class NettyConnection extends Connection {
 
 	@Override
 	public void setSockAddress(InetSocketAddress sockAddress) {
-		__hasRemoteAddress = true;
-		_sockAddress = sockAddress;
-		__address = _sockAddress.toString();
+		// only need for the Datagram connection
+		if (isType(Type.DATAGRAM)) {
+			__hasRemoteAddress = true;
+			_sockAddress = sockAddress;
+			__address = _sockAddress.toString();
+		}
 	}
 
 	@Override
 	public void clean() {
 		// only need for WebSocket and Socket
-		__channel.attr(KEY_THIS).set(null);
-		__channel.attr(KEY_ID).set(null);
+		removeUsername();
+		removeThis();
 		__channel = null;
-	}
-
-	@Override
-	public Object getAttr(String key) {
-		return __channel.attr(AttributeKey.valueOf(key)).get();
-	}
-
-	@Override
-	public void setAttr(String key, Object value) {
-		__channel.attr(AttributeKey.valueOf(key)).set(value);
 	}
 
 }
