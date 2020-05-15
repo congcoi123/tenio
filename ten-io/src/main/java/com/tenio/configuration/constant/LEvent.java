@@ -86,58 +86,22 @@ public enum LEvent {
 	MANUALY_CLOSE_CONNECTION,
 
 	/**
-	 * When a new connection is created. This connection's type must be TCP or
-	 * WebSocket (The main connection). <br>
+	 * You can handle the message sent from a connection here.
 	 * <ul>
-	 * <li><b>parameter[0]</b> the maximum of players count that your server can
-	 * handle</li>
-	 * <li><b>parameter[1]</b> if the value is set to <code>true</code>, when the
-	 * client is disconnected, its player can be held for an interval time (you can
-	 * configure this interval time in your configurations)</li>
-	 * <li><b>parameter[2]</b> the new connection, see {@link Connection}</li>
-	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by the
-	 * first times from its new connection</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	CREATE_NEW_CONNECTION,
-
-	/**
-	 * You can handle the message sent from a connection here. This connection's
-	 * type is TCP or WebSocket. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
-	 * <li><b>parameter[1]</b> the message, see {@link TObject} which is sent by its
+	 * <li><b>parameter[0]</b> index: the connection's order in one player (start
+	 * from <b>0</b>)</li>
+	 * <li><b>parameter[1]</b> the connection (can be <b>null</b>) that is retrieved
+	 * from the corresponding channel, see {@link Connection}</li>
+	 * <li><b>parameter[2]</b> the player's username (can be <b>null</b>) that is
+	 * retrieved from the corresponding channel, see {@link String}</li>
+	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by its
 	 * corresponding connection</li>
+	 * <li><b>parameter[4]</b> the connection object which is used to assigned to a
+	 * player, see {@link Connection}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	SOCKET_HANDLE,
-
-	/**
-	 * You can handle the message sent from a player here. This connection's type is
-	 * UDP. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the player, see {@link AbstractPlayer}</li>
-	 * <li><b>parameter[1]</b> the message, see {@link TObject} which is sent by its
-	 * corresponding player</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	DATAGRAM_HANDLE,
-
-	/**
-	 * Retrieve a player by his name. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the player's name (unique)</li>
-	 * </ul>
-	 * 
-	 * Return a player, see {@link AbstractPlayer} if he has existed, <b>null</b>
-	 * otherwise
-	 */
-	GET_PLAYER,
+	CHANNEL_HANDLE
 
 }

@@ -306,10 +306,10 @@ public enum TEvent {
 	CCU,
 
 	/**
-	 * In this server, a UDP connection is treated as a sub-connection. That means
-	 * you need to create one main connection between one client and the server
-	 * first (a TCP connection). When it's finished, that client can send a request
-	 * for making a link. <br>
+	 * In this server, you can create other sub connections. That means you need to
+	 * create one main connection between one client and the server first (a TCP
+	 * connection). When it's finished, that client can send a request for making a
+	 * link. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the message from one client needs to hold some
 	 * credentials data so that you can return him a corresponding value, see
@@ -320,10 +320,10 @@ public enum TEvent {
 	 * corresponding player, see {@link AbstractPlayer}. Otherwise, return
 	 * <b>null</b>
 	 */
-	ATTACH_UDP_REQUEST,
+	ATTACH_CONNECTION_REQUEST,
 
 	/**
-	 * When a UDP connection link is established, you can inform its own player
+	 * When a a sub connection link is established, you can inform its own player
 	 * here. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the corresponding player, see
@@ -332,10 +332,10 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_UDP_SUCCESS,
+	ATTACH_CONNECTION_SUCCESS,
 
 	/**
-	 * The client failed to attach his desired UDP connection. The reason can be
+	 * The client failed to attach his desired sub connection. The reason can be
 	 * returned here. This event only for informing you about the current situation.
 	 * If you want to let your client know about his un-success, you can handle it
 	 * on {@link TEvent#ATTACH_UDP_REQUEST}. <br>
@@ -348,7 +348,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_UDP_FAILED,
+	ATTACH_CONNECTION_FAILED,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>

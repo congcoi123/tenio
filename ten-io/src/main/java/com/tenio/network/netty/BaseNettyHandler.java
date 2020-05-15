@@ -118,6 +118,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		var connection = __getConnection(ctx.channel(), remoteAddress);
 		var username = __getUsername(ctx.channel(), remoteAddress);
 
+		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, username, message, __connection);
 	}
 
 	/**

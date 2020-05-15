@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
@@ -122,69 +121,14 @@ final class InternalLogic extends AbstractLogger {
 			return null;
 		});
 
-		__on(LEvent.CREATE_NEW_CONNECTION, args -> {
-			int maxPlayer = __getInt(args[0]);
-			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
-			var connection = __getConnection(args[2]);
+		__on(LEvent.CHANNEL_HANDLE, args -> {
+			var index = __getInt(args[0]);
+			var connection = __getConnection(args[1]);
+			var username = __getString(args[2]);
 			var message = __getTObject(args[3]);
-
-			// check the reconnection first
-			if (keepPlayerOnDisconnect) {
-				var player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_REQUEST,
-						connection, message);
-				if (player != null) {
-					player.setCurrentReaderTime();
-					connection.setId(player.getName());
-					player.setConnection(connection);
-
-					__eventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
-					return null;
-				}
-			}
-			// check the number of current players
-			if (__playerManager.count() > maxPlayer) {
-				__eventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
-				connection.close();
-			} else {
-				__eventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
-			}
+			var tempConnection = __getConnection(args[4]);
 
 			return null;
-		});
-
-		__on(LEvent.SOCKET_HANDLE, args -> {
-			var connection = __getConnection(args[0]);
-			var message = __getTObject(args[1]);
-
-			String id = connection.getUsername();
-			if (id != null) { // the player's identify
-				var player = __playerManager.get(id);
-				if (player != null) {
-					__handle(player, false, message);
-				}
-			} else { // a new connection
-				__eventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
-			}
-
-			return null;
-		});
-
-		__on(LEvent.DATAGRAM_HANDLE, args -> {
-			var player = __getPlayer(args[0]);
-			var message = __getTObject(args[1]);
-
-			// UDP is only attach connection, so if the main connection not found, the UDP
-			// must be stop handled
-			if (player.hasConnection()) {
-				__handle(player, true, message);
-			}
-
-			return null;
-		});
-
-		__on(LEvent.GET_PLAYER, args -> {
-			String name = (String) args[0];
-			return __playerManager.get(name);
 		});
 
 	}
