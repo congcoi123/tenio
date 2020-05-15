@@ -58,9 +58,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private EventLoopGroup __consumer;
 	private GlobalTrafficShapingHandlerCustomize __traficCounter;
 
-	private List<Channel> __tcps;
-	private List<Channel> __udps;
-	private List<Channel> __wss;
+	private List<Channel> __sockets;
+	private List<Channel> __websockets;
 
 	@Override
 	public boolean start(IEventManager eventManager, BaseConfiguration configuration) {
@@ -71,29 +70,51 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				Constants.TRAFFIC_COUNTER_WRITE_LIMIT, Constants.TRAFFIC_COUNTER_READ_LIMIT,
 				Constants.TRAFFIC_COUNTER_CHECK_INTERVAL);
 
-		__tcps = new ArrayList<Channel>();
-		__udps = new ArrayList<Channel>();
-		__wss = new ArrayList<Channel>();
+		__sockets = new ArrayList<Channel>();
+		__websockets = new ArrayList<Channel>();
 
-		for (var port : configuration.getSocketPorts()) {
-			if (configuration.isDefined(port.getPort())) {
+		var socketPorts = configuration.getSocketPorts();
+		for (int index = 0; index < socketPorts.size(); index++) {
+			var socket = socketPorts.get(index);
+			if (configuration.isDefined(socket.getPort())) {
 				try {
-					switch (port.getType()) {
+					switch (socket.getType()) {
 					case SOCKET:
-						__tcps.add(__bindTCP(eventManager, configuration, port.getPort()));
+						__sockets.add(__bindTCP(index, eventManager, configuration, socket.getPort()));
 						break;
 					case DATAGRAM:
-						__udps.add(__bindUDP(eventManager, configuration, port.getPort()));
+						__sockets.add(__bindUDP(index, eventManager, configuration, socket.getPort()));
 						break;
-					case WEB_SOCKET:
-						__wss.add(__bindWS(eventManager, configuration, port.getPort()));
+					default:
 						break;
 					}
 				} catch (IOException e) {
-					error(e, "port: ", port.getPort());
+					error(e, "port: ", socket.getPort());
 					return false;
 				} catch (InterruptedException e) {
-					error(e, "port: ", port.getPort());
+					error(e, "port: ", socket.getPort());
+					return false;
+				}
+			}
+		}
+
+		var webSocketPorts = configuration.getWebSocketPorts();
+		for (int index = 0; index < webSocketPorts.size(); index++) {
+			var socket = webSocketPorts.get(index);
+			if (configuration.isDefined(socket.getPort())) {
+				try {
+					switch (socket.getType()) {
+					case WEB_SOCKET:
+						__websockets.add(__bindWS(index, eventManager, configuration, socket.getPort()));
+						break;
+					default:
+						break;
+					}
+				} catch (IOException e) {
+					error(e, "port: ", socket.getPort());
+					return false;
+				} catch (InterruptedException e) {
+					error(e, "port: ", socket.getPort());
 					return false;
 				}
 			}
@@ -106,6 +127,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a Datagram socket and binds it to the specified port on the local
 	 * host machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration, see {@link BaseConfiguration}
 	 * @param port          the UDP port
@@ -113,12 +135,12 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindUDP(IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindUDP(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
-				.handler(new NettyDatagramInitializer(eventManager, __traficCounter, configuration));
+				.handler(new NettyDatagramInitializer(index, eventManager, __traficCounter, configuration));
 
 		info("DATAGRAM", buildgen("Start at port: ", port));
 
@@ -129,6 +151,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration, see {@link BaseConfiguration}
 	 * @param port          the TCP port
@@ -136,13 +159,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindTCP(IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindTCP(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 10240)
 				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettySocketInitializer(eventManager, __traficCounter, configuration));
+				.childHandler(new NettySocketInitializer(index, eventManager, __traficCounter, configuration));
 
 		info("SOCKET", buildgen("Start at port: ", port));
 
@@ -153,6 +176,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * Constructs a web socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration configuration your own configuration, see
 	 *                      {@link BaseConfiguration}
@@ -161,13 +185,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindWS(IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindWS(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 1024)
 				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettyWSInitializer(eventManager, __traficCounter, configuration));
+				.childHandler(new NettyWSInitializer(index, eventManager, __traficCounter, configuration));
 
 		info("WEB SOCKET", buildgen("Start at port: ", port));
 
@@ -176,14 +200,11 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 	@Override
 	public void shutdown() {
-		for (var tcp : __tcps) {
-			__close(tcp);
+		for (var socket : __sockets) {
+			__close(socket);
 		}
-		for (var udp : __udps) {
-			__close(udp);
-		}
-		for (var ws : __wss) {
-			__close(ws);
+		for (var socket : __websockets) {
+			__close(socket);
 		}
 
 		if (__producer != null) {

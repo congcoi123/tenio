@@ -55,8 +55,8 @@ public final class NettySocketHandler extends BaseNettyHandler {
 	 */
 	private final boolean __keepPlayerOnDisconnect;
 
-	public NettySocketHandler(IEventManager eventManager, BaseConfiguration configuration) {
-		super(eventManager);
+	public NettySocketHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
+		super(eventManager, index);
 		__maxPlayer = configuration.getInt(BaseConfiguration.MAX_PLAYER) - 1;
 		__keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 	}

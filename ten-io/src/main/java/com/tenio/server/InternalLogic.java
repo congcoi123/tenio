@@ -71,7 +71,7 @@ final class InternalLogic extends AbstractLogger {
 			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
 
 			if (connection != null) { // the connection has existed
-				String id = connection.getId();
+				String id = connection.getUsername();
 				if (id != null) { // the player maybe exist
 					var player = __playerManager.get(id);
 					if (player != null) { // the player has existed
@@ -96,7 +96,7 @@ final class InternalLogic extends AbstractLogger {
 			var cause = __getThrowable(args[2]);
 
 			if (connection != null) { // the old connection
-				String id = connection.getId();
+				String id = connection.getUsername();
 				if (id != null) { // the player maybe exist
 					var player = __playerManager.get(id);
 					if (player != null) { // the player has existed
@@ -156,7 +156,7 @@ final class InternalLogic extends AbstractLogger {
 			var connection = __getConnection(args[0]);
 			var message = __getTObject(args[1]);
 
-			String id = connection.getId();
+			String id = connection.getUsername();
 			if (id != null) { // the player's identify
 				var player = __playerManager.get(id);
 				if (player != null) {

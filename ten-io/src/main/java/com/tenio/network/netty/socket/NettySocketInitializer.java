@@ -46,9 +46,11 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final BaseConfiguration __configuration;
+	private final int __index;
 
-	public NettySocketInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			BaseConfiguration configuration) {
+	public NettySocketInitializer(int index, IEventManager eventManager,
+			GlobalTrafficShapingHandlerCustomize trafficCounter, BaseConfiguration configuration) {
+		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
@@ -72,7 +74,7 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
 		// the logic handler
-		pipeline.addLast("handler", new NettySocketHandler(__eventManager, __configuration));
+		pipeline.addLast("handler", new NettySocketHandler(__index, __eventManager, __configuration));
 
 	}
 

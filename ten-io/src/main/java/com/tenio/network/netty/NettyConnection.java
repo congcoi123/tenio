@@ -112,13 +112,13 @@ public class NettyConnection extends Connection {
 	}
 
 	@Override
-	public String getId() {
+	public String getUsername() {
 		return __id;
 	}
 
 	@Override
-	public void setId(String id, int index) {
-		__id = (new StringBuilder()).append(id).append(index).toString();
+	public void setUsername(String id, int index) {
+		__id = index == 0 ? id : (new StringBuilder()).append(id).append(index).toString();
 		__channel.attr(KEY_ID).set(__id);
 	}
 

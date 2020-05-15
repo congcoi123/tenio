@@ -52,8 +52,8 @@ import io.netty.util.AttributeKey;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(IEventManager eventManager, BaseConfiguration configuration) {
-		super(eventManager);
+	public NettyDatagramHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
+		super(eventManager, index);
 	}
 
 	@Override

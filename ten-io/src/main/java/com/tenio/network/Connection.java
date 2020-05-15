@@ -42,6 +42,10 @@ import com.tenio.event.IEventManager;
  * 
  */
 public abstract class Connection {
+	
+	public static final String KEY_CONNECTION = "key_connection";
+	public static final String KEY_USERNAME = "key_username";
+	public static final String KEY_CONNECTION_INDEX = "key_connection_index";
 
 	protected final IEventManager _eventManager;
 
@@ -108,18 +112,18 @@ public abstract class Connection {
 	 * Retrieve the "connection" id, this id is player's name, see
 	 * {@link AbstractPlayer#getName()}
 	 * 
-	 * @return the id
+	 * @return the username
 	 */
-	public abstract String getId();
+	public abstract String getUsername();
 
 	/**
 	 * Set id for the "connection", this id is player's name, see
 	 * {@link AbstractPlayer#getName()}
 	 * 
-	 * @param id the identify of this connection
-	 * @param index the order of connection
+	 * @param username    the identify of this connection
+	 * @param index the order of connection (in case of 0, the index is not in use)
 	 */
-	public abstract void setId(String id, int index);
+	public abstract void setUsername(String username, int index);
 
 	/**
 	 * Retrieve value by key

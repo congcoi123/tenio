@@ -43,9 +43,11 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final BaseConfiguration __configuration;
+	private final int __index;
 
-	public NettyDatagramInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			BaseConfiguration configuration) {
+	public NettyDatagramInitializer(int index, IEventManager eventManager,
+			GlobalTrafficShapingHandlerCustomize trafficCounter, BaseConfiguration configuration) {
+		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
@@ -64,7 +66,7 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 		pipeline.addLast("traffic-counter", __trafficCounter);
 
 		// the logic handler
-		pipeline.addLast("handler", new NettyDatagramHandler(__eventManager, __configuration));
+		pipeline.addLast("handler", new NettyDatagramHandler(__index, __eventManager, __configuration));
 	}
 
 }

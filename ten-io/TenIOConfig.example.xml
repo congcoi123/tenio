@@ -14,14 +14,14 @@
 
 	<Network>
 		<Sockets>
-			<Port type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
-			<Port type="udp">8033</Port>
-			<Port type="tcp">8034</Port>
+			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
+			<Port name="move" type="udp">8033</Port>
+			<Port name="chat" type="tcp">8034</Port>
 		</Sockets>
 		<WebSockets>
-			<Port>8035</Port> <!-- The first element is always treated the main connection -->
-			<Port>8036</Port>
-			<Port>8037</Port>
+			<Port name="main">8035</Port> <!-- The first element is always treated the main connection -->
+			<Port name="move">8036</Port>
+			<Port name="chat">8037</Port>
 		</WebSockets>
 	</Network>
 

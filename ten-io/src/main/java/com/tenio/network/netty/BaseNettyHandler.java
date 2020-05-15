@@ -42,9 +42,11 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
 	protected IEventManager _eventManager;
+	protected int _index;
 
-	public BaseNettyHandler(IEventManager eventManager) {
+	public BaseNettyHandler(IEventManager eventManager, int index) {
 		_eventManager = eventManager;
+		_index = index;
 	}
 
 	/**
