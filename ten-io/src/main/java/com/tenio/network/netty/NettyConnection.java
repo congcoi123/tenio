@@ -79,11 +79,10 @@ public class NettyConnection extends Connection {
 		// set fix address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
 		// receive a message from client)
+		// in the Datagram connection there is only one channel existed
 		if (!isType(Type.DATAGRAM)) {
 			__address = ((InetSocketAddress) __channel.remoteAddress()).toString();
 		}
-		// in the Datagram connection there is only one channel existed
-		setThis();
 		__username = null;
 	}
 

@@ -167,14 +167,15 @@ final class InternalLogic extends AbstractLogger {
 					message);
 
 			if (player == null) {
-				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, index, message,
+						ErrorMsg.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection(0)) {
-				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, index, message,
 						ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				connection.setUsername(player.getName());
 				player.setConnection(connection, index);
-				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_SUCCESS, player);
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_SUCCESS, index, player);
 			}
 		}
 	}

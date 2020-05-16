@@ -83,6 +83,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		if (connection == null) {
 			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
 			__connection.setRemote(remote);
+			__connection.setThis();
 		}
 
 		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, message, __connection);
