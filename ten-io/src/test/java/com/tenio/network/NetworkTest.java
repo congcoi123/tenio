@@ -57,7 +57,7 @@ public final class NetworkTest {
 		assertNull(__network.start(__eventManager, __configuration));
 	}
 
-//	@Test
+	@Test
 	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
 		__network.start(__eventManager, __configuration);
 		assertEquals(ErrorMsg.IO_EXCEPTION, __network.start(__eventManager, __configuration));

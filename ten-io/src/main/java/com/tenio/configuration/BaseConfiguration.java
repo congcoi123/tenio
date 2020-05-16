@@ -139,7 +139,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	public final Map<String, String> __configuration = new HashMap<String, String>();
+	private final Map<String, String> __configuration = new HashMap<String, String>();
 
 	/**
 	 * All ports in sockets zone

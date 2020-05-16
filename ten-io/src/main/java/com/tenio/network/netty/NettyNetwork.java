@@ -73,51 +73,47 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
-		
+
 		var socketPorts = configuration.getSocketPorts();
 		for (int index = 0; index < socketPorts.size(); index++) {
 			var socket = socketPorts.get(index);
-			if (configuration.isDefined(socket.getPort())) {
-				try {
-					switch (socket.getType()) {
-					case SOCKET:
-						__sockets.add(__bindTCP(index, eventManager, configuration, socket.getPort()));
-						break;
-					case DATAGRAM:
-						__sockets.add(__bindUDP(index, eventManager, configuration, socket.getPort()));
-						break;
-					default:
-						break;
-					}
-				} catch (IOException e) {
-					error(e, "port: ", socket.getPort());
-					return ErrorMsg.IO_EXCEPTION;
-				} catch (InterruptedException e) {
-					error(e, "port: ", socket.getPort());
-					return ErrorMsg.INTERRUPTED_EXCEPTION;
+			try {
+				switch (socket.getType()) {
+				case SOCKET:
+					__sockets.add(__bindTCP(index, eventManager, configuration, socket.getPort()));
+					break;
+				case DATAGRAM:
+					__sockets.add(__bindUDP(index, eventManager, configuration, socket.getPort()));
+					break;
+				default:
+					break;
 				}
+			} catch (IOException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.IO_EXCEPTION;
+			} catch (InterruptedException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.INTERRUPTED_EXCEPTION;
 			}
 		}
 
 		var webSocketPorts = configuration.getWebSocketPorts();
 		for (int index = 0; index < webSocketPorts.size(); index++) {
 			var socket = webSocketPorts.get(index);
-			if (configuration.isDefined(socket.getPort())) {
-				try {
-					switch (socket.getType()) {
-					case WEB_SOCKET:
-						__websockets.add(__bindWS(index, eventManager, configuration, socket.getPort()));
-						break;
-					default:
-						break;
-					}
-				} catch (IOException e) {
-					error(e, "port: ", socket.getPort());
-					return ErrorMsg.IO_EXCEPTION;
-				} catch (InterruptedException e) {
-					error(e, "port: ", socket.getPort());
-					return ErrorMsg.INTERRUPTED_EXCEPTION;
+			try {
+				switch (socket.getType()) {
+				case WEB_SOCKET:
+					__websockets.add(__bindWS(index, eventManager, configuration, socket.getPort()));
+					break;
+				default:
+					break;
 				}
+			} catch (IOException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.IO_EXCEPTION;
+			} catch (InterruptedException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.INTERRUPTED_EXCEPTION;
 			}
 		}
 
