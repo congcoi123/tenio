@@ -56,9 +56,9 @@ public final class ConfigurationTest {
 	@Test
 	public void getConfigurationSocketPortsShouldReturnTrueValue() {
 		assertAll("getSocketPortsConfiguration",
-				() -> assertEquals("8032", __configuration.getSocketPorts().get(0).getPort()),
-				() -> assertEquals("8033", __configuration.getSocketPorts().get(1).getPort()),
-				() -> assertEquals("8034", __configuration.getSocketPorts().get(2).getPort()));
+				() -> assertEquals(8032, __configuration.getSocketPorts().get(0).getPort()),
+				() -> assertEquals(8033, __configuration.getSocketPorts().get(1).getPort()),
+				() -> assertEquals(8034, __configuration.getSocketPorts().get(2).getPort()));
 	}
 
 	@Test

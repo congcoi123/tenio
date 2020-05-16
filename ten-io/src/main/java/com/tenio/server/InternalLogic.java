@@ -154,13 +154,24 @@ final class InternalLogic extends AbstractLogger {
 	private void __createNewConnection(final BaseConfiguration configuration, final int index,
 			final Connection connection, final TObject message) {
 		if (index == 0) { // is main connection
-			// check the number of current players
-			if (__playerManager.count() > configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
-				__eventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
-				connection.close();
+			// check reconnection request first
+			var player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
+					message);
+			if (player != null) {
+				connection.setUsername(player.getName());
+				player.setConnection(connection, 0); // main connection
+				__eventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
-				__eventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+				// check the number of current players
+				if (__playerManager.count() > configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
+					__eventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection,
+							ErrorMsg.REACH_MAX_CONNECTION);
+					connection.close();
+				} else {
+					__eventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+				}
 			}
+
 		} else {
 			// the condition for creating sub-connection
 			var player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_REQUEST, index,
