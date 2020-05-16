@@ -97,73 +97,36 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player          See {@link AbstractPlayer}
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param message         the sending message
+	 * @param player  See {@link AbstractPlayer}
+	 * @param index   the index of connection in current player
+	 * @param message the sending message
 	 */
-	private void __send(AbstractPlayer player, boolean isSubConnection, TObject message) {
+	private void __send(AbstractPlayer player, int index, TObject message) {
 		player.setCurrentWriterTime(); // update time to check TIMEOUT
-		if (!isSubConnection) {
-			if (player.hasConnection()) { // send to CLIENT (connection)
-				player.getConnection().send(message);
-				debug("SENT", player.getName(), message.toString());
-			} else {
-				debug("SENT NPC", player.getName(), message.toString());
-			}
-		} else {
-			if (player.hasSubConnection()) { // send to CLIENT (sub-connection)
-				player.getSubConnection().send(message);
-				debug("SENT SUB", player.getName(), message.toString());
-			} else {
-				debug("SENT SUB NPC", player.getName(), message.toString());
-			}
+		// send to CLIENT (connection)
+		if (player.hasConnection(index)) {
+			player.getConnection(index).send(message);
 		}
-		__eventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, isSubConnection, message);
+		debug("SENT", "", player.getName(), message.toString());
+		__eventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, index, message);
 	}
 
 	/**
 	 * Send a message to player via his connection
 	 * 
-	 * @see #__send(AbstractPlayer, boolean, TObject)
+	 * @see #__send(AbstractPlayer, int, TObject)
 	 * 
 	 * @param key   the key of message
 	 * @param value the value of message
 	 */
-	private void __sendToPlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value) {
+	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value) {
 		var message = __objectPool.get();
 		message.put(key, value);
-		__send(player, isSubConnection, message);
+		__send(player, index, message);
 		__objectPool.repay(message);
 		if (value instanceof TArray) {
 			__arrayPool.repay((TArray) value);
 		}
-	}
-
-	/**
-	 * Send a message to player via his main connection
-	 * 
-	 * @see #__sendToPlayer(AbstractPlayer, boolean, String, Object)
-	 * 
-	 * @param player the desired player
-	 * @param key    the key of message
-	 * @param value  the value of message
-	 */
-	public void sendToPlayer(AbstractPlayer player, String key, Object value) {
-		__sendToPlayer(player, false, key, value);
-	}
-
-	/**
-	 * Send a message to player via his sub-connection
-	 * 
-	 * @see #__sendToPlayer(AbstractPlayer, boolean, String, Object)
-	 * 
-	 * @param player the desired player
-	 * @param key    the key of message
-	 * @param value  the value of message
-	 */
-	public void sendToPlayerSub(AbstractPlayer player, String key, Object value) {
-		__sendToPlayer(player, true, key, value);
 	}
 
 	/**
@@ -172,99 +135,40 @@ public final class MessageApi extends AbstractLogger {
 	 * Must use {@link #getArrayPack()} to create data array package for avoiding
 	 * memory leak.
 	 * 
-	 * @param player          the desired player
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param key             the key of message
-	 * @param value           the value of message
-	 * @param keyData         the key of message's data
-	 * @param data            the message data, see: {@link TArray}
+	 * @param player  the desired player
+	 * @param index   the index of connection in current player
+	 * @param key     the key of message
+	 * @param value   the value of message
+	 * @param keyData the key of message's data
+	 * @param data    the message data, see: {@link TArray}
 	 */
-	private void __sendToPlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
-			String keyData, TArray data) {
+	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData, TArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
-		__send(player, isSubConnection, message);
+		__send(player, index, message);
 		__objectPool.repay(message);
 		__arrayPool.repay(data);
 	}
 
 	/**
-	 * Send a message to a player via his main connection
-	 * 
-	 * @see #__sendToPlayer(AbstractPlayer, boolean, String, Object, String, TArray)
-	 * 
-	 * @param player  the desired player
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
-	 */
-	public void sendToPlayer(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
-		__sendToPlayer(player, false, key, value, keyData, data);
-	}
-
-	/**
-	 * Send a message to a player via his sub-connection
-	 * 
-	 * @see #__sendToPlayer(AbstractPlayer, boolean, String, Object, String, TArray)
-	 * 
-	 * @param player  the desired player
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
-	 */
-	public void sendToPlayerSub(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
-		__sendToPlayer(player, true, key, value, keyData, data);
-	}
-
-	/**
 	 * Send a message to all players of one room
 	 * 
-	 * @param room            the desired room
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param key             the key of message
-	 * @param value           the value of message
+	 * @param room  the desired room
+	 * @param index the index of connection in current player
+	 * @param key   the key of message
+	 * @param value the value of message
 	 */
-	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value) {
+	public void sendToRoom(AbstractRoom room, int index, String key, Object value) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		for (var player : room.getPlayers().values()) {
-			__send(player, isSubConnection, message);
+			__send(player, index, message);
 		}
 		__objectPool.repay(message);
 		if (value instanceof TArray) {
 			__arrayPool.repay((TArray) value);
 		}
-	}
-
-	/**
-	 * Send a message to all players on one room via their main connection
-	 * 
-	 * @see #__sendToRoom(AbstractRoom, boolean, String, Object)
-	 * 
-	 * @param room  the desired room
-	 * @param key   the key of message
-	 * @param value the value of message
-	 */
-	public void sendToRoom(AbstractRoom room, String key, Object value) {
-		__sendToRoom(room, false, key, value);
-	}
-
-	/**
-	 * Send a message to all players on one room via their sub-connection
-	 * 
-	 * @see #__sendToRoom(AbstractRoom, boolean, String, Object)
-	 * 
-	 * @param room  the desired room
-	 * @param key   the key of message
-	 * @param value the value of message
-	 */
-	public void sendToRoomSub(AbstractRoom room, String key, Object value) {
-		__sendToRoom(room, true, key, value);
 	}
 
 	/**
@@ -273,72 +177,39 @@ public final class MessageApi extends AbstractLogger {
 	 * Must use {@link #getArrayPack()} to create data array package for avoiding
 	 * memory leak.
 	 * 
-	 * @param room            the desired room
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param key             the key of message
-	 * @param value           the value of message
-	 * @param keyData         the key of message's data
-	 * @param data            the message's data, see: {@link TArray}
+	 * @param room    the desired room
+	 * @param index   the index of connection in current player
+	 * @param key     the key of message
+	 * @param value   the value of message
+	 * @param keyData the key of message's data
+	 * @param data    the message's data, see: {@link TArray}
 	 */
-	private void __sendToRoom(AbstractRoom room, boolean isSubConnection, String key, Object value, String keyData,
-			TArray data) {
+	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData, TArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		for (var player : room.getPlayers().values()) {
-			__send(player, isSubConnection, message);
+			__send(player, index, message);
 		}
 		__objectPool.repay(message);
 		__arrayPool.repay(data);
 	}
 
 	/**
-	 * Send a message to all players on one room via their main connection
-	 * 
-	 * @see #__sendToRoom(AbstractRoom, boolean, String, Object, String, TArray)
-	 * 
-	 * @param room    the desired room
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the messate's data, see: {@link TArray}
-	 */
-	public void sendToRoom(AbstractRoom room, String key, Object value, String keyData, TArray data) {
-		__sendToRoom(room, false, key, value, keyData, data);
-	}
-
-	/**
-	 * Send a message to all players on one room via their sub-connection
-	 * 
-	 * @see #__sendToRoom(AbstractRoom, boolean, String, Object, String, TArray)
-	 * 
-	 * @param room    the desired room
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the messate's data, see: {@link TArray}
-	 */
-	public void sendToRoomSub(AbstractRoom room, String key, Object value, String keyData, TArray data) {
-		__sendToRoom(room, true, key, value, keyData, data);
-	}
-
-	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * @param player          the desired player
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param key             the key of message
-	 * @param value           the value of message
+	 * @param player the desired player
+	 * @param index  the index of connection in current player
+	 * @param key    the key of message
+	 * @param value  the value of message
 	 */
-	private void __sendToRoomIgnorePlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value) {
+	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value) {
 		var room = player.getRoom();
 		var message = __objectPool.get();
 		message.put(key, value);
 		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
-				__send(p, isSubConnection, message);
+				__send(p, index, message);
 			}
 		}
 		__objectPool.repay(message);
@@ -348,95 +219,31 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
-	 * Send a message to all players in one room except the desired player via their
-	 * main connection
-	 * 
-	 * @see #__sendToRoomIgnorePlayer(AbstractPlayer, boolean, String, Object)
-	 * 
-	 * @param player the desired player
-	 * @param key    the key of message
-	 * @param value  the value of message
-	 */
-	public void sendToRoomIgnorePlayer(AbstractPlayer player, String key, Object value) {
-		__sendToRoomIgnorePlayer(player, false, key, value);
-	}
-
-	/**
-	 * Send a message to all players in one room except the desired player via their
-	 * sub-connection
-	 * 
-	 * @see #__sendToRoomIgnorePlayer(AbstractPlayer, boolean, String, Object)
-	 * 
-	 * @param player the desired player
-	 * @param key    the key of message
-	 * @param value  the value of message
-	 */
-	public void sendToRoomIgnorePlayerSub(AbstractPlayer player, String key, Object value) {
-		__sendToRoomIgnorePlayer(player, true, key, value);
-	}
-
-	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
 	 * Must use {@link #getArrayPack()} to create data array package for avoiding
 	 * memory leak.
 	 * 
-	 * @param player          the desired player
-	 * @param isSubConnection set <b>true</b> is you want to send to your client a
-	 *                        message in sub-connection (UDP)
-	 * @param key             the key of message
-	 * @param value           the value of message
-	 * @param keyData         the key of message's data
-	 * @param data            the message's data, see: {@link TArray}
+	 * @param player  the desired player
+	 * @param index   the index of connection in current player
+	 * @param key     the key of message
+	 * @param value   the value of message
+	 * @param keyData the key of message's data
+	 * @param data    the message's data, see: {@link TArray}
 	 */
-	private void __sendToRoomIgnorePlayer(AbstractPlayer player, boolean isSubConnection, String key, Object value,
-			String keyData, TArray data) {
+	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
+			TArray data) {
 		var room = player.getRoom();
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
-				__send(p, isSubConnection, message);
+				__send(p, index, message);
 			}
 		}
 		__objectPool.repay(message);
 		__arrayPool.repay(data);
-	}
-
-	/**
-	 * Send a message to all players in one room except the desired player via their
-	 * main connection
-	 * 
-	 * @see #__sendToRoomIgnorePlayer(AbstractPlayer, boolean, String, Object,
-	 *      String, TArray)
-	 * 
-	 * @param player  the desired player
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
-	 */
-	public void sendToRoomIgnorePlayer(AbstractPlayer player, String key, Object value, String keyData, TArray data) {
-		__sendToRoomIgnorePlayer(player, false, key, value, keyData, data);
-	}
-
-	/**
-	 * Send a message to all players in one room except the desired player via their
-	 * sub-connection
-	 * 
-	 * @see #__sendToRoomIgnorePlayer(AbstractPlayer, boolean, String, Object,
-	 *      String, TArray)
-	 * 
-	 * @param player  the desired player
-	 * @param key     the key of message
-	 * @param value   the value of message
-	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
-	 */
-	public void sendToRoomIgnorePlayerSub(AbstractPlayer player, String key, Object value, String keyData,
-			TArray data) {
-		__sendToRoomIgnorePlayer(player, true, key, value, keyData, data);
 	}
 
 	/**

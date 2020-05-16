@@ -161,10 +161,8 @@ public enum TEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player which will be received your message, see
 	 * {@link AbstractPlayer}</li>
-	 * <li><b>parameter[1]</b> this message was sent by the main connection (TCP) or
-	 * the sub connection (UDP). In the case of WebSocket, it can only send in the
-	 * main connection. It returns <b>true</b> for the sub connection and
-	 * <b>false</b> for the main connection</li>
+	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
+	 * {@link Integer}. Notice that, 0 value means main connection.
 	 * <li><b>parameter[2]</b> the sent message, see {@link TObject}</li>
 	 * </ul>
 	 * 
@@ -179,7 +177,7 @@ public enum TEvent {
 	 * <li><b>parameter[0]</b> the player which sent message, see
 	 * {@link AbstractPlayer} to your server</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
-	 * {@link Integer}. Notice that, 0 value means main connection
+	 * {@link Integer}. Notice that, 0 value means main connection.
 	 * <li><b>parameter[2]</b> the received message, see {@link TObject}</li>
 	 * </ul>
 	 * 
