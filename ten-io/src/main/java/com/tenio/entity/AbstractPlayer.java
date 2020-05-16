@@ -63,8 +63,8 @@ public abstract class AbstractPlayer {
 	@Column(name = "entity_id")
 	private String __entityId;
 	/**
-	 * A reference to its contained room. This value may be set
-	 * <b>null</b> @see {@link AbstractRoom}
+	 * A reference to its contained room. This value may be set <b>null</b> @see
+	 * {@link AbstractRoom}
 	 */
 	@Column(name = "room")
 	private AbstractRoom __room;
@@ -142,26 +142,45 @@ public abstract class AbstractPlayer {
 	}
 
 	public boolean hasConnection(int index) {
+		if (__connections == null) {
+			return false;
+		}
 		return (__connections[index] != null);
 	}
 
 	public Connection getConnection(int index) {
+		if (__connections == null) {
+			return null;
+		}
 		return __connections[index];
 	}
 
+	public void initializeConnections(int size) {
+		__connections = new Connection[size];
+	}
+
 	public void setConnection(final Connection connection, int index) {
+		if (__connections == null) {
+			return;
+		}
 		__connections[index] = connection;
 		__flagNPC = false;
 	}
-	
+
 	public void closeConnection(int index) {
+		if (__connections == null) {
+			return;
+		}
 		if (hasConnection(index)) {
 			__connections[index].close();
 			setConnection(null, index);
 		}
 	}
-	
+
 	public void closeAllConnections() {
+		if (__connections == null) {
+			return;
+		}
 		for (int i = 0; i < __connections.length; i++) {
 			closeConnection(i);
 		}

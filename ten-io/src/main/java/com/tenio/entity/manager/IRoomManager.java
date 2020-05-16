@@ -37,7 +37,7 @@ import com.tenio.entity.AbstractRoom;
  * @author kong
  * 
  */
-public interface IRoomManager {
+public interface IRoomManager extends IManager {
 
 	/**
 	 * @return the number of rooms in your server

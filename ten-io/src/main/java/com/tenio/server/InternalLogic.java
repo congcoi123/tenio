@@ -44,14 +44,11 @@ import com.tenio.network.Connection;
  */
 final class InternalLogic extends AbstractLogger {
 
-	private final BaseConfiguration __configuration;
 	private final IEventManager __eventManager;
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogic(BaseConfiguration configuration, IEventManager eventManager, IPlayerManager playerManager,
-			IRoomManager roomManager) {
-		__configuration = configuration;
+	public InternalLogic(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -60,11 +57,11 @@ final class InternalLogic extends AbstractLogger {
 	/**
 	 * Start handling
 	 */
-	public void init() {
+	public void init(BaseConfiguration configuration) {
 
 		__on(LEvent.CONNECTION_CLOSE, args -> {
 			var connection = __getConnection(args[0]);
-			boolean keepPlayerOnDisconnect = __configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
+			boolean keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 
 			if (connection != null) { // the connection has existed
 				String username = connection.getUsername();
@@ -130,11 +127,11 @@ final class InternalLogic extends AbstractLogger {
 		__on(LEvent.CHANNEL_HANDLE, args -> {
 			var index = __getInt(args[0]);
 			var connection = __getConnection(args[1]);
-			var message = __getTObject(args[3]);
-			var tempConnection = __getConnection(args[4]);
+			var message = __getTObject(args[2]);
+			var tempConnection = __getConnection(args[3]);
 
 			if (connection == null) {
-				__createNewConnection(index, tempConnection, message);
+				__createNewConnection(configuration, index, tempConnection, message);
 			} else {
 				var username = connection.getUsername();
 				if (username != null) {
@@ -154,10 +151,11 @@ final class InternalLogic extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final int index, final Connection connection, final TObject message) {
+	private void __createNewConnection(final BaseConfiguration configuration, final int index,
+			final Connection connection, final TObject message) {
 		if (index == 0) { // is main connection
 			// check the number of current players
-			if (__playerManager.count() > __configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
+			if (__playerManager.count() > configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
 				__eventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
 				connection.close();
 			} else {

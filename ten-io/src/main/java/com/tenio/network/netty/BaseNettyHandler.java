@@ -59,15 +59,15 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * Retrieve a connection by its channel
 	 * 
-	 * @param channel,      see {@link Channel}
-	 * @param remoteAddress the current address (in use for Datagram channel)
+	 * @param channel, see {@link Channel}
+	 * @param remote   the current address (in use for Datagram channel)
 	 * @return a connection
 	 */
-	private Connection __getConnection(Channel channel, String remoteAddress) {
-		if (remoteAddress == null) {
+	private Connection __getConnection(Channel channel, InetSocketAddress remote) {
+		if (remote == null) {
 			return channel.attr(NettyConnection.KEY_CONNECTION).get();
 		}
-		return (Connection) channel.attr(AttributeKey.valueOf(remoteAddress)).get();
+		return (Connection) channel.attr(AttributeKey.valueOf(remote.toString())).get();
 	}
 
 	/**
@@ -78,8 +78,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param remote  the current remote address (in use for Datagram channel)
 	 */
 	protected void _channelRead(ChannelHandlerContext ctx, TObject message, InetSocketAddress remote) {
-		var remoteAddress = remote.toString();
-		var connection = __getConnection(ctx.channel(), remoteAddress);
+		var connection = __getConnection(ctx.channel(), remote);
 
 		if (connection == null) {
 			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());

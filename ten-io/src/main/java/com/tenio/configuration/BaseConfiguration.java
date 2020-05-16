@@ -206,14 +206,14 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
 			var pDataNode = attrNetworkSockets.item(j);
 			var port = new PortInfo(
-					__getConnectionType(pDataNode.getAttributes().getNamedItem("name").getTextContent()),
-					pDataNode.getTextContent());
+					__getConnectionType(pDataNode.getAttributes().getNamedItem("type").getTextContent()),
+					Integer.parseInt(pDataNode.getTextContent()));
 			__socketPorts.add(port);
 		}
 		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
-			var port = new PortInfo(Connection.Type.WEB_SOCKET, pDataNode.getTextContent());
+			var port = new PortInfo(Connection.Type.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
 		}
 

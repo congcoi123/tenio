@@ -132,7 +132,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindUDP(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindUDP(int index, IEventManager eventManager, BaseConfiguration configuration, int port)
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
@@ -141,7 +141,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		info("DATAGRAM", buildgen("Start at port: ", port));
 
-		return bootstrap.bind(configuration.getInt(port)).sync().channel();
+		return bootstrap.bind(port).sync().channel();
 	}
 
 	/**
@@ -156,7 +156,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindTCP(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindTCP(int index, IEventManager eventManager, BaseConfiguration configuration, int port)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
@@ -166,7 +166,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		info("SOCKET", buildgen("Start at port: ", port));
 
-		return bootstrap.bind(configuration.getInt(port)).sync().channel();
+		return bootstrap.bind(port).sync().channel();
 	}
 
 	/**
@@ -182,7 +182,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindWS(int index, IEventManager eventManager, BaseConfiguration configuration, String port)
+	private Channel __bindWS(int index, IEventManager eventManager, BaseConfiguration configuration, int port)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
@@ -192,7 +192,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		info("WEB SOCKET", buildgen("Start at port: ", port));
 
-		return bootstrap.bind(configuration.getInt(port)).sync().channel();
+		return bootstrap.bind(port).sync().channel();
 	}
 
 	@Override

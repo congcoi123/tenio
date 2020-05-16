@@ -33,9 +33,9 @@ import com.tenio.network.Connection;
 public final class PortInfo {
 
 	private Connection.Type __type;
-	private String __port;
+	private int __port;
 
-	public PortInfo(Connection.Type type, String port) {
+	public PortInfo(Connection.Type type, int port) {
 		__type = type;
 		__port = port;
 	}
@@ -44,7 +44,7 @@ public final class PortInfo {
 		return __type;
 	}
 
-	public String getPort() {
+	public int getPort() {
 		return __port;
 	}
 

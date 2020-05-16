@@ -28,7 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import com.tenio.configuration.Configuration;
 import com.tenio.configuration.constant.ErrorMsg;
@@ -39,6 +42,7 @@ import com.tenio.network.netty.NettyNetwork;
 /**
  * @author kong
  */
+@TestMethodOrder(OrderAnnotation.class)
 public final class NetworkTest {
 
 	private INetwork __network;
@@ -53,11 +57,13 @@ public final class NetworkTest {
 	}
 
 	@Test
+	@Order(1)
 	public void startNetworkShouldReturnNull() {
 		assertNull(__network.start(__eventManager, __configuration));
 	}
 
 	@Test
+	@Order(2)
 	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
 		__network.start(__eventManager, __configuration);
 		assertEquals(ErrorMsg.IO_EXCEPTION, __network.start(__eventManager, __configuration));

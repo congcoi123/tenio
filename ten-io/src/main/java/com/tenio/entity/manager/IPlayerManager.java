@@ -37,7 +37,7 @@ import com.tenio.network.Connection;
  * @author kong
  * 
  */
-public interface IPlayerManager {
+public interface IPlayerManager extends IManager {
 
 	/**
 	 * @return the number of all current players' instance (include NPC or BOT)

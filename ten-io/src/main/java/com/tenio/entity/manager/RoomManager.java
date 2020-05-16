@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.api.RoomApi;
+import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
@@ -58,6 +59,11 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 
 	public RoomManager(IEventManager eventManager) {
 		__eventManager = eventManager;
+	}
+
+	@Override
+	public void initialize(BaseConfiguration configuration) {
+		// temporary do nothing
 	}
 
 	@Override

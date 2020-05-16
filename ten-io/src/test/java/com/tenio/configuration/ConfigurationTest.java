@@ -30,6 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.tenio.network.Connection;
+
 /**
  * @author kong
  */
@@ -57,6 +59,14 @@ public final class ConfigurationTest {
 				() -> assertEquals("8032", __configuration.getSocketPorts().get(0).getPort()),
 				() -> assertEquals("8033", __configuration.getSocketPorts().get(1).getPort()),
 				() -> assertEquals("8034", __configuration.getSocketPorts().get(2).getPort()));
+	}
+
+	@Test
+	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
+		assertAll("getSocketPortsTypeConfiguration",
+				() -> assertEquals(Connection.Type.SOCKET, __configuration.getSocketPorts().get(0).getType()),
+				() -> assertEquals(Connection.Type.DATAGRAM, __configuration.getSocketPorts().get(1).getType()),
+				() -> assertEquals(Connection.Type.SOCKET, __configuration.getSocketPorts().get(2).getType()));
 	}
 
 	@AfterEach
