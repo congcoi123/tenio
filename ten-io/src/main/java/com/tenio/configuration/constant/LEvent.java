@@ -37,25 +37,10 @@ import com.tenio.network.Connection;
 public enum LEvent {
 
 	/**
-	 * When a player is forced to leave his current room. It means this player was
-	 * kicked by the host or the entire room was removed. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> a player who was forced to leave, see
-	 * {@link AbstractPlayer}</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	FORCE_PLAYER_LEAVE_ROOM,
-
-	/**
 	 * When a client is disconnected from your server for any reason, you can handle
 	 * it in this event. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
-	 * <li><b>parameter[1]</b> If the value is set to <b>true</b>, when the client
-	 * is disconnected, its player can be held for an interval time (you can
-	 * configure this interval time in your configurations)</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -84,6 +69,18 @@ public enum LEvent {
 	 * Return <b>null</b>
 	 */
 	MANUALY_CLOSE_CONNECTION,
+
+	/**
+	 * When a player is forced to leave his current room. It means this player was
+	 * kicked by the host or the entire room was removed. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> a player who was forced to leave, see
+	 * {@link AbstractPlayer}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	FORCE_PLAYER_LEAVE_ROOM,
 
 	/**
 	 * You can handle the message sent from a connection here.

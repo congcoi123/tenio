@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
+import com.tenio.configuration.BaseConfiguration;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
@@ -42,11 +44,14 @@ import com.tenio.network.Connection;
  */
 final class InternalLogic extends AbstractLogger {
 
+	private final BaseConfiguration __configuration;
 	private final IEventManager __eventManager;
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogic(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
+	public InternalLogic(BaseConfiguration configuration, IEventManager eventManager, IPlayerManager playerManager,
+			IRoomManager roomManager) {
+		__configuration = configuration;
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -57,22 +62,14 @@ final class InternalLogic extends AbstractLogger {
 	 */
 	public void init() {
 
-		__on(LEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
-			var player = __getPlayer(args[0]);
-
-			__roomManager.playerLeaveRoom(player, true);
-
-			return null;
-		});
-
 		__on(LEvent.CONNECTION_CLOSE, args -> {
 			var connection = __getConnection(args[0]);
-			boolean keepPlayerOnDisconnect = __getBoolean(args[1]);
+			boolean keepPlayerOnDisconnect = __configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 
 			if (connection != null) { // the connection has existed
-				String id = connection.getUsername();
-				if (id != null) { // the player maybe exist
-					var player = __playerManager.get(id);
+				String username = connection.getUsername();
+				if (username != null) { // the player maybe exist
+					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
 						__eventManager.getExternal().emit(TEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
@@ -95,9 +92,9 @@ final class InternalLogic extends AbstractLogger {
 			var cause = __getThrowable(args[2]);
 
 			if (connection != null) { // the old connection
-				String id = connection.getUsername();
-				if (id != null) { // the player maybe exist
-					var player = __playerManager.get(id);
+				String username = connection.getUsername();
+				if (username != null) { // the player maybe exist
+					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
 						__exception(player, cause);
 						return null;
@@ -110,6 +107,15 @@ final class InternalLogic extends AbstractLogger {
 			return null;
 		});
 
+		__on(LEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
+			var player = __getPlayer(args[0]);
+
+			__roomManager.playerLeaveRoom(player, true);
+
+			return null;
+		});
+
+		// This event will trigger the LEvent.CONNECTION_CLOSE event effect
 		__on(LEvent.MANUALY_CLOSE_CONNECTION, args -> {
 			String name = __getString(args[0]);
 
@@ -128,9 +134,58 @@ final class InternalLogic extends AbstractLogger {
 			var message = __getTObject(args[3]);
 			var tempConnection = __getConnection(args[4]);
 
+			if (connection == null) {
+				__createNewConnection(index, tempConnection, __playerManager.get(username), message);
+			} else {
+				if (username != null) {
+					var player = __playerManager.get(username);
+					if (player != null) { // the player has existed
+						__handle(player, index, message);
+					} else {
+						// Can handle free connection here
+					}
+				} else {
+					// Can handle free connection here
+				}
+			}
+
 			return null;
 		});
 
+	}
+
+	private void __createNewConnection(final int index, final Connection connection, AbstractPlayer player,
+			final TObject message) {
+		if (index == 0) { // is main connection
+			// check the number of current players
+			if (__playerManager.count() > __configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
+				__eventManager.getExternal().emit(TEvent.CONNECTION_FAILED, connection, ErrorMsg.REACH_MAX_CONNECTION);
+				connection.close();
+			} else {
+				__eventManager.getExternal().emit(TEvent.CONNECTION_SUCCESS, connection, message);
+			}
+		} else {
+			// the condition for creating sub-connection
+			if (player == null) {
+				player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_REQUEST, index,
+						message);
+
+				if (player == null) {
+					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
+							ErrorMsg.PLAYER_NOT_FOUND);
+				} else if (!player.hasConnection(0)) {
+					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
+							ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
+				} else {
+					connection.setUsername(player.getName());
+					player.setConnection(connection, index);
+					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_SUCCESS, player);
+				}
+
+			} else {
+				__handle(player, index, message);
+			}
+		}
 	}
 
 	private void __on(final LEvent event, ISubscriber sub) {
@@ -163,14 +218,6 @@ final class InternalLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link Boolean}
-	 */
-	private boolean __getBoolean(Object object) {
-		return (boolean) object;
-	}
-
-	/**
-	 * @param object the corresponding object
 	 * @return a value in, see {@link String}
 	 */
 	private String __getString(Object object) {
@@ -193,14 +240,10 @@ final class InternalLogic extends AbstractLogger {
 		return (Throwable) object;
 	}
 
-	private void __handle(AbstractPlayer player, boolean isSubConnection, TObject message) {
-		if (isSubConnection) {
-			debug("RECV PLAYER SUB", player.getName(), message.toString());
-		} else {
-			debug("RECV PLAYER", player.getName(), message.toString());
-		}
+	private void __handle(AbstractPlayer player, int index, TObject message) {
+		debug("RECV PLAYER", index, player.getName(), message.toString());
 		player.setCurrentReaderTime();
-		__eventManager.getExternal().emit(TEvent.RECEIVED_FROM_PLAYER, player, isSubConnection, message);
+		__eventManager.getExternal().emit(TEvent.RECEIVED_FROM_PLAYER, player, index, message);
 	}
 
 	private void __exception(AbstractPlayer player, Throwable cause) {

@@ -121,7 +121,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			}
 
 			// add the main connection
-			connection.setUsername(player.getName(), 0);
+			connection.setUsername(player.getName());
 			player.setConnection(connection, 0);
 
 			__players.put(player.getName(), player);
@@ -166,7 +166,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 			// remove all player's connections, player
 			removeAllConnections(player);
-			
+
 			__players.remove(player.getName());
 		}
 
