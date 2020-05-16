@@ -50,11 +50,6 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 	}
 
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		_channelActive(ctx);
-	}
-
-	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		// get the message's content
 		byte[] content;
@@ -76,7 +71,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			return;
 		}
 
-		_channelRead(ctx, message, datagram.sender().toString());
+		_channelRead(ctx, message, datagram.sender());
 	}
 
 }

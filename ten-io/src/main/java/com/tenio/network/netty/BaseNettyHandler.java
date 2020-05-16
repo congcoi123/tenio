@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.network.netty;
 
+import java.net.InetSocketAddress;
+
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
@@ -97,26 +99,21 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	/**
-	 * When a client is first connect to your server for any reason, you can create
-	 * a new connection here. But in case of Datagram, this channel is only active
-	 * once time
-	 * 
-	 * @param ctx the channel, see {@link ChannelHandlerContext}
-	 */
-	protected void _channelActive(ChannelHandlerContext ctx) {
-		__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
-	}
-
-	/**
 	 * Handle in-comming messages for the channel
 	 * 
-	 * @param ctx           the channel, see {@link ChannelHandlerContext}
-	 * @param message       the message, see {@link TObject}
-	 * @param remoteAddress the current address (in use for Datagram channel)
+	 * @param ctx     the channel, see {@link ChannelHandlerContext}
+	 * @param message the message, see {@link TObject}
+	 * @param remote  the current remote address (in use for Datagram channel)
 	 */
-	protected void _channelRead(ChannelHandlerContext ctx, TObject message, String remoteAddress) {
+	protected void _channelRead(ChannelHandlerContext ctx, TObject message, InetSocketAddress remote) {
+		var remoteAddress = remote.toString();
 		var connection = __getConnection(ctx.channel(), remoteAddress);
 		var username = __getUsername(ctx.channel(), remoteAddress);
+
+		if (connection == null) {
+			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
+			__connection.setSockAddress(remote);
+		}
 
 		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, username, message, __connection);
 	}

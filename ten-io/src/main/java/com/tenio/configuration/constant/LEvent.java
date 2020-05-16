@@ -97,7 +97,7 @@ public enum LEvent {
 	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by its
 	 * corresponding connection</li>
 	 * <li><b>parameter[4]</b> the connection object which is used to assigned to a
-	 * player, see {@link Connection}</li>
+	 * player (can be <b>null</b>, see {@link Connection}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>

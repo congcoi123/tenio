@@ -49,11 +49,6 @@ public class NettyWSHandler extends BaseNettyHandler {
 	}
 
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		_channelActive(ctx);
-	}
-
-	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		_channelInactive(ctx);
 	}
