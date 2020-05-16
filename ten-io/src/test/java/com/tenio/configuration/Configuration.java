@@ -21,11 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.model;
+package com.tenio.configuration;
 
 import java.util.Map;
 
-import com.tenio.configuration.BaseConfiguration;
 import com.tenio.entity.element.TObject;
 
 /**
@@ -38,10 +37,10 @@ import com.tenio.entity.element.TObject;
  */
 public final class Configuration extends BaseConfiguration {
 
-	public static final String CUSTOM_VALUE_1 = "c_customvalue_1";
-	public static final String CUSTOM_VALUE_2 = "c_customvalue_2";
-	public static final String CUSTOM_VALUE_3 = "c_customvalue_3";
-	public static final String CUSTOM_VALUE_4 = "c_customvalue_4";
+	public static final String CUSTOM_VALUE_1 = "customvalue_1";
+	public static final String CUSTOM_VALUE_2 = "customvalue_2";
+	public static final String CUSTOM_VALUE_3 = "customvalue_3";
+	public static final String CUSTOM_VALUE_4 = "customvalue_4";
 
 	public Configuration(final String file) {
 		super(file);

@@ -74,5 +74,9 @@ public final class ErrorMsg {
 	 * TCP connection.
 	 */
 	public static final String MAIN_CONNECTION_NOT_FOUND = "main_connection_not_found";
+	
+	public static final String IO_EXCEPTION = "io_exception";
+	
+	public static final String INTERRUPTED_EXCEPTION = "interrupted_exception";
 
 }

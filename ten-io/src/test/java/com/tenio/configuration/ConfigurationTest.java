@@ -30,8 +30,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.model.Configuration;
-
 /**
  * @author kong
  */
@@ -51,6 +49,14 @@ public final class ConfigurationTest {
 				() -> assertEquals("1", __configuration.getString(Configuration.CUSTOM_VALUE_2)),
 				() -> assertEquals("1.5", __configuration.getString(Configuration.CUSTOM_VALUE_3)),
 				() -> assertEquals("True", __configuration.getString(Configuration.CUSTOM_VALUE_4)));
+	}
+
+	@Test
+	public void getConfigurationSocketPortsShouldReturnTrueValue() {
+		assertAll("getSocketPortsConfiguration",
+				() -> assertEquals("8032", __configuration.getSocketPorts().get(0).getPort()),
+				() -> assertEquals("8033", __configuration.getSocketPorts().get(1).getPort()),
+				() -> assertEquals("8034", __configuration.getSocketPorts().get(2).getPort()));
 	}
 
 	@AfterEach

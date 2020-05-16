@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
@@ -140,7 +139,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<String, String> __configuration = new HashMap<String, String>();
+	public final Map<String, String> __configuration = new HashMap<String, String>();
 
 	/**
 	 * All ports in sockets zone
@@ -178,102 +177,95 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
-		NodeList attrNodes = root.getChildNodes();
 
-		for (int i = 0; i < attrNodes.getLength(); i++) {
-			var attrNode = attrNodes.item(i);
+		// Properties
+		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
+		for (int j = 0; j < attrRootProperties.getLength(); j++) {
+			var pDataNode = attrRootProperties.item(j);
+			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
+			case "name":
+				__configuration.put(SERVER_NAME, pDataNode.getTextContent());
+				break;
 
-			// Properties
-			var attrRootProperties = XMLUtility.getNodeList(attrNode, "//Server/Properties/Property");
-			for (int j = 0; j < attrRootProperties.getLength(); j++) {
-				var pDataNode = attrRootProperties.item(j);
-				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
-				case "name":
-					__configuration.put(SERVER_NAME, pDataNode.getTextContent());
-					break;
+			case "id":
+				__configuration.put(SERVER_ID, pDataNode.getTextContent());
+				break;
 
-				case "id":
-					__configuration.put(SERVER_ID, pDataNode.getTextContent());
-					break;
+			case "versionName":
+				__configuration.put(VERSION_NAME, pDataNode.getTextContent());
+				break;
 
-				case "versionName":
-					__configuration.put(VERSION_NAME, pDataNode.getTextContent());
-					break;
-
-				case "versionCode":
-					__configuration.put(VERSION_CODE, pDataNode.getTextContent());
-					break;
-				}
+			case "versionCode":
+				__configuration.put(VERSION_CODE, pDataNode.getTextContent());
+				break;
 			}
-
-			// Network
-			var attrNetworkSockets = XMLUtility.getNodeList(attrNode, "//Server/Network/Sockets");
-			for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
-				var pDataNode = attrNetworkSockets.item(j);
-				var port = new PortInfo(
-						__getConnectionType(pDataNode.getAttributes().getNamedItem("name").getTextContent()),
-						pDataNode.getTextContent());
-				__socketPorts.add(port);
-			}
-			var attrNetworkWebSockets = XMLUtility.getNodeList(attrNode, "//Server/Network/WebSockets");
-			for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
-				var pDataNode = attrNetworkWebSockets.item(j);
-				var port = new PortInfo(Connection.Type.WEB_SOCKET, pDataNode.getTextContent());
-				__webSocketPorts.add(port);
-			}
-
-			// Configuration
-			var attrConfigurationProperties = XMLUtility.getNodeList(attrNode,
-					"//Server/Configuration/Properties/Property");
-			for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
-				var pDataNode = attrConfigurationProperties.item(j);
-				switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
-				case "keepPlayerOnDisconnect":
-					__configuration.put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
-					break;
-
-				case "maxHeartbeat":
-					__configuration.put(MAX_HEARTBEAT, pDataNode.getTextContent());
-					break;
-
-				case "maxPlayer":
-					__configuration.put(MAX_PLAYER, pDataNode.getTextContent());
-					break;
-
-				case "idleReader":
-					__configuration.put(IDLE_READER, pDataNode.getTextContent());
-					break;
-
-				case "idleWriter":
-					__configuration.put(IDLE_WRITER, pDataNode.getTextContent());
-					break;
-
-				case "emptyRoomScan":
-					__configuration.put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
-					break;
-
-				case "timeoutScan":
-					__configuration.put(TIMEOUT_SCAN, pDataNode.getTextContent());
-					break;
-
-				case "ccuScan":
-					__configuration.put(CCU_SCAN, pDataNode.getTextContent());
-					break;
-				}
-			}
-
-			// Extension
-			var attrExtensionProperties = XMLUtility.getNodeList(attrNode, "//Server/Extension/Properties/Property");
-			var extProperties = TObject.newInstance();
-			for (int j = 0; j < attrExtensionProperties.getLength(); j++) {
-				var pDataNode = attrExtensionProperties.item(j);
-				var key = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-				var value = pDataNode.getTextContent();
-				extProperties.put(key, value);
-			}
-			_extend(extProperties);
-
 		}
+
+		// Network
+		var attrNetworkSockets = XMLUtility.getNodeList(root, "//Server/Network/Sockets/Port");
+		for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
+			var pDataNode = attrNetworkSockets.item(j);
+			var port = new PortInfo(
+					__getConnectionType(pDataNode.getAttributes().getNamedItem("name").getTextContent()),
+					pDataNode.getTextContent());
+			__socketPorts.add(port);
+		}
+		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
+		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
+			var pDataNode = attrNetworkWebSockets.item(j);
+			var port = new PortInfo(Connection.Type.WEB_SOCKET, pDataNode.getTextContent());
+			__webSocketPorts.add(port);
+		}
+
+		// Configuration
+		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
+		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
+			var pDataNode = attrConfigurationProperties.item(j);
+			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
+			case "keepPlayerOnDisconnect":
+				__configuration.put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
+				break;
+
+			case "maxHeartbeat":
+				__configuration.put(MAX_HEARTBEAT, pDataNode.getTextContent());
+				break;
+
+			case "maxPlayer":
+				__configuration.put(MAX_PLAYER, pDataNode.getTextContent());
+				break;
+
+			case "idleReader":
+				__configuration.put(IDLE_READER, pDataNode.getTextContent());
+				break;
+
+			case "idleWriter":
+				__configuration.put(IDLE_WRITER, pDataNode.getTextContent());
+				break;
+
+			case "emptyRoomScan":
+				__configuration.put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
+				break;
+
+			case "timeoutScan":
+				__configuration.put(TIMEOUT_SCAN, pDataNode.getTextContent());
+				break;
+
+			case "ccuScan":
+				__configuration.put(CCU_SCAN, pDataNode.getTextContent());
+				break;
+			}
+		}
+
+		// Extension
+		var attrExtensionProperties = XMLUtility.getNodeList(root, "//Server/Extension/Properties/Property");
+		var extProperties = TObject.newInstance();
+		for (int j = 0; j < attrExtensionProperties.getLength(); j++) {
+			var pDataNode = attrExtensionProperties.item(j);
+			var key = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			var value = pDataNode.getTextContent();
+			extProperties.put(key, value);
+		}
+		_extend(extProperties);
 
 		// Put the current configurations to the logger
 		info("Configuration", toString());

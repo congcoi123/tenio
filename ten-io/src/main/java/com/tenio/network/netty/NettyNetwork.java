@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
@@ -72,7 +73,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
-
+		
 		var socketPorts = configuration.getSocketPorts();
 		for (int index = 0; index < socketPorts.size(); index++) {
 			var socket = socketPorts.get(index);
@@ -90,10 +91,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 					}
 				} catch (IOException e) {
 					error(e, "port: ", socket.getPort());
-					return false;
+					return ErrorMsg.IO_EXCEPTION;
 				} catch (InterruptedException e) {
 					error(e, "port: ", socket.getPort());
-					return false;
+					return ErrorMsg.INTERRUPTED_EXCEPTION;
 				}
 			}
 		}
@@ -112,15 +113,15 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 					}
 				} catch (IOException e) {
 					error(e, "port: ", socket.getPort());
-					return false;
+					return ErrorMsg.IO_EXCEPTION;
 				} catch (InterruptedException e) {
 					error(e, "port: ", socket.getPort());
-					return false;
+					return ErrorMsg.INTERRUPTED_EXCEPTION;
 				}
 			}
 		}
 
-		return true;
+		return null;
 	}
 
 	/**
