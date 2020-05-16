@@ -30,14 +30,20 @@ import com.tenio.network.Connection;
  * @author kong
  * 
  */
-public final class PortInfo {
+public final class Sock {
 
+	private String __name;
 	private Connection.Type __type;
 	private int __port;
 
-	public PortInfo(Connection.Type type, int port) {
+	public Sock(String name, Connection.Type type, int port) {
+		__name = name;
 		__type = type;
 		__port = port;
+	}
+
+	public String getName() {
+		return __name;
 	}
 
 	public Connection.Type getType() {

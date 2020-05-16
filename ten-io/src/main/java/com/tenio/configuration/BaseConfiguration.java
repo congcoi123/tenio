@@ -144,12 +144,12 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	/**
 	 * All ports in sockets zone
 	 */
-	private final List<PortInfo> __socketPorts = new ArrayList<PortInfo>();
+	private final List<Sock> __socketPorts = new ArrayList<Sock>();
 
 	/**
 	 * All ports in web sockets zone
 	 */
-	private final List<PortInfo> __webSocketPorts = new ArrayList<PortInfo>();
+	private final List<Sock> __webSocketPorts = new ArrayList<Sock>();
 
 	/**
 	 * The constructor
@@ -205,7 +205,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		var attrNetworkSockets = XMLUtility.getNodeList(root, "//Server/Network/Sockets/Port");
 		for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
 			var pDataNode = attrNetworkSockets.item(j);
-			var port = new PortInfo(
+			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
 					__getConnectionType(pDataNode.getAttributes().getNamedItem("type").getTextContent()),
 					Integer.parseInt(pDataNode.getTextContent()));
 			__socketPorts.add(port);
@@ -213,7 +213,8 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
-			var port = new PortInfo(Connection.Type.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
+			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
+					Connection.Type.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
 		}
 
@@ -284,11 +285,11 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		return null;
 	}
 
-	public List<PortInfo> getSocketPorts() {
+	public List<Sock> getSocketPorts() {
 		return __socketPorts;
 	}
 
-	public List<PortInfo> getWebSocketPorts() {
+	public List<Sock> getWebSocketPorts() {
 		return __webSocketPorts;
 	}
 
