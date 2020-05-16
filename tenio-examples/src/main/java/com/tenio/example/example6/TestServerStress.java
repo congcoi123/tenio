@@ -98,8 +98,9 @@ public final class TestServerStress extends AbstractApp {
 				// Now you can send messages to the client
 				// Sending, the data need to be packed
 				var data = _messageApi.getArrayPack();
-				_messageApi.sendToPlayer(player, "p", player.getName(), "d", data.put("H").put("3").put("L").put("O")
-						.put(true).put(TArray.newInstance().put("Sub").put("Value").put(100)));
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_SOCKET, "p", player.getName(), "d",
+						data.put("H").put("3").put("L").put("O").put(true)
+								.put(TArray.newInstance().put("Sub").put("Value").put(100)));
 
 				return null;
 			});
@@ -114,7 +115,7 @@ public final class TestServerStress extends AbstractApp {
 					data.put(pack[i]);
 				}
 
-				_messageApi.sendToPlayer(player, "p", player.getName(), "d", data);
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_SOCKET, "p", player.getName(), "d", data);
 
 				return null;
 			});

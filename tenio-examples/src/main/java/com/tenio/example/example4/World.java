@@ -22,6 +22,7 @@ import com.tenio.entity.element.TArray;
 import com.tenio.entity.element.TObject;
 import com.tenio.example.example4.configuration.ParamLoader;
 import com.tenio.example.example4.constant.SummingMethod;
+import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.example4.entity.Obstacle;
 import com.tenio.example.example4.entity.Vehicle;
 import com.tenio.example.example4.entity.Wall;
@@ -463,7 +464,7 @@ public final class World extends AbstractHeartBeat {
 
 		// send to client (naive way)
 		for (var inspector : __inspectors) {
-			__messageApi.sendToPlayerSub(inspector, "p",
+			__messageApi.sendToPlayer(inspector, Inspector.MOVE_SOCKET, "p",
 					__messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
 		}
 
