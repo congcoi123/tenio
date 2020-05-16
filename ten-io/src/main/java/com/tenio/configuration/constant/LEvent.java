@@ -89,11 +89,9 @@ public enum LEvent {
 	 * from <b>0</b>)</li>
 	 * <li><b>parameter[1]</b> the connection (can be <b>null</b>) that is retrieved
 	 * from the corresponding channel, see {@link Connection}</li>
-	 * <li><b>parameter[2]</b> the player's username (can be <b>null</b>) that is
-	 * retrieved from the corresponding channel, see {@link String}</li>
-	 * <li><b>parameter[3]</b> the message, see {@link TObject} which is sent by its
+	 * <li><b>parameter[2]</b> the message, see {@link TObject} which is sent by its
 	 * corresponding connection</li>
-	 * <li><b>parameter[4]</b> the connection object which is used to assigned to a
+	 * <li><b>parameter[3]</b> the connection object which is used to assigned to a
 	 * player (can be <b>null</b>, see {@link Connection}</li>
 	 * </ul>
 	 * 

@@ -62,7 +62,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private List<Channel> __websockets;
 
 	@Override
-	public boolean start(IEventManager eventManager, BaseConfiguration configuration) {
+	public String start(IEventManager eventManager, BaseConfiguration configuration) {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 

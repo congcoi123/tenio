@@ -130,13 +130,13 @@ final class InternalLogic extends AbstractLogger {
 		__on(LEvent.CHANNEL_HANDLE, args -> {
 			var index = __getInt(args[0]);
 			var connection = __getConnection(args[1]);
-			var username = __getString(args[2]);
 			var message = __getTObject(args[3]);
 			var tempConnection = __getConnection(args[4]);
 
 			if (connection == null) {
-				__createNewConnection(index, tempConnection, __playerManager.get(username), message);
+				__createNewConnection(index, tempConnection, message);
 			} else {
+				var username = connection.getUsername();
 				if (username != null) {
 					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
@@ -154,8 +154,7 @@ final class InternalLogic extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final int index, final Connection connection, AbstractPlayer player,
-			final TObject message) {
+	private void __createNewConnection(final int index, final Connection connection, final TObject message) {
 		if (index == 0) { // is main connection
 			// check the number of current players
 			if (__playerManager.count() > __configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
@@ -166,24 +165,18 @@ final class InternalLogic extends AbstractLogger {
 			}
 		} else {
 			// the condition for creating sub-connection
+			var player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_REQUEST, index,
+					message);
+
 			if (player == null) {
-				player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_REQUEST, index,
-						message);
-
-				if (player == null) {
-					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
-							ErrorMsg.PLAYER_NOT_FOUND);
-				} else if (!player.hasConnection(0)) {
-					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
-							ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
-				} else {
-					connection.setUsername(player.getName());
-					player.setConnection(connection, index);
-					__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_SUCCESS, player);
-				}
-
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
+			} else if (!player.hasConnection(0)) {
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_FAILED, message,
+						ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
 			} else {
-				__handle(player, index, message);
+				connection.setUsername(player.getName());
+				player.setConnection(connection, index);
+				__eventManager.getExternal().emit(TEvent.ATTACH_CONNECTION_SUCCESS, player);
 			}
 		}
 	}

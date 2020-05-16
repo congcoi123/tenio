@@ -52,13 +52,6 @@ public class NettyConnection extends Connection {
 	 * use {@link #__address} as a key for the current connection
 	 */
 	public static final AttributeKey<Connection> KEY_CONNECTION = AttributeKey.valueOf(KEY_STR_CONNECTION);
-	/**
-	 * Save the player's name, see {@link AbstractPlayer#getName()} to its channel
-	 */
-	public static final AttributeKey<String> KEY_USERNAME = AttributeKey.valueOf(KEY_STR_USERNAME);
-
-	public static final String PREFIX_CONNECTION = "c_";
-	public static final String PREFIX_USERNAME = "u_";
 
 	/**
 	 * @see Channel
@@ -79,11 +72,8 @@ public class NettyConnection extends Connection {
 	 */
 	private boolean __hasRemoteAddress;
 
-	private StringBuilder __stringHelper;
-
 	private NettyConnection(int index, IEventManager eventManager, Type type, Channel channel) {
 		super(eventManager, type, index);
-		__stringHelper = new StringBuilder();
 		__hasRemoteAddress = false;
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
@@ -111,7 +101,7 @@ public class NettyConnection extends Connection {
 		} else if (isType(Type.DATAGRAM)) {
 			if (__hasRemoteAddress) {
 				__channel.writeAndFlush(
-						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), _sockAddress));
+						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), _remote));
 			}
 		}
 	}
@@ -126,53 +116,23 @@ public class NettyConnection extends Connection {
 
 	@Override
 	public String getUsername() {
-		if (isType(Type.DATAGRAM)) {
-			synchronized (__stringHelper) {
-				__stringHelper.delete(0, __stringHelper.length());
-				return (String) __channel
-						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
-						.get();
-			}
-		}
 		return __username;
 	}
 
 	@Override
 	public void setUsername(String username) {
 		__username = username;
-		if (isType(Type.DATAGRAM)) {
-			synchronized (__stringHelper) {
-				__stringHelper.delete(0, __stringHelper.length());
-				__channel
-						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
-						.set(__username);
-			}
-		} else {
-			__channel.attr(KEY_USERNAME).set(__username);
-		}
 	}
 
 	@Override
 	public void removeUsername() {
 		__username = null;
-		if (isType(Type.DATAGRAM)) {
-			synchronized (__stringHelper) {
-				__stringHelper.delete(0, __stringHelper.length());
-				__channel
-						.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_USERNAME).append(__address).toString()))
-						.set(__username);
-			}
-		} else {
-			__channel.attr(KEY_USERNAME).set(__username);
-		}
 	}
 
 	@Override
 	public Connection getThis() {
 		if (isType(Type.DATAGRAM)) {
-			return (Connection) __channel
-					.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
-					.get();
+			return (Connection) __channel.attr(AttributeKey.valueOf(__address)).get();
 		}
 		return __channel.attr(KEY_CONNECTION).get();
 	}
@@ -180,8 +140,7 @@ public class NettyConnection extends Connection {
 	@Override
 	public void setThis() {
 		if (isType(Type.DATAGRAM)) {
-			__channel.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
-					.set(this);
+			__channel.attr(AttributeKey.valueOf(__address)).set(this);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(this);
 		}
@@ -190,8 +149,7 @@ public class NettyConnection extends Connection {
 	@Override
 	public void removeThis() {
 		if (isType(Type.DATAGRAM)) {
-			__channel.attr(AttributeKey.valueOf(__stringHelper.append(PREFIX_CONNECTION).append(__address).toString()))
-					.set(null);
+			__channel.attr(AttributeKey.valueOf(__address)).set(null);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(null);
 		}
@@ -203,12 +161,12 @@ public class NettyConnection extends Connection {
 	}
 
 	@Override
-	public void setSockAddress(InetSocketAddress sockAddress) {
+	public void setRemote(InetSocketAddress remote) {
 		// only need for the Datagram connection
 		if (isType(Type.DATAGRAM)) {
 			__hasRemoteAddress = true;
-			_sockAddress = sockAddress;
-			__address = _sockAddress.toString();
+			_remote = remote;
+			__address = _remote.toString();
 		}
 	}
 

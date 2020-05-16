@@ -49,10 +49,8 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	private Connection __connection;
 	private Connection.Type __type;
 	private int __index;
-	private StringBuilder __stringHelper;
 
 	public BaseNettyHandler(IEventManager eventManager, int index, Connection.Type type) {
-		__stringHelper = new StringBuilder();
 		__eventManager = eventManager;
 		__index = index;
 		__type = type;
@@ -69,33 +67,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		if (remoteAddress == null) {
 			return channel.attr(NettyConnection.KEY_CONNECTION).get();
 		}
-		synchronized (__stringHelper) {
-			__stringHelper.delete(0, __stringHelper.length());
-			return (Connection) channel
-					.attr(AttributeKey.valueOf(
-							__stringHelper.append(NettyConnection.PREFIX_CONNECTION).append(remoteAddress).toString()))
-					.get();
-		}
-	}
-
-	/**
-	 * Retrieve a player's name by its channel
-	 * 
-	 * @param channel,      see {@link Channel}
-	 * @param remoteAddress the current address (in use for Datagram channel)
-	 * @return a player's name
-	 */
-	private String __getUsername(Channel channel, String remoteAddress) {
-		if (remoteAddress == null) {
-			return channel.attr(NettyConnection.KEY_USERNAME).get();
-		}
-		synchronized (__stringHelper) {
-			__stringHelper.delete(0, __stringHelper.length());
-			return (String) channel
-					.attr(AttributeKey.valueOf(
-							__stringHelper.append(NettyConnection.PREFIX_USERNAME).append(remoteAddress).toString()))
-					.get();
-		}
+		return (Connection) channel.attr(AttributeKey.valueOf(remoteAddress)).get();
 	}
 
 	/**
@@ -108,14 +80,13 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	protected void _channelRead(ChannelHandlerContext ctx, TObject message, InetSocketAddress remote) {
 		var remoteAddress = remote.toString();
 		var connection = __getConnection(ctx.channel(), remoteAddress);
-		var username = __getUsername(ctx.channel(), remoteAddress);
 
 		if (connection == null) {
 			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
-			__connection.setSockAddress(remote);
+			__connection.setRemote(remote);
 		}
 
-		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, username, message, __connection);
+		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, message, __connection);
 	}
 
 	/**

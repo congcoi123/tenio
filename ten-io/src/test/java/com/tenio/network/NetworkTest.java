@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.network;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
@@ -53,7 +54,7 @@ public final class NetworkTest {
 
 	@Test
 	public void startNetworkShouldReturnTrue() {
-		assertTrue(__network.start(__eventManager, __configuration));
+		assertNull(__network.start(__eventManager, __configuration));
 	}
 
 	@Test

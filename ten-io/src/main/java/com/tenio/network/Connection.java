@@ -42,16 +42,15 @@ import com.tenio.event.IEventManager;
  * 
  */
 public abstract class Connection {
-
-	public static final String KEY_STR_CONNECTION = "key_connection";
-	public static final String KEY_STR_USERNAME = "key_username";
+	
+	public static final String KEY_STR_CONNECTION = "c";
 
 	protected final IEventManager _eventManager;
 
 	/**
 	 * Save the connection address
 	 */
-	protected InetSocketAddress _sockAddress;
+	protected InetSocketAddress _remote;
 	/**
 	 * Type of the connection
 	 */
@@ -107,7 +106,7 @@ public abstract class Connection {
 	 * 
 	 * @param sockAddress, see {@link InetSocketAddress}
 	 */
-	public abstract void setSockAddress(InetSocketAddress sockAddress);
+	public abstract void setRemote(InetSocketAddress remote);
 
 	/**
 	 * Retrieve the "connection" address in string type

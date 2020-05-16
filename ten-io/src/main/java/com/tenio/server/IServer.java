@@ -29,6 +29,7 @@ import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.IEventManager;
 import com.tenio.extension.IExtension;
 
@@ -47,9 +48,10 @@ interface IServer {
 	 * 
 	 * @param configuration, see {@link BaseConfiguration}
 	 * 
-	 * @return <b>true</b> if the network can start normally, <b>false<b> otherwise
+	 * @return <b>null</b> if the server can start normally, {@link ErrorMsg}
+	 *         otherwise
 	 */
-	boolean start(BaseConfiguration configuration);
+	String start(BaseConfiguration configuration);
 
 	/**
 	 * Shut down the server and close all services
