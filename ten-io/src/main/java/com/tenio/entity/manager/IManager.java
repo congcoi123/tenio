@@ -26,9 +26,7 @@ package com.tenio.entity.manager;
 import com.tenio.configuration.BaseConfiguration;
 
 /**
- * 
  * @author kong
- * 
  */
 public interface IManager {
 

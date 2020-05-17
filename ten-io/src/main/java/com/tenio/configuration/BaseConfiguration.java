@@ -45,9 +45,6 @@ import com.tenio.utility.XMLUtility;
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
  * <ul>
- * <li><i>Network>Sockets:</i> Sockets zone</li>
- * <li><i>Network>WebSockets:</i> WebSockets zone</li>
- * <li><i>datagramPort:</i> UDP port</li>
  * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
  * client, can be hold its player instance until timeout</li>
  * <li><i>maxHeartbeat:</i> The maximum number of heartbeats which game can
@@ -75,14 +72,6 @@ import com.tenio.utility.XMLUtility;
  */
 public abstract class BaseConfiguration extends AbstractLogger {
 
-	/**
-	 * WebSockets zone
-	 */
-	public static final String WEBSOCKETS_ZONE = "t.webSocketsZone";
-	/**
-	 * Sockets zone
-	 */
-	public static final String SOCKETS_ZONE = "t.socketsZone";
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout

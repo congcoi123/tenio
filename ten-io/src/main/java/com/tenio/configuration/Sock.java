@@ -26,9 +26,7 @@ package com.tenio.configuration;
 import com.tenio.network.Connection;
 
 /**
- * 
  * @author kong
- * 
  */
 public final class Sock {
 

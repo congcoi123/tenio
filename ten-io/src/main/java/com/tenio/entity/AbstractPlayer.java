@@ -135,21 +135,21 @@ public abstract class AbstractPlayer {
 	 * Check the player's role
 	 * 
 	 * @return <b>true</b> if the player is a NPC (non player character), otherwise
-	 *         return <b>false</b>. A NPC is a player without a connection
+	 *         return <b>false</b> (A NPC is a player without a connection).
 	 */
 	public boolean isNPC() {
 		return __flagNPC;
 	}
 
 	public boolean hasConnection(int index) {
-		if (__connections == null) {
+		if (__flagNPC) {
 			return false;
 		}
 		return (__connections[index] != null);
 	}
 
 	public Connection getConnection(int index) {
-		if (__connections == null) {
+		if (__flagNPC) {
 			return null;
 		}
 		return __connections[index];
@@ -157,18 +157,18 @@ public abstract class AbstractPlayer {
 
 	public void initializeConnections(int size) {
 		__connections = new Connection[size];
-	}
-
-	public void setConnection(final Connection connection, int index) {
-		if (__connections == null) {
-			return;
-		}
-		__connections[index] = connection;
 		__flagNPC = false;
 	}
 
+	public void setConnection(final Connection connection, int index) {
+		if (__flagNPC) {
+			return;
+		}
+		__connections[index] = connection;
+	}
+
 	public void closeConnection(int index) {
-		if (__connections == null) {
+		if (__flagNPC) {
 			return;
 		}
 		if (hasConnection(index)) {
@@ -178,7 +178,7 @@ public abstract class AbstractPlayer {
 	}
 
 	public void closeAllConnections() {
-		if (__connections == null) {
+		if (__flagNPC) {
 			return;
 		}
 		for (int i = 0; i < __connections.length; i++) {

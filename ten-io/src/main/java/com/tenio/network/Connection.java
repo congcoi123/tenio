@@ -42,15 +42,19 @@ import com.tenio.event.IEventManager;
  * 
  */
 public abstract class Connection {
-	
+
 	public static final String KEY_STR_CONNECTION = "c";
 
 	protected final IEventManager _eventManager;
 
 	/**
-	 * Save the connection address
+	 * @see AbstractPlayer#getName()
 	 */
-	protected InetSocketAddress _remote;
+	private String __username;
+	/**
+	 * Save the client's address
+	 */
+	private String __address;
 	/**
 	 * Type of the connection
 	 */
@@ -70,16 +74,75 @@ public abstract class Connection {
 		__index = index;
 	}
 
+	/**
+	 * Retrieve the "connection" type, see {@link Connection.Type}
+	 * 
+	 * @return the type of connection
+	 */
 	public Type getType() {
 		return __type;
 	}
 
+	/**
+	 * Determine if the current type of connection is matched or not?
+	 * 
+	 * @param type the comparison type
+	 * @return <b>true</b> is the current type is matched, <b>false</b> otherwise.
+	 */
 	public boolean isType(Type type) {
 		return (__type == type);
 	}
 
+	/**
+	 * @return the current index of connection in one player
+	 */
 	public int getIndex() {
 		return __index;
+	}
+
+	/**
+	 * Retrieve the "connection" id, this id is player's name, see
+	 * {@link AbstractPlayer#getName()}
+	 * 
+	 * @return the username
+	 */
+	public String getUsername() {
+		return __username;
+	}
+
+	/**
+	 * Set id for the "connection", this id is player's name, see
+	 * {@link AbstractPlayer#getName()}
+	 * 
+	 * @param username the identify of this connection
+	 */
+	public void setUsername(String username) {
+		__username = username;
+	}
+
+	/**
+	 * Remove the username value from channel cache
+	 */
+	public void removeUsername() {
+		__username = null;
+	}
+
+	/**
+	 * Set the address
+	 * 
+	 * @param address the new address value
+	 */
+	public void setAddress(String address) {
+		__address = address;
+	}
+
+	/**
+	 * Retrieve the "connection" address in string type
+	 * 
+	 * @return the address
+	 */
+	public String getAddress() {
+		return __address;
 	}
 
 	/**
@@ -104,37 +167,9 @@ public abstract class Connection {
 	/**
 	 * Set the current address for your "connection" (only need for Socket type)
 	 * 
-	 * @param sockAddress, see {@link InetSocketAddress}
+	 * @param remote, see {@link InetSocketAddress}
 	 */
 	public abstract void setRemote(InetSocketAddress remote);
-
-	/**
-	 * Retrieve the "connection" address in string type
-	 * 
-	 * @return the address
-	 */
-	public abstract String getAddress();
-
-	/**
-	 * Retrieve the "connection" id, this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @return the username
-	 */
-	public abstract String getUsername();
-
-	/**
-	 * Set id for the "connection", this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @param username the identify of this connection
-	 */
-	public abstract void setUsername(String username);
-
-	/**
-	 * Remove the username value from channel cache
-	 */
-	public abstract void removeUsername();
 
 	/**
 	 * Retrieve this connection itself by channel

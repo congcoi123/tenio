@@ -26,7 +26,6 @@ package com.tenio.network.netty;
 import java.net.InetSocketAddress;
 
 import com.tenio.configuration.constant.LEvent;
-import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
@@ -58,32 +57,21 @@ public class NettyConnection extends Connection {
 	 */
 	private Channel __channel;
 	/**
-	 * @see AbstractPlayer#getName()
-	 */
-	private String __username;
-	/**
 	 * Save the client's address, in Datagram connection it is used for saving as a
-	 * key of the {@link #__username}
+	 * key of the {@link #__uzsername}
 	 */
-	private String __address;
-	/**
-	 * Determine if the remote address was assigned or not (only use for the
-	 * Datagram connection)
-	 */
-	private boolean __hasRemoteAddress;
+	protected InetSocketAddress __remote;
 
 	private NettyConnection(int index, IEventManager eventManager, Type type, Channel channel) {
 		super(eventManager, type, index);
-		__hasRemoteAddress = false;
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
 		// receive a message from client)
 		// in the Datagram connection there is only one channel existed
 		if (!isType(Type.DATAGRAM)) {
-			__address = ((InetSocketAddress) __channel.remoteAddress()).toString();
+			setAddress(((InetSocketAddress) __channel.remoteAddress()).toString());
 		}
-		__username = null;
 	}
 
 	public static NettyConnection newInstance(int index, IEventManager eventManager, Type type, Channel channel) {
@@ -98,9 +86,9 @@ public class NettyConnection extends Connection {
 			__channel.writeAndFlush(
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
 		} else if (isType(Type.DATAGRAM)) {
-			if (__hasRemoteAddress) {
+			if (__remote != null) {
 				__channel.writeAndFlush(
-						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), _remote));
+						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remote));
 			}
 		}
 	}
@@ -110,28 +98,13 @@ public class NettyConnection extends Connection {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
-		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, __username);
-	}
-
-	@Override
-	public String getUsername() {
-		return __username;
-	}
-
-	@Override
-	public void setUsername(String username) {
-		__username = username;
-	}
-
-	@Override
-	public void removeUsername() {
-		__username = null;
+		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, getUsername());
 	}
 
 	@Override
 	public Connection getThis() {
 		if (isType(Type.DATAGRAM)) {
-			return (Connection) __channel.attr(AttributeKey.valueOf(__address)).get();
+			return (Connection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
 		}
 		return __channel.attr(KEY_CONNECTION).get();
 	}
@@ -139,7 +112,7 @@ public class NettyConnection extends Connection {
 	@Override
 	public void setThis() {
 		if (isType(Type.DATAGRAM)) {
-			__channel.attr(AttributeKey.valueOf(__address)).set(this);
+			__channel.attr(AttributeKey.valueOf(getAddress())).set(this);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(this);
 		}
@@ -148,24 +121,18 @@ public class NettyConnection extends Connection {
 	@Override
 	public void removeThis() {
 		if (isType(Type.DATAGRAM)) {
-			__channel.attr(AttributeKey.valueOf(__address)).set(null);
+			__channel.attr(AttributeKey.valueOf(getAddress())).set(null);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(null);
 		}
 	}
 
 	@Override
-	public String getAddress() {
-		return __address;
-	}
-
-	@Override
 	public void setRemote(InetSocketAddress remote) {
 		// only need for the Datagram connection
 		if (isType(Type.DATAGRAM)) {
-			__hasRemoteAddress = true;
-			_remote = remote;
-			__address = _remote.toString();
+			__remote = remote;
+			setAddress(__remote.toString());
 		}
 	}
 
