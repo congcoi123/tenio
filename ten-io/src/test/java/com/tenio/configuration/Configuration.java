@@ -21,42 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio;
+package com.tenio.configuration;
 
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.extension.IExtension;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.server.Server;
+import java.util.Map;
+
+import com.tenio.entity.element.TObject;
 
 /**
- * Your application will start from here.
+ * Create your own configurations
+ * 
+ * @see BaseConfiguration
  * 
  * @author kong
- * 
+ *
  */
-public abstract class AbstractApp extends AbstractLogger {
+public final class Configuration extends BaseConfiguration {
 
-	/**
-	 * Start The Game Server
-	 */
-	public void start() {
-		var server = Server.getInstance();
-		server.setExtension(getExtension());
-		if (server.start(getConfiguration()) != null) {
-			server.shutdown();
-		}
+	public static final String CUSTOM_VALUE_1 = "customvalue_1";
+	public static final String CUSTOM_VALUE_2 = "customvalue_2";
+	public static final String CUSTOM_VALUE_3 = "customvalue_3";
+	public static final String CUSTOM_VALUE_4 = "customvalue_4";
+
+	public Configuration(final String file) {
+		super(file);
 	}
 
-	/**
-	 * @return an extension for handling your own logic class
-	 */
-	public abstract IExtension getExtension();
+	@Override
+	protected void _extend(TObject extProperties) {
+		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
+			switch (entry.getKey()) {
+			case "customValue1":
+				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
+				break;
 
-	/**
-	 * 
-	 * @param <T> The derived class of {@link BaseConfiguration}
-	 * @return your own class that derived from {@link BaseConfiguration} class
-	 */
-	public abstract <T extends BaseConfiguration> T getConfiguration();
+			case "customValue2":
+				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
+				break;
+
+			case "customValue3":
+				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
+				break;
+
+			case "customValue4":
+				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
+				break;
+			}
+		}
+	}
 
 }

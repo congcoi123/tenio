@@ -42,9 +42,11 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final BaseConfiguration __configuration;
+	private final int __index;
 
-	public NettyWSInitializer(IEventManager eventManager, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			BaseConfiguration configuration) {
+	public NettyWSInitializer(int index, IEventManager eventManager,
+			GlobalTrafficShapingHandlerCustomize trafficCounter, BaseConfiguration configuration) {
+		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
@@ -61,7 +63,7 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());
 
 		// the logic handler
-		pipeline.addLast("http-handshake", new NettyWSHandShake(__eventManager, __configuration));
+		pipeline.addLast("http-handshake", new NettyWSHandShake(__index, __eventManager, __configuration));
 	}
 
 }

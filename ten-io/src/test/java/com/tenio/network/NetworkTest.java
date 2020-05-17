@@ -23,21 +23,26 @@ THE SOFTWARE.
 */
 package com.tenio.network;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+import com.tenio.configuration.Configuration;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.EventManager;
 import com.tenio.event.IEventManager;
-import com.tenio.model.Configuration;
 import com.tenio.network.netty.NettyNetwork;
 
 /**
  * @author kong
  */
+@TestMethodOrder(OrderAnnotation.class)
 public final class NetworkTest {
 
 	private INetwork __network;
@@ -52,14 +57,16 @@ public final class NetworkTest {
 	}
 
 	@Test
-	public void startNetworkShouldReturnTrue() {
-		assertTrue(__network.start(__eventManager, __configuration));
+	@Order(1)
+	public void startNetworkShouldReturnNull() {
+		assertNull(__network.start(__eventManager, __configuration));
 	}
 
 	@Test
-	public void bindPortAlreadyInUseShouldReturnFalse() {
+	@Order(2)
+	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
 		__network.start(__eventManager, __configuration);
-		assertFalse(__network.start(__eventManager, __configuration));
+		assertEquals(ErrorMsg.IO_EXCEPTION, __network.start(__eventManager, __configuration));
 	}
 
 	@AfterEach

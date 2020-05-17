@@ -33,6 +33,8 @@ import com.tenio.entity.AbstractPlayer;
  */
 public final class PlayerAttach extends AbstractPlayer {
 
+	public static final int MAIN_SOCKET = 0;
+
 	public PlayerAttach(String name) {
 		super(name);
 	}

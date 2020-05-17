@@ -43,32 +43,106 @@ import com.tenio.event.IEventManager;
  */
 public abstract class Connection {
 
+	public static final String KEY_STR_CONNECTION = "c";
+
 	protected final IEventManager _eventManager;
 
 	/**
-	 * Save the connection address
+	 * @see AbstractPlayer#getName()
 	 */
-	protected InetSocketAddress _sockAddress;
+	private String __username;
+	/**
+	 * Save the client's address
+	 */
+	private String __address;
 	/**
 	 * Type of the connection
 	 */
 	private Type __type;
+	/**
+	 * The order of connection in one player
+	 */
+	private int __index;
 
 	public enum Type {
 		SOCKET, DATAGRAM, WEB_SOCKET
 	}
 
-	public Connection(IEventManager eventManager, Type type) {
+	public Connection(IEventManager eventManager, Type type, int index) {
 		_eventManager = eventManager;
 		__type = type;
+		__index = index;
 	}
 
+	/**
+	 * Retrieve the "connection" type, see {@link Connection.Type}
+	 * 
+	 * @return the type of connection
+	 */
 	public Type getType() {
 		return __type;
 	}
 
+	/**
+	 * Determine if the current type of connection is matched or not?
+	 * 
+	 * @param type the comparison type
+	 * @return <b>true</b> is the current type is matched, <b>false</b> otherwise.
+	 */
 	public boolean isType(Type type) {
 		return (__type == type);
+	}
+
+	/**
+	 * @return the current index of connection in one player
+	 */
+	public int getIndex() {
+		return __index;
+	}
+
+	/**
+	 * Retrieve the "connection" id, this id is player's name, see
+	 * {@link AbstractPlayer#getName()}
+	 * 
+	 * @return the username
+	 */
+	public String getUsername() {
+		return __username;
+	}
+
+	/**
+	 * Set id for the "connection", this id is player's name, see
+	 * {@link AbstractPlayer#getName()}
+	 * 
+	 * @param username the identify of this connection
+	 */
+	public void setUsername(String username) {
+		__username = username;
+	}
+
+	/**
+	 * Remove the username value from channel cache
+	 */
+	public void removeUsername() {
+		__username = null;
+	}
+
+	/**
+	 * Set the address
+	 * 
+	 * @param address the new address value
+	 */
+	public void setAddress(String address) {
+		__address = address;
+	}
+
+	/**
+	 * Retrieve the "connection" address in string type
+	 * 
+	 * @return the address
+	 */
+	public String getAddress() {
+		return __address;
 	}
 
 	/**
@@ -93,49 +167,27 @@ public abstract class Connection {
 	/**
 	 * Set the current address for your "connection" (only need for Socket type)
 	 * 
-	 * @param sockAddress, see {@link InetSocketAddress}
+	 * @param remote, see {@link InetSocketAddress}
 	 */
-	public abstract void setSockAddress(InetSocketAddress sockAddress);
+	public abstract void setRemote(InetSocketAddress remote);
 
 	/**
-	 * Retrieve the "connection" address in string type
+	 * Retrieve this connection itself by channel
 	 * 
-	 * @return the address
+	 * @return the current connection
 	 */
-	public abstract String getAddress();
+	public abstract Connection getThis();
 
 	/**
-	 * Retrieve the "connection" id, this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @return the id
+	 * Set this connection into current channel Note: Set value for one key. You can
+	 * set your custom data to one connection to quick access. These keys and values
+	 * should be saved to channel (which is defined by NIO mechanism)
 	 */
-	public abstract String getId();
+	public abstract void setThis();
 
 	/**
-	 * Set id for the "connection", this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @param id the identify of this connection
+	 * Remove the connection object from channel cache
 	 */
-	public abstract void setId(String id);
-
-	/**
-	 * Retrieve value by key
-	 * 
-	 * @param key the desired key
-	 * @return the corresponding object
-	 */
-	public abstract Object getAttr(String key);
-
-	/**
-	 * Set value for one key. You can set your custom data to one connection to
-	 * quick access. These keys and values should be saved to channel (which is
-	 * defined by NIO mechanism)
-	 * 
-	 * @param key   the desired key
-	 * @param value the desired value
-	 */
-	public abstract void setAttr(String key, Object value);
+	public abstract void removeThis();
 
 }

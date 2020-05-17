@@ -23,14 +23,18 @@ THE SOFTWARE.
 */
 package com.tenio.network.netty;
 
-import com.tenio.configuration.BaseConfiguration;
+import java.net.InetSocketAddress;
+
 import com.tenio.configuration.constant.LEvent;
+import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
 import com.tenio.network.Connection;
+import com.tenio.network.Connection.Type;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
 
 /**
  * Use <a href="https://netty.io/">Netty</a> to handle message. Base on the
@@ -41,51 +45,79 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	protected IEventManager _eventManager;
+	private IEventManager __eventManager;
+	private Connection __connection;
+	private Connection.Type __type;
+	private int __index;
 
-	public BaseNettyHandler(IEventManager eventManager) {
-		_eventManager = eventManager;
+	public BaseNettyHandler(IEventManager eventManager, int index, Connection.Type type) {
+		__eventManager = eventManager;
+		__index = index;
+		__type = type;
 	}
 
 	/**
 	 * Retrieve a connection by its channel
 	 * 
 	 * @param channel, see {@link Channel}
+	 * @param remote   the current address (in use for Datagram channel)
 	 * @return a connection
 	 */
-	protected Connection _getConnection(Channel channel) {
-		return channel.attr(NettyConnection.KEY_THIS).get();
+	private Connection __getConnection(Channel channel, InetSocketAddress remote) {
+		if (remote == null) {
+			return channel.attr(NettyConnection.KEY_CONNECTION).get();
+		}
+		return (Connection) channel.attr(AttributeKey.valueOf(remote.toString())).get();
+	}
+
+	/**
+	 * Handle in-comming messages for the channel
+	 * 
+	 * @param ctx     the channel, see {@link ChannelHandlerContext}
+	 * @param message the message, see {@link TObject}
+	 * @param remote  the current remote address (in use for Datagram channel)
+	 */
+	protected void _channelRead(ChannelHandlerContext ctx, TObject message, InetSocketAddress remote) {
+		var connection = __getConnection(ctx.channel(), remote);
+
+		if (connection == null) {
+			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
+			__connection.setRemote(remote);
+			__connection.setThis();
+		}
+
+		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, message, __connection);
 	}
 
 	/**
 	 * When a client is disconnected from your server for any reason, you can handle
-	 * it in this event
+	 * it in this event (only for TCP and WebSocket)
 	 * 
-	 * @param ctx                    the channel, see {@link ChannelHandlerContext}
-	 * @param keepPlayerOnDisconnect this value can be configured in your
-	 *                               configurations, see {@link BaseConfiguration}.
-	 *                               If the value is set to true, when the client is
-	 *                               disconnected, its player can be held for an
-	 *                               interval time (you can configure this interval
-	 *                               time in your configurations)
+	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
-	protected void _channelInactive(ChannelHandlerContext ctx, boolean keepPlayerOnDisconnect) {
+	protected void _channelInactive(ChannelHandlerContext ctx) {
+		if (__type == Type.DATAGRAM) {
+			return;
+		}
 		// get the connection first
-		var connection = _getConnection(ctx.channel());
-		_eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection, keepPlayerOnDisconnect);
+		var connection = __getConnection(ctx.channel(), null);
+		__eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection);
 		connection = null;
 	}
 
 	/**
-	 * Record the exceptions
+	 * Record the exceptions (only for TCP and WebSocket)
 	 * 
 	 * @param ctx   the channel, see {@link ChannelHandlerContext}
 	 * @param cause the exception will occur
 	 */
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		if (__type == Type.DATAGRAM) {
+			return;
+		}
 		// get the connection first
-		var connection = _getConnection(ctx.channel());
-		_eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
+		var connection = __getConnection(ctx.channel(), null);
+		__eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
 				cause);
 	}
 

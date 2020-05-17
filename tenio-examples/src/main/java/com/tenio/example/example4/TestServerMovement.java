@@ -97,7 +97,7 @@ public final class TestServerMovement extends AbstractApp {
 				info("PLAYER IN", player.getName());
 
 				// now we can allow that client send request for UDP connection
-				_messageApi.sendToPlayer(player, "c", "udp");
+				_messageApi.sendToPlayer(player, Inspector.MAIN_SOCKET, "c", "udp");
 
 				return null;
 			});
@@ -118,8 +118,8 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.ATTACH_UDP_REQUEST, args -> {
-				var message = _getTObject(args[0]);
+			_on(TEvent.ATTACH_CONNECTION_REQUEST, args -> {
+				var message = _getTObject(args[1]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -130,21 +130,23 @@ public final class TestServerMovement extends AbstractApp {
 				return _playerApi.get(name);
 			});
 
-			_on(TEvent.ATTACH_UDP_SUCCESS, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
+			_on(TEvent.ATTACH_CONNECTION_SUCCESS, args -> {
+				var index = _getInt(args[0]);
+				var player = this.<Inspector>_getPlayer(args[1]);
 
-				info("ATTACH UDP SUCCESS", player.getName() + " " + player.getConnection().getAddress() + " "
-						+ player.getSubConnection().getAddress());
+				info("ATTACH CONNECTION SUCCESS",
+						player.getName() + " " + player.getConnection(Inspector.MAIN_SOCKET).getAddress() + " "
+								+ player.getConnection(index).getAddress());
 
-				_messageApi.sendToPlayer(player, "c", "udp-done");
+				_messageApi.sendToPlayer(player, Inspector.MAIN_SOCKET, "c", "udp-done");
 
 				return null;
 			});
 
-			_on(TEvent.ATTACH_UDP_FAILED, args -> {
-				String reason = _getString(args[1]);
+			_on(TEvent.ATTACH_CONNECTION_FAILED, args -> {
+				String reason = _getString(args[2]);
 
-				info("ATTACH UDP FAILED", reason);
+				info("ATTACH CONNECTION FAILED", reason);
 
 				return null;
 			});

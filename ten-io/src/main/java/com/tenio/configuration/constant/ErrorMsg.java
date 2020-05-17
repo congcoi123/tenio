@@ -75,4 +75,14 @@ public final class ErrorMsg {
 	 */
 	public static final String MAIN_CONNECTION_NOT_FOUND = "main_connection_not_found";
 
+	public static final String IO_EXCEPTION = "io_exception";
+
+	public static final String INTERRUPTED_EXCEPTION = "interrupted_exception";
+
+	public static final String START_NO_CONNECTION = "start_no_connection";
+
+	public static final String START_NO_SUBCONNECTION_HANDLER = "start_no_connection_handler";
+
+	public static final String START_NO_RECONNECTION_HANDLER = "start_no_reconnection_handler";
+
 }

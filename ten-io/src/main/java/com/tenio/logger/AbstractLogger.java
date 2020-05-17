@@ -219,16 +219,18 @@ public abstract class AbstractLogger {
 	 * Only use for debugging PACKAGE in the server system. Be careful when using it
 	 * yourself. You are warned!
 	 * 
-	 * @param where where you put this log
-	 * @param tag   the tag type
-	 * @param msg   the message content
+	 * @param where    where you put this log
+	 * @param subWhere the extra information for "where" you put this log
+	 * @param tag      the tag type
+	 * @param msg      the message content
 	 */
-	public final void debug(final String where, final String tag, final String msg) {
+	public final void debug(final String where, final Object subWhere, final String tag, final String msg) {
 		if (!__logger.isDebugEnabled()) {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(">").append("[").append(tag).append("] ").append(msg);
+		builder.append("<").append(where).append(" ").append(subWhere).append(">").append("[").append(tag).append("] ")
+				.append(msg);
 		__logger.debug(builder.toString());
 		__stringPool.repay(builder);
 	}

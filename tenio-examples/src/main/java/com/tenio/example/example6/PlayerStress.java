@@ -34,6 +34,8 @@ import com.tenio.entity.AbstractPlayer;
  */
 @Entity
 public final class PlayerStress extends AbstractPlayer {
+	
+	public static final int MAIN_SOCKET = 0;
 
 	public PlayerStress(String name) {
 		super(name);

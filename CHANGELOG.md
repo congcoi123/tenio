@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.0.0 2020-05-17 Feature release
+Feature release
+- Allowed defining multiple connections
+- Standardized messages APIs
+- Bugfixed
+
 ## 2.0.0 2020-04-15 Feature release
 Feature release
 - Standardized package names and class names

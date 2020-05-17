@@ -24,9 +24,13 @@ THE SOFTWARE.
 package com.tenio.network.netty;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.configuration.Sock;
 import com.tenio.configuration.constant.Constants;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
@@ -56,12 +60,11 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private EventLoopGroup __consumer;
 	private GlobalTrafficShapingHandlerCustomize __traficCounter;
 
-	private Channel __tcp;
-	private Channel __udp;
-	private Channel __ws;
+	private List<Channel> __sockets;
+	private List<Channel> __websockets;
 
 	@Override
-	public boolean start(IEventManager eventManager, BaseConfiguration configuration) {
+	public String start(IEventManager eventManager, BaseConfiguration configuration) {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 
@@ -69,114 +72,138 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				Constants.TRAFFIC_COUNTER_WRITE_LIMIT, Constants.TRAFFIC_COUNTER_READ_LIMIT,
 				Constants.TRAFFIC_COUNTER_CHECK_INTERVAL);
 
-		if (configuration.isDefined(BaseConfiguration.SOCKET_PORT)) {
+		__sockets = new ArrayList<Channel>();
+		__websockets = new ArrayList<Channel>();
+
+		var socketPorts = configuration.getSocketPorts();
+		for (int index = 0; index < socketPorts.size(); index++) {
+			var socket = socketPorts.get(index);
 			try {
-				__bindTCP(eventManager, configuration);
+				switch (socket.getType()) {
+				case SOCKET:
+					__sockets.add(__bindTCP(index, eventManager, configuration, socket));
+					break;
+				case DATAGRAM:
+					__sockets.add(__bindUDP(index, eventManager, configuration, socket));
+					break;
+				default:
+					break;
+				}
 			} catch (IOException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.SOCKET_PORT));
-				return false;
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.IO_EXCEPTION;
 			} catch (InterruptedException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.SOCKET_PORT));
-				return false;
-			}
-		}
-		if (configuration.isDefined(BaseConfiguration.DATAGRAM_PORT)) {
-			try {
-				__bindUDP(eventManager, configuration);
-			} catch (IOException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.DATAGRAM_PORT));
-				return false;
-			} catch (InterruptedException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.DATAGRAM_PORT));
-				return false;
-			}
-		}
-		if (configuration.isDefined(BaseConfiguration.WEBSOCKET_PORT)) {
-			try {
-				__bindWS(eventManager, configuration);
-			} catch (IOException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.WEBSOCKET_PORT));
-				return false;
-			} catch (InterruptedException e) {
-				error(e, "port: ", configuration.getString(BaseConfiguration.WEBSOCKET_PORT));
-				return false;
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.INTERRUPTED_EXCEPTION;
 			}
 		}
 
-		return true;
+		var webSocketPorts = configuration.getWebSocketPorts();
+		for (int index = 0; index < webSocketPorts.size(); index++) {
+			var socket = webSocketPorts.get(index);
+			try {
+				switch (socket.getType()) {
+				case WEB_SOCKET:
+					__websockets.add(__bindWS(index, eventManager, configuration, socket));
+					break;
+				default:
+					break;
+				}
+			} catch (IOException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.IO_EXCEPTION;
+			} catch (InterruptedException e) {
+				error(e, "port: ", socket.getPort());
+				return ErrorMsg.INTERRUPTED_EXCEPTION;
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	 * Constructs a Datagram socket and binds it to the specified port on the local
 	 * host machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration, see {@link BaseConfiguration}
+	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @return the channel, see {@link Channel}
 	 */
-	private void __bindUDP(IEventManager eventManager, BaseConfiguration configuration)
+	private Channel __bindUDP(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
-				.handler(new NettyDatagramInitializer(eventManager, __traficCounter, configuration));
+				.handler(new NettyDatagramInitializer(index, eventManager, __traficCounter, configuration));
 
-		__udp = bootstrap.bind(configuration.getInt(BaseConfiguration.DATAGRAM_PORT)).sync().channel();
+		info("DATAGRAM", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
-		info("DATAGRAM", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.DATAGRAM_PORT)));
+		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
 
 	/**
 	 * Constructs a socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration, see {@link BaseConfiguration}
+	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @return the channel, see {@link Channel}
 	 */
-	private void __bindTCP(IEventManager eventManager, BaseConfiguration configuration)
+	private Channel __bindTCP(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 10240)
 				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettySocketInitializer(eventManager, __traficCounter, configuration));
+				.childHandler(new NettySocketInitializer(index, eventManager, __traficCounter, configuration));
 
-		__tcp = bootstrap.bind(configuration.getInt(BaseConfiguration.SOCKET_PORT)).sync().channel();
+		info("SOCKET", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
-		info("SOCKET", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.SOCKET_PORT)));
+		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
 
 	/**
 	 * Constructs a web socket and binds it to the specified port on the local host
 	 * machine.
 	 * 
+	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration configuration your own configuration, see
 	 *                      {@link BaseConfiguration}
+	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @return the channel, see {@link Channel}
 	 */
-	private void __bindWS(IEventManager eventManager, BaseConfiguration configuration)
+	private Channel __bindWS(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 1024)
 				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettyWSInitializer(eventManager, __traficCounter, configuration));
+				.childHandler(new NettyWSInitializer(index, eventManager, __traficCounter, configuration));
 
-		__ws = bootstrap.bind(configuration.getInt(BaseConfiguration.WEBSOCKET_PORT)).sync().channel();
+		info("WEB SOCKET", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
-		info("WEB SOCKET", buildgen("Start at port: ", configuration.getInt(BaseConfiguration.WEBSOCKET_PORT)));
+		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
 
 	@Override
 	public void shutdown() {
-		__close(__tcp);
-		__close(__udp);
-		__close(__ws);
+		for (var socket : __sockets) {
+			__close(socket);
+		}
+		for (var socket : __websockets) {
+			__close(socket);
+		}
 
 		if (__producer != null) {
 			__producer.shutdownGracefully();
