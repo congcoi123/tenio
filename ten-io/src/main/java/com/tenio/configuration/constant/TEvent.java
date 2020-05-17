@@ -338,7 +338,7 @@ public enum TEvent {
 	 * The client failed to attach his desired sub connection. The reason can be
 	 * returned here. This event only for informing you about the current situation.
 	 * If you want to let your client know about his un-success, you can handle it
-	 * on {@link TEvent#ATTACH_UDP_REQUEST}. <br>
+	 * on {@link TEvent#ATTACH_CONNECTION_REQUEST}. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the index of in-comming connection, see
 	 * {@link Integer}</li>

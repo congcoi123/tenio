@@ -58,7 +58,7 @@ public class NettyConnection extends Connection {
 	private Channel __channel;
 	/**
 	 * Save the client's address, in Datagram connection it is used for saving as a
-	 * key of the {@link #__uzsername}
+	 * key of the {@link #getUsername()}
 	 */
 	protected InetSocketAddress __remote;
 

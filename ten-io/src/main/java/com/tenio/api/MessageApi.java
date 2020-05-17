@@ -114,10 +114,10 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to player via his connection
 	 * 
-	 * @see #__send(AbstractPlayer, int, TObject)
-	 * 
-	 * @param key   the key of message
-	 * @param value the value of message
+	 * @param player See {@link AbstractPlayer}
+	 * @param index  the index of connection in current player
+	 * @param key    the key of message
+	 * @param value  the value of message
 	 */
 	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value) {
 		var message = __objectPool.get();
