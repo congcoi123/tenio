@@ -21,53 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.model;
+package com.tenio.configuration;
 
-import java.util.Map;
-
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entity.element.TObject;
+import com.tenio.network.Connection;
 
 /**
- * Create your own configurations
- * 
- * @see BaseConfiguration
- * 
  * @author kong
- *
  */
-public final class Configuration extends BaseConfiguration {
+public final class Sock {
 
-	public static final String CUSTOM_VALUE_1 = "c_customvalue_1";
-	public static final String CUSTOM_VALUE_2 = "c_customvalue_2";
-	public static final String CUSTOM_VALUE_3 = "c_customvalue_3";
-	public static final String CUSTOM_VALUE_4 = "c_customvalue_4";
+	private String __name;
+	private Connection.Type __type;
+	private int __port;
 
-	public Configuration(final String file) {
-		super(file);
+	public Sock(String name, Connection.Type type, int port) {
+		__name = name;
+		__type = type;
+		__port = port;
 	}
 
-	@Override
-	protected void _extend(TObject extProperties) {
-		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
-			switch (entry.getKey()) {
-			case "customValue1":
-				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
-				break;
+	public String getName() {
+		return __name;
+	}
 
-			case "customValue2":
-				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
-				break;
+	public Connection.Type getType() {
+		return __type;
+	}
 
-			case "customValue3":
-				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
-				break;
-
-			case "customValue4":
-				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
-				break;
-			}
-		}
+	public int getPort() {
+		return __port;
 	}
 
 }

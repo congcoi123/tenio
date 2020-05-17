@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tenio.api.PlayerApi;
+import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
@@ -36,6 +37,7 @@ import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.NullPlayerNameException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
+import com.tenio.network.Connection.Type;
 
 /**
  * Manage all your players ({@link AbstractPlayer}) on the server. It is a
@@ -54,9 +56,15 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	 */
 	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 	private final IEventManager __eventManager;
+	private BaseConfiguration __configuration;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
+	}
+
+	@Override
+	public void initialize(BaseConfiguration configuration) {
+		__configuration = configuration;
 	}
 
 	@Override
@@ -121,8 +129,15 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			}
 
 			// add the main connection
-			connection.setId(player.getName());
-			player.setConnection(connection);
+			connection.setUsername(player.getName());
+			int size = 0;
+			if (connection.isType(Type.WEB_SOCKET)) {
+				size = __configuration.getWebSocketPorts().size();
+			} else {
+				size = __configuration.getSocketPorts().size();
+			}
+			player.initializeConnections(size);
+			player.setConnection(connection, 0);
 
 			__players.put(player.getName(), player);
 
@@ -164,17 +179,9 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			// force player leave room, fire a logic event
 			__eventManager.getInternal().emit(LEvent.FORCE_PLAYER_LEAVE_ROOM, player);
 
-			// remove connection, player
-			if (player.hasConnection()) {
-				player.getConnection().close();
-			}
-			// remove sub-connection (no need to close, because of the UDP behavior)
-			/*
-			 * if (player.hasSubConnection()) {
-			 * 
-			 * }
-			 */
+			// remove all player's connections, player
 			removeAllConnections(player);
+
 			__players.remove(player.getName());
 		}
 
@@ -182,8 +189,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 	@Override
 	public void removeAllConnections(final AbstractPlayer player) {
-		player.setConnection(null);
-		player.setSubConnection(null);
+		player.closeAllConnections();
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 	 * Your own logic handler class
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
-		
+
 		RoomPhaserjs phaserjsRoom = new RoomPhaserjs("phaserjs", "Phaserjs", 3);
 
 		@Override
@@ -98,20 +98,20 @@ public final class TestServerPhaserjs extends AbstractApp {
 				int x = MathUtility.randInt(100, 400);
 				int y = MathUtility.randInt(100, 400);
 				player.setPosition(x, y);
-				
+
 				info("PLAYER_IN_SUCCESS", player.getName());
-				
-				_playerApi.playerJoinRoom(phaserjsRoom, player);				
+
+				_playerApi.playerJoinRoom(phaserjsRoom, player);
 
 				return null;
 			});
-			
+
 			_on(TEvent.PLAYER_JOIN_ROOM, args -> {
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				var room = this.<RoomPhaserjs>_getRoom(args[1]);
-				
+
 				info("PLAYER_JOIN_ROOM", player.getName(), room.getName());
-				
+
 				var pack = _messageApi.getArrayPack();
 				var players = room.getPlayers();
 				for (var p : players.values()) {
@@ -121,9 +121,9 @@ public final class TestServerPhaserjs extends AbstractApp {
 					data.add(pjs.getX());
 					data.add(pjs.getY());
 					pack.add(data);
-				}				
-				_messageApi.sendToRoom(room, "c", "i", "d", pack);
-				
+				}
+				_messageApi.sendToRoom(room, PlayerPhaserjs.MAIN_SOCKET, "c", "i", "d", pack);
+
 				return null;
 			});
 
@@ -131,16 +131,16 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				var message = _getTObject(args[2]);
 				var move = message.getTArray("d");
-				
+
 				player.setPosition(move.getInt(0), move.getInt(1));
-				
+
 				info("RECEIVED_FROM_PLAYER", message);
-				
+
 				var pack = _messageApi.getArrayPack();
 				pack.add(player.getName());
 				pack.add(move.get(0));
 				pack.add(move.get(1));
-				_messageApi.sendToRoom(phaserjsRoom, "c", "m", "d", pack);
+				_messageApi.sendToRoom(phaserjsRoom, PlayerPhaserjs.MAIN_SOCKET, "c", "m", "d", pack);
 
 				return null;
 			});

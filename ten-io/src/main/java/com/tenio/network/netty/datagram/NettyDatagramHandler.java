@@ -24,20 +24,13 @@ THE SOFTWARE.
 package com.tenio.network.netty.datagram;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.ErrorMsg;
-import com.tenio.configuration.constant.LEvent;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.AbstractPlayer;
 import com.tenio.event.IEventManager;
 import com.tenio.message.codec.MsgPackConverter;
 import com.tenio.network.Connection;
 import com.tenio.network.netty.BaseNettyHandler;
-import com.tenio.network.netty.NettyConnection;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.AttributeKey;
 
 /**
  * In this server, a UDP connection is treated as a sub-connection. That means
@@ -52,8 +45,8 @@ import io.netty.util.AttributeKey;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(IEventManager eventManager, BaseConfiguration configuration) {
-		super(eventManager);
+	public NettyDatagramHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
+		super(eventManager, index, Connection.Type.DATAGRAM);
 	}
 
 	@Override
@@ -72,56 +65,13 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			return;
 		}
 
-		// create a game object
+		// create a new message
 		var message = MsgPackConverter.unserialize(content);
 		if (message == null) {
 			return;
 		}
 
-		var player = __getPlayer(ctx.channel(), datagram.sender().toString());
-		// the condition for creating sub-connection
-		if (player == null) {
-			player = (AbstractPlayer) _eventManager.getExternal().emit(TEvent.ATTACH_UDP_REQUEST, message);
-
-			if (player == null) {
-				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.PLAYER_NOT_FOUND);
-			} else if (!player.hasConnection()) {
-				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_FAILED, message, ErrorMsg.MAIN_CONNECTION_NOT_FOUND);
-			} else {
-				__savePlayerRemote(ctx.channel(), datagram.sender().toString(), player.getName());
-				var connection = NettyConnection.newInstance(_eventManager, Connection.Type.DATAGRAM, ctx.channel());
-				connection.setSockAddress(datagram.sender());
-				player.setSubConnection(connection);
-				_eventManager.getExternal().emit(TEvent.ATTACH_UDP_SUCCESS, player);
-			}
-
-		} else {
-			_eventManager.getInternal().emit(LEvent.DATAGRAM_HANDLE, player, message);
-		}
-
-	}
-
-	/**
-	 * Retrieve a player by special credentials.
-	 * 
-	 * @param channel a channel, see {@link Channel}
-	 * @param remote  the remote's address
-	 * @return a player, see {@link AbstractPlayer}
-	 */
-	private AbstractPlayer __getPlayer(Channel channel, String remote) {
-		return channel.attr(AttributeKey.valueOf(remote)).get() != null ? (AbstractPlayer) _eventManager.getInternal()
-				.emit(LEvent.GET_PLAYER, (String) channel.attr(AttributeKey.valueOf(remote)).get()) : null;
-	}
-
-	/**
-	 * Save a player to one channel by special credentials.
-	 * 
-	 * @param channel a channel, see {@link Channel}
-	 * @param remote  the remote's address
-	 * @param name    the player's name, see {@link AbstractPlayer#getName()}}
-	 */
-	private void __savePlayerRemote(Channel channel, String remote, String name) {
-		channel.attr(AttributeKey.valueOf(remote)).set(name);
+		_channelRead(ctx, message, datagram.sender());
 	}
 
 }

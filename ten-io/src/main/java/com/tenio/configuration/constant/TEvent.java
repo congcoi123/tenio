@@ -161,10 +161,8 @@ public enum TEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player which will be received your message, see
 	 * {@link AbstractPlayer}</li>
-	 * <li><b>parameter[1]</b> this message was sent by the main connection (TCP) or
-	 * the sub connection (UDP). In the case of WebSocket, it can only send in the
-	 * main connection. It returns <b>true</b> for the sub connection and
-	 * <b>false</b> for the main connection</li>
+	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
+	 * {@link Integer}. Notice that, 0 value means main connection.
 	 * <li><b>parameter[2]</b> the sent message, see {@link TObject}</li>
 	 * </ul>
 	 * 
@@ -178,10 +176,8 @@ public enum TEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player which sent message, see
 	 * {@link AbstractPlayer} to your server</li>
-	 * <li><b>parameter[1]</b> this message was sent by the main connection (TCP) or
-	 * the sub connection (UDP). In the case of WebSocket, it can only send in the
-	 * main connection. It returns <b>true</b> for the sub connection and
-	 * <b>false</b> for the main connection</li>
+	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
+	 * {@link Integer}. Notice that, 0 value means main connection.
 	 * <li><b>parameter[2]</b> the received message, see {@link TObject}</li>
 	 * </ul>
 	 * 
@@ -306,49 +302,55 @@ public enum TEvent {
 	CCU,
 
 	/**
-	 * In this server, a UDP connection is treated as a sub-connection. That means
-	 * you need to create one main connection between one client and the server
-	 * first (a TCP connection). When it's finished, that client can send a request
-	 * for making a link. <br>
+	 * In this server, you can create other sub connections. That means you need to
+	 * create one main connection between one client and the server first (a TCP
+	 * connection). When it's finished, that client can send a request for making a
+	 * link. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the message from one client needs to hold some
+	 * <li><b>parameter[0]</b> the index of in-comming connection, see
+	 * {@link Integer}</li>
+	 * <li><b>parameter[1]</b> the message from one client needs to hold some
 	 * credentials data so that you can return him a corresponding value, see
 	 * {@link TObject}</li>
 	 * </ul>
 	 * 
-	 * Return if the client is allowed to attach a UDP connection, return the
+	 * Return if the client is allowed to attach a sub connection, return the
 	 * corresponding player, see {@link AbstractPlayer}. Otherwise, return
 	 * <b>null</b>
 	 */
-	ATTACH_UDP_REQUEST,
+	ATTACH_CONNECTION_REQUEST,
 
 	/**
-	 * When a UDP connection link is established, you can inform its own player
+	 * When a a sub connection link is established, you can inform its own player
 	 * here. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the corresponding player, see
+	 * <li><b>parameter[0]</b> the index of in-comming connection, see
+	 * {@link Integer}</li>
+	 * <li><b>parameter[1]</b> the corresponding player, see
 	 * {@link AbstractPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_UDP_SUCCESS,
+	ATTACH_CONNECTION_SUCCESS,
 
 	/**
-	 * The client failed to attach his desired UDP connection. The reason can be
+	 * The client failed to attach his desired sub connection. The reason can be
 	 * returned here. This event only for informing you about the current situation.
 	 * If you want to let your client know about his un-success, you can handle it
-	 * on {@link TEvent#ATTACH_UDP_REQUEST}. <br>
+	 * on {@link TEvent#ATTACH_CONNECTION_REQUEST}. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the message received from one client, see
+	 * <li><b>parameter[0]</b> the index of in-comming connection, see
+	 * {@link Integer}</li>
+	 * <li><b>parameter[1]</b> the message received from one client, see
 	 * {@link TObject}</li>
-	 * <li><b>parameter[1]</b> the reason for failed, see {@link ErrorMsg} in string
+	 * <li><b>parameter[2]</b> the reason for failed, see {@link ErrorMsg} in string
 	 * type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_UDP_FAILED,
+	ATTACH_CONNECTION_FAILED,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>

@@ -21,42 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio;
+package com.tenio.entity.manager;
 
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.extension.IExtension;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.server.Server;
 
 /**
- * Your application will start from here.
- * 
  * @author kong
- * 
  */
-public abstract class AbstractApp extends AbstractLogger {
+public interface IManager {
 
 	/**
-	 * Start The Game Server
-	 */
-	public void start() {
-		var server = Server.getInstance();
-		server.setExtension(getExtension());
-		if (server.start(getConfiguration()) != null) {
-			server.shutdown();
-		}
-	}
-
-	/**
-	 * @return an extension for handling your own logic class
-	 */
-	public abstract IExtension getExtension();
-
-	/**
+	 * Initialization
 	 * 
-	 * @param <T> The derived class of {@link BaseConfiguration}
-	 * @return your own class that derived from {@link BaseConfiguration} class
+	 * @param configuration the configuration, see {@link BaseConfiguration}
 	 */
-	public abstract <T extends BaseConfiguration> T getConfiguration();
+	void initialize(BaseConfiguration configuration);
 
 }

@@ -59,8 +59,10 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 	private final IEventManager __eventManager;
 	private final BaseConfiguration __configuration;
+	private final int __index;
 
-	public NettyWSHandShake(IEventManager eventManager, BaseConfiguration configuration) {
+	public NettyWSHandShake(int index, IEventManager eventManager, BaseConfiguration configuration) {
+		__index = index;
 		__eventManager = eventManager;
 		__configuration = configuration;
 	}
@@ -79,7 +81,7 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 				// add new handler to the existing pipeline to handle HandShake-WebSocket
 				// Messages
-				ctx.pipeline().replace(this, "handler", new NettyWSHandler(__eventManager, __configuration));
+				ctx.pipeline().replace(this, "handler", new NettyWSHandler(__index, __eventManager, __configuration));
 
 				// do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				__handleHandshake(ctx, httpRequest);

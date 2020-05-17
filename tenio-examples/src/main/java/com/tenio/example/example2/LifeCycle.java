@@ -37,6 +37,7 @@ import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.element.TObject;
 import com.tenio.example.example2.constant.EntityName;
 import com.tenio.example.example2.entity.BaseEntity;
+import com.tenio.example.example2.entity.Inspector;
 import com.tenio.example.example2.entity.Miner;
 import com.tenio.example.example2.entity.Wife;
 import com.tenio.server.Server;
@@ -50,7 +51,7 @@ import com.tenio.server.Server;
 public final class LifeCycle extends AbstractHeartBeat implements IMessageListener {
 
 	private static final float PERIOD_STEPS_IN_SECONDS = 1.0f;
-	
+
 	private final EntityManager __entities;
 	private final MessageDispatcher __dispatcher;
 
@@ -58,7 +59,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	 * @see PlayerApi#gets()
 	 */
 	private final Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
-	
+
 	/**
 	 * @see MessageApi
 	 */
@@ -101,7 +102,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 				if (base.getMood() != null) {
 					// send to all inspectors
 					for (var inspector : __inspectors) {
-						__messageApi.sendToPlayer(inspector, "m", base.getMood());
+						__messageApi.sendToPlayer(inspector, Inspector.MAIN_SOCKET, "m", base.getMood());
 					}
 				}
 			});

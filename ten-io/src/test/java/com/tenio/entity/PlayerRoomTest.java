@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
+import com.tenio.configuration.Configuration;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.entity.manager.IPlayerManager;
 import com.tenio.entity.manager.IRoomManager;
@@ -67,9 +68,13 @@ public final class PlayerRoomTest {
 
 	@BeforeEach
 	public void initialize() {
+		var configuration = new Configuration("TenIOConfig.example.xml");
+
 		__eventManager = new EventManager();
 		__playerManager = new PlayerManager(__eventManager);
+		__playerManager.initialize(configuration);
 		__roomManager = new RoomManager(__eventManager);
+		__roomManager.initialize(configuration);
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__testPlayerName = "kong";

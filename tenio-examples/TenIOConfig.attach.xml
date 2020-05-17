@@ -7,12 +7,15 @@
 		<Property name="versionCode">1</Property>
 		<Property name="versionName">1.0</Property>
 	</Properties>
-		
-	<Port>
-		<Socket>8032</Socket>		<!-- Null with value -1 -->
-		<Datagram>8031</Datagram>	<!-- Null with value -1 -->
-		<WebSocket>-1</WebSocket>	<!-- Null with value -1 -->
-	</Port>
+
+	<Network>
+		<Sockets>
+			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
+			<Port name="move" type="udp">8031</Port>
+		</Sockets>
+		<WebSockets>
+		</WebSockets>
+	</Network>
 
 	<Configuration>
 		<Properties>
