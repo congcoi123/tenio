@@ -142,7 +142,7 @@ public final class Server extends AbstractLogger implements IServer {
 		}
 
 		// initialize the subscribers
-		getExtension().init();
+		getExtension().initialize();
 
 		// check subscribers must handle subscribers for UDP attachment
 		error = __checkSubscriberSubConnectionAttach(configuration);

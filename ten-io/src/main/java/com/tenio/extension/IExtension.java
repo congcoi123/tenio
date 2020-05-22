@@ -39,5 +39,5 @@ public interface IExtension {
 	 * Initialize list subscribers, use <b>Event Emitter</b> with this method
 	 * {@code on(String name, ISubscriber sub)}
 	 */
-	void init();
+	void initialize();
 }

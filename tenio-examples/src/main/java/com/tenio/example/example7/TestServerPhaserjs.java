@@ -66,7 +66,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 		RoomPhaserjs phaserjsRoom = new RoomPhaserjs("phaserjs", "Phaserjs", 3);
 
 		@Override
-		public void init() {
+		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getTObject(args[1]);

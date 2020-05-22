@@ -33,7 +33,7 @@ import com.tenio.network.Connection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
- * implementing your own logic in the {@link IExtension#init()} method. The
+ * implementing your own logic in the {@link IExtension#initialize()} method. The
  * logic class must be an inheritance of {@link AbstractExtensionHandler} class.
  * 
  * @author kong
