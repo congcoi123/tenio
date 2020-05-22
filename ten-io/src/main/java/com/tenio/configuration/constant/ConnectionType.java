@@ -21,35 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration;
-
-import com.tenio.configuration.constant.ConnectionType;
+package com.tenio.configuration.constant;
 
 /**
  * @author kong
  */
-public final class Sock {
-
-	private String __name;
-	private ConnectionType __type;
-	private int __port;
-
-	public Sock(String name, ConnectionType type, int port) {
-		__name = name;
-		__type = type;
-		__port = port;
-	}
-
-	public String getName() {
-		return __name;
-	}
-
-	public ConnectionType getType() {
-		return __type;
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
+public enum ConnectionType {
+	/**
+	 * TCP
+	 */
+	SOCKET,
+	/**
+	 * UDP
+	 */
+	DATAGRAM,
+	/**
+	 * Web Socket
+	 */
+	WEB_SOCKET
 }

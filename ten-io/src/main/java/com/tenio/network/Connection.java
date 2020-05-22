@@ -25,6 +25,7 @@ package com.tenio.network;
 
 import java.net.InetSocketAddress;
 
+import com.tenio.configuration.constant.ConnectionType;
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
@@ -58,28 +59,24 @@ public abstract class Connection {
 	/**
 	 * Type of the connection
 	 */
-	private Type __type;
+	private ConnectionType __type;
 	/**
 	 * The order of connection in one player
 	 */
 	private int __index;
 
-	public enum Type {
-		SOCKET, DATAGRAM, WEB_SOCKET
-	}
-
-	public Connection(IEventManager eventManager, Type type, int index) {
+	public Connection(IEventManager eventManager, ConnectionType type, int index) {
 		_eventManager = eventManager;
 		__type = type;
 		__index = index;
 	}
 
 	/**
-	 * Retrieve the "connection" type, see {@link Connection.Type}
+	 * Retrieve the "connection" type, see {@link Connection.ConnectionType}
 	 * 
 	 * @return the type of connection
 	 */
-	public Type getType() {
+	public ConnectionType getType() {
 		return __type;
 	}
 
@@ -89,7 +86,7 @@ public abstract class Connection {
 	 * @param type the comparison type
 	 * @return <b>true</b> is the current type is matched, <b>false</b> otherwise.
 	 */
-	public boolean isType(Type type) {
+	public boolean isType(ConnectionType type) {
 		return (__type == type);
 	}
 

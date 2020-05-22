@@ -32,9 +32,9 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.tenio.configuration.constant.ConnectionType;
 import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.network.Connection;
 import com.tenio.utility.XMLUtility;
 
 /**
@@ -203,7 +203,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
 			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					Connection.Type.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
+					ConnectionType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
 		}
 
@@ -262,14 +262,12 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	}
 
-	private Connection.Type __getConnectionType(final String type) {
+	private ConnectionType __getConnectionType(final String type) {
 		switch (type.toLowerCase()) {
 		case "tcp":
-			return Connection.Type.SOCKET;
+			return ConnectionType.SOCKET;
 		case "udp":
-			return Connection.Type.DATAGRAM;
-		case "ws":
-			return Connection.Type.WEB_SOCKET;
+			return ConnectionType.DATAGRAM;
 		}
 		return null;
 	}
