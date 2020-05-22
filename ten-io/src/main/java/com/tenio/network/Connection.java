@@ -72,7 +72,7 @@ public abstract class Connection {
 	}
 
 	/**
-	 * Retrieve the "connection" type, see {@link Connection.ConnectionType}
+	 * Retrieve the "connection" type, see {@link ConnectionType}
 	 * 
 	 * @return the type of connection
 	 */
