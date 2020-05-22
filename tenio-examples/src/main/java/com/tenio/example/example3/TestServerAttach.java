@@ -93,7 +93,7 @@ public final class TestServerAttach extends AbstractApp {
 				info("PLAYER IN", player.getName());
 
 				// Now you can allow the player make a UDP connection request
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_SOCKET, "c", "udp");
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
 
 				return null;
 			});
@@ -146,7 +146,7 @@ public final class TestServerAttach extends AbstractApp {
 				info("ATTACH CONNECTION SUCCESS", player.getName() + " " + player.getConnection(0).getAddress() + " "
 						+ player.getConnection(index).getAddress());
 
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_SOCKET, "c", "udp-done");
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});

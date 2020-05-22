@@ -97,7 +97,7 @@ public final class TestServerMovement extends AbstractApp {
 				info("PLAYER IN", player.getName());
 
 				// now we can allow that client send request for UDP connection
-				_messageApi.sendToPlayer(player, Inspector.MAIN_SOCKET, "c", "udp");
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
 
 				return null;
 			});
@@ -135,10 +135,10 @@ public final class TestServerMovement extends AbstractApp {
 				var player = this.<Inspector>_getPlayer(args[1]);
 
 				info("ATTACH CONNECTION SUCCESS",
-						player.getName() + " " + player.getConnection(Inspector.MAIN_SOCKET).getAddress() + " "
+						player.getName() + " " + player.getConnection(Inspector.MAIN_CHANNEL).getAddress() + " "
 								+ player.getConnection(index).getAddress());
 
-				_messageApi.sendToPlayer(player, Inspector.MAIN_SOCKET, "c", "udp-done");
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});

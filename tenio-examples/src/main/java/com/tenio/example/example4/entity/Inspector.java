@@ -33,8 +33,8 @@ import com.tenio.entity.AbstractPlayer;
  */
 public final class Inspector extends AbstractPlayer {
 
-	public static final int MAIN_SOCKET = 0;
-	public static final int MOVE_SOCKET = 1;
+	public static final int MAIN_CHANNEL = 0;
+	public static final int MOVE_CHANNEL = 1;
 
 	public Inspector(String name) {
 		super(name);
