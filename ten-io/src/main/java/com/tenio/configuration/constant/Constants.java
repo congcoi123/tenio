@@ -82,6 +82,8 @@ public final class Constants {
 	 * A unique key for the Time Out scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
+	
+	public static final String KEY_SCHEDULE_HTTP_MANAGER = "t.schedule.http.manager";
 
 	/**
 	 * 0 or a limit in bytes/s

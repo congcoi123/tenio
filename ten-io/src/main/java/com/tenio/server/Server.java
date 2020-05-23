@@ -45,6 +45,7 @@ import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
+import com.tenio.network.http.HttpManagerTask;
 import com.tenio.network.netty.NettyNetwork;
 import com.tenio.task.ITaskManager;
 import com.tenio.task.TaskManager;
@@ -129,6 +130,9 @@ public final class Server extends AbstractLogger implements IServer {
 
 		// schedules
 		__createAllSchedules(configuration);
+
+		// http handler
+		__createHttpManagers(configuration);
 
 		// start network
 		error = __startNetwork(configuration);
@@ -239,6 +243,13 @@ public final class Server extends AbstractLogger implements IServer {
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
 		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
 				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
+	}
+
+	private void __createHttpManagers(BaseConfiguration configuration) {
+		for (var port : configuration.getHttpPorts()) {
+			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER,
+					new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths()).run());
+		}
 	}
 
 	@Override

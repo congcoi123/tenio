@@ -15,6 +15,18 @@
 		<WebSockets>
 			<Port name="main">8033</Port> <!-- The first element is always treated the main connection -->
 		</WebSockets>
+		<Http>
+			<Port name="main" value="9999">
+				<Path name="get" desc="retrieve a value" version="1"
+					method="get">/retrieve/*</Path>
+				<Path name="add" desc="add a new value" version="1"
+					method="post">/add/*</Path>
+				<Path name="change" desc="change a current value" version="1"
+					method="put">/change/*</Path>
+				<Path name="delete" desc="delete a existing value" version="1"
+					method="delete">/delete/*</Path>
+			</Port>
+		</Http>
 	</Network>
 
 	<Configuration>

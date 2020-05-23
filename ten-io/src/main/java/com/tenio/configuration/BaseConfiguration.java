@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.tenio.configuration.constant.ConnectionType;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.utility.XMLUtility;
@@ -141,6 +142,11 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	private final List<Sock> __webSocketPorts = new ArrayList<Sock>();
 
 	/**
+	 * All ports in http zone
+	 */
+	private final List<Http> __httpPorts = new ArrayList<Http>();
+
+	/**
 	 * The constructor
 	 * 
 	 * @param file The name of your configuration file and this file needs to be put
@@ -205,6 +211,25 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
 					ConnectionType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
+		}
+		var attrNetworkHttps = XMLUtility.getNodeList(root, "//Server/Network/Http/Port");
+		for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
+			var pPortNode = attrNetworkHttps.item(i);
+			var port = new Http(pPortNode.getAttributes().getNamedItem("name").getTextContent(),
+					Integer.parseInt(pPortNode.getAttributes().getNamedItem("value").getTextContent()));
+
+			var attrHttpPaths = XMLUtility.getNodeList(attrNetworkHttps.item(i), "//Path");
+			for (int j = 0; j < attrHttpPaths.getLength(); j++) {
+				var pPathNode = attrHttpPaths.item(j);
+				var path = new Path(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
+						__getRestMethod(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
+						pPathNode.getTextContent(), pPathNode.getAttributes().getNamedItem("desc").getTextContent(),
+						Integer.parseInt(pPathNode.getAttributes().getNamedItem("version").getTextContent()));
+
+				port.addPath(path);
+			}
+
+			__httpPorts.add(port);
 		}
 
 		// Configuration
@@ -272,12 +297,30 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		return null;
 	}
 
+	private RestMethod __getRestMethod(final String method) {
+		switch (method.toLowerCase()) {
+		case "get":
+			return RestMethod.GET;
+		case "post":
+			return RestMethod.POST;
+		case "put":
+			return RestMethod.PUT;
+		case "delete":
+			return RestMethod.DELETE;
+		}
+		return null;
+	}
+
 	public List<Sock> getSocketPorts() {
 		return __socketPorts;
 	}
 
 	public List<Sock> getWebSocketPorts() {
 		return __webSocketPorts;
+	}
+
+	public List<Http> getHttpPorts() {
+		return __httpPorts;
 	}
 
 	/**

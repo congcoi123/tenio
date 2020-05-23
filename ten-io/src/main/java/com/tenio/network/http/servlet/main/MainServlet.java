@@ -27,6 +27,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.configuration.constant.RestMethod;
+import com.tenio.configuration.constant.TEvent;
+import com.tenio.event.IEventManager;
 import com.tenio.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.network.http.servlet.base.BaseServlet;
 
@@ -39,10 +42,16 @@ public final class MainServlet extends BaseServlet {
 	 */
 	private static final long serialVersionUID = -1971993446960398293L;
 
-	private ProcessPost __processPost = new ProcessPost();
-	private ProcessPut __processPut = new ProcessPut();
-	private ProcessGet __processGet = new ProcessGet();
-	private ProcessDelete __processDelete = new ProcessDelete();
+	private final IEventManager __eventManager;
+
+	private final ProcessPost __processPost = new ProcessPost();
+	private final ProcessPut __processPut = new ProcessPut();
+	private final ProcessGet __processGet = new ProcessGet();
+	private final ProcessDelete __processDelete = new ProcessDelete();
+
+	public MainServlet(IEventManager eventManager) {
+		__eventManager = eventManager;
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -68,7 +77,10 @@ public final class MainServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-
+			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.POST, request, response);
+			if (check == null) {
+				__eventManager.getExternal().emit(TEvent.HTTP_HANDLER, RestMethod.POST, request, response);
+			}
 		}
 
 	}
@@ -77,7 +89,10 @@ public final class MainServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-
+			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.PUT, request, response);
+			if (check == null) {
+				__eventManager.getExternal().emit(TEvent.HTTP_HANDLER, RestMethod.PUT, request, response);
+			}
 		}
 
 	}
@@ -86,7 +101,10 @@ public final class MainServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-
+			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.GET, request, response);
+			if (check == null) {
+				__eventManager.getExternal().emit(TEvent.HTTP_HANDLER, RestMethod.GET, request, response);
+			}
 		}
 
 	}
@@ -95,7 +113,10 @@ public final class MainServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-
+			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.DELETE, request, response);
+			if (check == null) {
+				__eventManager.getExternal().emit(TEvent.HTTP_HANDLER, RestMethod.DELETE, request, response);
+			}
 		}
 
 	}

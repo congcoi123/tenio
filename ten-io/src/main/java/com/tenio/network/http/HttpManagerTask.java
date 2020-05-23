@@ -23,6 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.network.http;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +35,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.tenio.configuration.Path;
 import com.tenio.configuration.constant.Constants;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.http.servlet.PingServlet;
+import com.tenio.network.http.servlet.main.MainServlet;
 import com.tenio.task.schedule.ITask;
 
 /**
@@ -45,42 +52,56 @@ import com.tenio.task.schedule.ITask;
  */
 public final class HttpManagerTask extends AbstractLogger implements ITask {
 
-	private final IEventManager __eventManager;
 	private final Server __server;
+	private final String __name;
+	private final int __port;
 
-	public HttpManagerTask(IEventManager eventManager, int port) {
-		__eventManager = eventManager;
+	public HttpManagerTask(IEventManager eventManager, String name, int port, List<Path> paths) {
+		__name = name;
+		__port = port;
 
-		// Create a jetty server
+		// Create a Jetty server
 		__server = new Server(port);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 
 		// Configuration
 		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
+		// Collect the same URI path for one servlet
+		Map<String, List<Path>> servlets = new HashMap<String, List<Path>>();
+		for (var path : paths) {
+			if (!servlets.containsKey(path.getUri())) {
+				var servlet = new ArrayList<Path>();
+				servlet.add(path);
+				servlets.put(path.getUri(), servlet);
+			} else {
+				servlets.get(path.getUri()).add(path);
+			}
+		}
+
+		servlets.forEach((uri, list) -> {
+			context.addServlet(new ServletHolder(new MainServlet(eventManager)), uri);
+		});
 
 		__server.setHandler(context);
-
 	}
 
 	@Override
 	public ScheduledFuture<?> run() {
 		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 			try {
+				info("HTTP", buildgen("Name: ", __name, " > Start at port: ", __port));
+
 				__server.start();
 				__server.join();
 			} catch (Exception e) {
 				error(e, "EXCEPTION START", "system");
 			}
-		}, 1, TimeUnit.SECONDS);
+		}, 0, TimeUnit.SECONDS);
 	}
 
-	public void shutdown() {
-		try {
-			__server.stop();
-		} catch (Exception e) {
-			error(e, "EXCEPTION STOP", "system");
-		}
+	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<Path> servlet) {
+		return servlet.stream().filter(s -> s.getMethod().equals(method)).count() > 1 ? false : true;
 	}
 
 }
