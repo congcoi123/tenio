@@ -52,24 +52,23 @@ import com.tenio.task.schedule.ITask;
  */
 public final class HttpManagerTask extends AbstractLogger implements ITask {
 
-	private final Server __server;
+	private Server __server;
+	private final IEventManager __eventManager;
 	private final String __name;
 	private final int __port;
+	private final List<Path> __paths;
 
 	public HttpManagerTask(IEventManager eventManager, String name, int port, List<Path> paths) {
+		__eventManager = eventManager;
 		__name = name;
 		__port = port;
+		__paths = paths;
+	}
 
-		// Create a Jetty server
-		__server = new Server(port);
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/");
-
-		// Configuration
-		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
+	public String setup() {
 		// Collect the same URI path for one servlet
 		Map<String, List<Path>> servlets = new HashMap<String, List<Path>>();
-		for (var path : paths) {
+		for (var path : __paths) {
 			if (!servlets.containsKey(path.getUri())) {
 				var servlet = new ArrayList<Path>();
 				servlet.add(path);
@@ -79,11 +78,36 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 			}
 		}
 
+		for (Map.Entry<String, List<Path>> entry : servlets.entrySet()) {
+			if (__isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
+				return "";
+			}
+			if (__isUriHasDuplicatedMethod(RestMethod.PUT, entry.getValue())) {
+				return "";
+			}
+			if (__isUriHasDuplicatedMethod(RestMethod.GET, entry.getValue())) {
+				return "";
+			}
+			if (__isUriHasDuplicatedMethod(RestMethod.DELETE, entry.getValue())) {
+				return "";
+			}
+		}
+
+		// Create a Jetty server
+		__server = new Server(__port);
+
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
+
+		// Configuration
+		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
 		servlets.forEach((uri, list) -> {
-			context.addServlet(new ServletHolder(new MainServlet(eventManager)), uri);
+			context.addServlet(new ServletHolder(new MainServlet(__eventManager)), uri);
 		});
 
 		__server.setHandler(context);
+		
+		return null;
 	}
 
 	@Override

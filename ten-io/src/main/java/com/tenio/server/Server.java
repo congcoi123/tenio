@@ -128,11 +128,20 @@ public final class Server extends AbstractLogger implements IServer {
 			return error;
 		}
 
+		// http checking
+		error = __checkSubscriberHttpHandler(configuration);
+		if (error != null) {
+			return error;
+		}
+
 		// schedules
 		__createAllSchedules(configuration);
 
 		// http handler
-		__createHttpManagers(configuration);
+		error = __createHttpManagers(configuration);
+		if (error != null) {
+			return error;
+		}
 
 		// start network
 		error = __startNetwork(configuration);
@@ -234,6 +243,16 @@ public final class Server extends AbstractLogger implements IServer {
 		return null;
 	}
 
+	private String __checkSubscriberHttpHandler(BaseConfiguration configuration) {
+		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST)
+				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_HANDLER))) {
+			var e = new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
+			error(e);
+			return ErrorMsg.START_NO_HTTP_HANDLER;
+		}
+		return null;
+	}
+
 	private void __createAllSchedules(BaseConfiguration configuration) {
 		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
@@ -245,11 +264,16 @@ public final class Server extends AbstractLogger implements IServer {
 				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
 	}
 
-	private void __createHttpManagers(BaseConfiguration configuration) {
+	private String __createHttpManagers(BaseConfiguration configuration) {
 		for (var port : configuration.getHttpPorts()) {
-			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER,
-					new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths()).run());
+			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
+			var error = http.setup();
+			if (error != null) {
+				return error;
+			}
+			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
 		}
+		return null;
 	}
 
 	@Override

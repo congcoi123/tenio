@@ -88,4 +88,6 @@ public final class ErrorMsg {
 
 	public static final String START_NO_RECONNECTION_HANDLER = "start_no_reconnection_handler";
 
+	public static final String START_NO_HTTP_HANDLER = "start_no_http_handler";
+
 }
