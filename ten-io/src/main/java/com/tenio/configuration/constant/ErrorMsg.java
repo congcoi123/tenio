@@ -32,6 +32,9 @@ package com.tenio.configuration.constant;
  */
 public final class ErrorMsg {
 
+	private ErrorMsg() {
+	}
+
 	/**
 	 * When you try to add a player that has the same name with one appeared on the
 	 * server.

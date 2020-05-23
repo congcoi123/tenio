@@ -21,46 +21,66 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.task.schedule;
+package com.tenio.network.http;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.api.PlayerApi;
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.TEvent;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+
+import com.tenio.configuration.constant.Constants;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
+import com.tenio.network.http.servlet.PingServlet;
+import com.tenio.task.schedule.ITask;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link BaseConfiguration}
+ * 
  * 
  * @author kong
- * 
+ *
  */
-public final class CCUScanTask extends AbstractLogger implements ITask {
+public final class HttpManagerTask extends AbstractLogger implements ITask {
 
 	private final IEventManager __eventManager;
-	/**
-	 * The period time for retrieving CCU
-	 */
-	private final int __ccuScanPeriod;
-	private final PlayerApi __playerApi;
+	private final Server __server;
 
-	public CCUScanTask(IEventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
+	public HttpManagerTask(IEventManager eventManager, int port) {
 		__eventManager = eventManager;
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
+
+		// Create a jetty server
+		__server = new Server(port);
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
+
+		// Configuration
+		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
+
+		__server.setHandler(context);
+
 	}
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExternal().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+			try {
+				__server.start();
+				__server.join();
+			} catch (Exception e) {
+				error(e, "EXCEPTION START", "system");
+			}
+		}, 1, TimeUnit.SECONDS);
+	}
+
+	public void shutdown() {
+		try {
+			__server.stop();
+		} catch (Exception e) {
+			error(e, "EXCEPTION STOP", "system");
+		}
 	}
 
 }

@@ -34,6 +34,9 @@ import com.tenio.pool.IElementPool;
  */
 public final class Constants {
 
+	private Constants() {
+	}
+
 	/**
 	 * In TCP, because of the stream transmission, it's necessary to know a data
 	 * package's length for extracting the number of bytes of its content (divide
@@ -95,5 +98,13 @@ public final class Constants {
 	 * stats are to be computed.
 	 */
 	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
+
+	public static final String UTF_8 = "UTF-8";
+	
+	public static final String CONTENT_TYPE_JSON = "application/json";
+	
+	public static final String CONTENT_TYPE_TEXT = "text/html";
+	
+	public static final String PING_PATH = "/ping";
 
 }

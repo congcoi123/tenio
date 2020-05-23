@@ -43,6 +43,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<io.netty.version>4.1.42.Final</io.netty.version>
+		<org.eclipse.jetty.version>9.4.28.v20200408</org.eclipse.jetty.version>
+		<javax.servlet.version>2.5</javax.servlet.version>
 		<org.msgpack.version>0.6.12</org.msgpack.version>
 		<google.guava.version>25.1-jre</google.guava.version>
 		<logging.log4j.version>2.11.1</logging.log4j.version>
@@ -74,6 +76,24 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>${io.netty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${javax.servlet.version}</version>
 		</dependency>
 
 		<dependency>

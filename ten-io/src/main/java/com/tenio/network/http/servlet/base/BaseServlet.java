@@ -21,26 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration.constant;
+package com.tenio.network.http.servlet.base;
+
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author kong
  */
-public enum ConnectionType {
+public abstract class BaseServlet extends HttpServlet {
 	/**
-	 * TCP
+	 * 
 	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+	private static final long serialVersionUID = -5030886807666928581L;
+
+	protected final boolean hasHeaderKey(HttpServletRequest request, String key) {
+		Enumeration<String> headerNames = request.getHeaderNames();
+        if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                	if (headerNames.nextElement().equals(key))
+                		return true;
+                }
+        }
+        return false;
+	}
+	
 }
