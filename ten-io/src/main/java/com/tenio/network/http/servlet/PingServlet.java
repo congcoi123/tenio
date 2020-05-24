@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.configuration.constant.Constants;
 import com.tenio.entity.element.TObject;
 import com.tenio.network.http.servlet.base.BaseProcessServlet;
 
@@ -45,7 +44,7 @@ public final class PingServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 5999711002391728401L;
 
-	private Process __process = new Process(Constants.PING_PATH);
+	private Process __process = new Process();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -58,10 +57,6 @@ public final class PingServlet extends HttpServlet {
 	}
 
 	private final class Process extends BaseProcessServlet {
-
-		public Process(String path) {
-			super(path);
-		}
 
 		@SuppressWarnings({ "unchecked" })
 		@Override

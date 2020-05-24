@@ -61,16 +61,16 @@ public final class TServlet extends BaseServlet {
 		for (var path : paths) {
 			switch (path.getMethod()) {
 			case POST:
-				__processPost = new ProcessPost(path.getUri());
+				__processPost = new ProcessPost();
 				break;
 			case PUT:
-				__processPut = new ProcessPut(path.getUri());
+				__processPut = new ProcessPut();
 				break;
 			case GET:
-				__processGet = new ProcessGet(path.getUri());
+				__processGet = new ProcessGet();
 				break;
 			case DELETE:
-				__processDelete = new ProcessDelete(path.getUri());
+				__processDelete = new ProcessDelete();
 				break;
 			default:
 				break;
@@ -116,10 +116,6 @@ public final class TServlet extends BaseServlet {
 
 	private final class ProcessPost extends BaseProcessServlet {
 
-		public ProcessPost(String path) {
-			super(path);
-		}
-
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.POST, request, response);
@@ -131,10 +127,6 @@ public final class TServlet extends BaseServlet {
 	}
 
 	private final class ProcessPut extends BaseProcessServlet {
-
-		public ProcessPut(String path) {
-			super(path);
-		}
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
@@ -148,10 +140,6 @@ public final class TServlet extends BaseServlet {
 
 	private final class ProcessGet extends BaseProcessServlet {
 
-		public ProcessGet(String path) {
-			super(path);
-		}
-
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.GET, request, response);
@@ -164,10 +152,6 @@ public final class TServlet extends BaseServlet {
 
 	private final class ProcessDelete extends BaseProcessServlet {
 
-		public ProcessDelete(String path) {
-			super(path);
-		}
-
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.DELETE, request, response);
@@ -177,7 +161,7 @@ public final class TServlet extends BaseServlet {
 		}
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void __sendUnsupportedMethod(HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

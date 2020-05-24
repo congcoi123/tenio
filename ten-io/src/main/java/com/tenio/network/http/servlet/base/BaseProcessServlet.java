@@ -35,12 +35,6 @@ import com.tenio.network.http.servlet.IServletHandler;
  */
 public abstract class BaseProcessServlet extends AbstractLogger implements IServletHandler {
 
-	private String __path;
-
-	public BaseProcessServlet(String path) {
-		__path = path;
-	}
-
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response) {
 		response.setContentType(Constants.CONTENT_TYPE_JSON);
@@ -50,9 +44,5 @@ public abstract class BaseProcessServlet extends AbstractLogger implements IServ
 	}
 
 	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
-
-	public String getPath() {
-		return __path;
-	}
 
 }
