@@ -23,15 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.network.http.servlet;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
+
 import com.tenio.configuration.Path;
 import com.tenio.configuration.constant.RestMethod;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
 import com.tenio.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.network.http.servlet.base.BaseServlet;
@@ -79,7 +83,7 @@ public final class TServlet extends BaseServlet {
 		if (__processGet != null) {
 			__processGet.handle(request, response);
 		} else {
-
+			__sendUnsupportedMethod(response);
 		}
 	}
 
@@ -88,7 +92,7 @@ public final class TServlet extends BaseServlet {
 		if (__processPost != null) {
 			__processPost.handle(request, response);
 		} else {
-
+			__sendUnsupportedMethod(response);
 		}
 	}
 
@@ -97,7 +101,7 @@ public final class TServlet extends BaseServlet {
 		if (__processPut != null) {
 			__processPut.handle(request, response);
 		} else {
-
+			__sendUnsupportedMethod(response);
 		}
 	}
 
@@ -106,7 +110,7 @@ public final class TServlet extends BaseServlet {
 		if (__processDelete != null) {
 			__processDelete.handle(request, response);
 		} else {
-
+			__sendUnsupportedMethod(response);
 		}
 	}
 
@@ -172,6 +176,18 @@ public final class TServlet extends BaseServlet {
 			}
 		}
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void __sendUnsupportedMethod(HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+		try {
+			var json = new JSONObject();
+			json.putAll(TObject.newInstance().add("status", "failed").add("message", "405Method Not Allowed"));
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
