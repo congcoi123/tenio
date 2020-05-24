@@ -42,7 +42,7 @@ import com.tenio.logger.AbstractLogger;
  * @author kong
  * 
  */
-public final class EmptyRoomScanTask extends AbstractLogger {
+public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 
 	private final RoomApi __roomApi;
 	/**
@@ -64,6 +64,7 @@ public final class EmptyRoomScanTask extends AbstractLogger {
 		__rooms = __roomApi.gets();
 	}
 
+	@Override
 	public ScheduledFuture<?> run() {
 		info("EMPTY ROOM TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {

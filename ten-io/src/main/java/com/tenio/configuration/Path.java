@@ -21,26 +21,47 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration.constant;
+package com.tenio.configuration;
+
+import com.tenio.configuration.constant.RestMethod;
 
 /**
  * @author kong
  */
-public enum ConnectionType {
-	/**
-	 * TCP
-	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+public final class Path {
+
+	private String __name;
+	private String __description;
+	private int __version;
+	private RestMethod __method;
+	private String __uri;
+
+	public Path(String name, RestMethod method, String uri, String description, int version) {
+		__name = name;
+		__method = method;
+		__uri = uri;
+		__description = description;
+		__version = version;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public RestMethod getMethod() {
+		return __method;
+	}
+
+	public String getUri() {
+		return __uri;
+	}
+
+	public String getDescription() {
+		return __description;
+	}
+
+	public int getVersion() {
+		return __version;
+	}
+
 }

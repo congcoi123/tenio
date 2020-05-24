@@ -26,21 +26,21 @@ package com.tenio.configuration.constant;
 /**
  * @author kong
  */
-public enum ConnectionType {
+public enum RestMethod {
 	/**
-	 * TCP
+	 * Create
 	 */
-	SOCKET,
+	POST,
 	/**
-	 * UDP
+	 * Update
 	 */
-	DATAGRAM,
+	PUT,
 	/**
-	 * Web Socket
+	 * Retrieve
 	 */
-	WEB_SOCKET,
+	GET,
 	/**
-	 * HTTP
+	 * Delete
 	 */
-	HTTP
+	DELETE
 }

@@ -21,26 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration.constant;
+package com.tenio.exception;
 
 /**
  * @author kong
  */
-public enum ConnectionType {
+public class DuplicatedUriAndMethodException extends RuntimeException {
 	/**
-	 * TCP
+	 * 
 	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+	private static final long serialVersionUID = -5226506274080400540L;
+
+	public DuplicatedUriAndMethodException(String message) {
+		super(__getMessage(message));
+	}
+
+	private static String __getMessage(String error) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Error code: ");
+		builder.append(error);
+		return builder.toString();
+	}
+
 }

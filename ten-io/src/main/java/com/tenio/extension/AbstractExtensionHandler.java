@@ -23,11 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.extension;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.AbstractRoom;
@@ -111,7 +115,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
 		return (T) object;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * @param <T>    the corresponding return type
@@ -152,6 +156,30 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 */
 	protected long _getLong(Object object) {
 		return (long) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link RestMethod} type
+	 */
+	protected RestMethod _getRestMethod(Object object) {
+		return (RestMethod) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link HttpServletRequest} type
+	 */
+	protected HttpServletRequest _getHttpServletRequest(Object object) {
+		return (HttpServletRequest) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link HttpServletResponse} type
+	 */
+	protected HttpServletResponse _getHttpServletResponse(Object object) {
+		return (HttpServletResponse) object;
 	}
 
 	/**

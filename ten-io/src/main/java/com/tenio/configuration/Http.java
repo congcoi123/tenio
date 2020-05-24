@@ -21,26 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration.constant;
+package com.tenio.configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kong
  */
-public enum ConnectionType {
-	/**
-	 * TCP
-	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+public final class Http {
+
+	private String __name;
+	private int __port;
+	private List<Path> __paths;
+
+	public Http(String name, int port) {
+		__paths = new ArrayList<Path>();
+		__name = name;
+		__port = port;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public List<Path> getPaths() {
+		return __paths;
+	}
+	
+	public void addPath(Path path) {
+		__paths.add(path);
+	}
+
+	public int getPort() {
+		return __port;
+	}
+
 }

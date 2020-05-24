@@ -45,7 +45,7 @@ import com.tenio.logger.AbstractLogger;
  * @author kong
  * 
  */
-public final class TimeOutScanTask extends AbstractLogger {
+public final class TimeOutScanTask extends AbstractLogger implements ITask {
 
 	private final IEventManager __eventManager;
 	private final PlayerApi __playerApi;
@@ -77,6 +77,7 @@ public final class TimeOutScanTask extends AbstractLogger {
 		__timeoutScanPeriod = timeoutScanPeriod;
 	}
 
+	@Override
 	public ScheduledFuture<?> run() {
 		info("TIME OUT TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {

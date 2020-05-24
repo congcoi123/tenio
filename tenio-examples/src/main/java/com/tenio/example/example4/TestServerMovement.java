@@ -23,8 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+
 import com.tenio.AbstractApp;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entity.element.TObject;
 import com.tenio.example.example4.constant.Constants;
 import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.server.Configuration;
@@ -65,6 +71,7 @@ public final class TestServerMovement extends AbstractApp {
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void initialize() {
 
@@ -147,6 +154,41 @@ public final class TestServerMovement extends AbstractApp {
 				String reason = _getString(args[2]);
 
 				info("ATTACH CONNECTION FAILED", reason);
+
+				return null;
+			});
+
+			_on(TEvent.HTTP_REQUEST, args -> {
+				var method = _getRestMethod(args[0]);
+				// var request = _getHttpServletRequest(args[1]);
+				var response = _getHttpServletResponse(args[2]);
+
+				if (method.equals(RestMethod.DELETE)) {
+					var json = new JSONObject();
+					json.putAll(TObject.newInstance().add("status", "failed").add("message", "not supported"));
+					try {
+						response.getWriter().println(json.toString());
+					} catch (IOException e) {
+						error(e, "request");
+					}
+					return response;
+				}
+
+				return null;
+			});
+
+			_on(TEvent.HTTP_HANDLER, args -> {
+				// var method = _getRestMethod(args[0]);
+				// var request = _getHttpServletRequest(args[1]);
+				var response = _getHttpServletResponse(args[2]);
+
+				var json = new JSONObject();
+				json.putAll(TObject.newInstance().add("status", "ok").add("message", "handler"));
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					error(e, "handler");
+				}
 
 				return null;
 			});

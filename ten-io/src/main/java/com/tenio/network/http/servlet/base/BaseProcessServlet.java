@@ -21,26 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.configuration.constant;
+package com.tenio.network.http.servlet.base;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.tenio.configuration.constant.Constants;
+import com.tenio.logger.AbstractLogger;
+import com.tenio.network.http.servlet.IServletHandler;
 
 /**
  * @author kong
  */
-public enum ConnectionType {
-	/**
-	 * TCP
-	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+public abstract class BaseProcessServlet extends AbstractLogger implements IServletHandler {
+
+	@Override
+	public void handle(HttpServletRequest request, HttpServletResponse response) {
+		response.setContentType(Constants.CONTENT_TYPE_JSON);
+		response.setContentType(Constants.CONTENT_TYPE_TEXT);
+		response.setCharacterEncoding(Constants.UTF_8);
+		_handleImpl(request, response);
+	}
+
+	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
+
 }

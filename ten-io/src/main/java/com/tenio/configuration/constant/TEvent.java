@@ -23,6 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.configuration.constant;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.entity.AbstractPlayer;
 import com.tenio.entity.AbstractRoom;
@@ -33,8 +36,9 @@ import com.tenio.network.Connection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
- * implementing your own logic in the {@link IExtension#initialize()} method. The
- * logic class must be an inheritance of {@link AbstractExtensionHandler} class.
+ * implementing your own logic in the {@link IExtension#initialize()} method.
+ * The logic class must be an inheritance of {@link AbstractExtensionHandler}
+ * class.
  * 
  * @author kong
  *
@@ -365,6 +369,35 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	BANDWIDTH
+	BANDWIDTH,
+
+	/**
+	 * You can authenticate the request in here
+	 * <ul>
+	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
+	 * <li><b>parameter[1]</b> The request object, see
+	 * {@link HttpServletRequest}</li>
+	 * <li><b>parameter[2]</b> The response object, see
+	 * {@link HttpServletResponse}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b> if the confirmation was passed or
+	 * {@link HttpServletResponse} object otherwise
+	 */
+	HTTP_REQUEST,
+
+	/**
+	 * The main process for a HTTP request which comes from client
+	 * <ul>
+	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
+	 * <li><b>parameter[1]</b> The request object, see
+	 * {@link HttpServletRequest}</li>
+	 * <li><b>parameter[2]</b> The response object, see
+	 * {@link HttpServletResponse}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	HTTP_HANDLER
 
 }
