@@ -40,7 +40,7 @@ import com.tenio.logger.AbstractLogger;
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger {
+public final class CCUScanTask extends AbstractLogger implements ITask {
 
 	private final IEventManager __eventManager;
 	/**
@@ -55,6 +55,7 @@ public final class CCUScanTask extends AbstractLogger {
 		__ccuScanPeriod = ccuScanPeriod;
 	}
 
+	@Override
 	public ScheduledFuture<?> run() {
 		info("CCU SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {

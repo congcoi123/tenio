@@ -35,7 +35,7 @@ import com.tenio.entity.AbstractPlayer;
 @Entity
 public final class PlayerPhaserjs extends AbstractPlayer {
 
-	public static final int MAIN_SOCKET = 0;
+	public static final int MAIN_CHANNEL = 0;
 
 	private int __x;
 	private int __y;

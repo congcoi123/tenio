@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.configuration;
 
-import com.tenio.network.Connection;
+import com.tenio.configuration.constant.ConnectionType;
 
 /**
  * @author kong
@@ -31,10 +31,10 @@ import com.tenio.network.Connection;
 public final class Sock {
 
 	private String __name;
-	private Connection.Type __type;
+	private ConnectionType __type;
 	private int __port;
 
-	public Sock(String name, Connection.Type type, int port) {
+	public Sock(String name, ConnectionType type, int port) {
 		__name = name;
 		__type = type;
 		__port = port;
@@ -44,7 +44,7 @@ public final class Sock {
 		return __name;
 	}
 
-	public Connection.Type getType() {
+	public ConnectionType getType() {
 		return __type;
 	}
 

@@ -40,11 +40,13 @@ import com.tenio.entity.manager.PlayerManager;
 import com.tenio.entity.manager.RoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.event.IEventManager;
+import com.tenio.exception.DuplicatedUriAndMethodException;
 import com.tenio.exception.NotDefinedSocketConnectionException;
 import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
+import com.tenio.network.http.HttpManagerTask;
 import com.tenio.network.netty.NettyNetwork;
 import com.tenio.task.ITaskManager;
 import com.tenio.task.TaskManager;
@@ -121,8 +123,17 @@ public final class Server extends AbstractLogger implements IServer {
 		// main server logic
 		__internalLogic.init(configuration);
 
+		// initialize the subscribers
+		getExtension().initialize();
+
 		// server need at least one connection to start up
 		String error = __checkDefinedMainSocketConnection(configuration);
+		if (error != null) {
+			return error;
+		}
+
+		// http checking
+		error = __checkSubscriberHttpHandler(configuration);
 		if (error != null) {
 			return error;
 		}
@@ -130,6 +141,12 @@ public final class Server extends AbstractLogger implements IServer {
 		// schedules
 		__createAllSchedules(configuration);
 
+		// http handler
+		error = __createHttpManagers(configuration);
+		if (error != null) {
+			return error;
+		}
+		
 		// start network
 		error = __startNetwork(configuration);
 		if (error != null) {
@@ -140,9 +157,6 @@ public final class Server extends AbstractLogger implements IServer {
 		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
 			__heartBeatManager.initialize(configuration);
 		}
-
-		// initialize the subscribers
-		getExtension().init();
 
 		// check subscribers must handle subscribers for UDP attachment
 		error = __checkSubscriberSubConnectionAttach(configuration);
@@ -230,6 +244,16 @@ public final class Server extends AbstractLogger implements IServer {
 		return null;
 	}
 
+	private String __checkSubscriberHttpHandler(BaseConfiguration configuration) {
+		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST)
+				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_HANDLER))) {
+			var e = new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
+			error(e);
+			return ErrorMsg.START_NO_HTTP_HANDLER;
+		}
+		return null;
+	}
+
 	private void __createAllSchedules(BaseConfiguration configuration) {
 		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
@@ -239,6 +263,20 @@ public final class Server extends AbstractLogger implements IServer {
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
 		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
 				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
+	}
+
+	private String __createHttpManagers(BaseConfiguration configuration) {
+		for (var port : configuration.getHttpPorts()) {
+			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
+			var error = http.setup();
+			if (error != null) {
+				var e = new DuplicatedUriAndMethodException(error);
+				error(e);
+				return error;
+			}
+			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
+		}
+		return null;
 	}
 
 	@Override

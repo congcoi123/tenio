@@ -32,9 +32,10 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.tenio.configuration.constant.ConnectionType;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.entity.element.TObject;
 import com.tenio.logger.AbstractLogger;
-import com.tenio.network.Connection;
 import com.tenio.utility.XMLUtility;
 
 /**
@@ -141,6 +142,11 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	private final List<Sock> __webSocketPorts = new ArrayList<Sock>();
 
 	/**
+	 * All ports in http zone
+	 */
+	private final List<Http> __httpPorts = new ArrayList<Http>();
+
+	/**
 	 * The constructor
 	 * 
 	 * @param file The name of your configuration file and this file needs to be put
@@ -203,8 +209,27 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
 			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					Connection.Type.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
+					ConnectionType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
+		}
+		var attrNetworkHttps = XMLUtility.getNodeList(root, "//Server/Network/Http/Port");
+		for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
+			var pPortNode = attrNetworkHttps.item(i);
+			var port = new Http(pPortNode.getAttributes().getNamedItem("name").getTextContent(),
+					Integer.parseInt(pPortNode.getAttributes().getNamedItem("value").getTextContent()));
+
+			var attrHttpPaths = XMLUtility.getNodeList(attrNetworkHttps.item(i), "//Path");
+			for (int j = 0; j < attrHttpPaths.getLength(); j++) {
+				var pPathNode = attrHttpPaths.item(j);
+				var path = new Path(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
+						__getRestMethod(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
+						pPathNode.getTextContent(), pPathNode.getAttributes().getNamedItem("desc").getTextContent(),
+						Integer.parseInt(pPathNode.getAttributes().getNamedItem("version").getTextContent()));
+
+				port.addPath(path);
+			}
+
+			__httpPorts.add(port);
 		}
 
 		// Configuration
@@ -262,24 +287,57 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	}
 
-	private Connection.Type __getConnectionType(final String type) {
+	/**
+	 * @param type the type name in text
+	 * @return the connection type in {@link ConnectionType} type
+	 */
+	private ConnectionType __getConnectionType(final String type) {
 		switch (type.toLowerCase()) {
 		case "tcp":
-			return Connection.Type.SOCKET;
+			return ConnectionType.SOCKET;
 		case "udp":
-			return Connection.Type.DATAGRAM;
-		case "ws":
-			return Connection.Type.WEB_SOCKET;
+			return ConnectionType.DATAGRAM;
 		}
 		return null;
 	}
 
+	/**
+	 * @param method the method name in text
+	 * @return the method in {@link RestMethod} type
+	 */
+	private RestMethod __getRestMethod(final String method) {
+		switch (method.toLowerCase()) {
+		case "get":
+			return RestMethod.GET;
+		case "post":
+			return RestMethod.POST;
+		case "put":
+			return RestMethod.PUT;
+		case "delete":
+			return RestMethod.DELETE;
+		}
+		return null;
+	}
+
+	/**
+	 * @return the list of socket ports in configuration
+	 */
 	public List<Sock> getSocketPorts() {
 		return __socketPorts;
 	}
 
+	/**
+	 * @return the list of websocket ports in configuration
+	 */
 	public List<Sock> getWebSocketPorts() {
 		return __webSocketPorts;
+	}
+
+	/**
+	 * @return the list of http ports in configuration
+	 */
+	public List<Http> getHttpPorts() {
+		return __httpPorts;
 	}
 
 	/**

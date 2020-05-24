@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.tenio.api.PlayerApi;
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.configuration.constant.ConnectionType;
 import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
@@ -37,7 +38,6 @@ import com.tenio.exception.DuplicatedPlayerException;
 import com.tenio.exception.NullPlayerNameException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.Connection;
-import com.tenio.network.Connection.Type;
 
 /**
  * Manage all your players ({@link AbstractPlayer}) on the server. It is a
@@ -131,7 +131,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			// add the main connection
 			connection.setUsername(player.getName());
 			int size = 0;
-			if (connection.isType(Type.WEB_SOCKET)) {
+			if (connection.isType(ConnectionType.WEB_SOCKET)) {
 				size = __configuration.getWebSocketPorts().size();
 			} else {
 				size = __configuration.getSocketPorts().size();

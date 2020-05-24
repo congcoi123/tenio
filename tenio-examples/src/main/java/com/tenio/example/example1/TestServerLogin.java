@@ -67,7 +67,7 @@ public final class TestServerLogin extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void init() {
+		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getTObject(args[1]);
@@ -114,7 +114,7 @@ public final class TestServerLogin extends AbstractApp {
 
 					// Sending, the data need to be packed
 					var data = _messageApi.getArrayPack();
-					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_SOCKET, "c", "message", "d",
+					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
 							data.put("H").put("3").put("L").put("O").put(true)
 									.put(TArray.newInstance().put("Sub").put("Value").put(100)));
 

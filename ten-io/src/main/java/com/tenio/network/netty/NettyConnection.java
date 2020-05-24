@@ -25,6 +25,7 @@ package com.tenio.network.netty;
 
 import java.net.InetSocketAddress;
 
+import com.tenio.configuration.constant.ConnectionType;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
@@ -62,30 +63,30 @@ public class NettyConnection extends Connection {
 	 */
 	protected InetSocketAddress __remote;
 
-	private NettyConnection(int index, IEventManager eventManager, Type type, Channel channel) {
+	private NettyConnection(int index, IEventManager eventManager, ConnectionType type, Channel channel) {
 		super(eventManager, type, index);
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
 		// receive a message from client)
 		// in the Datagram connection there is only one channel existed
-		if (!isType(Type.DATAGRAM)) {
+		if (!isType(ConnectionType.DATAGRAM)) {
 			setAddress(((InetSocketAddress) __channel.remoteAddress()).toString());
 		}
 	}
 
-	public static NettyConnection newInstance(int index, IEventManager eventManager, Type type, Channel channel) {
+	public static NettyConnection newInstance(int index, IEventManager eventManager, ConnectionType type, Channel channel) {
 		return new NettyConnection(index, eventManager, type, channel);
 	}
 
 	@Override
 	public void send(TObject message) {
-		if (isType(Type.SOCKET)) {
+		if (isType(ConnectionType.SOCKET)) {
 			__channel.writeAndFlush(MsgPackConverter.serialize(message));
-		} else if (isType(Type.WEB_SOCKET)) {
+		} else if (isType(ConnectionType.WEB_SOCKET)) {
 			__channel.writeAndFlush(
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
-		} else if (isType(Type.DATAGRAM)) {
+		} else if (isType(ConnectionType.DATAGRAM)) {
 			if (__remote != null) {
 				__channel.writeAndFlush(
 						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remote));
@@ -103,7 +104,7 @@ public class NettyConnection extends Connection {
 
 	@Override
 	public Connection getThis() {
-		if (isType(Type.DATAGRAM)) {
+		if (isType(ConnectionType.DATAGRAM)) {
 			return (Connection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
 		}
 		return __channel.attr(KEY_CONNECTION).get();
@@ -111,7 +112,7 @@ public class NettyConnection extends Connection {
 
 	@Override
 	public void setThis() {
-		if (isType(Type.DATAGRAM)) {
+		if (isType(ConnectionType.DATAGRAM)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(this);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(this);
@@ -120,7 +121,7 @@ public class NettyConnection extends Connection {
 
 	@Override
 	public void removeThis() {
-		if (isType(Type.DATAGRAM)) {
+		if (isType(ConnectionType.DATAGRAM)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(null);
 		} else {
 			__channel.attr(KEY_CONNECTION).set(null);
@@ -130,7 +131,7 @@ public class NettyConnection extends Connection {
 	@Override
 	public void setRemote(InetSocketAddress remote) {
 		// only need for the Datagram connection
-		if (isType(Type.DATAGRAM)) {
+		if (isType(ConnectionType.DATAGRAM)) {
 			__remote = remote;
 			setAddress(__remote.toString());
 		}

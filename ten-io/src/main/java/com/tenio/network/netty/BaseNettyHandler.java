@@ -25,11 +25,11 @@ package com.tenio.network.netty;
 
 import java.net.InetSocketAddress;
 
+import com.tenio.configuration.constant.ConnectionType;
 import com.tenio.configuration.constant.LEvent;
 import com.tenio.entity.element.TObject;
 import com.tenio.event.IEventManager;
 import com.tenio.network.Connection;
-import com.tenio.network.Connection.Type;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,10 +47,10 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
 	private IEventManager __eventManager;
 	private Connection __connection;
-	private Connection.Type __type;
+	private ConnectionType __type;
 	private int __index;
 
-	public BaseNettyHandler(IEventManager eventManager, int index, Connection.Type type) {
+	public BaseNettyHandler(IEventManager eventManager, int index, ConnectionType type) {
 		__eventManager = eventManager;
 		__index = index;
 		__type = type;
@@ -96,7 +96,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
 	protected void _channelInactive(ChannelHandlerContext ctx) {
-		if (__type == Type.DATAGRAM) {
+		if (__type == ConnectionType.DATAGRAM) {
 			return;
 		}
 		// get the connection first
@@ -112,7 +112,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param cause the exception will occur
 	 */
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		if (__type == Type.DATAGRAM) {
+		if (__type == ConnectionType.DATAGRAM) {
 			return;
 		}
 		// get the connection first

@@ -21,23 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.extension;
+package com.tenio.network.http.servlet.base;
+
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * An entry point class is the first one you start to handle your own logic
- * in-game. The class must be implemented this interface and be created as a new
- * instance. In this new object, you can create a number of other logic handler
- * instances @see {@link AbstractExtensionHandler} and declare these in here. It
- * should be had only one entry point class for each server.
- * 
  * @author kong
- * 
  */
-public interface IExtension {
-
+public abstract class BaseServlet extends HttpServlet {
 	/**
-	 * Initialize list subscribers, use <b>Event Emitter</b> with this method
-	 * {@code on(String name, ISubscriber sub)}
+	 * 
 	 */
-	void initialize();
+	private static final long serialVersionUID = -5030886807666928581L;
+
+	protected final boolean hasHeaderKey(HttpServletRequest request, String key) {
+		Enumeration<String> headerNames = request.getHeaderNames();
+        if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                	if (headerNames.nextElement().equals(key))
+                		return true;
+                }
+        }
+        return false;
+	}
+	
 }

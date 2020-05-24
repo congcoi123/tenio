@@ -64,7 +64,7 @@ public final class TestServerStress extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void init() {
+		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getTObject(args[1]);
@@ -98,7 +98,7 @@ public final class TestServerStress extends AbstractApp {
 				// Now you can send messages to the client
 				// Sending, the data need to be packed
 				var data = _messageApi.getArrayPack();
-				_messageApi.sendToPlayer(player, PlayerStress.MAIN_SOCKET, "p", player.getName(), "d",
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
 						data.put("H").put("3").put("L").put("O").put(true)
 								.put(TArray.newInstance().put("Sub").put("Value").put(100)));
 
@@ -115,7 +115,7 @@ public final class TestServerStress extends AbstractApp {
 					data.put(pack[i]);
 				}
 
-				_messageApi.sendToPlayer(player, PlayerStress.MAIN_SOCKET, "p", player.getName(), "d", data);
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d", data);
 
 				return null;
 			});

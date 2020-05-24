@@ -102,7 +102,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 				if (base.getMood() != null) {
 					// send to all inspectors
 					for (var inspector : __inspectors) {
-						__messageApi.sendToPlayer(inspector, Inspector.MAIN_SOCKET, "m", base.getMood());
+						__messageApi.sendToPlayer(inspector, Inspector.MAIN_CHANNEL, "m", base.getMood());
 					}
 				}
 			});

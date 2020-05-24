@@ -21,23 +21,47 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.extension;
+package com.tenio.configuration;
+
+import com.tenio.configuration.constant.RestMethod;
 
 /**
- * An entry point class is the first one you start to handle your own logic
- * in-game. The class must be implemented this interface and be created as a new
- * instance. In this new object, you can create a number of other logic handler
- * instances @see {@link AbstractExtensionHandler} and declare these in here. It
- * should be had only one entry point class for each server.
- * 
  * @author kong
- * 
  */
-public interface IExtension {
+public final class Path {
 
-	/**
-	 * Initialize list subscribers, use <b>Event Emitter</b> with this method
-	 * {@code on(String name, ISubscriber sub)}
-	 */
-	void initialize();
+	private String __name;
+	private String __description;
+	private int __version;
+	private RestMethod __method;
+	private String __uri;
+
+	public Path(String name, RestMethod method, String uri, String description, int version) {
+		__name = name;
+		__method = method;
+		__uri = uri;
+		__description = description;
+		__version = version;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public RestMethod getMethod() {
+		return __method;
+	}
+
+	public String getUri() {
+		return __uri;
+	}
+
+	public String getDescription() {
+		return __description;
+	}
+
+	public int getVersion() {
+		return __version;
+	}
+
 }

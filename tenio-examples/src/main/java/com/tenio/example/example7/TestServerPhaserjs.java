@@ -66,7 +66,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 		RoomPhaserjs phaserjsRoom = new RoomPhaserjs("phaserjs", "Phaserjs", 3);
 
 		@Override
-		public void init() {
+		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getTObject(args[1]);
@@ -122,7 +122,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 					data.add(pjs.getY());
 					pack.add(data);
 				}
-				_messageApi.sendToRoom(room, PlayerPhaserjs.MAIN_SOCKET, "c", "i", "d", pack);
+				_messageApi.sendToRoom(room, PlayerPhaserjs.MAIN_CHANNEL, "c", "i", "d", pack);
 
 				return null;
 			});
@@ -140,7 +140,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				pack.add(player.getName());
 				pack.add(move.get(0));
 				pack.add(move.get(1));
-				_messageApi.sendToRoom(phaserjsRoom, PlayerPhaserjs.MAIN_SOCKET, "c", "m", "d", pack);
+				_messageApi.sendToRoom(phaserjsRoom, PlayerPhaserjs.MAIN_CHANNEL, "c", "m", "d", pack);
 
 				return null;
 			});

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.network.Connection;
+import com.tenio.configuration.constant.ConnectionType;
 
 /**
  * @author kong
@@ -48,9 +48,9 @@ public final class ConfigurationTest {
 	public void getConfigurationExtensionShouldReturnTrueValue() {
 		assertAll("getExtensionConfiguration",
 				() -> assertEquals("String", __configuration.getString(Configuration.CUSTOM_VALUE_1)),
-				() -> assertEquals("1", __configuration.getString(Configuration.CUSTOM_VALUE_2)),
-				() -> assertEquals("1.5", __configuration.getString(Configuration.CUSTOM_VALUE_3)),
-				() -> assertEquals("True", __configuration.getString(Configuration.CUSTOM_VALUE_4)));
+				() -> assertEquals(1, __configuration.getInt(Configuration.CUSTOM_VALUE_2)),
+				() -> assertEquals(1.5, __configuration.getFloat(Configuration.CUSTOM_VALUE_3)),
+				() -> assertEquals(true, __configuration.getBoolean(Configuration.CUSTOM_VALUE_4)));
 	}
 
 	@Test
@@ -64,9 +64,9 @@ public final class ConfigurationTest {
 	@Test
 	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
 		assertAll("getSocketPortsTypeConfiguration",
-				() -> assertEquals(Connection.Type.SOCKET, __configuration.getSocketPorts().get(0).getType()),
-				() -> assertEquals(Connection.Type.DATAGRAM, __configuration.getSocketPorts().get(1).getType()),
-				() -> assertEquals(Connection.Type.SOCKET, __configuration.getSocketPorts().get(2).getType()));
+				() -> assertEquals(ConnectionType.SOCKET, __configuration.getSocketPorts().get(0).getType()),
+				() -> assertEquals(ConnectionType.DATAGRAM, __configuration.getSocketPorts().get(1).getType()),
+				() -> assertEquals(ConnectionType.SOCKET, __configuration.getSocketPorts().get(2).getType()));
 	}
 
 	@AfterEach

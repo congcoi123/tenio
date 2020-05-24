@@ -23,8 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+
 import com.tenio.AbstractApp;
+import com.tenio.configuration.constant.RestMethod;
 import com.tenio.configuration.constant.TEvent;
+import com.tenio.entity.element.TObject;
 import com.tenio.example.server.Configuration;
 import com.tenio.extension.AbstractExtensionHandler;
 import com.tenio.extension.IExtension;
@@ -61,8 +67,9 @@ public final class TestServerAttach extends AbstractApp {
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void init() {
+		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getTObject(args[1]);
@@ -93,7 +100,7 @@ public final class TestServerAttach extends AbstractApp {
 				info("PLAYER IN", player.getName());
 
 				// Now you can allow the player make a UDP connection request
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_SOCKET, "c", "udp");
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
 
 				return null;
 			});
@@ -146,7 +153,7 @@ public final class TestServerAttach extends AbstractApp {
 				info("ATTACH CONNECTION SUCCESS", player.getName() + " " + player.getConnection(0).getAddress() + " "
 						+ player.getConnection(index).getAddress());
 
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_SOCKET, "c", "udp-done");
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});
@@ -155,6 +162,41 @@ public final class TestServerAttach extends AbstractApp {
 				var reason = _getString(args[2]);
 
 				info("ATTACH UDP FAILED", reason);
+
+				return null;
+			});
+
+			_on(TEvent.HTTP_REQUEST, args -> {
+				var method = _getRestMethod(args[0]);
+				// var request = _getHttpServletRequest(args[1]);
+				var response = _getHttpServletResponse(args[2]);
+
+				if (method.equals(RestMethod.DELETE)) {
+					var json = new JSONObject();
+					json.putAll(TObject.newInstance().add("status", "failed").add("message", "not supported"));
+					try {
+						response.getWriter().println(json.toString());
+					} catch (IOException e) {
+						error(e, "request");
+					}
+					return response;
+				}
+
+				return null;
+			});
+
+			_on(TEvent.HTTP_HANDLER, args -> {
+				// var method = _getRestMethod(args[0]);
+				// var request = _getHttpServletRequest(args[1]);
+				var response = _getHttpServletResponse(args[2]);
+
+				var json = new JSONObject();
+				json.putAll(TObject.newInstance().add("status", "ok").add("message", "handler"));
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					error(e, "handler");
+				}
 
 				return null;
 			});

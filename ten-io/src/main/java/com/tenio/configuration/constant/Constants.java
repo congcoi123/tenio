@@ -34,6 +34,9 @@ import com.tenio.pool.IElementPool;
  */
 public final class Constants {
 
+	private Constants() {
+	}
+
 	/**
 	 * In TCP, because of the stream transmission, it's necessary to know a data
 	 * package's length for extracting the number of bytes of its content (divide
@@ -80,6 +83,8 @@ public final class Constants {
 	 */
 	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
 
+	public static final String KEY_SCHEDULE_HTTP_MANAGER = "t.schedule.http.manager";
+
 	/**
 	 * 0 or a limit in bytes/s
 	 */
@@ -95,5 +100,26 @@ public final class Constants {
 	 * stats are to be computed.
 	 */
 	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
+
+	/**
+	 * The HTTP response with UTF-8 encoding
+	 */
+	public static final String UTF_8 = "UTF-8";
+
+	/**
+	 * The HTTP response with content type in JSON
+	 */
+	public static final String CONTENT_TYPE_JSON = "application/json";
+
+	/**
+	 * The HTTP response with content type in text
+	 */
+	public static final String CONTENT_TYPE_TEXT = "text/html";
+
+	/**
+	 * The default URI path when a HTTP server was started (To confirm if the server
+	 * was started or not)
+	 */
+	public static final String PING_PATH = "/ping";
 
 }
