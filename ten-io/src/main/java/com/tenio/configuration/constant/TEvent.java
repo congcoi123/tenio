@@ -372,8 +372,7 @@ public enum TEvent {
 	BANDWIDTH,
 
 	/**
-	 * 
-	 * 
+	 * You can authenticate the request in here
 	 * <ul>
 	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
 	 * <li><b>parameter[1]</b> The request object, see
@@ -388,8 +387,7 @@ public enum TEvent {
 	HTTP_REQUEST,
 
 	/**
-	 * 
-	 * 
+	 * The main process for a HTTP request which comes from client
 	 * <ul>
 	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
 	 * <li><b>parameter[1]</b> The request object, see

@@ -77,25 +77,45 @@ public final class ErrorMsg {
 	 * TCP connection.
 	 */
 	public static final String MAIN_CONNECTION_NOT_FOUND = "main_connection_not_found";
-
+	/**
+	 * When some errors occurred in network starting
+	 */
 	public static final String IO_EXCEPTION = "io_exception";
-
+	/**
+	 * When some errors occurred in network starting
+	 */
 	public static final String INTERRUPTED_EXCEPTION = "interrupted_exception";
-
+	/**
+	 * When you try to start server without any connections
+	 */
 	public static final String START_NO_CONNECTION = "start_no_connection";
-
+	/**
+	 * When you try to start server without sub-connection event handler
+	 */
 	public static final String START_NO_SUBCONNECTION_HANDLER = "start_no_connection_handler";
-
+	/**
+	 * When you try to start server without re-connection event handler
+	 */
 	public static final String START_NO_RECONNECTION_HANDLER = "start_no_reconnection_handler";
-
+	/**
+	 * When you try to start server without HTTP request event handler
+	 */
 	public static final String START_NO_HTTP_HANDLER = "start_no_http_handler";
-	
+	/**
+	 * When you defined duplicated methods with same URI path
+	 */
 	public static final String DUPLICATED_URI_AND_METHOD_POST = "duplicated_uri_and_method_post";
-	
+	/**
+	 * When you defined duplicated methods with same URI path
+	 */
 	public static final String DUPLICATED_URI_AND_METHOD_PUT = "duplicated_uri_and_method_put";
-	
+	/**
+	 * When you defined duplicated methods with same URI path
+	 */
 	public static final String DUPLICATED_URI_AND_METHOD_GET = "duplicated_uri_and_method_get";
-	
+	/**
+	 * When you defined duplicated methods with same URI path
+	 */
 	public static final String DUPLICATED_URI_AND_METHOD_DELETE = "duplicated_uri_and_method_delete";
 
 }

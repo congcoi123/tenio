@@ -82,7 +82,7 @@ public final class Constants {
 	 * A unique key for the Time Out scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
-	
+
 	public static final String KEY_SCHEDULE_HTTP_MANAGER = "t.schedule.http.manager";
 
 	/**
@@ -101,12 +101,25 @@ public final class Constants {
 	 */
 	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
 
+	/**
+	 * The HTTP response with UTF-8 encoding
+	 */
 	public static final String UTF_8 = "UTF-8";
-	
+
+	/**
+	 * The HTTP response with content type in JSON
+	 */
 	public static final String CONTENT_TYPE_JSON = "application/json";
-	
+
+	/**
+	 * The HTTP response with content type in text
+	 */
 	public static final String CONTENT_TYPE_TEXT = "text/html";
-	
+
+	/**
+	 * The default URI path when a HTTP server was started (To confirm if the server
+	 * was started or not)
+	 */
 	public static final String PING_PATH = "/ping";
 
 }

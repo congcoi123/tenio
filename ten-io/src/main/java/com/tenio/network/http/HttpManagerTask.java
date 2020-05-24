@@ -46,7 +46,7 @@ import com.tenio.network.http.servlet.TServlet;
 import com.tenio.task.schedule.ITask;
 
 /**
- * 
+ * The HTTP request and response handlers class
  * 
  * @author kong
  *

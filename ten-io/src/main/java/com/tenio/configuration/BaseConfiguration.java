@@ -287,6 +287,10 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 	}
 
+	/**
+	 * @param type the type name in text
+	 * @return the connection type in {@link ConnectionType} type
+	 */
 	private ConnectionType __getConnectionType(final String type) {
 		switch (type.toLowerCase()) {
 		case "tcp":
@@ -297,6 +301,10 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		return null;
 	}
 
+	/**
+	 * @param method the method name in text
+	 * @return the method in {@link RestMethod} type
+	 */
 	private RestMethod __getRestMethod(final String method) {
 		switch (method.toLowerCase()) {
 		case "get":
@@ -311,14 +319,23 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		return null;
 	}
 
+	/**
+	 * @return the list of socket ports in configuration
+	 */
 	public List<Sock> getSocketPorts() {
 		return __socketPorts;
 	}
 
+	/**
+	 * @return the list of websocket ports in configuration
+	 */
 	public List<Sock> getWebSocketPorts() {
 		return __webSocketPorts;
 	}
 
+	/**
+	 * @return the list of http ports in configuration
+	 */
 	public List<Http> getHttpPorts() {
 		return __httpPorts;
 	}
