@@ -4,6 +4,7 @@
 Feature release
 - Standardized package names and class names
 - Supported HTTP protocol
+- Bugfixed
 
 ## 3.0.0 2020-05-17 Feature release
 Feature release
