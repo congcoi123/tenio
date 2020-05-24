@@ -57,7 +57,7 @@ Maven
 <dependency>
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 Or you can get the sources
