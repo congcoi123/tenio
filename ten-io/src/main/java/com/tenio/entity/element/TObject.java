@@ -83,5 +83,10 @@ public final class TObject extends HashMap<String, Object> {
 	public boolean contain(final String key) {
 		return containsKey(key);
 	}
+	
+	public TObject add(String key, Object value) {
+		put(key, value);
+		return this;
+	}
 
 }

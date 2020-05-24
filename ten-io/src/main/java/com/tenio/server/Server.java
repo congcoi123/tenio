@@ -123,6 +123,9 @@ public final class Server extends AbstractLogger implements IServer {
 		// main server logic
 		__internalLogic.init(configuration);
 
+		// initialize the subscribers
+		getExtension().initialize();
+
 		// server need at least one connection to start up
 		String error = __checkDefinedMainSocketConnection(configuration);
 		if (error != null) {
@@ -143,7 +146,7 @@ public final class Server extends AbstractLogger implements IServer {
 		if (error != null) {
 			return error;
 		}
-
+		
 		// start network
 		error = __startNetwork(configuration);
 		if (error != null) {
@@ -154,9 +157,6 @@ public final class Server extends AbstractLogger implements IServer {
 		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
 			__heartBeatManager.initialize(configuration);
 		}
-
-		// initialize the subscribers
-		getExtension().initialize();
 
 		// check subscribers must handle subscribers for UDP attachment
 		error = __checkSubscriberSubConnectionAttach(configuration);
@@ -270,7 +270,8 @@ public final class Server extends AbstractLogger implements IServer {
 			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			var error = http.setup();
 			if (error != null) {
-				new DuplicatedUriAndMethodException(error);
+				var e = new DuplicatedUriAndMethodException(error);
+				error(e);
 				return error;
 			}
 			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());

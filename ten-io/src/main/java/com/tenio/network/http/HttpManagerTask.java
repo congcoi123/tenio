@@ -79,7 +79,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 			}
 		}
 
-		for (Map.Entry<String, List<Path>> entry : servlets.entrySet()) {
+		for (var entry : servlets.entrySet()) {
 			if (__isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
 				return ErrorMsg.DUPLICATED_URI_AND_METHOD_POST;
 			}
@@ -103,7 +103,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		// Configuration
 		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
 		servlets.forEach((uri, list) -> {
-			context.addServlet(new ServletHolder(new TServlet(__eventManager)), uri);
+			context.addServlet(new ServletHolder(new TServlet(__eventManager, list)), uri);
 		});
 
 		__server.setHandler(context);
@@ -126,7 +126,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	}
 
 	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<Path> servlet) {
-		return servlet.stream().filter(s -> s.getMethod().equals(method)).count() > 1 ? false : true;
+		return servlet.stream().filter(s -> s.getMethod().equals(method)).count() > 1 ? true : false;
 	}
 
 }

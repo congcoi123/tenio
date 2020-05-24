@@ -23,10 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.network.http.servlet;
 
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.configuration.Path;
 import com.tenio.configuration.constant.RestMethod;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.event.IEventManager;
@@ -44,36 +47,74 @@ public final class TServlet extends BaseServlet {
 
 	private final IEventManager __eventManager;
 
-	private final ProcessPost __processPost = new ProcessPost();
-	private final ProcessPut __processPut = new ProcessPut();
-	private final ProcessGet __processGet = new ProcessGet();
-	private final ProcessDelete __processDelete = new ProcessDelete();
+	private ProcessPost __processPost;
+	private ProcessPut __processPut;
+	private ProcessGet __processGet;
+	private ProcessDelete __processDelete;
 
-	public TServlet(IEventManager eventManager) {
+	public TServlet(IEventManager eventManager, List<Path> paths) {
 		__eventManager = eventManager;
+		for (var path : paths) {
+			switch (path.getMethod()) {
+			case POST:
+				__processPost = new ProcessPost(path.getUri());
+				break;
+			case PUT:
+				__processPut = new ProcessPut(path.getUri());
+				break;
+			case GET:
+				__processGet = new ProcessGet(path.getUri());
+				break;
+			case DELETE:
+				__processDelete = new ProcessDelete(path.getUri());
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		__processGet.handle(request, response);
+		if (__processGet != null) {
+			__processGet.handle(request, response);
+		} else {
+
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		__processPost.handle(request, response);
+		if (__processPost != null) {
+			__processPost.handle(request, response);
+		} else {
+
+		}
 	}
 
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		__processPut.handle(request, response);
+		if (__processPut != null) {
+			__processPut.handle(request, response);
+		} else {
+
+		}
 	}
 
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		__processDelete.handle(request, response);
+		if (__processDelete != null) {
+			__processDelete.handle(request, response);
+		} else {
+
+		}
 	}
 
 	private final class ProcessPost extends BaseProcessServlet {
+
+		public ProcessPost(String path) {
+			super(path);
+		}
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
@@ -87,6 +128,10 @@ public final class TServlet extends BaseServlet {
 
 	private final class ProcessPut extends BaseProcessServlet {
 
+		public ProcessPut(String path) {
+			super(path);
+		}
+
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.PUT, request, response);
@@ -99,6 +144,10 @@ public final class TServlet extends BaseServlet {
 
 	private final class ProcessGet extends BaseProcessServlet {
 
+		public ProcessGet(String path) {
+			super(path);
+		}
+
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST, RestMethod.GET, request, response);
@@ -110,6 +159,10 @@ public final class TServlet extends BaseServlet {
 	}
 
 	private final class ProcessDelete extends BaseProcessServlet {
+
+		public ProcessDelete(String path) {
+			super(path);
+		}
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
