@@ -37,11 +37,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.configuration.Path;
 import com.tenio.configuration.constant.Constants;
+import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.RestMethod;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.http.servlet.PingServlet;
-import com.tenio.network.http.servlet.main.MainServlet;
+import com.tenio.network.http.servlet.TServlet;
 import com.tenio.task.schedule.ITask;
 
 /**
@@ -80,16 +81,16 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 
 		for (Map.Entry<String, List<Path>> entry : servlets.entrySet()) {
 			if (__isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
-				return "";
+				return ErrorMsg.DUPLICATED_URI_AND_METHOD_POST;
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.PUT, entry.getValue())) {
-				return "";
+				return ErrorMsg.DUPLICATED_URI_AND_METHOD_PUT;
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.GET, entry.getValue())) {
-				return "";
+				return ErrorMsg.DUPLICATED_URI_AND_METHOD_GET;
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.DELETE, entry.getValue())) {
-				return "";
+				return ErrorMsg.DUPLICATED_URI_AND_METHOD_DELETE;
 			}
 		}
 
@@ -102,11 +103,11 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		// Configuration
 		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
 		servlets.forEach((uri, list) -> {
-			context.addServlet(new ServletHolder(new MainServlet(__eventManager)), uri);
+			context.addServlet(new ServletHolder(new TServlet(__eventManager)), uri);
 		});
 
 		__server.setHandler(context);
-		
+
 		return null;
 	}
 

@@ -89,5 +89,13 @@ public final class ErrorMsg {
 	public static final String START_NO_RECONNECTION_HANDLER = "start_no_reconnection_handler";
 
 	public static final String START_NO_HTTP_HANDLER = "start_no_http_handler";
+	
+	public static final String DUPLICATED_URI_AND_METHOD_POST = "duplicated_uri_and_method_post";
+	
+	public static final String DUPLICATED_URI_AND_METHOD_PUT = "duplicated_uri_and_method_put";
+	
+	public static final String DUPLICATED_URI_AND_METHOD_GET = "duplicated_uri_and_method_get";
+	
+	public static final String DUPLICATED_URI_AND_METHOD_DELETE = "duplicated_uri_and_method_delete";
 
 }

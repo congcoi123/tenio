@@ -40,6 +40,7 @@ import com.tenio.entity.manager.PlayerManager;
 import com.tenio.entity.manager.RoomManager;
 import com.tenio.event.EventManager;
 import com.tenio.event.IEventManager;
+import com.tenio.exception.DuplicatedUriAndMethodException;
 import com.tenio.exception.NotDefinedSocketConnectionException;
 import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
@@ -269,6 +270,7 @@ public final class Server extends AbstractLogger implements IServer {
 			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			var error = http.setup();
 			if (error != null) {
+				new DuplicatedUriAndMethodException(error);
 				return error;
 			}
 			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());

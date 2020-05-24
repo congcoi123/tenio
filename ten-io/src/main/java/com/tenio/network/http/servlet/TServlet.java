@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.network.http.servlet.main;
+package com.tenio.network.http.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +36,7 @@ import com.tenio.network.http.servlet.base.BaseServlet;
 /**
  * @author kong
  */
-public final class MainServlet extends BaseServlet {
+public final class TServlet extends BaseServlet {
 	/**
 	 * 
 	 */
@@ -49,7 +49,7 @@ public final class MainServlet extends BaseServlet {
 	private final ProcessGet __processGet = new ProcessGet();
 	private final ProcessDelete __processDelete = new ProcessDelete();
 
-	public MainServlet(IEventManager eventManager) {
+	public TServlet(IEventManager eventManager) {
 		__eventManager = eventManager;
 	}
 
