@@ -38,10 +38,13 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - [TenIO Phaserjs](https://github.com/congcoi123/tenio-phaserjs.git)
 
 ## Dependencies
-- netty-all 4.1.42.Final
+- guava 29.0-jre
+- netty-all 4.1.50.Final
+- servlet-api 2.5
+- log4j-core 2.13.3
+- jetty-server 9.4.29.v20200521
+- jetty-servlet 9.4.29.v20200521
 - msgpack 0.6.12
-- guava 25.1-jre
-- log4j-core 2.11.1
 
 ## Requirements
 - Java 11
