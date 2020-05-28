@@ -5,7 +5,7 @@
 
 	<groupId>io.github.congcoi123</groupId>
 	<artifactId>tenio</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -61,10 +61,6 @@
 		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
 		<jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 		<coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
-
-		<!-- Sonar -->
-		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.jacoco.outputDirectory>${project.reporting.outputEncoding}</sonar.jacoco.outputDirectory>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
