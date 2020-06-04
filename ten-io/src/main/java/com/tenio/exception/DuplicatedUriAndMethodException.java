@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class DuplicatedUriAndMethodException extends RuntimeException {
+public final class DuplicatedUriAndMethodException extends Exception {
 	/**
 	 * 
 	 */

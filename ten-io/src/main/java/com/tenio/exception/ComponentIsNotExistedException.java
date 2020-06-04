@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class ComponentIsNotExistedException extends RuntimeException {
+public final class ComponentIsNotExistedException extends RuntimeException {
 	/**
 	 * 
 	 */

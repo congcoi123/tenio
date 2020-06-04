@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class RunningScheduledTaskException extends RuntimeException {
+public final class RunningScheduledTaskException extends RuntimeException {
 	/**
 	 * 
 	 */

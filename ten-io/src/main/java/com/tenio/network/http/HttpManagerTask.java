@@ -37,9 +37,9 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.configuration.Path;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.RestMethod;
 import com.tenio.event.IEventManager;
+import com.tenio.exception.DuplicatedUriAndMethodException;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.http.servlet.PingServlet;
 import com.tenio.network.http.servlet.TServlet;
@@ -66,7 +66,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		__paths = paths;
 	}
 
-	public String setup() {
+	public void setup() throws DuplicatedUriAndMethodException {
 		// Collect the same URI path for one servlet
 		Map<String, List<Path>> servlets = new HashMap<String, List<Path>>();
 		for (var path : __paths) {
@@ -81,16 +81,16 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 
 		for (var entry : servlets.entrySet()) {
 			if (__isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
-				return ErrorMsg.DUPLICATED_URI_AND_METHOD_POST;
+				throw new DuplicatedUriAndMethodException("post");
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.PUT, entry.getValue())) {
-				return ErrorMsg.DUPLICATED_URI_AND_METHOD_PUT;
+				throw new DuplicatedUriAndMethodException("put");
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.GET, entry.getValue())) {
-				return ErrorMsg.DUPLICATED_URI_AND_METHOD_GET;
+				throw new DuplicatedUriAndMethodException("get");
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.DELETE, entry.getValue())) {
-				return ErrorMsg.DUPLICATED_URI_AND_METHOD_DELETE;
+				throw new DuplicatedUriAndMethodException("delete");
 			}
 		}
 
@@ -107,8 +107,6 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		});
 
 		__server.setHandler(context);
-
-		return null;
 	}
 
 	@Override

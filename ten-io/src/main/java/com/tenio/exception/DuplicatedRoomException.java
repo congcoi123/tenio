@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class DuplicatedRoomException extends RuntimeException {
+public final class DuplicatedRoomException extends RuntimeException {
 	/**
 	 * 
 	 */

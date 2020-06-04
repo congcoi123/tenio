@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class NullRoomException extends RuntimeException {
+public final class NullRoomException extends RuntimeException {
 	/**
 	 * 
 	 */

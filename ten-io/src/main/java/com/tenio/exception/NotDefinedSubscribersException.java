@@ -28,7 +28,7 @@ import com.tenio.configuration.constant.TEvent;
 /**
  * @author kong
  */
-public class NotDefinedSubscribersException extends RuntimeException {
+public final class NotDefinedSubscribersException extends Exception {
 	/**
 	 * 
 	 */
