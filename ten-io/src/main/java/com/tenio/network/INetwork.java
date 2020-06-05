@@ -44,8 +44,12 @@ public interface INetwork {
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
 	 * 
-	 * @throws InterruptedException
-	 * @throws IOException
+	 * @throws InterruptedException thrown when a thread is waiting, sleeping, or
+	 *                              otherwise occupied, and the thread is
+	 *                              interrupted, either before or during the
+	 *                              activity.
+	 * @throws IOException          signals that an I/O exception of some sort has
+	 *                              occurred.
 	 */
 	void start(IEventManager eventManager, BaseConfiguration configuration) throws IOException, InterruptedException;
 
