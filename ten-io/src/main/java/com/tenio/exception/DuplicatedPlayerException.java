@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class DuplicatedPlayerException extends RuntimeException {
+public final class DuplicatedPlayerException extends RuntimeException {
 	/**
 	 * 
 	 */

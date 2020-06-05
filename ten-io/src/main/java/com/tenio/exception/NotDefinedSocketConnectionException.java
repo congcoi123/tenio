@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class NotDefinedSocketConnectionException extends RuntimeException {
+public final class NotDefinedSocketConnectionException extends Exception {
 	/**
 	 * 
 	 */

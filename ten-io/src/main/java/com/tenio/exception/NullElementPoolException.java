@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class NullElementPoolException extends RuntimeException {
+public final class NullElementPoolException extends RuntimeException {
 	/**
 	 * 
 	 */

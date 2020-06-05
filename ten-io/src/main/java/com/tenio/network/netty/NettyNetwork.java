@@ -30,7 +30,6 @@ import java.util.List;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.Sock;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.IEventManager;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.network.INetwork;
@@ -64,7 +63,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private List<Channel> __websockets;
 
 	@Override
-	public String start(IEventManager eventManager, BaseConfiguration configuration) {
+	public void start(IEventManager eventManager, BaseConfiguration configuration) throws IOException, InterruptedException {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 
@@ -78,47 +77,30 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		var socketPorts = configuration.getSocketPorts();
 		for (int index = 0; index < socketPorts.size(); index++) {
 			var socket = socketPorts.get(index);
-			try {
-				switch (socket.getType()) {
-				case SOCKET:
-					__sockets.add(__bindTCP(index, eventManager, configuration, socket));
-					break;
-				case DATAGRAM:
-					__sockets.add(__bindUDP(index, eventManager, configuration, socket));
-					break;
-				default:
-					break;
-				}
-			} catch (IOException e) {
-				error(e, "port: ", socket.getPort());
-				return ErrorMsg.IO_EXCEPTION;
-			} catch (InterruptedException e) {
-				error(e, "port: ", socket.getPort());
-				return ErrorMsg.INTERRUPTED_EXCEPTION;
+			switch (socket.getType()) {
+			case SOCKET:
+				__sockets.add(__bindTCP(index, eventManager, configuration, socket));
+				break;
+			case DATAGRAM:
+				__sockets.add(__bindUDP(index, eventManager, configuration, socket));
+				break;
+			default:
+				break;
 			}
 		}
 
 		var webSocketPorts = configuration.getWebSocketPorts();
 		for (int index = 0; index < webSocketPorts.size(); index++) {
 			var socket = webSocketPorts.get(index);
-			try {
-				switch (socket.getType()) {
-				case WEB_SOCKET:
-					__websockets.add(__bindWS(index, eventManager, configuration, socket));
-					break;
-				default:
-					break;
-				}
-			} catch (IOException e) {
-				error(e, "port: ", socket.getPort());
-				return ErrorMsg.IO_EXCEPTION;
-			} catch (InterruptedException e) {
-				error(e, "port: ", socket.getPort());
-				return ErrorMsg.INTERRUPTED_EXCEPTION;
+			switch (socket.getType()) {
+			case WEB_SOCKET:
+				__websockets.add(__bindWS(index, eventManager, configuration, socket));
+				break;
+			default:
+				break;
 			}
 		}
 
-		return null;
 	}
 
 	/**

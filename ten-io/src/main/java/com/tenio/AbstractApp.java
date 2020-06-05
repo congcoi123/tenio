@@ -23,7 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio;
 
+import java.io.IOException;
+
 import com.tenio.configuration.BaseConfiguration;
+import com.tenio.exception.DuplicatedUriAndMethodException;
+import com.tenio.exception.NotDefinedSocketConnectionException;
+import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 import com.tenio.logger.AbstractLogger;
 import com.tenio.server.Server;
@@ -42,7 +47,11 @@ public abstract class AbstractApp extends AbstractLogger {
 	public void start() {
 		var server = Server.getInstance();
 		server.setExtension(getExtension());
-		if (server.start(getConfiguration()) != null) {
+		try {
+			server.start(getConfiguration());
+		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
+				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
+			error(e, "Application start");
 			server.shutdown();
 		}
 	}

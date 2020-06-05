@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class DuplicatedEntityException extends RuntimeException {
+public final class DuplicatedEntityException extends RuntimeException {
 	/**
 	 * 
 	 */

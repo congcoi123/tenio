@@ -23,18 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.network;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import com.tenio.configuration.Configuration;
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.EventManager;
 import com.tenio.event.IEventManager;
 import com.tenio.network.netty.NettyNetwork;
@@ -42,7 +39,6 @@ import com.tenio.network.netty.NettyNetwork;
 /**
  * @author kong
  */
-@TestMethodOrder(OrderAnnotation.class)
 public final class NetworkTest {
 
 	private INetwork __network;
@@ -50,23 +46,18 @@ public final class NetworkTest {
 	private Configuration __configuration;
 
 	@BeforeEach
-	public void initialize() {
+	public void initialize() throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__eventManager = new EventManager();
 		__configuration = new Configuration("TenIOConfig.example.xml");
-	}
-
-	@Test
-	@Order(1)
-	public void startNetworkShouldReturnNull() {
-		assertNull(__network.start(__eventManager, __configuration));
-	}
-
-	@Test
-	@Order(2)
-	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
 		__network.start(__eventManager, __configuration);
-		assertEquals(ErrorMsg.IO_EXCEPTION, __network.start(__eventManager, __configuration));
+	}
+
+	@Test
+	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
+		assertThrows(IOException.class, () -> {
+			__network.start(__eventManager, __configuration);
+		});
 	}
 
 	@AfterEach

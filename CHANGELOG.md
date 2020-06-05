@@ -1,5 +1,10 @@
 # CHANGELOG
 
+#### 3.1.1 2020-06-05 Bugfix release
+Bugfix release
+- Updated all dependencies
+- Refactored exception classes
+
 ### 3.1.0 2020-05-22 Feature release
 Feature release
 - Standardized package names and class names

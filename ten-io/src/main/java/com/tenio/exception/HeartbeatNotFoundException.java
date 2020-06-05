@@ -26,7 +26,7 @@ package com.tenio.exception;
 /**
  * @author kong
  */
-public class HeartbeatNotFoundException extends RuntimeException {
+public final class HeartbeatNotFoundException extends Exception {
 	/**
 	 * 
 	 */

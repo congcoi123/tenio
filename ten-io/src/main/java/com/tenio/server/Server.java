@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
+import java.io.IOException;
+
 import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
@@ -30,7 +32,6 @@ import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
@@ -113,7 +114,8 @@ public final class Server extends AbstractLogger implements IServer {
 	private INetwork __network;
 
 	@Override
-	public String start(BaseConfiguration configuration) {
+	public void start(BaseConfiguration configuration) throws IOException, InterruptedException,
+			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Starting ...");
 
 		// managements
@@ -127,31 +129,19 @@ public final class Server extends AbstractLogger implements IServer {
 		getExtension().initialize();
 
 		// server need at least one connection to start up
-		String error = __checkDefinedMainSocketConnection(configuration);
-		if (error != null) {
-			return error;
-		}
+		__checkDefinedMainSocketConnection(configuration);
 
 		// http checking
-		error = __checkSubscriberHttpHandler(configuration);
-		if (error != null) {
-			return error;
-		}
+		__checkSubscriberHttpHandler(configuration);
 
 		// schedules
 		__createAllSchedules(configuration);
 
 		// http handler
-		error = __createHttpManagers(configuration);
-		if (error != null) {
-			return error;
-		}
-		
+		__createHttpManagers(configuration);
+
 		// start network
-		error = __startNetwork(configuration);
-		if (error != null) {
-			return error;
-		}
+		__startNetwork(configuration);
 
 		// initialize heart-beat
 		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
@@ -159,28 +149,20 @@ public final class Server extends AbstractLogger implements IServer {
 		}
 
 		// check subscribers must handle subscribers for UDP attachment
-		error = __checkSubscriberSubConnectionAttach(configuration);
-		if (error != null) {
-			return error;
-		}
+		__checkSubscriberSubConnectionAttach(configuration);
 
 		// must handle subscribers for reconnection
-		error = __checkSubscriberReconnection(configuration);
-		if (error != null) {
-			return error;
-		}
+		__checkSubscriberReconnection(configuration);
 
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
 		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
-
-		return null;
 	}
 
-	private String __startNetwork(BaseConfiguration configuration) {
+	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
-		return __network.start(__eventManager, configuration);
+		__network.start(__eventManager, configuration);
 	}
 
 	@Override
@@ -208,50 +190,40 @@ public final class Server extends AbstractLogger implements IServer {
 		__extension = extension;
 	}
 
-	private String __checkSubscriberReconnection(BaseConfiguration configuration) {
+	private void __checkSubscriberReconnection(BaseConfiguration configuration) throws NotDefinedSubscribersException {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
 			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-				var e = new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
+				throw new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
 						TEvent.PLAYER_RECONNECT_SUCCESS);
-				error(e);
-				return ErrorMsg.START_NO_RECONNECTION_HANDLER;
 			}
 		}
-		return null;
 	}
 
-	private String __checkSubscriberSubConnectionAttach(BaseConfiguration configuration) {
+	private void __checkSubscriberSubConnectionAttach(BaseConfiguration configuration)
+			throws NotDefinedSubscribersException {
 		if (configuration.getSocketPorts().size() > 1 || configuration.getWebSocketPorts().size() > 1) {
 			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_REQUEST)
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_SUCCESS)
 					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_FAILED)) {
-				var e = new NotDefinedSubscribersException(TEvent.ATTACH_CONNECTION_REQUEST,
+				throw new NotDefinedSubscribersException(TEvent.ATTACH_CONNECTION_REQUEST,
 						TEvent.ATTACH_CONNECTION_SUCCESS, TEvent.ATTACH_CONNECTION_FAILED);
-				error(e);
-				return ErrorMsg.START_NO_SUBCONNECTION_HANDLER;
 			}
 		}
-		return null;
 	}
 
-	private String __checkDefinedMainSocketConnection(BaseConfiguration configuration) {
+	private void __checkDefinedMainSocketConnection(BaseConfiguration configuration)
+			throws NotDefinedSocketConnectionException {
 		if (configuration.getSocketPorts().isEmpty() && configuration.getWebSocketPorts().isEmpty()) {
-			var e = new NotDefinedSocketConnectionException();
-			error(e);
-			return ErrorMsg.START_NO_CONNECTION;
+			throw new NotDefinedSocketConnectionException();
 		}
-		return null;
 	}
 
-	private String __checkSubscriberHttpHandler(BaseConfiguration configuration) {
+	private void __checkSubscriberHttpHandler(BaseConfiguration configuration) throws NotDefinedSubscribersException {
 		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST)
 				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_HANDLER))) {
-			var e = new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
-			error(e);
-			return ErrorMsg.START_NO_HTTP_HANDLER;
+			throw new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
 		}
-		return null;
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
@@ -265,15 +237,10 @@ public final class Server extends AbstractLogger implements IServer {
 				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
 	}
 
-	private String __createHttpManagers(BaseConfiguration configuration) {
+	private String __createHttpManagers(BaseConfiguration configuration) throws DuplicatedUriAndMethodException {
 		for (var port : configuration.getHttpPorts()) {
 			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
-			var error = http.setup();
-			if (error != null) {
-				var e = new DuplicatedUriAndMethodException(error);
-				error(e);
-				return error;
-			}
+			http.setup();
 			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
 		}
 		return null;

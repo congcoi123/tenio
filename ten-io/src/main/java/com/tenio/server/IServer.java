@@ -23,14 +23,18 @@ THE SOFTWARE.
 */
 package com.tenio.server;
 
+import java.io.IOException;
+
 import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
 import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
-import com.tenio.configuration.constant.ErrorMsg;
 import com.tenio.event.IEventManager;
+import com.tenio.exception.DuplicatedUriAndMethodException;
+import com.tenio.exception.NotDefinedSocketConnectionException;
+import com.tenio.exception.NotDefinedSubscribersException;
 import com.tenio.extension.IExtension;
 
 /**
@@ -48,10 +52,14 @@ interface IServer {
 	 * 
 	 * @param configuration, see {@link BaseConfiguration}
 	 * 
-	 * @return <b>null</b> if the server can start normally, {@link ErrorMsg}
-	 *         otherwise
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws NotDefinedSocketConnectionException
+	 * @throws NotDefinedSubscribersException
+	 * @throws DuplicatedUriAndMethodException
 	 */
-	String start(BaseConfiguration configuration);
+	void start(BaseConfiguration configuration) throws IOException, InterruptedException,
+			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
 
 	/**
 	 * Shut down the server and close all services
