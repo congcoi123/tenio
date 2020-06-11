@@ -1,14 +1,46 @@
-# TenIO
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg)](https://mvnrepository.com/artifact/io.github.congcoi123/tenio)
-[![Javadocs](https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg)](https://javadoc.io/doc/io.github.congcoi123/tenio)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/congcoi123/tenio.svg?branch=master)](https://travis-ci.org/github/congcoi123/tenio)
-[![Coverage Status](https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master)](https://coveralls.io/github/congcoi123/tenio)
-[![GitHub last commit](https://img.shields.io/github/last-commit/congcoi123/tenio)](#)
-[![GitHub issues](https://img.shields.io/github/issues/congcoi123/tenio)](https://github.com/congcoi123/tenio/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Join Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ten-io/community?source=orgpage)
+<p align="center">
+    <img src="assets/tenio-github-logo.png">
+</p>
+<p align="center">
+    <a href="https://mvnrepository.com/artifact/io.github.congcoi123/tenio">
+        <img src="https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg"
+             alt="maven-central">
+    </a>
+    <a href="https://javadoc.io/doc/io.github.congcoi123/tenio">
+        <img src="https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg"
+             alt="javadoc">
+    </a>
+    <a href="LICENSE">
+        <img src="https://img.shields.io/badge/license-MIT-blue.svg"
+             alt="license">
+    </a>
+    <a href="https://travis-ci.org/github/congcoi123/tenio">
+        <img src="https://travis-ci.org/congcoi123/tenio.svg?branch=master"
+             alt="build">
+    </a>
+    <a href="https://coveralls.io/github/congcoi123/tenio">
+        <img src="https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master"
+             alt="coverage">
+    </a>
+    <a href="#">
+        <img src="https://img.shields.io/github/last-commit/congcoi123/tenio"
+             alt="last-commit">
+    </a>
+    <a href="https://github.com/congcoi123/tenio/issues">
+        <img src="https://img.shields.io/github/issues/congcoi123/tenio"
+             alt="issues">
+    </a>
+    <a href="CONTRIBUTING.md">
+        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
+             alt="contributing">
+    </a>
+    <a href="https://gitter.im/ten-io/community?source=orgpage">
+        <img src="https://badges.gitter.im/Join%20Chat.svg"
+             alt="join-chat">
+    </a>
+</p>
 
+# TenIO
 `TenIO` is a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games. It supports UDP and TCP transports which are handled by [Netty](https://netty.io/) for high-speed network transmission. It uses [MsgPack](https://msgpack.org/index.html) for compressing data so that can be transferred quickly through the network. This framework can help you quickly create a game server or integrate it into your system.
 
 ## Features
