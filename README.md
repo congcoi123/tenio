@@ -51,8 +51,16 @@
 - Have simple existing game clients for rapid development.
 
 ## Showcases
-- [Gold Miner Online](https://www.youtube.com/watch?v=BBv5IQFHLjc)
-- [Retro Brick Game Online](https://www.youtube.com/watch?v=nojkJMAfG6Y)
+<p align="center">
+    <a href="https://www.youtube.com/watch?v=BBv5IQFHLjc">
+        <img src="assets/gold-miner-online-logo.png" alt="gold miner online"><br/>
+        <sub><b>Gold Miner Online</b></sub>
+    </a>
+    <a href="https://www.youtube.com/watch?v=nojkJMAfG6Y">
+        <img src="assets/retro-brick-online-logo.png" alt="retro brick game online"><br/>
+        <sub><b>Retro Brick Game Online</b></sub>
+    </a>
+</p>
 
 ## First glimpse
 - Simple Movement Simulation  
@@ -64,10 +72,24 @@
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
 ## Clients
-- [TenIO Cocos2dx](https://github.com/congcoi123/tenio-cocos2dx.git)
-- [TenIO Libgdx](https://github.com/congcoi123/tenio-libgdx.git)
-- [TenIO Unity](https://github.com/congcoi123/tenio-unity.git)
-- [TenIO Phaserjs](https://github.com/congcoi123/tenio-phaserjs.git)
+<p align="center">
+    <a href="https://github.com/congcoi123/tenio-cocos2dx.git">
+        <img src="assets/cocos2dx-logo.png" alt="tenio cocos2dx"><br/>
+        <sub><b>TenIO Cocos2dx</b></sub>
+    </a>
+    <a href="https://github.com/congcoi123/tenio-libgdx.git">
+        <img src="assets/libgdx-logo.png" alt="tenio libgdx"><br/>
+        <sub><b>TenIO Libgdx</b></sub>
+    </a>
+    <a href="https://github.com/congcoi123/tenio-unity.git">
+        <img src="assets/untiy-logo.png" alt="tenio untiy"><br/>
+        <sub><b>TenIO Unity</b></sub>
+    </a>
+    <a href="https://github.com/congcoi123/tenio-phaserjs.git">
+        <img src="assets/phaserjs-logo.png" alt="tenio phaserjs"><br/>
+        <sub><b>TenIO Phaserjs</b></sub>
+    </a>
+</p>
 
 ## Dependencies
 - guava 29.0-jre
