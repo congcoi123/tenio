@@ -51,14 +51,8 @@
 - Have simple existing game clients for rapid development.
 
 ## Showcases
-<p align="center">
-    <a href="https://www.youtube.com/watch?v=BBv5IQFHLjc">
-        <img src="assets/gold-miner-online-logo.png" alt="gold miner online">
-    </a>
-    <a href="https://www.youtube.com/watch?v=nojkJMAfG6Y">
-        <img src="assets/retro-brick-online-logo.png" alt="retro brick game online">
-    </a>
-</p>
+| [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## First glimpse
 - Simple Movement Simulation  
