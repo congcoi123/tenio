@@ -54,11 +54,11 @@
 <p align="center">
     <a href="https://www.youtube.com/watch?v=BBv5IQFHLjc">
         <img src="assets/gold-miner-online-logo.png" alt="gold miner online"><br/>
-        <sub><b>Gold Miner Online</b></sub>
+        <p><b>Gold Miner Online</b></p>
     </a>
     <a href="https://www.youtube.com/watch?v=nojkJMAfG6Y">
         <img src="assets/retro-brick-online-logo.png" alt="retro brick game online"><br/>
-        <sub><b>Retro Brick Game Online</b></sub>
+        <p><b>Retro Brick Game Online</b></p>
     </a>
 </p>
 
@@ -75,19 +75,19 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 <p align="center">
     <a href="https://github.com/congcoi123/tenio-cocos2dx.git">
         <img src="assets/cocos2dx-logo.png" alt="tenio cocos2dx"><br/>
-        <sub><b>TenIO Cocos2dx</b></sub>
+        <p><b>TenIO Cocos2dx</b></p>
     </a>
     <a href="https://github.com/congcoi123/tenio-libgdx.git">
         <img src="assets/libgdx-logo.png" alt="tenio libgdx"><br/>
-        <sub><b>TenIO Libgdx</b></sub>
+        <p><b>TenIO Libgdx</b></p>
     </a>
     <a href="https://github.com/congcoi123/tenio-unity.git">
-        <img src="assets/untiy-logo.png" alt="tenio untiy"><br/>
-        <sub><b>TenIO Unity</b></sub>
+        <img src="assets/unity-logo.png" alt="tenio unity"><br/>
+        <p><b>TenIO Unity</b></p>
     </a>
     <a href="https://github.com/congcoi123/tenio-phaserjs.git">
         <img src="assets/phaserjs-logo.png" alt="tenio phaserjs"><br/>
-        <sub><b>TenIO Phaserjs</b></sub>
+        <p><b>TenIO Phaserjs</b></p>
     </a>
 </p>
 
