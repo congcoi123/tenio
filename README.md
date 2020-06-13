@@ -3,40 +3,31 @@
 </p>
 <p align="center">
     <a href="https://mvnrepository.com/artifact/io.github.congcoi123/tenio">
-        <img src="https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg"
-             alt="maven-central">
+        <img src="https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg">
     </a>
     <a href="https://javadoc.io/doc/io.github.congcoi123/tenio">
-        <img src="https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg"
-             alt="javadoc">
+        <img src="https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg">
     </a>
     <a href="LICENSE">
-        <img src="https://img.shields.io/badge/license-MIT-blue.svg"
-             alt="license">
+        <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
     <a href="https://travis-ci.org/github/congcoi123/tenio">
-        <img src="https://travis-ci.org/congcoi123/tenio.svg?branch=master"
-             alt="build">
+        <img src="https://travis-ci.org/congcoi123/tenio.svg?branch=master">
     </a>
     <a href="https://coveralls.io/github/congcoi123/tenio">
-        <img src="https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master"
-             alt="coverage">
+        <img src="https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master">
     </a>
     <a href="#">
-        <img src="https://img.shields.io/github/last-commit/congcoi123/tenio"
-             alt="last-commit">
+        <img src="https://img.shields.io/github/last-commit/congcoi123/tenio">
     </a>
     <a href="https://github.com/congcoi123/tenio/issues">
-        <img src="https://img.shields.io/github/issues/congcoi123/tenio"
-             alt="issues">
+        <img src="https://img.shields.io/github/issues/congcoi123/tenio">
     </a>
     <a href="CONTRIBUTING.md">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
-             alt="contributing">
+        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
     <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg"
-             alt="join-chat">
+        <img src="https://badges.gitter.im/Join%20Chat.svg">
     </a>
 </p>
 
@@ -64,20 +55,8 @@
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
 ## Clients
-<p align="center">
-    <a href="https://github.com/congcoi123/tenio-cocos2dx.git">
-        <img src="assets/cocos2dx-logo.png" alt="tenio cocos2dx">
-    </a>
-    <a href="https://github.com/congcoi123/tenio-libgdx.git">
-        <img src="assets/libgdx-logo.png" alt="tenio libgdx">
-    </a>
-    <a href="https://github.com/congcoi123/tenio-unity.git">
-        <img src="assets/unity-logo.png" alt="tenio unity">
-    </a>
-    <a href="https://github.com/congcoi123/tenio-phaserjs.git">
-        <img src="assets/phaserjs-logo.png" alt="tenio phaserjs">
-    </a>
-</p>
+| [<img src="assets/cocos2dx-logo.png" width="100px;"/><br /><sub><b>TenIO Cocos2dx</b></sub>](https://github.com/congcoi123/tenio-cocos2dx.git)<br />        | [<img src="assets/libgdx-logo.png" width="150px;"/><br /><sub><b>TenIO Libgdx</b></sub>](https://github.com/congcoi123/tenio-libgdx.git)<br /> | [<img src="assets/unity-logo.png" width="150px;"/><br /><sub><b>TenIO Unity</b></sub>](https://github.com/congcoi123/tenio-unity.git)<br />          | [<img src="assets/phaserjs-logo.png" width="150px;"/><br /><sub><b>TenIO Phaserjs</b></sub>](https://github.com/congcoi123/tenio-phaserjs.git)<br /> |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## Dependencies
 - guava 29.0-jre
