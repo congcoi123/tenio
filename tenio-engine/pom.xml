@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.github.congcoi123</groupId>
-	<artifactId>tenio-network</artifactId>
+	<artifactId>tenio-engine</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 

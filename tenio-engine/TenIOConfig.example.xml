@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server>
+
+	<Properties>
+		<!-- The server name -->
+		<Property name="name">TenIO</Property>
+		<!-- The server id (module name) -->
+		<Property name="id">tenio</Property>
+		<!-- This current version code of your server in integer type (can be compared) -->
+		<Property name="versionCode">1</Property>
+		<!-- This current version name of your server in string type -->
+		<Property name="versionName">1.0</Property>
+	</Properties>
+
+	<Network>
+		<Sockets>
+			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
+			<Port name="move" type="udp">8033</Port>
+			<Port name="chat" type="tcp">8034</Port>
+		</Sockets>
+		<WebSockets>
+			<Port name="main">8035</Port> <!-- The first element is always treated the main connection -->
+			<Port name="move">8036</Port>
+			<Port name="chat">8037</Port>
+		</WebSockets>
+		<Http>
+			<Port name="main" value="9999">
+				<Path name="get" desc="retrieve a value" version="1"
+					method="get">/retrieve/*</Path>
+				<Path name="add" desc="add a new value" version="1"
+					method="post">/add/*</Path>
+				<Path name="change" desc="change a current value" version="1"
+					method="put">/change/*</Path>
+				<Path name="delete" desc="delete a existing value" version="1"
+					method="delete">/delete/*</Path>
+			</Port>
+		</Http>
+	</Network>
+
+	<Configuration>
+		<Properties>
+			<!-- When the server get disconnection of one client, can be hold its 
+				player instance until timeout -->
+			<Property name="keepPlayerOnDisconnect">true</Property>
+			<!-- The maximum number of heartbeats which game can handle -->
+			<Property name="maxHeartbeat">5</Property>		<!-- Null with value -1 -->
+			<!-- The maximum number of players which game can handle -->
+			<Property name="maxPlayer">1000</Property>
+			<!-- The max IDLE time in seconds which server can wait from the last 
+				getting message from client -->
+			<Property name="idleReader">180</Property>		<!-- Unit: Seconds -->
+			<!-- The max IDLE time in seconds which server can wait from the last 
+				sending message to client -->
+			<Property name="idleWriter">60</Property>		<!-- Unit: Seconds -->
+			<!-- Get the period checking in seconds which server can keep the empty 
+				room -->
+			<Property name="emptyRoomScan">30</Property>	<!-- Unit: Seconds -->
+			<!-- The period checking player time out in seconds -->
+			<Property name="timeoutScan">45</Property>		<!-- Unit: Seconds -->
+			<!-- The period checking CCU in seconds -->
+			<Property name="ccuScan">60</Property>			<!-- Unit: Seconds -->
+		</Properties>
+	</Configuration>
+
+	<!-- Your customize configurations -->
+	<Extension>
+		<Properties>
+			<Property name="customValue1">String</Property>
+			<Property name="customValue2">1</Property>
+			<Property name="customValue3">1.5</Property>
+			<Property name="customValue4">True</Property>
+		</Properties>
+	</Extension>
+
+</Server>
