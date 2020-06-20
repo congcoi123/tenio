@@ -25,8 +25,8 @@ package com.tenio.engine.fsm.entity;
 
 import java.util.UUID;
 
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.fsm.MessageDispatcher;
-import com.tenio.logger.AbstractLogger;
 
 /**
  * An entity is an element of one game, such as a hero, a dragon, a wall, ...

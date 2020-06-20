@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.engine.fsm.entity;
 
+import com.tenio.engine.utility.TimeUtility;
 import com.tenio.entity.element.TObject;
-import com.tenio.utility.TimeUtility;
 
 /**
  * This object is used for communication between entities.

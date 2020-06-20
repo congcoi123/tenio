@@ -32,10 +32,10 @@ import java.util.concurrent.Future;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.configuration.BaseConfiguration;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.engine.configuration.BaseConfiguration;
+import com.tenio.engine.exception.HeartbeatNotFoundException;
 import com.tenio.entity.element.TObject;
-import com.tenio.exception.HeartbeatNotFoundException;
-import com.tenio.logger.AbstractLogger;
 
 /**
  * The Java ExecutorService is a construct that allows you to pass a task to be

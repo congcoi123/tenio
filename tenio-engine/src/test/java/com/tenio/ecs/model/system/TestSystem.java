@@ -30,7 +30,7 @@ import com.tenio.engine.ecs.system.IExecuteSystem;
 import com.tenio.engine.ecs.system.IInitializeSystem;
 import com.tenio.engine.ecs.system.IRenderSystem;
 import com.tenio.engine.ecs.system.ITearDownSystem;
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * @author kong

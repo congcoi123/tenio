@@ -36,6 +36,8 @@ import com.tenio.configuration.constant.LEvent;
 import com.tenio.configuration.constant.TEvent;
 import com.tenio.entity.manager.IPlayerManager;
 import com.tenio.entity.manager.PlayerManager;
+import com.tenio.event.EventManager;
+import com.tenio.event.IEventManager;
 import com.tenio.model.PlayerModel;
 
 /**

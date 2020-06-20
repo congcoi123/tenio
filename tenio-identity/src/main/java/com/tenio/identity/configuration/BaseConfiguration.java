@@ -139,7 +139,11 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 *             in same folder with your application
 	 */
 	public BaseConfiguration(final String file) {
-		super(file);
+		try {
+			__load(file);
+		} catch (Exception e) {
+			error(e, "file: ", file);
+		}
 	}
 
 	/**
@@ -150,8 +154,7 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 * @throws Exception some exceptions, which can be occurred in reading or
 	 *                   parsing the file
 	 */
-	@Override
-	protected void _load(final String file) throws Exception {
+	private void __load(final String file) throws Exception {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();

@@ -26,9 +26,9 @@ package com.tenio.engine.fsm;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.engine.exception.DuplicatedEntityException;
 import com.tenio.engine.fsm.entity.AbstractEntity;
-import com.tenio.exception.DuplicatedEntityException;
-import com.tenio.logger.AbstractLogger;
 
 /**
  * This class for managing entities.

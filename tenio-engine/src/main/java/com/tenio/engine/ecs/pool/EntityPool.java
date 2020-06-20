@@ -28,13 +28,13 @@ import java.util.UUID;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.configuration.constant.Constants;
+import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.Entity;
 import com.tenio.engine.ecs.base.IEntity;
-import com.tenio.exception.NullElementPoolException;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.pool.IElementPool;
 
 /**
  * The object pool mechanism for {@link IEntity}.
@@ -54,8 +54,8 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 	public EntityPool(Class<? extends Entity> clazz, ContextInfo contextInfo) {
 		__clazz = clazz;
 		__contextInfo = contextInfo;
-		__pool = new IEntity[Constants.BASE_ELEMENT_POOL];
-		__used = new boolean[Constants.BASE_ELEMENT_POOL];
+		__pool = new IEntity[CommonConstants.BASE_ELEMENT_POOL];
+		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
@@ -83,11 +83,11 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + Constants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new IEntity[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new IEntity[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -104,7 +104,7 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 		}
 
 		info("COMPONENT POOL",
-				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
+				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

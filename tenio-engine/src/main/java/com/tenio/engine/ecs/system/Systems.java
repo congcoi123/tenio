@@ -26,7 +26,7 @@ package com.tenio.engine.ecs.system;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * Systems provide a convenient way to group systems. You can add

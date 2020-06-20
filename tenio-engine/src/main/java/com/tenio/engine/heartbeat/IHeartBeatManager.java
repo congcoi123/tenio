@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.heartbeat;
 
-import com.tenio.configuration.BaseConfiguration;
+import com.tenio.engine.configuration.BaseConfiguration;
 import com.tenio.entity.element.TObject;
 
 /**

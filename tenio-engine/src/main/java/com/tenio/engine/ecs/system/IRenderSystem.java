@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.system;
 
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * Display simple shapes for debugging.

@@ -25,6 +25,7 @@ package com.tenio.identity.server;
 
 import java.io.IOException;
 
+import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
@@ -32,7 +33,6 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
 import com.tenio.identity.api.RoomApi;
-import com.tenio.identity.api.TaskApi;
 import com.tenio.identity.configuration.BaseConfiguration;
 import com.tenio.identity.configuration.constant.Constants;
 import com.tenio.identity.configuration.constant.TEvent;

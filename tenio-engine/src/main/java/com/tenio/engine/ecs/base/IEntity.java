@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.base;
 
+import com.tenio.common.pool.IElementPool;
 import com.tenio.engine.ecs.pool.ComponentPool;
-import com.tenio.pool.IElementPool;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is

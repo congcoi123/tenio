@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.identity.configuration.constant;
 
-import com.tenio.common.pool.IElementPool;
-
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
@@ -45,28 +43,6 @@ public final class Constants {
 	 * connections which connect to our server must follow this rule.
 	 */
 	public static final int HEADER_BYTES = 2;
-	/**
-	 * It is used in the FSM pattern in which all entities can communicate with
-	 * others by message in some delay time. The value below describes one entity
-	 * can send a message immediately for others. It is also used for communication
-	 * between a heart-beat with outside.
-	 */
-	public static final double SEND_MSG_IMMEDIATELY = 0;
-
-	/**
-	 * The number of elements in a bulk those created for the first time.
-	 * 
-	 * @see IElementPool
-	 */
-	public static final int BASE_ELEMENT_POOL = 32;
-
-	/**
-	 * When the desired number of elements exceeded the first configuration. The new
-	 * number of elements will be added.
-	 * 
-	 * @see IElementPool
-	 */
-	public static final int ADD_ELEMENT_POOL = 10;
 
 	/**
 	 * A unique key for the CCU scan schedule.

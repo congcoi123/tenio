@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.base;
 
-import com.tenio.exception.ComponentIsNotExistedException;
-import com.tenio.exception.DuplicatedComponentException;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.pool.IElementPool;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.pool.IElementPool;
+import com.tenio.engine.exception.ComponentIsNotExistedException;
+import com.tenio.engine.exception.DuplicatedComponentException;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is

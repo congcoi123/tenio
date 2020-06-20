@@ -26,9 +26,9 @@ package com.tenio.engine.ecs.base;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenio.common.pool.IElementPool;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
-import com.tenio.pool.IElementPool;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
