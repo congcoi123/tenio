@@ -3,14 +3,24 @@
 
 	<Properties>
 		<!-- The server name -->
-		<Property name="name">TenIO</Property>
+		<Property name="name">TenIO Identity</Property>
 		<!-- The server id (module name) -->
-		<Property name="id">tenio</Property>
+		<Property name="id">tenio-identity</Property>
 		<!-- This current version code of your server in integer type (can be compared) -->
 		<Property name="versionCode">1</Property>
 		<!-- This current version name of your server in string type -->
 		<Property name="versionName">1.0</Property>
 	</Properties>
+
+	<Middleware>
+		<Properties>
+			<Property name="middleHost">localhost</Property>
+			<Property name="middleName">tenio-identity-name</Property>
+			<Property name="middlePass">tenio-identity-pass</Property>
+			<Property name="middleTask">tenio-identity-task</Property>
+			<Property name="middleQueue">tenio-identity-queue</Property>
+		</Properties>
+	</Middleware>
 
 	<Network>
 		<Sockets>
@@ -42,8 +52,6 @@
 			<!-- When the server get disconnection of one client, can be hold its 
 				player instance until timeout -->
 			<Property name="keepPlayerOnDisconnect">true</Property>
-			<!-- The maximum number of heartbeats which game can handle -->
-			<Property name="maxHeartbeat">5</Property>		<!-- Null with value -1 -->
 			<!-- The maximum number of players which game can handle -->
 			<Property name="maxPlayer">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 

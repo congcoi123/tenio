@@ -32,7 +32,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
 import com.tenio.identity.configuration.constant.ConnectionType;
 import com.tenio.identity.configuration.constant.RestMethod;
@@ -45,10 +45,13 @@ import com.tenio.identity.configuration.constant.RestMethod;
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
  * <ul>
+ * <li><i>middleHost:</i> xxx</li>
+ * <li><i>middleName:</i> xxx</li>
+ * <li><i>middlePass:</i> xxx</li>
+ * <li><i>middleTask:</i> xxx</li>
+ * <li><i>middleQueue:</i> xxx</li>
  * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
  * client, can be hold its player instance until timeout</li>
- * <li><i>maxHeartbeat:</i> The maximum number of heartbeats which game can
- * handle</li>
  * <li><i>maxPlayer:</i> The maximum number of players which game can handle
  * </li>
  * <li><i>idleReader:</i> The max IDLE time in seconds which server can wait
@@ -70,17 +73,13 @@ import com.tenio.identity.configuration.constant.RestMethod;
  * @author kong
  * 
  */
-public abstract class BaseConfiguration extends AbstractLogger {
+public abstract class BaseConfiguration extends CommonConfiguration {
 
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout
 	 */
 	public static final String KEEP_PLAYER_ON_DISCONNECT = "t.keepPlayerOnDisconnect";
-	/**
-	 * The maximum number of heartbeats which game can handle
-	 */
-	public static final String MAX_HEARTBEAT = "t.maxHeartbeat";
 	/**
 	 * The maximum number of players which game can handle
 	 */
@@ -125,12 +124,6 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	public static final String VERSION_CODE = "t.versionCode";
 
 	/**
-	 * All configuration values will be held in this map. You access values by your
-	 * defined keys.
-	 */
-	private final Map<String, String> __configuration = new HashMap<String, String>();
-
-	/**
 	 * All ports in sockets zone
 	 */
 	private final List<Sock> __socketPorts = new ArrayList<Sock>();
@@ -172,25 +165,52 @@ public abstract class BaseConfiguration extends AbstractLogger {
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 
+		// Middleware
+		var attrMiddlewareProperties = XMLUtility.getNodeList(root, "//Server/Middleware/Properties/Property");
+		for (int j = 0; j < attrMiddlewareProperties.getLength(); j++) {
+			var pDataNode = attrMiddlewareProperties.item(j);
+			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
+			case "middleHost":
+				_put(MIDDLE_HOST, pDataNode.getTextContent());
+				break;
+
+			case "middleName":
+				_put(MIDDLE_NAME, pDataNode.getTextContent());
+				break;
+
+			case "middlePass":
+				_put(MIDDLE_PASS, pDataNode.getTextContent());
+				break;
+
+			case "middleTask":
+				_put(MIDDLE_TASK, pDataNode.getTextContent());
+				break;
+
+			case "middleQueue":
+				_put(MIDDLE_QUEUE, pDataNode.getTextContent());
+				break;
+			}
+		}
+
 		// Properties
 		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
 		for (int j = 0; j < attrRootProperties.getLength(); j++) {
 			var pDataNode = attrRootProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "name":
-				__configuration.put(SERVER_NAME, pDataNode.getTextContent());
+				_put(SERVER_NAME, pDataNode.getTextContent());
 				break;
 
 			case "id":
-				__configuration.put(SERVER_ID, pDataNode.getTextContent());
+				_put(SERVER_ID, pDataNode.getTextContent());
 				break;
 
 			case "versionName":
-				__configuration.put(VERSION_NAME, pDataNode.getTextContent());
+				_put(VERSION_NAME, pDataNode.getTextContent());
 				break;
 
 			case "versionCode":
-				__configuration.put(VERSION_CODE, pDataNode.getTextContent());
+				_put(VERSION_CODE, pDataNode.getTextContent());
 				break;
 			}
 		}
@@ -237,35 +257,31 @@ public abstract class BaseConfiguration extends AbstractLogger {
 			var pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "keepPlayerOnDisconnect":
-				__configuration.put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
-				break;
-
-			case "maxHeartbeat":
-				__configuration.put(MAX_HEARTBEAT, pDataNode.getTextContent());
+				_put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
 				break;
 
 			case "maxPlayer":
-				__configuration.put(MAX_PLAYER, pDataNode.getTextContent());
+				_put(MAX_PLAYER, pDataNode.getTextContent());
 				break;
 
 			case "idleReader":
-				__configuration.put(IDLE_READER, pDataNode.getTextContent());
+				_put(IDLE_READER, pDataNode.getTextContent());
 				break;
 
 			case "idleWriter":
-				__configuration.put(IDLE_WRITER, pDataNode.getTextContent());
+				_put(IDLE_WRITER, pDataNode.getTextContent());
 				break;
 
 			case "emptyRoomScan":
-				__configuration.put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
+				_put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "timeoutScan":
-				__configuration.put(TIMEOUT_SCAN, pDataNode.getTextContent());
+				_put(TIMEOUT_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "ccuScan":
-				__configuration.put(CCU_SCAN, pDataNode.getTextContent());
+				_put(CCU_SCAN, pDataNode.getTextContent());
 				break;
 			}
 		}
@@ -340,71 +356,10 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	}
 
 	/**
-	 * Put new configuration
-	 * 
-	 * @param key   key
-	 * @param value value
-	 */
-	protected void _put(final String key, final String value) {
-		__configuration.put(key, value);
-	}
-
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Boolean}
-	 */
-	public boolean getBoolean(final String key) {
-		return Boolean.parseBoolean(__configuration.get(key));
-	}
-
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Integer}
-	 */
-	public int getInt(final String key) {
-		return Integer.parseInt(__configuration.get(key));
-	}
-
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Float}
-	 */
-	public float getFloat(final String key) {
-		return Float.parseFloat(__configuration.get(key));
-	}
-
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link String}
-	 */
-	public String getString(final String key) {
-		return __configuration.get(key);
-	}
-
-	/**
-	 * Determine if this configuration is existed or defined. If you want some
-	 * configuration value to be treated as an "undefined" status, let its value
-	 * "-1".
-	 * 
-	 * @param key The desired configuration's key
-	 * @return <b>true</b> if the configuration is defined and otherwise return
-	 *         <b>false</b>
-	 */
-	public boolean isDefined(final String key) {
-		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
-	}
-
-	@Override
-	public String toString() {
-		return __configuration.toString();
-	}
-
-	/**
 	 * Your extension part can be handled here. Check the examples for more details
 	 * about how to use it.
 	 * 
-	 * @param extProperties the extension data in key-value format (see
-	 *                      {@link Map})
+	 * @param extProperties the extension data in key-value format (see {@link Map})
 	 */
 	protected abstract void _extend(Map<String, String> extProperties);
 

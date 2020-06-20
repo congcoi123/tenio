@@ -46,6 +46,7 @@
 
 		<google.guava.version>29.0-jre</google.guava.version>
 		<logging.log4j.version>2.13.3</logging.log4j.version>
+		<com.rabbitmq.version>5.9.0</com.rabbitmq.version>
 
 		<org.junit.jupiter.version>5.6.2</org.junit.jupiter.version>
 		<org.junit.platform.version>1.6.2</org.junit.platform.version>
@@ -76,6 +77,12 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${logging.log4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>${com.rabbitmq.version}</version>
 		</dependency>
 
 		<dependency>
