@@ -26,7 +26,6 @@ package com.tenio.extension;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
@@ -74,10 +73,6 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @see TaskApi
 	 */
 	protected TaskApi _taskApi = __server.getTaskApi();
-	/**
-	 * @see HeartBeatApi
-	 */
-	protected HeartBeatApi _heartbeatApi = __server.getHeartBeatApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type

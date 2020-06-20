@@ -25,7 +25,6 @@ package com.tenio.server;
 
 import java.io.IOException;
 
-import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
@@ -33,8 +32,6 @@ import com.tenio.api.TaskApi;
 import com.tenio.configuration.BaseConfiguration;
 import com.tenio.configuration.constant.Constants;
 import com.tenio.configuration.constant.TEvent;
-import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.engine.heartbeat.IHeartBeatManager;
 import com.tenio.entity.manager.IPlayerManager;
 import com.tenio.entity.manager.IRoomManager;
 import com.tenio.entity.manager.PlayerManager;
@@ -72,20 +69,18 @@ public final class Server extends AbstractLogger implements IServer {
 	private Server() {
 		__eventManager = new EventManager();
 
-		__heartBeatManager = new HeartBeatManager();
 		__roomManager = new RoomManager(__eventManager);
 		__playerManager = new PlayerManager(__eventManager);
 		__taskManager = new TaskManager();
 
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
-		__heartbeatApi = new HeartBeatApi(__heartBeatManager);
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi(__eventManager);
 
 		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
 		
-		// print out the logo
+		// print out the framework's icon
 		for (var line : Constants.LOGO) {			
 			info("", "", line);
 		}
@@ -102,14 +97,12 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private final IEventManager __eventManager;
 
-	private final IHeartBeatManager __heartBeatManager;
 	private final IRoomManager __roomManager;
 	private final IPlayerManager __playerManager;
 	private final ITaskManager __taskManager;
 
 	private final PlayerApi __playerApi;
 	private final RoomApi __roomApi;
-	private final HeartBeatApi __heartbeatApi;
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
@@ -147,11 +140,6 @@ public final class Server extends AbstractLogger implements IServer {
 		// start network
 		__startNetwork(configuration);
 
-		// initialize heart-beat
-		if (configuration.isDefined(BaseConfiguration.MAX_HEARTBEAT)) {
-			__heartBeatManager.initialize(configuration);
-		}
-
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
 
@@ -174,8 +162,7 @@ public final class Server extends AbstractLogger implements IServer {
 		if (__network != null) {
 			__network.shutdown();
 		}
-		// clear all objects
-		__heartBeatManager.clear();
+		// clear all managers
 		__roomManager.clear();
 		__playerManager.clear();
 		__taskManager.clear();
@@ -263,11 +250,6 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public MessageApi getMessageApi() {
 		return __messageApi;
-	}
-
-	@Override
-	public HeartBeatApi getHeartBeatApi() {
-		return __heartbeatApi;
 	}
 
 	@Override

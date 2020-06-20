@@ -25,7 +25,6 @@ package com.tenio.server;
 
 import java.io.IOException;
 
-import com.tenio.api.HeartBeatApi;
 import com.tenio.api.MessageApi;
 import com.tenio.api.PlayerApi;
 import com.tenio.api.RoomApi;
@@ -97,11 +96,6 @@ interface IServer {
 	 * @return see {@link MessageApi}
 	 */
 	MessageApi getMessageApi();
-
-	/**
-	 * @return see {@link HeartBeatApi}
-	 */
-	HeartBeatApi getHeartBeatApi();
 
 	/**
 	 * @return see {@link TaskApi}
