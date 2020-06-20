@@ -27,7 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -45,11 +44,6 @@ import com.tenio.identity.configuration.constant.RestMethod;
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
  * <ul>
- * <li><i>middleHost:</i> xxx</li>
- * <li><i>middleName:</i> xxx</li>
- * <li><i>middlePass:</i> xxx</li>
- * <li><i>middleTask:</i> xxx</li>
- * <li><i>middleQueue:</i> xxx</li>
  * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
  * client, can be hold its player instance until timeout</li>
  * <li><i>maxPlayer:</i> The maximum number of players which game can handle
@@ -145,11 +139,7 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 *             in same folder with your application
 	 */
 	public BaseConfiguration(final String file) {
-		try {
-			load(file);
-		} catch (Exception e) {
-			error(e, "file: ", file);
-		}
+		super(file);
 	}
 
 	/**
@@ -160,37 +150,11 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 * @throws Exception some exceptions, which can be occurred in reading or
 	 *                   parsing the file
 	 */
-	public void load(final String file) throws Exception {
+	@Override
+	protected void _load(final String file) throws Exception {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
-
-		// Middleware
-		var attrMiddlewareProperties = XMLUtility.getNodeList(root, "//Server/Middleware/Properties/Property");
-		for (int j = 0; j < attrMiddlewareProperties.getLength(); j++) {
-			var pDataNode = attrMiddlewareProperties.item(j);
-			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
-			case "middleHost":
-				_put(MIDDLE_HOST, pDataNode.getTextContent());
-				break;
-
-			case "middleName":
-				_put(MIDDLE_NAME, pDataNode.getTextContent());
-				break;
-
-			case "middlePass":
-				_put(MIDDLE_PASS, pDataNode.getTextContent());
-				break;
-
-			case "middleTask":
-				_put(MIDDLE_TASK, pDataNode.getTextContent());
-				break;
-
-			case "middleQueue":
-				_put(MIDDLE_QUEUE, pDataNode.getTextContent());
-				break;
-			}
-		}
 
 		// Properties
 		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
@@ -354,13 +318,5 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	public List<Http> getHttpPorts() {
 		return __httpPorts;
 	}
-
-	/**
-	 * Your extension part can be handled here. Check the examples for more details
-	 * about how to use it.
-	 * 
-	 * @param extProperties the extension data in key-value format (see {@link Map})
-	 */
-	protected abstract void _extend(Map<String, String> extProperties);
 
 }

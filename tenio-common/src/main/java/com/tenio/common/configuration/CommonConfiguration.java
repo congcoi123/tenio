@@ -35,30 +35,25 @@ import com.tenio.common.logger.AbstractLogger;
  * configuration values.
  * 
  * <h1>Configuration for game server, declared in properties file</h1> <br>
- * <ul>
- * <li><i>middleHost:</i> xxx</li>
- * <li><i>middleName:</i> xxx</li>
- * <li><i>middlePass:</i> xxx</li>
- * <li><i>middleTask:</i> xxx</li>
- * <li><i>middleQueue:</i> xxx</li>
- * </ul>
  * 
  * @author kong
  * 
  */
 public abstract class CommonConfiguration extends AbstractLogger {
 
-	public static final String MIDDLE_HOST = "t.middleHost";
-	public static final String MIDDLE_NAME = "t.middleName";
-	public static final String MIDDLE_PASS = "t.middlePass";
-	public static final String MIDDLE_TASK = "t.middleTask";
-	public static final String MIDDLE_QUEUE = "t.middleQueue";
-
 	/**
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
 	private final Map<String, String> __configuration = new HashMap<String, String>();
+
+	public CommonConfiguration(final String file) {
+		try {
+			_load(file);
+		} catch (Exception e) {
+			error(e, "file: ", file);
+		}
+	}
 
 	/**
 	 * Put new configuration
@@ -119,6 +114,16 @@ public abstract class CommonConfiguration extends AbstractLogger {
 	public String toString() {
 		return __configuration.toString();
 	}
+
+	/**
+	 * Read file content and convert it to configuration values.
+	 * 
+	 * @param file The name of your configuration file and this file needs to be put
+	 *             in same folder with your application
+	 * @throws Exception some exceptions, which can be occurred in reading or
+	 *                   parsing the file
+	 */
+	protected abstract void _load(final String file) throws Exception;
 
 	/**
 	 * Your extension part can be handled here. Check the examples for more details

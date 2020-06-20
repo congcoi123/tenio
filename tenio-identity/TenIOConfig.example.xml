@@ -12,16 +12,6 @@
 		<Property name="versionName">1.0</Property>
 	</Properties>
 
-	<Middleware>
-		<Properties>
-			<Property name="middleHost">localhost</Property>
-			<Property name="middleName">tenio-identity-name</Property>
-			<Property name="middlePass">tenio-identity-pass</Property>
-			<Property name="middleTask">tenio-identity-task</Property>
-			<Property name="middleQueue">tenio-identity-queue</Property>
-		</Properties>
-	</Middleware>
-
 	<Network>
 		<Sockets>
 			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
