@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.manager.IPlayerManager;
-import com.tenio.identity.common.entity.manager.IRoomManager;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.manager.IPlayerManager;
+import com.tenio.identity.entity.manager.IRoomManager;
+import com.tenio.identity.network.Connection;
 
 /**
  * This class provides you a necessary interface for managing players.

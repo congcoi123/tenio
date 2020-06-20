@@ -25,8 +25,8 @@ package com.tenio.identity.network.netty;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.event.IEventManager;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.event.IEventManager;
 
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.handler.traffic.TrafficCounter;

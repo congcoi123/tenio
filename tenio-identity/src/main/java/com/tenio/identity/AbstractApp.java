@@ -26,12 +26,12 @@ package com.tenio.identity;
 import java.io.IOException;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.exception.DuplicatedUriAndMethodException;
-import com.tenio.identity.common.exception.NotDefinedSocketConnectionException;
-import com.tenio.identity.common.exception.NotDefinedSubscribersException;
-import com.tenio.identity.common.extension.IExtension;
-import com.tenio.identity.common.server.Server;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.exception.DuplicatedUriAndMethodException;
+import com.tenio.identity.exception.NotDefinedSocketConnectionException;
+import com.tenio.identity.exception.NotDefinedSubscribersException;
+import com.tenio.identity.extension.IExtension;
+import com.tenio.identity.server.Server;
 
 /**
  * Your application will start from here.

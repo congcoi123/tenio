@@ -25,7 +25,7 @@ package com.tenio.identity.server;
 
 import java.io.IOException;
 
-import com.tenio.common.configuration.constant.Constants;
+import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
@@ -33,27 +33,25 @@ import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
 import com.tenio.identity.api.RoomApi;
 import com.tenio.identity.api.TaskApi;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.manager.IPlayerManager;
-import com.tenio.identity.common.entity.manager.IRoomManager;
-import com.tenio.identity.common.entity.manager.PlayerManager;
-import com.tenio.identity.common.entity.manager.RoomManager;
-import com.tenio.identity.common.event.EventManager;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.exception.DuplicatedUriAndMethodException;
-import com.tenio.identity.common.exception.NotDefinedSocketConnectionException;
-import com.tenio.identity.common.exception.NotDefinedSubscribersException;
-import com.tenio.identity.common.extension.IExtension;
-import com.tenio.identity.common.network.INetwork;
-import com.tenio.identity.common.network.http.HttpManagerTask;
-import com.tenio.identity.common.network.netty.NettyNetwork;
-import com.tenio.identity.common.server.IServer;
-import com.tenio.identity.common.server.InternalLogic;
-import com.tenio.identity.common.server.Server;
-import com.tenio.identity.common.task.schedule.CCUScanTask;
-import com.tenio.identity.common.task.schedule.EmptyRoomScanTask;
-import com.tenio.identity.common.task.schedule.TimeOutScanTask;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.Constants;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.manager.IPlayerManager;
+import com.tenio.identity.entity.manager.IRoomManager;
+import com.tenio.identity.entity.manager.PlayerManager;
+import com.tenio.identity.entity.manager.RoomManager;
+import com.tenio.identity.event.EventManager;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.exception.DuplicatedUriAndMethodException;
+import com.tenio.identity.exception.NotDefinedSocketConnectionException;
+import com.tenio.identity.exception.NotDefinedSubscribersException;
+import com.tenio.identity.extension.IExtension;
+import com.tenio.identity.network.INetwork;
+import com.tenio.identity.network.http.HttpManagerTask;
+import com.tenio.identity.network.netty.NettyNetwork;
+import com.tenio.identity.task.schedule.CCUScanTask;
+import com.tenio.identity.task.schedule.EmptyRoomScanTask;
+import com.tenio.identity.task.schedule.TimeOutScanTask;
 
 /**
  * This class manages the workflow of the current server. The instruction's
@@ -82,9 +80,9 @@ public final class Server extends AbstractLogger implements IServer {
 		__messageApi = new MessageApi(__eventManager);
 
 		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
-		
+
 		// print out the framework's icon
-		for (var line : Constants.LOGO) {			
+		for (var line : CommonConstants.LOGO) {
 			info("", "", line);
 		}
 	} // prevent creation manually

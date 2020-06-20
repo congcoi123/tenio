@@ -26,9 +26,8 @@ package com.tenio.identity.entity.manager;
 import java.util.Map;
 
 import com.tenio.identity.api.RoomApi;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.manager.IManager;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
 
 /**
  * Manage all your rooms ({@link AbstractRoom}) on the server. It is a singleton

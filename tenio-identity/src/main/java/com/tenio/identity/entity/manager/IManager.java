@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.entity.manager;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.BaseConfiguration;
 
 /**
  * @author kong

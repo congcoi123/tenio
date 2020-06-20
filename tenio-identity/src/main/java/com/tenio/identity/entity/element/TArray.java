@@ -25,8 +25,6 @@ package com.tenio.identity.entity.element;
 
 import java.util.ArrayList;
 
-import com.tenio.identity.common.entity.element.TArray;
-
 /**
  * This is an element object in your server. You can use it for holding array
  * data and make it serialize to send through the network.

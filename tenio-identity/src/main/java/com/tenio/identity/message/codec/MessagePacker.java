@@ -26,7 +26,7 @@ package com.tenio.identity.message.codec;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import com.tenio.common.configuration.constant.Constants;
+import com.tenio.identity.configuration.constant.Constants;
 
 /**
  * When sending a message through the Internet, it's necessary to convert one

@@ -25,9 +25,8 @@ package com.tenio.identity.network.netty.ws;
 
 import java.net.URISyntaxException;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.netty.ws.NettyWSHandler;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.event.IEventManager;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

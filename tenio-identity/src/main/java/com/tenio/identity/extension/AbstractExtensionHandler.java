@@ -31,15 +31,14 @@ import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
 import com.tenio.identity.api.RoomApi;
 import com.tenio.identity.api.TaskApi;
-import com.tenio.identity.common.configuration.constant.RestMethod;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.event.ISubscriber;
-import com.tenio.identity.common.extension.IExtension;
-import com.tenio.identity.common.network.Connection;
-import com.tenio.identity.common.server.Server;
+import com.tenio.identity.configuration.constant.RestMethod;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.event.ISubscriber;
+import com.tenio.identity.network.Connection;
+import com.tenio.identity.server.Server;
 
 /**
  * This class provides you all the necessary APIs for your own logic game

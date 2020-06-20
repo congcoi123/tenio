@@ -25,11 +25,10 @@ package com.tenio.identity.network;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.identity.common.configuration.constant.ConnectionType;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.configuration.constant.ConnectionType;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.event.IEventManager;
 
 /**
  * A connection is created when the first request from client reach and pass in

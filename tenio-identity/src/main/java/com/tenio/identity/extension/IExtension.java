@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.identity.extension;
 
-import com.tenio.identity.common.extension.AbstractExtensionHandler;
-
 /**
  * An entry point class is the first one you start to handle your own logic
  * in-game. The class must be implemented this interface and be created as a new

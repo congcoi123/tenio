@@ -26,9 +26,9 @@ package com.tenio.identity.network.http.servlet.base;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.configuration.constant.Constants;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.network.http.servlet.IServletHandler;
+import com.tenio.identity.configuration.constant.Constants;
+import com.tenio.identity.network.http.servlet.IServletHandler;
 
 /**
  * @author kong

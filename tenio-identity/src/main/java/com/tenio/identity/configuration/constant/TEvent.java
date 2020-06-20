@@ -26,13 +26,13 @@ package com.tenio.identity.configuration.constant;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.extension.AbstractExtensionHandler;
-import com.tenio.identity.common.extension.IExtension;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.extension.AbstractExtensionHandler;
+import com.tenio.identity.extension.IExtension;
+import com.tenio.identity.network.Connection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by

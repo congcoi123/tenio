@@ -35,15 +35,15 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.tenio.common.configuration.constant.Constants;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
-import com.tenio.identity.common.configuration.Path;
-import com.tenio.identity.common.configuration.constant.RestMethod;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.exception.DuplicatedUriAndMethodException;
-import com.tenio.identity.common.network.http.servlet.PingServlet;
-import com.tenio.identity.common.network.http.servlet.TServlet;
+import com.tenio.identity.configuration.Path;
+import com.tenio.identity.configuration.constant.Constants;
+import com.tenio.identity.configuration.constant.RestMethod;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.exception.DuplicatedUriAndMethodException;
+import com.tenio.identity.network.http.servlet.PingServlet;
+import com.tenio.identity.network.http.servlet.TServlet;
 
 /**
  * The HTTP request and response handlers class

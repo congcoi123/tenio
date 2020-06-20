@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.identity.configuration.constant;
 
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.network.Connection;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should

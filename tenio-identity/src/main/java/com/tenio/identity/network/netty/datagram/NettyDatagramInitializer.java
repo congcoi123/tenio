@@ -23,10 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.identity.network.netty.datagram;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.netty.GlobalTrafficShapingHandlerCustomize;
-import com.tenio.identity.common.network.netty.datagram.NettyDatagramHandler;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.netty.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.DatagramChannel;

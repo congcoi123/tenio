@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.identity.network.netty.socket;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.ConnectionType;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.message.codec.MsgPackConverter;
-import com.tenio.identity.common.network.netty.BaseNettyHandler;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.ConnectionType;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.message.codec.MsgPackConverter;
+import com.tenio.identity.network.netty.BaseNettyHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 

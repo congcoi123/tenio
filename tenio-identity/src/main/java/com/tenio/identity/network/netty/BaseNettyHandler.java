@@ -25,12 +25,11 @@ package com.tenio.identity.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.identity.common.configuration.constant.ConnectionType;
-import com.tenio.identity.common.configuration.constant.LEvent;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.Connection;
-import com.tenio.identity.common.network.netty.NettyConnection;
+import com.tenio.identity.configuration.constant.ConnectionType;
+import com.tenio.identity.configuration.constant.LEvent;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.Connection;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

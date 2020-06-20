@@ -26,10 +26,9 @@ package com.tenio.identity.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.identity.annotation.Column;
-import com.tenio.identity.annotation.Entity;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.manager.PlayerManager;
+import com.tenio.identity.entity.annotation.Column;
+import com.tenio.identity.entity.annotation.Entity;
+import com.tenio.identity.entity.manager.PlayerManager;
 
 /**
  * A room or simpler is a group of related players, see {@link AbstractPlayer}.

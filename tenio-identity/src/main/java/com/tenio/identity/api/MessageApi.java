@@ -27,13 +27,13 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.identity.api.pool.ArrayPool;
 import com.tenio.identity.api.pool.ObjectPool;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.element.TArray;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.element.TArray;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.Connection;
 
 /**
  * This class provides you a necessary interface for sending messages from the

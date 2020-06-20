@@ -23,9 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.identity.event.external;
 
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.event.ISubscriber;
-import com.tenio.identity.common.event.external.TSubscriber;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.event.ISubscriber;
 
 /**
  * An object which creates a mapping between an event type with a subscriber.

@@ -26,9 +26,8 @@ package com.tenio.identity.entity.manager;
 import java.util.Map;
 
 import com.tenio.identity.api.PlayerApi;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.manager.IManager;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.network.Connection;
 
 /**
  * Manage all your players ({@link AbstractPlayer}) on the server. It is a

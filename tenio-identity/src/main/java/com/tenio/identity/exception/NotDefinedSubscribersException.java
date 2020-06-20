@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.exception;
 
-import com.tenio.identity.common.configuration.constant.TEvent;
+import com.tenio.identity.configuration.constant.TEvent;
 
 /**
  * @author kong

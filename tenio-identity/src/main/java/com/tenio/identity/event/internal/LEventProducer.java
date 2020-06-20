@@ -23,8 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.event.internal;
 
-import com.tenio.identity.common.configuration.constant.LEvent;
-import com.tenio.identity.common.event.internal.LEventHandler;
+import com.tenio.identity.configuration.constant.LEvent;
 
 /**
  * Only for creating an event handler object, see {@link LEventHandler}

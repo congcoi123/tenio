@@ -23,8 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.event.external;
 
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.event.external.TEventHandler;
+import com.tenio.identity.configuration.constant.TEvent;
 
 /**
  * Only for creating an event handler object, see {@link TEventHandler}

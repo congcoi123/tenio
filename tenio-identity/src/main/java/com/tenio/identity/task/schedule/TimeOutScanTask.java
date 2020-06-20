@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.identity.api.PlayerApi;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.event.IEventManager;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.event.IEventManager;
 
 /**
  * For a player which is in IDLE mode, that means for a long time without

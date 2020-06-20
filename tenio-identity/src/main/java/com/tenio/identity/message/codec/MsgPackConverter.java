@@ -34,10 +34,9 @@ import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.common.entity.element.TArray;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.message.codec.ByteArrayInputStream;
-import com.tenio.identity.common.message.pool.ByteArrayInputStreamPool;
+import com.tenio.identity.entity.element.TArray;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.message.pool.ByteArrayInputStreamPool;
 
 /**
  * <a href="https://msgpack.org/index.html">MessagePack</a> is an efficient

@@ -25,11 +25,11 @@ package com.tenio.identity.api.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.common.configuration.constant.Constants;
+import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.common.entity.element.TArray;
+import com.tenio.identity.entity.element.TArray;
 
 /**
  * The object pool mechanism for {@link TArray}.
@@ -45,8 +45,8 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 	private boolean[] __used;
 
 	public ArrayPool() {
-		__pool = new TArray[Constants.BASE_ELEMENT_POOL];
-		__used = new boolean[Constants.BASE_ELEMENT_POOL];
+		__pool = new TArray[CommonConstants.BASE_ELEMENT_POOL];
+		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = TArray.newInstance();
@@ -66,11 +66,11 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + Constants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new TArray[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new TArray[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -79,7 +79,7 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		}
 
 		info("ARRAY POOL",
-				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
+				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

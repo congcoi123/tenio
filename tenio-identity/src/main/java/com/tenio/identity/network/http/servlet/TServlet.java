@@ -32,13 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.identity.common.configuration.Path;
-import com.tenio.identity.common.configuration.constant.RestMethod;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.http.servlet.base.BaseProcessServlet;
-import com.tenio.identity.common.network.http.servlet.base.BaseServlet;
+import com.tenio.identity.configuration.Path;
+import com.tenio.identity.configuration.constant.RestMethod;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.http.servlet.base.BaseProcessServlet;
+import com.tenio.identity.network.http.servlet.base.BaseServlet;
 
 /**
  * @author kong

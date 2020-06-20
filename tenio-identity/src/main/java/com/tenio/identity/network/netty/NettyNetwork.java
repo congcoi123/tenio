@@ -27,16 +27,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.common.configuration.constant.Constants;
+import com.tenio.identity.configuration.constant.Constants;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.Sock;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.INetwork;
-import com.tenio.identity.common.network.netty.GlobalTrafficShapingHandlerCustomize;
-import com.tenio.identity.common.network.netty.datagram.NettyDatagramInitializer;
-import com.tenio.identity.common.network.netty.socket.NettySocketInitializer;
-import com.tenio.identity.common.network.netty.ws.NettyWSInitializer;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.Sock;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.INetwork;
+import com.tenio.identity.network.netty.datagram.NettyDatagramInitializer;
+import com.tenio.identity.network.netty.socket.NettySocketInitializer;
+import com.tenio.identity.network.netty.ws.NettyWSInitializer;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;

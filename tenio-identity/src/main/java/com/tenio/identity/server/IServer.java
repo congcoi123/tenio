@@ -29,12 +29,12 @@ import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
 import com.tenio.identity.api.RoomApi;
 import com.tenio.identity.api.TaskApi;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.exception.DuplicatedUriAndMethodException;
-import com.tenio.identity.common.exception.NotDefinedSocketConnectionException;
-import com.tenio.identity.common.exception.NotDefinedSubscribersException;
-import com.tenio.identity.common.extension.IExtension;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.exception.DuplicatedUriAndMethodException;
+import com.tenio.identity.exception.NotDefinedSocketConnectionException;
+import com.tenio.identity.exception.NotDefinedSubscribersException;
+import com.tenio.identity.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's

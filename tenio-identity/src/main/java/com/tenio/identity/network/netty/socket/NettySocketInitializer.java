@@ -23,11 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.identity.network.netty.socket;
 
-import com.tenio.common.configuration.constant.Constants;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.network.netty.GlobalTrafficShapingHandlerCustomize;
-import com.tenio.identity.common.network.netty.socket.NettySocketHandler;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.Constants;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.network.netty.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

@@ -34,12 +34,9 @@ import org.w3c.dom.Node;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.XMLUtility;
-import com.tenio.identity.common.configuration.Http;
-import com.tenio.identity.common.configuration.Path;
-import com.tenio.identity.common.configuration.Sock;
-import com.tenio.identity.common.configuration.constant.ConnectionType;
-import com.tenio.identity.common.configuration.constant.RestMethod;
-import com.tenio.identity.common.entity.element.TObject;
+import com.tenio.identity.configuration.constant.ConnectionType;
+import com.tenio.identity.configuration.constant.RestMethod;
+import com.tenio.identity.entity.element.TObject;
 
 /**
  * This server needs some basic configuration to start running. The

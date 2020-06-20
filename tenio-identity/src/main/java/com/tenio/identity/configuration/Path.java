@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.configuration;
 
-import com.tenio.identity.common.configuration.constant.RestMethod;
+import com.tenio.identity.configuration.constant.RestMethod;
 
 /**
  * @author kong

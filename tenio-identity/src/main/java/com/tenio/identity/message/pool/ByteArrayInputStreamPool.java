@@ -25,11 +25,11 @@ package com.tenio.identity.message.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.common.configuration.constant.Constants;
+import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.common.message.codec.ByteArrayInputStream;
+import com.tenio.identity.message.codec.ByteArrayInputStream;
 
 /**
  * The object pool mechanism for {@link ByteArrayInputStream}.
@@ -45,8 +45,8 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 	private boolean[] __used;
 
 	public ByteArrayInputStreamPool() {
-		__pool = new ByteArrayInputStream[Constants.BASE_ELEMENT_POOL];
-		__used = new boolean[Constants.BASE_ELEMENT_POOL];
+		__pool = new ByteArrayInputStream[CommonConstants.BASE_ELEMENT_POOL];
+		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = ByteArrayInputStream.newInstance();
@@ -66,11 +66,11 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + Constants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new ByteArrayInputStream[oldPool.length + Constants.ADD_ELEMENT_POOL];
+		__pool = new ByteArrayInputStream[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -79,7 +79,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		}
 
 		info("BYTE ARRAY POOL",
-				buildgen("Increase the number of elements by ", Constants.ADD_ELEMENT_POOL, " to ", __used.length));
+				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

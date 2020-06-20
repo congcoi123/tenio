@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.event.IEvent;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.event.IEvent;
 
 /**
  * This class for handling events and these subscribers.

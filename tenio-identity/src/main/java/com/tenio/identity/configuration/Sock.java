@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.identity.configuration;
 
-import com.tenio.identity.common.configuration.constant.ConnectionType;
+import com.tenio.identity.configuration.constant.ConnectionType;
 
 /**
  * @author kong

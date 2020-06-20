@@ -24,17 +24,17 @@ THE SOFTWARE.
 package com.tenio.identity.server;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.ErrorMsg;
-import com.tenio.identity.common.configuration.constant.LEvent;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.entity.manager.IPlayerManager;
-import com.tenio.identity.common.entity.manager.IRoomManager;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.event.ISubscriber;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.ErrorMsg;
+import com.tenio.identity.configuration.constant.LEvent;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.manager.IPlayerManager;
+import com.tenio.identity.entity.manager.IRoomManager;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.event.ISubscriber;
+import com.tenio.identity.network.Connection;
 
 /**
  * Handle the main logic of the server.

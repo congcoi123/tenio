@@ -33,10 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.tenio.identity.annotation.Column;
-import com.tenio.identity.annotation.Entity;
-import com.tenio.identity.annotation.Sanitizer;
-
 /**
  * This class is used to export game objects with supported annotation to JSON
  * data (backup) or create game objects from JSON data (restore).

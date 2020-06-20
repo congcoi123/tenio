@@ -26,8 +26,6 @@ package com.tenio.identity.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.identity.common.configuration.Path;
-
 /**
  * @author kong
  */

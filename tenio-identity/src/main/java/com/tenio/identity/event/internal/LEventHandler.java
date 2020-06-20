@@ -26,8 +26,8 @@ package com.tenio.identity.event.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.identity.common.configuration.constant.LEvent;
-import com.tenio.identity.common.event.IEvent;
+import com.tenio.identity.configuration.constant.LEvent;
+import com.tenio.identity.event.IEvent;
 
 /**
  * This class for handling events and these subscribers.

@@ -30,15 +30,14 @@ import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.identity.api.RoomApi;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.ErrorMsg;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.manager.IRoomManager;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.exception.DuplicatedRoomException;
-import com.tenio.identity.common.exception.NullRoomException;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.ErrorMsg;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.exception.DuplicatedRoomException;
+import com.tenio.identity.exception.NullRoomException;
 
 /**
  * Manage all your rooms ({@link AbstractRoom}) on the server. It is a singleton

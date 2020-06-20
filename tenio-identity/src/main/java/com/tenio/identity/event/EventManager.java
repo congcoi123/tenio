@@ -24,9 +24,8 @@ THE SOFTWARE.
 package com.tenio.identity.event;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.event.external.TEventManager;
-import com.tenio.identity.common.event.internal.LEventManager;
+import com.tenio.identity.event.external.TEventManager;
+import com.tenio.identity.event.internal.LEventManager;
 
 /**
  * Manage all events in the server

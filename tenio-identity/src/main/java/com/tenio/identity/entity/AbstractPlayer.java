@@ -23,10 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.identity.entity;
 
-import com.tenio.identity.annotation.Column;
-import com.tenio.identity.annotation.Entity;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.entity.annotation.Column;
+import com.tenio.identity.entity.annotation.Entity;
+import com.tenio.identity.network.Connection;
 
 /**
  * A player is one of the base elements in your server. It is a representation

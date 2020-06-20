@@ -25,8 +25,8 @@ package com.tenio.identity.network;
 
 import java.io.IOException;
 
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.event.IEventManager;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.event.IEventManager;
 
 /**
  * A network is one of the most important parts of this server for the main

@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.entity.AbstractRoom;
-import com.tenio.identity.common.entity.manager.IRoomManager;
+import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.manager.IRoomManager;
 
 /**
  * This class provides you a necessary interface for managing rooms.

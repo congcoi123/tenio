@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.event.ISubscriber;
-import com.tenio.identity.common.event.external.TEventProducer;
-import com.tenio.identity.common.event.external.TSubscriber;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.event.ISubscriber;
 
 /**
  * This class for managing events and these subscribers.

@@ -25,9 +25,6 @@ package com.tenio.identity.entity.element;
 
 import java.util.HashMap;
 
-import com.tenio.identity.common.entity.element.TArray;
-import com.tenio.identity.common.entity.element.TObject;
-
 /**
  * This is an element object in your server. It can be used to hold your map
  * data. All message comes from a client will be converted to this object. That

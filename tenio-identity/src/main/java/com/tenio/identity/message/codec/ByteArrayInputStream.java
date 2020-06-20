@@ -18,8 +18,6 @@ package com.tenio.identity.message.codec;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.tenio.identity.common.message.codec.ByteArrayInputStream;
-
 /**
  * @author Riyad Kalla (software@thebuzzmedia.com)
  */

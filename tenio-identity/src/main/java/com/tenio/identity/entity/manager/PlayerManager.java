@@ -28,17 +28,16 @@ import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.identity.api.PlayerApi;
-import com.tenio.identity.common.configuration.BaseConfiguration;
-import com.tenio.identity.common.configuration.constant.ConnectionType;
-import com.tenio.identity.common.configuration.constant.ErrorMsg;
-import com.tenio.identity.common.configuration.constant.LEvent;
-import com.tenio.identity.common.configuration.constant.TEvent;
-import com.tenio.identity.common.entity.AbstractPlayer;
-import com.tenio.identity.common.entity.manager.IPlayerManager;
-import com.tenio.identity.common.event.IEventManager;
-import com.tenio.identity.common.exception.DuplicatedPlayerException;
-import com.tenio.identity.common.exception.NullPlayerNameException;
-import com.tenio.identity.common.network.Connection;
+import com.tenio.identity.configuration.BaseConfiguration;
+import com.tenio.identity.configuration.constant.ConnectionType;
+import com.tenio.identity.configuration.constant.ErrorMsg;
+import com.tenio.identity.configuration.constant.LEvent;
+import com.tenio.identity.configuration.constant.TEvent;
+import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.event.IEventManager;
+import com.tenio.identity.exception.DuplicatedPlayerException;
+import com.tenio.identity.exception.NullPlayerNameException;
+import com.tenio.identity.network.Connection;
 
 /**
  * Manage all your players ({@link AbstractPlayer}) on the server. It is a

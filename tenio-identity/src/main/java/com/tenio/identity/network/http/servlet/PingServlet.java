@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.identity.common.entity.element.TObject;
-import com.tenio.identity.common.network.http.servlet.base.BaseProcessServlet;
+import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.network.http.servlet.base.BaseProcessServlet;
 
 /**
  * @author kong
