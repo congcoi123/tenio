@@ -36,19 +36,19 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.api.pool.ObjectPool;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.api.pool.MessageObjectPool;
+import com.tenio.identity.entity.element.MessageObject;
 
 /**
  * @author kong
  */
-public final class ObjectPoolTest {
+public final class MessageObjectPoolTest {
 
-	private IElementPool<TObject> __objectPool;
+	private IElementPool<MessageObject> __objectPool;
 
 	@BeforeEach
 	public void initialize() {
-		__objectPool = new ObjectPool();
+		__objectPool = new MessageObjectPool();
 	}
 
 	@AfterEach
@@ -57,8 +57,8 @@ public final class ObjectPoolTest {
 	}
 
 	@Test
-	public void createNewTObjectShouldReturnSuccess() {
-		TObject object = __objectPool.get();
+	public void createNewMessageObjectShouldReturnSuccess() {
+		MessageObject object = __objectPool.get();
 		
 		assertNotEquals(null, object);
 	}
@@ -66,14 +66,14 @@ public final class ObjectPoolTest {
 	@Test
 	public void repayAnObjectWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			TObject object = TObject.newInstance();
+			MessageObject object = MessageObject.newInstance();
 			__objectPool.repay(object);
 		});
 	}
 
 	@Test
 	public void afterReplayObjectShouldBeClearedAllData() {
-		TObject object = __objectPool.get();
+		MessageObject object = __objectPool.get();
 		object.put("key1", "value1");
 		object.put("key2", "value2");
 		object.put("key3", "value3");

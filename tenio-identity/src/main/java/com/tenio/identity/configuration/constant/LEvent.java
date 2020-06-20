@@ -24,7 +24,6 @@ THE SOFTWARE.
 package com.tenio.identity.configuration.constant;
 
 import com.tenio.identity.entity.AbstractPlayer;
-import com.tenio.identity.entity.element.TObject;
 import com.tenio.identity.network.Connection;
 
 /**
@@ -89,7 +88,7 @@ public enum LEvent {
 	 * from <b>0</b>)</li>
 	 * <li><b>parameter[1]</b> the connection (can be <b>null</b>) that is retrieved
 	 * from the corresponding channel, see {@link Connection}</li>
-	 * <li><b>parameter[2]</b> the message, see {@link TObject} which is sent by its
+	 * <li><b>parameter[2]</b> the message, see {@link MessageObject} which is sent by its
 	 * corresponding connection</li>
 	 * <li><b>parameter[3]</b> the connection object which is used to assigned to a
 	 * player (can be <b>null</b>, see {@link Connection}</li>

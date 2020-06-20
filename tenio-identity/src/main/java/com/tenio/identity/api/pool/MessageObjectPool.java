@@ -29,33 +29,33 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 
 /**
- * The object pool mechanism for {@link TObject}.
+ * The object pool mechanism for {@link MessageObject}.
  * 
  * @author kong
  * 
  */
-public final class ObjectPool extends AbstractLogger implements IElementPool<TObject> {
+public final class MessageObjectPool extends AbstractLogger implements IElementPool<MessageObject> {
 
 	@GuardedBy("this")
-	private TObject[] __pool;
+	private MessageObject[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public ObjectPool() {
-		__pool = new TObject[CommonConstants.BASE_ELEMENT_POOL];
+	public MessageObjectPool() {
+		__pool = new MessageObject[CommonConstants.BASE_ELEMENT_POOL];
 		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = TObject.newInstance();
+			__pool[i] = MessageObject.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized TObject get() {
+	public synchronized MessageObject get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -70,11 +70,11 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new TObject[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
+		__pool = new MessageObject[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = TObject.newInstance();
+			__pool[i] = MessageObject.newInstance();
 			__used[i] = false;
 		}
 
@@ -87,7 +87,7 @@ public final class ObjectPool extends AbstractLogger implements IElementPool<TOb
 	}
 
 	@Override
-	public synchronized void repay(TObject element) {
+	public synchronized void repay(MessageObject element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {

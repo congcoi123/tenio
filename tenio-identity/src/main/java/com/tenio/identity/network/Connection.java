@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 
 import com.tenio.identity.configuration.constant.ConnectionType;
 import com.tenio.identity.entity.AbstractPlayer;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.IEventManager;
 
 /**
@@ -145,9 +145,9 @@ public abstract class Connection {
 	/**
 	 * Send a message to the client
 	 * 
-	 * @param message the message content, see {@link TObject}
+	 * @param message the message content, see {@link MessageObject}
 	 */
-	public abstract void send(TObject message);
+	public abstract void send(MessageObject message);
 
 	/**
 	 * Close a "connection" between a client with the server

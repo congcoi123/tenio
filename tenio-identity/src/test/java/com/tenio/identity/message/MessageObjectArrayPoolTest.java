@@ -36,19 +36,19 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.api.pool.ArrayPool;
-import com.tenio.identity.entity.element.TArray;
+import com.tenio.identity.api.pool.MessageObjectArrayPool;
+import com.tenio.identity.entity.element.MessageObjectArray;
 
 /**
  * @author kong
  */
-public final class ArrayPoolTest {
+public final class MessageObjectArrayPoolTest {
 
-	private IElementPool<TArray> __arrayPool;
+	private IElementPool<MessageObjectArray> __arrayPool;
 
 	@BeforeEach
 	public void initialize() {
-		__arrayPool = new ArrayPool();
+		__arrayPool = new MessageObjectArrayPool();
 	}
 
 	@AfterEach
@@ -58,7 +58,7 @@ public final class ArrayPoolTest {
 
 	@Test
 	public void createNewTArrayShouldReturnSuccess() {
-		TArray array = __arrayPool.get();
+		MessageObjectArray array = __arrayPool.get();
 		
 		assertNotEquals(null, array);
 	}
@@ -66,14 +66,14 @@ public final class ArrayPoolTest {
 	@Test
 	public void repayAnArrayWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			TArray array = TArray.newInstance();
+			MessageObjectArray array = MessageObjectArray.newInstance();
 			__arrayPool.repay(array);
 		});
 	}
 
 	@Test
 	public void afterReplayArrayShouldBeClearedAllData() {
-		TArray array = __arrayPool.get();
+		MessageObjectArray array = __arrayPool.get();
 		array.put(10).put(20).put(30);
 		__arrayPool.repay(array);
 		

@@ -33,15 +33,15 @@ import java.util.HashMap;
  * @author kong
  * 
  */
-public final class TObject extends HashMap<String, Object> {
+public final class MessageObject extends HashMap<String, Object> {
 
 	private static final long serialVersionUID = 8818783476027583633L;
 
-	public static TObject newInstance() {
-		return new TObject();
+	public static MessageObject newInstance() {
+		return new MessageObject();
 	}
 
-	private TObject() {
+	private MessageObject() {
 	}
 
 	public double getDouble(final String key) {
@@ -72,19 +72,19 @@ public final class TObject extends HashMap<String, Object> {
 		return get(key);
 	}
 
-	public TObject getTObject(final String key) {
-		return (TObject) get(key);
+	public MessageObject getMessageObject(final String key) {
+		return (MessageObject) get(key);
 	}
 
-	public TArray getTArray(final String key) {
-		return (TArray) get(key);
+	public MessageObjectArray getMessageObjectArray(final String key) {
+		return (MessageObjectArray) get(key);
 	}
 
 	public boolean contain(final String key) {
 		return containsKey(key);
 	}
 	
-	public TObject add(String key, Object value) {
+	public MessageObject add(String key, Object value) {
 		put(key, value);
 		return this;
 	}

@@ -29,7 +29,7 @@ import com.tenio.identity.configuration.constant.ErrorMsg;
 import com.tenio.identity.configuration.constant.LEvent;
 import com.tenio.identity.configuration.constant.TEvent;
 import com.tenio.identity.entity.AbstractPlayer;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.entity.manager.IPlayerManager;
 import com.tenio.identity.entity.manager.IRoomManager;
 import com.tenio.identity.event.IEventManager;
@@ -127,7 +127,7 @@ final class InternalLogic extends AbstractLogger {
 		__on(LEvent.CHANNEL_HANDLE, args -> {
 			var index = __getInt(args[0]);
 			var connection = __getConnection(args[1]);
-			var message = __getTObject(args[2]);
+			var message = __getMessageObject(args[2]);
 			var tempConnection = __getConnection(args[3]);
 
 			if (connection == null) {
@@ -152,7 +152,7 @@ final class InternalLogic extends AbstractLogger {
 	}
 
 	private void __createNewConnection(final BaseConfiguration configuration, final int index,
-			final Connection connection, final TObject message) {
+			final Connection connection, final MessageObject message) {
 		if (index == 0) { // is main connection
 			// check reconnection request first
 			var player = (AbstractPlayer) __eventManager.getExternal().emit(TEvent.PLAYER_RECONNECT_REQUEST, connection,
@@ -197,10 +197,10 @@ final class InternalLogic extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link TObject}
+	 * @return a value in, see {@link MessageObject}
 	 */
-	private TObject __getTObject(Object object) {
-		return (TObject) object;
+	private MessageObject __getMessageObject(Object object) {
+		return (MessageObject) object;
 	}
 
 	/**
@@ -243,7 +243,7 @@ final class InternalLogic extends AbstractLogger {
 		return (Throwable) object;
 	}
 
-	private void __handle(AbstractPlayer player, int index, TObject message) {
+	private void __handle(AbstractPlayer player, int index, MessageObject message) {
 		debug("RECV PLAYER", index, player.getName(), message.toString());
 		player.setCurrentReaderTime();
 		__eventManager.getExternal().emit(TEvent.RECEIVED_FROM_PLAYER, player, index, message);

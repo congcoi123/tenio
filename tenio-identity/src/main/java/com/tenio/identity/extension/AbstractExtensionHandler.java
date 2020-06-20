@@ -35,7 +35,7 @@ import com.tenio.identity.configuration.constant.RestMethod;
 import com.tenio.identity.configuration.constant.TEvent;
 import com.tenio.identity.entity.AbstractPlayer;
 import com.tenio.identity.entity.AbstractRoom;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.ISubscriber;
 import com.tenio.identity.network.Connection;
 import com.tenio.identity.server.Server;
@@ -87,10 +87,10 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link TObject} type
+	 * @return a value in {@link MessageObject} type
 	 */
-	protected TObject _getTObject(Object object) {
-		return (TObject) object;
+	protected MessageObject _getMessageObject(Object object) {
+		return (MessageObject) object;
 	}
 
 	/**

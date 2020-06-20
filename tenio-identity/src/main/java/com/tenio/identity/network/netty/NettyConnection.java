@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 
 import com.tenio.identity.configuration.constant.ConnectionType;
 import com.tenio.identity.configuration.constant.LEvent;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.message.codec.MsgPackConverter;
 import com.tenio.identity.network.Connection;
@@ -80,7 +80,7 @@ public class NettyConnection extends Connection {
 	}
 
 	@Override
-	public void send(TObject message) {
+	public void send(MessageObject message) {
 		if (isType(ConnectionType.SOCKET)) {
 			__channel.writeAndFlush(MsgPackConverter.serialize(message));
 		} else if (isType(ConnectionType.WEB_SOCKET)) {

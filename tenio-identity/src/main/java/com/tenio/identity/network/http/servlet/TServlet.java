@@ -35,7 +35,7 @@ import org.json.simple.JSONObject;
 import com.tenio.identity.configuration.Path;
 import com.tenio.identity.configuration.constant.RestMethod;
 import com.tenio.identity.configuration.constant.TEvent;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.identity.network.http.servlet.base.BaseServlet;
@@ -167,7 +167,7 @@ public final class TServlet extends BaseServlet {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		try {
 			var json = new JSONObject();
-			json.putAll(TObject.newInstance().add("status", "failed").add("message", "405Method Not Allowed"));
+			json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "405Method Not Allowed"));
 			response.getWriter().println(json.toString());
 		} catch (IOException e) {
 			e.printStackTrace();

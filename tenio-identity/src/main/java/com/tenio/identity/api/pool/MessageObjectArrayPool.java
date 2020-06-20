@@ -29,33 +29,33 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.entity.element.TArray;
+import com.tenio.identity.entity.element.MessageObjectArray;
 
 /**
- * The object pool mechanism for {@link TArray}.
+ * The object pool mechanism for {@link MessageObjectArray}.
  * 
  * @author kong
  * 
  */
-public final class ArrayPool extends AbstractLogger implements IElementPool<TArray> {
+public final class MessageObjectArrayPool extends AbstractLogger implements IElementPool<MessageObjectArray> {
 
 	@GuardedBy("this")
-	private TArray[] __pool;
+	private MessageObjectArray[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public ArrayPool() {
-		__pool = new TArray[CommonConstants.BASE_ELEMENT_POOL];
+	public MessageObjectArrayPool() {
+		__pool = new MessageObjectArray[CommonConstants.BASE_ELEMENT_POOL];
 		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = TArray.newInstance();
+			__pool[i] = MessageObjectArray.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized TArray get() {
+	public synchronized MessageObjectArray get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -70,11 +70,11 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new TArray[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
+		__pool = new MessageObjectArray[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = TArray.newInstance();
+			__pool[i] = MessageObjectArray.newInstance();
 			__used[i] = false;
 		}
 
@@ -87,7 +87,7 @@ public final class ArrayPool extends AbstractLogger implements IElementPool<TArr
 	}
 
 	@Override
-	public synchronized void repay(TArray element) {
+	public synchronized void repay(MessageObjectArray element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {

@@ -36,7 +36,6 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.XMLUtility;
 import com.tenio.identity.configuration.constant.ConnectionType;
 import com.tenio.identity.configuration.constant.RestMethod;
-import com.tenio.identity.entity.element.TObject;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -273,7 +272,7 @@ public abstract class BaseConfiguration extends AbstractLogger {
 
 		// Extension
 		var attrExtensionProperties = XMLUtility.getNodeList(root, "//Server/Extension/Properties/Property");
-		var extProperties = TObject.newInstance();
+		var extProperties = new HashMap<String, String>();
 		for (int j = 0; j < attrExtensionProperties.getLength(); j++) {
 			var pDataNode = attrExtensionProperties.item(j);
 			var key = pDataNode.getAttributes().getNamedItem("name").getTextContent();
@@ -405,8 +404,8 @@ public abstract class BaseConfiguration extends AbstractLogger {
 	 * about how to use it.
 	 * 
 	 * @param extProperties the extension data in key-value format (see
-	 *                      {@link TObject})
+	 *                      {@link Map})
 	 */
-	protected abstract void _extend(TObject extProperties);
+	protected abstract void _extend(Map<String, String> extProperties);
 
 }

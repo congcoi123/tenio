@@ -34,8 +34,8 @@ import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.entity.element.TArray;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
+import com.tenio.identity.entity.element.MessageObjectArray;
 import com.tenio.identity.message.pool.ByteArrayInputStreamPool;
 
 /**
@@ -44,7 +44,7 @@ import com.tenio.identity.message.pool.ByteArrayInputStreamPool;
  * languages like JSON. But it's faster and smaller. Small integers are encoded
  * into a single byte, and typical short strings require only one extra byte in
  * addition to the strings themselves. This class helps you convert one system
- * object ({@link TObject}) to MsgPack data and vice versa.
+ * object ({@link Map}) to MsgPack data and vice versa.
  * 
  * @author kong
  * 
@@ -62,13 +62,13 @@ public final class MsgPackConverter {
 	}
 
 	/**
-	 * Un-serialize an array of bytes data to a {@link TObject}
+	 * Un-serialize an array of bytes data to a {@link Map}
 	 * 
 	 * @param msg an array of bytes data
-	 * @return an object in <b>TObject</b> type
+	 * @return an object in <b>MessageObject</b> type
 	 */
-	public static TObject unserialize(byte[] msg) {
-		var object = TObject.newInstance();
+	public static MessageObject unserialize(byte[] msg) {
+		var object = MessageObject.newInstance();
 		var dstMap = MsgPackUtil.unpack(msg);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
@@ -92,7 +92,7 @@ public final class MsgPackConverter {
 		private static final IElementPool<ByteArrayInputStream> __bytesPool = new ByteArrayInputStreamPool();
 
 		/**
-		 * Converting an object ({@link TObject}) to array of bytes data
+		 * Converting an object ({@link Map}) to array of bytes data
 		 * 
 		 * @param map an object in {@link Map} type
 		 * @return an array of bytes data
@@ -152,7 +152,7 @@ public final class MsgPackConverter {
 			} else if (value.isArrayValue()) {
 				// Convert value to list of objects (TArray)
 				var arr = value.asArrayValue();
-				var array = TArray.newInstance();
+				var array = MessageObjectArray.newInstance();
 				arr.forEach(element -> {
 					array.add(valueToObject(element));
 				});

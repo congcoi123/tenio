@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 
 import com.tenio.identity.configuration.constant.ConnectionType;
 import com.tenio.identity.configuration.constant.LEvent;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.network.Connection;
 
@@ -74,10 +74,10 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * Handle in-comming messages for the channel
 	 * 
 	 * @param ctx     the channel, see {@link ChannelHandlerContext}
-	 * @param message the message, see {@link TObject}
+	 * @param message the message, see {@link MessageObject}
 	 * @param remote  the current remote address (in use for Datagram channel)
 	 */
-	protected void _channelRead(ChannelHandlerContext ctx, TObject message, InetSocketAddress remote) {
+	protected void _channelRead(ChannelHandlerContext ctx, MessageObject message, InetSocketAddress remote) {
 		var connection = __getConnection(ctx.channel(), remote);
 
 		if (connection == null) {

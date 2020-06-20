@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.identity.configuration;
 
 import java.util.Map;
-
-import com.tenio.identity.configuration.BaseConfiguration;
-import com.tenio.identity.entity.element.TObject;
+import java.util.Map.Entry;
 
 /**
  * Create your own configurations
@@ -48,8 +46,8 @@ public final class Configuration extends BaseConfiguration {
 	}
 
 	@Override
-	protected void _extend(TObject extProperties) {
-		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
+	protected void _extend(Map<String, String> extProperties) {
+		for (Entry<String, String> entry : extProperties.entrySet()) {
 			switch (entry.getKey()) {
 			case "customValue1":
 				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));

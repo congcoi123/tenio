@@ -25,13 +25,13 @@ package com.tenio.identity.api;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.identity.api.pool.ArrayPool;
-import com.tenio.identity.api.pool.ObjectPool;
+import com.tenio.identity.api.pool.MessageObjectArrayPool;
+import com.tenio.identity.api.pool.MessageObjectPool;
 import com.tenio.identity.configuration.constant.TEvent;
 import com.tenio.identity.entity.AbstractPlayer;
 import com.tenio.identity.entity.AbstractRoom;
-import com.tenio.identity.entity.element.TArray;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObjectArray;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.network.Connection;
 
@@ -48,8 +48,8 @@ import com.tenio.identity.network.Connection;
  */
 public final class MessageApi extends AbstractLogger {
 
-	private final IElementPool<TArray> __arrayPool = new ArrayPool();
-	private final IElementPool<TObject> __objectPool = new ObjectPool();
+	private final IElementPool<MessageObjectArray> __arrayPool = new MessageObjectArrayPool();
+	private final IElementPool<MessageObject> __objectPool = new MessageObjectPool();
 	private final IEventManager __eventManager;
 
 	public MessageApi(IEventManager eventManager) {
@@ -68,8 +68,8 @@ public final class MessageApi extends AbstractLogger {
 		message.put(key, value);
 		connection.send(message);
 		__objectPool.repay(message);
-		if (value instanceof TArray) {
-			__arrayPool.repay((TArray) value);
+		if (value instanceof MessageObjectArray) {
+			__arrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
@@ -83,9 +83,9 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
-	 * @param data       the main data of message, see: {@link TArray}
+	 * @param data       the main data of message, see: {@link MessageObjectArray}
 	 */
-	public void sendToConnection(Connection connection, String key, Object value, String keyData, TArray data) {
+	public void sendToConnection(Connection connection, String key, Object value, String keyData, MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -101,7 +101,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param index   the index of connection in current player
 	 * @param message the sending message
 	 */
-	private void __send(AbstractPlayer player, int index, TObject message) {
+	private void __send(AbstractPlayer player, int index, MessageObject message) {
 		player.setCurrentWriterTime(); // update time to check TIMEOUT
 		// send to CLIENT (connection)
 		if (player.hasConnection(index)) {
@@ -124,8 +124,8 @@ public final class MessageApi extends AbstractLogger {
 		message.put(key, value);
 		__send(player, index, message);
 		__objectPool.repay(message);
-		if (value instanceof TArray) {
-			__arrayPool.repay((TArray) value);
+		if (value instanceof MessageObjectArray) {
+			__arrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
@@ -140,9 +140,9 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message data, see: {@link TArray}
+	 * @param data    the message data, see: {@link MessageObjectArray}
 	 */
-	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData, TArray data) {
+	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData, MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -166,8 +166,8 @@ public final class MessageApi extends AbstractLogger {
 			__send(player, index, message);
 		}
 		__objectPool.repay(message);
-		if (value instanceof TArray) {
-			__arrayPool.repay((TArray) value);
+		if (value instanceof MessageObjectArray) {
+			__arrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
@@ -182,9 +182,9 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
+	 * @param data    the message's data, see: {@link MessageObjectArray}
 	 */
-	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData, TArray data) {
+	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData, MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -213,8 +213,8 @@ public final class MessageApi extends AbstractLogger {
 			}
 		}
 		__objectPool.repay(message);
-		if (value instanceof TArray) {
-			__arrayPool.repay((TArray) value);
+		if (value instanceof MessageObjectArray) {
+			__arrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
@@ -229,10 +229,10 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link TArray}
+	 * @param data    the message's data, see: {@link MessageObjectArray}
 	 */
 	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
-			TArray data) {
+			MessageObjectArray data) {
 		var room = player.getRoom();
 		var message = __objectPool.get();
 		message.put(key, value);
@@ -247,9 +247,9 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
-	 * @return a {@link TArray} object from the pooling mechanism
+	 * @return a {@link MessageObjectArray} object from the pooling mechanism
 	 */
-	public TArray getArrayPack() {
+	public MessageObjectArray getArrayPack() {
 		return __arrayPool.get();
 	}
 

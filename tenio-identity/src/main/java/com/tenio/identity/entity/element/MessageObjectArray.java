@@ -32,18 +32,18 @@ import java.util.ArrayList;
  * @author kong
  * 
  */
-public final class TArray extends ArrayList<Object> {
+public final class MessageObjectArray extends ArrayList<Object> {
 
 	private static final long serialVersionUID = -5100842875580575666L;
 
-	public static TArray newInstance() {
-		return new TArray();
+	public static MessageObjectArray newInstance() {
+		return new MessageObjectArray();
 	}
 
-	private TArray() {
+	private MessageObjectArray() {
 	}
 
-	public TArray put(final Object e) {
+	public MessageObjectArray put(final Object e) {
 		add(e);
 		return this;
 	}
@@ -76,8 +76,8 @@ public final class TArray extends ArrayList<Object> {
 		return get(index);
 	}
 
-	public TArray getTArray(final int index) {
-		return (TArray) get(index);
+	public MessageObjectArray getTArray(final int index) {
+		return (MessageObjectArray) get(index);
 	}
 
 }

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.identity.configuration.constant.Constants;
-import com.tenio.identity.entity.element.TObject;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.message.codec.MessagePacker;
 import com.tenio.identity.message.codec.MsgPackConverter;
 
@@ -40,11 +40,11 @@ import com.tenio.identity.message.codec.MsgPackConverter;
  */
 public final class MessagePackingTest {
 
-	private TObject __message;
+	private MessageObject __message;
 
 	@BeforeEach
 	public void initialize() {
-		__message = TObject.newInstance();
+		__message = MessageObject.newInstance();
 		__message.put("string", "String");
 		__message.put("integer", 1993);
 		__message.put("float", 1.0);
@@ -53,23 +53,23 @@ public final class MessagePackingTest {
 
 	@Test
 	public void messageSerializeAndUnserializeShouldReturnTrue() {
-		// Convert TObject message to byte array
+		// Convert MessageObject message to byte array
 		var bytes = MsgPackConverter.serialize(__message);
 		
-		// Revert the byte array to TObject message
+		// Revert the byte array to MessageObject message
 		assertEquals(__message, MsgPackConverter.unserialize(bytes));
 	}
 
 	@Test
 	public void messagePackAndUnpackShouldReturnTrue() {
-		// Convert TObject message to byte array
+		// Convert MessageObject message to byte array
 		var bytes = MsgPackConverter.serialize(__message);
 		// Pack message with header-length value
 		var packWithHeader = MessagePacker.pack(bytes);
 		// Slide message, keep only the message content
 		var packWithContent = Arrays.copyOfRange(packWithHeader, Constants.HEADER_BYTES, packWithHeader.length);
 		
-		// Revert the byte array to TObject message
+		// Revert the byte array to MessageObject message
 		assertEquals(__message, MsgPackConverter.unserialize(packWithContent));
 	}
 
