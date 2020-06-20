@@ -84,7 +84,11 @@ public final class Server extends AbstractLogger implements IServer {
 		__messageApi = new MessageApi(__eventManager);
 
 		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
-
+		
+		// print out the logo
+		for (var line : Constants.LOGO) {			
+			info("", "", line);
+		}
 	} // prevent creation manually
 
 	// preventing Singleton object instantiation from outside
