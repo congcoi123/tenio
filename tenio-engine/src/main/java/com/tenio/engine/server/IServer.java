@@ -25,17 +25,17 @@ package com.tenio.engine.server;
 
 import java.io.IOException;
 
-import com.tenio.api.HeartBeatApi;
-import com.tenio.api.MessageApi;
-import com.tenio.api.PlayerApi;
-import com.tenio.api.RoomApi;
-import com.tenio.api.TaskApi;
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.event.IEventManager;
-import com.tenio.exception.DuplicatedUriAndMethodException;
-import com.tenio.exception.NotDefinedSocketConnectionException;
-import com.tenio.exception.NotDefinedSubscribersException;
-import com.tenio.extension.IExtension;
+import com.tenio.engine.api.HeartBeatApi;
+import com.tenio.engine.api.MessageApi;
+import com.tenio.engine.api.PlayerApi;
+import com.tenio.engine.api.RoomApi;
+import com.tenio.engine.api.TaskApi;
+import com.tenio.engine.configuration.BaseConfiguration;
+import com.tenio.engine.event.IEventManager;
+import com.tenio.engine.exception.DuplicatedUriAndMethodException;
+import com.tenio.engine.exception.NotDefinedSocketConnectionException;
+import com.tenio.engine.exception.NotDefinedSubscribersException;
+import com.tenio.engine.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's

@@ -25,13 +25,13 @@ package com.tenio.engine;
 
 import java.io.IOException;
 
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.exception.DuplicatedUriAndMethodException;
-import com.tenio.exception.NotDefinedSocketConnectionException;
-import com.tenio.exception.NotDefinedSubscribersException;
-import com.tenio.extension.IExtension;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.server.Server;
+import com.tenio.engine.configuration.BaseConfiguration;
+import com.tenio.engine.exception.DuplicatedUriAndMethodException;
+import com.tenio.engine.exception.NotDefinedSocketConnectionException;
+import com.tenio.engine.exception.NotDefinedSubscribersException;
+import com.tenio.engine.extension.IExtension;
+import com.tenio.engine.logger.AbstractLogger;
+import com.tenio.engine.server.Server;
 
 /**
  * Your application will start from here.

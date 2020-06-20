@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.ecs;
+package com.tenio.engine.ecs;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,10 +31,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.ecs.model.GameComponents;
-import com.tenio.ecs.model.GameContext;
-import com.tenio.ecs.model.system.TestSystem;
 import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.model.GameComponents;
+import com.tenio.engine.ecs.model.GameContext;
+import com.tenio.engine.ecs.model.system.TestSystem;
 import com.tenio.engine.ecs.system.Systems;
 
 /**

@@ -24,9 +24,9 @@ THE SOFTWARE.
 package com.tenio.engine.api;
 
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
-import com.tenio.entity.element.TObject;
 
 /**
  * This class provides you a necessary interface for managing heart beats.

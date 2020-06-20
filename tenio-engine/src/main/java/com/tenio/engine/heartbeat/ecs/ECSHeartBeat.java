@@ -25,9 +25,9 @@ package com.tenio.engine.heartbeat.ecs;
 
 import com.tenio.engine.ecs.system.ISystem;
 import com.tenio.engine.ecs.system.Systems;
+import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.physic2d.graphic.Paint;
-import com.tenio.entity.element.TObject;
 
 /**
  * The ECS system base on heart-beat

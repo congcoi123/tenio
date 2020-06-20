@@ -26,20 +26,20 @@ package com.tenio.engine.extension;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.api.HeartBeatApi;
-import com.tenio.api.MessageApi;
-import com.tenio.api.PlayerApi;
-import com.tenio.api.RoomApi;
-import com.tenio.api.TaskApi;
-import com.tenio.configuration.constant.RestMethod;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.AbstractPlayer;
-import com.tenio.entity.AbstractRoom;
-import com.tenio.entity.element.TObject;
-import com.tenio.event.ISubscriber;
-import com.tenio.logger.AbstractLogger;
-import com.tenio.network.Connection;
-import com.tenio.server.Server;
+import com.tenio.engine.api.HeartBeatApi;
+import com.tenio.engine.api.MessageApi;
+import com.tenio.engine.api.PlayerApi;
+import com.tenio.engine.api.RoomApi;
+import com.tenio.engine.api.TaskApi;
+import com.tenio.engine.configuration.constant.RestMethod;
+import com.tenio.engine.configuration.constant.TEvent;
+import com.tenio.engine.entity.AbstractPlayer;
+import com.tenio.engine.entity.AbstractRoom;
+import com.tenio.engine.entity.element.TObject;
+import com.tenio.engine.event.ISubscriber;
+import com.tenio.engine.logger.AbstractLogger;
+import com.tenio.engine.network.Connection;
+import com.tenio.engine.server.Server;
 
 /**
  * This class provides you all the necessary APIs for your own logic game

@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(JUnitPlatform.class)
 @SuiteDisplayName("Test all unit test cases for tenio-common module")
-@SelectPackages("com.tenio")
+@SelectPackages("com.tenio.common")
 public final class TenIOCommonTest {
 
 }

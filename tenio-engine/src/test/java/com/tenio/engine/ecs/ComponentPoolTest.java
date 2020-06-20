@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.message;
+package com.tenio.engine.ecs;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,73 +33,63 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.api.pool.ObjectPool;
-import com.tenio.configuration.constant.Constants;
-import com.tenio.entity.element.TObject;
-import com.tenio.exception.NullElementPoolException;
-import com.tenio.pool.IElementPool;
+import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.pool.IElementPool;
+import com.tenio.engine.ecs.base.IComponent;
+import com.tenio.engine.ecs.model.component.View;
+import com.tenio.engine.ecs.pool.ComponentPool;
 
 /**
  * @author kong
  */
-public final class ObjectPoolTest {
+public final class ComponentPoolTest {
 
-	private IElementPool<TObject> __objectPool;
+	private IElementPool<IComponent> __componentPool;
 
 	@BeforeEach
 	public void initialize() {
-		__objectPool = new ObjectPool();
+		__componentPool = new ComponentPool(View.class);
 	}
 
 	@AfterEach
 	public void tearDown() {
-		__objectPool.cleanup();
+		__componentPool.cleanup();
 	}
 
 	@Test
-	public void createNewTObjectShouldReturnSuccess() {
-		TObject object = __objectPool.get();
-		
-		assertNotEquals(null, object);
+	public void createNewComponentShouldReturnSuccess() {
+		View view = (View) __componentPool.get();
+
+		assertNotEquals(null, view);
 	}
 
 	@Test
-	public void repayAnObjectWithoutGetShouldCauseException() {
+	public void repayAComponentWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			TObject object = TObject.newInstance();
-			__objectPool.repay(object);
+			View view = new View();
+			__componentPool.repay(view);
 		});
-	}
-
-	@Test
-	public void afterReplayObjectShouldBeClearedAllData() {
-		TObject object = __objectPool.get();
-		object.put("key1", "value1");
-		object.put("key2", "value2");
-		object.put("key3", "value3");
-		__objectPool.repay(object);
-		
-		assertTrue(object.isEmpty());
 	}
 
 	@Test
 	public void createNumberOfElementsShouldLessThanPoolSize() {
 		int numberElement = 100;
 		for (int i = 0; i < numberElement; i++) {
-			__objectPool.get();
+			__componentPool.get();
 		}
 		int expectedPoolSize = 0;
-		if (numberElement <= Constants.BASE_ELEMENT_POOL) {
-			expectedPoolSize = Constants.BASE_ELEMENT_POOL;
+		if (numberElement <= CommonConstants.BASE_ELEMENT_POOL) {
+			expectedPoolSize = CommonConstants.BASE_ELEMENT_POOL;
 		} else {
-			double p = Math
-					.ceil((double) (numberElement - Constants.BASE_ELEMENT_POOL) / (double) Constants.ADD_ELEMENT_POOL);
-			expectedPoolSize = (int) (Constants.BASE_ELEMENT_POOL + Constants.ADD_ELEMENT_POOL * p);
+			double p = Math.ceil((double) (numberElement - CommonConstants.BASE_ELEMENT_POOL)
+					/ (double) CommonConstants.ADD_ELEMENT_POOL);
+			expectedPoolSize = (int) (CommonConstants.BASE_ELEMENT_POOL + CommonConstants.ADD_ELEMENT_POOL * p);
 		}
 		final int expected = expectedPoolSize;
-		
-		assertAll("createNumberOfElements", () -> assertEquals(expected, __objectPool.getPoolSize()),
-				() -> assertTrue(__objectPool.getPoolSize() > numberElement));
+
+		assertAll("createNumberOfElements", () -> assertEquals(expected, __componentPool.getPoolSize()),
+				() -> assertTrue(__componentPool.getPoolSize() > numberElement));
 	}
 
 }

@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.ecs.model;
+package com.tenio.engine.ecs.model;
 
-import com.tenio.ecs.model.component.Position;
 import com.tenio.engine.ecs.base.Entity;
+import com.tenio.engine.ecs.model.component.Position;
 
 /**
  * @author kong
