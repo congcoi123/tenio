@@ -26,6 +26,7 @@ package com.tenio.identity.server;
 import java.io.IOException;
 
 import com.tenio.common.api.TaskApi;
+import com.tenio.common.extension.IExtension;
 import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
 import com.tenio.identity.api.RoomApi;
@@ -34,7 +35,6 @@ import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.exception.DuplicatedUriAndMethodException;
 import com.tenio.identity.exception.NotDefinedSocketConnectionException;
 import com.tenio.identity.exception.NotDefinedSubscribersException;
-import com.tenio.identity.extension.IExtension;
 
 /**
  * This class manages the workflow of the current server. The instruction's

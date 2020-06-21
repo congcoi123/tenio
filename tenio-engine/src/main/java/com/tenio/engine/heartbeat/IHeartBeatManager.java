@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.heartbeat;
 
 import com.tenio.engine.configuration.BaseConfiguration;
-import com.tenio.engine.entity.element.TObject;
+import com.tenio.engine.message.IMessage;
 
 /**
  * The Java ExecutorService is a construct that allows you to pass a task to be
@@ -42,16 +42,18 @@ public interface IHeartBeatManager {
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
 	 * @param configuration see {@link BaseConfiguration}
+	 * @throws Exception
 	 */
-	void initialize(final BaseConfiguration configuration);
+	void initialize(final BaseConfiguration configuration) throws Exception;
 
 	/**
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
 	 * @param maxHeartbeat the number of maximum heart-beats that the server can
 	 *                     handle
+	 * @throws Exception
 	 */
-	void initialize(final int maxHeartbeat);
+	void initialize(final int maxHeartbeat) throws Exception;
 
 	/**
 	 * Create a new heart-beat.
@@ -85,17 +87,17 @@ public interface IHeartBeatManager {
 	 * Send a message to a particular heart-beat with a delay time
 	 * 
 	 * @param id        the unique id
-	 * @param message   the message content, see {@link TObject}
+	 * @param message   the message content, see {@link IMessage}
 	 * @param delayTime the delay time in seconds
 	 */
-	void sendMessage(final String id, final TObject message, final double delayTime);
+	void sendMessage(final String id, final IMessage message, final double delayTime);
 
 	/**
 	 * Send a message to a particular heart-beat with no delay time
 	 * 
 	 * @param id      the unique id
-	 * @param message the message content, see {@link TObject}
+	 * @param message the message content, see {@link IMessage}
 	 */
-	void sendMessage(final String id, final TObject message);
+	void sendMessage(final String id, final IMessage message);
 
 }

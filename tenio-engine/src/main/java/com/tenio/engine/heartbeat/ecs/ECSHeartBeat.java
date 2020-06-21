@@ -25,8 +25,8 @@ package com.tenio.engine.heartbeat.ecs;
 
 import com.tenio.engine.ecs.system.ISystem;
 import com.tenio.engine.ecs.system.Systems;
-import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
+import com.tenio.engine.message.IMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
@@ -58,7 +58,7 @@ public class ECSHeartBeat extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onMessage(TObject message) {
+	protected void _onMessage(IMessage message) {
 	}
 
 	@Override

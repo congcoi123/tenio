@@ -23,15 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.engine;
 
-import java.io.IOException;
-
+import com.tenio.common.extension.IExtension;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.configuration.BaseConfiguration;
-import com.tenio.engine.exception.DuplicatedUriAndMethodException;
-import com.tenio.engine.exception.NotDefinedSocketConnectionException;
-import com.tenio.engine.exception.NotDefinedSubscribersException;
-import com.tenio.engine.extension.IExtension;
-import com.tenio.engine.logger.AbstractLogger;
-import com.tenio.engine.server.Server;
+import com.tenio.engine.server.Engine;
 
 /**
  * Your application will start from here.
@@ -42,17 +37,16 @@ import com.tenio.engine.server.Server;
 public abstract class AbstractApp extends AbstractLogger {
 
 	/**
-	 * Start The Game Server
+	 * Start The Game Engine
 	 */
 	public void start() {
-		var server = Server.getInstance();
-		server.setExtension(getExtension());
+		var engine = Engine.getInstance();
+		engine.setExtension(getExtension());
 		try {
-			server.start(getConfiguration());
-		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
-				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
+			engine.start(getConfiguration());
+		} catch (Exception e) {
 			error(e, "Application start");
-			server.shutdown();
+			engine.shutdown();
 		}
 	}
 

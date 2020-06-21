@@ -18,7 +18,7 @@
 
 	<Configuration>
 		<Properties>
-			<!-- The maximum number of heartbeats which game can handle -->
+			<!-- The maximum number of heart-beats which game can handle -->
 			<Property name="maxHeartbeat">5</Property>		<!-- Null with value -1 -->
 		</Properties>
 	</Configuration>

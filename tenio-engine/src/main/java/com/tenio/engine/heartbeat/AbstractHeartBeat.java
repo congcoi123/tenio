@@ -37,9 +37,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.engine.engine.utility.MathUtility;
-import com.tenio.engine.engine.utility.TimeUtility;
-import com.tenio.engine.entity.element.TObject;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.engine.message.IMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
@@ -391,9 +391,9 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called when the heart-beat receives a message from outside
 	 * 
-	 * @param message the coming message, see {@link TObject}
+	 * @param message the coming message, see {@link IMessage}
 	 */
-	protected abstract void _onMessage(TObject message);
+	protected abstract void _onMessage(IMessage message);
 
 	/**
 	 * It is called every frame in a game loop

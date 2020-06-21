@@ -24,9 +24,9 @@ THE SOFTWARE.
 package com.tenio.engine.api;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.heartbeat.IHeartBeatManager;
+import com.tenio.engine.message.IMessage;
 
 /**
  * This class provides you a necessary interface for managing heart beats.
@@ -43,17 +43,7 @@ public final class HeartBeatApi extends AbstractLogger {
 	public HeartBeatApi(IHeartBeatManager heartBeatManager) {
 		__heartBeatManager = heartBeatManager;
 	}
-
-	/**
-	 * The number of maximum heart-beats that the server can handle.
-	 * 
-	 * @param maxHeartbeat The number of maximum heart-beats that the server can
-	 *                     handle
-	 */
-	public void initialize(int maxHeartbeat) {
-		__heartBeatManager.initialize(maxHeartbeat);
-	}
-
+	
 	/**
 	 * Create a new heart-beat.
 	 * 
@@ -80,7 +70,7 @@ public final class HeartBeatApi extends AbstractLogger {
 	 * @param message   the message content
 	 * @param delayTime the delay time in seconds
 	 */
-	public void sendMessage(final String id, final TObject message, final double delayTime) {
+	public void sendMessage(final String id, final IMessage message, final double delayTime) {
 		__heartBeatManager.sendMessage(id, message, delayTime);
 	}
 
@@ -90,7 +80,7 @@ public final class HeartBeatApi extends AbstractLogger {
 	 * @param id      the unique id
 	 * @param message the message content
 	 */
-	public void sendMessage(final String id, final TObject message) {
+	public void sendMessage(final String id, final IMessage message) {
 		__heartBeatManager.sendMessage(id, message);
 	}
 

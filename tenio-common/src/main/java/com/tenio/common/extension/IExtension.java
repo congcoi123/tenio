@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.extension;
+package com.tenio.common.extension;
 
 /**
  * An entry point class is the first one you start to handle your own logic
@@ -36,8 +36,7 @@ package com.tenio.engine.extension;
 public interface IExtension {
 
 	/**
-	 * Initialize list subscribers, use <b>Event Emitter</b> with this method
-	 * {@code on(String name, ISubscriber sub)}
+	 * Initialize extension processing
 	 */
 	void initialize();
 }

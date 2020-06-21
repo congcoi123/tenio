@@ -26,11 +26,12 @@ package com.tenio.identity.configuration.constant;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.common.extension.IExtension;
 import com.tenio.identity.configuration.BaseConfiguration;
 import com.tenio.identity.entity.AbstractPlayer;
 import com.tenio.identity.entity.AbstractRoom;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.extension.AbstractExtensionHandler;
-import com.tenio.identity.extension.IExtension;
 import com.tenio.identity.network.Connection;
 
 /**

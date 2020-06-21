@@ -34,8 +34,8 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.configuration.BaseConfiguration;
-import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.exception.HeartbeatNotFoundException;
+import com.tenio.engine.message.IMessage;
 
 /**
  * The Java ExecutorService is a construct that allows you to pass a task to be
@@ -63,19 +63,15 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	private ExecutorService __executorService;
 
 	@Override
-	public void initialize(final BaseConfiguration configuration) {
+	public void initialize(final BaseConfiguration configuration) throws Exception {
 		int maxHeartbeat = configuration.getInt(BaseConfiguration.MAX_HEARTBEAT);
 		initialize(maxHeartbeat);
 	}
 
 	@Override
-	public void initialize(final int maxHeartbeat) {
-		try {
-			__executorService = Executors.newFixedThreadPool(maxHeartbeat);
-			info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
-		} catch (Exception e) {
-			error(e);
-		}
+	public void initialize(final int maxHeartbeat) throws Exception {
+		__executorService = Executors.newFixedThreadPool(maxHeartbeat);
+		info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
 	}
 
 	@Override
@@ -137,13 +133,13 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	}
 
 	@Override
-	public void sendMessage(String id, TObject message, double delayTime) {
+	public void sendMessage(String id, IMessage message, double delayTime) {
 		var container = HMessage.newInstance(message, delayTime);
 		__listeners.get(id).add(container);
 	}
 
 	@Override
-	public void sendMessage(String id, TObject message) {
+	public void sendMessage(String id, IMessage message) {
 		sendMessage(id, message, 0);
 	}
 

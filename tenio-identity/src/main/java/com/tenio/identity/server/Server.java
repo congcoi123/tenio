@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.extension.IExtension;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
@@ -45,7 +46,6 @@ import com.tenio.identity.event.IEventManager;
 import com.tenio.identity.exception.DuplicatedUriAndMethodException;
 import com.tenio.identity.exception.NotDefinedSocketConnectionException;
 import com.tenio.identity.exception.NotDefinedSubscribersException;
-import com.tenio.identity.extension.IExtension;
 import com.tenio.identity.network.INetwork;
 import com.tenio.identity.network.http.HttpManagerTask;
 import com.tenio.identity.network.netty.NettyNetwork;
@@ -129,13 +129,13 @@ public final class Server extends AbstractLogger implements IServer {
 		// server need at least one connection to start up
 		__checkDefinedMainSocketConnection(configuration);
 
-		// http checking
+		// HTTP checking
 		__checkSubscriberHttpHandler(configuration);
 
 		// schedules
 		__createAllSchedules(configuration);
 
-		// http handler
+		// HTTP handler
 		__createHttpManagers(configuration);
 
 		// start network

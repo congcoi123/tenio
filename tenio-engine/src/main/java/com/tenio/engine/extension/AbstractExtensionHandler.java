@@ -23,23 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.engine.extension;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.tenio.common.extension.IExtension;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.api.HeartBeatApi;
-import com.tenio.engine.api.MessageApi;
-import com.tenio.engine.api.PlayerApi;
-import com.tenio.engine.api.RoomApi;
-import com.tenio.engine.api.TaskApi;
-import com.tenio.engine.configuration.constant.RestMethod;
-import com.tenio.engine.configuration.constant.TEvent;
-import com.tenio.engine.entity.AbstractPlayer;
-import com.tenio.engine.entity.AbstractRoom;
-import com.tenio.engine.entity.element.TObject;
-import com.tenio.engine.event.ISubscriber;
-import com.tenio.engine.logger.AbstractLogger;
-import com.tenio.engine.network.Connection;
-import com.tenio.engine.server.Server;
+import com.tenio.engine.server.Engine;
 
 /**
  * This class provides you all the necessary APIs for your own logic game
@@ -56,138 +43,11 @@ import com.tenio.engine.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	private Server __server = Server.getInstance();
+	private Engine __server = Engine.getInstance();
 
-	/**
-	 * @see MessageApi
-	 */
-	protected MessageApi _messageApi = __server.getMessageApi();
-	/**
-	 * @see PlayerApi
-	 */
-	protected PlayerApi _playerApi = __server.getPlayerApi();
-	/**
-	 * @see RoomApi
-	 */
-	protected RoomApi _roomApi = __server.getRoomApi();
-	/**
-	 * @see TaskApi
-	 */
-	protected TaskApi _taskApi = __server.getTaskApi();
 	/**
 	 * @see HeartBeatApi
 	 */
 	protected HeartBeatApi _heartbeatApi = __server.getHeartBeatApi();
-
-	/**
-	 * Handle your own logic with the corresponding event type
-	 * 
-	 * @param type the type of this current event. All the supported type can be
-	 *             found in {@link TEvent}
-	 * @param sub  your own subscriber-class handler
-	 */
-	protected void _on(final TEvent type, final ISubscriber sub) {
-		__server.getEventManager().getExternal().on(type, sub);
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link TObject} type
-	 */
-	protected TObject _getTObject(Object object) {
-		return (TObject) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Connection} type
-	 */
-	protected Connection _getConnection(Object object) {
-		return (Connection) object;
-	}
-
-	@SuppressWarnings("unchecked")
-	/**
-	 * @param <T>    the corresponding return type
-	 * @param object the corresponding object
-	 * @return a value in {@link AbstractPlayer} type
-	 */
-	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
-		return (T) object;
-	}
-
-	@SuppressWarnings("unchecked")
-	/**
-	 * @param <T>    the corresponding return type
-	 * @param object the corresponding object
-	 * @return a value in {@link AbstractRoom} type
-	 */
-	protected <T extends AbstractRoom> T _getRoom(Object object) {
-		return (T) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Boolean} type
-	 */
-	protected boolean _getBoolean(Object object) {
-		return (boolean) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return value in {@link String} type
-	 */
-	protected String _getString(Object object) {
-		return (String) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Integer} type
-	 */
-	protected int _getInt(Object object) {
-		return (int) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Long} type
-	 */
-	protected long _getLong(Object object) {
-		return (long) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link RestMethod} type
-	 */
-	protected RestMethod _getRestMethod(Object object) {
-		return (RestMethod) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link HttpServletRequest} type
-	 */
-	protected HttpServletRequest _getHttpServletRequest(Object object) {
-		return (HttpServletRequest) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link HttpServletResponse} type
-	 */
-	protected HttpServletResponse _getHttpServletResponse(Object object) {
-		return (HttpServletResponse) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Throwable} type
-	 */
-	protected Throwable _getThrowable(Object object) {
-		return (Throwable) object;
-	}
 
 }

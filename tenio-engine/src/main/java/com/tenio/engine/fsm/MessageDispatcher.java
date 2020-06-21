@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.tenio.common.utility.TimeUtility;
 import com.tenio.engine.configuration.constant.Constants;
-import com.tenio.engine.engine.utility.TimeUtility;
-import com.tenio.engine.entity.element.TObject;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.fsm.entity.Telegram;
+import com.tenio.engine.message.IMessage;
 
 /**
  * This class is used for sending messages between entities
@@ -73,7 +73,7 @@ public final class MessageDispatcher {
 	 * @param msgType  the message's type
 	 * @param info     the message extra information
 	 */
-	public void dispatchMessage(double delay, String sender, String receiver, int msgType, TObject info) {
+	public void dispatchMessage(double delay, String sender, String receiver, int msgType, IMessage info) {
 
 		// get pointers to the receiver
 		var pReceiver = __manager.get(receiver);

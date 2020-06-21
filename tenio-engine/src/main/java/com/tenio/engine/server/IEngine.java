@@ -23,43 +23,23 @@ THE SOFTWARE.
 */
 package com.tenio.engine.server;
 
-import java.io.IOException;
-
+import com.tenio.common.api.TaskApi;
+import com.tenio.common.extension.IExtension;
 import com.tenio.engine.api.HeartBeatApi;
-import com.tenio.engine.api.MessageApi;
-import com.tenio.engine.api.PlayerApi;
-import com.tenio.engine.api.RoomApi;
-import com.tenio.engine.api.TaskApi;
 import com.tenio.engine.configuration.BaseConfiguration;
-import com.tenio.engine.event.IEventManager;
-import com.tenio.engine.exception.DuplicatedUriAndMethodException;
-import com.tenio.engine.exception.NotDefinedSocketConnectionException;
-import com.tenio.engine.exception.NotDefinedSubscribersException;
-import com.tenio.engine.extension.IExtension;
 
 /**
- * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set last and all configuration
- * values should be confirmed.
- * 
  * @author kong
- * 
  */
-interface IServer {
+interface IEngine {
 
 	/**
 	 * Start the server base on your own configurations
 	 * 
 	 * @param configuration, see {@link BaseConfiguration}
-	 * 
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws NotDefinedSocketConnectionException
-	 * @throws NotDefinedSubscribersException
-	 * @throws DuplicatedUriAndMethodException
+	 * @throws Exception
 	 */
-	void start(BaseConfiguration configuration) throws IOException, InterruptedException,
-			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
+	void start(BaseConfiguration configuration) throws Exception;
 
 	/**
 	 * Shut down the server and close all services
@@ -77,26 +57,6 @@ interface IServer {
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
 	void setExtension(IExtension extension);
-
-	/**
-	 * @return see {@link IEventManager}
-	 */
-	IEventManager getEventManager();
-
-	/**
-	 * @return see {@link PlayerApi}
-	 */
-	PlayerApi getPlayerApi();
-
-	/**
-	 * @return see {@link RoomApi}
-	 */
-	RoomApi getRoomApi();
-
-	/**
-	 * @return see {@link MessageApi}
-	 */
-	MessageApi getMessageApi();
 
 	/**
 	 * @return see {@link HeartBeatApi}
