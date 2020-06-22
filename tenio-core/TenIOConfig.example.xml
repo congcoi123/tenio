@@ -3,9 +3,9 @@
 
 	<Properties>
 		<!-- The server name -->
-		<Property name="name">TenIO Identity</Property>
+		<Property name="name">TenIO Core</Property>
 		<!-- The server id (module name) -->
-		<Property name="id">tenio-identity</Property>
+		<Property name="id">tenio-core</Property>
 		<!-- This current version code of your server in integer type (can be compared) -->
 		<Property name="versionCode">1</Property>
 		<!-- This current version name of your server in string type -->
