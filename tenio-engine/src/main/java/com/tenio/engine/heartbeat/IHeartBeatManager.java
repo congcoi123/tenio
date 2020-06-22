@@ -42,7 +42,7 @@ public interface IHeartBeatManager {
 	 * The number of maximum heart-beats that the server can handle.
 	 * 
 	 * @param configuration see {@link BaseConfiguration}
-	 * @throws Exception
+	 * @throws Exception an exception
 	 */
 	void initialize(final BaseConfiguration configuration) throws Exception;
 
@@ -51,7 +51,7 @@ public interface IHeartBeatManager {
 	 * 
 	 * @param maxHeartbeat the number of maximum heart-beats that the server can
 	 *                     handle
-	 * @throws Exception
+	 * @throws Exception an exception
 	 */
 	void initialize(final int maxHeartbeat) throws Exception;
 

@@ -8,7 +8,6 @@ jdk:
   - openjdk11
 
 script:
-  - cd ten-io
   - mvn clean verify -Dgpg.skip=true
   # run all unit test cases
   - mvn clean test

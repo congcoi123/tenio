@@ -26,9 +26,7 @@ package com.tenio.common.extension;
 /**
  * An entry point class is the first one you start to handle your own logic
  * in-game. The class must be implemented this interface and be created as a new
- * instance. In this new object, you can create a number of other logic handler
- * instances @see {@link AbstractExtensionHandler} and declare these in here. It
- * should be had only one entry point class for each server.
+ * instance. It should be had only one entry point class for each server.
  * 
  * @author kong
  * 

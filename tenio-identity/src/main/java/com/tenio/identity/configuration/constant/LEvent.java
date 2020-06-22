@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.identity.configuration.constant;
 
 import com.tenio.identity.entity.AbstractPlayer;
+import com.tenio.identity.entity.element.MessageObject;
 import com.tenio.identity.network.Connection;
 
 /**

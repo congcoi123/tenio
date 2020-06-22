@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
+import com.tenio.common.extension.IExtension;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.identity.api.MessageApi;
 import com.tenio.identity.api.PlayerApi;
