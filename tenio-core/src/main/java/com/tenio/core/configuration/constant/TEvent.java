@@ -26,12 +26,12 @@ package com.tenio.core.configuration.constant;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.extension.IExtension;
 import com.tenio.core.configuration.BaseConfiguration;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;
 
 /**

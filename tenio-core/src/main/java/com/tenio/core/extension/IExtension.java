@@ -21,12 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.extension;
+package com.tenio.core.extension;
 
 /**
  * An entry point class is the first one you start to handle your own logic
  * in-game. The class must be implemented this interface and be created as a new
- * instance. It should be had only one entry point class for each server.
+ * instance. In this new object, you can create a number of other logic handler
+ * instances @see {@link AbstractExtensionHandler} and declare these in here. It
+ * should be had only one entry point class for each server. instance. It should
+ * be had only one entry point class for each server.
  * 
  * @author kong
  * 

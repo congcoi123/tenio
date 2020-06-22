@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.extension.IExtension;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
@@ -46,6 +45,7 @@ import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
+import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;

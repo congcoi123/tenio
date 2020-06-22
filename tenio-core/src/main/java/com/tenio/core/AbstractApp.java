@@ -25,12 +25,12 @@ package com.tenio.core;
 
 import java.io.IOException;
 
-import com.tenio.common.extension.IExtension;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.BaseConfiguration;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
+import com.tenio.core.extension.IExtension;
 import com.tenio.core.server.Server;
 
 /**
