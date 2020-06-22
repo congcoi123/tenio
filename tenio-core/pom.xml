@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
   	</parent>
 
-	<artifactId>tenio-identity</artifactId>
+	<artifactId>tenio-core</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>

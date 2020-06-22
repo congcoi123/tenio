@@ -61,7 +61,7 @@
 
 	<modules>
 		<module>tenio-common</module>
-		<module>tenio-identity</module>
+		<module>tenio-core</module>
 		<module>tenio-engine</module>
 	</modules>
 
