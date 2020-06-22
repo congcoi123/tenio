@@ -33,7 +33,6 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.engine.configuration.BaseConfiguration;
 import com.tenio.engine.exception.HeartbeatNotFoundException;
 import com.tenio.engine.message.IMessage;
 
@@ -61,12 +60,6 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	@GuardedBy("this")
 	private final Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
 	private ExecutorService __executorService;
-
-	@Override
-	public void initialize(final BaseConfiguration configuration) throws Exception {
-		int maxHeartbeat = configuration.getInt(BaseConfiguration.MAX_HEARTBEAT);
-		initialize(maxHeartbeat);
-	}
 
 	@Override
 	public void initialize(final int maxHeartbeat) throws Exception {

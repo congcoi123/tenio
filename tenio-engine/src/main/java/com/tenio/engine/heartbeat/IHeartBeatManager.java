@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.engine.heartbeat;
 
-import com.tenio.engine.configuration.BaseConfiguration;
 import com.tenio.engine.message.IMessage;
 
 /**
@@ -37,14 +36,6 @@ import com.tenio.engine.message.IMessage;
  *
  */
 public interface IHeartBeatManager {
-
-	/**
-	 * The number of maximum heart-beats that the server can handle.
-	 * 
-	 * @param configuration see {@link BaseConfiguration}
-	 * @throws Exception an exception
-	 */
-	void initialize(final BaseConfiguration configuration) throws Exception;
 
 	/**
 	 * The number of maximum heart-beats that the server can handle.
