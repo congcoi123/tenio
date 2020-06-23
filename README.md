@@ -42,10 +42,18 @@
 - Simple event handlers implementation.
 - Simple physic simulator and debugger.
 - Have simple existing game clients for rapid development.
+- Scalable, distributed design.
 
 ## Showcases
 | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+
+## Architecture
+- Game Server
+![Game Server](documents/datagram/game-server.jpg)
+
+- Game System
+![Game System](documents/datagram/game-system.jpg)
 
 ## First glimpse
 - Simple Movement Simulation  

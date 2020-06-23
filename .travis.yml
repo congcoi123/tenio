@@ -8,7 +8,7 @@ jdk:
   - openjdk11
 
 script:
-  # - mvn clean verify -Dgpg.skip=true
+  - mvn clean verify -Dgpg.skip=true
   # run all unit test cases
   - mvn clean test
 
