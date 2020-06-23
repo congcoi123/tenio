@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example7;
 
-import com.tenio.annotation.Entity;
-import com.tenio.entity.AbstractRoom;
+import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.annotation.Entity;
 
 /**
  * The room in server

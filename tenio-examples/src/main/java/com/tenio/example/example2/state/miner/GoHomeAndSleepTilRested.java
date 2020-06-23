@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2.state.miner;
 
-import com.tenio.configuration.constant.Constants;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.engine.configuration.constant.Constants;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.example.example2.constant.EntityName;
 import com.tenio.example.example2.constant.Location;
 import com.tenio.example.example2.constant.MessageType;
 import com.tenio.example.example2.entity.Miner;
-import com.tenio.utility.TimeUtility;
 
 /**
  * Miner will go home and sleep until his fatigue is decreased sufficiently

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2.state.wife;
 
-import com.tenio.configuration.constant.Constants;
+import com.tenio.engine.configuration.constant.Constants;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.example.example2.constant.EntityName;

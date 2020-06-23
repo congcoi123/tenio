@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+	    <groupId>io.github.congcoi123</groupId>
+		<artifactId>tenio-all</artifactId>
+		<version>4.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+  	</parent>
+
+	<artifactId>tenio-core</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<io.netty.version>4.1.50.Final</io.netty.version>
+		<org.eclipse.jetty.version>9.4.29.v20200521</org.eclipse.jetty.version>
+		<javax.servlet.version>2.5</javax.servlet.version>
+		<org.msgpack.version>0.6.12</org.msgpack.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>tenio-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${io.netty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${javax.servlet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.msgpack</groupId>
+			<artifactId>msgpack</artifactId>
+			<version>${org.msgpack.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>

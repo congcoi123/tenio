@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1;
 
-import com.tenio.annotation.Column;
-import com.tenio.annotation.Entity;
-import com.tenio.entity.AbstractPlayer;
-import com.tenio.entity.annotation.IBackup;
+import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.annotation.Column;
+import com.tenio.core.entity.annotation.Entity;
+import com.tenio.core.entity.annotation.IBackup;
 
 /**
  * The player in server

@@ -27,15 +27,16 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.RestMethod;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.element.TObject;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.entity.element.MessageObject;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
+import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.example.example4.constant.Constants;
 import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
@@ -77,7 +78,7 @@ public final class TestServerMovement extends AbstractApp {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -126,7 +127,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_CONNECTION_REQUEST, args -> {
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -165,7 +166,7 @@ public final class TestServerMovement extends AbstractApp {
 
 				if (method.equals(RestMethod.DELETE)) {
 					var json = new JSONObject();
-					json.putAll(TObject.newInstance().add("status", "failed").add("message", "not supported"));
+					json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "not supported"));
 					try {
 						response.getWriter().println(json.toString());
 					} catch (IOException e) {
@@ -183,7 +184,7 @@ public final class TestServerMovement extends AbstractApp {
 				var response = _getHttpServletResponse(args[2]);
 
 				var json = new JSONObject();
-				json.putAll(TObject.newInstance().add("status", "ok").add("message", "handler"));
+				json.putAll(MessageObject.newInstance().add("status", "ok").add("message", "handler"));
 				try {
 					response.getWriter().println(json.toString());
 				} catch (IOException e) {
@@ -196,7 +197,13 @@ public final class TestServerMovement extends AbstractApp {
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 			world.debug("[TenIO] Server Debugger : Movement Simulation");
-			_heartbeatApi.create("world", world);
+			var hearbeatManager = new HeartBeatManager();
+			try {
+				hearbeatManager.initialize(1);
+				hearbeatManager.create("world", world);
+			} catch (Exception e) {
+				error(e, "world");
+			}
 
 		}
 

@@ -5,29 +5,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.tenio.api.MessageApi;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.core.api.MessageApi;
+import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.physic.common.BaseGameEntity;
-import com.tenio.engine.physic.common.InvertedAABBox2D;
-import com.tenio.engine.physic.common.Path;
-import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.graphic.window.Windows.PPoint;
-import com.tenio.engine.physic.math.Vector2;
-import com.tenio.engine.physic.utility.CellSpacePartition;
-import com.tenio.engine.physic.utility.EntitiesRelationship;
-import com.tenio.engine.physic.utility.Geometry;
-import com.tenio.engine.physic.utility.Smoother;
-import com.tenio.entity.AbstractPlayer;
-import com.tenio.entity.element.TArray;
-import com.tenio.entity.element.TObject;
+import com.tenio.engine.message.IMessage;
+import com.tenio.engine.physic2d.common.BaseGameEntity;
+import com.tenio.engine.physic2d.common.InvertedAABBox2D;
+import com.tenio.engine.physic2d.common.Path;
+import com.tenio.engine.physic2d.graphic.Paint;
+import com.tenio.engine.physic2d.graphic.window.Windows.PPoint;
+import com.tenio.engine.physic2d.math.Vector2;
+import com.tenio.engine.physic2d.utility.CellSpacePartition;
+import com.tenio.engine.physic2d.utility.EntitiesRelationship;
+import com.tenio.engine.physic2d.utility.Geometry;
+import com.tenio.engine.physic2d.utility.Smoother;
 import com.tenio.example.example4.configuration.ParamLoader;
 import com.tenio.example.example4.constant.SummingMethod;
 import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.example4.entity.Obstacle;
 import com.tenio.example.example4.entity.Vehicle;
 import com.tenio.example.example4.entity.Wall;
-import com.tenio.server.Server;
-import com.tenio.utility.MathUtility;
 
 /**
  * All the environment data and methods for the Steering Behavior projects. This
@@ -79,10 +79,10 @@ public final class World extends AbstractHeartBeat {
 	// for network communication
 	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
-	private TArray __ids = TArray.newInstance();
-	private TArray __pxs = TArray.newInstance();
-	private TArray __pys = TArray.newInstance();
-	private TArray __prs = TArray.newInstance();
+	private MessageObjectArray __ids = MessageObjectArray.newInstance();
+	private MessageObjectArray __pxs = MessageObjectArray.newInstance();
+	private MessageObjectArray __pys = MessageObjectArray.newInstance();
+	private MessageObjectArray __prs = MessageObjectArray.newInstance();
 
 	public World(int cx, int cy) {
 		super(cx, cy);
@@ -507,8 +507,8 @@ public final class World extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onMessage(TObject message) {
-		System.out.println("World._onMessage(): " + message);
+	protected void _onMessage(IMessage message) {
+		System.out.println("World._onMessage(): " + message.getContent().toString());
 	}
 
 }

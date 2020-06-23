@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example5;
 
+import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.example.example5.constant.Constants;
-import com.tenio.server.Server;
 
 /**
  * @author kong
@@ -33,14 +33,16 @@ public final class TestECS {
 
 	/**
 	 * The entry point
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// Create a ECS
 		var ecs = new ECS(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 		// Enable debugger window
 		ecs.debug("[TenIO] Server Debugger : ECS");
-		Server.getInstance().getHeartBeatApi().initialize(1);
-		Server.getInstance().getHeartBeatApi().create("ECS", ecs);
+		var hearbeatManager = new HeartBeatManager();
+		hearbeatManager.initialize(1);
+		hearbeatManager.create("ECS", ecs);
 	}
 	
 }

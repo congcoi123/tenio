@@ -27,13 +27,13 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.RestMethod;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.element.TObject;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.entity.element.MessageObject;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
 
 /**
  * This class shows how a server handle messages that came from a client
@@ -72,7 +72,7 @@ public final class TestServerAttach extends AbstractApp {
 		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -108,7 +108,7 @@ public final class TestServerAttach extends AbstractApp {
 			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
 				var player = this.<PlayerAttach>_getPlayer(args[0]);
 				int index = _getInt(args[1]);
-				var message = _getTObject(args[2]);
+				var message = _getMessageObject(args[2]);
 
 				info("PLAYER RECV ", message);
 
@@ -135,7 +135,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(TEvent.ATTACH_CONNECTION_REQUEST, args -> {
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 				String name = message.getString("u");
 
 				// It should be ...
@@ -173,7 +173,7 @@ public final class TestServerAttach extends AbstractApp {
 
 				if (method.equals(RestMethod.DELETE)) {
 					var json = new JSONObject();
-					json.putAll(TObject.newInstance().add("status", "failed").add("message", "not supported"));
+					json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "not supported"));
 					try {
 						response.getWriter().println(json.toString());
 					} catch (IOException e) {
@@ -191,7 +191,7 @@ public final class TestServerAttach extends AbstractApp {
 				var response = _getHttpServletResponse(args[2]);
 
 				var json = new JSONObject();
-				json.putAll(TObject.newInstance().add("status", "ok").add("message", "handler"));
+				json.putAll(MessageObject.newInstance().add("status", "ok").add("message", "handler"));
 				try {
 					response.getWriter().println(json.toString());
 				} catch (IOException e) {

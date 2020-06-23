@@ -25,8 +25,7 @@ package com.tenio.example.server;
 
 import java.util.Map;
 
-import com.tenio.configuration.BaseConfiguration;
-import com.tenio.entity.element.TObject;
+import com.tenio.core.configuration.BaseConfiguration;
 
 /**
  * Create your own configurations
@@ -48,8 +47,8 @@ public final class Configuration extends BaseConfiguration {
 	}
 
 	@Override
-	protected void _extend(TObject extProperties) {
-		for (Map.Entry<String, Object> entry : extProperties.entrySet()) {
+	protected void _extend(Map<String, String> extProperties) {
+		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
 			switch (entry.getKey()) {
 			case "customValue1":
 				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));

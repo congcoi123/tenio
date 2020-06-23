@@ -23,12 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.TEvent;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
+import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.example.example2.entity.Inspector;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
 
 /**
  * This class is used to send to clients all the daily life of our miner and his
@@ -68,7 +69,7 @@ public final class TestServerFSM extends AbstractApp {
 
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -113,7 +114,13 @@ public final class TestServerFSM extends AbstractApp {
 			});
 			
 			// create a life-cycle first
-			_heartbeatApi.create("daily-life", new LifeCycle());
+			var hearbeatManager = new HeartBeatManager();
+			try {
+				hearbeatManager.initialize(1);
+				hearbeatManager.create("daily-life", new LifeCycle());
+			} catch (Exception e) {
+				error(e, "daily-life");
+			}
 
 		}
 

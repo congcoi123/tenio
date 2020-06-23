@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2.state.wife;
 
+import com.tenio.common.utility.MathUtility;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.example.example2.constant.MessageType;
 import com.tenio.example.example2.entity.Wife;
-import com.tenio.utility.MathUtility;
 
 /**
  * This is a global state, which means the miner's wife will check it every

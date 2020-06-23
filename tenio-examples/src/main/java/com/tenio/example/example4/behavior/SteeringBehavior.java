@@ -4,20 +4,20 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.engine.physic.common.BaseGameEntity;
-import com.tenio.engine.physic.common.Path;
-import com.tenio.engine.physic.graphic.IRender;
-import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.math.Vector2;
-import com.tenio.engine.physic.utility.Geometry;
-import com.tenio.engine.physic.utility.Transformation;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.engine.physic2d.common.BaseGameEntity;
+import com.tenio.engine.physic2d.common.Path;
+import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Paint;
+import com.tenio.engine.physic2d.math.Vector2;
+import com.tenio.engine.physic2d.utility.Geometry;
+import com.tenio.engine.physic2d.utility.Transformation;
 import com.tenio.example.example4.configuration.ParamLoader;
 import com.tenio.example.example4.constant.Behavior;
 import com.tenio.example.example4.constant.Deceleration;
 import com.tenio.example.example4.constant.SummingMethod;
 import com.tenio.example.example4.entity.Vehicle;
 import com.tenio.example.example4.entity.Wall;
-import com.tenio.utility.MathUtility;
 
 /**
  * This class is used to encapsulate steering behaviors for a vehicle @see

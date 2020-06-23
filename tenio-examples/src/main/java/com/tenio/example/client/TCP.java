@@ -31,10 +31,10 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.configuration.constant.Constants;
-import com.tenio.entity.element.TObject;
-import com.tenio.message.codec.MessagePacker;
-import com.tenio.message.codec.MsgPackConverter;
+import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.entity.element.MessageObject;
+import com.tenio.core.message.codec.MessagePacker;
+import com.tenio.core.message.codec.MsgPackConverter;
 
 /**
  * Create an object for handling a socket connection. It is used to send
@@ -79,9 +79,9 @@ public final class TCP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link TObject}
+	 * @param message the desired message, see {@link MessageObject}
 	 */
-	public void send(TObject message) {
+	public void send(MessageObject message) {
 		// convert message object to bytes data
 		var pack = MsgPackConverter.serialize(message);
 		// attach the packet's length to packet's header

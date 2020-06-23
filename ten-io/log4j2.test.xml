@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
-<Configuration status="info">
-	<Loggers>
-		<!-- Temporary disable logging -->
-		<Root level="off" />
-	</Loggers>
-</Configuration>
