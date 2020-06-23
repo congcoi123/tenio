@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 4.0.0 2020-06-24 Feature release, Breaking changes, Update recommended
+Feature release
+- Split project modules
+- Standardized package names and class names
+- Scalable, distributed design
+
 #### 3.1.1 2020-06-05 Bugfix release
 Bugfix release
 - Updated all dependencies

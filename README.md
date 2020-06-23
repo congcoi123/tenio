@@ -49,9 +49,9 @@
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## Architecture
-![Game Server](documents/datagram/game-server.jpg)
+![Game Server](documentations/datagram/game-server.jpg)
 
-![Game System](documents/datagram/game-system.jpg)
+![Game System](documentations/datagram/game-system.jpg)
 
 ## First glimpse
 - Simple Movement Simulation  
@@ -87,13 +87,16 @@ Please check out the [changelog](CHANGELOG.md) for more details.
 ## Contributing
 Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
 
+## Documentations
+Please check out the [documentations directory](documentations) for more details.
+
 ## Installation
 Maven
 ```xml
 <dependency>
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio</artifactId>
-    <version>3.1.1</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 Or you can get the sources
