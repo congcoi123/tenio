@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example7;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.element.TArray;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
-import com.tenio.utility.MathUtility;
 
 /**
  * This class shows how a server handle 1000 players and communications
@@ -69,7 +69,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -116,7 +116,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var players = room.getPlayers();
 				for (var p : players.values()) {
 					var pjs = (PlayerPhaserjs) p;
-					var data = TArray.newInstance();
+					var data = MessageObjectArray.newInstance();
 					data.add(pjs.getName());
 					data.add(pjs.getX());
 					data.add(pjs.getY());
@@ -129,8 +129,8 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
-				var message = _getTObject(args[2]);
-				var move = message.getTArray("d");
+				var message = _getMessageObject(args[2]);
+				var move = message.getMessageObjectArray("d");
 
 				player.setPosition(move.getInt(0), move.getInt(1));
 

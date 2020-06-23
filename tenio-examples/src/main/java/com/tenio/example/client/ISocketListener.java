@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.client;
 
-import com.tenio.entity.element.TObject;
+import com.tenio.core.entity.element.MessageObject;
 
 /**
  * This interface helps you listen to all messages these came from the server's
@@ -37,8 +37,8 @@ public interface ISocketListener {
 	/**
 	 * Listen for a new message
 	 * 
-	 * @param message the received message, see {@link TObject}
+	 * @param message the received message, see {@link MessageObject}
 	 */
-	void onReceivedTCP(TObject message);
+	void onReceivedTCP(MessageObject message);
 
 }

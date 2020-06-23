@@ -25,15 +25,15 @@ package com.tenio.example.example5.system;
 
 import java.awt.Color;
 
+import com.tenio.common.utility.MathUtility;
 import com.tenio.engine.ecs.base.IContext;
 import com.tenio.engine.ecs.system.AbstractSystem;
 import com.tenio.engine.ecs.system.IInitializeSystem;
 import com.tenio.engine.ecs.system.IRenderSystem;
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.example.example5.component.Position;
 import com.tenio.example.example5.context.GameComponents;
 import com.tenio.example.example5.context.GameEntity;
-import com.tenio.utility.MathUtility;
 
 /**
  * @author kong

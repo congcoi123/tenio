@@ -32,8 +32,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.entity.element.TObject;
-import com.tenio.message.codec.MsgPackConverter;
+import com.tenio.core.entity.element.MessageObject;
+import com.tenio.core.message.codec.MsgPackConverter;
 
 /**
  * Create an object for handling a Datagram socket connection. It is used to
@@ -74,9 +74,9 @@ public final class UDP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link TObject}
+	 * @param message the desired message, see {@link MessageObject}
 	 */
-	public void send(TObject message) {
+	public void send(MessageObject message) {
 		var pack = MsgPackConverter.serialize(message);
 		var request = new DatagramPacket(pack, pack.length, __address, __port);
 		try {

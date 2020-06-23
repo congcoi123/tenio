@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.engine.physic.common.MoveableEntity;
-import com.tenio.engine.physic.graphic.IRender;
-import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.math.Vector2;
-import com.tenio.engine.physic.utility.SmootherVector;
-import com.tenio.engine.physic.utility.Transformation;
+import com.tenio.engine.physic2d.common.MoveableEntity;
+import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Paint;
+import com.tenio.engine.physic2d.math.Vector2;
+import com.tenio.engine.physic2d.utility.SmootherVector;
+import com.tenio.engine.physic2d.utility.Transformation;
 import com.tenio.example.example4.World;
 import com.tenio.example.example4.behavior.SteeringBehavior;
 import com.tenio.example.example4.configuration.ParamLoader;

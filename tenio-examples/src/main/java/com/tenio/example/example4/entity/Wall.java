@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4.entity;
 
-import com.tenio.engine.physic.graphic.IRender;
-import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.engine.physic.math.Vector2;
+import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Paint;
+import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * This class is used to create and render 2D walls. Defined as the two vectors

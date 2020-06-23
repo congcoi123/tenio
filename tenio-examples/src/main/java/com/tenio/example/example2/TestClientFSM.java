@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.entity.element.TObject;
+import com.tenio.core.entity.element.MessageObject;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
 
@@ -50,7 +50,7 @@ public final class TestClientFSM implements ISocketListener {
 		__tcp.receive(this);
 
 		// send a login request to the server
-		var message = TObject.newInstance();
+		var message = MessageObject.newInstance();
 		message.put("u", "kong");
 		__tcp.send(message);
 		System.err.println("Login Request -> " + message);
@@ -58,7 +58,7 @@ public final class TestClientFSM implements ISocketListener {
 	}
 
 	@Override
-	public void onReceivedTCP(TObject message) {
+	public void onReceivedTCP(MessageObject message) {
 		System.out.println(message);
 	}
 

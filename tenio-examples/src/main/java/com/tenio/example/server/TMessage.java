@@ -21,22 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example3;
+package com.tenio.example.server;
 
-import com.tenio.core.entity.AbstractPlayer;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.tenio.engine.message.IMessage;
 
 /**
- * The player in server
- * 
  * @author kong
- *
  */
-public final class PlayerAttach extends AbstractPlayer {
+public final class TMessage implements IMessage {
 
-	public static final int MAIN_CHANNEL = 0;
+	private Map<String, Object> __content = new HashMap<String, Object>();
+	
+	@Override
+	public long getTimestamp() {
+		return 0;
+	}
 
-	public PlayerAttach(String name) {
-		super(name);
+	@Override
+	public void putContent(String key, Object value) {
+		__content.put(key, value);
+	}
+
+	@Override
+	public Map<String, Object> getContent() {
+		return __content;
+	}
+
+	@Override
+	public Object getContentByKey(String key) {
+		return __content.get(key);
 	}
 
 }

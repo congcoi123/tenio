@@ -2,7 +2,7 @@ package com.tenio.example.example4.configuration;
 
 import java.io.IOException;
 
-import com.tenio.utility.MathUtility;
+import com.tenio.common.utility.MathUtility;
 
 /**
  * Class to configuration

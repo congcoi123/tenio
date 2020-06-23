@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example6;
 
-import com.tenio.annotation.Entity;
-import com.tenio.entity.AbstractPlayer;
+import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.annotation.Entity;
 
 /**
  * The player in server

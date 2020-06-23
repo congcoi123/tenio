@@ -164,7 +164,7 @@ public class Telegram implements Comparable {
 		builder.append(", MsgType: ");
 		builder.append(__type);
 		builder.append(", Info: ");
-		builder.append(__info);
+		builder.append(__info.toString());
 		return builder.toString();
 	}
 

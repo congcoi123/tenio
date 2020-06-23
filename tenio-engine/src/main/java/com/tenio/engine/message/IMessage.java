@@ -23,13 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.engine.message;
 
+import java.util.Map;
+
 /**
  * @author kong
  */
 public interface IMessage {
 
 	long getTimestamp();
+	
+	void putContent(String key, Object value);
 
-	String getContent();
+	Map<String, Object> getContent();
+	
+	Object getContentByKey(String key);
 
 }

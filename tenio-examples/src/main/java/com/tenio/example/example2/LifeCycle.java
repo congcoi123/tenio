@@ -25,22 +25,22 @@ package com.tenio.example.example2;
 
 import java.util.Collection;
 
-import com.tenio.api.MessageApi;
-import com.tenio.api.PlayerApi;
+import com.tenio.core.api.MessageApi;
+import com.tenio.core.api.PlayerApi;
+import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.server.Server;
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.IMessageListener;
 import com.tenio.engine.fsm.MessageDispatcher;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.physic.graphic.Paint;
-import com.tenio.entity.AbstractPlayer;
-import com.tenio.entity.element.TObject;
+import com.tenio.engine.message.IMessage;
+import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.example.example2.constant.EntityName;
 import com.tenio.example.example2.entity.BaseEntity;
 import com.tenio.example.example2.entity.Inspector;
 import com.tenio.example.example2.entity.Miner;
 import com.tenio.example.example2.entity.Wife;
-import com.tenio.server.Server;
 
 /**
  * The lifecycle, all actions is performed in this class
@@ -156,7 +156,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	}
 
 	@Override
-	protected void _onMessage(TObject message) {
+	protected void _onMessage(IMessage message) {
 		System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
 	}
 

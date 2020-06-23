@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example6;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.element.TArray;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
-import com.tenio.utility.MathUtility;
 
 /**
  * This class shows how a server handle 1000 players and communications
@@ -67,7 +67,7 @@ public final class TestServerStress extends AbstractApp {
 		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -100,7 +100,7 @@ public final class TestServerStress extends AbstractApp {
 				var data = _messageApi.getArrayPack();
 				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
 						data.put("H").put("3").put("L").put("O").put(true)
-								.put(TArray.newInstance().put("Sub").put("Value").put(100)));
+								.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 				return null;
 			});

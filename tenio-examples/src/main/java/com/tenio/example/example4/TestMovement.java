@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
+import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.example.example4.constant.Constants;
-import com.tenio.server.Server;
 
 /**
  * Only for testing the movement behavior of vehicles
@@ -36,14 +36,16 @@ public final class TestMovement {
 
 	/**
 	 * The entry point
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// Create a world
 		var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 		// Enable debugger window
 		world.debug("[TenIO] Server Debugger : Movement Simulation");
-		Server.getInstance().getHeartBeatApi().initialize(1);
-		Server.getInstance().getHeartBeatApi().create("world", world);
+		var hearbeatManager = new HeartBeatManager();
+		hearbeatManager.initialize(1);
+		hearbeatManager.create("world", world);
 	}
 
 }

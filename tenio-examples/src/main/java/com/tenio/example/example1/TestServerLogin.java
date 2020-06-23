@@ -26,13 +26,13 @@ package com.tenio.example.example1;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.AbstractApp;
-import com.tenio.configuration.constant.TEvent;
-import com.tenio.entity.annotation.EntityProcess;
-import com.tenio.entity.element.TArray;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.entity.annotation.EntityProcess;
+import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
-import com.tenio.extension.AbstractExtensionHandler;
-import com.tenio.extension.IExtension;
 
 /**
  * This class shows how a server handle messages that came from a client
@@ -70,7 +70,7 @@ public final class TestServerLogin extends AbstractApp {
 		public void initialize() {
 			_on(TEvent.CONNECTION_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
-				var message = _getTObject(args[1]);
+				var message = _getMessageObject(args[1]);
 
 				info("CONNECTION", connection.getAddress());
 
@@ -116,7 +116,7 @@ public final class TestServerLogin extends AbstractApp {
 					var data = _messageApi.getArrayPack();
 					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
 							data.put("H").put("3").put("L").put("O").put(true)
-									.put(TArray.newInstance().put("Sub").put("Value").put(100)));
+									.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 					try {
 						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
@@ -146,7 +146,7 @@ public final class TestServerLogin extends AbstractApp {
 			});
 
 			_on(TEvent.SEND_TO_PLAYER, args -> {
-				var message = _getTObject(args[2]);
+				var message = _getMessageObject(args[2]);
 
 				info("SEND_TO_PLAYER", message.toString());
 

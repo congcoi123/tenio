@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.entity.element.TObject;
-import com.tenio.server.Server;
+import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.example.server.TMessage;
 
 /**
  * Only for testing the FSM mechanism
@@ -36,26 +36,28 @@ public final class TestFSM {
 
 	/**
 	 * The entry point
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// create a heart-beat
-		Server.getInstance().getHeartBeatApi().initialize(1);
-		Server.getInstance().getHeartBeatApi().create("daily-life", new LifeCycle());
+		var hearbeatManager = new HeartBeatManager();
+		hearbeatManager.initialize(1);
+		hearbeatManager.create("daily-life", new LifeCycle());
 		
 		// try to send messages immediately
 		for (int i = 1; i <= 5; i++) {
-			var message = TObject.newInstance();
-			message.put("IMMEDIATELY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
+			var message = new TMessage();
+			message.putContent("IMMEDIATELY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
 			System.out.println("SEND IMMEDIATELY: " + message);
-			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", message);
+			hearbeatManager.sendMessage("daily-life", message);
 		}
 		
 		// try to send messages with delay time
 		for (int i = 1; i <= 5; i++) {
-			var mess = TObject.newInstance();
-			mess.put("DELAY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
-			System.out.println("SEND DELAY: " + mess);
-			Server.getInstance().getHeartBeatApi().sendMessage("daily-life", mess, i * 10);
+			var message = new TMessage();
+			message.putContent("DELAY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
+			System.out.println("SEND DELAY: " + message);
+			hearbeatManager.sendMessage("daily-life", message, i * 10);
 		}
 		
 	}

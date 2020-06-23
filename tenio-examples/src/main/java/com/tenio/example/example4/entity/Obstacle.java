@@ -26,9 +26,9 @@ package com.tenio.example.example4.entity;
 import java.awt.Color;
 
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.engine.physic.common.BaseGameEntity;
-import com.tenio.engine.physic.graphic.IRender;
-import com.tenio.engine.physic.graphic.Paint;
+import com.tenio.engine.physic2d.common.BaseGameEntity;
+import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * Just a simple obstacle class
