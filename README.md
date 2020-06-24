@@ -16,9 +16,11 @@
     <a href="https://travis-ci.org/github/congcoi123/tenio">
         <img src="https://travis-ci.org/congcoi123/tenio.svg?branch=master">
     </a>
+    <!-- 
     <a href="https://coveralls.io/github/congcoi123/tenio">
         <img src="https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master">
-    </a>
+    </a> 
+    -->
     <a href="#">
         <img src="https://img.shields.io/github/last-commit/congcoi123/tenio">
     </a>
@@ -91,12 +93,12 @@ Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
 Please check out the [documentations directory](documentations) for more details.
 
 ## Installation
-Maven
+For the 3.x version, you can get by Maven
 ```xml
 <dependency>
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio</artifactId>
-    <version>4.0.0</version>
+    <version>3.1.1</version>
 </dependency>
 ```
 Or you can get the sources
