@@ -32,8 +32,8 @@ import org.junit.runner.RunWith;
  * @author kong
  */
 @RunWith(JUnitPlatform.class)
-@SuiteDisplayName("Test all unit test cases for tenio-identity module")
-@SelectPackages("com.tenio.identity")
+@SuiteDisplayName("Test all unit test cases for tenio-core module")
+@SelectPackages("com.tenio")
 public final class TenIOCoreTest {
 
 }
