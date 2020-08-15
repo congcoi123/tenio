@@ -71,8 +71,8 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - netty-all 4.1.50.Final
 - servlet-api 2.5
 - log4j-core 2.13.3
-- jetty-server 9.4.29.v20200521
-- jetty-servlet 9.4.29.v20200521
+- jetty-server 9.4.31.v20200723
+- jetty-servlet 9.4.31.v20200723
 - msgpack 0.6.12
 
 ## Requirements
