@@ -4,3 +4,6 @@
 [submodule "tenio-clients/tenio-libgdx"]
 	path = tenio-clients/tenio-libgdx
 	url = git@github.com:congcoi123/tenio-libgdx.git
+[submodule "tenio-clients/tenio-phaserjs"]
+	path = tenio-clients/tenio-phaserjs
+	url = git@github.com:congcoi123/tenio-phaserjs.git
