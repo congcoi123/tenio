@@ -7,3 +7,6 @@
 [submodule "tenio-clients/tenio-phaserjs"]
 	path = tenio-clients/tenio-phaserjs
 	url = git@github.com:congcoi123/tenio-phaserjs.git
+[submodule "tenio-clients/tenio-unity"]
+	path = tenio-clients/tenio-unity
+	url = git@github.com:congcoi123/tenio-unity.git
