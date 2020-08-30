@@ -1,0 +1,3 @@
+[submodule "tenio-clients/tenio-cocos2dx"]
+	path = tenio-clients/tenio-cocos2dx
+	url = git@github.com:congcoi123/tenio-cocos2dx.git
