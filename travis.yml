@@ -10,6 +10,7 @@ jdk:
 script:
   # jump to the target directory
   - cd core
+  # verify the GPG key
   - mvn clean verify -Dgpg.skip=true
   # run all unit test cases
   - mvn clean test
