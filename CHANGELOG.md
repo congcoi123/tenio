@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 4.1.0 2020-08-31 Feature release, Breaking changes, Update recommended
+Feature release
+- Standardized the project's structure
+
 ## 4.0.0 2020-06-24 Feature release, Breaking changes, Update recommended
 Feature release
 - Split project modules

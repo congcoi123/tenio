@@ -8,7 +8,7 @@ jdk:
   - openjdk11
 
 script:
-  # move to target directory
+  # jump to the target directory
   - cd core
   - mvn clean verify -Dgpg.skip=true
   # run all unit test cases
