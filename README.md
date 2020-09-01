@@ -48,12 +48,12 @@
 | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
-## Architecture
+## MMOG System Architecture
 ![Game Server](documentations/datagram/game-server.jpg)
 
 ![Game System](documentations/datagram/game-system.jpg)
 
-## First glimpse
+## First Glimpse
 - Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 - Communication Simulation  
