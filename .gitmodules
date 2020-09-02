@@ -10,3 +10,6 @@
 [submodule "clients/tenio-unity"]
 	path = clients/tenio-unity
 	url = git@github.com:congcoi123/tenio-unity.git
+[submodule "mmorpg/client"]
+	path = mmorpg/client
+	url = git@github.com:congcoi123/tenio-mmorpg-client.git
