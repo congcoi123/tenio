@@ -4,4 +4,4 @@ Monitoring an application's health and metrics helps us manage it better, notice
 
 All configuration files can be found here: https://github.com/congcoi123/product-order-services-configuration
 
-![monitoring](../../assets/monitoring.png)
+![monitoring](../../../assets/monitoring.png)
