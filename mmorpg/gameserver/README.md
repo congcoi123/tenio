@@ -1,4 +1,4 @@
 ## Architecture
-![Game Server](../../../documentations/datagram/game-server.jpg)
+![Game Server](../../documentations/datagram/game-server.jpg)
 
 > Happy coding !
