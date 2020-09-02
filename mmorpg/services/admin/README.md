@@ -1,2 +1,4 @@
 ## Overview
-Shop information management, Members role management
+System information management, Members role management.
+
+> Happy coding !

@@ -43,3 +43,5 @@ DELETE	| /credentials/{username}	| Delete credential by username | ✓  | PERM_D
 POST| /credentials/assign	| Assign role for credential | ✓  | PERM_WRITE_CREDENTIAL |
 
 You can check out the examples [here](https://github.com/congcoi123/product-order-services/blob/develop/systems/auth-role/ENDPOINTS.md) !
+
+> Happy coding !
