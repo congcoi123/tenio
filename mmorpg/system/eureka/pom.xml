@@ -9,7 +9,7 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.wishop</groupId>
+	<groupId>com.tenio.mmorpg</groupId>
 	<artifactId>eureka</artifactId>
 	<version>1.0.0</version>
 	<name>eureka</name>
@@ -60,7 +60,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.wishop.eureka.EurekaApplication</mainClass>
+					<mainClass>com.tenio.mmorpg.eureka.EurekaApplication</mainClass>
 					<layout>ZIP</layout>
 				</configuration>
 				<executions>

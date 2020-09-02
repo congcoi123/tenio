@@ -1,3 +1,4 @@
-## Overview
+## Architecture
+![Game Server](../documentations/datagram/game-server.jpg)
 
-This directory contains all bussiness services.
+> Happy coding !

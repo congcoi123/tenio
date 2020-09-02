@@ -9,10 +9,10 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.wishop</groupId>
-	<artifactId>gate-way</artifactId>
+	<groupId>com.tenio.mmorpg</groupId>
+	<artifactId>gateway</artifactId>
 	<version>1.0.0</version>
-	<name>gate-way</name>
+	<name>gateway</name>
 	<description>The API gateway service</description>
 
 	<properties>
@@ -71,7 +71,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.wishop.gateway.GatewayApplication</mainClass>
+					<mainClass>com.tenio.mmorpg.gateway.GatewayApplication</mainClass>
 					<layout>ZIP</layout>
 				</configuration>
 				<executions>
