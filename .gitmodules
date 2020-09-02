@@ -13,3 +13,6 @@
 [submodule "mmorpg/client"]
 	path = mmorpg/client
 	url = git@github.com:congcoi123/tenio-mmorpg-client.git
+[submodule "mmorpg/configuration"]
+	path = mmorpg/configuration
+	url = git@github.com:congcoi123/tenio-mmorpg-configuration.git
