@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 4.2.0 2020-09-03 Feature release
+Feature release
+- Added MMORPG projects template
+
 ### 4.1.0 2020-08-31 Feature release, Breaking changes, Update recommended
 Feature release
 - Standardized the project's structure
