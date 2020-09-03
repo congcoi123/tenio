@@ -9,16 +9,16 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.wishop</groupId>
-	<artifactId>logger</artifactId>
+	<groupId>com.tenio.mmorpg</groupId>
+	<artifactId>cluster</artifactId>
 	<version>1.0.0</version>
-	<name>logger</name>
-	<description>The logger management service</description>
+	<name>cluster</name>
+	<description>The cluster management service</description>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>com.wishop</groupId>
+			<groupId>com.tenio.mmorpg</groupId>
 			<artifactId>common</artifactId>
 			<version>1.0.0</version>
 		</dependency>
@@ -31,7 +31,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.wishop.logger.LoggerApplication</mainClass>
+					<mainClass>com.tenio.mmorpg.cluster.ClusterApplication</mainClass>
 					<layout>ZIP</layout>
 				</configuration>
 				<executions>
