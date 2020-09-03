@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2019-2020 kong <congcoi123@gmail.com>
+Copyright (c) 2019 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.mmorpg.authrole.controllers.impl;
+package com.tenio.mmorpg.common;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.tenio.mmorpg.authrole.controllers.CommonInterface;
-import com.tenio.mmorpg.common.entities.response.BaseReponse;
-import com.tenio.mmorpg.common.entities.response.BaseReponse.ResponseState;
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CommonApplicationTests {
 
-@RestController
-public class CommonController implements CommonInterface {
-
-	@HystrixCommand
-	@Override
-	public ResponseEntity<Object> ping() {
-		return new BaseReponse(HttpStatus.OK, ResponseState.SUCCESS).get();
+	@Test
+	public void contextLoads() {
 	}
 
 }

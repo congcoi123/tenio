@@ -21,24 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.mmorpg.authrole.controllers.impl;
+package com.tenio.mmorpg.common.entities.response;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.tenio.mmorpg.authrole.controllers.CommonInterface;
-import com.tenio.mmorpg.common.entities.response.BaseReponse;
-import com.tenio.mmorpg.common.entities.response.BaseReponse.ResponseState;
+public class ListResultsResponse extends BaseReponse {
 
-@RestController
-public class CommonController implements CommonInterface {
+	private String key;
+	private List<?> list;
 
-	@HystrixCommand
-	@Override
-	public ResponseEntity<Object> ping() {
-		return new BaseReponse(HttpStatus.OK, ResponseState.SUCCESS).get();
+	public ListResultsResponse() {
+		super(HttpStatus.OK, ResponseState.SUCCESS);
 	}
 
+	public ListResultsResponse setListResults(String key, List<?> list) {
+		this.key = key;
+		this.list = list;
+		return this;
+	}
+
+	@Override
+	public ResponseEntity<Object> get() {
+		body.put(key, list);
+		return super.get();
+	}
+	
 }

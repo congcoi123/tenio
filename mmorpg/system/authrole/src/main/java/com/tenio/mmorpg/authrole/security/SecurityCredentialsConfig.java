@@ -39,7 +39,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.tenio.mmorpg.authrole.services.CredentialService;
-import com.wishop.common.configurations.JwtConfig;
+import com.tenio.mmorpg.common.configurations.JwtConfig;
 
 //Enable security configuration. This annotation denotes configuration for spring security.
 @EnableWebSecurity

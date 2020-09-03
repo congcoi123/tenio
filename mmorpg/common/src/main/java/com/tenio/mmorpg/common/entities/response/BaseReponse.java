@@ -21,24 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.mmorpg.authrole.controllers.impl;
+package com.tenio.mmorpg.common.entities.response;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.tenio.mmorpg.authrole.controllers.CommonInterface;
-import com.tenio.mmorpg.common.entities.response.BaseReponse;
-import com.tenio.mmorpg.common.entities.response.BaseReponse.ResponseState;
+public class BaseReponse {
 
-@RestController
-public class CommonController implements CommonInterface {
+	public enum ResponseState {
+		SUCCESS("success"), WARN("warn"), FAILED("failed");
 
-	@HystrixCommand
-	@Override
-	public ResponseEntity<Object> ping() {
-		return new BaseReponse(HttpStatus.OK, ResponseState.SUCCESS).get();
+		private String state;
+
+		ResponseState(String state) {
+			this.state = state;
+		}
+
+		public String get() {
+			return state;
+		}
+	}
+
+	protected Map<String, Object> body = new LinkedHashMap<>();
+	protected List<String> messages;
+	protected HttpStatus status;
+	protected ResponseState state;
+
+	public BaseReponse() {
+		status = HttpStatus.OK;
+		state = ResponseState.SUCCESS;
+	}
+
+	public BaseReponse(HttpStatus status, ResponseState state) {
+		this.status = status;
+		this.state = state;
+	}
+
+	public BaseReponse addMessageError(String message) {
+		if (messages == null)
+			messages = new ArrayList<String>();
+		messages.add(message);
+		return this;
+	}
+
+	public ResponseEntity<Object> get() {
+		body.put("timestamp", new Date());
+		body.put("status", status.value());
+		body.put("state", state.get());
+		return new ResponseEntity<Object>(body, status);
 	}
 
 }

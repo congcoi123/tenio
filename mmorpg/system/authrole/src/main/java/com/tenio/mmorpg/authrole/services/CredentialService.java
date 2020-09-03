@@ -36,7 +36,7 @@ import com.tenio.mmorpg.authrole.entities.Permission;
 import com.tenio.mmorpg.authrole.entities.Role;
 import com.tenio.mmorpg.authrole.entities.request.AssignRoleRequest;
 import com.tenio.mmorpg.authrole.repository.CredentialRepository;
-import com.wishop.common.exceptions.EntityNotFoundException;
+import com.tenio.mmorpg.common.exceptions.EntityNotFoundException;
 
 @Service
 public class CredentialService {

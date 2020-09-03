@@ -36,9 +36,9 @@ import com.tenio.mmorpg.authrole.controllers.RoleInterface;
 import com.tenio.mmorpg.authrole.entities.Role;
 import com.tenio.mmorpg.authrole.entities.request.AssignPermRequest;
 import com.tenio.mmorpg.authrole.services.RoleService;
-import com.wishop.common.entities.response.BaseReponse;
-import com.wishop.common.entities.response.ListResultsResponse;
-import com.wishop.common.entities.response.PageResultsResponse;
+import com.tenio.mmorpg.common.entities.response.BaseReponse;
+import com.tenio.mmorpg.common.entities.response.ListResultsResponse;
+import com.tenio.mmorpg.common.entities.response.PageResultsResponse;
 
 @RequestMapping("v1/" + "${api.path.root}")
 @RestController

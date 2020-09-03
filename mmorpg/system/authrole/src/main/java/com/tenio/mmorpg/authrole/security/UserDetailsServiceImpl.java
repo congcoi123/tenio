@@ -40,7 +40,7 @@ import com.tenio.mmorpg.authrole.entities.Credential;
 import com.tenio.mmorpg.authrole.entities.Permission;
 import com.tenio.mmorpg.authrole.entities.Role;
 import com.tenio.mmorpg.authrole.services.CredentialService;
-import com.wishop.common.exceptions.EntityNotFoundException;
+import com.tenio.mmorpg.common.exceptions.EntityNotFoundException;
 
 @Service // It has to be annotated with @Service.
 public class UserDetailsServiceImpl implements UserDetailsService {

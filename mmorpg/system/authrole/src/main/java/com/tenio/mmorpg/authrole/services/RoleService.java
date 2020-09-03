@@ -36,7 +36,7 @@ import com.tenio.mmorpg.authrole.entities.Permission;
 import com.tenio.mmorpg.authrole.entities.Role;
 import com.tenio.mmorpg.authrole.entities.request.AssignPermRequest;
 import com.tenio.mmorpg.authrole.repository.RoleRepository;
-import com.wishop.common.exceptions.EntityNotFoundException;
+import com.tenio.mmorpg.common.exceptions.EntityNotFoundException;
 
 @Service
 public class RoleService {

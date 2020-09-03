@@ -21,24 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.mmorpg.authrole.controllers.impl;
+package com.tenio.mmorpg.common.entities.response;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.tenio.mmorpg.authrole.controllers.CommonInterface;
-import com.tenio.mmorpg.common.entities.response.BaseReponse;
-import com.tenio.mmorpg.common.entities.response.BaseReponse.ResponseState;
+public class PageResultsResponse extends ListResultsResponse {
 
-@RestController
-public class CommonController implements CommonInterface {
+	private int page;
+	private int limit;
+	private int pageSize;
+	private long count;
 
-	@HystrixCommand
-	@Override
-	public ResponseEntity<Object> ping() {
-		return new BaseReponse(HttpStatus.OK, ResponseState.SUCCESS).get();
+	public PageResultsResponse(int page, int limit, int pageSize, long count) {
+		super();
+		this.page = page;
+		this.limit = limit;
+		this.pageSize = pageSize;
+		this.count = count;
 	}
 
+	@Override
+	public ResponseEntity<Object> get() {
+		body.put("current_page", page);
+		body.put("page_size", pageSize);
+		body.put("pages", (int) Math.ceil((count * 1.0) / limit));
+		body.put("items", count);
+		return super.get();
+	}
+	
 }

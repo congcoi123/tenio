@@ -32,8 +32,8 @@ import org.springframework.stereotype.Service;
 
 import com.tenio.mmorpg.authrole.entities.Permission;
 import com.tenio.mmorpg.authrole.repository.PermissionRepository;
-import com.wishop.common.exceptions.EntityDuplicatedException;
-import com.wishop.common.exceptions.EntityNotFoundException;
+import com.tenio.mmorpg.common.exceptions.EntityDuplicatedException;
+import com.tenio.mmorpg.common.exceptions.EntityNotFoundException;
 
 @Service
 public class PermissionService {

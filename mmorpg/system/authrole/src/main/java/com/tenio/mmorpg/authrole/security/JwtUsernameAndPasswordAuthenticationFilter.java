@@ -43,7 +43,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.tenio.mmorpg.authrole.entities.Credential;
 import com.tenio.mmorpg.authrole.services.CredentialService;
-import com.wishop.common.configurations.JwtConfig;
+import com.tenio.mmorpg.common.configurations.JwtConfig;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
