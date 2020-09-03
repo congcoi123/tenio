@@ -74,9 +74,13 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 - jetty-server 9.4.31.v20200723
 - jetty-servlet 9.4.31.v20200723
 - msgpack 0.6.12
+- spring-boot
+- spring-cloud
 
 ## Requirements
 - Java 11
+- Java 8
+- Docker
 
 ## License
 The `TenIO` project is currently available under the [MIT](LICENSE) License.
