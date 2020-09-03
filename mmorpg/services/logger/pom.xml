@@ -9,7 +9,7 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.wishop</groupId>
+	<groupId>com.tenio.mmorpg</groupId>
 	<artifactId>logger</artifactId>
 	<version>1.0.0</version>
 	<name>logger</name>
@@ -18,7 +18,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>com.wishop</groupId>
+			<groupId>com.tenio.mmorpg</groupId>
 			<artifactId>common</artifactId>
 			<version>1.0.0</version>
 		</dependency>
@@ -31,7 +31,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.wishop.logger.LoggerApplication</mainClass>
+					<mainClass>com.tenio.mmorpg.logger.LoggerApplication</mainClass>
 					<layout>ZIP</layout>
 				</configuration>
 				<executions>

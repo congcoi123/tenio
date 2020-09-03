@@ -9,16 +9,16 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.wishop</groupId>
-	<artifactId>product</artifactId>
+	<groupId>com.tenio.mmorpg</groupId>
+	<artifactId>assets</artifactId>
 	<version>1.0.0</version>
-	<name>product</name>
-	<description>The product management service</description>
+	<name>assets</name>
+	<description>The assets management service</description>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>com.wishop</groupId>
+			<groupId>com.tenio.mmorpg</groupId>
 			<artifactId>common</artifactId>
 			<version>1.0.0</version>
 		</dependency>
@@ -31,7 +31,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.wishop.product.ProductApplication</mainClass>
+					<mainClass>com.tenio.mmorpg.assets.AssetsApplication</mainClass>
 					<layout>ZIP</layout>
 				</configuration>
 				<executions>
