@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.configuration.constant.SystemConstants;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.message.codec.MessagePacker;
 import com.tenio.core.message.codec.MsgPackConverter;
@@ -128,12 +128,12 @@ public final class TCP {
 	}
 
 	private void __updateRecvHeaderData(byte[] bytes) {
-		if (bytes.length >= Constants.HEADER_BYTES) { // header length
-			var header = Arrays.copyOfRange(bytes, 0, Constants.HEADER_BYTES);
+		if (bytes.length >= SystemConstants.HEADER_BYTES) { // header length
+			var header = Arrays.copyOfRange(bytes, 0, SystemConstants.HEADER_BYTES);
 			__dataSize = MessagePacker.byteToShort(header); // network to host short
 			__flagRecvHeader = false;
 			// package = |2 bytes header| <content bytes> |
-			var data = Arrays.copyOfRange(bytes, Constants.HEADER_BYTES, __dataSize + Constants.HEADER_BYTES);
+			var data = Arrays.copyOfRange(bytes, SystemConstants.HEADER_BYTES, __dataSize + SystemConstants.HEADER_BYTES);
 			__onRecvData(data); // recursion
 		}
 	}

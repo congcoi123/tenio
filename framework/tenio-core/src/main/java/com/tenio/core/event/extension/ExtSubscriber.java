@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.core.event.extension;
 
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
@@ -32,7 +32,7 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
-public final class TSubscriber {
+public final class ExtSubscriber {
 
 	/**
 	 * @see ExtEvent
@@ -43,11 +43,11 @@ public final class TSubscriber {
 	 */
 	private final ISubscriber __sub;
 
-	public static TSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
-		return new TSubscriber(type, sub);
+	public static ExtSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
+		return new ExtSubscriber(type, sub);
 	}
 
-	private TSubscriber(final ExtEvent type, final ISubscriber sub) {
+	private ExtSubscriber(final ExtEvent type, final ISubscriber sub) {
 		__type = type;
 		__sub = sub;
 	}

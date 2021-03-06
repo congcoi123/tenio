@@ -21,49 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.internal;
+package com.tenio.core.event.extension;
 
-import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.configuration.define.ExtEvent;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
+ * Only for creating an event handler object, see {@link ExtEventHandler}
  * 
  * @author kong
  * 
  */
-public final class LSubscriber {
+public final class ExtEventProducer {
 
 	/**
-	 * @see InternalEvent
+	 * @see ExtEventHandler
 	 */
-	private final InternalEvent __type;
+	private final ExtEventHandler<Object> __eventHandler = new ExtEventHandler<Object>();
+
 	/**
-	 * @see ISubscriber
+	 * Retrieves an event handler
+	 * 
+	 * @return see {@link ExtEventHandler}
 	 */
-	private final ISubscriber __sub;
-
-	public static LSubscriber newInstance(final InternalEvent type, final ISubscriber sub) {
-		return new LSubscriber(type, sub);
-	}
-
-	private LSubscriber(final InternalEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
+	public ExtEventHandler<Object> getEventHandler() {
+		return __eventHandler;
 	}
 
 	/**
-	 * @return see {@link InternalEvent}
+	 * Emit an event with its parameters.
+	 * 
+	 * @param type see {@link ExtEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
+	 * @see ExtEventHandler#emit(ExtEvent, Object...)
 	 */
-	public InternalEvent getType() {
-		return __type;
+	public Object emit(final ExtEvent type, final Object... args) {
+		return __eventHandler.emit(type, args);
 	}
 
 	/**
-	 * @return see {@link ISubscriber}
+	 * Clear all events and these handlers.
+	 * 
+	 * @see ExtEventHandler#clear()
 	 */
-	public ISubscriber getSub() {
-		return __sub;
+	public void clear() {
+		__eventHandler.clear();
 	}
 
 }

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.configuration.constant.SystemConstants;
 import com.tenio.core.network.http.servlet.IServletHandler;
 
 /**
@@ -37,9 +37,9 @@ public abstract class BaseProcessServlet extends AbstractLogger implements IServ
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response) {
-		response.setContentType(Constants.CONTENT_TYPE_JSON);
-		response.setContentType(Constants.CONTENT_TYPE_TEXT);
-		response.setCharacterEncoding(Constants.UTF_8);
+		response.setContentType(SystemConstants.CONTENT_TYPE_JSON);
+		response.setContentType(SystemConstants.CONTENT_TYPE_TEXT);
+		response.setCharacterEncoding(SystemConstants.UTF_8);
 		_handleImpl(request, response);
 	}
 

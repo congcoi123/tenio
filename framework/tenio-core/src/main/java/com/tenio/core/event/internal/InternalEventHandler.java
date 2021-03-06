@@ -23,28 +23,36 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.event.IEvent;
 
 /**
- * Only for creating an event handler object, see {@link LEventHandler}
+ * This class for handling events and these subscribers.
+ * 
+ * @param <T> the template
  * 
  * @author kong
  * 
  */
-public final class LEventProducer {
+public final class InternalEventHandler<T> {
 
 	/**
-	 * @see LEventHandler
+	 * An instance creates a mapping between an event with its list of event
+	 * handlers.
 	 */
-	private final LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
+	private final Map<InternalEvent, IEvent<T>> __delegate = new HashMap<InternalEvent, IEvent<T>>();
 
 	/**
-	 * Retrieves an event handler
+	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @return see {@link LEventHandler}
+	 * @param type  see {@link InternalEvent}
+	 * @param event see {@link IEvent}
 	 */
-	public LEventHandler<Object> getEventHandler() {
-		return __eventHandler;
+	public void subscribe(final InternalEvent type, final IEvent<T> event) {
+		__delegate.put(type, event);
 	}
 
 	/**
@@ -54,19 +62,21 @@ public final class LEventProducer {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventHandler#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public Object emit(final InternalEvent type, final @SuppressWarnings("unchecked") T... args) {
+		if (__delegate.containsKey(type)) {
+			return __delegate.get(type).emit(args);
+		}
+		return null;
 	}
 
 	/**
 	 * Clear all events and these handlers
-	 * 
-	 * @see LEventHandler#clear()
 	 */
 	public void clear() {
-		__eventHandler.clear();
+		if (!__delegate.isEmpty()) {
+			__delegate.clear();
+		}
 	}
 
 }

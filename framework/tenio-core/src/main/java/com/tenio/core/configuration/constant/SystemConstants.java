@@ -30,9 +30,9 @@ package com.tenio.core.configuration.constant;
  * @author kong
  * 
  */
-public final class Constants {
+public final class SystemConstants {
 
-	private Constants() {
+	private SystemConstants() {
 	}
 
 	/**

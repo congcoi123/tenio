@@ -30,7 +30,7 @@ import java.util.List;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.BaseConfiguration;
 import com.tenio.core.configuration.Sock;
-import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.configuration.constant.SystemConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
@@ -68,8 +68,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		__consumer = new NioEventLoopGroup();
 
 		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __consumer,
-				Constants.TRAFFIC_COUNTER_WRITE_LIMIT, Constants.TRAFFIC_COUNTER_READ_LIMIT,
-				Constants.TRAFFIC_COUNTER_CHECK_INTERVAL);
+				SystemConstants.TRAFFIC_COUNTER_WRITE_LIMIT, SystemConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				SystemConstants.TRAFFIC_COUNTER_CHECK_INTERVAL);
 
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();

@@ -23,36 +23,28 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.IEvent;
 
 /**
- * This class for handling events and these subscribers.
- * 
- * @param <T> the template
+ * Only for creating an event handler object, see {@link InternalEventHandler}
  * 
  * @author kong
  * 
  */
-public final class LEventHandler<T> {
+public final class InternalEventProducer {
 
 	/**
-	 * An instance creates a mapping between an event with its list of event
-	 * handlers.
+	 * @see InternalEventHandler
 	 */
-	private final Map<InternalEvent, IEvent<T>> __delegate = new HashMap<InternalEvent, IEvent<T>>();
+	private final InternalEventHandler<Object> __eventHandler = new InternalEventHandler<Object>();
 
 	/**
-	 * Create a link between an event and its list of event handlers.
+	 * Retrieves an event handler
 	 * 
-	 * @param type  see {@link InternalEvent}
-	 * @param event see {@link IEvent}
+	 * @return see {@link InternalEventHandler}
 	 */
-	public void subscribe(final InternalEvent type, final IEvent<T> event) {
-		__delegate.put(type, event);
+	public InternalEventHandler<Object> getEventHandler() {
+		return __eventHandler;
 	}
 
 	/**
@@ -62,21 +54,19 @@ public final class LEventHandler<T> {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
+	 * @see InternalEventHandler#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent type, final @SuppressWarnings("unchecked") T... args) {
-		if (__delegate.containsKey(type)) {
-			return __delegate.get(type).emit(args);
-		}
-		return null;
+	public Object emit(final InternalEvent type, final Object... args) {
+		return __eventHandler.emit(type, args);
 	}
 
 	/**
 	 * Clear all events and these handlers
+	 * 
+	 * @see InternalEventHandler#clear()
 	 */
 	public void clear() {
-		if (!__delegate.isEmpty()) {
-			__delegate.clear();
-		}
+		__eventHandler.clear();
 	}
 
 }

@@ -36,16 +36,16 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
-public final class LEventManager extends AbstractLogger {
+public final class InternalEventManager extends AbstractLogger {
 
 	/**
 	 * A list of subscribers
 	 */
-	private final List<LSubscriber> __subscribers = new ArrayList<LSubscriber>();
+	private final List<InternalSubscriber> __subscribers = new ArrayList<InternalSubscriber>();
 	/**
-	 * @see LEventProducer
+	 * @see InternalEventProducer
 	 */
-	private final LEventProducer __producer = new LEventProducer();
+	private final InternalEventProducer __producer = new InternalEventProducer();
 
 	/**
 	 * Emit an event with its parameters
@@ -54,7 +54,7 @@ public final class LEventManager extends AbstractLogger {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventProducer#emit(InternalEvent, Object...)
+	 * @see InternalEventProducer#emit(InternalEvent, Object...)
 	 */
 	public Object emit(final InternalEvent type, final Object... args) {
 		return __producer.emit(type, args);
@@ -71,7 +71,7 @@ public final class LEventManager extends AbstractLogger {
 			info("INTERNAL EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(LSubscriber.newInstance(type, sub));
+		__subscribers.add(InternalSubscriber.newInstance(type, sub));
 	}
 
 	/**

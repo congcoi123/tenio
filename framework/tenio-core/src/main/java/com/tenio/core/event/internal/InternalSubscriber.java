@@ -21,52 +21,49 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.core.event.internal;
 
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.event.ISubscriber;
 
 /**
- * Only for creating an event handler object, see {@link TEventHandler}
+ * An object which creates a mapping between an event type with a subscriber
  * 
  * @author kong
  * 
  */
-public final class TEventProducer {
+public final class InternalSubscriber {
 
 	/**
-	 * @see TEventHandler
+	 * @see InternalEvent
 	 */
-	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
-
+	private final InternalEvent __type;
 	/**
-	 * Retrieves an event handler
-	 * 
-	 * @return see {@link TEventHandler}
+	 * @see ISubscriber
 	 */
-	public TEventHandler<Object> getEventHandler() {
-		return __eventHandler;
+	private final ISubscriber __sub;
+
+	public static InternalSubscriber newInstance(final InternalEvent type, final ISubscriber sub) {
+		return new InternalSubscriber(type, sub);
+	}
+
+	private InternalSubscriber(final InternalEvent type, final ISubscriber sub) {
+		__type = type;
+		__sub = sub;
 	}
 
 	/**
-	 * Emit an event with its parameters.
-	 * 
-	 * @param type see {@link ExtEvent}
-	 * @param args a list parameters of this event
-	 * @return the event result (the response of its subscribers), see
-	 *         {@link Object} or <b>null</b>
-	 * @see TEventHandler#emit(ExtEvent, Object...)
+	 * @return see {@link InternalEvent}
 	 */
-	public Object emit(final ExtEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public InternalEvent getType() {
+		return __type;
 	}
 
 	/**
-	 * Clear all events and these handlers.
-	 * 
-	 * @see TEventHandler#clear()
+	 * @return see {@link ISubscriber}
 	 */
-	public void clear() {
-		__eventHandler.clear();
+	public ISubscriber getSub() {
+		return __sub;
 	}
 
 }

@@ -42,13 +42,13 @@ import com.tenio.core.network.Connection;
  * @author kong
  *
  */
-final class InternalLogic extends AbstractLogger {
+final class InternalLogicManager extends AbstractLogger {
 
 	private final IEventManager __eventManager;
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogic(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
+	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;

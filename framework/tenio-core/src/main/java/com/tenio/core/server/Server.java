@@ -34,7 +34,7 @@ import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.configuration.constant.SystemConstants;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
@@ -79,7 +79,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi(__eventManager);
 
-		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
+		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
 		// print out the framework's icon
 		for (var line : CommonConstants.LOGO) {
@@ -107,7 +107,7 @@ public final class Server extends AbstractLogger implements IServer {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final InternalLogic __internalLogic;
+	private final InternalLogicManager __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
@@ -219,13 +219,13 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __createAllSchedules(BaseConfiguration configuration) {
-		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
+		__taskManager.create(SystemConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
 						configuration.getInt(BaseConfiguration.IDLE_WRITER),
 						configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run());
-		__taskManager.create(Constants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
+		__taskManager.create(SystemConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
-		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
+		__taskManager.create(SystemConstants.KEY_SCHEDULE_CCU_SCAN,
 				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
 	}
 
@@ -233,7 +233,7 @@ public final class Server extends AbstractLogger implements IServer {
 		for (var port : configuration.getHttpPorts()) {
 			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			http.setup();
-			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
+			__taskManager.create(SystemConstants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
 		}
 		return null;
 	}

@@ -24,8 +24,8 @@ THE SOFTWARE.
 package com.tenio.core.event;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.event.external.TEventManager;
-import com.tenio.core.event.internal.LEventManager;
+import com.tenio.core.event.extension.ExtEventManager;
+import com.tenio.core.event.internal.InternalEventManager;
 
 /**
  * Manage all events in the server
@@ -38,21 +38,21 @@ import com.tenio.core.event.internal.LEventManager;
 public final class EventManager extends AbstractLogger implements IEventManager {
 
 	/**
-	 * @see TEventManager
+	 * @see ExtEventManager
 	 */
-	private TEventManager __tEvent = new TEventManager();
+	private ExtEventManager __tEvent = new ExtEventManager();
 	/**
-	 * @see LEventManager
+	 * @see InternalEventManager
 	 */
-	private LEventManager __lEvent = new LEventManager();
+	private InternalEventManager __lEvent = new InternalEventManager();
 
 	@Override
-	public TEventManager getExternal() {
+	public ExtEventManager getExternal() {
 		return __tEvent;
 	}
 
 	@Override
-	public LEventManager getInternal() {
+	public InternalEventManager getInternal() {
 		return __lEvent;
 	}
 

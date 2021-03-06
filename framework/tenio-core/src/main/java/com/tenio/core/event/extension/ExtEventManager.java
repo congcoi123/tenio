@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.core.event.extension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +36,16 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
-public final class TEventManager extends AbstractLogger {
+public final class ExtEventManager extends AbstractLogger {
 
 	/**
 	 * A list of subscribers.
 	 */
-	private final List<TSubscriber> __subscribers = new ArrayList<TSubscriber>();
+	private final List<ExtSubscriber> __subscribers = new ArrayList<ExtSubscriber>();
 	/**
-	 * @see TEventProducer
+	 * @see ExtEventProducer
 	 */
-	private final TEventProducer __producer = new TEventProducer();
+	private final ExtEventProducer __producer = new ExtEventProducer();
 
 	/**
 	 * Emit an event with its parameters.
@@ -54,7 +54,7 @@ public final class TEventManager extends AbstractLogger {
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventProducer#emit(ExtEvent, Object...)
+	 * @see ExtEventProducer#emit(ExtEvent, Object...)
 	 */
 	public Object emit(final ExtEvent type, final Object... args) {
 		if (__canShowTraceLog(type)) {
@@ -76,7 +76,7 @@ public final class TEventManager extends AbstractLogger {
 			info("EXTERNAL EVENT WARNING", "Duplicated", type);
 		}
 
-		__subscribers.add(TSubscriber.newInstance(type, sub));
+		__subscribers.add(ExtSubscriber.newInstance(type, sub));
 	}
 
 	/**

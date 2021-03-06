@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.core.event.extension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ import com.tenio.core.event.IEvent;
  * @author kong
  * 
  */
-public final class TEventHandler<T> {
+public final class ExtEventHandler<T> {
 
 	/**
 	 * An instance creates a mapping between an event with its list of event
