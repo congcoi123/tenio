@@ -292,20 +292,6 @@ public enum TEvent {
 	DISCONNECT_CONNECTION,
 
 	/**
-	 * You can see the number of concurrent users (CCU) in period time. This scanned
-	 * time can be changed in configuration, see {@link BaseConfiguration}. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the number of current players that have
-	 * connection</li>
-	 * <li><b>parameter[1]</b> the number of all players (players and your
-	 * BOTs)</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	CCU,
-
-	/**
 	 * In this server, you can create other sub connections. That means you need to
 	 * create one main connection between one client and the server first (a TCP
 	 * connection). When it's finished, that client can send a request for making a
@@ -357,6 +343,20 @@ public enum TEvent {
 	ATTACH_CONNECTION_FAILED,
 
 	/**
+	 * You can see the number of concurrent users (CCU) in period time. This scanned
+	 * time can be changed in configuration, see {@link BaseConfiguration}. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the number of current players that have
+	 * connection</li>
+	 * <li><b>parameter[1]</b> the number of all players (players and your
+	 * BOTs)</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	CCU,
+
+	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> Last reading bandwidth (KB/s)</li>
@@ -384,10 +384,11 @@ public enum TEvent {
 	 * Return <b>null</b> if the confirmation was passed or
 	 * {@link HttpServletResponse} object otherwise
 	 */
-	HTTP_REQUEST,
+	HTTP_REQUEST_VALIDATE,
 
 	/**
-	 * The main process for a HTTP request which comes from client
+	 * The main process for a HTTP request which comes from client,
+	 * this request must be passed from the {@link #HTTP_REQUEST_VALIDATE} event
 	 * <ul>
 	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
 	 * <li><b>parameter[1]</b> The request object, see
@@ -398,6 +399,6 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	HTTP_HANDLER
+	HTTP_REQUEST_HANDLE
 
 }

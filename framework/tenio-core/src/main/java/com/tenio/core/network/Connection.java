@@ -141,6 +141,11 @@ public abstract class Connection {
 	public String getAddress() {
 		return __address;
 	}
+	
+	@Override
+	public String toString() {
+		return getAddress();
+	}
 
 	/**
 	 * Send a message to the client

@@ -244,7 +244,6 @@ final class InternalLogic extends AbstractLogger {
 	}
 
 	private void __handle(AbstractPlayer player, int index, MessageObject message) {
-		debug("RECV PLAYER", index, player.getName(), message.toString());
 		player.setCurrentReaderTime();
 		__eventManager.getExternal().emit(TEvent.RECEIVED_FROM_PLAYER, player, index, message);
 	}

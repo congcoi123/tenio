@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.manager.IRoomManager;
 
@@ -101,7 +102,7 @@ public final class RoomApi extends AbstractLogger {
 			var data = new ArrayList<Object>();
 			data.add(room.getId());
 			data.add(room.getName());
-			data.add(strgen(room.getPlayers().size(), "/", room.getCapacity()));
+			data.add(StringUtility.strgen(room.getPlayers().size(), "/", room.getCapacity()));
 			data.add(room.getState());
 			var players = new StringBuilder();
 			players.append("{ ");

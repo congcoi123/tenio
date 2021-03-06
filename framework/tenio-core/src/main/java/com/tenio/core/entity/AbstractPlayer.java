@@ -219,5 +219,10 @@ public abstract class AbstractPlayer {
 		setCurrentReaderTime();
 		setCurrentWriterTime();
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 }

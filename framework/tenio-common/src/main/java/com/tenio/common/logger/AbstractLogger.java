@@ -113,7 +113,7 @@ public abstract class AbstractLogger {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(">").append("[").append(tag).append("] ").append(msg);
+		builder.append("[").append(where).append("]").append("[").append(tag).append("] ").append(msg);
 		__logger.info(builder.toString());
 		__stringPool.repay(builder);
 		__stringPool.repay(where);
@@ -134,7 +134,7 @@ public abstract class AbstractLogger {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(">").append("[").append(tag).append("] ").append(msg);
+		builder.append("[").append(where).append("]").append("[").append(tag).append("] ").append(msg);
 		__logger.info(builder.toString());
 		__stringPool.repay(builder);
 		__stringPool.repay(msg);
@@ -153,7 +153,7 @@ public abstract class AbstractLogger {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(">").append("[").append(tag).append("] ").append(msg);
+		builder.append("[").append(where).append("]").append("[").append(tag).append("] ").append(msg);
 		__logger.info(builder.toString());
 		__stringPool.repay(builder);
 	}
@@ -214,6 +214,58 @@ public abstract class AbstractLogger {
 		__logger.info(builder.toString());
 		__stringPool.repay(builder);
 	}
+	
+	/**
+	 * Only use for debugging EVENTS in the server system. Be careful when using it
+	 * yourself. You are warned!
+	 * 
+	 * @param type		the event's type
+	 * @param args 		the extra information for "type"
+	 */
+	public final void debug(final String type, final Object... args) {
+		if (!__logger.isDebugEnabled()) {
+			return;
+		}
+		
+		StringBuilder builder = __stringPool.get();
+		builder.append("{").append(type).append("} ");
+		
+		for (int i = 0; i < args.length - 1; i++) {
+	        builder.append(args[i]).append(", ");
+	    }
+	    if(args.length > 0){
+	        builder.append(args[args.length - 1]);
+	    }
+	    
+		__logger.debug(builder.toString());
+		__stringPool.repay(builder);
+	}
+	
+	/**
+	 * Only use for debugging EVENTS in the server system. Be careful when using it
+	 * yourself. You are warned!
+	 * 
+	 * @param type		the event's type
+	 * @param args 		the extra information for "type"
+	 */
+	public final void trace(final String type, final Object... args) {
+		if (!__logger.isTraceEnabled()) {
+			return;
+		}
+		
+		StringBuilder builder = __stringPool.get();
+		builder.append("<").append(type).append("> ");
+		
+		for (int i = 0; i < args.length - 1; i++) {
+	        builder.append(args[i]).append(", ");
+	    }
+	    if(args.length > 0){
+	        builder.append(args[args.length - 1]);
+	    }
+	    
+		__logger.trace(builder.toString());
+		__stringPool.repay(builder);
+	}
 
 	/**
 	 * Only use for debugging PACKAGE in the server system. Be careful when using it
@@ -224,17 +276,17 @@ public abstract class AbstractLogger {
 	 * @param tag      the tag type
 	 * @param msg      the message content
 	 */
-	public final void debug(final String where, final Object subWhere, final String tag, final String msg) {
-		if (!__logger.isDebugEnabled()) {
+	public final void trace(final String where, final Object subWhere, final String tag, final String msg) {
+		if (!__logger.isTraceEnabled()) {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
 		builder.append("<").append(where).append(" ").append(subWhere).append(">").append("[").append(tag).append("] ")
 				.append(msg);
-		__logger.debug(builder.toString());
+		__logger.trace(builder.toString());
 		__stringPool.repay(builder);
 	}
-
+	
 	/**
 	 * Only use for EXCEPTION detection in the server system. Be careful when using
 	 * it yourself. You are warned!
@@ -249,11 +301,12 @@ public abstract class AbstractLogger {
 		StringBuilder builder = __stringPool.get();
 		builder.append(Throwables.getStackTraceAsString(cause));
 		if (extra.length > 0) {
-			builder.append("=========== BEGIN INFORMATION ===========\n");
+			builder.append("\n=========== BEGIN ERROR INFORMATION ===========\n");
 			for (var e : extra) {
 				builder.append(e);
+				builder.append("\n");
 			}
-			builder.append("\n============ END INFORMATION ============\n");
+			builder.append("============ END ERROR INFORMATION ============\n");
 		}
 		__logger.error(builder.toString());
 		__stringPool.repay(builder);
@@ -272,21 +325,6 @@ public abstract class AbstractLogger {
 			builder.append(object);
 		}
 		return builder;
-	}
-
-	/**
-	 * To generate {@code String} for logging information by the corresponding
-	 * objects
-	 * 
-	 * @param objects the corresponding objects, {@link Object}
-	 * @return a string value
-	 */
-	public final String strgen(final Object... objects) {
-		StringBuilder builder = new StringBuilder();
-		for (var object : objects) {
-			builder.append(object);
-		}
-		return builder.toString();
 	}
 
 }

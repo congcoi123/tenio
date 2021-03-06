@@ -212,9 +212,9 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberHttpHandler(BaseConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST)
-				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_HANDLER))) {
-			throw new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
+		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST_VALIDATE)
+				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST_HANDLE))) {
+			throw new NotDefinedSubscribersException(TEvent.HTTP_REQUEST_VALIDATE, TEvent.HTTP_REQUEST_HANDLE);
 		}
 	}
 

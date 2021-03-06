@@ -57,6 +57,11 @@ public final class TEventManager extends AbstractLogger {
 	 * @see TEventProducer#emit(TEvent, Object...)
 	 */
 	public Object emit(final TEvent type, final Object... args) {
+		if (__canShowTraceLog(type)) {
+			trace(type.name(), args);
+		} else {
+			debug(type.name(), args);
+		}
 		return __producer.emit(type, args);
 	}
 
@@ -106,6 +111,25 @@ public final class TEventManager extends AbstractLogger {
 	public void clear() {
 		__subscribers.clear();
 		__producer.clear();
+	}
+	
+	/**
+	 * Special events will be traced by trace log
+	 * @param type the event's type
+	 * @return <b>true</b> if an event can be traced
+	 */
+	private boolean __canShowTraceLog(final TEvent type) {
+		switch (type) {
+		case RECEIVED_FROM_CONNECTION:
+		case RECEIVED_FROM_PLAYER:
+		case CCU:
+		case BANDWIDTH:
+		case HTTP_REQUEST_VALIDATE:
+		case HTTP_REQUEST_HANDLE:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 }

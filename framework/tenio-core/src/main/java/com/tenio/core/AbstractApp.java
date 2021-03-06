@@ -53,7 +53,12 @@ public abstract class AbstractApp extends AbstractLogger {
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
 			error(e, "Application start");
 			server.shutdown();
+			onShutdown();
 		}
+		// Suddenly shutdown
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			onShutdown();
+		}));
 	}
 
 	/**
@@ -67,5 +72,10 @@ public abstract class AbstractApp extends AbstractLogger {
 	 * @return your own class that derived from {@link BaseConfiguration} class
 	 */
 	public abstract <T extends BaseConfiguration> T getConfiguration();
+	
+	/**
+	 * The trigger is called when server was down
+	 */
+	public abstract void onShutdown();
 
 }

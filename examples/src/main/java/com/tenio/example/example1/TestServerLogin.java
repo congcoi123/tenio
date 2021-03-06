@@ -60,6 +60,11 @@ public final class TestServerLogin extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	/**
 	 * Your own logic handler class
@@ -72,8 +77,6 @@ public final class TestServerLogin extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
@@ -83,19 +86,10 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
 			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerLogin>_getPlayer(args[0]);
 
-				info("PLAYER IN", player.getName());
 				try {
 					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 				} catch (Exception e) {
@@ -125,30 +119,6 @@ public final class TestServerLogin extends AbstractApp {
 					}
 
 				}, 0, 1, TimeUnit.SECONDS));
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.SEND_TO_PLAYER, args -> {
-				var message = _getMessageObject(args[2]);
-
-				info("SEND_TO_PLAYER", message.toString());
 
 				return null;
 			});

@@ -159,7 +159,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.HTTP_REQUEST, args -> {
+			_on(TEvent.HTTP_REQUEST_VALIDATE, args -> {
 				var method = _getRestMethod(args[0]);
 				// var request = _getHttpServletRequest(args[1]);
 				var response = _getHttpServletResponse(args[2]);
@@ -178,7 +178,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.HTTP_HANDLER, args -> {
+			_on(TEvent.HTTP_REQUEST_HANDLE, args -> {
 				// var method = _getRestMethod(args[0]);
 				// var request = _getHttpServletRequest(args[1]);
 				var response = _getHttpServletResponse(args[2]);
