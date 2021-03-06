@@ -57,6 +57,11 @@ public final class TestServerPhaserjs extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	/**
 	 * Your own logic handler class
@@ -71,21 +76,11 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
 				// is only for testing
 				_playerApi.login(new PlayerPhaserjs(username), connection);
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
 
 				return null;
 			});
@@ -99,18 +94,13 @@ public final class TestServerPhaserjs extends AbstractApp {
 				int y = MathUtility.randInt(100, 400);
 				player.setPosition(x, y);
 
-				info("PLAYER_IN_SUCCESS", player.getName());
-
 				_playerApi.playerJoinRoom(phaserjsRoom, player);
 
 				return null;
 			});
 
 			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				var room = this.<RoomPhaserjs>_getRoom(args[1]);
-
-				info("PLAYER_JOIN_ROOM", player.getName(), room.getName());
 
 				var pack = _messageApi.getArrayPack();
 				var players = room.getPlayers();
@@ -134,8 +124,6 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 				player.setPosition(move.getInt(0), move.getInt(1));
 
-				info("RECEIVED_FROM_PLAYER", message);
-
 				var pack = _messageApi.getArrayPack();
 				pack.add(player.getName());
 				pack.add(move.get(0));
@@ -145,26 +133,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
 			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("CCU", ccu);
+				info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});

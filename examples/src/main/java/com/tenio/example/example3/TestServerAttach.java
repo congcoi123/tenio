@@ -61,6 +61,11 @@ public final class TestServerAttach extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	/**
 	 * Your own logic handler class
@@ -74,8 +79,6 @@ public final class TestServerAttach extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
@@ -85,19 +88,9 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("PLAYER IN", player.getName());
 
 				// Now you can allow the player make a UDP connection request
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
@@ -108,28 +101,9 @@ public final class TestServerAttach extends AbstractApp {
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
 				var player = this.<PlayerAttach>_getPlayer(args[0]);
 				int index = _getInt(args[1]);
-				var message = _getMessageObject(args[2]);
-
-				info("PLAYER RECV ", message);
 
 				_messageApi.sendToPlayer(player, index, "hello",
 						"from server > " + index + " > " + player.getConnection(index).getAddress());
-
-				return null;
-			});
-
-			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
 
 				return null;
 			});
@@ -147,21 +121,9 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var index = _getInt(args[0]);
 				var player = this.<PlayerAttach>_getPlayer(args[1]);
 
-				info("ATTACH CONNECTION SUCCESS", player.getName() + " " + player.getConnection(0).getAddress() + " "
-						+ player.getConnection(index).getAddress());
-
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
-
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_FAILED, args -> {
-				var reason = _getString(args[2]);
-
-				info("ATTACH UDP FAILED", reason);
 
 				return null;
 			});

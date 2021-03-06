@@ -57,6 +57,11 @@ public final class TestServerStress extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	/**
 	 * Your own logic handler class
@@ -69,8 +74,6 @@ public final class TestServerStress extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
@@ -80,20 +83,10 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerStress>_getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
-
-				info("PLAYER_IN_SUCCESS", player.getName());
 
 				// Now you can send messages to the client
 				// Sending, the data need to be packed
@@ -120,26 +113,10 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
 			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("CCU", ccu);
+				info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});
@@ -157,7 +134,7 @@ public final class TestServerStress extends AbstractApp {
 						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
-				info("BANDWIDTH", bandwidth);
+				info("FETCHED_BANDWIDTH_INFO", bandwidth);
 
 				return null;
 			});

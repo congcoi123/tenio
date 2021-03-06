@@ -23,14 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
-import java.io.IOException;
-
-import org.json.simple.JSONObject;
-
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -66,13 +60,17 @@ public final class TestServerMovement extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	/**
 	 * Handle your own logic here
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void initialize() {
 
@@ -80,19 +78,9 @@ public final class TestServerMovement extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// can make a login request for this connection
 				String username = message.getString("u");
 				_playerApi.login(new Inspector(username), connection);
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
 
 				return null;
 			});
@@ -102,26 +90,8 @@ public final class TestServerMovement extends AbstractApp {
 				var player = this.<Inspector>_getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 
-				info("PLAYER IN", player.getName());
-
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
-
-				return null;
-			});
-
-			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
 
 				return null;
 			});
@@ -139,57 +109,9 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var index = _getInt(args[0]);
 				var player = this.<Inspector>_getPlayer(args[1]);
 
-				info("ATTACH CONNECTION SUCCESS",
-						player.getName() + " " + player.getConnection(Inspector.MAIN_CHANNEL).getAddress() + " "
-								+ player.getConnection(index).getAddress());
-
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
-
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_FAILED, args -> {
-				String reason = _getString(args[2]);
-
-				info("ATTACH CONNECTION FAILED", reason);
-
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_VALIDATE, args -> {
-				var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
-
-				if (method.equals(RestMethod.DELETE)) {
-					var json = new JSONObject();
-					json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "not supported"));
-					try {
-						response.getWriter().println(json.toString());
-					} catch (IOException e) {
-						error(e, "request");
-					}
-					return response;
-				}
-
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_HANDLE, args -> {
-				// var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
-
-				var json = new JSONObject();
-				json.putAll(MessageObject.newInstance().add("status", "ok").add("message", "handler"));
-				try {
-					response.getWriter().println(json.toString());
-				} catch (IOException e) {
-					error(e, "handler");
-				}
 
 				return null;
 			});

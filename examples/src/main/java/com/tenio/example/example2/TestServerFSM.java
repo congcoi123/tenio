@@ -52,6 +52,11 @@ public final class TestServerFSM extends AbstractApp {
 	public IExtension getExtension() {
 		return new Extenstion();
 	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -71,44 +76,9 @@ public final class TestServerFSM extends AbstractApp {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
-				info("CONNECTION", connection.getAddress());
-
 				// allow a connection login to the server
 				String username = message.getString("u");
 				_playerApi.login(new Inspector(username), connection);
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				// Login successful
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("PLAYER IN", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
 
 				return null;
 			});
