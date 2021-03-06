@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.constant;
+package com.tenio.core.configuration.define;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +43,7 @@ import com.tenio.core.network.Connection;
  * @author kong
  *
  */
-public enum TEvent {
+public enum ExtEvent {
 
 	/**
 	 * When the client sends its first request to your server and is made a valid
@@ -58,7 +58,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_SUCCESS,
+	CONNECTION_ESTABLISHED_SUCCESS,
 
 	/**
 	 * When a connection was established, the next requests are handled in this
@@ -71,7 +71,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	RECEIVED_FROM_CONNECTION,
+	RECEIVED_MESSAGE_FROM_CONNECTION,
 
 	/**
 	 * When the client sends its first request to your server and because of some
@@ -85,7 +85,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_FAILED,
+	CONNECTION_ESTABLISHED_FAILED,
 
 	/**
 	 * This event let you know when one connection has login successful and became a
@@ -96,7 +96,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_IN_SUCCESS,
+	PLAYER_LOGINED_SUCCESS,
 
 	/**
 	 * When a connection has failed to login to your server for some reason. At this
@@ -111,7 +111,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_IN_FAILED,
+	PLAYER_LOGINED_FAILED,
 
 	/**
 	 * When a player is disconnected from your server without its desired, the
@@ -130,7 +130,7 @@ public enum TEvent {
 	 * Return if you allow the client can be re-connected, return the corresponding
 	 * player: {@link AbstractPlayer}, return <b>null</b> otherwise
 	 */
-	PLAYER_RECONNECT_REQUEST,
+	PLAYER_RECONNECT_REQUEST_HANDLE,
 
 	/**
 	 * When a client makes reconnection successful and you can inform him here by a
@@ -157,7 +157,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_TIMEOUT,
+	PLAYER_GOT_TIMEOUT,
 
 	/**
 	 * When you send a message from your server to one client it can be seen here.
@@ -172,7 +172,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	SEND_TO_PLAYER,
+	SEND_MESSAGE_TO_PLAYER,
 
 	/**
 	 * With a valid player, his message can be seen here. This message is sent from
@@ -187,7 +187,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	RECEIVED_FROM_PLAYER,
+	RECEIVED_MESSAGE_FROM_PLAYER,
 
 	/**
 	 * Created a new room. A room ({@link AbstractRoom}) is a group of some players.
@@ -200,7 +200,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CREATED_ROOM,
+	ROOM_WAS_CREATED,
 
 	/**
 	 * The room will be removed, but in this event, all the players and their state
@@ -213,7 +213,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	REMOVE_ROOM,
+	ROOM_WILL_BE_REMOVED,
 
 	/**
 	 * When a player wants to join one room, its request can be seen here. This
@@ -234,7 +234,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_JOIN_ROOM,
+	PLAYER_JOIN_ROOM_HANDLE,
 
 	/**
 	 * This event occurs when a player before leaves his current room. You can
@@ -265,7 +265,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_LEFT_ROOM,
+	PLAYER_AFTER_LEFT_ROOM,
 
 	/**
 	 * When a connection between one player and your service is closed (for any
@@ -308,7 +308,7 @@ public enum TEvent {
 	 * corresponding player, see {@link AbstractPlayer}. Otherwise, return
 	 * <b>null</b>
 	 */
-	ATTACH_CONNECTION_REQUEST,
+	ATTACH_CONNECTION_REQUEST_VALIDATE,
 
 	/**
 	 * When a a sub connection link is established, you can inform its own player
@@ -354,7 +354,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CCU,
+	FETCHED_CCU_INFO,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>
@@ -369,7 +369,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	BANDWIDTH,
+	FETCHED_BANDWIDTH_INFO,
 
 	/**
 	 * You can authenticate the request in here

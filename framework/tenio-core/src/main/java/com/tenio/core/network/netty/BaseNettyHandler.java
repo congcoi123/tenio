@@ -25,8 +25,8 @@ package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.core.configuration.constant.ConnectionType;
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
@@ -86,7 +86,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 			__connection.setThis();
 		}
 
-		__eventManager.getInternal().emit(LEvent.CHANNEL_HANDLE, __index, connection, message, __connection);
+		__eventManager.getInternal().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, __index, connection, message, __connection);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		}
 		// get the connection first
 		var connection = __getConnection(ctx.channel(), null);
-		__eventManager.getInternal().emit(LEvent.CONNECTION_CLOSE, connection);
+		__eventManager.getInternal().emit(InternalEvent.CONNECTION_WAS_CLOSED, connection);
 		connection = null;
 	}
 
@@ -117,7 +117,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		}
 		// get the connection first
 		var connection = __getConnection(ctx.channel(), null);
-		__eventManager.getInternal().emit(LEvent.CONNECTION_EXCEPTION, ctx.channel().id().asLongText(), connection,
+		__eventManager.getInternal().emit(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, ctx.channel().id().asLongText(), connection,
 				cause);
 	}
 

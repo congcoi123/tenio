@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.external;
 
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 
 /**
  * Only for creating an event handler object, see {@link TEventHandler}
@@ -50,13 +50,13 @@ public final class TEventProducer {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventHandler#emit(TEvent, Object...)
+	 * @see TEventHandler#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final Object... args) {
+	public Object emit(final ExtEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
 	}
 

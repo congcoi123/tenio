@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.socket;
 
 import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.ConnectionType;
+import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.message.codec.MsgPackConverter;
 import com.tenio.core.network.netty.BaseNettyHandler;

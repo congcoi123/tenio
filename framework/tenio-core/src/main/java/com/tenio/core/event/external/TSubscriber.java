@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.external;
 
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
@@ -35,27 +35,27 @@ import com.tenio.core.event.ISubscriber;
 public final class TSubscriber {
 
 	/**
-	 * @see TEvent
+	 * @see ExtEvent
 	 */
-	private final TEvent __type;
+	private final ExtEvent __type;
 	/**
 	 * @see ISubscriber
 	 */
 	private final ISubscriber __sub;
 
-	public static TSubscriber newInstance(final TEvent type, final ISubscriber sub) {
+	public static TSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
 		return new TSubscriber(type, sub);
 	}
 
-	private TSubscriber(final TEvent type, final ISubscriber sub) {
+	private TSubscriber(final ExtEvent type, final ISubscriber sub) {
 		__type = type;
 		__sub = sub;
 	}
 
 	/**
-	 * @return see {@link TEvent}
+	 * @return see {@link ExtEvent}
 	 */
-	public TEvent getType() {
+	public ExtEvent getType() {
 		return __type;
 	}
 
@@ -63,7 +63,7 @@ public final class TSubscriber {
 	 * @param type the comparison event value
 	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
 	 */
-	public boolean isType(TEvent type) {
+	public boolean isType(ExtEvent type) {
 		return __type == type;
 	}
 

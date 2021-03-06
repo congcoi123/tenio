@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.internal;
 
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
@@ -35,27 +35,27 @@ import com.tenio.core.event.ISubscriber;
 public final class LSubscriber {
 
 	/**
-	 * @see LEvent
+	 * @see InternalEvent
 	 */
-	private final LEvent __type;
+	private final InternalEvent __type;
 	/**
 	 * @see ISubscriber
 	 */
 	private final ISubscriber __sub;
 
-	public static LSubscriber newInstance(final LEvent type, final ISubscriber sub) {
+	public static LSubscriber newInstance(final InternalEvent type, final ISubscriber sub) {
 		return new LSubscriber(type, sub);
 	}
 
-	private LSubscriber(final LEvent type, final ISubscriber sub) {
+	private LSubscriber(final InternalEvent type, final ISubscriber sub) {
 		__type = type;
 		__sub = sub;
 	}
 
 	/**
-	 * @return see {@link LEvent}
+	 * @return see {@link InternalEvent}
 	 */
-	public LEvent getType() {
+	public InternalEvent getType() {
 		return __type;
 	}
 

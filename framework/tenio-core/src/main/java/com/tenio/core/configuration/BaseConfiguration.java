@@ -33,8 +33,8 @@ import org.w3c.dom.Node;
 
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
-import com.tenio.core.configuration.constant.ConnectionType;
-import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.RestMethod;
 
 /**
  * This server needs some basic configuration to start running. The

@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEvent;
 
 /**
@@ -45,15 +45,15 @@ public final class TEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<TEvent, List<IEvent<T>>> __delegate = new HashMap<TEvent, List<IEvent<T>>>();
+	private final Map<ExtEvent, List<IEvent<T>>> __delegate = new HashMap<ExtEvent, List<IEvent<T>>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  see {@link TEvent}
+	 * @param type  see {@link ExtEvent}
 	 * @param event see {@link IEvent}
 	 */
-	public void subscribe(final TEvent type, final IEvent<T> event) {
+	public void subscribe(final ExtEvent type, final IEvent<T> event) {
 		if (__delegate.containsKey(type)) {
 			__delegate.get(type).add(event);
 		} else {
@@ -68,12 +68,12 @@ public final class TEventHandler<T> {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final TEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public Object emit(final ExtEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (!__delegate.isEmpty()) {
 			Object obj = null;
 			if (__delegate.containsKey(type)) {

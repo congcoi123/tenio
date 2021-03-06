@@ -32,8 +32,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.constant.LEvent;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.model.PlayerModel;
@@ -58,13 +58,13 @@ public final class EventTest {
 		__playerManager.add(player);
 
 		// Handle events
-		__eventManager.getExternal().on(TEvent.CCU, args -> {
+		__eventManager.getExternal().on(ExtEvent.FETCHED_CCU_INFO, args -> {
 			__testCCU[0] = (int) args[0];
 			__testCCU[1] = (int) args[1];
 			return null;
 		});
 
-		__eventManager.getInternal().on(LEvent.FORCE_PLAYER_LEAVE_ROOM, args -> {
+		__eventManager.getInternal().on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
 
 			return null;
 		});
@@ -73,7 +73,7 @@ public final class EventTest {
 		__eventManager.subscribe();
 
 		// Make events listener
-		__eventManager.getExternal().emit(TEvent.CCU, __playerManager.countPlayers(), __playerManager.count());
+		__eventManager.getExternal().emit(ExtEvent.FETCHED_CCU_INFO, __playerManager.countPlayers(), __playerManager.count());
 
 	}
 
@@ -85,7 +85,7 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertTrue(__eventManager.getExternal().hasSubscriber(TEvent.CCU));
+		assertTrue(__eventManager.getExternal().hasSubscriber(ExtEvent.FETCHED_CCU_INFO));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public final class EventTest {
 	public void clearAllTEventShouldReturnZero() {
 		__eventManager.getExternal().clear();
 
-		assertFalse(__eventManager.getExternal().hasSubscriber(TEvent.CCU));
+		assertFalse(__eventManager.getExternal().hasSubscriber(ExtEvent.FETCHED_CCU_INFO));
 	}
 
 }

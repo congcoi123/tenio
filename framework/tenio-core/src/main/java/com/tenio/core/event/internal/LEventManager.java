@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
@@ -50,23 +50,23 @@ public final class LEventManager extends AbstractLogger {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link LEvent}
+	 * @param type see {@link InternalEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventProducer#emit(LEvent, Object...)
+	 * @see LEventProducer#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final LEvent type, final Object... args) {
+	public Object emit(final InternalEvent type, final Object... args) {
 		return __producer.emit(type, args);
 	}
 
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type see {@link LEvent}
+	 * @param type see {@link InternalEvent}
 	 * @param sub  see {@link ISubscriber}
 	 */
-	public void on(final LEvent type, final ISubscriber sub) {
+	public void on(final InternalEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
 			info("INTERNAL EVENT WARNING", "Duplicated", type);
 		}
@@ -81,7 +81,7 @@ public final class LEventManager extends AbstractLogger {
 		__producer.clear(); // clear the old first
 
 		// only for log recording
-		var subs = new ArrayList<LEvent>();
+		var subs = new ArrayList<InternalEvent>();
 		// start handling
 		__subscribers.forEach(s -> {
 			subs.add(s.getType());
@@ -93,10 +93,10 @@ public final class LEventManager extends AbstractLogger {
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type see {@link LEvent}
+	 * @param type see {@link InternalEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final LEvent type) {
+	public boolean hasSubscriber(final InternalEvent type) {
 		for (var subscriber : __subscribers) {
 			if (subscriber.getType() == type) {
 				return true;

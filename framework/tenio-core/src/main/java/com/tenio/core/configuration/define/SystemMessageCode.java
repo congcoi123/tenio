@@ -21,60 +21,73 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.constant;
+package com.tenio.core.configuration.define;
 
 /**
- * All base errors' messages for the server are defined here. This class should
+ * All base system messages for the server are defined here. This class should
  * not be modified.
  * 
  * @author kong
  * 
  */
-public final class ErrorMsg {
-
-	private ErrorMsg() {
-	}
+public enum SystemMessageCode {
 
 	/**
 	 * When you try to add a player that has the same name with one appeared on the
 	 * server.
 	 */
-	public static final String PLAYER_IS_EXISTED = "player_is_existed";
+	PLAYER_WAS_EXISTED("player_was_existed"),
 	/**
 	 * When you try to add an invalid player (wrong credentials or your own logic
 	 * handle) into the server.
 	 */
-	public static final String PLAYER_IS_INVALID = "player_is_invalid";
+	PLAYER_INFO_IS_INVALID("player_info_is_invalid"),
 	/**
 	 * When you try to add a player that duplicates in one room.
 	 */
-	public static final String PLAYER_WAS_IN_ROOM = "player_was_in_room";
+	PLAYER_WAS_IN_ROOM("player_was_in_room"),
 	/**
-	 * When you try to remove a player from his room, but he has already leave.
+	 * When you try to remove a player from his room, but he has already left.
 	 */
-	public static final String PLAYER_ALREADY_LEAVE_ROOM = "player_already_leave_room";
+	PLAYER_ALREADY_LEFT_ROOM("player_already_left_room"),
 	/**
 	 * When you try to add a player in one room and that exceeds the room's
 	 * capacity.
 	 */
-	public static final String ROOM_IS_FULL = "room_is_full";
+	ROOM_IS_FULL("room_is_full"),
 	/**
 	 * When you try to add a room that has the same id with one appeared on the
 	 * server.
 	 */
-	public static final String ROOM_IS_EXISTED = "room_is_existed";
+	ROOM_WAS_EXISTED("room_was_existed"),
 	/**
 	 * When you try to create a new connection and that exceeds the number of
 	 * allowed connections.
 	 */
-	public static final String REACH_MAX_CONNECTION = "reach_max_connection";
+	REACHED_MAX_CONNECTION("reached_max_connection"),
 	/**
 	 * When you try to retrieve a non-existing player.
 	 */
-	public static final String PLAYER_NOT_FOUND = "player_not_found";
+	PLAYER_NOT_FOUND("player_not_found"),
 	/**
 	 * When you try to attach a UDP connection to one player with a non-existing of
 	 * TCP connection.
 	 */
-	public static final String MAIN_CONNECTION_NOT_FOUND = "main_connection_not_found";
+	MAIN_CONNECTION_NOT_FOUND("main_connection_not_found");
+	
+	private final String value;
+	
+	private SystemMessageCode(String value) {
+		this.value = value;
+	}
+	
+	public final String getValue() {
+		return this.value;
+	}
+	
+	@Override
+	public final String toString() {
+		return this.name();
+	}
+	
 }

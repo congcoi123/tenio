@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 
 import com.tenio.core.configuration.Path;
-import com.tenio.core.configuration.constant.RestMethod;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
@@ -118,9 +118,9 @@ public final class TServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request, response);
+			var check = __eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request, response);
 			if (check == null) {
-				__eventManager.getExternal().emit(TEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
+				__eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
 			}
 		}
 
@@ -130,9 +130,9 @@ public final class TServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request, response);
+			var check = __eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request, response);
 			if (check == null) {
-				__eventManager.getExternal().emit(TEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
+				__eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
 			}
 		}
 
@@ -142,9 +142,9 @@ public final class TServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request, response);
+			var check = __eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request, response);
 			if (check == null) {
-				__eventManager.getExternal().emit(TEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
+				__eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
 			}
 		}
 
@@ -154,9 +154,9 @@ public final class TServlet extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExternal().emit(TEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request, response);
+			var check = __eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request, response);
 			if (check == null) {
-				__eventManager.getExternal().emit(TEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
+				__eventManager.getExternal().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
 			}
 		}
 

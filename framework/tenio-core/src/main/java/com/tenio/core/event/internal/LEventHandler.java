@@ -26,7 +26,7 @@ package com.tenio.core.event.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.IEvent;
 
 /**
@@ -43,27 +43,27 @@ public final class LEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<LEvent, IEvent<T>> __delegate = new HashMap<LEvent, IEvent<T>>();
+	private final Map<InternalEvent, IEvent<T>> __delegate = new HashMap<InternalEvent, IEvent<T>>();
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  see {@link LEvent}
+	 * @param type  see {@link InternalEvent}
 	 * @param event see {@link IEvent}
 	 */
-	public void subscribe(final LEvent type, final IEvent<T> event) {
+	public void subscribe(final InternalEvent type, final IEvent<T> event) {
 		__delegate.put(type, event);
 	}
 
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link LEvent}
+	 * @param type see {@link InternalEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final LEvent type, final @SuppressWarnings("unchecked") T... args) {
+	public Object emit(final InternalEvent type, final @SuppressWarnings("unchecked") T... args) {
 		if (__delegate.containsKey(type)) {
 			return __delegate.get(type).emit(args);
 		}

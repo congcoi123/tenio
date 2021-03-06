@@ -35,7 +35,7 @@ import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.BaseConfiguration;
 import com.tenio.core.configuration.constant.Constants;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -184,10 +184,10 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __checkSubscriberReconnection(BaseConfiguration configuration) throws NotDefinedSubscribersException {
 		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-				throw new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
-						TEvent.PLAYER_RECONNECT_SUCCESS);
+			if (!__eventManager.getExternal().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
+					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
+				throw new NotDefinedSubscribersException(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+						ExtEvent.PLAYER_RECONNECT_SUCCESS);
 			}
 		}
 	}
@@ -195,11 +195,11 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberSubConnectionAttach(BaseConfiguration configuration)
 			throws NotDefinedSubscribersException {
 		if (configuration.getSocketPorts().size() > 1 || configuration.getWebSocketPorts().size() > 1) {
-			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_REQUEST)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_FAILED)) {
-				throw new NotDefinedSubscribersException(TEvent.ATTACH_CONNECTION_REQUEST,
-						TEvent.ATTACH_CONNECTION_SUCCESS, TEvent.ATTACH_CONNECTION_FAILED);
+			if (!__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
+					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_SUCCESS)
+					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_FAILED)) {
+				throw new NotDefinedSubscribersException(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+						ExtEvent.ATTACH_CONNECTION_SUCCESS, ExtEvent.ATTACH_CONNECTION_FAILED);
 			}
 		}
 	}
@@ -212,9 +212,9 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberHttpHandler(BaseConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST_VALIDATE)
-				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST_HANDLE))) {
-			throw new NotDefinedSubscribersException(TEvent.HTTP_REQUEST_VALIDATE, TEvent.HTTP_REQUEST_HANDLE);
+		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
+				|| !__eventManager.getExternal().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
+			throw new NotDefinedSubscribersException(ExtEvent.HTTP_REQUEST_VALIDATE, ExtEvent.HTTP_REQUEST_HANDLE);
 		}
 	}
 

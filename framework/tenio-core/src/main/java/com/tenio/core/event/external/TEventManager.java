@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
@@ -50,13 +50,13 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventProducer#emit(TEvent, Object...)
+	 * @see TEventProducer#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final Object... args) {
+	public Object emit(final ExtEvent type, final Object... args) {
 		if (__canShowTraceLog(type)) {
 			trace(type.name(), args);
 		} else {
@@ -68,10 +68,10 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @param sub  see {@link ISubscriber}
 	 */
-	public void on(final TEvent type, final ISubscriber sub) {
+	public void on(final ExtEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
 			info("EXTERNAL EVENT WARNING", "Duplicated", type);
 		}
@@ -86,7 +86,7 @@ public final class TEventManager extends AbstractLogger {
 		__producer.clear(); // clear the old first
 
 		// only for log recording
-		var subs = new ArrayList<TEvent>();
+		var subs = new ArrayList<ExtEvent>();
 		// start handling
 		__subscribers.forEach(s -> {
 			subs.add(s.getType());
@@ -98,10 +98,10 @@ public final class TEventManager extends AbstractLogger {
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final TEvent type) {
+	public boolean hasSubscriber(final ExtEvent type) {
 		return __subscribers.stream().anyMatch(subscribe -> subscribe.isType(type));
 	}
 
@@ -118,12 +118,12 @@ public final class TEventManager extends AbstractLogger {
 	 * @param type the event's type
 	 * @return <b>true</b> if an event can be traced
 	 */
-	private boolean __canShowTraceLog(final TEvent type) {
+	private boolean __canShowTraceLog(final ExtEvent type) {
 		switch (type) {
-		case RECEIVED_FROM_CONNECTION:
-		case RECEIVED_FROM_PLAYER:
-		case CCU:
-		case BANDWIDTH:
+		case RECEIVED_MESSAGE_FROM_CONNECTION:
+		case RECEIVED_MESSAGE_FROM_PLAYER:
+		case FETCHED_CCU_INFO:
+		case FETCHED_BANDWIDTH_INFO:
 		case HTTP_REQUEST_VALIDATE:
 		case HTTP_REQUEST_HANDLE:
 			return true;

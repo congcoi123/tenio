@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example2;
 
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -67,7 +67,7 @@ public final class TestServerFSM extends AbstractApp {
 		@Override
 		public void initialize() {
 
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
@@ -80,7 +80,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
+			_on(ExtEvent.DISCONNECT_CONNECTION, args -> {
 				var connection = _getConnection(args[0]);
 
 				info("DISCONNECT CONNECTION", connection.getAddress());
@@ -88,7 +88,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// Login successful
 				var player = this.<Inspector>_getPlayer(args[0]);
 
@@ -97,7 +97,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
+			_on(ExtEvent.PLAYER_GOT_TIMEOUT, args -> {
 				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("PLAYER TIMEOUT", player.getName());
@@ -105,7 +105,7 @@ public final class TestServerFSM extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
+			_on(ExtEvent.DISCONNECT_PLAYER, args -> {
 				var player = this.<Inspector>_getPlayer(args[0]);
 
 				info("DISCONNECT PLAYER", player.getName());

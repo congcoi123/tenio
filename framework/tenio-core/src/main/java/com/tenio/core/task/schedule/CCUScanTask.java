@@ -31,7 +31,7 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 
 /**
@@ -60,7 +60,7 @@ public final class CCUScanTask extends AbstractLogger implements ITask {
 	public ScheduledFuture<?> run() {
 		info("CCU SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExternal().emit(TEvent.CCU, __playerApi.countPlayers(), __playerApi.count());
+			__eventManager.getExternal().emit(ExtEvent.FETCHED_CCU_INFO, __playerApi.countPlayers(), __playerApi.count());
 		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
 	}
 

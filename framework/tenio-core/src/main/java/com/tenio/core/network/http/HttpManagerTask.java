@@ -39,7 +39,7 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.Path;
 import com.tenio.core.configuration.constant.Constants;
-import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.network.http.servlet.PingServlet;

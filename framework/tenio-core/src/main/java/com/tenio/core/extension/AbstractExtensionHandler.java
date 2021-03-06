@@ -31,8 +31,8 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.constant.RestMethod;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.element.MessageObject;
@@ -78,10 +78,10 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * Handle your own logic with the corresponding event type
 	 * 
 	 * @param type the type of this current event. All the supported type can be
-	 *             found in {@link TEvent}
+	 *             found in {@link ExtEvent}
 	 * @param sub  your own subscriber-class handler
 	 */
-	protected void _on(final TEvent type, final ISubscriber sub) {
+	protected void _on(final ExtEvent type, final ISubscriber sub) {
 		__server.getEventManager().getExternal().on(type, sub);
 	}
 

@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
 import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -73,7 +73,7 @@ public final class TestServerLogin extends AbstractApp {
 
 		@Override
 		public void initialize() {
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
 
@@ -86,7 +86,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerLogin>_getPlayer(args[0]);
 

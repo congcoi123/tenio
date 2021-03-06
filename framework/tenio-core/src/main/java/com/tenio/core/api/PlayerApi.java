@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.core.configuration.define.SystemMessageCode;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
@@ -123,10 +124,10 @@ public final class PlayerApi extends AbstractLogger {
 	 * 
 	 * @param room   the desired room, see: {@link AbstractRoom}
 	 * @param player the current player, see: {@link AbstractPlayer}
-	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public SystemMessageCode playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		return __roomManager.playerJoinRoom(room, player);
 	}
 
@@ -137,10 +138,10 @@ public final class PlayerApi extends AbstractLogger {
 	 * @param player that will be left his current room, see {@link AbstractPlayer}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
-	 * @return the action' result if it existed in, see {@link String}, <b>null</b>
+	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public String playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public SystemMessageCode playerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		return __roomManager.playerLeaveRoom(player, force);
 	}
 

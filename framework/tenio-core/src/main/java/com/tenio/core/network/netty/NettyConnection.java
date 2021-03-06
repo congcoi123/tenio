@@ -25,8 +25,8 @@ package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.core.configuration.constant.ConnectionType;
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.message.codec.MsgPackConverter;
@@ -99,7 +99,7 @@ public class NettyConnection extends Connection {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
-		_eventManager.getInternal().emit(LEvent.MANUALY_CLOSE_CONNECTION, getUsername());
+		_eventManager.getInternal().emit(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, getUsername());
 	}
 
 	@Override

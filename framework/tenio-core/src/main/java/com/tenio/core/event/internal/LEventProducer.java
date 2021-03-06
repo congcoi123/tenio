@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.internal;
 
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 
 /**
  * Only for creating an event handler object, see {@link LEventHandler}
@@ -50,13 +50,13 @@ public final class LEventProducer {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link LEvent}
+	 * @param type see {@link InternalEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see LEventHandler#emit(LEvent, Object...)
+	 * @see LEventHandler#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final LEvent type, final Object... args) {
+	public Object emit(final InternalEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
 	}
 

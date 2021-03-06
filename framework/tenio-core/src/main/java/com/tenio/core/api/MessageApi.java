@@ -27,7 +27,7 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.api.pool.MessageObjectArrayPool;
 import com.tenio.core.api.pool.MessageObjectPool;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.element.MessageObject;
@@ -107,7 +107,7 @@ public final class MessageApi extends AbstractLogger {
 		if (player.hasConnection(index)) {
 			player.getConnection(index).send(message);
 		}
-		__eventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, index, message);
+		__eventManager.getExternal().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, index, message);
 	}
 
 	/**
