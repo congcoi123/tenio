@@ -26,6 +26,7 @@ package com.tenio.example.example1;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
@@ -72,7 +73,7 @@ public final class TestServerLogin extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize() {
+		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);

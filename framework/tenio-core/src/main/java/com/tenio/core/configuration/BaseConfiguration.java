@@ -165,19 +165,19 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 			var pDataNode = attrRootProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "name":
-				_put(SERVER_NAME, pDataNode.getTextContent());
+				_push(SERVER_NAME, pDataNode.getTextContent());
 				break;
 
 			case "id":
-				_put(SERVER_ID, pDataNode.getTextContent());
+				_push(SERVER_ID, pDataNode.getTextContent());
 				break;
 
 			case "versionName":
-				_put(VERSION_NAME, pDataNode.getTextContent());
+				_push(VERSION_NAME, pDataNode.getTextContent());
 				break;
 
 			case "versionCode":
-				_put(VERSION_CODE, pDataNode.getTextContent());
+				_push(VERSION_CODE, pDataNode.getTextContent());
 				break;
 			}
 		}
@@ -224,31 +224,31 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 			var pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "keepPlayerOnDisconnect":
-				_put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
+				_push(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
 				break;
 
 			case "maxPlayer":
-				_put(MAX_PLAYER, pDataNode.getTextContent());
+				_push(MAX_PLAYER, pDataNode.getTextContent());
 				break;
 
 			case "idleReader":
-				_put(IDLE_READER, pDataNode.getTextContent());
+				_push(IDLE_READER, pDataNode.getTextContent());
 				break;
 
 			case "idleWriter":
-				_put(IDLE_WRITER, pDataNode.getTextContent());
+				_push(IDLE_WRITER, pDataNode.getTextContent());
 				break;
 
 			case "emptyRoomScan":
-				_put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
+				_push(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "timeoutScan":
-				_put(TIMEOUT_SCAN, pDataNode.getTextContent());
+				_push(TIMEOUT_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "ccuScan":
-				_put(CCU_SCAN, pDataNode.getTextContent());
+				_push(CCU_SCAN, pDataNode.getTextContent());
 				break;
 			}
 		}

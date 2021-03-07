@@ -127,8 +127,8 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public SystemMessageCode playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
-		return __roomManager.playerJoinRoom(room, player);
+	public SystemMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+		return __roomManager.makePlayerJoinRoom(room, player);
 	}
 
 	/**
@@ -141,8 +141,8 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public SystemMessageCode playerLeaveRoom(final AbstractPlayer player, final boolean force) {
-		return __roomManager.playerLeaveRoom(player, force);
+	public SystemMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
+		return __roomManager.makePlayerLeaveRoom(player, force);
 	}
 
 	/**

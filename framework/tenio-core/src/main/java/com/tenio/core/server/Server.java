@@ -124,7 +124,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__internalLogic.init(configuration);
 
 		// initialize the subscribers
-		getExtension().initialize();
+		getExtension().initialize(configuration);
 
 		// server need at least one connection to start up
 		__checkDefinedMainSocketConnection(configuration);

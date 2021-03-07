@@ -97,5 +97,10 @@ public final class SystemConstants {
 	 * was started or not)
 	 */
 	public static final String PING_PATH = "/ping";
+	
+	/**
+	 * Base FPS in server
+	 */
+	public static final float FPS = 1 / 60.0f;
 
 }

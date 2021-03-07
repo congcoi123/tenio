@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example7;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -71,7 +72,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 		RoomPhaserjs phaserjsRoom = new RoomPhaserjs("phaserjs", "Phaserjs", 3);
 
 		@Override
-		public void initialize() {
+		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
@@ -94,7 +95,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				int y = MathUtility.randInt(100, 400);
 				player.setPosition(x, y);
 
-				_playerApi.playerJoinRoom(phaserjsRoom, player);
+				_playerApi.makePlayerJoinRoom(phaserjsRoom, player);
 
 				return null;
 			});

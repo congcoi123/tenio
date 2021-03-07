@@ -149,13 +149,13 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			removePlayers.add(player);
 		});
 		for (var player : removePlayers) {
-			playerLeaveRoom(player, true);
+			makePlayerLeaveRoom(player, true);
 		}
 		removePlayers.clear();
 	}
 
 	@Override
-	public SystemMessageCode playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public SystemMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
 			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					SystemMessageCode.PLAYER_WAS_IN_ROOM);
@@ -168,7 +168,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		}
 
 		// the player need to leave his room (if existed) first
-		playerLeaveRoom(player, false);
+		makePlayerLeaveRoom(player, false);
 
 		room.add(player);
 		player.setRoom(room);
@@ -179,7 +179,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public SystemMessageCode playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public SystemMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		var room = player.getRoom();
 		if (room == null) {
 			return SystemMessageCode.PLAYER_ALREADY_LEFT_ROOM;

@@ -51,19 +51,19 @@ public final class Configuration extends BaseConfiguration {
 		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
 			switch (entry.getKey()) {
 			case "customValue1":
-				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue2":
-				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue3":
-				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue4":
-				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
 				break;
 			}
 		}

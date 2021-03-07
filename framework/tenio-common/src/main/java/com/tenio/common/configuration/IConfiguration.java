@@ -23,11 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.common.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.tenio.common.logger.AbstractLogger;
-
 /**
  * This server needs some basic configuration to start running. The
  * configuration file can be defined as an XML file. See an example in
@@ -39,60 +34,46 @@ import com.tenio.common.logger.AbstractLogger;
  * @author kong
  * 
  */
-public abstract class CommonConfiguration extends AbstractLogger implements IConfiguration {
+public interface IConfiguration {
 
 	/**
-	 * All configuration values will be held in this map. You access values by your
-	 * defined keys.
+	 * @param key the configuration's key
+	 * @return the value in {@link Boolean}
 	 */
-	private final Map<String, String> __configuration = new HashMap<String, String>();
-
-	@Override
-	public boolean getBoolean(final String key) {
-		return Boolean.parseBoolean(__configuration.get(key));
-	}
-
-	@Override
-	public int getInt(final String key) {
-		return Integer.parseInt(__configuration.get(key));
-	}
-
-	@Override
-	public float getFloat(final String key) {
-		return Float.parseFloat(__configuration.get(key));
-	}
-
-	@Override
-	public String getString(final String key) {
-		return __configuration.get(key);
-	}
-
-	@Override
-	public boolean isDefined(final String key) {
-		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
-	}
-
-	@Override
-	public String toString() {
-		return __configuration.toString();
-	}
+	boolean getBoolean(final String key);
 
 	/**
-	 * Put new configuration
+	 * @param key the configuration's key
+	 * @return the value in {@link Integer}
+	 */
+	int getInt(final String key);
+
+	/**
+	 * @param key the configuration's key
+	 * @return the value in {@link Float}
+	 */
+	float getFloat(final String key);
+
+	/**
+	 * @param key the configuration's key
+	 * @return the value in {@link String}
+	 */
+	String getString(final String key);
+
+	/**
+	 * Determine if this configuration is existed or defined. If you want some
+	 * configuration value to be treated as an "undefined" status, let its value
+	 * "-1".
 	 * 
-	 * @param key   key
-	 * @param value value
+	 * @param key The desired configuration's key
+	 * @return <b>true</b> if the configuration is defined and otherwise return
+	 *         <b>false</b>
 	 */
-	protected void _push(final String key, final String value) {
-		__configuration.put(key, value);
-	}
-	
+	boolean isDefined(final String key);
+
 	/**
-	 * Your extension part can be handled here. Check the examples for more details
-	 * about how to use it.
-	 * 
-	 * @param extProperties the extension data in key-value format (see {@link Map})
+	 * @return configuration information as human readable data 
 	 */
-	protected abstract void _extend(Map<String, String> extProperties);
+	String toString();
 
 }

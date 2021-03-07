@@ -94,7 +94,7 @@ public interface IRoomManager extends IManager {
 	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	SystemMessageCode playerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
+	SystemMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
 
 	/**
 	 * Allow a player to leave his current room. You can handle your own logic in
@@ -106,6 +106,6 @@ public interface IRoomManager extends IManager {
 	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	SystemMessageCode playerLeaveRoom(final AbstractPlayer player, final boolean force);
+	SystemMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force);
 
 }

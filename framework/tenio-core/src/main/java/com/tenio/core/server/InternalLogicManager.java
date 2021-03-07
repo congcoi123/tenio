@@ -107,7 +107,7 @@ final class InternalLogicManager extends AbstractLogger {
 		__on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
 			var player = __getPlayer(args[0]);
 
-			__roomManager.playerLeaveRoom(player, true);
+			__roomManager.makePlayerLeaveRoom(player, true);
 
 			return null;
 		});

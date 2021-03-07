@@ -27,9 +27,10 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
@@ -74,7 +75,7 @@ public final class TestServerAttach extends AbstractApp {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void initialize() {
+		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
