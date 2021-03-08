@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.ws;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.message.codec.MsgPackConverter;
@@ -44,7 +44,7 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  */
 public class NettyWSHandler extends BaseNettyHandler {
 
-	public NettyWSHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
+	public NettyWSHandler(int index, IEventManager eventManager, CoreConfiguration configuration) {
 		super(eventManager, index, ConnectionType.WEB_SOCKET);
 	}
 

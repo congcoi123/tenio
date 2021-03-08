@@ -25,17 +25,17 @@ package com.tenio.example.server;
 
 import java.util.Map;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 
 /**
  * Create your own configurations
  * 
- * @see BaseConfiguration
+ * @see CoreConfiguration
  * 
  * @author kong
  *
  */
-public final class Configuration extends BaseConfiguration {
+public final class Configuration extends CoreConfiguration {
 
 	public static final String CUSTOM_VALUE_1 = "c_customvalue_1";
 	public static final String CUSTOM_VALUE_2 = "c_customvalue_2";

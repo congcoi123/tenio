@@ -30,8 +30,8 @@ import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.define.SystemMessageCode;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
@@ -62,7 +62,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public void initialize(BaseConfiguration configuration) {
+	public void initialize(CoreConfiguration configuration) {
 		// temporary do nothing
 	}
 
@@ -106,7 +106,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.ROOM_WAS_CREATED, room, SystemMessageCode.ROOM_WAS_EXISTED);
+				__eventManager.getExternal().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
 				var e = new DuplicatedRoomException();
 				error(e, "room id: ", room.getId());
 				throw e;
@@ -155,16 +155,16 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public SystemMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
 			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
-					SystemMessageCode.PLAYER_WAS_IN_ROOM);
-			return SystemMessageCode.PLAYER_WAS_IN_ROOM;
+					CoreMessageCode.PLAYER_WAS_IN_ROOM);
+			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
 		}
 
 		if (room.isFull()) {
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, SystemMessageCode.ROOM_IS_FULL);
-			return SystemMessageCode.ROOM_IS_FULL;
+			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, CoreMessageCode.ROOM_IS_FULL);
+			return CoreMessageCode.ROOM_IS_FULL;
 		}
 
 		// the player need to leave his room (if existed) first
@@ -179,10 +179,10 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public SystemMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		var room = player.getRoom();
 		if (room == null) {
-			return SystemMessageCode.PLAYER_ALREADY_LEFT_ROOM;
+			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
 		}
 
 		// fire an event

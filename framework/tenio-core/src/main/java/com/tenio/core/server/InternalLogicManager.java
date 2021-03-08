@@ -24,8 +24,8 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.define.SystemMessageCode;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
@@ -57,11 +57,11 @@ final class InternalLogicManager extends AbstractLogger {
 	/**
 	 * Start handling
 	 */
-	public void init(BaseConfiguration configuration) {
+	public void init(CoreConfiguration configuration) {
 
 		__on(InternalEvent.CONNECTION_WAS_CLOSED, args -> {
 			var connection = __getConnection(args[0]);
-			boolean keepPlayerOnDisconnect = configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT);
+			boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfiguration.KEEP_PLAYER_ON_DISCONNECT);
 
 			if (connection != null) { // the connection has existed
 				String username = connection.getUsername();
@@ -151,7 +151,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final BaseConfiguration configuration, final int index,
+	private void __createNewConnection(final CoreConfiguration configuration, final int index,
 			final Connection connection, final MessageObject message) {
 		if (index == 0) { // is main connection
 			// check reconnection request first
@@ -163,9 +163,9 @@ final class InternalLogicManager extends AbstractLogger {
 				__eventManager.getExternal().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
-				if (__playerManager.count() > configuration.getInt(BaseConfiguration.MAX_PLAYER)) {
+				if (__playerManager.count() > configuration.getInt(CoreConfiguration.MAX_PLAYER)) {
 					__eventManager.getExternal().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
-							SystemMessageCode.REACHED_MAX_CONNECTION);
+							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();
 				} else {
 					__eventManager.getExternal().emit(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
@@ -179,10 +179,10 @@ final class InternalLogicManager extends AbstractLogger {
 
 			if (player == null) {
 				__eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
-						SystemMessageCode.PLAYER_NOT_FOUND);
+						CoreMessageCode.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection(0)) {
 				__eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
-						SystemMessageCode.MAIN_CONNECTION_NOT_FOUND);
+						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				connection.setUsername(player.getName());
 				player.setConnection(connection, index);

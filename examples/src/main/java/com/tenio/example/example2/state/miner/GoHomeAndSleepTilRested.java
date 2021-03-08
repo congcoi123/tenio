@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example2.state.miner;
 
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.engine.configuration.constant.Constants;
+import com.tenio.engine.configuration.constant.EngineConstants;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.example.example2.constant.EntityName;
@@ -63,7 +63,7 @@ public final class GoHomeAndSleepTilRested extends State<Miner> {
 		}
 
 		// let the wife know I'm home
-		miner.getFSM().getDispatcher().dispatchMessage(Constants.SEND_MSG_IMMEDIATELY, // time delay
+		miner.getFSM().getDispatcher().dispatchMessage(EngineConstants.SEND_MSG_IMMEDIATELY, // time delay
 				miner.getId(), // ID of sender
 				EntityName.WIFE.get(), // ID of recipient
 				MessageType.HI_HONEY_IM_HOME.get(), // the message

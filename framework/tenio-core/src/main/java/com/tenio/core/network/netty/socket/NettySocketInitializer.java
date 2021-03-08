@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.socket;
 
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.SystemConstants;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.GlobalTrafficShapingHandlerCustomize;
 
@@ -45,11 +45,11 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final BaseConfiguration __configuration;
+	private final CoreConfiguration __configuration;
 	private final int __index;
 
 	public NettySocketInitializer(int index, IEventManager eventManager,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, BaseConfiguration configuration) {
+			GlobalTrafficShapingHandlerCustomize trafficCounter, CoreConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;
@@ -64,12 +64,12 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("traffic-counter", __trafficCounter);
 
 		// break each data chunk by newlines (read-up)
-		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, SystemConstants.HEADER_BYTES,
-				0, SystemConstants.HEADER_BYTES));
+		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, CoreConstants.HEADER_BYTES,
+				0, CoreConstants.HEADER_BYTES));
 		// convert each data chunk into a byte array (read-up)
 		pipeline.addLast("bytearray-decoder", new ByteArrayDecoder());
 		// add data-length package's head
-		pipeline.addLast("length-encoder", new LengthFieldPrepender(SystemConstants.HEADER_BYTES));
+		pipeline.addLast("length-encoder", new LengthFieldPrepender(CoreConstants.HEADER_BYTES));
 		// convert bytes' array to data chunk (write-down)
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 

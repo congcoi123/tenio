@@ -67,7 +67,7 @@ import com.tenio.core.configuration.define.RestMethod;
  * @author kong
  * 
  */
-public abstract class BaseConfiguration extends CommonConfiguration {
+public abstract class CoreConfiguration extends CommonConfiguration {
 
 	/**
 	 * When the server get disconnection of one client, can be hold its player
@@ -138,7 +138,7 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
 	 */
-	public BaseConfiguration(final String file) {
+	public CoreConfiguration(final String file) {
 		try {
 			__load(file);
 		} catch (Exception e) {

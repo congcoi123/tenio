@@ -30,7 +30,7 @@ package com.tenio.core.configuration.define;
  * @author kong
  * 
  */
-public enum SystemMessageCode {
+public enum CoreMessageCode {
 
 	/**
 	 * When you try to add a player that has the same name with one appeared on the
@@ -77,7 +77,7 @@ public enum SystemMessageCode {
 	
 	private final String value;
 	
-	private SystemMessageCode(String value) {
+	private CoreMessageCode(String value) {
 		this.value = value;
 	}
 	

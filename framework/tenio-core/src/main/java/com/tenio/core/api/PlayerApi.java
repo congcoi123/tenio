@@ -23,12 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.define.SystemMessageCode;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
@@ -124,10 +122,10 @@ public final class PlayerApi extends AbstractLogger {
 	 * 
 	 * @param room   the desired room, see: {@link AbstractRoom}
 	 * @param player the current player, see: {@link AbstractPlayer}
-	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
+	 * @return the action' result if it existed in, see {@link CoreMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public SystemMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		return __roomManager.makePlayerJoinRoom(room, player);
 	}
 
@@ -138,10 +136,10 @@ public final class PlayerApi extends AbstractLogger {
 	 * @param player that will be left his current room, see {@link AbstractPlayer}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
-	 * @return the action' result if it existed in, see {@link SystemMessageCode}, <b>null</b>
+	 * @return the action' result if it existed in, see {@link CoreMessageCode}, <b>null</b>
 	 *         otherwise
 	 */
-	public SystemMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		return __roomManager.makePlayerLeaveRoom(player, force);
 	}
 
@@ -169,25 +167,6 @@ public final class PlayerApi extends AbstractLogger {
 	 */
 	public int getCCU() {
 		return count();
-	}
-
-	/**
-	 * @return all players' information data
-	 */
-	public List<List<Object>> getAllPlayerBaseInfos() {
-		var list = new ArrayList<List<Object>>();
-		gets().values().forEach((player) -> {
-			var data = new ArrayList<Object>();
-			data.add(player.getName());
-			if (player.getRoom() != null) {
-				data.add(player.getRoom().getName());
-			} else {
-				data.add("NULL ROOM");
-			}
-			data.add(player.getState());
-			list.add(data);
-		});
-		return list;
 	}
 
 }

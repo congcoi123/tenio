@@ -23,12 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.utility.StringUtility;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.manager.IRoomManager;
 
@@ -91,30 +88,6 @@ public final class RoomApi extends AbstractLogger {
 	 */
 	public void remove(final AbstractRoom room) {
 		__roomManager.remove(room);
-	}
-
-	/**
-	 * @return all rooms' information data
-	 */
-	public List<List<Object>> getAllRoomInfos() {
-		var list = new ArrayList<List<Object>>();
-		gets().values().forEach((room) -> {
-			var data = new ArrayList<Object>();
-			data.add(room.getId());
-			data.add(room.getName());
-			data.add(StringUtility.strgen(room.getPlayers().size(), "/", room.getCapacity()));
-			data.add(room.getState());
-			var players = new StringBuilder();
-			players.append("{ ");
-			room.getPlayers().forEach((key, player) -> {
-				players.append(player.getName());
-				players.append(", ");
-			});
-			players.append("}");
-			data.add(players.toString());
-			list.add(data);
-		});
-		return list;
 	}
 
 }

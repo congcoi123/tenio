@@ -26,7 +26,7 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.entity.element.MessageObject;
@@ -80,7 +80,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> an invalid connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -106,7 +106,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> an invalid player, it will be removed after this
 	 * event, see {@link AbstractPlayer}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -116,7 +116,7 @@ public enum ExtEvent {
 	/**
 	 * When a player is disconnected from your server without its desired, the
 	 * player instance is not be removed immediately. In allowed time (which can be
-	 * set in the configuration: {@link BaseConfiguration}) the current client can
+	 * set in the configuration: {@link CoreConfiguration}) the current client can
 	 * request a reconnection. You can handle your own reconnect logic in here. In
 	 * this event, you can inform the current client to know that his request was
 	 * failed. <br>
@@ -146,7 +146,7 @@ public enum ExtEvent {
 
 	/**
 	 * When a player is in IDLE status in a long time (exceeded the time out, that
-	 * can be defined in configuration: {@link BaseConfiguration}). For more
+	 * can be defined in configuration: {@link CoreConfiguration}). For more
 	 * details: in a long time without sending or receiving message that will be
 	 * treated as time out. After this event, the player will be log out of your
 	 * server. <br>
@@ -195,7 +195,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> a new created room, see {@link AbstractRoom}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -228,7 +228,7 @@ public enum ExtEvent {
 	 * <b>false</b></li>
 	 * 
 	 * <li><b>parameter[3]</b> if the player can not join his desired room, the
-	 * reason can be found here, see {@link ErrorMsg}. Its value can be
+	 * reason can be found here, see {@link CoreMessageCode}. Its value can be
 	 * <b>null</b></li>
 	 * </ul>
 	 * 
@@ -334,7 +334,7 @@ public enum ExtEvent {
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message received from one client, see
 	 * {@link MessageObject}</li>
-	 * <li><b>parameter[2]</b> the reason for failed, see {@link ErrorMsg} in string
+	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in string
 	 * type</li>
 	 * </ul>
 	 * 
@@ -344,7 +344,7 @@ public enum ExtEvent {
 
 	/**
 	 * You can see the number of concurrent users (CCU) in period time. This scanned
-	 * time can be changed in configuration, see {@link BaseConfiguration}. <br>
+	 * time can be changed in configuration, see {@link CoreConfiguration}. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the number of current players that have
 	 * connection</li>

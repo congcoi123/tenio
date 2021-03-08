@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.entity.manager;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 
 /**
  * @author kong
@@ -33,8 +33,8 @@ public interface IManager {
 	/**
 	 * Initialization
 	 * 
-	 * @param configuration the configuration, see {@link BaseConfiguration}
+	 * @param configuration the configuration, see {@link CoreConfiguration}
 	 */
-	void initialize(BaseConfiguration configuration);
+	void initialize(CoreConfiguration configuration);
 
 }

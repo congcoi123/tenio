@@ -78,11 +78,6 @@ public abstract class AbstractPlayer {
 	 */
 	private long __writerTime;
 	/**
-	 * For simple hold some states. Default value is <b>0</b>
-	 */
-	@Column(name = "state")
-	private int __state;
-	/**
 	 * This flag (enabled state) allows the player not affected by the system
 	 * timeouts rule. The default value is <b>false</b>
 	 */
@@ -117,18 +112,6 @@ public abstract class AbstractPlayer {
 
 	public String getName() {
 		return __name;
-	}
-
-	public boolean isState(final int state) {
-		return (__state == state);
-	}
-
-	public int getState() {
-		return __state;
-	}
-
-	public void setState(final int state) {
-		__state = state;
 	}
 
 	/**

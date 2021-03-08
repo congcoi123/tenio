@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.datagram;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.message.codec.MsgPackConverter;
@@ -45,7 +45,7 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(int index, IEventManager eventManager, BaseConfiguration configuration) {
+	public NettyDatagramHandler(int index, IEventManager eventManager, CoreConfiguration configuration) {
 		super(eventManager, index, ConnectionType.DATAGRAM);
 	}
 

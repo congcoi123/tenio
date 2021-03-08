@@ -30,13 +30,13 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 
 /**
  * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link BaseConfiguration}
+ * configurations, see {@link CoreConfiguration}
  * 
  * @author kong
  * 

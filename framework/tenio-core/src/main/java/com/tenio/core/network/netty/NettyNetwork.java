@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.Sock;
-import com.tenio.core.configuration.constant.SystemConstants;
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
@@ -63,13 +63,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	private List<Channel> __websockets;
 
 	@Override
-	public void start(IEventManager eventManager, BaseConfiguration configuration) throws IOException, InterruptedException {
+	public void start(IEventManager eventManager, CoreConfiguration configuration) throws IOException, InterruptedException {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
 
 		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __consumer,
-				SystemConstants.TRAFFIC_COUNTER_WRITE_LIMIT, SystemConstants.TRAFFIC_COUNTER_READ_LIMIT,
-				SystemConstants.TRAFFIC_COUNTER_CHECK_INTERVAL);
+				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				CoreConstants.TRAFFIC_COUNTER_CHECK_INTERVAL);
 
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
@@ -109,13 +109,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * 
 	 * @param index         the order of socket
 	 * @param eventManager  the system event management
-	 * @param configuration your own configuration, see {@link BaseConfiguration}
+	 * @param configuration your own configuration, see {@link CoreConfiguration}
 	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindUDP(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
+	private Channel __bindUDP(int index, IEventManager eventManager, CoreConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
@@ -133,13 +133,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * 
 	 * @param index         the order of socket
 	 * @param eventManager  the system event management
-	 * @param configuration your own configuration, see {@link BaseConfiguration}
+	 * @param configuration your own configuration, see {@link CoreConfiguration}
 	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindTCP(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
+	private Channel __bindTCP(int index, IEventManager eventManager, CoreConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
@@ -159,13 +159,13 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @param index         the order of socket
 	 * @param eventManager  the system event management
 	 * @param configuration configuration your own configuration, see
-	 *                      {@link BaseConfiguration}
+	 *                      {@link CoreConfiguration}
 	 * @param sock          the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindWS(int index, IEventManager eventManager, BaseConfiguration configuration, Sock sock)
+	private Channel __bindWS(int index, IEventManager eventManager, CoreConfiguration configuration, Sock sock)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)

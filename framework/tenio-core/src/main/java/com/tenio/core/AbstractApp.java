@@ -26,7 +26,7 @@ package com.tenio.core;
 import java.io.IOException;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -54,9 +54,12 @@ public abstract class AbstractApp extends AbstractLogger {
 			error(e, "Application start");
 			server.shutdown();
 			onShutdown();
+			// exit with errors
+			System.exit(1);
 		}
 		// Suddenly shutdown
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			server.shutdown();
 			onShutdown();
 		}));
 	}
@@ -68,10 +71,10 @@ public abstract class AbstractApp extends AbstractLogger {
 
 	/**
 	 * 
-	 * @param <T> The derived class of {@link BaseConfiguration}
-	 * @return your own class that derived from {@link BaseConfiguration} class
+	 * @param <T> The derived class of {@link CoreConfiguration}
+	 * @return your own class that derived from {@link CoreConfiguration} class
 	 */
-	public abstract <T extends BaseConfiguration> T getConfiguration();
+	public abstract <T extends CoreConfiguration> T getConfiguration();
 	
 	/**
 	 * The trigger is called when server was down

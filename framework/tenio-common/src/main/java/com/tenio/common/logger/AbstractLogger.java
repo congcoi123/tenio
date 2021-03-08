@@ -304,9 +304,8 @@ public abstract class AbstractLogger {
 			builder.append("\n=========== BEGIN ERROR INFORMATION ===========\n");
 			for (var e : extra) {
 				builder.append(e);
-				builder.append("\n");
 			}
-			builder.append("============ END ERROR INFORMATION ============\n");
+			builder.append("\n============ END ERROR INFORMATION ============\n");
 		}
 		__logger.error(builder.toString());
 		__stringPool.repay(builder);

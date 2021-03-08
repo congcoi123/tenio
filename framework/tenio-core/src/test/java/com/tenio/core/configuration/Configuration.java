@@ -29,12 +29,12 @@ import java.util.Map.Entry;
 /**
  * Create your own configurations
  * 
- * @see BaseConfiguration
+ * @see CoreConfiguration
  * 
  * @author kong
  *
  */
-public final class Configuration extends BaseConfiguration {
+public final class Configuration extends CoreConfiguration {
 
 	public static final String CUSTOM_VALUE_1 = "customvalue_1";
 	public static final String CUSTOM_VALUE_2 = "customvalue_2";

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.Configuration;
-import com.tenio.core.configuration.define.SystemMessageCode;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -187,7 +187,7 @@ public final class PlayerRoomTest {
 
 		__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
 
-		assertEquals(SystemMessageCode.PLAYER_WAS_IN_ROOM,
+		assertEquals(CoreMessageCode.PLAYER_WAS_IN_ROOM,
 				__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
 
@@ -230,7 +230,7 @@ public final class PlayerRoomTest {
 				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[0])),
 				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[1])),
 				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[2])),
-				() -> assertEquals(SystemMessageCode.ROOM_IS_FULL,
+				() -> assertEquals(CoreMessageCode.ROOM_IS_FULL,
 						__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[3])));
 	}
 

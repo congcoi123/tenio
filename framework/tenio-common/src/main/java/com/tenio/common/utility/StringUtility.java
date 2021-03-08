@@ -23,12 +23,16 @@ THE SOFTWARE.
 */
 package com.tenio.common.utility;
 
+import java.util.UUID;
+
 /**
  * A collection of utility methods for strings.
  * 
  * @author kong
  */
 public final class StringUtility {
+
+	private static String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
 
 	/**
 	 * To generate {@code String} for logging information by the corresponding
@@ -43,6 +47,38 @@ public final class StringUtility {
 			builder.append(object);
 		}
 		return builder.toString();
+	}
+
+	/**
+	 * To generate an unique string in UUID format
+	 * 
+	 * @return an unique string
+	 */
+	public static String getRandomUUID() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * To generate a randomized string
+	 * 
+	 * @param length limited size of the text
+	 * @return a randomized string that could be duplicated
+	 */
+	public static String getRandomTextByLength(int length) {
+		// create StringBuffer size of AlphaNumericString
+		StringBuilder sb = new StringBuilder(length);
+
+		for (int i = 0; i < length; i++) {
+
+			// generate a random number between
+			// 0 to AlphaNumericString variable length
+			int index = (int) (ALPHA_NUMERIC_STRING.length() * Math.random());
+
+			// add Character one by one in end of sb
+			sb.append(ALPHA_NUMERIC_STRING.charAt(index));
+		}
+
+		return sb.toString();
 	}
 
 }

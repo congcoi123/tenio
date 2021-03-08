@@ -30,9 +30,9 @@ package com.tenio.engine.configuration.constant;
  * @author kong
  * 
  */
-public final class Constants {
+public final class EngineConstants {
 
-	private Constants() {
+	private EngineConstants() {
 	}
 
 	/**

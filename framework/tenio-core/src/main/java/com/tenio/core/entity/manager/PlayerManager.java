@@ -28,9 +28,9 @@ import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ConnectionType;
-import com.tenio.core.configuration.define.SystemMessageCode;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
@@ -56,14 +56,14 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	 */
 	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 	private final IEventManager __eventManager;
-	private BaseConfiguration __configuration;
+	private CoreConfiguration __configuration;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
 	}
 
 	@Override
-	public void initialize(BaseConfiguration configuration) {
+	public void initialize(CoreConfiguration configuration) {
 		__configuration = configuration;
 	}
 
@@ -113,7 +113,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	public void add(final AbstractPlayer player, final Connection connection) {
 		if (player.getName() == null) {
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, SystemMessageCode.PLAYER_INFO_IS_INVALID);
+			__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			var e = new NullPlayerNameException();
 			error(e);
 			throw e;
@@ -122,7 +122,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, SystemMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;
@@ -152,7 +152,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, SystemMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;

@@ -29,7 +29,7 @@ import com.tenio.common.api.TaskApi;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
@@ -49,7 +49,7 @@ interface IServer {
 	/**
 	 * Start the server base on your own configurations
 	 * 
-	 * @param configuration, see {@link BaseConfiguration}
+	 * @param configuration, see {@link CoreConfiguration}
 	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
@@ -57,7 +57,7 @@ interface IServer {
 	 * @throws NotDefinedSubscribersException
 	 * @throws DuplicatedUriAndMethodException
 	 */
-	void start(BaseConfiguration configuration) throws IOException, InterruptedException,
+	void start(CoreConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
 
 	/**
