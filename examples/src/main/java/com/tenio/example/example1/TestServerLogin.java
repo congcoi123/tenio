@@ -108,7 +108,7 @@ public final class TestServerLogin extends AbstractApp {
 					player.counter++;
 
 					// Sending, the data need to be packed
-					var data = _messageApi.getArrayPack();
+					var data = _messageApi.getMessageObjectArray();
 					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
 							data.put("H").put("3").put("L").put("O").put(true)
 									.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));

@@ -103,7 +103,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
 				var room = this.<RoomPhaserjs>_getRoom(args[1]);
 
-				var pack = _messageApi.getArrayPack();
+				var pack = _messageApi.getMessageObjectArray();
 				var players = room.getPlayers();
 				for (var p : players.values()) {
 					var pjs = (PlayerPhaserjs) p;
@@ -125,7 +125,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 				player.setPosition(move.getInt(0), move.getInt(1));
 
-				var pack = _messageApi.getArrayPack();
+				var pack = _messageApi.getMessageObjectArray();
 				pack.add(player.getName());
 				pack.add(move.get(0));
 				pack.add(move.get(1));

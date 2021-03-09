@@ -465,7 +465,7 @@ public final class World extends AbstractHeartBeat {
 		// send to client (naive way)
 		for (var inspector : __inspectors) {
 			__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-					__messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
+					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
 		}
 
 	}

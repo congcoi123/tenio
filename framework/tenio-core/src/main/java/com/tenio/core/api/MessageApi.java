@@ -76,7 +76,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a connection
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param connection See {@link Connection}
@@ -132,7 +132,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a player
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param player  the desired player
@@ -175,7 +175,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players on one room
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param room    the desired room
@@ -223,7 +223,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param player  the desired player
@@ -264,7 +264,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * @return a {@link MessageObjectArray} object from the pooling mechanism
 	 */
-	public MessageObjectArray getArrayPack() {
+	public MessageObjectArray getMessageObjectArray() {
 		return __arrayPool.get();
 	}
 
