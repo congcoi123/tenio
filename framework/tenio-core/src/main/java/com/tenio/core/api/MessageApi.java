@@ -85,7 +85,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData    the key of message's data
 	 * @param data       the main data of message, see: {@link MessageObjectArray}
 	 */
-	public void sendToConnection(Connection connection, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToConnection(Connection connection, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -141,7 +142,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData the key of message's data
 	 * @param data    the message data, see: {@link MessageObjectArray}
 	 */
-	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -183,7 +185,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData the key of message's data
 	 * @param data    the message's data, see: {@link MessageObjectArray}
 	 */
-	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -243,6 +246,19 @@ public final class MessageApi extends AbstractLogger {
 		}
 		__objectPool.repay(message);
 		__arrayPool.repay(data);
+	}
+
+	/**
+	 * Send a internal server message, the message format need to be recognized by
+	 * handler classes
+	 * 
+	 * @param player  the desired player
+	 * @param index   the index of connection in current player
+	 * @param message the message instance
+	 */
+	public void sendToInternalServer(AbstractPlayer player, int index, MessageObject message) {
+		player.setCurrentReaderTime();
+		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
 	}
 
 	/**

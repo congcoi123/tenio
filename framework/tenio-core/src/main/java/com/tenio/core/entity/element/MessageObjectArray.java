@@ -76,7 +76,7 @@ public final class MessageObjectArray extends ArrayList<Object> {
 		return get(index);
 	}
 
-	public MessageObjectArray getTArray(final int index) {
+	public MessageObjectArray getMessageObjectArray(final int index) {
 		return (MessageObjectArray) get(index);
 	}
 
