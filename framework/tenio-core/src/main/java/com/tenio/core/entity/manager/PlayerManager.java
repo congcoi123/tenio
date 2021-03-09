@@ -113,7 +113,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	public void add(final AbstractPlayer player, final Connection connection) {
 		if (player.getName() == null) {
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_INFO_IS_INVALID);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			var e = new NullPlayerNameException();
 			error(e);
 			throw e;
@@ -122,7 +122,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;
@@ -142,7 +142,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			__players.put(player.getName(), player);
 
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}
@@ -152,7 +152,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;
@@ -160,7 +160,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 
 			__players.put(player.getName(), player);
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}

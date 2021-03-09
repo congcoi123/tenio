@@ -40,32 +40,32 @@ public final class EventManager extends AbstractLogger implements IEventManager 
 	/**
 	 * @see ExtEventManager
 	 */
-	private ExtEventManager __tEvent = new ExtEventManager();
+	private ExtEventManager __extEventManager = new ExtEventManager();
 	/**
 	 * @see InternalEventManager
 	 */
-	private InternalEventManager __lEvent = new InternalEventManager();
+	private InternalEventManager __internalEventManager = new InternalEventManager();
 
 	@Override
-	public ExtEventManager getExternal() {
-		return __tEvent;
+	public ExtEventManager getExtension() {
+		return __extEventManager;
 	}
 
 	@Override
 	public InternalEventManager getInternal() {
-		return __lEvent;
+		return __internalEventManager;
 	}
 
 	@Override
 	public void subscribe() {
-		__tEvent.subscribe();
-		__lEvent.subscribe();
+		__extEventManager.subscribe();
+		__internalEventManager.subscribe();
 	}
 
 	@Override
 	public void clear() {
-		__tEvent.clear();
-		__lEvent.clear();
+		__extEventManager.clear();
+		__internalEventManager.clear();
 	}
 
 }

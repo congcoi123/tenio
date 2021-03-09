@@ -60,7 +60,7 @@ public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficSha
 		long currentWrittenBytes = counter.currentWrittenBytes() >> 10;
 		long realWrittenBytes = counter.getRealWrittenBytes().get() >> 10;
 
-		__eventManager.getExternal().emit(ExtEvent.FETCHED_BANDWIDTH_INFO, lastReadThroughput, lastWriteThroughput,
+		__eventManager.getExtension().emit(ExtEvent.FETCHED_BANDWIDTH_INFO, lastReadThroughput, lastWriteThroughput,
 				realWriteThroughput, currentReadBytes, currentWrittenBytes, realWrittenBytes);
 
 	}

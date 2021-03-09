@@ -106,14 +106,14 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
-				__eventManager.getExternal().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
 				var e = new DuplicatedRoomException();
 				error(e, "room id: ", room.getId());
 				throw e;
 			}
 			__rooms.put(room.getId(), room);
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.ROOM_WAS_CREATED, room);
+			__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room);
 		}
 	}
 
@@ -127,7 +127,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			}
 
 			// fire an event
-			__eventManager.getExternal().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
+			__eventManager.getExtension().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
 			// force all players leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
@@ -157,13 +157,13 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	@Override
 	public CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
 			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
 		}
 
 		if (room.isFull()) {
-			__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, CoreMessageCode.ROOM_IS_FULL);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, CoreMessageCode.ROOM_IS_FULL);
 			return CoreMessageCode.ROOM_IS_FULL;
 		}
 
@@ -173,7 +173,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		room.add(player);
 		player.setRoom(room);
 		// fire an event
-		__eventManager.getExternal().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true);
 
 		return null;
 	}
@@ -186,11 +186,11 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		}
 
 		// fire an event
-		__eventManager.getExternal().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
 		// fire an event
-		__eventManager.getExternal().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
 
 		return null;
 	}

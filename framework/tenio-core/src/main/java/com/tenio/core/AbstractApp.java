@@ -51,7 +51,7 @@ public abstract class AbstractApp extends AbstractLogger {
 			server.start(getConfiguration());
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
-			error(e, "Application start");
+			error(e, "The application started with exceptions occured");
 			server.shutdown();
 			onShutdown();
 			// exit with errors
@@ -62,6 +62,8 @@ public abstract class AbstractApp extends AbstractLogger {
 			server.shutdown();
 			onShutdown();
 		}));
+		// The server was ready
+		onStarted();
 	}
 
 	/**
@@ -77,7 +79,12 @@ public abstract class AbstractApp extends AbstractLogger {
 	public abstract <T extends CoreConfiguration> T getConfiguration();
 	
 	/**
-	 * The trigger is called when server was down
+	 * The trigger is called when server was started
+	 */
+	public abstract void onStarted();
+	
+	/**
+	 * The trigger is called when server was tear down
 	 */
 	public abstract void onShutdown();
 

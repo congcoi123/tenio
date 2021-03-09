@@ -107,7 +107,7 @@ public final class MessageApi extends AbstractLogger {
 		if (player.hasConnection(index)) {
 			player.getConnection(index).send(message);
 		}
-		__eventManager.getExternal().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, index, message);
+		__eventManager.getExtension().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, index, message);
 	}
 
 	/**

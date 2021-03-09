@@ -182,8 +182,8 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __checkSubscriberReconnection(CoreConfiguration configuration) throws NotDefinedSubscribersException {
 		if (configuration.getBoolean(CoreConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExternal().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
-					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
+			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
 				throw new NotDefinedSubscribersException(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
 						ExtEvent.PLAYER_RECONNECT_SUCCESS);
 			}
@@ -193,9 +193,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberSubConnectionAttach(CoreConfiguration configuration)
 			throws NotDefinedSubscribersException {
 		if (configuration.getSocketPorts().size() > 1 || configuration.getWebSocketPorts().size() > 1) {
-			if (!__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
-					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExternal().hasSubscriber(ExtEvent.ATTACH_CONNECTION_FAILED)) {
+			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_SUCCESS)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_FAILED)) {
 				throw new NotDefinedSubscribersException(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
 						ExtEvent.ATTACH_CONNECTION_SUCCESS, ExtEvent.ATTACH_CONNECTION_FAILED);
 			}
@@ -210,8 +210,8 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberHttpHandler(CoreConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
-				|| !__eventManager.getExternal().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
+		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
+				|| !__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
 			throw new NotDefinedSubscribersException(ExtEvent.HTTP_REQUEST_VALIDATE, ExtEvent.HTTP_REQUEST_HANDLE);
 		}
 	}

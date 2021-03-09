@@ -68,14 +68,14 @@ final class InternalLogicManager extends AbstractLogger {
 				if (username != null) { // the player maybe exist
 					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
-						__eventManager.getExternal().emit(ExtEvent.DISCONNECT_PLAYER, player);
+						__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
 						if (!keepPlayerOnDisconnect) {
 							__playerManager.clean(player);
 						}
 					}
 				} else { // the free connection (without a corresponding player)
-					__eventManager.getExternal().emit(ExtEvent.DISCONNECT_CONNECTION, connection);
+					__eventManager.getExtension().emit(ExtEvent.DISCONNECT_CONNECTION, connection);
 				}
 				connection.clean();
 			}
@@ -118,7 +118,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 			var player = __playerManager.get(name);
 			if (player != null) {
-				__eventManager.getExternal().emit(ExtEvent.DISCONNECT_PLAYER, player);
+				__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
 			}
 
 			return null;
@@ -155,38 +155,38 @@ final class InternalLogicManager extends AbstractLogger {
 			final Connection connection, final MessageObject message) {
 		if (index == 0) { // is main connection
 			// check reconnection request first
-			var player = (AbstractPlayer) __eventManager.getExternal().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, connection,
+			var player = (AbstractPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, connection,
 					message);
 			if (player != null) {
 				connection.setUsername(player.getName());
 				player.setConnection(connection, 0); // main connection
-				__eventManager.getExternal().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
 				if (__playerManager.count() > configuration.getInt(CoreConfiguration.MAX_PLAYER)) {
-					__eventManager.getExternal().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
+					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
 							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();
 				} else {
-					__eventManager.getExternal().emit(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
+					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
 				}
 			}
 
 		} else {
 			// the condition for creating sub-connection
-			var player = (AbstractPlayer) __eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, index,
+			var player = (AbstractPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, index,
 					message);
 
 			if (player == null) {
-				__eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
 						CoreMessageCode.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection(0)) {
-				__eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
 						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				connection.setUsername(player.getName());
 				player.setConnection(connection, index);
-				__eventManager.getExternal().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, index, player);
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, index, player);
 			}
 		}
 	}
@@ -245,7 +245,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 	private void __handle(AbstractPlayer player, int index, MessageObject message) {
 		player.setCurrentReaderTime();
-		__eventManager.getExternal().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
+		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
 	}
 
 	private void __exception(AbstractPlayer player, Throwable cause) {

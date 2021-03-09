@@ -37,7 +37,7 @@ public interface IEventManager {
 	/**
 	 * @return see {@link ExtEventManager}
 	 */
-	public ExtEventManager getExternal();
+	public ExtEventManager getExtension();
 
 	/**
 	 * @return see {@link InternalEventManager}
