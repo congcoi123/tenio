@@ -26,10 +26,10 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.common.element.MessageObject;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;

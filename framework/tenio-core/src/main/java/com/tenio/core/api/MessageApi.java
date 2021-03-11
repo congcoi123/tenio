@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.api.pool.MessageObjectArrayPool;
@@ -30,8 +32,6 @@ import com.tenio.core.api.pool.MessageObjectPool;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 

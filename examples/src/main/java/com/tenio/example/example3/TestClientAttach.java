@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.example.client.IDatagramListener;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;

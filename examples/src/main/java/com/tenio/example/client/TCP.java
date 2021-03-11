@@ -31,10 +31,10 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.message.codec.MessagePacker;
-import com.tenio.core.message.codec.MsgPackConverter;
+import com.tenio.core.message.MessagePacker;
 
 /**
  * Create an object for handling a socket connection. It is used to send

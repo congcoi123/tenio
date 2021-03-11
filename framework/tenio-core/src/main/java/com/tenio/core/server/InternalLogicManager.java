@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;

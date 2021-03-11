@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.message.pool;
+package com.tenio.common.msgpack.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.message.codec.ByteArrayInputStream;
 
 /**
  * The object pool mechanism for {@link ByteArrayInputStream}.

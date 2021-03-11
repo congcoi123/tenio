@@ -27,11 +27,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;

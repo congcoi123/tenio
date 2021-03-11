@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
@@ -35,7 +36,6 @@ import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.network.Connection;
 import com.tenio.core.server.Server;

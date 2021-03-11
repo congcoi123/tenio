@@ -32,10 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
+import com.tenio.common.element.MessageObject;
 import com.tenio.core.configuration.Path;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.core.network.http.servlet.base.BaseServlet;

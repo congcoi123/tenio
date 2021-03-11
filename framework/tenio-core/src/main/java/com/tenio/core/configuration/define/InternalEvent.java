@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.define;
 
+import com.tenio.common.element.MessageObject;
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.network.Connection;
 
 /**

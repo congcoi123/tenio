@@ -17,7 +17,6 @@
 		<io.netty.version>4.1.50.Final</io.netty.version>
 		<org.eclipse.jetty.version>9.4.31.v20200723</org.eclipse.jetty.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
-		<org.msgpack.version>0.6.12</org.msgpack.version>
 	</properties>
 
 	<dependencies>
@@ -45,11 +44,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${javax.servlet.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.msgpack</groupId>
-			<artifactId>msgpack</artifactId>
-			<version>${org.msgpack.version}</version>
 		</dependency>
 	</dependencies>
 

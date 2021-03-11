@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.message.codec;
+package com.tenio.common.msgpack;
 
 import static org.msgpack.template.Templates.TString;
 import static org.msgpack.template.Templates.TValue;
@@ -33,10 +33,10 @@ import java.util.Map;
 import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.msgpack.pool.ByteArrayInputStreamPool;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.entity.element.MessageObjectArray;
-import com.tenio.core.message.pool.ByteArrayInputStreamPool;
 
 /**
  * <a href="https://msgpack.org/index.html">MessagePack</a> is an efficient

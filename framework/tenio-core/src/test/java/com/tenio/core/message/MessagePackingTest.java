@@ -30,10 +30,9 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.message.codec.MessagePacker;
-import com.tenio.core.message.codec.MsgPackConverter;
 
 /**
  * @author kong

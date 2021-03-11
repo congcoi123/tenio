@@ -24,10 +24,10 @@ THE SOFTWARE.
 package com.tenio.example.example6;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;

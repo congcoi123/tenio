@@ -25,11 +25,11 @@ package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.message.codec.MsgPackConverter;
 import com.tenio.core.network.Connection;
 
 import io.netty.buffer.Unpooled;
