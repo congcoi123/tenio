@@ -60,6 +60,11 @@ public final class TestServerStress extends AbstractApp {
 	}
 	
 	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
 	public void onShutdown() {
 		
 	}

@@ -64,6 +64,11 @@ public final class TestServerAttach extends AbstractApp {
 	}
 	
 	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
 	public void onShutdown() {
 		
 	}

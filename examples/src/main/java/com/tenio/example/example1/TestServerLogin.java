@@ -63,6 +63,11 @@ public final class TestServerLogin extends AbstractApp {
 	}
 	
 	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
 	public void onShutdown() {
 		
 	}

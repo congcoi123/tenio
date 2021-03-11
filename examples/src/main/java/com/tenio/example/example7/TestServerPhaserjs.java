@@ -60,6 +60,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 	}
 	
 	@Override
+	public void onStarted() {
+		
+	}
+	@Override
 	public void onShutdown() {
 		
 	}

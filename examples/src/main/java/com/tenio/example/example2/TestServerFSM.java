@@ -55,6 +55,11 @@ public final class TestServerFSM extends AbstractApp {
 	}
 	
 	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
 	public void onShutdown() {
 		
 	}
