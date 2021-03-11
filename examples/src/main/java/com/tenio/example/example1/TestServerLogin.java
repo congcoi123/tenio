@@ -30,6 +30,7 @@ import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
+import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
@@ -61,15 +62,15 @@ public final class TestServerLogin extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
-	
+
 	@Override
 	public void onStarted() {
-		
+
 	}
-	
+
 	@Override
 	public void onShutdown() {
-		
+
 	}
 
 	/**
@@ -118,6 +119,10 @@ public final class TestServerLogin extends AbstractApp {
 							data.put("H").put("3").put("L").put("O").put(true)
 									.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
+					// Attempt to send internal message
+					_messageApi.sendToInternalServer(player, 1,
+							MessageObject.newInstance().add("internal", "this is a message in external server"));
+
 					try {
 						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 					} catch (Exception e) {
@@ -125,6 +130,14 @@ public final class TestServerLogin extends AbstractApp {
 					}
 
 				}, 0, 1, TimeUnit.SECONDS));
+
+				return null;
+			});
+
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
+				var message = _getMessageObject(args[1]);
+
+				info(buildgen("RECEIVED INTERNAL MESSAGE").toString(), message.toString());
 
 				return null;
 			});

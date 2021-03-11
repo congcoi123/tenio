@@ -45,10 +45,11 @@ public abstract class AbstractApp extends AbstractLogger {
 	 * Start The Game Server
 	 */
 	public void start() {
+		var configuration = getConfiguration();
 		var server = Server.getInstance();
 		server.setExtension(getExtension());
 		try {
-			server.start(getConfiguration());
+			server.start(configuration);
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
 			error(e, "The application started with exceptions occured");
