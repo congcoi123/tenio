@@ -59,6 +59,12 @@ public interface IConfiguration {
 	 * @return the value in {@link String}
 	 */
 	String getString(final String key);
+	
+	/**
+	 * @param key the configuration's key
+	 * @return the value in {@link Object}
+	 */
+	Object get(final String key);
 
 	/**
 	 * Determine if this configuration is existed or defined. If you want some

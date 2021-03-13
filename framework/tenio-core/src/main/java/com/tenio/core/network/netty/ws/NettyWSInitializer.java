@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.ws;
 
-import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.GlobalTrafficShapingHandlerCustomize;
 
@@ -41,11 +41,11 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final CoreConfiguration __configuration;
+	private final IConfiguration __configuration;
 	private final int __index;
 
 	public NettyWSInitializer(int index, IEventManager eventManager,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, CoreConfiguration configuration) {
+			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;

@@ -116,6 +116,18 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * This current version code of your server in integer type (can be compared)
 	 */
 	public static final String VERSION_CODE = "t.versionCode";
+	/**
+	 * The list of socket ports in configuration
+	 */
+	public static final String SOCKET_PORTS = "t.socketPorts";
+	/**
+	 * The list of web socket ports in configuration
+	 */
+	public static final String WEBSOCKET_PORTS = "t.webSocketPorts";
+	/**
+	 * The list of http ports in configuration
+	 */
+	public static final String HTTP_PORTS = "t.httpPorts";
 
 	/**
 	 * All ports in sockets zone
@@ -219,6 +231,11 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		}
 
 		// Configuration
+		_push(SOCKET_PORTS, __socketPorts);
+		_push(WEBSOCKET_PORTS, __webSocketPorts);
+		_push(HTTP_PORTS, __httpPorts);
+
+		// Parsing configuration data
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			var pDataNode = attrConfigurationProperties.item(j);
@@ -299,27 +316,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			return RestMethod.DELETE;
 		}
 		return null;
-	}
-
-	/**
-	 * @return the list of socket ports in configuration
-	 */
-	public List<Sock> getSocketPorts() {
-		return __socketPorts;
-	}
-
-	/**
-	 * @return the list of websocket ports in configuration
-	 */
-	public List<Sock> getWebSocketPorts() {
-		return __webSocketPorts;
-	}
-
-	/**
-	 * @return the list of http ports in configuration
-	 */
-	public List<Http> getHttpPorts() {
-		return __httpPorts;
 	}
 
 }

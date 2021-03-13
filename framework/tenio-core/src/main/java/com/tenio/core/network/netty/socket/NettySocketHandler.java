@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.socket;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
@@ -43,7 +43,7 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public final class NettySocketHandler extends BaseNettyHandler {
 
-	public NettySocketHandler(int index, IEventManager eventManager, CoreConfiguration configuration) {
+	public NettySocketHandler(int index, IEventManager eventManager, IConfiguration configuration) {
 		super(eventManager, index, ConnectionType.SOCKET);
 	}
 

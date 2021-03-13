@@ -25,8 +25,8 @@ package com.tenio.core;
 
 import java.io.IOException;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -73,17 +73,15 @@ public abstract class AbstractApp extends AbstractLogger {
 	public abstract IExtension getExtension();
 
 	/**
-	 * 
-	 * @param <T> The derived class of {@link CoreConfiguration}
-	 * @return your own class that derived from {@link CoreConfiguration} class
+	 * @return your own class that derived from {@link IConfiguration} class
 	 */
-	public abstract <T extends CoreConfiguration> T getConfiguration();
-	
+	public abstract IConfiguration getConfiguration();
+
 	/**
 	 * The trigger is called when server was started
 	 */
 	public abstract void onStarted();
-	
+
 	/**
 	 * The trigger is called when server was tear down
 	 */

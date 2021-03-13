@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.socket;
 
-import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.GlobalTrafficShapingHandlerCustomize;
@@ -45,11 +45,11 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 
 	private final IEventManager __eventManager;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final CoreConfiguration __configuration;
+	private final IConfiguration __configuration;
 	private final int __index;
 
 	public NettySocketInitializer(int index, IEventManager eventManager,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, CoreConfiguration configuration) {
+			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
 		__trafficCounter = trafficCounter;
@@ -64,8 +64,8 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("traffic-counter", __trafficCounter);
 
 		// break each data chunk by newlines (read-up)
-		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, CoreConstants.HEADER_BYTES,
-				0, CoreConstants.HEADER_BYTES));
+		pipeline.addLast("length-decoder", new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0,
+				CoreConstants.HEADER_BYTES, 0, CoreConstants.HEADER_BYTES));
 		// convert each data chunk into a byte array (read-up)
 		pipeline.addLast("bytearray-decoder", new ByteArrayDecoder());
 		// add data-length package's head

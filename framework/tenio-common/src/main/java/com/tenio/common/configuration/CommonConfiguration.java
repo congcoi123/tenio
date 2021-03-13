@@ -45,25 +45,30 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<String, String> __configuration = new HashMap<String, String>();
+	private final Map<String, Object> __configuration = new HashMap<String, Object>();
 
 	@Override
 	public boolean getBoolean(final String key) {
-		return Boolean.parseBoolean(__configuration.get(key));
+		return Boolean.parseBoolean((String) __configuration.get(key));
 	}
 
 	@Override
 	public int getInt(final String key) {
-		return Integer.parseInt(__configuration.get(key));
+		return Integer.parseInt((String) __configuration.get(key));
 	}
 
 	@Override
 	public float getFloat(final String key) {
-		return Float.parseFloat(__configuration.get(key));
+		return Float.parseFloat((String) __configuration.get(key));
 	}
 
 	@Override
 	public String getString(final String key) {
+		return (String) __configuration.get(key);
+	}
+
+	@Override
+	public Object get(final String key) {
 		return __configuration.get(key);
 	}
 
@@ -83,10 +88,10 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(final String key, final String value) {
+	protected void _push(final String key, final Object value) {
 		__configuration.put(key, value);
 	}
-	
+
 	/**
 	 * Your extension part can be handled here. Check the examples for more details
 	 * about how to use it.

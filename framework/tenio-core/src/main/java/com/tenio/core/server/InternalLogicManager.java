@@ -23,12 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.MessageObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
@@ -57,7 +58,7 @@ final class InternalLogicManager extends AbstractLogger {
 	/**
 	 * Start handling
 	 */
-	public void init(CoreConfiguration configuration) {
+	public void init(IConfiguration configuration) {
 
 		__on(InternalEvent.CONNECTION_WAS_CLOSED, args -> {
 			var connection = __getConnection(args[0]);
@@ -151,7 +152,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final CoreConfiguration configuration, final int index,
+	private void __createNewConnection(final IConfiguration configuration, final int index,
 			final Connection connection, final MessageObject message) {
 		if (index == 0) { // is main connection
 			// check reconnection request first

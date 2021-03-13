@@ -24,15 +24,18 @@ THE SOFTWARE.
 package com.tenio.core.entity.manager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.Sock;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
@@ -56,15 +59,24 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	 */
 	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
 	private final IEventManager __eventManager;
-	private CoreConfiguration __configuration;
+	private IConfiguration __configuration;
+	private List<Sock> __socketPorts;
+	private List<Sock> __webSocketPorts;
+	private int __socketPortsSize;
+	private int __webSocketPortsSize;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void initialize(CoreConfiguration configuration) {
+	public void initialize(IConfiguration configuration) {
 		__configuration = configuration;
+		__socketPorts = (List<Sock>) (__configuration.get(CoreConfiguration.SOCKET_PORTS));
+		__webSocketPorts = (List<Sock>) (__configuration.get(CoreConfiguration.WEBSOCKET_PORTS));
+		__socketPortsSize = __socketPorts.size();
+		__webSocketPortsSize = __webSocketPorts.size();
 	}
 
 	@Override
@@ -113,7 +125,8 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	public void add(final AbstractPlayer player, final Connection connection) {
 		if (player.getName() == null) {
 			// fire an event
-			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_INFO_IS_INVALID);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+					CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			var e = new NullPlayerNameException();
 			error(e);
 			throw e;
@@ -122,7 +135,8 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+						CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;
@@ -132,9 +146,9 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			connection.setUsername(player.getName());
 			int size = 0;
 			if (connection.isType(ConnectionType.WEB_SOCKET)) {
-				size = __configuration.getWebSocketPorts().size();
+				size = __webSocketPortsSize;
 			} else {
-				size = __configuration.getSocketPorts().size();
+				size = __socketPortsSize;
 			}
 			player.initializeConnections(size);
 			player.setConnection(connection, 0);
@@ -152,7 +166,8 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+						CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
 				error(e, "player name: ", player.getName());
 				throw e;

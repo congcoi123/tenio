@@ -25,7 +25,7 @@ package com.tenio.core.network.netty.ws;
 
 import java.net.URISyntaxException;
 
-import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.event.IEventManager;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -58,10 +58,10 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	private WebSocketServerHandshaker __handshaker;
 
 	private final IEventManager __eventManager;
-	private final CoreConfiguration __configuration;
+	private final IConfiguration __configuration;
 	private final int __index;
 
-	public NettyWSHandShake(int index, IEventManager eventManager, CoreConfiguration configuration) {
+	public NettyWSHandShake(int index, IEventManager eventManager, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
 		__configuration = configuration;

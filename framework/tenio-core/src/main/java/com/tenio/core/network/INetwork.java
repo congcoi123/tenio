@@ -25,6 +25,7 @@ package com.tenio.core.network;
 
 import java.io.IOException;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 
@@ -51,7 +52,7 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, CoreConfiguration configuration) throws IOException, InterruptedException;
+	void start(IEventManager eventManager, IConfiguration configuration) throws IOException, InterruptedException;
 
 	/**
 	 * Shutdown the network

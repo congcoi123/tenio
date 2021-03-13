@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
@@ -62,7 +62,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public void initialize(CoreConfiguration configuration) {
+	public void initialize(IConfiguration configuration) {
 		// temporary do nothing
 	}
 
