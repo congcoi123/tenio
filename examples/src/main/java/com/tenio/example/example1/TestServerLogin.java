@@ -57,7 +57,6 @@ public final class TestServerLogin extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");

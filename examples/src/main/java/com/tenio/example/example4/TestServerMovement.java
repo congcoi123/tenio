@@ -56,7 +56,6 @@ public final class TestServerMovement extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");

@@ -64,7 +64,6 @@ public final class TestServerFSM extends AbstractApp {
 		
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
