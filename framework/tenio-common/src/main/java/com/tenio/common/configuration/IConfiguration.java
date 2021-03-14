@@ -40,31 +40,31 @@ public interface IConfiguration {
 	 * @param key the configuration's key
 	 * @return the value in {@link Boolean}
 	 */
-	boolean getBoolean(final String key);
+	boolean getBoolean(final ConfigurationType key);
 
 	/**
 	 * @param key the configuration's key
 	 * @return the value in {@link Integer}
 	 */
-	int getInt(final String key);
+	int getInt(final ConfigurationType key);
 
 	/**
 	 * @param key the configuration's key
 	 * @return the value in {@link Float}
 	 */
-	float getFloat(final String key);
+	float getFloat(final ConfigurationType key);
 
 	/**
 	 * @param key the configuration's key
 	 * @return the value in {@link String}
 	 */
-	String getString(final String key);
+	String getString(final ConfigurationType key);
 	
 	/**
 	 * @param key the configuration's key
 	 * @return the value in {@link Object}
 	 */
-	Object get(final String key);
+	Object get(final ConfigurationType key);
 
 	/**
 	 * Determine if this configuration is existed or defined. If you want some
@@ -75,7 +75,7 @@ public interface IConfiguration {
 	 * @return <b>true</b> if the configuration is defined and otherwise return
 	 *         <b>false</b>
 	 */
-	boolean isDefined(final String key);
+	boolean isDefined(final ConfigurationType key);
 
 	/**
 	 * @return configuration information as human readable data 

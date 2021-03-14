@@ -52,4 +52,9 @@ public final class Sock {
 		return __port;
 	}
 
+	@Override
+	public final String toString() {
+		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+	}
+
 }

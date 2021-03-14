@@ -64,4 +64,10 @@ public final class Path {
 		return __version;
 	}
 
+	@Override
+	public final String toString() {
+		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
+				__uri, __description, __version);
+	}
+
 }

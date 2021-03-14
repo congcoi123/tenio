@@ -45,35 +45,35 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<String, Object> __configuration = new HashMap<String, Object>();
+	private final Map<ConfigurationType, Object> __configuration = new HashMap<ConfigurationType, Object>();
 
 	@Override
-	public boolean getBoolean(final String key) {
+	public boolean getBoolean(final ConfigurationType key) {
 		return Boolean.parseBoolean((String) __configuration.get(key));
 	}
 
 	@Override
-	public int getInt(final String key) {
+	public int getInt(final ConfigurationType key) {
 		return Integer.parseInt((String) __configuration.get(key));
 	}
 
 	@Override
-	public float getFloat(final String key) {
+	public float getFloat(final ConfigurationType key) {
 		return Float.parseFloat((String) __configuration.get(key));
 	}
 
 	@Override
-	public String getString(final String key) {
+	public String getString(final ConfigurationType key) {
 		return (String) __configuration.get(key);
 	}
 
 	@Override
-	public Object get(final String key) {
+	public Object get(final ConfigurationType key) {
 		return __configuration.get(key);
 	}
 
 	@Override
-	public boolean isDefined(final String key) {
+	public boolean isDefined(final ConfigurationType key) {
 		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
 	}
 
@@ -88,7 +88,15 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(final String key, final Object value) {
+	protected void _push(final ConfigurationType key, final Object value) {
+		if (key == null) {
+			return;
+		}
+		if (__configuration.containsKey(key)) {
+			info("CONFIGURATION", buildgen("Configuration key [", key, "] attempted to replace the old value ",
+					__configuration.get(key), " by the new one ", value));
+			return;
+		}
 		__configuration.put(key, value);
 	}
 

@@ -34,6 +34,7 @@ import org.w3c.dom.Node;
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
 import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.RestMethod;
 
 /**
@@ -68,67 +69,6 @@ import com.tenio.core.configuration.define.RestMethod;
  * 
  */
 public abstract class CoreConfiguration extends CommonConfiguration {
-
-	/**
-	 * When the server get disconnection of one client, can be hold its player
-	 * instance until timeout
-	 */
-	public static final String KEEP_PLAYER_ON_DISCONNECT = "t.keepPlayerOnDisconnect";
-	/**
-	 * The maximum number of players which game can handle
-	 */
-	public static final String MAX_PLAYER = "t.maxPlayer";
-	/**
-	 * The max IDLE time in seconds which server can wait from the last getting
-	 * message from client
-	 */
-	public static final String IDLE_READER = "t.idleReader";
-	/**
-	 * The max IDLE time in seconds which server can wait from the last sending
-	 * message to client
-	 */
-	public static final String IDLE_WRITER = "t.idleWriter";
-	/**
-	 * Get the period checking in seconds which server can keep the empty room
-	 */
-	public static final String EMPTY_ROOM_SCAN = "t.emptyRoomScan";
-	/**
-	 * The period checking player time out in seconds
-	 */
-	public static final String TIMEOUT_SCAN = "t.timeoutScan";
-	/**
-	 * The period checking CCU in seconds
-	 */
-	public static final String CCU_SCAN = "t.ccuScan";
-	/**
-	 * The server name
-	 */
-	public static final String SERVER_NAME = "t.serverName";
-	/**
-	 * The server id (module name)
-	 */
-	public static final String SERVER_ID = "t.serverId";
-	/**
-	 * This current version name of your server in string type
-	 */
-	public static final String VERSION_NAME = "t.versionName";
-	/**
-	 * This current version code of your server in integer type (can be compared)
-	 */
-	public static final String VERSION_CODE = "t.versionCode";
-	/**
-	 * The list of socket ports in configuration
-	 */
-	public static final String SOCKET_PORTS = "t.socketPorts";
-	/**
-	 * The list of web socket ports in configuration
-	 */
-	public static final String WEBSOCKET_PORTS = "t.webSocketPorts";
-	/**
-	 * The list of http ports in configuration
-	 */
-	public static final String HTTP_PORTS = "t.httpPorts";
-
 	/**
 	 * All ports in sockets zone
 	 */
@@ -175,23 +115,8 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
 		for (int j = 0; j < attrRootProperties.getLength(); j++) {
 			var pDataNode = attrRootProperties.item(j);
-			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
-			case "name":
-				_push(SERVER_NAME, pDataNode.getTextContent());
-				break;
-
-			case "id":
-				_push(SERVER_ID, pDataNode.getTextContent());
-				break;
-
-			case "versionName":
-				_push(VERSION_NAME, pDataNode.getTextContent());
-				break;
-
-			case "versionCode":
-				_push(VERSION_CODE, pDataNode.getTextContent());
-				break;
-			}
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
 		}
 
 		// Network
@@ -231,43 +156,16 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		}
 
 		// Configuration
-		_push(SOCKET_PORTS, __socketPorts);
-		_push(WEBSOCKET_PORTS, __webSocketPorts);
-		_push(HTTP_PORTS, __httpPorts);
+		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
+		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
+		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
 
 		// Parsing configuration data
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			var pDataNode = attrConfigurationProperties.item(j);
-			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
-			case "keepPlayerOnDisconnect":
-				_push(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
-				break;
-
-			case "maxPlayer":
-				_push(MAX_PLAYER, pDataNode.getTextContent());
-				break;
-
-			case "idleReader":
-				_push(IDLE_READER, pDataNode.getTextContent());
-				break;
-
-			case "idleWriter":
-				_push(IDLE_WRITER, pDataNode.getTextContent());
-				break;
-
-			case "emptyRoomScan":
-				_push(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
-				break;
-
-			case "timeoutScan":
-				_push(TIMEOUT_SCAN, pDataNode.getTextContent());
-				break;
-
-			case "ccuScan":
-				_push(CCU_SCAN, pDataNode.getTextContent());
-				break;
-			}
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
 		}
 
 		// Extension
