@@ -31,7 +31,7 @@ import com.tenio.engine.message.IMessage;
 /**
  * @author kong
  */
-public final class TMessage implements IMessage {
+public final class ExampleMessage implements IMessage {
 
 	private Map<String, Object> __content = new HashMap<String, Object>();
 	

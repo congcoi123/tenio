@@ -30,9 +30,9 @@ import java.util.Map;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.Sock;
 import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
@@ -73,8 +73,8 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	@Override
 	public void initialize(IConfiguration configuration) {
 		__configuration = configuration;
-		__socketPorts = (List<Sock>) (__configuration.get(CoreConfiguration.SOCKET_PORTS));
-		__webSocketPorts = (List<Sock>) (__configuration.get(CoreConfiguration.WEBSOCKET_PORTS));
+		__socketPorts = (List<Sock>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		__webSocketPorts = (List<Sock>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
 		__socketPortsSize = __socketPorts.size();
 		__webSocketPortsSize = __webSocketPorts.size();
 	}

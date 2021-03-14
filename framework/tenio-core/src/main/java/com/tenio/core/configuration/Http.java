@@ -48,13 +48,18 @@ public final class Http {
 	public List<Path> getPaths() {
 		return __paths;
 	}
-	
+
 	public void addPath(Path path) {
 		__paths.add(path);
 	}
 
 	public int getPort() {
 		return __port;
+	}
+
+	@Override
+	public final String toString() {
+		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
 	}
 
 }

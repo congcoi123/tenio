@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example2;
 
 import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.example.server.TMessage;
+import com.tenio.example.server.ExampleMessage;
 
 /**
  * Only for testing the FSM mechanism
@@ -46,7 +46,7 @@ public final class TestFSM {
 		
 		// try to send messages immediately
 		for (int i = 1; i <= 5; i++) {
-			var message = new TMessage();
+			var message = new ExampleMessage();
 			message.putContent("IMMEDIATELY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
 			System.out.println("SEND IMMEDIATELY: " + message);
 			hearbeatManager.sendMessage("daily-life", message);
@@ -54,7 +54,7 @@ public final class TestFSM {
 		
 		// try to send messages with delay time
 		for (int i = 1; i <= 5; i++) {
-			var message = new TMessage();
+			var message = new ExampleMessage();
 			message.putContent("DELAY", "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
 			System.out.println("SEND DELAY: " + message);
 			hearbeatManager.sendMessage("daily-life", message, i * 10);

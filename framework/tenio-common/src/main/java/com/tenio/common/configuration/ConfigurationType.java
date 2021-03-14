@@ -21,32 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.server;
-
-import java.util.Map;
-
-import com.tenio.core.configuration.CoreConfiguration;
+package com.tenio.common.configuration;
 
 /**
- * Create your own configurations
+ * This server needs some basic configuration to start running. The
+ * configuration file can be defined as an XML file. See an example in
+ * TenIOConfig.example.xml. You can also extend this file to create your own
+ * configuration values.
  * 
- * @see CoreConfiguration
+ * <h1>Configuration for game server, declared in properties file</h1> <br>
  * 
  * @author kong
- *
+ * 
  */
-public final class Configuration extends CoreConfiguration {
-
-	public Configuration(final String file) {
-		super(file);
-	}
-
-	@Override
-	protected void _extend(Map<String, String> extProperties) {
-		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-			var paramName = entry.getKey();
-			_push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-		}
-	}
-
+public interface ConfigurationType {
+	
 }

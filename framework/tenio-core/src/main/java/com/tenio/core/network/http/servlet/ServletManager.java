@@ -167,7 +167,7 @@ public final class ServletManager extends BaseServlet {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		try {
 			var json = new JSONObject();
-			json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "405Method Not Allowed"));
+			json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "405 Method Not Allowed"));
 			response.getWriter().println(json.toString());
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -26,7 +26,7 @@ package com.tenio.core.server;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.MessageObject;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
@@ -62,7 +62,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 		__on(InternalEvent.CONNECTION_WAS_CLOSED, args -> {
 			var connection = __getConnection(args[0]);
-			boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfiguration.KEEP_PLAYER_ON_DISCONNECT);
+			boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
 			if (connection != null) { // the connection has existed
 				String username = connection.getUsername();
@@ -164,7 +164,7 @@ final class InternalLogicManager extends AbstractLogger {
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
-				if (__playerManager.count() > configuration.getInt(CoreConfiguration.MAX_PLAYER)) {
+				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_PLAYER)) {
 					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
 							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();
