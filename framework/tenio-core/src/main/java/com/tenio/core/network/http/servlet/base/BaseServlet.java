@@ -23,10 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.http.servlet.base;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONObject;
 
 /**
  * @author kong
@@ -37,15 +41,47 @@ public abstract class BaseServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5030886807666928581L;
 
-	protected final boolean hasHeaderKey(HttpServletRequest request, String key) {
+	protected final boolean _hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
-        if (headerNames != null) {
-                while (headerNames.hasMoreElements()) {
-                	if (headerNames.nextElement().equals(key))
-                		return true;
-                }
-        }
-        return false;
+		if (headerNames != null) {
+			while (headerNames.hasMoreElements()) {
+				if (headerNames.nextElement().equals(key))
+					return true;
+			}
+		}
+		return false;
 	}
-	
+
+	protected JSONObject _getBody(HttpServletRequest request) {
+		String body = "{}";
+		if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")
+				|| request.getMethod().equals("DELETE")) {
+			StringBuilder sb = new StringBuilder();
+			BufferedReader bufferedReader = null;
+
+			try {
+				bufferedReader = request.getReader();
+				char[] charBuffer = new char[1024];
+				int bytesRead;
+				while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
+					sb.append(charBuffer, 0, bytesRead);
+				}
+			} catch (IOException e) {
+				// swallow silently -- can't get body, won't
+				e.printStackTrace();
+			} finally {
+				if (bufferedReader != null) {
+					try {
+						bufferedReader.close();
+					} catch (IOException e) {
+						// swallow silently -- can't get body, won't
+						e.printStackTrace();
+					}
+				}
+			}
+			body = sb.toString();
+		}
+		return new JSONObject(body);
+	}
+
 }

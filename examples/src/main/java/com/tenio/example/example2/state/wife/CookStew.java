@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2.state.wife;
 
-import com.tenio.engine.configuration.constant.Constants;
+import com.tenio.engine.configuration.constant.EngineConstants;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.example.example2.constant.EntityName;
@@ -92,7 +92,7 @@ public final class CookStew extends State<Wife> {
 			System.out.print("\n" + wife.getMood());
 
 			// let hubby know the stew is ready
-			wife.getFSM().getDispatcher().dispatchMessage(Constants.SEND_MSG_IMMEDIATELY, wife.getId(),
+			wife.getFSM().getDispatcher().dispatchMessage(EngineConstants.SEND_MSG_IMMEDIATELY, wife.getId(),
 					EntityName.MINER.get(), MessageType.STEW_READY.get(), null);
 
 			wife.setCooking(false);

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.Configuration;
-import com.tenio.core.configuration.constant.ErrorMsg;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -175,7 +175,7 @@ public final class PlayerRoomTest {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
 
-		assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
+		assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
 
 	@Test
@@ -185,10 +185,10 @@ public final class PlayerRoomTest {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
 
-		__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
+		__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
 
-		assertEquals(ErrorMsg.PLAYER_WAS_IN_ROOM,
-				__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
+		assertEquals(CoreMessageCode.PLAYER_WAS_IN_ROOM,
+				__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
 
 	@Test
@@ -198,8 +198,8 @@ public final class PlayerRoomTest {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
 
-		__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
-		__playerApi.playerLeaveRoom(__playerApi.get(__testPlayerName), true);
+		__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
+		__playerApi.makePlayerLeaveRoom(__playerApi.get(__testPlayerName), true);
 
 		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).contain(__testPlayerName)),
 				() -> assertEquals(null, __playerApi.get(__testPlayerName).getRoom()));
@@ -227,11 +227,11 @@ public final class PlayerRoomTest {
 		}
 
 		assertAll("playerJoinRoom", () -> assertEquals(3, capacity),
-				() -> assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[0])),
-				() -> assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[1])),
-				() -> assertEquals(null, __playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[2])),
-				() -> assertEquals(ErrorMsg.ROOM_IS_FULL,
-						__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), players[3])));
+				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[0])),
+				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[1])),
+				() -> assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[2])),
+				() -> assertEquals(CoreMessageCode.ROOM_IS_FULL,
+						__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), players[3])));
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public final class PlayerRoomTest {
 		for (int i = 0; i < 3; i++) {
 			var player = new PlayerModel(UUID.randomUUID().toString());
 			__playerApi.login(player);
-			__playerApi.playerJoinRoom(__roomApi.get(__testRoomId), player);
+			__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), player);
 		}
 
 		__roomApi.remove(__roomApi.get(__testRoomId));

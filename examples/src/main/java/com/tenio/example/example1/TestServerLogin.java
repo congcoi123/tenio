@@ -26,10 +26,12 @@ package com.tenio.example.example1;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -55,10 +57,19 @@ public final class TestServerLogin extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
+	}
+
+	@Override
+	public void onStarted() {
+
+	}
+
+	@Override
+	public void onShutdown() {
+
 	}
 
 	/**
@@ -67,12 +78,10 @@ public final class TestServerLogin extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize() {
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+		public void initialize(IConfiguration configuration) {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
-
-				info("CONNECTION", connection.getAddress());
 
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
@@ -83,19 +92,10 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerLogin>_getPlayer(args[0]);
 
-				info("PLAYER IN", player.getName());
 				try {
 					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 				} catch (Exception e) {
@@ -113,10 +113,14 @@ public final class TestServerLogin extends AbstractApp {
 					player.counter++;
 
 					// Sending, the data need to be packed
-					var data = _messageApi.getArrayPack();
+					var data = _messageApi.getMessageObjectArray();
 					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
 							data.put("H").put("3").put("L").put("O").put(true)
 									.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
+
+					// Attempt to send internal message
+					_messageApi.sendToInternalServer(player, 1,
+							MessageObject.newInstance().add("internal", "this is a message in external server"));
 
 					try {
 						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
@@ -129,26 +133,10 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
+				var message = _getMessageObject(args[1]);
 
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.SEND_TO_PLAYER, args -> {
-				var message = _getMessageObject(args[2]);
-
-				info("SEND_TO_PLAYER", message.toString());
+				info(buildgen("RECEIVED INTERNAL MESSAGE").toString(), message.toString());
 
 				return null;
 			});

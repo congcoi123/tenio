@@ -21,52 +21,57 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.internal;
+package com.tenio.core.event.extension;
 
-import com.tenio.core.configuration.constant.LEvent;
+import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.event.ISubscriber;
 
 /**
- * Only for creating an event handler object, see {@link LEventHandler}
+ * An object which creates a mapping between an event type with a subscriber.
  * 
  * @author kong
  * 
  */
-public final class LEventProducer {
+public final class ExtSubscriber {
 
 	/**
-	 * @see LEventHandler
+	 * @see ExtEvent
 	 */
-	private final LEventHandler<Object> __eventHandler = new LEventHandler<Object>();
-
+	private final ExtEvent __type;
 	/**
-	 * Retrieves an event handler
-	 * 
-	 * @return see {@link LEventHandler}
+	 * @see ISubscriber
 	 */
-	public LEventHandler<Object> getEventHandler() {
-		return __eventHandler;
+	private final ISubscriber __sub;
+
+	public static ExtSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
+		return new ExtSubscriber(type, sub);
+	}
+
+	private ExtSubscriber(final ExtEvent type, final ISubscriber sub) {
+		__type = type;
+		__sub = sub;
 	}
 
 	/**
-	 * Emit an event with its parameters
-	 * 
-	 * @param type see {@link LEvent}
-	 * @param args a list parameters of this event
-	 * @return the event result (the response of its subscribers), see
-	 *         {@link Object} or <b>null</b>
-	 * @see LEventHandler#emit(LEvent, Object...)
+	 * @return see {@link ExtEvent}
 	 */
-	public Object emit(final LEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public ExtEvent getType() {
+		return __type;
 	}
 
 	/**
-	 * Clear all events and these handlers
-	 * 
-	 * @see LEventHandler#clear()
+	 * @param type the comparison event value
+	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
 	 */
-	public void clear() {
-		__eventHandler.clear();
+	public boolean isType(ExtEvent type) {
+		return __type == type;
+	}
+
+	/**
+	 * @return see {@link ISubscriber}
+	 */
+	public ISubscriber getSub() {
+		return __sub;
 	}
 
 }

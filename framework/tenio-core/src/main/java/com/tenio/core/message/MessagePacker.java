@@ -21,12 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.message.codec;
+package com.tenio.core.message;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import com.tenio.core.configuration.constant.Constants;
+import com.tenio.core.configuration.constant.CoreConstants;
 
 /**
  * When sending a message through the Internet, it's necessary to convert one
@@ -50,10 +50,10 @@ public final class MessagePacker {
 		// Make bytes
 		var length = shortToByte((short) data.length);
 		// HEADER_BYTES bytes for hold data's length
-		var all = ByteBuffer.allocate(Constants.HEADER_BYTES + data.length).array();
+		var all = ByteBuffer.allocate(CoreConstants.HEADER_BYTES + data.length).array();
 		// Done by native codes = "exceptional fast"
-		System.arraycopy(length, 0, all, 0, Constants.HEADER_BYTES);
-		System.arraycopy(data, 0, all, Constants.HEADER_BYTES, data.length);
+		System.arraycopy(length, 0, all, 0, CoreConstants.HEADER_BYTES);
+		System.arraycopy(data, 0, all, CoreConstants.HEADER_BYTES, data.length);
 
 		return all;
 	}

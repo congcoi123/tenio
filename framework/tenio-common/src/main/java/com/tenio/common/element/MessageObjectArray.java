@@ -21,57 +21,63 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.common.element;
 
-import com.tenio.core.configuration.constant.TEvent;
-import com.tenio.core.event.ISubscriber;
+import java.util.ArrayList;
 
 /**
- * An object which creates a mapping between an event type with a subscriber.
+ * This is an element object in your server. You can use it for holding array
+ * data and make it serialize to send through the network.
  * 
  * @author kong
  * 
  */
-public final class TSubscriber {
+public final class MessageObjectArray extends ArrayList<Object> {
 
-	/**
-	 * @see TEvent
-	 */
-	private final TEvent __type;
-	/**
-	 * @see ISubscriber
-	 */
-	private final ISubscriber __sub;
+	private static final long serialVersionUID = -5100842875580575666L;
 
-	public static TSubscriber newInstance(final TEvent type, final ISubscriber sub) {
-		return new TSubscriber(type, sub);
+	public static MessageObjectArray newInstance() {
+		return new MessageObjectArray();
 	}
 
-	private TSubscriber(final TEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
+	private MessageObjectArray() {
 	}
 
-	/**
-	 * @return see {@link TEvent}
-	 */
-	public TEvent getType() {
-		return __type;
+	public MessageObjectArray put(final Object e) {
+		add(e);
+		return this;
 	}
 
-	/**
-	 * @param type the comparison event value
-	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
-	 */
-	public boolean isType(TEvent type) {
-		return __type == type;
+	public double getDouble(final int index) {
+		return (double) get(index);
 	}
 
-	/**
-	 * @return see {@link ISubscriber}
-	 */
-	public ISubscriber getSub() {
-		return __sub;
+	public float getFloat(final int index) {
+		return (float) get(index);
+	}
+
+	public long getLong(final int index) {
+		return (long) get(index);
+	}
+
+	public int getInt(final int index) {
+		return (int) get(index);
+	}
+
+	public boolean getBoolean(final int index) {
+		return (boolean) get(index);
+	}
+
+	public String getString(final int index) {
+		return (String) get(index);
+	}
+
+	public Object getObject(final int index) {
+		return get(index);
+	}
+
+	public MessageObjectArray getMessageObjectArray(final int index) {
+		return (MessageObjectArray) get(index);
 	}
 
 }

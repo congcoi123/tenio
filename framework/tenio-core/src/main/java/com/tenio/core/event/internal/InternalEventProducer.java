@@ -21,26 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.configuration.constant;
+package com.tenio.core.event.internal;
+
+import com.tenio.core.configuration.define.InternalEvent;
 
 /**
- * All base constants' values for the server are defined here. This class should
- * not be modified.
+ * Only for creating an event handler object, see {@link InternalEventHandler}
  * 
  * @author kong
  * 
  */
-public final class Constants {
+public final class InternalEventProducer {
 
-	private Constants() {
+	/**
+	 * @see InternalEventHandler
+	 */
+	private final InternalEventHandler<Object> __eventHandler = new InternalEventHandler<Object>();
+
+	/**
+	 * Retrieves an event handler
+	 * 
+	 * @return see {@link InternalEventHandler}
+	 */
+	public InternalEventHandler<Object> getEventHandler() {
+		return __eventHandler;
 	}
 
 	/**
-	 * It is used in the FSM pattern in which all entities can communicate with
-	 * others by message in some delay time. The value below describes one entity
-	 * can send a message immediately for others. It is also used for communication
-	 * between a heart-beat with outside.
+	 * Emit an event with its parameters
+	 * 
+	 * @param type see {@link InternalEvent}
+	 * @param args a list parameters of this event
+	 * @return the event result (the response of its subscribers), see
+	 *         {@link Object} or <b>null</b>
+	 * @see InternalEventHandler#emit(InternalEvent, Object...)
 	 */
-	public static final double SEND_MSG_IMMEDIATELY = 0;
+	public Object emit(final InternalEvent type, final Object... args) {
+		return __eventHandler.emit(type, args);
+	}
+
+	/**
+	 * Clear all events and these handlers
+	 * 
+	 * @see InternalEventHandler#clear()
+	 */
+	public void clear() {
+		__eventHandler.clear();
+	}
 
 }

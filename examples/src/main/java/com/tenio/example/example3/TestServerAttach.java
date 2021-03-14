@@ -27,10 +27,11 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.RestMethod;
-import com.tenio.core.configuration.constant.TEvent;
-import com.tenio.core.entity.element.MessageObject;
+import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -56,10 +57,19 @@ public final class TestServerAttach extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");
+	}
+	
+	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
+	public void onShutdown() {
+		
 	}
 
 	/**
@@ -69,12 +79,10 @@ public final class TestServerAttach extends AbstractApp {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void initialize() {
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+		public void initialize(IConfiguration configuration) {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
-
-				info("CONNECTION", connection.getAddress());
 
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
@@ -85,19 +93,9 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("PLAYER IN", player.getName());
 
 				// Now you can allow the player make a UDP connection request
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
@@ -105,12 +103,9 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
 				var player = this.<PlayerAttach>_getPlayer(args[0]);
 				int index = _getInt(args[1]);
-				var message = _getMessageObject(args[2]);
-
-				info("PLAYER RECV ", message);
 
 				_messageApi.sendToPlayer(player, index, "hello",
 						"from server > " + index + " > " + player.getConnection(index).getAddress());
@@ -118,23 +113,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.ATTACH_CONNECTION_REQUEST, args -> {
+			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
 				var message = _getMessageObject(args[1]);
 				String name = message.getString("u");
 
@@ -146,27 +125,15 @@ public final class TestServerAttach extends AbstractApp {
 				return _playerApi.get(name);
 			});
 
-			_on(TEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var index = _getInt(args[0]);
+			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
 				var player = this.<PlayerAttach>_getPlayer(args[1]);
-
-				info("ATTACH CONNECTION SUCCESS", player.getName() + " " + player.getConnection(0).getAddress() + " "
-						+ player.getConnection(index).getAddress());
 
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});
 
-			_on(TEvent.ATTACH_CONNECTION_FAILED, args -> {
-				var reason = _getString(args[2]);
-
-				info("ATTACH UDP FAILED", reason);
-
-				return null;
-			});
-
-			_on(TEvent.HTTP_REQUEST, args -> {
+			_on(ExtEvent.HTTP_REQUEST_VALIDATE, args -> {
 				var method = _getRestMethod(args[0]);
 				// var request = _getHttpServletRequest(args[1]);
 				var response = _getHttpServletResponse(args[2]);
@@ -185,7 +152,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.HTTP_HANDLER, args -> {
+			_on(ExtEvent.HTTP_REQUEST_HANDLE, args -> {
 				// var method = _getRestMethod(args[0]);
 				// var request = _getHttpServletRequest(args[1]);
 				var response = _getHttpServletResponse(args[2]);

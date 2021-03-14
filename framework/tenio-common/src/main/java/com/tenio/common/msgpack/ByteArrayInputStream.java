@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tenio.core.message.codec;
+package com.tenio.common.msgpack;
 
 import java.io.IOException;
 import java.io.InputStream;

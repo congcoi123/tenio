@@ -115,7 +115,7 @@ public final class MathUtility {
 	/**
 	 * @param x x value
 	 * @param y y value
-	 * @return a random integer between x and y
+	 * @return a random integer between x and y (included x and y)
 	 */
 	public static int randInt(int x, int y) {
 		return x + (int)(Math.random() * ((y - x) + 1));

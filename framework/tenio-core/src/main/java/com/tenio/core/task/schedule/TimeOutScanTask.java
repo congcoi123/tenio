@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.event.IEventManager;
 
@@ -56,12 +56,12 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 	private final List<AbstractPlayer> __removeables = new ArrayList<AbstractPlayer>();
 	/**
 	 * After a number of seconds without any message from the client. It can be
-	 * configured in your configurations, see {@link BaseConfiguration}
+	 * configured in your configurations, see {@link CoreConfiguration}
 	 */
 	private final int __idleReader;
 	/**
 	 * After a number of seconds without any message is sent to the client. It can
-	 * be configured in your configurations, see {@link BaseConfiguration}
+	 * be configured in your configurations, see {@link CoreConfiguration}
 	 */
 	private final int __idleWriter;
 	/**
@@ -101,7 +101,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 			}
 
 			__removeables.forEach((player) -> {
-				__eventManager.getExternal().emit(TEvent.PLAYER_TIMEOUT, player);
+				__eventManager.getExtension().emit(ExtEvent.PLAYER_GOT_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 

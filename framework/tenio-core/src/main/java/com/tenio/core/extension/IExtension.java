@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension;
 
+import com.tenio.common.configuration.IConfiguration;
+
 /**
  * An entry point class is the first one you start to handle your own logic
  * in-game. The class must be implemented this interface and be created as a new
@@ -38,6 +40,9 @@ public interface IExtension {
 
 	/**
 	 * Initialize extension processing
+	 * 
+	 * @param configuration base configuration in server
 	 */
-	void initialize();
+	void initialize(IConfiguration configuration);
+	
 }

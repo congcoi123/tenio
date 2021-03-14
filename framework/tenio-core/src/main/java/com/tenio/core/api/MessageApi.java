@@ -23,15 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.api.pool.MessageObjectArrayPool;
 import com.tenio.core.api.pool.MessageObjectPool;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 
@@ -76,7 +76,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a connection
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param connection See {@link Connection}
@@ -85,7 +85,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData    the key of message's data
 	 * @param data       the main data of message, see: {@link MessageObjectArray}
 	 */
-	public void sendToConnection(Connection connection, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToConnection(Connection connection, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -107,8 +108,7 @@ public final class MessageApi extends AbstractLogger {
 		if (player.hasConnection(index)) {
 			player.getConnection(index).send(message);
 		}
-		debug("SENT", "", player.getName(), message.toString());
-		__eventManager.getExternal().emit(TEvent.SEND_TO_PLAYER, player, index, message);
+		__eventManager.getExtension().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, index, message);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to a player
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param player  the desired player
@@ -142,7 +142,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData the key of message's data
 	 * @param data    the message data, see: {@link MessageObjectArray}
 	 */
-	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -174,7 +175,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players on one room
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param room    the desired room
@@ -184,7 +185,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData the key of message's data
 	 * @param data    the message's data, see: {@link MessageObjectArray}
 	 */
-	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData, MessageObjectArray data) {
+	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData,
+			MessageObjectArray data) {
 		var message = __objectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -221,7 +223,7 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * Must use {@link #getArrayPack()} to create data array package for avoiding
+	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
 	 * memory leak.
 	 * 
 	 * @param player  the desired player
@@ -247,9 +249,22 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	/**
+	 * Send a internal server message, the message format need to be recognized by
+	 * handler classes
+	 * 
+	 * @param player  the desired player
+	 * @param index   the index of connection in current player
+	 * @param message the message instance
+	 */
+	public void sendToInternalServer(AbstractPlayer player, int index, MessageObject message) {
+		player.setCurrentReaderTime();
+		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
+	}
+
+	/**
 	 * @return a {@link MessageObjectArray} object from the pooling mechanism
 	 */
-	public MessageObjectArray getArrayPack() {
+	public MessageObjectArray getMessageObjectArray() {
 		return __arrayPool.get();
 	}
 

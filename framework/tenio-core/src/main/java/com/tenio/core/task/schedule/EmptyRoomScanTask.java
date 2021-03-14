@@ -33,12 +33,12 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.AbstractRoom;
 
 /**
  * To remove the empty room (a room without any players) in period time. You can
- * configure this time in your own configurations, see {@link BaseConfiguration}
+ * configure this time in your own configurations, see {@link CoreConfiguration}
  * 
  * @author kong
  * 

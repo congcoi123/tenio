@@ -30,10 +30,9 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.constant.Constants;
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.message.codec.MessagePacker;
-import com.tenio.core.message.codec.MsgPackConverter;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.core.configuration.constant.CoreConstants;
 
 /**
  * @author kong
@@ -67,7 +66,7 @@ public final class MessagePackingTest {
 		// Pack message with header-length value
 		var packWithHeader = MessagePacker.pack(bytes);
 		// Slide message, keep only the message content
-		var packWithContent = Arrays.copyOfRange(packWithHeader, Constants.HEADER_BYTES, packWithHeader.length);
+		var packWithContent = Arrays.copyOfRange(packWithHeader, CoreConstants.HEADER_BYTES, packWithHeader.length);
 		
 		// Revert the byte array to MessageObject message
 		assertEquals(__message, MsgPackConverter.unserialize(packWithContent));

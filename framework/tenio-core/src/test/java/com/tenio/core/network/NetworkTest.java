@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import com.tenio.core.configuration.Configuration;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.INetwork;
 import com.tenio.core.network.netty.NettyNetwork;
 
 /**

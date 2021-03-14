@@ -83,5 +83,10 @@ public final class CommonConstants {
 	 * @see IElementPool
 	 */
 	public static final int ADD_ELEMENT_POOL = 10;
+	
+	/**
+	 * Base FPS in server
+	 */
+	public static final float FPS = 1 / 60.0f;
 
 }

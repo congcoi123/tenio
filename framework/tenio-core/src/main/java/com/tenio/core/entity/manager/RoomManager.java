@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.ErrorMsg;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.CoreMessageCode;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.event.IEventManager;
@@ -62,7 +62,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public void initialize(BaseConfiguration configuration) {
+	public void initialize(IConfiguration configuration) {
 		// temporary do nothing
 	}
 
@@ -106,14 +106,14 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
-				__eventManager.getExternal().emit(TEvent.CREATED_ROOM, room, ErrorMsg.ROOM_IS_EXISTED);
+				__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
 				var e = new DuplicatedRoomException();
 				error(e, "room id: ", room.getId());
 				throw e;
 			}
 			__rooms.put(room.getId(), room);
 			// fire an event
-			__eventManager.getExternal().emit(TEvent.CREATED_ROOM, room);
+			__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room);
 		}
 	}
 
@@ -127,7 +127,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			}
 
 			// fire an event
-			__eventManager.getExternal().emit(TEvent.REMOVE_ROOM, room);
+			__eventManager.getExtension().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
 			// force all players leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
@@ -149,48 +149,48 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 			removePlayers.add(player);
 		});
 		for (var player : removePlayers) {
-			playerLeaveRoom(player, true);
+			makePlayerLeaveRoom(player, true);
 		}
 		removePlayers.clear();
 	}
 
 	@Override
-	public String playerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
 		if (room.contain(player.getName())) {
-			__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false,
-					ErrorMsg.PLAYER_WAS_IN_ROOM);
-			return ErrorMsg.PLAYER_WAS_IN_ROOM;
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
+					CoreMessageCode.PLAYER_WAS_IN_ROOM);
+			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
 		}
 
 		if (room.isFull()) {
-			__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, false, ErrorMsg.ROOM_IS_FULL);
-			return ErrorMsg.ROOM_IS_FULL;
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, CoreMessageCode.ROOM_IS_FULL);
+			return CoreMessageCode.ROOM_IS_FULL;
 		}
 
 		// the player need to leave his room (if existed) first
-		playerLeaveRoom(player, false);
+		makePlayerLeaveRoom(player, false);
 
 		room.add(player);
 		player.setRoom(room);
 		// fire an event
-		__eventManager.getExternal().emit(TEvent.PLAYER_JOIN_ROOM, player, room, true);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true);
 
 		return null;
 	}
 
 	@Override
-	public String playerLeaveRoom(final AbstractPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
 		var room = player.getRoom();
 		if (room == null) {
-			return ErrorMsg.PLAYER_ALREADY_LEAVE_ROOM;
+			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
 		}
 
 		// fire an event
-		__eventManager.getExternal().emit(TEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
 		player.setRoom(null);
 		// fire an event
-		__eventManager.getExternal().emit(TEvent.PLAYER_LEFT_ROOM, player, room, force);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
 
 		return null;
 	}

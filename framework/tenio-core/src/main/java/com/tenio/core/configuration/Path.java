@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration;
 
-import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.define.RestMethod;
 
 /**
  * @author kong

@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	    <groupId>io.github.congcoi123</groupId>
+		<groupId>io.github.congcoi123</groupId>
 		<artifactId>tenio-all</artifactId>
 		<version>4.0.0</version>
 		<relativePath>../pom.xml</relativePath>
-  	</parent>
+	</parent>
 
 	<artifactId>tenio-core</artifactId>
 	<packaging>jar</packaging>
@@ -17,7 +17,7 @@
 		<io.netty.version>4.1.50.Final</io.netty.version>
 		<org.eclipse.jetty.version>9.4.31.v20200723</org.eclipse.jetty.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
-		<org.msgpack.version>0.6.12</org.msgpack.version>
+		<org.json.version>20180130</org.json.version>
 	</properties>
 
 	<dependencies>
@@ -47,9 +47,9 @@
 			<version>${javax.servlet.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.msgpack</groupId>
-			<artifactId>msgpack</artifactId>
-			<version>${org.msgpack.version}</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${org.json.version}</version>
 		</dependency>
 	</dependencies>
 

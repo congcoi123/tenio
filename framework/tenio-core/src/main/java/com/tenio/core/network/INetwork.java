@@ -25,13 +25,14 @@ package com.tenio.core.network;
 
 import java.io.IOException;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 
 /**
  * A network is one of the most important parts of this server for the main
  * purpose of communication. This class help create a new network instance by
- * your own configurations, see {@link BaseConfiguration}.
+ * your own configurations, see {@link CoreConfiguration}.
  * 
  * @author kong
  * 
@@ -51,7 +52,7 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, BaseConfiguration configuration) throws IOException, InterruptedException;
+	void start(IEventManager eventManager, IConfiguration configuration) throws IOException, InterruptedException;
 
 	/**
 	 * Shutdown the network

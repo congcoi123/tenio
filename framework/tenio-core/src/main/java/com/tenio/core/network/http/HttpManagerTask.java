@@ -38,12 +38,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.Path;
-import com.tenio.core.configuration.constant.Constants;
-import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.network.http.servlet.PingServlet;
-import com.tenio.core.network.http.servlet.TServlet;
+import com.tenio.core.network.http.servlet.ServletManager;
 
 /**
  * The HTTP request and response handlers class
@@ -101,9 +101,9 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		context.setContextPath("/");
 
 		// Configuration
-		context.addServlet(new ServletHolder(new PingServlet()), Constants.PING_PATH);
+		context.addServlet(new ServletHolder(new PingServlet()), CoreConstants.PING_PATH);
 		servlets.forEach((uri, list) -> {
-			context.addServlet(new ServletHolder(new TServlet(__eventManager, list)), uri);
+			context.addServlet(new ServletHolder(new ServletManager(__eventManager, list)), uri);
 		});
 
 		__server.setHandler(context);

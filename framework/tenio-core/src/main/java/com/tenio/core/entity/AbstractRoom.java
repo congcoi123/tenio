@@ -65,11 +65,6 @@ public abstract class AbstractRoom {
 	 */
 	@Column(name = "capacity")
 	private int __capacity;
-	/**
-	 * To simple hold some states
-	 */
-	@Column(name = "state")
-	private int __state;
 
 	public AbstractRoom(final String id, final String name, final int capacity) {
 		__id = id;
@@ -116,18 +111,6 @@ public abstract class AbstractRoom {
 		__players.clear();
 	}
 
-	public boolean isState(final int state) {
-		return (__state == state);
-	}
-
-	public int getState() {
-		return __state;
-	}
-
-	public void setState(final int state) {
-		__state = state;
-	}
-
 	public int getCapacity() {
 		return __capacity;
 	}
@@ -171,15 +154,9 @@ public abstract class AbstractRoom {
 		return __players.isEmpty();
 	}
 
-	/**
-	 * Set a new state for all players in this room
-	 * 
-	 * @param state the desired state
-	 */
-	public void setPlayersState(final int state) {
-		__players.values().stream().forEach(player -> {
-			player.setState(state);
-		});
+	@Override
+	public String toString() {
+		return getId();
 	}
-
+	
 }

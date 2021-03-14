@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.event;
 
-import com.tenio.core.event.external.TEventManager;
-import com.tenio.core.event.internal.LEventManager;
+import com.tenio.core.event.extension.ExtEventManager;
+import com.tenio.core.event.internal.InternalEventManager;
 
 /**
  * Manage all events in the server
@@ -35,14 +35,14 @@ import com.tenio.core.event.internal.LEventManager;
 public interface IEventManager {
 
 	/**
-	 * @return see {@link TEventManager}
+	 * @return see {@link ExtEventManager}
 	 */
-	public TEventManager getExternal();
+	public ExtEventManager getExtension();
 
 	/**
-	 * @return see {@link LEventManager}
+	 * @return see {@link InternalEventManager}
 	 */
-	public LEventManager getInternal();
+	public InternalEventManager getInternal();
 
 	/**
 	 * Collect all subscribers and these corresponding events.
