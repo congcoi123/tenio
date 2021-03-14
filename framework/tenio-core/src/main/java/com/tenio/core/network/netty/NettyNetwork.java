@@ -29,9 +29,9 @@ import java.util.List;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.Sock;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
@@ -77,7 +77,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
 
-		var socketPorts = (List<Sock>) configuration.get(CoreConfiguration.SOCKET_PORTS);
+		var socketPorts = (List<Sock>) configuration.get(CoreConfigurationType.SOCKET_PORTS);
 		for (int index = 0; index < socketPorts.size(); index++) {
 			var socket = socketPorts.get(index);
 			switch (socket.getType()) {
@@ -92,7 +92,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			}
 		}
 
-		var webSocketPorts = (List<Sock>) configuration.get(CoreConfiguration.WEBSOCKET_PORTS);
+		var webSocketPorts = (List<Sock>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
 		for (int index = 0; index < webSocketPorts.size(); index++) {
 			var socket = webSocketPorts.get(index);
 			switch (socket.getType()) {

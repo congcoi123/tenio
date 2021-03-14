@@ -35,10 +35,10 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.Http;
 import com.tenio.core.configuration.Sock;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
@@ -125,12 +125,12 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
-		info("SERVER", configuration.getString(CoreConfiguration.SERVER_NAME), "Starting ...");
+		info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
 
 		// create all ports information
-		__socketPorts = (List<Sock>) (configuration.get(CoreConfiguration.SOCKET_PORTS));
-		__webSocketPorts = (List<Sock>) (configuration.get(CoreConfiguration.WEBSOCKET_PORTS));
-		__httpPorts = (List<Http>) (configuration.get(CoreConfiguration.HTTP_PORTS));
+		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		__webSocketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
+		__httpPorts = (List<Http>) (configuration.get(CoreConfigurationType.HTTP_PORTS));
 
 		__socketPortsSize = __socketPorts.size();
 		__webSocketPortsSize = __webSocketPorts.size();
@@ -169,7 +169,7 @@ public final class Server extends AbstractLogger implements IServer {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		info("SERVER", configuration.getString(CoreConfiguration.SERVER_NAME), "Started!");
+		info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
 	}
 
 	private void __startNetwork(IConfiguration configuration) throws IOException, InterruptedException {
@@ -200,7 +200,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberReconnection(IConfiguration configuration) throws NotDefinedSubscribersException {
-		if (configuration.getBoolean(CoreConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
+		if (configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT)) {
 			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
 					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
 				throw new NotDefinedSubscribersException(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
@@ -229,7 +229,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberHttpHandler(IConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!__socketPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
+		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
 				|| !__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
 			throw new NotDefinedSubscribersException(ExtEvent.HTTP_REQUEST_VALIDATE, ExtEvent.HTTP_REQUEST_HANDLE);
 		}
@@ -237,13 +237,15 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __createAllSchedules(IConfiguration configuration) {
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfiguration.IDLE_READER),
-						configuration.getInt(CoreConfiguration.IDLE_WRITER),
-						configuration.getInt(CoreConfiguration.TIMEOUT_SCAN))).run());
+				(new TimeOutScanTask(__eventManager, __playerApi,
+						configuration.getInt(CoreConfigurationType.IDLE_READER),
+						configuration.getInt(CoreConfigurationType.IDLE_WRITER),
+						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfiguration.EMPTY_ROOM_SCAN))).run());
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfiguration.CCU_SCAN))).run());
+				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfigurationType.CCU_SCAN)))
+						.run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {

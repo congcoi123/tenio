@@ -36,11 +36,6 @@ import java.util.Map.Entry;
  */
 public final class Configuration extends CoreConfiguration {
 
-	public static final String CUSTOM_VALUE_1 = "customvalue_1";
-	public static final String CUSTOM_VALUE_2 = "customvalue_2";
-	public static final String CUSTOM_VALUE_3 = "customvalue_3";
-	public static final String CUSTOM_VALUE_4 = "customvalue_4";
-
 	public Configuration(final String file) {
 		super(file);
 	}
@@ -48,23 +43,8 @@ public final class Configuration extends CoreConfiguration {
 	@Override
 	protected void _extend(Map<String, String> extProperties) {
 		for (Entry<String, String> entry : extProperties.entrySet()) {
-			switch (entry.getKey()) {
-			case "customValue1":
-				_push(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
-				break;
-
-			case "customValue2":
-				_push(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
-				break;
-
-			case "customValue3":
-				_push(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
-				break;
-
-			case "customValue4":
-				_push(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
-				break;
-			}
+			var paramName = entry.getKey();
+			_push(TestConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
 		}
 	}
 
