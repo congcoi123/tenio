@@ -43,7 +43,7 @@ import com.tenio.core.network.http.servlet.base.BaseServlet;
 /**
  * @author kong
  */
-public final class TServlet extends BaseServlet {
+public final class ServletManager extends BaseServlet {
 	/**
 	 * 
 	 */
@@ -56,7 +56,7 @@ public final class TServlet extends BaseServlet {
 	private ProcessGet __processGet;
 	private ProcessDelete __processDelete;
 
-	public TServlet(IEventManager eventManager, List<Path> paths) {
+	public ServletManager(IEventManager eventManager, List<Path> paths) {
 		__eventManager = eventManager;
 		for (var path : paths) {
 			switch (path.getMethod()) {
