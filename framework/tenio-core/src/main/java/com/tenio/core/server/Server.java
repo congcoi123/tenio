@@ -24,8 +24,10 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.tenio.common.api.TaskApi;
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
@@ -33,9 +35,11 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.BaseConfiguration;
-import com.tenio.core.configuration.constant.Constants;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.Http;
+import com.tenio.core.configuration.Sock;
+import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -79,7 +83,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskApi = new TaskApi(__taskManager);
 		__messageApi = new MessageApi(__eventManager);
 
-		__internalLogic = new InternalLogic(__eventManager, __playerManager, __roomManager);
+		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
 		// print out the framework's icon
 		for (var line : CommonConstants.LOGO) {
@@ -107,14 +111,29 @@ public final class Server extends AbstractLogger implements IServer {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final InternalLogic __internalLogic;
+	private final InternalLogicManager __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
+	private List<Sock> __socketPorts;
+	private List<Sock> __webSocketPorts;
+	private List<Http> __httpPorts;
+	private int __socketPortsSize;
+	private int __webSocketPortsSize;
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public void start(BaseConfiguration configuration) throws IOException, InterruptedException,
+	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
-		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Starting ...");
+		info("SERVER", configuration.getString(CoreConfiguration.SERVER_NAME), "Starting ...");
+
+		// create all ports information
+		__socketPorts = (List<Sock>) (configuration.get(CoreConfiguration.SOCKET_PORTS));
+		__webSocketPorts = (List<Sock>) (configuration.get(CoreConfiguration.WEBSOCKET_PORTS));
+		__httpPorts = (List<Http>) (configuration.get(CoreConfiguration.HTTP_PORTS));
+
+		__socketPortsSize = __socketPorts.size();
+		__webSocketPortsSize = __webSocketPorts.size();
 
 		// managements
 		__playerManager.initialize(configuration);
@@ -124,7 +143,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__internalLogic.init(configuration);
 
 		// initialize the subscribers
-		getExtension().initialize();
+		getExtension().initialize(configuration);
 
 		// server need at least one connection to start up
 		__checkDefinedMainSocketConnection(configuration);
@@ -150,10 +169,10 @@ public final class Server extends AbstractLogger implements IServer {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		info("SERVER", configuration.getString(BaseConfiguration.SERVER_NAME), "Started!");
+		info("SERVER", configuration.getString(CoreConfiguration.SERVER_NAME), "Started!");
 	}
 
-	private void __startNetwork(BaseConfiguration configuration) throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__network.start(__eventManager, configuration);
 	}
@@ -168,8 +187,6 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerManager.clear();
 		__taskManager.clear();
 		__eventManager.clear();
-		// exit
-		System.exit(0);
 	}
 
 	@Override
@@ -182,58 +199,58 @@ public final class Server extends AbstractLogger implements IServer {
 		__extension = extension;
 	}
 
-	private void __checkSubscriberReconnection(BaseConfiguration configuration) throws NotDefinedSubscribersException {
-		if (configuration.getBoolean(BaseConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_REQUEST)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.PLAYER_RECONNECT_SUCCESS)) {
-				throw new NotDefinedSubscribersException(TEvent.PLAYER_RECONNECT_REQUEST,
-						TEvent.PLAYER_RECONNECT_SUCCESS);
+	private void __checkSubscriberReconnection(IConfiguration configuration) throws NotDefinedSubscribersException {
+		if (configuration.getBoolean(CoreConfiguration.KEEP_PLAYER_ON_DISCONNECT)) {
+			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
+				throw new NotDefinedSubscribersException(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+						ExtEvent.PLAYER_RECONNECT_SUCCESS);
 			}
 		}
 	}
 
-	private void __checkSubscriberSubConnectionAttach(BaseConfiguration configuration)
+	private void __checkSubscriberSubConnectionAttach(IConfiguration configuration)
 			throws NotDefinedSubscribersException {
-		if (configuration.getSocketPorts().size() > 1 || configuration.getWebSocketPorts().size() > 1) {
-			if (!__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_REQUEST)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExternal().hasSubscriber(TEvent.ATTACH_CONNECTION_FAILED)) {
-				throw new NotDefinedSubscribersException(TEvent.ATTACH_CONNECTION_REQUEST,
-						TEvent.ATTACH_CONNECTION_SUCCESS, TEvent.ATTACH_CONNECTION_FAILED);
+		if (__socketPortsSize > 1 || __webSocketPortsSize > 1) {
+			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_SUCCESS)
+					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_FAILED)) {
+				throw new NotDefinedSubscribersException(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+						ExtEvent.ATTACH_CONNECTION_SUCCESS, ExtEvent.ATTACH_CONNECTION_FAILED);
 			}
 		}
 	}
 
-	private void __checkDefinedMainSocketConnection(BaseConfiguration configuration)
+	private void __checkDefinedMainSocketConnection(IConfiguration configuration)
 			throws NotDefinedSocketConnectionException {
-		if (configuration.getSocketPorts().isEmpty() && configuration.getWebSocketPorts().isEmpty()) {
+		if (__socketPorts.isEmpty() && __webSocketPorts.isEmpty()) {
 			throw new NotDefinedSocketConnectionException();
 		}
 	}
 
-	private void __checkSubscriberHttpHandler(BaseConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!configuration.getHttpPorts().isEmpty() && (!__eventManager.getExternal().hasSubscriber(TEvent.HTTP_REQUEST)
-				|| !__eventManager.getExternal().hasSubscriber(TEvent.HTTP_HANDLER))) {
-			throw new NotDefinedSubscribersException(TEvent.HTTP_REQUEST, TEvent.HTTP_HANDLER);
+	private void __checkSubscriberHttpHandler(IConfiguration configuration) throws NotDefinedSubscribersException {
+		if (!__socketPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
+				|| !__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
+			throw new NotDefinedSubscribersException(ExtEvent.HTTP_REQUEST_VALIDATE, ExtEvent.HTTP_REQUEST_HANDLE);
 		}
 	}
 
-	private void __createAllSchedules(BaseConfiguration configuration) {
-		__taskManager.create(Constants.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.IDLE_READER),
-						configuration.getInt(BaseConfiguration.IDLE_WRITER),
-						configuration.getInt(BaseConfiguration.TIMEOUT_SCAN))).run());
-		__taskManager.create(Constants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(BaseConfiguration.EMPTY_ROOM_SCAN))).run());
-		__taskManager.create(Constants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(BaseConfiguration.CCU_SCAN))).run());
+	private void __createAllSchedules(IConfiguration configuration) {
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
+				(new TimeOutScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfiguration.IDLE_READER),
+						configuration.getInt(CoreConfiguration.IDLE_WRITER),
+						configuration.getInt(CoreConfiguration.TIMEOUT_SCAN))).run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfiguration.EMPTY_ROOM_SCAN))).run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN,
+				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfiguration.CCU_SCAN))).run());
 	}
 
-	private String __createHttpManagers(BaseConfiguration configuration) throws DuplicatedUriAndMethodException {
-		for (var port : configuration.getHttpPorts()) {
+	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {
+		for (var port : __httpPorts) {
 			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			http.setup();
-			__taskManager.create(Constants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
+			__taskManager.create(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
 		}
 		return null;
 	}

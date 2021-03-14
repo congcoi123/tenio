@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.engine.configuration.constant.Constants;
+import com.tenio.engine.configuration.constant.EngineConstants;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.message.IMessage;
@@ -87,7 +87,7 @@ public final class MessageDispatcher {
 		var telegram = new Telegram(0, sender, receiver, msgType, info);
 
 		// if there is no delay, route telegram immediately
-		if (delay <= Constants.SEND_MSG_IMMEDIATELY) {
+		if (delay <= EngineConstants.SEND_MSG_IMMEDIATELY) {
 			// send the telegram to the recipient
 			__discharge(pReceiver, telegram);
 		} // else calculate the time when the telegram should be dispatched

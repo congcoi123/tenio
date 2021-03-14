@@ -25,9 +25,9 @@ package com.tenio.core.network;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.core.configuration.constant.ConnectionType;
+import com.tenio.common.element.MessageObject;
+import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.event.IEventManager;
 
 /**
@@ -140,6 +140,11 @@ public abstract class Connection {
 	 */
 	public String getAddress() {
 		return __address;
+	}
+	
+	@Override
+	public String toString() {
+		return getAddress();
 	}
 
 	/**

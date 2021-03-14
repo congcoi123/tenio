@@ -34,10 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.api.pool.MessageObjectPool;
-import com.tenio.core.entity.element.MessageObject;
 
 /**
  * @author kong

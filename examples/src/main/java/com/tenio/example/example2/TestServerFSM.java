@@ -23,8 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -52,8 +53,17 @@ public final class TestServerFSM extends AbstractApp {
 	public IExtension getExtension() {
 		return new Extenstion();
 	}
+	
+	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
+	public void onShutdown() {
+		
+	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
@@ -65,50 +75,15 @@ public final class TestServerFSM extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize() {
+		public void initialize(IConfiguration configuration) {
 
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
-
-				info("CONNECTION", connection.getAddress());
 
 				// allow a connection login to the server
 				String username = message.getString("u");
 				_playerApi.login(new Inspector(username), connection);
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
-				// Login successful
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("PLAYER IN", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<Inspector>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
 
 				return null;
 			});

@@ -26,11 +26,13 @@ package com.tenio.core.configuration;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.constant.ConnectionType;
+import com.tenio.core.configuration.define.ConnectionType;
 
 /**
  * @author kong
@@ -53,20 +55,24 @@ public final class ConfigurationTest {
 				() -> assertEquals(true, __configuration.getBoolean(Configuration.CUSTOM_VALUE_4)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsShouldReturnTrueValue() {
+		var listSockets = (List<Sock>) (__configuration.get(CoreConfiguration.SOCKET_PORTS));
 		assertAll("getSocketPortsConfiguration",
-				() -> assertEquals(8032, __configuration.getSocketPorts().get(0).getPort()),
-				() -> assertEquals(8033, __configuration.getSocketPorts().get(1).getPort()),
-				() -> assertEquals(8034, __configuration.getSocketPorts().get(2).getPort()));
+				() -> assertEquals(8032, listSockets.get(0).getPort()),
+				() -> assertEquals(8033, listSockets.get(1).getPort()),
+				() -> assertEquals(8034, listSockets.get(2).getPort()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
+		var listSockets = (List<Sock>) (__configuration.get(CoreConfiguration.SOCKET_PORTS));
 		assertAll("getSocketPortsTypeConfiguration",
-				() -> assertEquals(ConnectionType.SOCKET, __configuration.getSocketPorts().get(0).getType()),
-				() -> assertEquals(ConnectionType.DATAGRAM, __configuration.getSocketPorts().get(1).getType()),
-				() -> assertEquals(ConnectionType.SOCKET, __configuration.getSocketPorts().get(2).getType()));
+				() -> assertEquals(ConnectionType.SOCKET, listSockets.get(0).getType()),
+				() -> assertEquals(ConnectionType.DATAGRAM, listSockets.get(1).getType()),
+				() -> assertEquals(ConnectionType.SOCKET, listSockets.get(2).getType()));
 	}
 
 	@AfterEach

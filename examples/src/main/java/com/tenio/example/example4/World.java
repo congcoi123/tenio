@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.element.MessageObjectArray;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
@@ -465,7 +465,7 @@ public final class World extends AbstractHeartBeat {
 		// send to client (naive way)
 		for (var inspector : __inspectors) {
 			__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-					__messageApi.getArrayPack().put(__ids).put(__pxs).put(__pys).put(__prs));
+					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
 		}
 
 	}

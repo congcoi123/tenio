@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.constant;
+package com.tenio.core.configuration.define;
 
+import com.tenio.common.element.MessageObject;
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.network.Connection;
 
 /**
@@ -34,7 +34,7 @@ import com.tenio.core.network.Connection;
  * @author kong
  *
  */
-public enum LEvent {
+public enum InternalEvent {
 
 	/**
 	 * When a client is disconnected from your server for any reason, you can handle
@@ -45,7 +45,7 @@ public enum LEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_CLOSE,
+	CONNECTION_WAS_CLOSED,
 
 	/**
 	 * The exceptions occur when the server handles messages from a client. <br>
@@ -57,7 +57,7 @@ public enum LEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_EXCEPTION,
+	CONNECTION_MESSAGE_HANDLED_EXCEPTION,
 
 	/**
 	 * This event is called when you let the player leave by his desire. <br>
@@ -68,7 +68,7 @@ public enum LEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	MANUALY_CLOSE_CONNECTION,
+	CONNECTION_WAS_CLOSED_MANUALLY,
 
 	/**
 	 * When a player is forced to leave his current room. It means this player was
@@ -80,7 +80,7 @@ public enum LEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	FORCE_PLAYER_LEAVE_ROOM,
+	PLAYER_WAS_FORCED_TO_LEAVE_ROOM,
 
 	/**
 	 * You can handle the message sent from a connection here.
@@ -97,6 +97,6 @@ public enum LEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CHANNEL_HANDLE
+	MESSAGE_HANDLED_IN_CHANNEL
 
 }

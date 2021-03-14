@@ -25,8 +25,8 @@ package com.tenio.core;
 
 import java.io.IOException;
 
+import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.BaseConfiguration;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -45,15 +45,26 @@ public abstract class AbstractApp extends AbstractLogger {
 	 * Start The Game Server
 	 */
 	public void start() {
+		var configuration = getConfiguration();
 		var server = Server.getInstance();
 		server.setExtension(getExtension());
 		try {
-			server.start(getConfiguration());
+			server.start(configuration);
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
-			error(e, "Application start");
+			error(e, "The application started with exceptions occured");
 			server.shutdown();
+			onShutdown();
+			// exit with errors
+			System.exit(1);
 		}
+		// Suddenly shutdown
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			server.shutdown();
+			onShutdown();
+		}));
+		// The server was ready
+		onStarted();
 	}
 
 	/**
@@ -62,10 +73,18 @@ public abstract class AbstractApp extends AbstractLogger {
 	public abstract IExtension getExtension();
 
 	/**
-	 * 
-	 * @param <T> The derived class of {@link BaseConfiguration}
-	 * @return your own class that derived from {@link BaseConfiguration} class
+	 * @return your own class that derived from {@link IConfiguration} class
 	 */
-	public abstract <T extends BaseConfiguration> T getConfiguration();
+	public abstract IConfiguration getConfiguration();
+
+	/**
+	 * The trigger is called when server was started
+	 */
+	public abstract void onStarted();
+
+	/**
+	 * The trigger is called when server was tear down
+	 */
+	public abstract void onShutdown();
 
 }

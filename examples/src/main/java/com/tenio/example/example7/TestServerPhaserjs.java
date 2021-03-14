@@ -23,10 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.example.example7;
 
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
-import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -52,10 +53,18 @@ public final class TestServerPhaserjs extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
+	}
+	
+	@Override
+	public void onStarted() {
+		
+	}
+	@Override
+	public void onShutdown() {
+		
 	}
 
 	/**
@@ -66,12 +75,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 		RoomPhaserjs phaserjsRoom = new RoomPhaserjs("phaserjs", "Phaserjs", 3);
 
 		@Override
-		public void initialize() {
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+		public void initialize(IConfiguration configuration) {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
-
-				info("CONNECTION", connection.getAddress());
 
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
@@ -82,15 +89,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
@@ -99,20 +98,15 @@ public final class TestServerPhaserjs extends AbstractApp {
 				int y = MathUtility.randInt(100, 400);
 				player.setPosition(x, y);
 
-				info("PLAYER_IN_SUCCESS", player.getName());
-
-				_playerApi.playerJoinRoom(phaserjsRoom, player);
+				_playerApi.makePlayerJoinRoom(phaserjsRoom, player);
 
 				return null;
 			});
 
-			_on(TEvent.PLAYER_JOIN_ROOM, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
+			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
 				var room = this.<RoomPhaserjs>_getRoom(args[1]);
 
-				info("PLAYER_JOIN_ROOM", player.getName(), room.getName());
-
-				var pack = _messageApi.getArrayPack();
+				var pack = _messageApi.getMessageObjectArray();
 				var players = room.getPlayers();
 				for (var p : players.values()) {
 					var pjs = (PlayerPhaserjs) p;
@@ -127,16 +121,14 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
 				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
 				var message = _getMessageObject(args[2]);
 				var move = message.getMessageObjectArray("d");
 
 				player.setPosition(move.getInt(0), move.getInt(1));
 
-				info("RECEIVED_FROM_PLAYER", message);
-
-				var pack = _messageApi.getArrayPack();
+				var pack = _messageApi.getMessageObjectArray();
 				pack.add(player.getName());
 				pack.add(move.get(0));
 				pack.add(move.get(1));
@@ -145,26 +137,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.CCU, args -> {
+			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("CCU", ccu);
+				info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});

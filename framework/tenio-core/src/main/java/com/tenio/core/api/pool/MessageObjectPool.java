@@ -26,10 +26,10 @@ package com.tenio.core.api.pool;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.entity.element.MessageObject;
 
 /**
  * The object pool mechanism for {@link MessageObject}.

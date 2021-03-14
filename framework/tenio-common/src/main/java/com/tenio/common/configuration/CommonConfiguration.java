@@ -39,65 +39,40 @@ import com.tenio.common.logger.AbstractLogger;
  * @author kong
  * 
  */
-public abstract class CommonConfiguration extends AbstractLogger {
+public abstract class CommonConfiguration extends AbstractLogger implements IConfiguration {
 
 	/**
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<String, String> __configuration = new HashMap<String, String>();
+	private final Map<String, Object> __configuration = new HashMap<String, Object>();
 
-	/**
-	 * Put new configuration
-	 * 
-	 * @param key   key
-	 * @param value value
-	 */
-	protected void _put(final String key, final String value) {
-		__configuration.put(key, value);
-	}
-
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Boolean}
-	 */
+	@Override
 	public boolean getBoolean(final String key) {
-		return Boolean.parseBoolean(__configuration.get(key));
+		return Boolean.parseBoolean((String) __configuration.get(key));
 	}
 
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Integer}
-	 */
+	@Override
 	public int getInt(final String key) {
-		return Integer.parseInt(__configuration.get(key));
+		return Integer.parseInt((String) __configuration.get(key));
 	}
 
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link Float}
-	 */
+	@Override
 	public float getFloat(final String key) {
-		return Float.parseFloat(__configuration.get(key));
+		return Float.parseFloat((String) __configuration.get(key));
 	}
 
-	/**
-	 * @param key the configuration's key
-	 * @return the value in {@link String}
-	 */
+	@Override
 	public String getString(final String key) {
+		return (String) __configuration.get(key);
+	}
+
+	@Override
+	public Object get(final String key) {
 		return __configuration.get(key);
 	}
 
-	/**
-	 * Determine if this configuration is existed or defined. If you want some
-	 * configuration value to be treated as an "undefined" status, let its value
-	 * "-1".
-	 * 
-	 * @param key The desired configuration's key
-	 * @return <b>true</b> if the configuration is defined and otherwise return
-	 *         <b>false</b>
-	 */
+	@Override
 	public boolean isDefined(final String key) {
 		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
 	}
@@ -105,6 +80,16 @@ public abstract class CommonConfiguration extends AbstractLogger {
 	@Override
 	public String toString() {
 		return __configuration.toString();
+	}
+
+	/**
+	 * Put new configuration
+	 * 
+	 * @param key   key
+	 * @param value value
+	 */
+	protected void _push(final String key, final Object value) {
+		__configuration.put(key, value);
 	}
 
 	/**

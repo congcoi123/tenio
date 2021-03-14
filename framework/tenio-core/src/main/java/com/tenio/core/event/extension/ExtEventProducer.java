@@ -21,49 +21,49 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.external;
+package com.tenio.core.event.extension;
 
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 
 /**
- * Only for creating an event handler object, see {@link TEventHandler}
+ * Only for creating an event handler object, see {@link ExtEventHandler}
  * 
  * @author kong
  * 
  */
-public final class TEventProducer {
+public final class ExtEventProducer {
 
 	/**
-	 * @see TEventHandler
+	 * @see ExtEventHandler
 	 */
-	private final TEventHandler<Object> __eventHandler = new TEventHandler<Object>();
+	private final ExtEventHandler<Object> __eventHandler = new ExtEventHandler<Object>();
 
 	/**
 	 * Retrieves an event handler
 	 * 
-	 * @return see {@link TEventHandler}
+	 * @return see {@link ExtEventHandler}
 	 */
-	public TEventHandler<Object> getEventHandler() {
+	public ExtEventHandler<Object> getEventHandler() {
 		return __eventHandler;
 	}
 
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link TEvent}
+	 * @param type see {@link ExtEvent}
 	 * @param args a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see TEventHandler#emit(TEvent, Object...)
+	 * @see ExtEventHandler#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final TEvent type, final Object... args) {
+	public Object emit(final ExtEvent type, final Object... args) {
 		return __eventHandler.emit(type, args);
 	}
 
 	/**
 	 * Clear all events and these handlers.
 	 * 
-	 * @see TEventHandler#clear()
+	 * @see ExtEventHandler#clear()
 	 */
 	public void clear() {
 		__eventHandler.clear();

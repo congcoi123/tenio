@@ -33,8 +33,8 @@ import org.w3c.dom.Node;
 
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
-import com.tenio.core.configuration.constant.ConnectionType;
-import com.tenio.core.configuration.constant.RestMethod;
+import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.define.RestMethod;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -67,7 +67,7 @@ import com.tenio.core.configuration.constant.RestMethod;
  * @author kong
  * 
  */
-public abstract class BaseConfiguration extends CommonConfiguration {
+public abstract class CoreConfiguration extends CommonConfiguration {
 
 	/**
 	 * When the server get disconnection of one client, can be hold its player
@@ -116,6 +116,18 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 * This current version code of your server in integer type (can be compared)
 	 */
 	public static final String VERSION_CODE = "t.versionCode";
+	/**
+	 * The list of socket ports in configuration
+	 */
+	public static final String SOCKET_PORTS = "t.socketPorts";
+	/**
+	 * The list of web socket ports in configuration
+	 */
+	public static final String WEBSOCKET_PORTS = "t.webSocketPorts";
+	/**
+	 * The list of http ports in configuration
+	 */
+	public static final String HTTP_PORTS = "t.httpPorts";
 
 	/**
 	 * All ports in sockets zone
@@ -138,7 +150,7 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
 	 */
-	public BaseConfiguration(final String file) {
+	public CoreConfiguration(final String file) {
 		try {
 			__load(file);
 		} catch (Exception e) {
@@ -165,19 +177,19 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 			var pDataNode = attrRootProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "name":
-				_put(SERVER_NAME, pDataNode.getTextContent());
+				_push(SERVER_NAME, pDataNode.getTextContent());
 				break;
 
 			case "id":
-				_put(SERVER_ID, pDataNode.getTextContent());
+				_push(SERVER_ID, pDataNode.getTextContent());
 				break;
 
 			case "versionName":
-				_put(VERSION_NAME, pDataNode.getTextContent());
+				_push(VERSION_NAME, pDataNode.getTextContent());
 				break;
 
 			case "versionCode":
-				_put(VERSION_CODE, pDataNode.getTextContent());
+				_push(VERSION_CODE, pDataNode.getTextContent());
 				break;
 			}
 		}
@@ -219,36 +231,41 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 		}
 
 		// Configuration
+		_push(SOCKET_PORTS, __socketPorts);
+		_push(WEBSOCKET_PORTS, __webSocketPorts);
+		_push(HTTP_PORTS, __httpPorts);
+
+		// Parsing configuration data
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			var pDataNode = attrConfigurationProperties.item(j);
 			switch (pDataNode.getAttributes().getNamedItem("name").getTextContent()) {
 			case "keepPlayerOnDisconnect":
-				_put(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
+				_push(KEEP_PLAYER_ON_DISCONNECT, pDataNode.getTextContent());
 				break;
 
 			case "maxPlayer":
-				_put(MAX_PLAYER, pDataNode.getTextContent());
+				_push(MAX_PLAYER, pDataNode.getTextContent());
 				break;
 
 			case "idleReader":
-				_put(IDLE_READER, pDataNode.getTextContent());
+				_push(IDLE_READER, pDataNode.getTextContent());
 				break;
 
 			case "idleWriter":
-				_put(IDLE_WRITER, pDataNode.getTextContent());
+				_push(IDLE_WRITER, pDataNode.getTextContent());
 				break;
 
 			case "emptyRoomScan":
-				_put(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
+				_push(EMPTY_ROOM_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "timeoutScan":
-				_put(TIMEOUT_SCAN, pDataNode.getTextContent());
+				_push(TIMEOUT_SCAN, pDataNode.getTextContent());
 				break;
 
 			case "ccuScan":
-				_put(CCU_SCAN, pDataNode.getTextContent());
+				_push(CCU_SCAN, pDataNode.getTextContent());
 				break;
 			}
 		}
@@ -299,27 +316,6 @@ public abstract class BaseConfiguration extends CommonConfiguration {
 			return RestMethod.DELETE;
 		}
 		return null;
-	}
-
-	/**
-	 * @return the list of socket ports in configuration
-	 */
-	public List<Sock> getSocketPorts() {
-		return __socketPorts;
-	}
-
-	/**
-	 * @return the list of websocket ports in configuration
-	 */
-	public List<Sock> getWebSocketPorts() {
-		return __webSocketPorts;
-	}
-
-	/**
-	 * @return the list of http ports in configuration
-	 */
-	public List<Http> getHttpPorts() {
-		return __httpPorts;
 	}
 
 }

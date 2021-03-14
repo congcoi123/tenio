@@ -26,17 +26,15 @@ package com.tenio.core.configuration;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.tenio.core.configuration.BaseConfiguration;
-
 /**
  * Create your own configurations
  * 
- * @see BaseConfiguration
+ * @see CoreConfiguration
  * 
  * @author kong
  *
  */
-public final class Configuration extends BaseConfiguration {
+public final class Configuration extends CoreConfiguration {
 
 	public static final String CUSTOM_VALUE_1 = "customvalue_1";
 	public static final String CUSTOM_VALUE_2 = "customvalue_2";
@@ -52,19 +50,19 @@ public final class Configuration extends BaseConfiguration {
 		for (Entry<String, String> entry : extProperties.entrySet()) {
 			switch (entry.getKey()) {
 			case "customValue1":
-				_put(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_1, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue2":
-				_put(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_2, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue3":
-				_put(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_3, String.valueOf(entry.getValue()));
 				break;
 
 			case "customValue4":
-				_put(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
+				_push(CUSTOM_VALUE_4, String.valueOf(entry.getValue()));
 				break;
 			}
 		}

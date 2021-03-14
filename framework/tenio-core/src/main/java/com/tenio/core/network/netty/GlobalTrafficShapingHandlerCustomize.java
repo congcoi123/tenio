@@ -25,7 +25,7 @@ package com.tenio.core.network.netty;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.tenio.core.configuration.constant.TEvent;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
@@ -60,7 +60,7 @@ public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficSha
 		long currentWrittenBytes = counter.currentWrittenBytes() >> 10;
 		long realWrittenBytes = counter.getRealWrittenBytes().get() >> 10;
 
-		__eventManager.getExternal().emit(TEvent.BANDWIDTH, lastReadThroughput, lastWriteThroughput,
+		__eventManager.getExtension().emit(ExtEvent.FETCHED_BANDWIDTH_INFO, lastReadThroughput, lastWriteThroughput,
 				realWriteThroughput, currentReadBytes, currentWrittenBytes, realWrittenBytes);
 
 	}

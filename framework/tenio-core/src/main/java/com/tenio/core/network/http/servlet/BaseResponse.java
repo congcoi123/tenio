@@ -28,7 +28,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import com.tenio.common.logger.AbstractLogger;
 
@@ -36,18 +36,19 @@ import com.tenio.common.logger.AbstractLogger;
  * @author kong
  */
 public abstract class BaseResponse extends AbstractLogger {
-	
-	public abstract void process(String admin, HttpServletRequest request, JSONObject body, HttpServletResponse response);
 
-	protected final boolean hasHeaderKey(HttpServletRequest request, String key) {
+	public abstract void process(String admin, HttpServletRequest request, JSONObject body,
+			HttpServletResponse response);
+
+	protected final boolean _hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
-        if (headerNames != null) {
-                while (headerNames.hasMoreElements()) {
-                	if (headerNames.nextElement().equals(key))
-                		return true;
-                }
-        }
-        return false;
+		if (headerNames != null) {
+			while (headerNames.hasMoreElements()) {
+				if (headerNames.nextElement().equals(key))
+					return true;
+			}
+		}
+		return false;
 	}
-	
+
 }

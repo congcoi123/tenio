@@ -32,8 +32,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.core.entity.element.MessageObject;
-import com.tenio.core.message.codec.MsgPackConverter;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.MsgPackConverter;
 
 /**
  * Create an object for handling a Datagram socket connection. It is used to

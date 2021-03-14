@@ -23,10 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.example.example6;
 
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.constant.TEvent;
-import com.tenio.core.entity.element.MessageObjectArray;
+import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -52,10 +53,19 @@ public final class TestServerStress extends AbstractApp {
 		return new Extenstion();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
+	}
+	
+	@Override
+	public void onStarted() {
+		
+	}
+	
+	@Override
+	public void onShutdown() {
+		
 	}
 
 	/**
@@ -64,12 +74,10 @@ public final class TestServerStress extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize() {
-			_on(TEvent.CONNECTION_SUCCESS, args -> {
+		public void initialize(IConfiguration configuration) {
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
 				var connection = _getConnection(args[0]);
 				var message = _getMessageObject(args[1]);
-
-				info("CONNECTION", connection.getAddress());
 
 				// Allow the connection login into server (become a player)
 				String username = message.getString("u");
@@ -80,24 +88,14 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.DISCONNECT_CONNECTION, args -> {
-				var connection = _getConnection(args[0]);
-
-				info("DISCONNECT CONNECTION", connection.getAddress());
-
-				return null;
-			});
-
-			_on(TEvent.PLAYER_IN_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
 				var player = this.<PlayerStress>_getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 
-				info("PLAYER_IN_SUCCESS", player.getName());
-
 				// Now you can send messages to the client
 				// Sending, the data need to be packed
-				var data = _messageApi.getArrayPack();
+				var data = _messageApi.getMessageObjectArray();
 				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
 						data.put("H").put("3").put("L").put("O").put(true)
 								.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
@@ -105,12 +103,12 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.RECEIVED_FROM_PLAYER, args -> {
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
 				var player = this.<PlayerStress>_getPlayer(args[0]);
 
 				var pack = __getSortRandomNumberArray();
 				// Sending, the data need to be packed
-				var data = _messageApi.getArrayPack();
+				var data = _messageApi.getMessageObjectArray();
 				for (int i = 0; i < pack.length; i++) {
 					data.put(pack[i]);
 				}
@@ -120,31 +118,15 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(TEvent.PLAYER_TIMEOUT, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
-
-				info("PLAYER TIMEOUT", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.DISCONNECT_PLAYER, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
-
-				info("DISCONNECT PLAYER", player.getName());
-
-				return null;
-			});
-
-			_on(TEvent.CCU, args -> {
+			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("CCU", ccu);
+				info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});
 
-			_on(TEvent.BANDWIDTH, args -> {
+			_on(ExtEvent.FETCHED_BANDWIDTH_INFO, args -> {
 				long lastReadThroughput = _getLong(args[0]);
 				long lastWriteThroughput = _getLong(args[1]);
 				long realWriteThroughput = _getLong(args[2]);
@@ -157,7 +139,7 @@ public final class TestServerStress extends AbstractApp {
 						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
-				info("BANDWIDTH", bandwidth);
+				info("FETCHED_BANDWIDTH_INFO", bandwidth);
 
 				return null;
 			});

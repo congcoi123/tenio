@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.constant;
+package com.tenio.core.configuration.define;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.core.configuration.BaseConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.element.MessageObject;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;
@@ -43,7 +43,7 @@ import com.tenio.core.network.Connection;
  * @author kong
  *
  */
-public enum TEvent {
+public enum ExtEvent {
 
 	/**
 	 * When the client sends its first request to your server and is made a valid
@@ -58,7 +58,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_SUCCESS,
+	CONNECTION_ESTABLISHED_SUCCESS,
 
 	/**
 	 * When a connection was established, the next requests are handled in this
@@ -71,7 +71,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	RECEIVED_FROM_CONNECTION,
+	RECEIVED_MESSAGE_FROM_CONNECTION,
 
 	/**
 	 * When the client sends its first request to your server and because of some
@@ -80,12 +80,12 @@ public enum TEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> an invalid connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_FAILED,
+	CONNECTION_ESTABLISHED_FAILED,
 
 	/**
 	 * This event let you know when one connection has login successful and became a
@@ -96,7 +96,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_IN_SUCCESS,
+	PLAYER_LOGINED_SUCCESS,
 
 	/**
 	 * When a connection has failed to login to your server for some reason. At this
@@ -106,17 +106,17 @@ public enum TEvent {
 	 * <li><b>parameter[0]</b> an invalid player, it will be removed after this
 	 * event, see {@link AbstractPlayer}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_IN_FAILED,
+	PLAYER_LOGINED_FAILED,
 
 	/**
 	 * When a player is disconnected from your server without its desired, the
 	 * player instance is not be removed immediately. In allowed time (which can be
-	 * set in the configuration: {@link BaseConfiguration}) the current client can
+	 * set in the configuration: {@link CoreConfiguration}) the current client can
 	 * request a reconnection. You can handle your own reconnect logic in here. In
 	 * this event, you can inform the current client to know that his request was
 	 * failed. <br>
@@ -130,7 +130,7 @@ public enum TEvent {
 	 * Return if you allow the client can be re-connected, return the corresponding
 	 * player: {@link AbstractPlayer}, return <b>null</b> otherwise
 	 */
-	PLAYER_RECONNECT_REQUEST,
+	PLAYER_RECONNECT_REQUEST_HANDLE,
 
 	/**
 	 * When a client makes reconnection successful and you can inform him here by a
@@ -146,7 +146,7 @@ public enum TEvent {
 
 	/**
 	 * When a player is in IDLE status in a long time (exceeded the time out, that
-	 * can be defined in configuration: {@link BaseConfiguration}). For more
+	 * can be defined in configuration: {@link CoreConfiguration}). For more
 	 * details: in a long time without sending or receiving message that will be
 	 * treated as time out. After this event, the player will be log out of your
 	 * server. <br>
@@ -157,7 +157,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_TIMEOUT,
+	PLAYER_GOT_TIMEOUT,
 
 	/**
 	 * When you send a message from your server to one client it can be seen here.
@@ -172,7 +172,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	SEND_TO_PLAYER,
+	SEND_MESSAGE_TO_PLAYER,
 
 	/**
 	 * With a valid player, his message can be seen here. This message is sent from
@@ -187,7 +187,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	RECEIVED_FROM_PLAYER,
+	RECEIVED_MESSAGE_FROM_PLAYER,
 
 	/**
 	 * Created a new room. A room ({@link AbstractRoom}) is a group of some players.
@@ -195,12 +195,12 @@ public enum TEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> a new created room, see {@link AbstractRoom}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
-	 * {@link ErrorMsg} class in string type</li>
+	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	CREATED_ROOM,
+	ROOM_WAS_CREATED,
 
 	/**
 	 * The room will be removed, but in this event, all the players and their state
@@ -213,7 +213,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	REMOVE_ROOM,
+	ROOM_WILL_BE_REMOVED,
 
 	/**
 	 * When a player wants to join one room, its request can be seen here. This
@@ -228,13 +228,13 @@ public enum TEvent {
 	 * <b>false</b></li>
 	 * 
 	 * <li><b>parameter[3]</b> if the player can not join his desired room, the
-	 * reason can be found here, see {@link ErrorMsg}. Its value can be
+	 * reason can be found here, see {@link CoreMessageCode}. Its value can be
 	 * <b>null</b></li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_JOIN_ROOM,
+	PLAYER_JOIN_ROOM_HANDLE,
 
 	/**
 	 * This event occurs when a player before leaves his current room. You can
@@ -265,7 +265,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_LEFT_ROOM,
+	PLAYER_AFTER_LEFT_ROOM,
 
 	/**
 	 * When a connection between one player and your service is closed (for any
@@ -292,20 +292,6 @@ public enum TEvent {
 	DISCONNECT_CONNECTION,
 
 	/**
-	 * You can see the number of concurrent users (CCU) in period time. This scanned
-	 * time can be changed in configuration, see {@link BaseConfiguration}. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the number of current players that have
-	 * connection</li>
-	 * <li><b>parameter[1]</b> the number of all players (players and your
-	 * BOTs)</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	CCU,
-
-	/**
 	 * In this server, you can create other sub connections. That means you need to
 	 * create one main connection between one client and the server first (a TCP
 	 * connection). When it's finished, that client can send a request for making a
@@ -322,7 +308,7 @@ public enum TEvent {
 	 * corresponding player, see {@link AbstractPlayer}. Otherwise, return
 	 * <b>null</b>
 	 */
-	ATTACH_CONNECTION_REQUEST,
+	ATTACH_CONNECTION_REQUEST_VALIDATE,
 
 	/**
 	 * When a a sub connection link is established, you can inform its own player
@@ -348,13 +334,27 @@ public enum TEvent {
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message received from one client, see
 	 * {@link MessageObject}</li>
-	 * <li><b>parameter[2]</b> the reason for failed, see {@link ErrorMsg} in string
+	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in string
 	 * type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
 	ATTACH_CONNECTION_FAILED,
+
+	/**
+	 * You can see the number of concurrent users (CCU) in period time. This scanned
+	 * time can be changed in configuration, see {@link CoreConfiguration}. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> the number of current players that have
+	 * connection</li>
+	 * <li><b>parameter[1]</b> the number of all players (players and your
+	 * BOTs)</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	FETCHED_CCU_INFO,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>
@@ -369,7 +369,7 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	BANDWIDTH,
+	FETCHED_BANDWIDTH_INFO,
 
 	/**
 	 * You can authenticate the request in here
@@ -384,10 +384,11 @@ public enum TEvent {
 	 * Return <b>null</b> if the confirmation was passed or
 	 * {@link HttpServletResponse} object otherwise
 	 */
-	HTTP_REQUEST,
+	HTTP_REQUEST_VALIDATE,
 
 	/**
-	 * The main process for a HTTP request which comes from client
+	 * The main process for a HTTP request which comes from client,
+	 * this request must be passed from the {@link #HTTP_REQUEST_VALIDATE} event
 	 * <ul>
 	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
 	 * <li><b>parameter[1]</b> The request object, see
@@ -398,6 +399,6 @@ public enum TEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	HTTP_HANDLER
+	HTTP_REQUEST_HANDLE
 
 }

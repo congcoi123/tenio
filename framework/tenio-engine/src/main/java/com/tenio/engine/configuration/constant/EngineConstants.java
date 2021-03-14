@@ -21,26 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.constant;
+package com.tenio.engine.configuration.constant;
 
 /**
+ * All base constants' values for the server are defined here. This class should
+ * not be modified.
+ * 
  * @author kong
+ * 
  */
-public enum ConnectionType {
+public final class EngineConstants {
+
+	private EngineConstants() {
+	}
+
 	/**
-	 * TCP
+	 * It is used in the FSM pattern in which all entities can communicate with
+	 * others by message in some delay time. The value below describes one entity
+	 * can send a message immediately for others. It is also used for communication
+	 * between a heart-beat with outside.
 	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+	public static final double SEND_MSG_IMMEDIATELY = 0;
+
 }

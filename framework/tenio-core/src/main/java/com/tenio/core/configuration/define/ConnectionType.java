@@ -21,49 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.internal;
-
-import com.tenio.core.configuration.constant.LEvent;
-import com.tenio.core.event.ISubscriber;
+package com.tenio.core.configuration.define;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
- * 
  * @author kong
- * 
  */
-public final class LSubscriber {
-
+public enum ConnectionType {
 	/**
-	 * @see LEvent
+	 * TCP
 	 */
-	private final LEvent __type;
+	SOCKET,
 	/**
-	 * @see ISubscriber
+	 * UDP
 	 */
-	private final ISubscriber __sub;
-
-	public static LSubscriber newInstance(final LEvent type, final ISubscriber sub) {
-		return new LSubscriber(type, sub);
-	}
-
-	private LSubscriber(final LEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
-	}
-
+	DATAGRAM,
 	/**
-	 * @return see {@link LEvent}
+	 * Web Socket
 	 */
-	public LEvent getType() {
-		return __type;
-	}
-
+	WEB_SOCKET,
 	/**
-	 * @return see {@link ISubscriber}
+	 * HTTP
 	 */
-	public ISubscriber getSub() {
-		return __sub;
-	}
-
+	HTTP
 }
