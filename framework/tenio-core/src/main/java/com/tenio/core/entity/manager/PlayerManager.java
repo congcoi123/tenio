@@ -128,7 +128,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 					CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			var e = new NullPlayerNameException();
-			error(e);
+			_error(e);
 			throw e;
 		}
 
@@ -138,7 +138,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
-				error(e, "player name: ", player.getName());
+				_error(e, "player name: ", player.getName());
 				throw e;
 			}
 
@@ -169,7 +169,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				var e = new DuplicatedPlayerException();
-				error(e, "player name: ", player.getName());
+				_error(e, "player name: ", player.getName());
 				throw e;
 			}
 

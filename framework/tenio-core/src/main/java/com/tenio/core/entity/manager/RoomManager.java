@@ -108,7 +108,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 				// fire an event
 				__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
 				var e = new DuplicatedRoomException();
-				error(e, "room id: ", room.getId());
+				_error(e, "room id: ", room.getId());
 				throw e;
 			}
 			__rooms.put(room.getId(), room);
@@ -122,7 +122,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		synchronized (__rooms) {
 			if (!__rooms.containsKey(room.getId())) {
 				var e = new NullRoomException();
-				error(e, "room id: ", room.getId());
+				_error(e, "room id: ", room.getId());
 				throw e;
 			}
 

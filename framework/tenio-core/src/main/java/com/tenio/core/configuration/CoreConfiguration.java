@@ -94,7 +94,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		try {
 			__load(file);
 		} catch (Exception e) {
-			error(e, "file: ", file);
+			_error(e, "file: ", file);
 		}
 	}
 
@@ -180,7 +180,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		_extend(extProperties);
 
 		// Put the current configurations to the logger
-		info("Configuration", toString());
+		_info("Configuration", toString());
 
 	}
 

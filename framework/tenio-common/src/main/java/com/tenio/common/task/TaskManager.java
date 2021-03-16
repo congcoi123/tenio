@@ -61,13 +61,13 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 					throw new RunningScheduledTaskException();
 				}
 			} catch (RunningScheduledTaskException e) {
-				error(e, "task id: ", id);
+				_error(e, "task id: ", id);
 				return;
 			}
 		}
 
 		__tasks.put(id, task);
-		info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		_info("RUN TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 		var task = __tasks.get(id);
 		if (task != null) {
 			task.cancel(true);
-			info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+			_info("KILLED TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
 			__tasks.remove(id);
 		}
 	}
@@ -84,7 +84,7 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 	public synchronized void clear() {
 		__tasks.forEach((id, task) -> {
 			task.cancel(true);
-			info("KILLED TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+			_info("KILLED TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
 		});
 		__tasks.clear();
 	}

@@ -121,7 +121,7 @@ public final class TestServerStress extends AbstractApp {
 			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("FETCHED_CCU_INFO", ccu);
+				_info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});
@@ -139,7 +139,7 @@ public final class TestServerStress extends AbstractApp {
 						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
-				info("FETCHED_BANDWIDTH_INFO", bandwidth);
+				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
 
 				return null;
 			});

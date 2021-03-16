@@ -250,11 +250,11 @@ final class InternalLogicManager extends AbstractLogger {
 	}
 
 	private void __exception(AbstractPlayer player, Throwable cause) {
-		error(cause, "player name: ", player.getName());
+		_error(cause, "player name: ", player.getName());
 	}
 
 	private void __exception(String identify, Throwable cause) {
-		error(cause, "identify: ", identify);
+		_error(cause, "identify: ", identify);
 	}
 
 }
