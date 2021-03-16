@@ -93,7 +93,7 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 			return;
 		}
 		if (__configuration.containsKey(key)) {
-			info("CONFIGURATION", buildgen("Configuration key [", key, "] attempted to replace the old value ",
+			_info("CONFIGURATION", _buildgen("Configuration key [", key, "] attempted to replace the old value ",
 					__configuration.get(key), " by the new one ", value));
 			return;
 		}

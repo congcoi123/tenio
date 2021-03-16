@@ -113,12 +113,12 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	public ScheduledFuture<?> run() {
 		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 			try {
-				info("HTTP", buildgen("Name: ", __name, " > Start at port: ", __port));
+				_info("HTTP", _buildgen("Name: ", __name, " > Start at port: ", __port));
 
 				__server.start();
 				__server.join();
 			} catch (Exception e) {
-				error(e, "EXCEPTION START", "system");
+				_error(e, "EXCEPTION START", "system");
 			}
 		}, 0, TimeUnit.SECONDS);
 	}

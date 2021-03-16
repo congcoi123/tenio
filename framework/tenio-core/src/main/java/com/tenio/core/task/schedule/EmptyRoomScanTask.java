@@ -67,7 +67,7 @@ public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("EMPTY ROOM TASK", "Running ...");
+		_info("EMPTY ROOM TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			__rooms.forEach((key, value) -> {

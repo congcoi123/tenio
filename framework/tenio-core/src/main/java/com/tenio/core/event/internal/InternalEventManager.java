@@ -68,7 +68,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 */
 	public void on(final InternalEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
-			info("INTERNAL EVENT WARNING", "Duplicated", type);
+			_info("INTERNAL EVENT WARNING", "Duplicated", type);
 		}
 
 		__subscribers.add(InternalSubscriber.newInstance(type, sub));
@@ -87,7 +87,7 @@ public final class InternalEventManager extends AbstractLogger {
 			subs.add(s.getType());
 			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
 		});
-		info("INTERNAL EVENT UPDATED", "Subscribers", subs.toString());
+		_info("INTERNAL EVENT UPDATED", "Subscribers", subs.toString());
 	}
 
 	/**

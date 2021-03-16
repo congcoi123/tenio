@@ -125,7 +125,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
 				.handler(new NettyDatagramInitializer(index, eventManager, __traficCounter, configuration));
 
-		info("DATAGRAM", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
+		_info("DATAGRAM", _buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
@@ -150,7 +150,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
 				.childHandler(new NettySocketInitializer(index, eventManager, __traficCounter, configuration));
 
-		info("SOCKET", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
+		_info("SOCKET", _buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
@@ -176,7 +176,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)
 				.childHandler(new NettyWSInitializer(index, eventManager, __traficCounter, configuration));
 
-		info("WEB SOCKET", buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
+		_info("WEB SOCKET", _buildgen("Name: ", sock.getName(), " > Start at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
@@ -213,7 +213,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			channel.close().sync();
 			return true;
 		} catch (InterruptedException e) {
-			error(e);
+			_error(e);
 			return false;
 		}
 	}

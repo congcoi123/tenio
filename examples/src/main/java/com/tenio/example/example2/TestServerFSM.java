@@ -94,7 +94,7 @@ public final class TestServerFSM extends AbstractApp {
 				hearbeatManager.initialize(1);
 				hearbeatManager.create("daily-life", new LifeCycle());
 			} catch (Exception e) {
-				error(e, "daily-life");
+				_error(e, "daily-life");
 			}
 
 		}

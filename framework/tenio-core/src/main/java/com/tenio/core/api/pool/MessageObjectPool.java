@@ -78,8 +78,8 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 			__used[i] = false;
 		}
 
-		info("OBJECT POOL",
-				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+		_info("OBJECT POOL",
+				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -100,7 +100,7 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error(e);
+			_error(e);
 			throw e;
 		}
 	}

@@ -97,7 +97,7 @@ public final class TestServerLogin extends AbstractApp {
 				var player = this.<PlayerLogin>_getPlayer(args[0]);
 
 				try {
-					info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+					_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -123,7 +123,7 @@ public final class TestServerLogin extends AbstractApp {
 							MessageObject.newInstance().add("internal", "this is a message in external server"));
 
 					try {
-						info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+						_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -136,7 +136,7 @@ public final class TestServerLogin extends AbstractApp {
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
 				var message = _getMessageObject(args[1]);
 
-				info(buildgen("RECEIVED INTERNAL MESSAGE").toString(), message.toString());
+				_info(_buildgen("RECEIVED INTERNAL MESSAGE").toString(), message.toString());
 
 				return null;
 			});

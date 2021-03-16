@@ -26,7 +26,7 @@ package com.tenio.core.event.extension;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.SystemAbstractLogger;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
 
@@ -36,7 +36,7 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
-public final class ExtEventManager extends AbstractLogger {
+public final class ExtEventManager extends SystemAbstractLogger {
 
 	/**
 	 * A list of subscribers.
@@ -58,9 +58,9 @@ public final class ExtEventManager extends AbstractLogger {
 	 */
 	public Object emit(final ExtEvent type, final Object... args) {
 		if (__canShowTraceLog(type)) {
-			trace(type.name(), args);
+			_trace(type.name(), args);
 		} else {
-			debug(type.name(), args);
+			_debug(type.name(), args);
 		}
 		return __producer.emit(type, args);
 	}
@@ -73,7 +73,7 @@ public final class ExtEventManager extends AbstractLogger {
 	 */
 	public void on(final ExtEvent type, final ISubscriber sub) {
 		if (hasSubscriber(type)) {
-			info("EXTERNAL EVENT WARNING", "Duplicated", type);
+			_info("EXTERNAL EVENT WARNING", "Duplicated", type);
 		}
 
 		__subscribers.add(ExtSubscriber.newInstance(type, sub));
@@ -92,7 +92,7 @@ public final class ExtEventManager extends AbstractLogger {
 			subs.add(s.getType());
 			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
 		});
-		info("EXTERNAL EVENT UPDATED", "Subscribers", subs.toString());
+		_info("EXTERNAL EVENT UPDATED", "Subscribers", subs.toString());
 	}
 
 	/**

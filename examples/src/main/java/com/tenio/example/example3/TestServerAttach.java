@@ -144,7 +144,7 @@ public final class TestServerAttach extends AbstractApp {
 					try {
 						response.getWriter().println(json.toString());
 					} catch (IOException e) {
-						error(e, "request");
+						_error(e, "request");
 					}
 					return response;
 				}
@@ -162,7 +162,7 @@ public final class TestServerAttach extends AbstractApp {
 				try {
 					response.getWriter().println(json.toString());
 				} catch (IOException e) {
-					error(e, "handler");
+					_error(e, "handler");
 				}
 
 				return null;

@@ -58,7 +58,7 @@ public final class CCUScanTask extends AbstractLogger implements ITask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
+		_info("CCU SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			__eventManager.getExtension().emit(ExtEvent.FETCHED_CCU_INFO, __playerApi.countPlayers(), __playerApi.count());
 		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);

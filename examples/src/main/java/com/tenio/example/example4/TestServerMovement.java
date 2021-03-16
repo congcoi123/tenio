@@ -129,7 +129,7 @@ public final class TestServerMovement extends AbstractApp {
 				hearbeatManager.initialize(1);
 				hearbeatManager.create("world", world);
 			} catch (Exception e) {
-				error(e, "world");
+				_error(e, "world");
 			}
 
 		}

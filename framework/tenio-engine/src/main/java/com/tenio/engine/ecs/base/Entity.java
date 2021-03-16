@@ -87,7 +87,7 @@ public class Entity extends AbstractLogger implements IEntity {
 	public void setComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
 			var e = new DuplicatedComponentException();
-			error(e, "index: ", index);
+			_error(e, "index: ", index);
 			throw e;
 		}
 
@@ -98,7 +98,7 @@ public class Entity extends AbstractLogger implements IEntity {
 	public void removeComponent(int index) {
 		if (!hasComponent(index)) {
 			var e = new ComponentIsNotExistedException();
-			error(e, "index: ", index);
+			_error(e, "index: ", index);
 			throw e;
 		}
 
