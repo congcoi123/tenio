@@ -60,9 +60,10 @@ final class InternalLogicManager extends AbstractLogger {
 	 */
 	public void init(IConfiguration configuration) {
 
+		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
+		
 		__on(InternalEvent.CONNECTION_WAS_CLOSED, args -> {
 			var connection = __getConnection(args[0]);
-			boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
 			if (connection != null) { // the connection has existed
 				String username = connection.getUsername();

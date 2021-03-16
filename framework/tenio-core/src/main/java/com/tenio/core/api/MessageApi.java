@@ -27,8 +27,6 @@ import com.tenio.common.element.MessageObject;
 import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.api.pool.MessageObjectArrayPool;
-import com.tenio.core.api.pool.MessageObjectPool;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
@@ -48,12 +46,15 @@ import com.tenio.core.network.Connection;
  */
 public final class MessageApi extends AbstractLogger {
 
-	private final IElementPool<MessageObjectArray> __arrayPool = new MessageObjectArrayPool();
-	private final IElementPool<MessageObject> __objectPool = new MessageObjectPool();
+	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<MessageObjectArray> __msgArrayPool;
 	private final IEventManager __eventManager;
 
-	public MessageApi(IEventManager eventManager) {
+	public MessageApi(IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<MessageObjectArray> msgArrayPool) {
 		__eventManager = eventManager;
+		__msgObjectPool = msgObjectPool;
+		__msgArrayPool = msgArrayPool;
 	}
 
 	/**
@@ -64,20 +65,20 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value      the value of message
 	 */
 	public void sendToConnection(Connection connection, String key, Object value) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		connection.send(message);
-		__objectPool.repay(message);
+		__msgObjectPool.repay(message);
 		if (value instanceof MessageObjectArray) {
-			__arrayPool.repay((MessageObjectArray) value);
+			__msgArrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
 	/**
 	 * Send a message to a connection
 	 * 
-	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
-	 * memory leak.
+	 * Must use {@link #getMessageObjectArray()} to create data array package for
+	 * avoiding memory leak.
 	 * 
 	 * @param connection See {@link Connection}
 	 * @param key        the key of message
@@ -87,12 +88,12 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	public void sendToConnection(Connection connection, String key, Object value, String keyData,
 			MessageObjectArray data) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		connection.send(message);
-		__objectPool.repay(message);
-		__arrayPool.repay(data);
+		__msgObjectPool.repay(message);
+		__msgArrayPool.repay(data);
 	}
 
 	/**
@@ -120,20 +121,20 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value  the value of message
 	 */
 	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		__send(player, index, message);
-		__objectPool.repay(message);
+		__msgObjectPool.repay(message);
 		if (value instanceof MessageObjectArray) {
-			__arrayPool.repay((MessageObjectArray) value);
+			__msgArrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
 	/**
 	 * Send a message to a player
 	 * 
-	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
-	 * memory leak.
+	 * Must use {@link #getMessageObjectArray()} to create data array package for
+	 * avoiding memory leak.
 	 * 
 	 * @param player  the desired player
 	 * @param index   the index of connection in current player
@@ -144,12 +145,12 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
 			MessageObjectArray data) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		__send(player, index, message);
-		__objectPool.repay(message);
-		__arrayPool.repay(data);
+		__msgObjectPool.repay(message);
+		__msgArrayPool.repay(data);
 	}
 
 	/**
@@ -161,22 +162,22 @@ public final class MessageApi extends AbstractLogger {
 	 * @param value the value of message
 	 */
 	public void sendToRoom(AbstractRoom room, int index, String key, Object value) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		for (var player : room.getPlayers().values()) {
 			__send(player, index, message);
 		}
-		__objectPool.repay(message);
+		__msgObjectPool.repay(message);
 		if (value instanceof MessageObjectArray) {
-			__arrayPool.repay((MessageObjectArray) value);
+			__msgArrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
 	/**
 	 * Send a message to all players on one room
 	 * 
-	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
-	 * memory leak.
+	 * Must use {@link #getMessageObjectArray()} to create data array package for
+	 * avoiding memory leak.
 	 * 
 	 * @param room    the desired room
 	 * @param index   the index of connection in current player
@@ -187,14 +188,14 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData,
 			MessageObjectArray data) {
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		for (var player : room.getPlayers().values()) {
 			__send(player, index, message);
 		}
-		__objectPool.repay(message);
-		__arrayPool.repay(data);
+		__msgObjectPool.repay(message);
+		__msgArrayPool.repay(data);
 	}
 
 	/**
@@ -207,24 +208,24 @@ public final class MessageApi extends AbstractLogger {
 	 */
 	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value) {
 		var room = player.getRoom();
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		for (var p : room.getPlayers().values()) {
 			if (!p.equals(player)) {
 				__send(p, index, message);
 			}
 		}
-		__objectPool.repay(message);
+		__msgObjectPool.repay(message);
 		if (value instanceof MessageObjectArray) {
-			__arrayPool.repay((MessageObjectArray) value);
+			__msgArrayPool.repay((MessageObjectArray) value);
 		}
 	}
 
 	/**
 	 * Send a message to all players in one room except the desired player
 	 * 
-	 * Must use {@link #getMessageObjectArray()} to create data array package for avoiding
-	 * memory leak.
+	 * Must use {@link #getMessageObjectArray()} to create data array package for
+	 * avoiding memory leak.
 	 * 
 	 * @param player  the desired player
 	 * @param index   the index of connection in current player
@@ -236,7 +237,7 @@ public final class MessageApi extends AbstractLogger {
 	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
 			MessageObjectArray data) {
 		var room = player.getRoom();
-		var message = __objectPool.get();
+		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
 		for (var p : room.getPlayers().values()) {
@@ -244,8 +245,8 @@ public final class MessageApi extends AbstractLogger {
 				__send(p, index, message);
 			}
 		}
-		__objectPool.repay(message);
-		__arrayPool.repay(data);
+		__msgObjectPool.repay(message);
+		__msgArrayPool.repay(data);
 	}
 
 	/**
@@ -265,7 +266,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @return a {@link MessageObjectArray} object from the pooling mechanism
 	 */
 	public MessageObjectArray getMessageObjectArray() {
-		return __arrayPool.get();
+		return __msgArrayPool.get();
 	}
 
 }

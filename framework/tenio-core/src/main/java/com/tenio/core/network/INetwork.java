@@ -26,6 +26,8 @@ package com.tenio.core.network;
 import java.io.IOException;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 
@@ -44,6 +46,7 @@ public interface INetwork {
 	 * 
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
+	 * @param msgObjectPool the pool of message objects
 	 * 
 	 * @throws InterruptedException thrown when a thread is waiting, sleeping, or
 	 *                              otherwise occupied, and the thread is
@@ -52,7 +55,8 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, IConfiguration configuration) throws IOException, InterruptedException;
+	void start(IEventManager eventManager, IConfiguration configuration, IElementPool<MessageObject> msgObjectPool)
+			throws IOException, InterruptedException;
 
 	/**
 	 * Shutdown the network

@@ -24,7 +24,9 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.socket;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
@@ -43,8 +45,9 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public final class NettySocketHandler extends BaseNettyHandler {
 
-	public NettySocketHandler(int index, IEventManager eventManager, IConfiguration configuration) {
-		super(eventManager, index, ConnectionType.SOCKET);
+	public NettySocketHandler(int index, IEventManager eventManager,
+			IElementPool<MessageObject> msgObjectPool, IConfiguration configuration) {
+		super(eventManager, msgObjectPool, index, ConnectionType.SOCKET);
 	}
 
 	@Override
@@ -53,14 +56,20 @@ public final class NettySocketHandler extends BaseNettyHandler {
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
+		// retrieve an object from pool
+		var msgObject = getMsgObjectPool().get();
+		
 		// convert the bytes' array to a game message
-		var message = MsgPackConverter.unserialize((byte[]) msg);
+		var message = MsgPackConverter.unserialize(msgObject, (byte[]) msgRaw);
 		if (message == null) {
 			return;
 		}
 
 		_channelRead(ctx, message, null);
+		
+		// repay
+		getMsgObjectPool().repay(msgObject);
 	}
 
 	@Override

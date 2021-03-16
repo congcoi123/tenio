@@ -29,7 +29,10 @@ import java.util.List;
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
@@ -53,6 +56,8 @@ import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
+import com.tenio.core.pool.MessageObjectArrayPool;
+import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
 import com.tenio.core.task.schedule.TimeOutScanTask;
@@ -72,6 +77,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private static Server __instance;
 
 	private Server() {
+		__msgObjectPool = new MessageObjectPool();
+		__msgArrayPool = new MessageObjectArrayPool();
+
 		__eventManager = new EventManager();
 
 		__roomManager = new RoomManager(__eventManager);
@@ -81,7 +89,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager);
+		__messageApi = new MessageApi(__eventManager, __msgObjectPool, __msgArrayPool);
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
@@ -99,6 +107,9 @@ public final class Server extends AbstractLogger implements IServer {
 		}
 		return __instance;
 	}
+
+	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<MessageObjectArray> __msgArrayPool;
 
 	private final IEventManager __eventManager;
 
@@ -158,7 +169,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__createHttpManagers(configuration);
 
 		// start network
-		__startNetwork(configuration);
+		__startNetwork(configuration, __msgObjectPool);
 
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
@@ -172,9 +183,10 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration) throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool)
+			throws IOException, InterruptedException {
 		__network = new NettyNetwork();
-		__network.start(__eventManager, configuration);
+		__network.start(__eventManager, configuration, msgObjectPool);
 	}
 
 	@Override

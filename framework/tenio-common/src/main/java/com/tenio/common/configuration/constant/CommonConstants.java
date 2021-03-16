@@ -74,7 +74,7 @@ public final class CommonConstants {
 	 * 
 	 * @see IElementPool
 	 */
-	public static final int BASE_ELEMENT_POOL = 32;
+	public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 32;
 
 	/**
 	 * When the desired number of elements exceeded the first configuration. The new
@@ -82,7 +82,7 @@ public final class CommonConstants {
 	 * 
 	 * @see IElementPool
 	 */
-	public static final int ADD_ELEMENT_POOL = 10;
+	public static final int ADDED_NUMBER_ELEMENTS_POOL = 10;
 	
 	/**
 	 * Base FPS in server

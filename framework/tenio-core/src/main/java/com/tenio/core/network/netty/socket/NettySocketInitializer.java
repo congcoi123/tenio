@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.socket;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.GlobalTrafficShapingHandlerCustomize;
@@ -44,14 +46,16 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public final class NettySocketInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final IEventManager __eventManager;
+	private final IElementPool<MessageObject> __msgObjectPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
 	private final int __index;
 
-	public NettySocketInitializer(int index, IEventManager eventManager,
+	public NettySocketInitializer(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
 			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
+		__msgObjectPool = msgObjectPool;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
@@ -74,7 +78,7 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
 		// the logic handler
-		pipeline.addLast("handler", new NettySocketHandler(__index, __eventManager, __configuration));
+		pipeline.addLast("handler", new NettySocketHandler(__index, __eventManager, __msgObjectPool, __configuration));
 
 	}
 

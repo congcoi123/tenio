@@ -21,41 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.api.pool;
+package com.tenio.core.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 
 /**
- * The object pool mechanism for {@link MessageObjectArray}.
+ * The object pool mechanism for {@link MessageObject}.
  * 
  * @author kong
  * 
  */
-public final class MessageObjectArrayPool extends AbstractLogger implements IElementPool<MessageObjectArray> {
+public final class MessageObjectPool extends AbstractLogger implements IElementPool<MessageObject> {
 
 	@GuardedBy("this")
-	private MessageObjectArray[] __pool;
+	private MessageObject[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public MessageObjectArrayPool() {
-		__pool = new MessageObjectArray[CommonConstants.BASE_ELEMENT_POOL];
-		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
+	public MessageObjectPool() {
+		__pool = new MessageObject[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = MessageObjectArray.newInstance();
+			__pool[i] = MessageObject.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized MessageObjectArray get() {
+	public synchronized MessageObject get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -66,20 +66,20 @@ public final class MessageObjectArrayPool extends AbstractLogger implements IEle
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new MessageObjectArray[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
+		__pool = new MessageObject[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = MessageObjectArray.newInstance();
+			__pool[i] = MessageObject.newInstance();
 			__used[i] = false;
 		}
 
-		_info("ARRAY POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+		_info("OBJECT POOL",
+				_buildgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -87,19 +87,19 @@ public final class MessageObjectArrayPool extends AbstractLogger implements IEle
 	}
 
 	@Override
-	public synchronized void repay(MessageObjectArray element) {
+	public synchronized void repay(MessageObject element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {
 				__used[i] = false;
-				// Clear array
+				// Clear object
 				element.clear();
 				flagFound = true;
 				break;
 			}
 		}
 		if (!flagFound) {
-			var e = new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
+			var e = new NullElementPoolException();
 			_error(e);
 			throw e;
 		}

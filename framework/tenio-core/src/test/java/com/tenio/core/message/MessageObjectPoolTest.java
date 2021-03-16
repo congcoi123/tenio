@@ -37,7 +37,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.MessageObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.api.pool.MessageObjectPool;
+import com.tenio.core.pool.MessageObjectPool;
 
 /**
  * @author kong
@@ -89,12 +89,12 @@ public final class MessageObjectPoolTest {
 			__objectPool.get();
 		}
 		int expectedPoolSize = 0;
-		if (numberElement <= CommonConstants.BASE_ELEMENT_POOL) {
-			expectedPoolSize = CommonConstants.BASE_ELEMENT_POOL;
+		if (numberElement <= CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) {
+			expectedPoolSize = CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL;
 		} else {
 			double p = Math
-					.ceil((double) (numberElement - CommonConstants.BASE_ELEMENT_POOL) / (double) CommonConstants.ADD_ELEMENT_POOL);
-			expectedPoolSize = (int) (CommonConstants.BASE_ELEMENT_POOL + CommonConstants.ADD_ELEMENT_POOL * p);
+					.ceil((double) (numberElement - CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) / (double) CommonConstants.ADDED_NUMBER_ELEMENTS_POOL);
+			expectedPoolSize = (int) (CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL * p);
 		}
 		final int expected = expectedPoolSize;
 		

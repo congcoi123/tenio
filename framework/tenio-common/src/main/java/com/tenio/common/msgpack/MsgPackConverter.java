@@ -64,19 +64,37 @@ public final class MsgPackConverter {
 	/**
 	 * Un-serialize an array of bytes data to a {@link Map}
 	 * 
-	 * @param msg an array of bytes data
-	 * @return an object in <b>MessageObject</b> type
+	 * @param msgObject the message container which is using in the system
+	 * @param msgRaw    an array of bytes data
+	 * @return an message object in <b>MessageObject</b> type
 	 */
-	public static MessageObject unserialize(byte[] msg) {
-		var object = MessageObject.newInstance();
-		var dstMap = MsgPackUtil.unpack(msg);
+	public static MessageObject unserialize(MessageObject msgObject, byte[] msgRaw) {
+		var dstMap = MsgPackUtil.unpack(msgRaw);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
 		}
 		dstMap.forEach((key, value) -> {
-			object.put(key, MsgPackUtil.valueToObject(value));
+			msgObject.put(key, MsgPackUtil.valueToObject(value));
 		});
-		return object;
+		return msgObject;
+	}
+
+	/**
+	 * Un-serialize an array of bytes data to a {@link Map}
+	 * 
+	 * @param msgRaw an array of bytes data
+	 * @return an message object in <b>MessageObject</b> type
+	 */
+	public static MessageObject unserialize(byte[] msgRaw) {
+		var msgObject = MessageObject.newInstance();
+		var dstMap = MsgPackUtil.unpack(msgRaw);
+		if (dstMap == null || dstMap.isEmpty()) {
+			return null;
+		}
+		dstMap.forEach((key, value) -> {
+			msgObject.put(key, MsgPackUtil.valueToObject(value));
+		});
+		return msgObject;
 	}
 
 	private final static class MsgPackUtil {
@@ -150,7 +168,7 @@ public final class MsgPackConverter {
 				// Integer only (4 bytes)
 				return value.asIntegerValue().getInt();
 			} else if (value.isArrayValue()) {
-				// Convert value to list of objects (TArray)
+				// Convert value to list of objects (MessageObjectArray)
 				var arr = value.asArrayValue();
 				var array = MessageObjectArray.newInstance();
 				arr.forEach(element -> {

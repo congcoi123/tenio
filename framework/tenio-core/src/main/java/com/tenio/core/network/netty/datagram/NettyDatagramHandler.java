@@ -24,7 +24,9 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.datagram;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
@@ -45,18 +47,19 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(int index, IEventManager eventManager, IConfiguration configuration) {
-		super(eventManager, index, ConnectionType.DATAGRAM);
+	public NettyDatagramHandler(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IConfiguration configuration) {
+		super(eventManager, msgObjectPool, index, ConnectionType.DATAGRAM);
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
 		// get the message's content
 		byte[] content;
 		DatagramPacket datagram;
-		if (msg instanceof DatagramPacket) {
+		if (msgRaw instanceof DatagramPacket) {
 			// get the packet and sender data, convert it to a bytes' array
-			datagram = (DatagramPacket) msg;
+			datagram = (DatagramPacket) msgRaw;
 			var buffer = datagram.content();
 			int readableBytes = buffer.readableBytes();
 			content = new byte[readableBytes];
@@ -65,13 +68,19 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			return;
 		}
 
+		// retrieve an object from pool
+		var msgObject = getMsgObjectPool().get();
+		
 		// create a new message
-		var message = MsgPackConverter.unserialize(content);
+		var message = MsgPackConverter.unserialize(msgObject, content);
 		if (message == null) {
 			return;
 		}
 
 		_channelRead(ctx, message, datagram.sender());
+		
+		// repay
+		getMsgObjectPool().repay(msgObject);
 	}
 
 }

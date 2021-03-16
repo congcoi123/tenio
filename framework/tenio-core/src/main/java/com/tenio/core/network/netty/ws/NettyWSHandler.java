@@ -24,7 +24,9 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.ws;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
 import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
@@ -44,8 +46,9 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  */
 public class NettyWSHandler extends BaseNettyHandler {
 
-	public NettyWSHandler(int index, IEventManager eventManager, IConfiguration configuration) {
-		super(eventManager, index, ConnectionType.WEB_SOCKET);
+	public NettyWSHandler(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IConfiguration configuration) {
+		super(eventManager, msgObjectPool, index, ConnectionType.WEB_SOCKET);
 	}
 
 	@Override
@@ -54,22 +57,28 @@ public class NettyWSHandler extends BaseNettyHandler {
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
 		// only allow this type of frame
-		if (msg instanceof BinaryWebSocketFrame) {
+		if (msgRaw instanceof BinaryWebSocketFrame) {
 			// convert the BinaryWebSocketFrame to bytes' array
-			var buffer = ((BinaryWebSocketFrame) msg).content();
+			var buffer = ((BinaryWebSocketFrame) msgRaw).content();
 			var bytes = new byte[buffer.readableBytes()];
 			buffer.getBytes(buffer.readerIndex(), bytes);
 			buffer.release();
 
+			// retrieve an object from pool
+			var msgObject = getMsgObjectPool().get();
+
 			// create a new message
-			var message = MsgPackConverter.unserialize(bytes);
+			var message = MsgPackConverter.unserialize(msgObject, bytes);
 			if (message == null) {
 				return;
 			}
 
 			_channelRead(ctx, message, null);
+
+			// repay
+			getMsgObjectPool().repay(msgObject);
 		}
 
 	}
