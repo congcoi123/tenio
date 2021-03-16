@@ -78,8 +78,8 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 			__used[i] = false;
 		}
 
-		info("BYTE ARRAY POOL",
-				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+		_info("BYTE ARRAY POOL",
+				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -98,7 +98,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			error(e);
+			_error(e);
 			throw e;
 		}
 	}

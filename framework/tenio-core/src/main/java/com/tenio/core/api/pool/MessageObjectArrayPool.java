@@ -78,8 +78,8 @@ public final class MessageObjectArrayPool extends AbstractLogger implements IEle
 			__used[i] = false;
 		}
 
-		info("ARRAY POOL",
-				buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+		_info("ARRAY POOL",
+				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -100,7 +100,7 @@ public final class MessageObjectArrayPool extends AbstractLogger implements IEle
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException("Make sure to use {@link MessageApi.genArrayPacker}!");
-			error(e);
+			_error(e);
 			throw e;
 		}
 	}

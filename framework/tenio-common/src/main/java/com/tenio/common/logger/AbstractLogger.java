@@ -45,22 +45,22 @@ public abstract class AbstractLogger {
 	/**
 	 * A Log4j object
 	 */
-	private final Logger __logger = LogManager.getLogger(getClass());
+	final Logger __logger = LogManager.getLogger(getClass());
 	/**
 	 * An object creation pool instance, which is used for re-use string objects,
 	 * see {@link IElementPool}
 	 */
-	private final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
+	final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	public final void info(final StringBuilder where, final StringBuilder tag, final StringBuilder msg) {
+	protected final void _info(final StringBuilder where, final StringBuilder tag, final StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(tag);
@@ -77,14 +77,14 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	public final void info(final StringBuilder where, final String tag, final StringBuilder msg) {
+	protected final void _info(final StringBuilder where, final String tag, final StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(msg);
@@ -99,14 +99,14 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	public final void info(final StringBuilder where, final StringBuilder tag, final Object msg) {
+	protected final void _info(final StringBuilder where, final StringBuilder tag, final Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(tag);
@@ -121,14 +121,14 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	public final void info(final String where, final String tag, final StringBuilder msg) {
+	protected final void _info(final String where, final String tag, final StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(msg);
 			return;
@@ -141,14 +141,14 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	public final void info(final String where, final String tag, final Object msg) {
+	protected final void _info(final String where, final String tag, final Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
@@ -159,13 +159,13 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	public final void info(final StringBuilder tag, final StringBuilder msg) {
+	protected final void _info(final StringBuilder tag, final StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(tag);
 			__stringPool.repay(msg);
@@ -180,13 +180,13 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	public final void info(final String tag, final StringBuilder msg) {
+	protected final void _info(final String tag, final StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(msg);
 			return;
@@ -199,91 +199,19 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #buildgen(Object...)} for creating {@code StringBuilder} to
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
 	 * avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	public final void info(final String tag, final Object msg) {
+	protected final void _info(final String tag, final Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
 		StringBuilder builder = __stringPool.get();
 		builder.append("[").append(tag).append("] ").append(msg);
 		__logger.info(builder.toString());
-		__stringPool.repay(builder);
-	}
-	
-	/**
-	 * Only use for debugging EVENTS in the server system. Be careful when using it
-	 * yourself. You are warned!
-	 * 
-	 * @param type		the event's type
-	 * @param args 		the extra information for "type"
-	 */
-	public final void debug(final String type, final Object... args) {
-		if (!__logger.isDebugEnabled()) {
-			return;
-		}
-		
-		StringBuilder builder = __stringPool.get();
-		builder.append("{").append(type).append("} ");
-		
-		for (int i = 0; i < args.length - 1; i++) {
-	        builder.append(args[i]).append(", ");
-	    }
-	    if(args.length > 0){
-	        builder.append(args[args.length - 1]);
-	    }
-	    
-		__logger.debug(builder.toString());
-		__stringPool.repay(builder);
-	}
-	
-	/**
-	 * Only use for debugging EVENTS in the server system. Be careful when using it
-	 * yourself. You are warned!
-	 * 
-	 * @param type		the event's type
-	 * @param args 		the extra information for "type"
-	 */
-	public final void trace(final String type, final Object... args) {
-		if (!__logger.isTraceEnabled()) {
-			return;
-		}
-		
-		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(type).append("> ");
-		
-		for (int i = 0; i < args.length - 1; i++) {
-	        builder.append(args[i]).append(", ");
-	    }
-	    if(args.length > 0){
-	        builder.append(args[args.length - 1]);
-	    }
-	    
-		__logger.trace(builder.toString());
-		__stringPool.repay(builder);
-	}
-
-	/**
-	 * Only use for debugging PACKAGE in the server system. Be careful when using it
-	 * yourself. You are warned!
-	 * 
-	 * @param where    where you put this log
-	 * @param subWhere the extra information for "where" you put this log
-	 * @param tag      the tag type
-	 * @param msg      the message content
-	 */
-	public final void trace(final String where, final Object subWhere, final String tag, final String msg) {
-		if (!__logger.isTraceEnabled()) {
-			return;
-		}
-		StringBuilder builder = __stringPool.get();
-		builder.append("<").append(where).append(" ").append(subWhere).append(">").append("[").append(tag).append("] ")
-				.append(msg);
-		__logger.trace(builder.toString());
 		__stringPool.repay(builder);
 	}
 	
@@ -294,7 +222,7 @@ public abstract class AbstractLogger {
 	 * @param cause the reason for this exception
 	 * @param extra the extra information
 	 */
-	public final void error(final Throwable cause, final Object... extra) {
+	protected final void _error(final Throwable cause, final Object... extra) {
 		if (!__logger.isErrorEnabled()) {
 			return;
 		}
@@ -318,12 +246,12 @@ public abstract class AbstractLogger {
 	 * @param objects the corresponding objects, see {@link Object}
 	 * @return an instance of the <b>StringBuilder</b>
 	 */
-	public final StringBuilder buildgen(final Object... objects) {
+	protected final StringBuilder _buildgen(final Object... objects) {
 		StringBuilder builder = __stringPool.get();
 		for (var object : objects) {
 			builder.append(object);
 		}
 		return builder;
 	}
-
+	
 }

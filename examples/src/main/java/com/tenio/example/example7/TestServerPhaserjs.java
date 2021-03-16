@@ -140,7 +140,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
 				var ccu = _getInt(args[0]);
 
-				info("FETCHED_CCU_INFO", ccu);
+				_info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});

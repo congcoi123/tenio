@@ -87,7 +87,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 		// print out the framework's icon
 		for (var line : CommonConstants.LOGO) {
-			info("", "", line);
+			_info("", "", line);
 		}
 	} // prevent creation manually
 
@@ -125,7 +125,7 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
-		info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
+		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
 
 		// create all ports information
 		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
@@ -169,7 +169,7 @@ public final class Server extends AbstractLogger implements IServer {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
+		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
 	}
 
 	private void __startNetwork(IConfiguration configuration) throws IOException, InterruptedException {

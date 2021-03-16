@@ -52,7 +52,7 @@ public abstract class AbstractApp extends AbstractLogger {
 			server.start(configuration);
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
-			error(e, "The application started with exceptions occured");
+			_error(e, "The application started with exceptions occured");
 			server.shutdown();
 			onShutdown();
 			// exit with errors
