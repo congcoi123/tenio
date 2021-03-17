@@ -39,6 +39,7 @@
 			<Property name="timeoutScanInterval">45</Property>		<!-- Unit: Seconds -->
 			<Property name="ccuScanInterval">60</Property>			<!-- Unit: Seconds -->
 			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
+			<Property name="systemMonitoringInterval">60</Property>		<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

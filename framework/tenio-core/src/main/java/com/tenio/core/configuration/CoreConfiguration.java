@@ -157,11 +157,8 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			var value = pDataNode.getTextContent();
 			extProperties.put(key, value);
 		}
+		
 		_extend(extProperties);
-
-		// Put the current configurations to the logger
-		_info("Configuration", toString());
-
 	}
 
 	/**

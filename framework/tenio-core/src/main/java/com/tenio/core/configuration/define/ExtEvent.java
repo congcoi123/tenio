@@ -334,8 +334,8 @@ public enum ExtEvent {
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message received from one client, see
 	 * {@link MessageObject}</li>
-	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in string
-	 * type</li>
+	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in
+	 * string type</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -359,17 +359,30 @@ public enum ExtEvent {
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> Last reading bandwidth (KB/s)</li>
-	 * <li><b>parameter[1]</b> Last writing bandwidth (KB/s)</li>
-	 * <li><b>parameter[2]</b> Real writing bandwidth (KB/s)</li>
-	 * <li><b>parameter[3]</b> Current read bytes (KB)</li>
-	 * <li><b>parameter[4]</b> Current written bytes (KB)</li>
-	 * <li><b>parameter[5]</b> Real written bytes (KB)</li>
+	 * <li><b>parameter[0]</b> Last reading bandwidth (KB/s), see {@link Long}</li>
+	 * <li><b>parameter[1]</b> Last writing bandwidth (KB/s), see {@link Long}</li>
+	 * <li><b>parameter[2]</b> Real writing bandwidth (KB/s), see {@link Long}</li>
+	 * <li><b>parameter[3]</b> Current read bytes (KB), see {@link Long}</li>
+	 * <li><b>parameter[4]</b> Current written bytes (KB), see {@link Long}</li>
+	 * <li><b>parameter[5]</b> Real written bytes (KB), see {@link Long}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
 	FETCHED_BANDWIDTH_INFO,
+
+	/**
+	 * The current system information. <br>
+	 * <ul>
+	 * <li><b>parameter[0]</b> CPU Usage percent, see {@link Double}</li>
+	 * <li><b>parameter[1]</b> Total memory (Bytes), see {@link Long}</li>
+	 * <li><b>parameter[2]</b> Used Memory (Bytes), see {@link Long}</li>
+	 * <li><b>parameter[3]</b> Free Memory (Bytes), see {@link Long}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	MONITORING_SYSTEM,
 
 	/**
 	 * You can authenticate the request in here
@@ -387,8 +400,8 @@ public enum ExtEvent {
 	HTTP_REQUEST_VALIDATE,
 
 	/**
-	 * The main process for a HTTP request which comes from client,
-	 * this request must be passed from the {@link #HTTP_REQUEST_VALIDATE} event
+	 * The main process for a HTTP request which comes from client, this request
+	 * must be passed from the {@link #HTTP_REQUEST_VALIDATE} event
 	 * <ul>
 	 * <li><b>parameter[0]</b> REST method, see {@link RestMethod}</li>
 	 * <li><b>parameter[1]</b> The request object, see

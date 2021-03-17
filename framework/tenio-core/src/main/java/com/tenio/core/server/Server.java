@@ -63,6 +63,7 @@ import com.tenio.core.pool.MessageObjectArrayPool;
 import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
+import com.tenio.core.task.schedule.SystemMonitoringTask;
 import com.tenio.core.task.schedule.TimeOutScanTask;
 
 /**
@@ -141,12 +142,15 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
-		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
-
 		// show system information
 		SystemInfo.getInstance().logSystemInfo();
 		SystemInfo.getInstance().logNetCardsInfo();
 		SystemInfo.getInstance().logDiskInfo();
+		
+		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
+		
+		// Put the current configurations to the logger
+		_info("CONFIGURATION", configuration.toString());
 
 		// create all ports information
 		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
@@ -272,6 +276,8 @@ public final class Server extends AbstractLogger implements IServer {
 						.run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
 				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
+				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {

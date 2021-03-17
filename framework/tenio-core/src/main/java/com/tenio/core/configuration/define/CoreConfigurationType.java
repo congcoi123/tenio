@@ -66,6 +66,10 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 */
 	CCU_SCAN_INTERVAL("ccuScanInterval"),
 	/**
+	 * The period monitoring system
+	 */
+	SYSTEM_MONITORING_INTERVAL("systemMonitoringInterval"),
+	/**
 	 * The delay between two computations of performances for channels or 0 if no
 	 * stats are to be computed
 	 */

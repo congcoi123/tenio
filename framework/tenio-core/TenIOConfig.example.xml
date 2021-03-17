@@ -61,6 +61,8 @@
 			<!-- The delay between two computations of performances for channels or 
 				0 if no stats are to be computed -->
 			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
+			<!-- The period monitoring system -->
+			<Property name="systemMonitoringInterval">60</Property>		<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

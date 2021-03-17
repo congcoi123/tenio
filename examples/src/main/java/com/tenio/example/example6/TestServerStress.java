@@ -57,21 +57,23 @@ public final class TestServerStress extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
-	
+
 	@Override
 	public void onStarted() {
-		
+
 	}
-	
+
 	@Override
 	public void onShutdown() {
-		
+
 	}
 
 	/**
 	 * Your own logic handler class
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
+
+		private static final int CONVERT_TO_MB = 1024 * 1024;
 
 		@Override
 		public void initialize(IConfiguration configuration) {
@@ -140,6 +142,21 @@ public final class TestServerStress extends AbstractApp {
 						currentWrittenBytes, realWrittenBytes);
 
 				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
+
+				return null;
+			});
+
+			_on(ExtEvent.MONITORING_SYSTEM, args -> {
+				double cpuUsage = _getDouble(args[0]);
+				long totalMemory = _getLong(args[1]);
+				long usedMemory = _getLong(args[2]);
+				long freeMemory = _getLong(args[3]);
+
+				var info = String.format("cpuUsage=%f%;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
+						(float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB);
+
+				_info("MONITORING_SYSTEM", info);
 
 				return null;
 			});

@@ -50,6 +50,11 @@ public final class CoreConstants {
 	public static final String KEY_SCHEDULE_CCU_SCAN = "t.schedule.ccu.scan";
 
 	/**
+	 * A unique key for the system monitoring.
+	 */
+	public static final String KEY_SCHEDULE_SYSTEM_MONITORING = "t.schedule.system.monitoring";
+
+	/**
 	 * A unique key for the Empty Room scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_EMPTY_ROOM_SCAN = "t.schedule.empty.room.scan";

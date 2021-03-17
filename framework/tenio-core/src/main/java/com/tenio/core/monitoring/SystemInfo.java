@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import com.tenio.common.logger.AbstractLogger;
 
 /**
- * For showing the system information
+ * For logging the system information
  * 
  * <h1>Operation System</h1>
  * <ul>
