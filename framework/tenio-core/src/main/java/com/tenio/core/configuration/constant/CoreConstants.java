@@ -72,12 +72,6 @@ public final class CoreConstants {
 	public static final long TRAFFIC_COUNTER_READ_LIMIT = 0L;
 
 	/**
-	 * The delay between two computations of performances for channels or 0 if no
-	 * stats are to be computed.
-	 */
-	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000 * 60;
-
-	/**
 	 * The HTTP response with UTF-8 encoding
 	 */
 	public static final String UTF_8 = "UTF-8";

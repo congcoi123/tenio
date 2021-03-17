@@ -258,13 +258,13 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __createAllSchedules(IConfiguration configuration) {
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi,
-						configuration.getInt(CoreConfigurationType.IDLE_READER),
-						configuration.getInt(CoreConfigurationType.IDLE_WRITER),
-						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN))).run());
+						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
+						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
+						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN))).run());
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfigurationType.CCU_SCAN)))
+				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL)))
 						.run());
 	}
 

@@ -47,17 +47,20 @@
 			<Property name="maxPlayer">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				getting message from client -->
-			<Property name="idleReader">180</Property>		<!-- Unit: Seconds -->
+			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				sending message to client -->
-			<Property name="idleWriter">60</Property>		<!-- Unit: Seconds -->
+			<Property name="idleWriterTime">60</Property>		<!-- Unit: Seconds -->
 			<!-- Get the period checking in seconds which server can keep the empty 
 				room -->
-			<Property name="emptyRoomScan">30</Property>	<!-- Unit: Seconds -->
+			<Property name="emptyRoomScanInterval">30</Property>	<!-- Unit: Seconds -->
 			<!-- The period checking player time out in seconds -->
-			<Property name="timeoutScan">45</Property>		<!-- Unit: Seconds -->
+			<Property name="timeoutScanInterval">45</Property>		<!-- Unit: Seconds -->
 			<!-- The period checking CCU in seconds -->
-			<Property name="ccuScan">60</Property>			<!-- Unit: Seconds -->
+			<Property name="ccuScanInterval">60</Property>			<!-- Unit: Seconds -->
+			<!-- The delay between two computations of performances for channels or 
+				0 if no stats are to be computed -->
+			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

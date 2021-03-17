@@ -76,7 +76,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __consumer,
 				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
-				CoreConstants.TRAFFIC_COUNTER_CHECK_INTERVAL);
+				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
@@ -133,7 +133,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.handler(new NettyDatagramInitializer(index, eventManager, msgObjectPool, byteArrayPool,
 						__traficCounter, configuration));
 
-		_info("DATAGRAM", _buildgen("Name: ", sock.getName(), " > Started at port: ", sock.getPort()));
+		_info("DATAGRAM",
+				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
@@ -162,7 +163,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childHandler(new NettySocketInitializer(index, eventManager, msgObjectPool, byteArrayPool,
 						__traficCounter, configuration));
 
-		_info("SOCKET", _buildgen("Name: ", sock.getName(), " > Started at port: ", sock.getPort()));
+		_info("SOCKET",
+				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}
@@ -192,7 +194,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childHandler(new NettyWSInitializer(index, eventManager, msgObjectPool, byteArrayPool, __traficCounter,
 						configuration));
 
-		_info("WEB SOCKET", _buildgen("Name: ", sock.getName(), " > Started at port: ", sock.getPort()));
+		_info("WEB SOCKET",
+				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
 
 		return bootstrap.bind(sock.getPort()).sync().channel();
 	}

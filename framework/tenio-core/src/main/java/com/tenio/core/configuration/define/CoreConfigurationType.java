@@ -47,24 +47,29 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 * The max IDLE time in seconds which server can wait from the last getting
 	 * message from client
 	 */
-	IDLE_READER("idleReader"),
+	IDLE_READER_TIME("idleReaderTime"),
 	/**
 	 * The max IDLE time in seconds which server can wait from the last sending
 	 * message to client
 	 */
-	IDLE_WRITER("idleWriter"),
+	IDLE_WRITER_TIME("idleWriterTime"),
 	/**
 	 * Get the period checking in seconds which server can keep the empty room
 	 */
-	EMPTY_ROOM_SCAN("emptyRoomScan"),
+	EMPTY_ROOM_SCAN_INTERVAL("emptyRoomScanInterval"),
 	/**
 	 * The period checking player time out in seconds
 	 */
-	TIMEOUT_SCAN("timeoutScan"),
+	TIMEOUT_SCAN_INTERVAL("timeoutScanInterval"),
 	/**
 	 * The period checking CCU in seconds
 	 */
-	CCU_SCAN("ccuScan"),
+	CCU_SCAN_INTERVAL("ccuScanInterval"),
+	/**
+	 * The delay between two computations of performances for channels or 0 if no
+	 * stats are to be computed
+	 */
+	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
 	/**
 	 * The list of socket ports in configuration
 	 */

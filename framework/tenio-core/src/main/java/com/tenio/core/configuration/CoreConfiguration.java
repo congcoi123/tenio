@@ -43,27 +43,7 @@ import com.tenio.core.configuration.define.RestMethod;
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
  * 
- * <h1>Configuration for game server, declared in properties file</h1> <br>
- * <ul>
- * <li><i>keepPlayerOnDisconnect:</i> When the server get disconnection of one
- * client, can be hold its player instance until timeout</li>
- * <li><i>maxPlayer:</i> The maximum number of players which game can handle
- * </li>
- * <li><i>idleReader:</i> The max IDLE time in seconds which server can wait
- * from the last getting message from client</li>
- * <li><i>idleWriter:</i> The max IDLE time in seconds which server can wait
- * from the last sending message to client</li>
- * <li><i>emptyRoomScan:</i> Get the period checking in seconds which server can
- * keep the empty room</li>
- * <li><i>timeoutScan:</i> The period checking player time out in seconds</li>
- * <li><i>ccuScan:</i> The period checking CCU in seconds</li>
- * <li><i>serverName:</i> The server name</li>
- * <li><i>serverId:</i> The server id (module name)</li>
- * <li><i>versionName:</i> This current version name of your server in string
- * type</li>
- * <li><i>versionCode:</i> This current version code of your server in integer
- * type (can be compared)</li>
- * </ul>
+ * @see CoreConfigurationType
  * 
  * @author kong
  * 
