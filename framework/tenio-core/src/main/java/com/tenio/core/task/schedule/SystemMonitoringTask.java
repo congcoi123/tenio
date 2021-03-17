@@ -32,7 +32,7 @@ import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.monitoring.SystemMonitoring;
+import com.tenio.core.monitoring.system.SystemMonitoring;
 
 /**
  * To retrieve the current system information in period time. You can configure

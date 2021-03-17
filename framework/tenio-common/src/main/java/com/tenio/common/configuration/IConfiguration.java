@@ -59,7 +59,7 @@ public interface IConfiguration {
 	 * @return the value in {@link String}
 	 */
 	String getString(final ConfigurationType key);
-	
+
 	/**
 	 * @param key the configuration's key
 	 * @return the value in {@link Object}
@@ -78,8 +78,13 @@ public interface IConfiguration {
 	boolean isDefined(final ConfigurationType key);
 
 	/**
-	 * @return configuration information as human readable data 
+	 * @return configuration information as human readable data
 	 */
 	String toString();
+
+	/**
+	 * remove all configurations
+	 */
+	void clear();
 
 }

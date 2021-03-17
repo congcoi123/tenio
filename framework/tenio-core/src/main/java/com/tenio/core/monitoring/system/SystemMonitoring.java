@@ -1,4 +1,4 @@
-package com.tenio.core.monitoring;
+package com.tenio.core.monitoring.system;
 
 import java.lang.management.ManagementFactory;
 
