@@ -32,8 +32,8 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
 import com.tenio.core.event.ISubscriber;
@@ -151,6 +151,14 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 */
 	protected long _getLong(Object object) {
 		return (long) object;
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Double} type
+	 */
+	protected double _getDouble(Object object) {
+		return (double) object;
 	}
 
 	/**

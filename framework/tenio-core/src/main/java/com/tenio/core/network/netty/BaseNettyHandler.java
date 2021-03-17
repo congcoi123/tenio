@@ -26,6 +26,8 @@ package com.tenio.core.network.netty;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.IEventManager;
@@ -45,13 +47,18 @@ import io.netty.util.AttributeKey;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	private IEventManager __eventManager;
+	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IEventManager __eventManager;
 	private Connection __connection;
-	private ConnectionType __type;
-	private int __index;
+	private final ConnectionType __type;
+	private final int __index;
 
-	public BaseNettyHandler(IEventManager eventManager, int index, ConnectionType type) {
+	public BaseNettyHandler(IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayPool, int index, ConnectionType type) {
 		__eventManager = eventManager;
+		__msgObjectPool = msgObjectPool;
+		__byteArrayPool = byteArrayPool;
 		__index = index;
 		__type = type;
 	}
@@ -86,7 +93,8 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 			__connection.setThis();
 		}
 
-		__eventManager.getInternal().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, __index, connection, message, __connection);
+		__eventManager.getInternal().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, __index, connection, message,
+				__connection);
 	}
 
 	/**
@@ -117,8 +125,22 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 		}
 		// get the connection first
 		var connection = __getConnection(ctx.channel(), null);
-		__eventManager.getInternal().emit(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, ctx.channel().id().asLongText(), connection,
-				cause);
+		__eventManager.getInternal().emit(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION,
+				ctx.channel().id().asLongText(), connection, cause);
+	}
+
+	/**
+	 * @return the message object manager pool instance
+	 */
+	protected IElementPool<MessageObject> getMsgObjectPool() {
+		return __msgObjectPool;
+	}
+
+	/**
+	 * @return the byte array input steam manager pool instance
+	 */
+	protected IElementPool<ByteArrayInputStream> getByteArrayPool() {
+		return __byteArrayPool;
 	}
 
 }

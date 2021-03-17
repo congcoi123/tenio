@@ -49,8 +49,8 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 
 	public ComponentPool(Class<?> clazz) {
 		__clazz = clazz;
-		__pool = new IComponent[CommonConstants.BASE_ELEMENT_POOL];
-		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
+		__pool = new IComponent[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
@@ -76,11 +76,11 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new IComponent[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
+		__pool = new IComponent[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -94,7 +94,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 		}
 
 		_info("COMPONENT POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+				_buildgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

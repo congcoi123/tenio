@@ -21,7 +21,7 @@ import java.io.InputStream;
 /**
  * @author Riyad Kalla (software@thebuzzmedia.com)
  */
-public class ByteArrayInputStream extends InputStream {
+public final class ByteArrayInputStream extends InputStream {
 
 	private int __offset;
 	private int __length;

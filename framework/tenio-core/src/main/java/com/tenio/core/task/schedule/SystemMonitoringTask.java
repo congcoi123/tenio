@@ -29,39 +29,42 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
-import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
+import com.tenio.core.monitoring.SystemMonitoring;
 
 /**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link CoreConfiguration}
+ * To retrieve the current system information in period time. You can configure
+ * this time in your own configurations, see {@link CoreConfiguration}
  * 
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger implements ITask {
+public final class SystemMonitoringTask extends AbstractLogger implements ITask {
+
+	private final SystemMonitoring __monitoring;
 
 	private final IEventManager __eventManager;
 	/**
-	 * The period time for retrieving CCU
+	 * The period time for retrieving system information
 	 */
-	private final int __ccuScanPeriod;
-	private final PlayerApi __playerApi;
+	private final int __monitoringPeriod;
 
-	public CCUScanTask(IEventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
+	public SystemMonitoringTask(IEventManager eventManager, int ccuScanPeriod) {
 		__eventManager = eventManager;
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
+		__monitoringPeriod = ccuScanPeriod;
+
+		__monitoring = new SystemMonitoring();
 	}
 
 	@Override
 	public ScheduledFuture<?> run() {
-		_info("CCU SCAN TASK", "Running ...");
+		_info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ExtEvent.FETCHED_CCU_NUMBER, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+			__eventManager.getExtension().emit(ExtEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
+					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory());
+		}, 0, __monitoringPeriod, TimeUnit.SECONDS);
 	}
 
 }
