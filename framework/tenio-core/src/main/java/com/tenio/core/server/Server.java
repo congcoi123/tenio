@@ -54,6 +54,7 @@ import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.extension.IExtension;
+import com.tenio.core.monitoring.SystemInfo;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
@@ -141,6 +142,11 @@ public final class Server extends AbstractLogger implements IServer {
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
+
+		// show system information
+		SystemInfo.getInstance().logSystemInfo();
+		SystemInfo.getInstance().logNetCardsInfo();
+		SystemInfo.getInstance().logDiskInfo();
 
 		// create all ports information
 		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
@@ -262,10 +268,10 @@ public final class Server extends AbstractLogger implements IServer {
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL))).run());
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL)))
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
+				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {
