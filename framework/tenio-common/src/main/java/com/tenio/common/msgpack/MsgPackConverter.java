@@ -35,8 +35,6 @@ import org.msgpack.type.Value;
 
 import com.tenio.common.element.MessageObject;
 import com.tenio.common.element.MessageObjectArray;
-import com.tenio.common.msgpack.pool.ByteArrayInputStreamPool;
-import com.tenio.common.pool.IElementPool;
 
 /**
  * <a href="https://msgpack.org/index.html">MessagePack</a> is an efficient
@@ -64,19 +62,41 @@ public final class MsgPackConverter {
 	/**
 	 * Un-serialize an array of bytes data to a {@link Map}
 	 * 
-	 * @param msg an array of bytes data
-	 * @return an object in <b>MessageObject</b> type
+	 * @param msgObject      the message container which is using in the system
+	 * @param byteArrayInput the object for converting raw bytes data to msgpack
+	 *                       using one
+	 * @param msgRaw         an array of bytes data
+	 * @return an message object in <b>MessageObject</b> type
 	 */
-	public static MessageObject unserialize(byte[] msg) {
-		var object = MessageObject.newInstance();
-		var dstMap = MsgPackUtil.unpack(msg);
+	public static MessageObject unserialize(MessageObject msgObject, ByteArrayInputStream byteArrayInput,
+			byte[] msgRaw) {
+		var dstMap = MsgPackUtil.unpack(byteArrayInput, msgRaw);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;
 		}
 		dstMap.forEach((key, value) -> {
-			object.put(key, MsgPackUtil.valueToObject(value));
+			msgObject.put(key, MsgPackUtil.valueToObject(value));
 		});
-		return object;
+		return msgObject;
+	}
+
+	/**
+	 * Un-serialize an array of bytes data to a {@link Map}
+	 * 
+	 * @param msgRaw an array of bytes data
+	 * @return an message object in <b>MessageObject</b> type
+	 */
+	public static MessageObject unserialize(byte[] msgRaw) {
+		var msgObject = MessageObject.newInstance();
+		var byteArrayInput = ByteArrayInputStream.newInstance();
+		var dstMap = MsgPackUtil.unpack(byteArrayInput, msgRaw);
+		if (dstMap == null || dstMap.isEmpty()) {
+			return null;
+		}
+		dstMap.forEach((key, value) -> {
+			msgObject.put(key, MsgPackUtil.valueToObject(value));
+		});
+		return msgObject;
 	}
 
 	private final static class MsgPackUtil {
@@ -85,11 +105,6 @@ public final class MsgPackConverter {
 		 * A MsgPack instance
 		 */
 		private static final MessagePack __packer = new MessagePack();
-		/**
-		 * An object creation pool instance, which is used for re-use byte objects, see
-		 * {@link IElementPool}
-		 */
-		private static final IElementPool<ByteArrayInputStream> __bytesPool = new ByteArrayInputStreamPool();
 
 		/**
 		 * Converting an object ({@link Map}) to array of bytes data
@@ -109,22 +124,19 @@ public final class MsgPackConverter {
 		/**
 		 * Converting an array of bytes data to a {@link Map} object
 		 * 
-		 * @param msg an array of bytes
+		 * @param byteArrayInput object for handling byte array
+		 * @param msgRaw         an array of bytes
 		 * @return a object in map type
 		 */
-		public static Map<String, Value> unpack(byte[] msg) {
+		public static Map<String, Value> unpack(ByteArrayInputStream byteArrayInput, byte[] msgRaw) {
 			var mapTmpl = tMap(TString, TValue);
-			var in = __bytesPool.get();
 			try {
-				in.reset(msg);
-				var unpacker = __packer.createUnpacker(in);
+				byteArrayInput.reset(msgRaw);
+				var unpacker = __packer.createUnpacker(byteArrayInput);
 				return unpacker.read(mapTmpl);
 			} catch (IOException | IllegalArgumentException e) {
 				e.printStackTrace();
 				return null;
-			} finally {
-				// anyway --> repay
-				__bytesPool.repay(in);
 			}
 		}
 
@@ -150,7 +162,7 @@ public final class MsgPackConverter {
 				// Integer only (4 bytes)
 				return value.asIntegerValue().getInt();
 			} else if (value.isArrayValue()) {
-				// Convert value to list of objects (TArray)
+				// Convert value to list of objects (MessageObjectArray)
 				var arr = value.asArrayValue();
 				var array = MessageObjectArray.newInstance();
 				arr.forEach(element -> {

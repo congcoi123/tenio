@@ -50,6 +50,11 @@ public final class CoreConstants {
 	public static final String KEY_SCHEDULE_CCU_SCAN = "t.schedule.ccu.scan";
 
 	/**
+	 * A unique key for the system monitoring.
+	 */
+	public static final String KEY_SCHEDULE_SYSTEM_MONITORING = "t.schedule.system.monitoring";
+
+	/**
 	 * A unique key for the Empty Room scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_EMPTY_ROOM_SCAN = "t.schedule.empty.room.scan";
@@ -70,12 +75,6 @@ public final class CoreConstants {
 	 * 0 or a limit in bytes/s
 	 */
 	public static final long TRAFFIC_COUNTER_READ_LIMIT = 0L;
-
-	/**
-	 * The delay between two computations of performances for channels or 0 if no
-	 * stats are to be computed.
-	 */
-	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
 
 	/**
 	 * The HTTP response with UTF-8 encoding

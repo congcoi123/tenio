@@ -83,12 +83,12 @@ public final class EntityPoolTest {
 			__entityPool.get();
 		}
 		int expectedPoolSize = 0;
-		if (numberElement <= CommonConstants.BASE_ELEMENT_POOL) {
-			expectedPoolSize = CommonConstants.BASE_ELEMENT_POOL;
+		if (numberElement <= CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) {
+			expectedPoolSize = CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL;
 		} else {
-			double p = Math.ceil((double) (numberElement - CommonConstants.BASE_ELEMENT_POOL)
-					/ (double) CommonConstants.ADD_ELEMENT_POOL);
-			expectedPoolSize = (int) (CommonConstants.BASE_ELEMENT_POOL + CommonConstants.ADD_ELEMENT_POOL * p);
+			double p = Math.ceil((double) (numberElement - CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL)
+					/ (double) CommonConstants.ADDED_NUMBER_ELEMENTS_POOL);
+			expectedPoolSize = (int) (CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL * p);
 		}
 		final int expected = expectedPoolSize;
 

@@ -29,7 +29,11 @@ import java.util.List;
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.msgpack.ByteArrayInputStream;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
@@ -50,11 +54,16 @@ import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.extension.IExtension;
+import com.tenio.core.monitoring.SystemInfo;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
+import com.tenio.core.pool.ByteArrayInputStreamPool;
+import com.tenio.core.pool.MessageObjectArrayPool;
+import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
+import com.tenio.core.task.schedule.SystemMonitoringTask;
 import com.tenio.core.task.schedule.TimeOutScanTask;
 
 /**
@@ -72,6 +81,10 @@ public final class Server extends AbstractLogger implements IServer {
 	private static Server __instance;
 
 	private Server() {
+		__msgObjectPool = new MessageObjectPool();
+		__msgArrayPool = new MessageObjectArrayPool();
+		__byteArrayPool = new ByteArrayInputStreamPool();
+
 		__eventManager = new EventManager();
 
 		__roomManager = new RoomManager(__eventManager);
@@ -81,7 +94,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager);
+		__messageApi = new MessageApi(__eventManager, __msgObjectPool, __msgArrayPool);
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
@@ -99,6 +112,10 @@ public final class Server extends AbstractLogger implements IServer {
 		}
 		return __instance;
 	}
+
+	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<MessageObjectArray> __msgArrayPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 
 	private final IEventManager __eventManager;
 
@@ -125,7 +142,15 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
+		// show system information
+		SystemInfo.getInstance().logSystemInfo();
+		SystemInfo.getInstance().logNetCardsInfo();
+		SystemInfo.getInstance().logDiskInfo();
+		
 		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
+		
+		// Put the current configurations to the logger
+		_info("CONFIGURATION", configuration.toString());
 
 		// create all ports information
 		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
@@ -158,7 +183,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__createHttpManagers(configuration);
 
 		// start network
-		__startNetwork(configuration);
+		__startNetwork(configuration, __msgObjectPool, __byteArrayPool);
 
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
@@ -172,9 +197,10 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration) throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
-		__network.start(__eventManager, configuration);
+		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
 
 	@Override
@@ -187,6 +213,10 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerManager.clear();
 		__taskManager.clear();
 		__eventManager.clear();
+		// clear all pools
+		__msgObjectPool.cleanup();
+		__msgArrayPool.cleanup();
+		__byteArrayPool.cleanup();
 	}
 
 	@Override
@@ -238,14 +268,16 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __createAllSchedules(IConfiguration configuration) {
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi,
-						configuration.getInt(CoreConfigurationType.IDLE_READER),
-						configuration.getInt(CoreConfigurationType.IDLE_WRITER),
-						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN))).run());
+						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
+						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
+						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN))).run());
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN,
-				(new CCUScanTask(__eventManager, __playerApi, configuration.getInt(CoreConfigurationType.CCU_SCAN)))
+				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
+				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
+				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {

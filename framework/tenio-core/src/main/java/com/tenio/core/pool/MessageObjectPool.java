@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.api.pool;
+package com.tenio.core.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -45,8 +45,8 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 	private boolean[] __used;
 
 	public MessageObjectPool() {
-		__pool = new MessageObject[CommonConstants.BASE_ELEMENT_POOL];
-		__used = new boolean[CommonConstants.BASE_ELEMENT_POOL];
+		__pool = new MessageObject[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			__pool[i] = MessageObject.newInstance();
@@ -66,11 +66,11 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADD_ELEMENT_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new MessageObject[oldPool.length + CommonConstants.ADD_ELEMENT_POOL];
+		__pool = new MessageObject[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -78,8 +78,8 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 			__used[i] = false;
 		}
 
-		_info("OBJECT POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADD_ELEMENT_POOL, " to ", __used.length));
+		_info("MESSAGE OBJECT POOL",
+				_buildgen("Increased the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

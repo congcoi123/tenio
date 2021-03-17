@@ -26,6 +26,9 @@ package com.tenio.core.network.netty.ws;
 import java.net.URISyntaxException;
 
 import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
+import com.tenio.common.pool.IElementPool;
 import com.tenio.core.event.IEventManager;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -58,22 +61,27 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	private WebSocketServerHandshaker __handshaker;
 
 	private final IEventManager __eventManager;
+	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 	private final IConfiguration __configuration;
 	private final int __index;
 
-	public NettyWSHandShake(int index, IEventManager eventManager, IConfiguration configuration) {
+	public NettyWSHandShake(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
+		__msgObjectPool = msgObjectPool;
+		__byteArrayPool = byteArrayPool;
 		__configuration = configuration;
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
 
 		// check the request for handshake
-		if (msg instanceof HttpRequest) {
+		if (msgRaw instanceof HttpRequest) {
 
-			var httpRequest = (HttpRequest) msg;
+			var httpRequest = (HttpRequest) msgRaw;
 			var headers = httpRequest.headers();
 
 			if (headers.get("Connection").equalsIgnoreCase("Upgrade")
@@ -81,7 +89,8 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 				// add new handler to the existing pipeline to handle HandShake-WebSocket
 				// Messages
-				ctx.pipeline().replace(this, "handler", new NettyWSHandler(__index, __eventManager, __configuration));
+				ctx.pipeline().replace(this, "handler",
+						new NettyWSHandler(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
 
 				// do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				__handleHandshake(ctx, httpRequest);
