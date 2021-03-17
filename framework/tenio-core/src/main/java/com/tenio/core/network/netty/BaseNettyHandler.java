@@ -26,6 +26,7 @@ package com.tenio.core.network.netty;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.InternalEvent;
@@ -47,15 +48,17 @@ import io.netty.util.AttributeKey;
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
 	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 	private final IEventManager __eventManager;
 	private Connection __connection;
 	private final ConnectionType __type;
 	private final int __index;
 
-	public BaseNettyHandler(IEventManager eventManager, IElementPool<MessageObject> msgObjectPool, int index,
-			ConnectionType type) {
+	public BaseNettyHandler(IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayPool, int index, ConnectionType type) {
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
+		__byteArrayPool = byteArrayPool;
 		__index = index;
 		__type = type;
 	}
@@ -131,6 +134,13 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 */
 	protected IElementPool<MessageObject> getMsgObjectPool() {
 		return __msgObjectPool;
+	}
+
+	/**
+	 * @return the byte array input steam manager pool instance
+	 */
+	protected IElementPool<ByteArrayInputStream> getByteArrayPool() {
+		return __byteArrayPool;
 	}
 
 }

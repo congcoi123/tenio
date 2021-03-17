@@ -47,6 +47,7 @@ import com.tenio.example.client.TCP;
  */
 public final class TestClientStress implements ISocketListener {
 
+	private static final boolean SHOW_DEBUG = false;
 	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
 	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
 	private static final String NUMBER = "0123456789";
@@ -79,15 +80,20 @@ public final class TestClientStress implements ISocketListener {
 			var message = MessageObject.newInstance();
 			message.put("u", name);
 			tcp.send(message);
-			System.err.println("Login Request -> " + message);
+			if (SHOW_DEBUG) {
+				System.err.println("Login Request -> " + message);
+			}
 		}
 
 	}
 
 	@Override
 	public void onReceivedTCP(MessageObject message) {
-		System.out.println("[RECV FROM SERVER TCP] -> " + message);
-
+		if (SHOW_DEBUG) {
+			System.out.println("x[RECV FROM SERVER TCP] -> " + message);
+		}
+		
+		// make an echo message
 		var msg = MessageObject.newInstance();
 		msg.put("m", __generateRandomString(5));
 		__tcps.get(message.get("p")).send(msg);

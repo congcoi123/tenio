@@ -25,6 +25,7 @@ package com.tenio.core.network.netty.datagram;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
@@ -48,8 +49,8 @@ import io.netty.channel.socket.DatagramPacket;
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
 	public NettyDatagramHandler(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
-			IConfiguration configuration) {
-		super(eventManager, msgObjectPool, index, ConnectionType.DATAGRAM);
+			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
+		super(eventManager, msgObjectPool, byteArrayPool, index, ConnectionType.DATAGRAM);
 	}
 
 	@Override
@@ -70,17 +71,23 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 
 		// retrieve an object from pool
 		var msgObject = getMsgObjectPool().get();
-		
+		var byteArray = getByteArrayPool().get();
+
 		// create a new message
-		var message = MsgPackConverter.unserialize(msgObject, content);
+		var message = MsgPackConverter.unserialize(msgObject, byteArray, content);
 		if (message == null) {
+			// repay
+			getMsgObjectPool().repay(msgObject);
+			getByteArrayPool().repay(byteArray);
 			return;
 		}
 
+		// the main process
 		_channelRead(ctx, message, datagram.sender());
-		
+
 		// repay
 		getMsgObjectPool().repay(msgObject);
+		getByteArrayPool().repay(byteArray);
 	}
 
 }

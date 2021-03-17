@@ -58,7 +58,7 @@ public final class EventTest {
 		__playerManager.add(player);
 
 		// Handle events
-		__eventManager.getExtension().on(ExtEvent.FETCHED_CCU_INFO, args -> {
+		__eventManager.getExtension().on(ExtEvent.FETCHED_CCU_NUMBER, args -> {
 			__testCCU[0] = (int) args[0];
 			__testCCU[1] = (int) args[1];
 			return null;
@@ -73,7 +73,7 @@ public final class EventTest {
 		__eventManager.subscribe();
 
 		// Make events listener
-		__eventManager.getExtension().emit(ExtEvent.FETCHED_CCU_INFO, __playerManager.countPlayers(), __playerManager.count());
+		__eventManager.getExtension().emit(ExtEvent.FETCHED_CCU_NUMBER, __playerManager.countPlayers(), __playerManager.count());
 
 	}
 
@@ -85,7 +85,7 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertTrue(__eventManager.getExtension().hasSubscriber(ExtEvent.FETCHED_CCU_INFO));
+		assertTrue(__eventManager.getExtension().hasSubscriber(ExtEvent.FETCHED_CCU_NUMBER));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public final class EventTest {
 	public void clearAllTEventShouldReturnZero() {
 		__eventManager.getExtension().clear();
 
-		assertFalse(__eventManager.getExtension().hasSubscriber(ExtEvent.FETCHED_CCU_INFO));
+		assertFalse(__eventManager.getExtension().hasSubscriber(ExtEvent.FETCHED_CCU_NUMBER));
 	}
 
 }

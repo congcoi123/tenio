@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.event.IEventManager;
 
@@ -61,14 +62,16 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 	private final IEventManager __eventManager;
 	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 	private final IConfiguration __configuration;
 	private final int __index;
 
 	public NettyWSHandShake(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
-			IConfiguration configuration) {
+			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
 		__index = index;
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
+		__byteArrayPool = byteArrayPool;
 		__configuration = configuration;
 	}
 
@@ -87,7 +90,7 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 				// add new handler to the existing pipeline to handle HandShake-WebSocket
 				// Messages
 				ctx.pipeline().replace(this, "handler",
-						new NettyWSHandler(__index, __eventManager, __msgObjectPool, __configuration));
+						new NettyWSHandler(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
 
 				// do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				__handleHandshake(ctx, httpRequest);

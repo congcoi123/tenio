@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.msgpack.pool;
+package com.tenio.core.pool;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -78,8 +78,8 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 			__used[i] = false;
 		}
 
-		_info("BYTE ARRAY POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		_info("BYTE ARRAY POOL", _buildgen("Increased the number of elements by ",
+				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

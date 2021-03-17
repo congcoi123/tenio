@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.msgpack.pool.ByteArrayInputStreamPool;
 import com.tenio.common.pool.IElementPool;
+import com.tenio.core.pool.ByteArrayInputStreamPool;
 
 /**
  * @author kong

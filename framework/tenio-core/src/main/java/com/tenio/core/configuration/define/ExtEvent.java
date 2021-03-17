@@ -354,7 +354,7 @@ public enum ExtEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	FETCHED_CCU_INFO,
+	FETCHED_CCU_NUMBER,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>

@@ -32,6 +32,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.MessageObject;
 import com.tenio.common.element.MessageObjectArray;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
@@ -56,6 +57,7 @@ import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
+import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.MessageObjectArrayPool;
 import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
@@ -79,6 +81,7 @@ public final class Server extends AbstractLogger implements IServer {
 	private Server() {
 		__msgObjectPool = new MessageObjectPool();
 		__msgArrayPool = new MessageObjectArrayPool();
+		__byteArrayPool = new ByteArrayInputStreamPool();
 
 		__eventManager = new EventManager();
 
@@ -110,6 +113,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private final IElementPool<MessageObject> __msgObjectPool;
 	private final IElementPool<MessageObjectArray> __msgArrayPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 
 	private final IEventManager __eventManager;
 
@@ -169,7 +173,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__createHttpManagers(configuration);
 
 		// start network
-		__startNetwork(configuration, __msgObjectPool);
+		__startNetwork(configuration, __msgObjectPool, __byteArrayPool);
 
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
@@ -183,10 +187,10 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool)
-			throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
-		__network.start(__eventManager, configuration, msgObjectPool);
+		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
 
 	@Override
@@ -199,6 +203,10 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerManager.clear();
 		__taskManager.clear();
 		__eventManager.clear();
+		// clear all pools
+		__msgObjectPool.cleanup();
+		__msgArrayPool.cleanup();
+		__byteArrayPool.cleanup();
 	}
 
 	@Override

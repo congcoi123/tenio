@@ -75,7 +75,7 @@ public final class CoreConstants {
 	 * The delay between two computations of performances for channels or 0 if no
 	 * stats are to be computed.
 	 */
-	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000;
+	public static final long TRAFFIC_COUNTER_CHECK_INTERVAL = 1000 * 60;
 
 	/**
 	 * The HTTP response with UTF-8 encoding

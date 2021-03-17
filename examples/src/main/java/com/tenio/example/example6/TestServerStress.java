@@ -118,10 +118,10 @@ public final class TestServerStress extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.FETCHED_CCU_INFO, args -> {
+			_on(ExtEvent.FETCHED_CCU_NUMBER, args -> {
 				var ccu = _getInt(args[0]);
 
-				_info("FETCHED_CCU_INFO", ccu);
+				_info("FETCHED_CCU_NUMBER", ccu);
 
 				return null;
 			});

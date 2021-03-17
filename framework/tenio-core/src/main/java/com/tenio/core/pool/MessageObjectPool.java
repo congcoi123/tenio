@@ -78,8 +78,8 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 			__used[i] = false;
 		}
 
-		_info("OBJECT POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		_info("MESSAGE OBJECT POOL",
+				_buildgen("Increased the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

@@ -25,6 +25,7 @@ package com.tenio.core.network.netty.ws;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.MessageObject;
+import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ConnectionType;
@@ -47,8 +48,8 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 public class NettyWSHandler extends BaseNettyHandler {
 
 	public NettyWSHandler(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
-			IConfiguration configuration) {
-		super(eventManager, msgObjectPool, index, ConnectionType.WEB_SOCKET);
+			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
+		super(eventManager, msgObjectPool, byteArrayPool, index, ConnectionType.WEB_SOCKET);
 	}
 
 	@Override
@@ -68,17 +69,23 @@ public class NettyWSHandler extends BaseNettyHandler {
 
 			// retrieve an object from pool
 			var msgObject = getMsgObjectPool().get();
+			var byteArray = getByteArrayPool().get();
 
 			// create a new message
-			var message = MsgPackConverter.unserialize(msgObject, bytes);
+			var message = MsgPackConverter.unserialize(msgObject, byteArray, bytes);
 			if (message == null) {
+				// repay
+				getMsgObjectPool().repay(msgObject);
+				getByteArrayPool().repay(byteArray);
 				return;
 			}
 
+			// the main process
 			_channelRead(ctx, message, null);
 
 			// repay
 			getMsgObjectPool().repay(msgObject);
+			getByteArrayPool().repay(byteArray);
 		}
 
 	}

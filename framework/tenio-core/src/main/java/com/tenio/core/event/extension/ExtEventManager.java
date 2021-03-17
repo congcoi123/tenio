@@ -122,8 +122,6 @@ public final class ExtEventManager extends SystemAbstractLogger {
 		switch (type) {
 		case RECEIVED_MESSAGE_FROM_CONNECTION:
 		case RECEIVED_MESSAGE_FROM_PLAYER:
-		case FETCHED_CCU_INFO:
-		case FETCHED_BANDWIDTH_INFO:
 		case HTTP_REQUEST_VALIDATE:
 		case HTTP_REQUEST_HANDLE:
 			return true;
