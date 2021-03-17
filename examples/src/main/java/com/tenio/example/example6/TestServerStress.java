@@ -152,7 +152,7 @@ public final class TestServerStress extends AbstractApp {
 				long usedMemory = _getLong(args[2]);
 				long freeMemory = _getLong(args[3]);
 
-				var info = String.format("cpuUsage=%f%;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
+				var info = String.format("cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
 						(float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
 						(float) freeMemory / CONVERT_TO_MB);
 

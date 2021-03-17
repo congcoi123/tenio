@@ -94,10 +94,10 @@ public final class SystemInfo extends AbstractLogger {
 
 		/* For each file system root, print some info */
 		for (File root : roots) {
-			logger.append("File system root: ").append(root.getAbsolutePath()).append("\n");
-			logger.append("Total space (bytes): ").append(root.getTotalSpace()).append("\n");
-			logger.append("Free space (bytes): ").append(root.getFreeSpace()).append("\n");
-			logger.append("Usable space (bytes): ").append(root.getUsableSpace()).append("\n");
+			logger.append("\t").append("File system root: ").append(root.getAbsolutePath()).append("\n");
+			logger.append("\t").append("Total space (bytes): ").append(root.getTotalSpace()).append("\n");
+			logger.append("\t").append("Free space (bytes): ").append(root.getFreeSpace()).append("\n");
+			logger.append("\t").append("Usable space (bytes): ").append(root.getUsableSpace()).append("\n");
 		}
 
 		_info("DISK INFORMATION", logger);
