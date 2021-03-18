@@ -62,6 +62,7 @@ import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.MessageObjectArrayPool;
 import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
+import com.tenio.core.task.schedule.DeadlockScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
 import com.tenio.core.task.schedule.SystemMonitoringTask;
 import com.tenio.core.task.schedule.TimeOutScanTask;
@@ -306,13 +307,19 @@ public final class Server extends AbstractLogger implements IServer {
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
 				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
 				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
+
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
+				(new DeadlockScanTask(CoreConstants.DEADLOCKED_THREAD_SCAN_INTERVAL)).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {
