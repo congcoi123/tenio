@@ -54,7 +54,7 @@ import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.extension.IExtension;
-import com.tenio.core.monitoring.SystemInfo;
+import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
@@ -62,6 +62,7 @@ import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.MessageObjectArrayPool;
 import com.tenio.core.pool.MessageObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
+import com.tenio.core.task.schedule.DeadlockScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
 import com.tenio.core.task.schedule.SystemMonitoringTask;
 import com.tenio.core.task.schedule.TimeOutScanTask;
@@ -113,22 +114,24 @@ public final class Server extends AbstractLogger implements IServer {
 		return __instance;
 	}
 
-	private final IElementPool<MessageObject> __msgObjectPool;
-	private final IElementPool<MessageObjectArray> __msgArrayPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private IConfiguration __configuration;
 
-	private final IEventManager __eventManager;
+	private IElementPool<MessageObject> __msgObjectPool;
+	private IElementPool<MessageObjectArray> __msgArrayPool;
+	private IElementPool<ByteArrayInputStream> __byteArrayPool;
 
-	private final IRoomManager __roomManager;
-	private final IPlayerManager __playerManager;
-	private final ITaskManager __taskManager;
+	private IEventManager __eventManager;
 
-	private final PlayerApi __playerApi;
-	private final RoomApi __roomApi;
-	private final TaskApi __taskApi;
-	private final MessageApi __messageApi;
+	private IRoomManager __roomManager;
+	private IPlayerManager __playerManager;
+	private ITaskManager __taskManager;
 
-	private final InternalLogicManager __internalLogic;
+	private PlayerApi __playerApi;
+	private RoomApi __roomApi;
+	private TaskApi __taskApi;
+	private MessageApi __messageApi;
+
+	private InternalLogicManager __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
@@ -137,18 +140,23 @@ public final class Server extends AbstractLogger implements IServer {
 	private List<Http> __httpPorts;
 	private int __socketPortsSize;
 	private int __webSocketPortsSize;
+	private String __serverName;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
+		__configuration = configuration;
+
+		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
+
 		// show system information
 		SystemInfo.getInstance().logSystemInfo();
 		SystemInfo.getInstance().logNetCardsInfo();
 		SystemInfo.getInstance().logDiskInfo();
-		
-		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Starting ...");
-		
+
+		_info("SERVER", __serverName, "Starting ...");
+
 		// Put the current configurations to the logger
 		_info("CONFIGURATION", configuration.toString());
 
@@ -194,7 +202,7 @@ public final class Server extends AbstractLogger implements IServer {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		_info("SERVER", configuration.getString(CoreConfigurationType.SERVER_NAME), "Started!");
+		_info("SERVER", __serverName, "Started!");
 	}
 
 	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool,
@@ -205,9 +213,12 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@Override
 	public void shutdown() {
+		_info("SERVER", __serverName, "Stopping ...");
 		if (__network != null) {
 			__network.shutdown();
 		}
+		// clear configuration
+		__configuration.clear();
 		// clear all managers
 		__roomManager.clear();
 		__playerManager.clear();
@@ -217,6 +228,31 @@ public final class Server extends AbstractLogger implements IServer {
 		__msgObjectPool.cleanup();
 		__msgArrayPool.cleanup();
 		__byteArrayPool.cleanup();
+		// clear all ports
+		__socketPorts.clear();
+		__webSocketPorts.clear();
+		__httpPorts.clear();
+		// show log
+		_info("SERVER", __serverName, "Stopped!");
+		// assign by null
+		__configuration = null;
+		__msgObjectPool = null;
+		__msgArrayPool = null;
+		__byteArrayPool = null;
+		__eventManager = null;
+		__roomManager = null;
+		__playerManager = null;
+		__taskManager = null;
+		__playerApi = null;
+		__roomApi = null;
+		__taskApi = null;
+		__messageApi = null;
+		__internalLogic = null;
+		__extension = null;
+		__network = null;
+		__socketPorts = null;
+		__webSocketPorts = null;
+		__httpPorts = null;
 	}
 
 	@Override
@@ -271,13 +307,19 @@ public final class Server extends AbstractLogger implements IServer {
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
 				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
+
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
 				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
+
+		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
+				(new DeadlockScanTask(CoreConstants.DEADLOCKED_THREAD_SCAN_INTERVAL)).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {

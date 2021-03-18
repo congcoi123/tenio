@@ -36,7 +36,7 @@ import com.tenio.core.configuration.Sock;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.monitoring.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
 import com.tenio.core.network.netty.socket.NettySocketInitializer;
