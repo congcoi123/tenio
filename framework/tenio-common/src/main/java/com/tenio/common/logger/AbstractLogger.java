@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Throwables;
-import com.tenio.common.logger.pool.StringBuilderPool;
 import com.tenio.common.pool.IElementPool;
 
 /**
@@ -50,11 +49,11 @@ public abstract class AbstractLogger {
 	 * An object creation pool instance, which is used for re-use string objects,
 	 * see {@link IElementPool}
 	 */
-	final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
+	static final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -77,8 +76,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -99,8 +98,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -121,8 +120,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -141,8 +140,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param where where you put this log
 	 * @param tag   the tag type
@@ -159,8 +158,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -180,8 +179,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -199,8 +198,8 @@ public abstract class AbstractLogger {
 	}
 
 	/**
-	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder} to
-	 * avoid memory leak. Generate log in <b>info</b> level
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>info</b> level
 	 * 
 	 * @param tag the tag type
 	 * @param msg the message content
@@ -214,7 +213,7 @@ public abstract class AbstractLogger {
 		__logger.info(builder.toString());
 		__stringPool.repay(builder);
 	}
-	
+
 	/**
 	 * Only use for EXCEPTION detection in the server system. Be careful when using
 	 * it yourself. You are warned!
@@ -253,5 +252,5 @@ public abstract class AbstractLogger {
 		}
 		return builder;
 	}
-	
+
 }

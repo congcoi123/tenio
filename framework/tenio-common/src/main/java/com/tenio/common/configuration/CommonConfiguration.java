@@ -82,6 +82,11 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 		return __configuration.toString();
 	}
 
+	@Override
+	public void clear() {
+		__configuration.clear();
+	}
+
 	/**
 	 * Put new configuration
 	 * 

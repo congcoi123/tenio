@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.logger.pool;
+package com.tenio.common.logger;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -38,7 +38,7 @@ import com.tenio.common.pool.IElementPool;
  * @author kong
  * 
  */
-public final class StringBuilderPool implements IElementPool<StringBuilder> {
+final class StringBuilderPool implements IElementPool<StringBuilder> {
 
 	private static volatile StringBuilderPool __instance;
 
@@ -63,7 +63,7 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public StringBuilderPool() {
+	private StringBuilderPool() {
 		__pool = new StringBuilder[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
@@ -97,8 +97,8 @@ public final class StringBuilderPool implements IElementPool<StringBuilder> {
 			__used[i] = false;
 		}
 
-		__infoWithoutPool("STRINGBUILDER POOL",
-				__strgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		__infoWithoutPool("STRINGBUILDER POOL", __strgen("Increased the number of elements by ",
+				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
