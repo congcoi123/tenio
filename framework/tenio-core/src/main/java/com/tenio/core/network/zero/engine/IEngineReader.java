@@ -21,15 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exception;
+package com.tenio.core.network.zero.engine;
+
+import java.io.IOException;
+import java.nio.channels.Selector;
+
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.core.network.zero.handler.IOHandler;
 
 /**
+ * UNDER CONSTRUCTION
+ * 
  * @author kong
  */
-public final class HeartbeatNotFoundException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7597111087047955872L;
+public interface IEngineReader {
+
+	void setConfiguration(final IConfiguration configuration);
+
+	void setIoHandler(final IOHandler ioHandler);
+	
+	void setEngineAcceptor(final IEngineAcceptor engineAcceptor);
+	
+	void setEngineWriter(final IEngineWriter engineWriter);
+
+	Selector getSelector();
+
+	long getReadBytes();
+	
+	void setup() throws IOException;
+
+	void start();
+
+	void stop();
 
 }

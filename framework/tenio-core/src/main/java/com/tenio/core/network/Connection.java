@@ -23,11 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.network;
 
-import java.net.InetSocketAddress;
-
-import com.tenio.common.element.MessageObject;
-import com.tenio.core.configuration.define.ConnectionType;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 
 /**
@@ -42,16 +39,16 @@ import com.tenio.core.event.IEventManager;
  * @author kong
  * 
  */
-public abstract class Connection {
-
-	public static final String KEY_STR_CONNECTION = "c";
-
-	protected final IEventManager _eventManager;
+public abstract class Connection implements IConnection {
 
 	/**
-	 * @see AbstractPlayer#getName()
+	 * {@link IEventManager}
 	 */
-	private String __username;
+	private final IEventManager __eventManager;
+	/**
+	 * {@link IPlayer#getName()}
+	 */
+	private String __playerName;
 	/**
 	 * Save the client's address
 	 */
@@ -59,137 +56,61 @@ public abstract class Connection {
 	/**
 	 * Type of the connection
 	 */
-	private ConnectionType __type;
+	private TransportType __type;
 	/**
 	 * The order of connection in one player
 	 */
 	private int __index;
 
-	public Connection(IEventManager eventManager, ConnectionType type, int index) {
-		_eventManager = eventManager;
+	public Connection(final IEventManager eventManager, final TransportType type, final int index) {
+		__eventManager = eventManager;
 		__type = type;
 		__index = index;
 	}
 
-	/**
-	 * Retrieve the "connection" type, see {@link ConnectionType}
-	 * 
-	 * @return the type of connection
-	 */
-	public ConnectionType getType() {
+	@Override
+	public IEventManager getEventManager() {
+		return __eventManager;
+	}
+
+	@Override
+	public TransportType getType() {
 		return __type;
 	}
 
-	/**
-	 * Determine if the current type of connection is matched or not?
-	 * 
-	 * @param type the comparison type
-	 * @return <b>true</b> is the current type is matched, <b>false</b> otherwise.
-	 */
-	public boolean isType(ConnectionType type) {
+	@Override
+	public boolean isType(TransportType type) {
 		return (__type == type);
 	}
 
-	/**
-	 * @return the current index of connection in one player
-	 */
+	@Override
 	public int getIndex() {
 		return __index;
 	}
 
-	/**
-	 * Retrieve the "connection" id, this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @return the username
-	 */
-	public String getUsername() {
-		return __username;
+	@Override
+	public String getPlayerName() {
+		return __playerName;
 	}
 
-	/**
-	 * Set id for the "connection", this id is player's name, see
-	 * {@link AbstractPlayer#getName()}
-	 * 
-	 * @param username the identify of this connection
-	 */
-	public void setUsername(String username) {
-		__username = username;
+	@Override
+	public void setPlayerName(String playerName) {
+		__playerName = playerName;
 	}
 
-	/**
-	 * Remove the username value from channel cache
-	 */
-	public void removeUsername() {
-		__username = null;
+	@Override
+	public void removePlayerName() {
+		__playerName = null;
 	}
 
-	/**
-	 * Set the address
-	 * 
-	 * @param address the new address value
-	 */
+	@Override
 	public void setAddress(String address) {
 		__address = address;
 	}
 
-	/**
-	 * Retrieve the "connection" address in string type
-	 * 
-	 * @return the address
-	 */
+	@Override
 	public String getAddress() {
 		return __address;
 	}
-	
-	@Override
-	public String toString() {
-		return getAddress();
-	}
-
-	/**
-	 * Send a message to the client
-	 * 
-	 * @param message the message content, see {@link MessageObject}
-	 */
-	public abstract void send(MessageObject message);
-
-	/**
-	 * Close a "connection" between a client with the server
-	 */
-	public abstract void close();
-
-	/**
-	 * Delete the keys which are used to identify a player in one "connection". This
-	 * method need to be implemented when the "connection" type is Socket or
-	 * WebSocket
-	 */
-	public abstract void clean();
-
-	/**
-	 * Set the current address for your "connection" (only need for Socket type)
-	 * 
-	 * @param remote, see {@link InetSocketAddress}
-	 */
-	public abstract void setRemote(InetSocketAddress remote);
-
-	/**
-	 * Retrieve this connection itself by channel
-	 * 
-	 * @return the current connection
-	 */
-	public abstract Connection getThis();
-
-	/**
-	 * Set this connection into current channel Note: Set value for one key. You can
-	 * set your custom data to one connection to quick access. These keys and values
-	 * should be saved to channel (which is defined by NIO mechanism)
-	 */
-	public abstract void setThis();
-
-	/**
-	 * Remove the connection object from channel cache
-	 */
-	public abstract void removeThis();
 
 }

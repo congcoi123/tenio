@@ -26,7 +26,7 @@ package com.tenio.core.network;
 import java.io.IOException;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.CoreConfiguration;
@@ -57,8 +57,9 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, IConfiguration configuration, IElementPool<MessageObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException;
+	void start(final IEventManager eventManager, final IConfiguration configuration,
+			final IElementPool<CommonObject> msgObjectPool, final IElementPool<ByteArrayInputStream> byteArrayPool)
+			throws IOException, InterruptedException;
 
 	/**
 	 * Shutdown the network

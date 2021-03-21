@@ -23,9 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.entity;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.tenio.core.entity.annotation.Column;
 import com.tenio.core.entity.annotation.Entity;
-import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 /**
  * A player is one of the base elements in your server. It is a representation
@@ -45,12 +48,16 @@ import com.tenio.core.network.Connection;
  * 
  */
 @Entity
-public abstract class AbstractPlayer {
+public abstract class AbstractPlayer implements IPlayer {
 
 	/**
 	 * The list of socket/web socket connections
 	 */
-	private Connection[] __connections;
+	private IConnection[] __connections;
+	/**
+	 * Tracing the room which they player has been in
+	 */
+	private LinkedList<String> __tracedPassedRoom;
 	/**
 	 * The unique name in the server
 	 */
@@ -64,10 +71,10 @@ public abstract class AbstractPlayer {
 	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
-	 * {@link AbstractRoom}
+	 * {@link IRoom}
 	 */
 	@Column(name = "room")
-	private AbstractRoom __room;
+	private IRoom __room;
 	/**
 	 * The current system time when a new message from the client comes
 	 */
@@ -98,32 +105,32 @@ public abstract class AbstractPlayer {
 	public AbstractPlayer(final String name) {
 		__name = name;
 		__flagNPC = true;
+		__tracedPassedRoom = new LinkedList<String>();
 		setCurrentReaderTime();
 		setCurrentWriterTime();
 	}
 
+	@Override
 	public String getEntityId() {
 		return __entityId;
 	}
 
+	@Override
 	public void setEntityId(String entityId) {
 		__entityId = entityId;
 	}
 
+	@Override
 	public String getName() {
 		return __name;
 	}
 
-	/**
-	 * Check the player's role
-	 * 
-	 * @return <b>true</b> if the player is a NPC (non player character), otherwise
-	 *         return <b>false</b> (A NPC is a player without a connection).
-	 */
+	@Override
 	public boolean isNPC() {
 		return __flagNPC;
 	}
 
+	@Override
 	public boolean hasConnection(int index) {
 		if (__flagNPC) {
 			return false;
@@ -131,25 +138,29 @@ public abstract class AbstractPlayer {
 		return (__connections[index] != null);
 	}
 
-	public Connection getConnection(int index) {
+	@Override
+	public IConnection getConnection(int index) {
 		if (__flagNPC) {
 			return null;
 		}
 		return __connections[index];
 	}
 
+	@Override
 	public void initializeConnections(int size) {
-		__connections = new Connection[size];
+		__connections = new IConnection[size];
 		__flagNPC = false;
 	}
 
-	public void setConnection(final Connection connection, int index) {
+	@Override
+	public void setConnection(final IConnection connection, int index) {
 		if (__flagNPC) {
 			return;
 		}
 		__connections[index] = connection;
 	}
 
+	@Override
 	public void closeConnection(int index) {
 		if (__flagNPC) {
 			return;
@@ -160,6 +171,7 @@ public abstract class AbstractPlayer {
 		}
 	}
 
+	@Override
 	public void closeAllConnections() {
 		if (__flagNPC) {
 			return;
@@ -169,43 +181,54 @@ public abstract class AbstractPlayer {
 		}
 	}
 
-	public AbstractRoom getRoom() {
+	@Override
+	public IRoom getCurrentRoom() {
 		return __room;
 	}
 
-	public void setRoom(final AbstractRoom room) {
+	@Override
+	public void setCurrentRoom(final IRoom room) {
 		__room = room;
+		if (room != null) {
+			__tracedPassedRoom.addLast(room.getId());
+		}
 	}
 
+	@Override
+	public List<String> getTracedRoomsList() {
+		return __tracedPassedRoom;
+	}
+
+	@Override
 	public long getReaderTime() {
 		return __readerTime;
 	}
 
+	@Override
 	public void setCurrentReaderTime() {
 		__readerTime = System.currentTimeMillis();
 	}
 
+	@Override
 	public long getWriterTime() {
 		return __writerTime;
 	}
 
+	@Override
 	public void setCurrentWriterTime() {
 		__writerTime = System.currentTimeMillis();
 	}
 
+	@Override
 	public boolean isIgnoreTimeout() {
 		return __flagIgnoreTimeout;
 	}
 
+	@Override
 	public void setIgnoreTimeout(final boolean flagIgnoreTimeout) {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
 		setCurrentReaderTime();
 		setCurrentWriterTime();
-	}
-	
-	@Override
-	public String toString() {
-		return getName();
 	}
 
 }

@@ -32,8 +32,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.configuration.define.TransportType;
 
 /**
  * @author kong
@@ -59,7 +59,7 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsShouldReturnTrueValue() {
-		var listSockets = (List<Sock>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		assertAll("getSocketPortsConfiguration", () -> assertEquals(8032, listSockets.get(0).getPort()),
 				() -> assertEquals(8033, listSockets.get(1).getPort()),
 				() -> assertEquals(8034, listSockets.get(2).getPort()));
@@ -68,11 +68,11 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
-		var listSockets = (List<Sock>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		assertAll("getSocketPortsTypeConfiguration",
-				() -> assertEquals(ConnectionType.SOCKET, listSockets.get(0).getType()),
-				() -> assertEquals(ConnectionType.DATAGRAM, listSockets.get(1).getType()),
-				() -> assertEquals(ConnectionType.SOCKET, listSockets.get(2).getType()));
+				() -> assertEquals(TransportType.TCP, listSockets.get(0).getType()),
+				() -> assertEquals(TransportType.UDP, listSockets.get(1).getType()),
+				() -> assertEquals(TransportType.TCP, listSockets.get(2).getType()));
 	}
 
 	@AfterEach

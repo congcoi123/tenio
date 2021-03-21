@@ -37,7 +37,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
-import com.tenio.core.configuration.Path;
+import com.tenio.core.configuration.PathConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.event.IEventManager;
@@ -57,9 +57,9 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	private final IEventManager __eventManager;
 	private final String __name;
 	private final int __port;
-	private final List<Path> __paths;
+	private final List<PathConfig> __paths;
 
-	public HttpManagerTask(IEventManager eventManager, String name, int port, List<Path> paths) {
+	public HttpManagerTask(IEventManager eventManager, String name, int port, List<PathConfig> paths) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;
@@ -68,10 +68,10 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 
 	public void setup() throws DuplicatedUriAndMethodException {
 		// Collect the same URI path for one servlet
-		Map<String, List<Path>> servlets = new HashMap<String, List<Path>>();
+		Map<String, List<PathConfig>> servlets = new HashMap<String, List<PathConfig>>();
 		for (var path : __paths) {
 			if (!servlets.containsKey(path.getUri())) {
-				var servlet = new ArrayList<Path>();
+				var servlet = new ArrayList<PathConfig>();
 				servlet.add(path);
 				servlets.put(path.getUri(), servlet);
 			} else {
@@ -123,7 +123,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		}, 0, TimeUnit.SECONDS);
 	}
 
-	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<Path> servlet) {
+	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<PathConfig> servlet) {
 		return servlet.stream().filter(s -> s.getMethod().equals(method)).count() > 1 ? true : false;
 	}
 

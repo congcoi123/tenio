@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.configuration.Sock;
+import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.event.IEventManager;
@@ -69,8 +69,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(IEventManager eventManager, IConfiguration configuration,
-			IElementPool<MessageObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool)
+	public void start(final IEventManager eventManager, final IConfiguration configuration,
+			final IElementPool<CommonObject> msgObjectPool, final IElementPool<ByteArrayInputStream> byteArrayPool)
 			throws IOException, InterruptedException {
 		__producer = new NioEventLoopGroup();
 		__consumer = new NioEventLoopGroup();
@@ -82,14 +82,14 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		__sockets = new ArrayList<Channel>();
 		__websockets = new ArrayList<Channel>();
 
-		var socketPorts = (List<Sock>) configuration.get(CoreConfigurationType.SOCKET_PORTS);
+		var socketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.SOCKET_PORTS);
 		for (int index = 0; index < socketPorts.size(); index++) {
 			var socket = socketPorts.get(index);
 			switch (socket.getType()) {
-			case SOCKET:
+			case TCP:
 				__sockets.add(__bindTCP(index, eventManager, configuration, msgObjectPool, byteArrayPool, socket));
 				break;
-			case DATAGRAM:
+			case UDP:
 				__sockets.add(__bindUDP(index, eventManager, configuration, msgObjectPool, byteArrayPool, socket));
 				break;
 			default:
@@ -97,7 +97,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			}
 		}
 
-		var webSocketPorts = (List<Sock>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
+		var webSocketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
 		for (int index = 0; index < webSocketPorts.size(); index++) {
 			var socket = webSocketPorts.get(index);
 			switch (socket.getType()) {
@@ -120,24 +120,24 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @param configuration your own configuration, see {@link IConfiguration}
 	 * @param msgObjectPool the pool of message objects
 	 * @param byteArrayPool the pool of byte array input stream objects
-	 * @param sock          the socket information
+	 * @param socketConfig  the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindUDP(int index, IEventManager eventManager, IConfiguration configuration,
-			IElementPool<MessageObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool, Sock sock)
-			throws IOException, InterruptedException {
+			IElementPool<CommonObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool,
+			SocketConfig socketConfig) throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
 				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
 				.handler(new NettyDatagramInitializer(index, eventManager, msgObjectPool, byteArrayPool,
 						__traficCounter, configuration));
 
-		_info("DATAGRAM",
-				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
+		_info("DATAGRAM", _buildgen("Name: ", socketConfig.getName(), " > Index: ", index, " > Started at port: ",
+				socketConfig.getPort()));
 
-		return bootstrap.bind(sock.getPort()).sync().channel();
+		return bootstrap.bind(socketConfig.getPort()).sync().channel();
 	}
 
 	/**
@@ -149,14 +149,14 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @param configuration your own configuration, see {@link IConfiguration}
 	 * @param msgObjectPool the pool of message objects
 	 * @param byteArrayPool the pool of byte array input stream objects
-	 * @param sock          the socket information
+	 * @param socketConfig  the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindTCP(int index, IEventManager eventManager, IConfiguration configuration,
-			IElementPool<MessageObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool, Sock sock)
-			throws IOException, InterruptedException {
+			IElementPool<CommonObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool,
+			SocketConfig socketConfig) throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 10240)
@@ -164,10 +164,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childHandler(new NettySocketInitializer(index, eventManager, msgObjectPool, byteArrayPool,
 						__traficCounter, configuration));
 
-		_info("SOCKET",
-				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
+		_info("SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", index, " > Started at port: ",
+				socketConfig.getPort()));
 
-		return bootstrap.bind(sock.getPort()).sync().channel();
+		return bootstrap.bind(socketConfig.getPort()).sync().channel();
 	}
 
 	/**
@@ -180,14 +180,14 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 *                      {@link IConfiguration}
 	 * @param msgObjectPool the pool of message objects
 	 * @param byteArrayPool the pool of byte array input stream objects
-	 * @param sock          the socket information
+	 * @param socketConfig  the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindWS(int index, IEventManager eventManager, IConfiguration configuration,
-			IElementPool<MessageObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool, Sock sock)
-			throws IOException, InterruptedException {
+			IElementPool<CommonObject> msgObjectPool, IElementPool<ByteArrayInputStream> byteArrayPool,
+			SocketConfig socketConfig) throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 1024)
@@ -195,10 +195,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 				.childHandler(new NettyWSInitializer(index, eventManager, msgObjectPool, byteArrayPool, __traficCounter,
 						configuration));
 
-		_info("WEB SOCKET",
-				_buildgen("Name: ", sock.getName(), " > Index: ", index, " > Started at port: ", sock.getPort()));
+		_info("WEB SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", index, " > Started at port: ",
+				socketConfig.getPort()));
 
-		return bootstrap.bind(sock.getPort()).sync().channel();
+		return bootstrap.bind(socketConfig.getPort()).sync().channel();
 	}
 
 	@Override

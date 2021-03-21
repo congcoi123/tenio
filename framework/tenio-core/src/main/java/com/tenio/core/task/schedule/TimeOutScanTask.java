@@ -34,7 +34,7 @@ import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 
 /**
@@ -53,7 +53,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 	/**
 	 * The removable list of players
 	 */
-	private final List<AbstractPlayer> __removeables = new ArrayList<AbstractPlayer>();
+	private final List<IPlayer> __removeablePlayers;
 	/**
 	 * After a number of seconds without any message from the client. It can be
 	 * configured in your configurations, see {@link CoreConfiguration}
@@ -76,6 +76,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 		__idleReader = idleReader;
 		__idleWriter = idleWriter;
 		__timeoutScanPeriod = timeoutScanPeriod;
+		__removeablePlayers = new ArrayList<IPlayer>();
 	}
 
 	@Override
@@ -89,23 +90,23 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 				if (!player.isIgnoreTimeout()) {
 					long writerTime = player.getWriterTime();
 					if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
-						__removeables.add(player);
+						__removeablePlayers.add(player);
 						continue;
 					} else { // check reader time
 						long readerTime = player.getReaderTime();
 						if (currentTime - readerTime >= (__idleReader * 1000)) {
-							__removeables.add(player);
+							__removeablePlayers.add(player);
 						}
 					}
 				}
 			}
 
-			__removeables.forEach((player) -> {
+			__removeablePlayers.forEach((player) -> {
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_GOT_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 
-			__removeables.clear();
+			__removeablePlayers.clear();
 
 		}, 0, __timeoutScanPeriod, TimeUnit.SECONDS);
 	}

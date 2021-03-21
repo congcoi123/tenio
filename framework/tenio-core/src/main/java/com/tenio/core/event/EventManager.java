@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.event;
 
-import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.event.extension.ExtEventManager;
 import com.tenio.core.event.internal.InternalEventManager;
 
@@ -35,7 +34,7 @@ import com.tenio.core.event.internal.InternalEventManager;
  * @author kong
  *
  */
-public final class EventManager extends AbstractLogger implements IEventManager {
+public final class EventManager implements IEventManager {
 
 	/**
 	 * @see ExtEventManager

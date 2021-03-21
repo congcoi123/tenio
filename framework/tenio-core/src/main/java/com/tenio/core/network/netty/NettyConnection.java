@@ -25,12 +25,13 @@ package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -48,12 +49,6 @@ import io.netty.util.AttributeKey;
 public class NettyConnection extends Connection {
 
 	/**
-	 * Save this connection itself to its channel. In case of Datagram channel, we
-	 * use {@link #__address} as a key for the current connection
-	 */
-	public static final AttributeKey<Connection> KEY_CONNECTION = AttributeKey.valueOf(KEY_STR_CONNECTION);
-
-	/**
 	 * @see Channel
 	 */
 	private Channel __channel;
@@ -63,30 +58,31 @@ public class NettyConnection extends Connection {
 	 */
 	protected InetSocketAddress __remote;
 
-	private NettyConnection(int index, IEventManager eventManager, ConnectionType type, Channel channel) {
+	private NettyConnection(int index, IEventManager eventManager, TransportType type, Channel channel) {
 		super(eventManager, type, index);
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
 		// receive a message from client)
 		// in the Datagram connection there is only one channel existed
-		if (!isType(ConnectionType.DATAGRAM)) {
+		if (!isType(TransportType.UDP)) {
 			setAddress(((InetSocketAddress) __channel.remoteAddress()).toString());
 		}
 	}
 
-	public static NettyConnection newInstance(int index, IEventManager eventManager, ConnectionType type, Channel channel) {
+	public static NettyConnection newInstance(int index, IEventManager eventManager, TransportType type,
+			Channel channel) {
 		return new NettyConnection(index, eventManager, type, channel);
 	}
 
 	@Override
-	public void send(MessageObject message) {
-		if (isType(ConnectionType.SOCKET)) {
+	public void send(CommonObject message) {
+		if (isType(TransportType.TCP)) {
 			__channel.writeAndFlush(MsgPackConverter.serialize(message));
-		} else if (isType(ConnectionType.WEB_SOCKET)) {
+		} else if (isType(TransportType.WEB_SOCKET)) {
 			__channel.writeAndFlush(
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
-		} else if (isType(ConnectionType.DATAGRAM)) {
+		} else if (isType(TransportType.UDP)) {
 			if (__remote != null) {
 				__channel.writeAndFlush(
 						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remote));
@@ -99,39 +95,39 @@ public class NettyConnection extends Connection {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
-		_eventManager.getInternal().emit(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, getUsername());
+		getEventManager().getInternal().emit(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, getPlayerName());
 	}
 
 	@Override
-	public Connection getThis() {
-		if (isType(ConnectionType.DATAGRAM)) {
+	public IConnection getThis() {
+		if (isType(TransportType.UDP)) {
 			return (Connection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
 		}
-		return __channel.attr(KEY_CONNECTION).get();
+		return __channel.attr(NettyConnectionOption.CONNECTION).get();
 	}
 
 	@Override
 	public void setThis() {
-		if (isType(ConnectionType.DATAGRAM)) {
+		if (isType(TransportType.UDP)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(this);
 		} else {
-			__channel.attr(KEY_CONNECTION).set(this);
+			__channel.attr(NettyConnectionOption.CONNECTION).set(this);
 		}
 	}
 
 	@Override
 	public void removeThis() {
-		if (isType(ConnectionType.DATAGRAM)) {
+		if (isType(TransportType.UDP)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(null);
 		} else {
-			__channel.attr(KEY_CONNECTION).set(null);
+			__channel.attr(NettyConnectionOption.CONNECTION).set(null);
 		}
 	}
 
 	@Override
 	public void setRemote(InetSocketAddress remote) {
 		// only need for the Datagram connection
-		if (isType(ConnectionType.DATAGRAM)) {
+		if (isType(TransportType.UDP)) {
 			__remote = remote;
 			setAddress(__remote.toString());
 		}
@@ -140,7 +136,7 @@ public class NettyConnection extends Connection {
 	@Override
 	public void clean() {
 		// only need for WebSocket and Socket
-		removeUsername();
+		removePlayerName();
 		removeThis();
 		__channel = null;
 	}

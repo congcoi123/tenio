@@ -33,8 +33,8 @@ import java.util.Map;
 import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
-import com.tenio.common.element.MessageObject;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 
 /**
  * <a href="https://msgpack.org/index.html">MessagePack</a> is an efficient
@@ -68,7 +68,7 @@ public final class MsgPackConverter {
 	 * @param msgRaw         an array of bytes data
 	 * @return an message object in <b>MessageObject</b> type
 	 */
-	public static MessageObject unserialize(MessageObject msgObject, ByteArrayInputStream byteArrayInput,
+	public static CommonObject unserialize(CommonObject msgObject, ByteArrayInputStream byteArrayInput,
 			byte[] msgRaw) {
 		var dstMap = MsgPackUtil.unpack(byteArrayInput, msgRaw);
 		if (dstMap == null || dstMap.isEmpty()) {
@@ -86,8 +86,8 @@ public final class MsgPackConverter {
 	 * @param msgRaw an array of bytes data
 	 * @return an message object in <b>MessageObject</b> type
 	 */
-	public static MessageObject unserialize(byte[] msgRaw) {
-		var msgObject = MessageObject.newInstance();
+	public static CommonObject unserialize(byte[] msgRaw) {
+		var msgObject = CommonObject.newInstance();
 		var byteArrayInput = ByteArrayInputStream.newInstance();
 		var dstMap = MsgPackUtil.unpack(byteArrayInput, msgRaw);
 		if (dstMap == null || dstMap.isEmpty()) {
@@ -164,7 +164,7 @@ public final class MsgPackConverter {
 			} else if (value.isArrayValue()) {
 				// Convert value to list of objects (MessageObjectArray)
 				var arr = value.asArrayValue();
-				var array = MessageObjectArray.newInstance();
+				var array = CommonObjectArray.newInstance();
 				arr.forEach(element -> {
 					array.add(valueToObject(element));
 				});

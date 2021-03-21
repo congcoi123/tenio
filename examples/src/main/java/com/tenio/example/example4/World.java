@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
@@ -77,12 +77,12 @@ public final class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
-	private Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	private Collection<IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
-	private MessageObjectArray __ids = MessageObjectArray.newInstance();
-	private MessageObjectArray __pxs = MessageObjectArray.newInstance();
-	private MessageObjectArray __pys = MessageObjectArray.newInstance();
-	private MessageObjectArray __prs = MessageObjectArray.newInstance();
+	private CommonObjectArray __ids = CommonObjectArray.newInstance();
+	private CommonObjectArray __pxs = CommonObjectArray.newInstance();
+	private CommonObjectArray __pys = CommonObjectArray.newInstance();
+	private CommonObjectArray __prs = CommonObjectArray.newInstance();
 
 	public World(int cx, int cy) {
 		super(cx, cy);

@@ -27,7 +27,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
 
@@ -47,7 +47,7 @@ import com.tenio.example.client.TCP;
  */
 public final class TestClientStress implements ISocketListener {
 
-	private static final boolean SHOW_DEBUG = false;
+	private static final boolean ENABLED_DEBUG = false;
 	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
 	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
 	private static final String NUMBER = "0123456789";
@@ -77,10 +77,10 @@ public final class TestClientStress implements ISocketListener {
 			__tcps.put(name, tcp);
 
 			// send a login request
-			var message = MessageObject.newInstance();
+			var message = CommonObject.newInstance();
 			message.put("u", name);
 			tcp.send(message);
-			if (SHOW_DEBUG) {
+			if (ENABLED_DEBUG) {
 				System.err.println("Login Request -> " + message);
 			}
 		}
@@ -88,13 +88,13 @@ public final class TestClientStress implements ISocketListener {
 	}
 
 	@Override
-	public void onReceivedTCP(MessageObject message) {
-		if (SHOW_DEBUG) {
+	public void onReceivedTCP(CommonObject message) {
+		if (ENABLED_DEBUG) {
 			System.out.println("x[RECV FROM SERVER TCP] -> " + message);
 		}
 		
 		// make an echo message
-		var msg = MessageObject.newInstance();
+		var msg = CommonObject.newInstance();
 		msg.put("m", __generateRandomString(5));
 		__tcps.get(message.get("p")).send(msg);
 	}

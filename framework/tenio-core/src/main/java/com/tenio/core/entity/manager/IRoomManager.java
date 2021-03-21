@@ -27,11 +27,13 @@ import java.util.Map;
 
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
+import com.tenio.core.exception.DuplicatedRoomIdException;
+import com.tenio.core.exception.NullRoomException;
 
 /**
- * Manage all your rooms ({@link AbstractRoom}) on the server. It is a singleton
+ * Manage all your rooms ({@link IRoom}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
  * {@link RoomApi} interface for easy management.
  * 
@@ -48,7 +50,7 @@ public interface IRoomManager extends IManager {
 	/**
 	 * @return all the current rooms in your server
 	 */
-	Map<String, AbstractRoom> gets();
+	Map<String, IRoom> gets();
 
 	/**
 	 * Remove all rooms
@@ -61,7 +63,7 @@ public interface IRoomManager extends IManager {
 	 * @param roomId the unique ID
 	 * @return a room's instance if it has existed, <b>null</b> otherwise
 	 */
-	AbstractRoom get(final String roomId);
+	IRoom get(final String roomId);
 
 	/**
 	 * Determine if the room has existed or not.
@@ -74,38 +76,42 @@ public interface IRoomManager extends IManager {
 	/**
 	 * Add a new room to your server. You need create your own room first.
 	 * 
-	 * @param room that is added, see {@link AbstractRoom}
+	 * @param room that is added, see {@link IRoom}
+	 * 
+	 * @throws DuplicatedRoomIdException
 	 */
-	void add(final AbstractRoom room);
+	void add(final IRoom room) throws DuplicatedRoomIdException;
 
 	/**
 	 * Remove a room from your server.
 	 * 
-	 * @param room that is removed, see {@link AbstractRoom}
+	 * @param room that is removed, see {@link IRoom}
+	 * 
+	 * @throws NullRoomException
 	 */
-	void remove(final AbstractRoom room);
+	void remove(final IRoom room) throws NullRoomException;
 
 	/**
 	 * Request one player to join a room. This request can be refused with some
 	 * reason. You can handle these results in the corresponding events.
 	 * 
-	 * @param room   the desired room, see {@link AbstractRoom}
-	 * @param player the current player, see {@link AbstractPlayer}
-	 * @return the action' result if it existed in, see {@link CoreMessageCode}, <b>null</b>
-	 *         otherwise
+	 * @param room   the desired room, see {@link IRoom}
+	 * @param player the current player, see {@link IPlayer}
+	 * @return the action' result if it existed in, see {@link CoreMessageCode},
+	 *         <b>null</b> otherwise
 	 */
-	CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player);
+	CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player);
 
 	/**
 	 * Allow a player to leave his current room. You can handle your own logic in
 	 * the corresponding events.
 	 * 
-	 * @param player that will be left his current room, see {@link AbstractPlayer}
+	 * @param player that will be left his current room, see {@link IPlayer}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
-	 * @return the action' result if it existed in, see {@link CoreMessageCode}, <b>null</b>
-	 *         otherwise
+	 * @return the action' result if it existed in, see {@link CoreMessageCode},
+	 *         <b>null</b> otherwise
 	 */
-	CoreMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force);
+	CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force);
 
 }

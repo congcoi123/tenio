@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.common.element.MessageObject;
-import com.tenio.core.configuration.Path;
+import com.tenio.common.element.CommonObject;
+import com.tenio.core.configuration.PathConfig;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
@@ -56,7 +56,7 @@ public final class ServletManager extends BaseServlet {
 	private ProcessGet __processGet;
 	private ProcessDelete __processDelete;
 
-	public ServletManager(IEventManager eventManager, List<Path> paths) {
+	public ServletManager(IEventManager eventManager, List<PathConfig> paths) {
 		__eventManager = eventManager;
 		for (var path : paths) {
 			switch (path.getMethod()) {
@@ -167,7 +167,7 @@ public final class ServletManager extends BaseServlet {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		try {
 			var json = new JSONObject();
-			json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "405 Method Not Allowed"));
+			json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "405 Method Not Allowed"));
 			response.getWriter().println(json.toString());
 		} catch (IOException e) {
 			e.printStackTrace();

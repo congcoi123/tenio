@@ -26,10 +26,14 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class DuplicatedPlayerException extends RuntimeException {
+public final class DuplicatedPlayerException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1303721781114060707L;
+
+	public DuplicatedPlayerException(final String playerName) {
+		super(playerName);
+	}
 
 }

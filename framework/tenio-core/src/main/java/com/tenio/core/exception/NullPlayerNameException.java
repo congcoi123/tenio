@@ -26,7 +26,7 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class NullPlayerNameException extends RuntimeException {
+public final class NullPlayerNameException extends Exception {
 	/**
 	 * 
 	 */

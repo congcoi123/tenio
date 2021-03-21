@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.pool.MessageObjectPool;
@@ -44,7 +44,7 @@ import com.tenio.core.pool.MessageObjectPool;
  */
 public final class MessageObjectPoolTest {
 
-	private IElementPool<MessageObject> __objectPool;
+	private IElementPool<CommonObject> __objectPool;
 
 	@BeforeEach
 	public void initialize() {
@@ -58,7 +58,7 @@ public final class MessageObjectPoolTest {
 
 	@Test
 	public void createNewMessageObjectShouldReturnSuccess() {
-		MessageObject object = __objectPool.get();
+		CommonObject object = __objectPool.get();
 		
 		assertNotEquals(null, object);
 	}
@@ -66,14 +66,14 @@ public final class MessageObjectPoolTest {
 	@Test
 	public void repayAnObjectWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			MessageObject object = MessageObject.newInstance();
+			CommonObject object = CommonObject.newInstance();
 			__objectPool.repay(object);
 		});
 	}
 
 	@Test
 	public void afterReplayObjectShouldBeClearedAllData() {
-		MessageObject object = __objectPool.get();
+		CommonObject object = __objectPool.get();
 		object.put("key1", "value1");
 		object.put("key2", "value2");
 		object.put("key3", "value3");
