@@ -26,9 +26,9 @@ package com.tenio.core.message.packet;
 import com.tenio.core.exception.MessagePacketQueueFullException;
 
 /**
+ * UNDER CONSTRUCTION
  * 
  * @author kong
- *
  */
 public interface IPacketQueue {
 

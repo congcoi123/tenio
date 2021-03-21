@@ -28,9 +28,9 @@ import java.util.LinkedList;
 import com.tenio.core.exception.MessagePacketQueueFullException;
 
 /**
+ * UNDER CONSTRUCTION
  * 
  * @author kong
- *
  */
 public final class DefaultPacketQueue implements IPacketQueue {
 
