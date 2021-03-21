@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.json.simple.JSONObject;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
@@ -140,7 +140,7 @@ public final class TestServerAttach extends AbstractApp {
 
 				if (method.equals(RestMethod.DELETE)) {
 					var json = new JSONObject();
-					json.putAll(MessageObject.newInstance().add("status", "failed").add("message", "not supported"));
+					json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
 					try {
 						response.getWriter().println(json.toString());
 					} catch (IOException e) {
@@ -158,7 +158,7 @@ public final class TestServerAttach extends AbstractApp {
 				var response = _getHttpServletResponse(args[2]);
 
 				var json = new JSONObject();
-				json.putAll(MessageObject.newInstance().add("status", "ok").add("message", "handler"));
+				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
 				try {
 					response.getWriter().println(json.toString());
 				} catch (IOException e) {

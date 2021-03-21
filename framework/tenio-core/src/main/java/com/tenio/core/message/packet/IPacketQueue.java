@@ -21,26 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.define;
+package com.tenio.core.message.packet;
+
+import com.tenio.core.exception.MessagePacketQueueFullException;
 
 /**
+ * 
  * @author kong
+ *
  */
-public enum ConnectionType {
-	/**
-	 * TCP
-	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+public interface IPacketQueue {
+
+	byte[] peek();
+
+	byte[] take();
+
+	boolean isEmpty();
+
+	boolean isFull();
+
+	int count();
+
+	int getSize();
+
+	void setSize(int size);
+
+	float getPercentageUsed();
+
+	void put(byte[] packet) throws MessagePacketQueueFullException;
+
+	void clear();
+
 }

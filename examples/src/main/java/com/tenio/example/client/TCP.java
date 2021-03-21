@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.message.MessagePacker;
@@ -79,9 +79,9 @@ public final class TCP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link MessageObject}
+	 * @param message the desired message, see {@link CommonObject}
 	 */
-	public void send(MessageObject message) {
+	public void send(CommonObject message) {
 		// convert message object to bytes data
 		var pack = MsgPackConverter.serialize(message);
 		// attach the packet's length to packet's header

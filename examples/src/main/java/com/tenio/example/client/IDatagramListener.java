@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.client;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 
 /**
  * This interface helps you listen to all messages these came from the server's
@@ -37,8 +37,8 @@ public interface IDatagramListener {
 	/**
 	 * Listen for a new message
 	 * 
-	 * @param message the received message, see {@link MessageObject}
+	 * @param message the received message, see {@link CommonObject}
 	 */
-	void onReceivedUDP(MessageObject message);
+	void onReceivedUDP(CommonObject message);
 
 }

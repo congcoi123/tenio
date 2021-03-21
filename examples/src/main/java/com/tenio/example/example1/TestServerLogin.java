@@ -27,8 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
@@ -116,11 +116,11 @@ public final class TestServerLogin extends AbstractApp {
 					var data = _messageApi.getMessageObjectArray();
 					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
 							data.put("H").put("3").put("L").put("O").put(true)
-									.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
+									.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 					// Attempt to send internal message
 					_messageApi.sendToInternalServer(player, 1,
-							MessageObject.newInstance().add("internal", "this is a message in external server"));
+							CommonObject.newInstance().add("internal", "this is a message in external server"));
 
 					try {
 						_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));

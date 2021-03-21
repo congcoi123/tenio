@@ -26,7 +26,6 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.element.MessageObject;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
@@ -53,7 +52,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> a valid connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message that sent from the client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -66,7 +65,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the current connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message that sent from the client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -124,7 +123,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> a new connection from the current client (the old one
 	 * was removed automatically), see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message from the current client which needs to hold
-	 * some credentials information, see {@link MessageObject}</li>
+	 * some credentials information, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return if you allow the client can be re-connected, return the corresponding
@@ -167,7 +166,7 @@ public enum ExtEvent {
 	 * {@link AbstractPlayer}</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
 	 * {@link Integer}. Notice that, 0 value means main connection.
-	 * <li><b>parameter[2]</b> the sent message, see {@link MessageObject}</li>
+	 * <li><b>parameter[2]</b> the sent message, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -182,7 +181,7 @@ public enum ExtEvent {
 	 * {@link AbstractPlayer} to your server</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
 	 * {@link Integer}. Notice that, 0 value means main connection.
-	 * <li><b>parameter[2]</b> the received message, see {@link MessageObject}</li>
+	 * <li><b>parameter[2]</b> the received message, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -301,7 +300,7 @@ public enum ExtEvent {
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message from one client needs to hold some
 	 * credentials data so that you can return him a corresponding value, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return if the client is allowed to attach a sub connection, return the
@@ -333,7 +332,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> the index of in-comming connection, see
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message received from one client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in
 	 * string type</li>
 	 * </ul>

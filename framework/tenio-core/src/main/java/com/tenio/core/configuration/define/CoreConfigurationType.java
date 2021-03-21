@@ -74,6 +74,20 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 * stats are to be computed
 	 */
 	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
+
+	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
+
+	NUMBER_READER_WORKER("numberReaderWorker"),
+
+	NUMBER_WRITER_WORKER("numberWriterWorker"),
+	
+	READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
+	
+	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
+	
+	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
+
+	SERVER_ADDRESS("serverAddress"),
 	/**
 	 * The list of socket ports in configuration
 	 */

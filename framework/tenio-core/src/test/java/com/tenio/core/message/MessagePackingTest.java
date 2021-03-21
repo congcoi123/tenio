@@ -30,7 +30,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
 
@@ -39,11 +39,11 @@ import com.tenio.core.configuration.constant.CoreConstants;
  */
 public final class MessagePackingTest {
 
-	private MessageObject __message;
+	private CommonObject __message;
 
 	@BeforeEach
 	public void initialize() {
-		__message = MessageObject.newInstance();
+		__message = CommonObject.newInstance();
 		__message.put("string", "String");
 		__message.put("integer", 1993);
 		__message.put("float", 1.0);

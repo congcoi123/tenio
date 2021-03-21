@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example6;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -100,7 +100,7 @@ public final class TestServerStress extends AbstractApp {
 				var data = _messageApi.getMessageObjectArray();
 				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
 						data.put("H").put("3").put("L").put("O").put(true)
-								.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
+								.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 				return null;
 			});

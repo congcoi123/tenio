@@ -32,7 +32,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 
 /**
@@ -74,9 +74,9 @@ public final class UDP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link MessageObject}
+	 * @param message the desired message, see {@link CommonObject}
 	 */
-	public void send(MessageObject message) {
+	public void send(CommonObject message) {
 		var pack = MsgPackConverter.serialize(message);
 		var request = new DatagramPacket(pack, pack.length, __address, __port);
 		try {

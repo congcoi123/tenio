@@ -28,7 +28,7 @@ import com.tenio.core.configuration.define.RestMethod;
 /**
  * @author kong
  */
-public final class Path {
+public final class PathConfig {
 
 	private String __name;
 	private String __description;
@@ -36,7 +36,7 @@ public final class Path {
 	private RestMethod __method;
 	private String __uri;
 
-	public Path(String name, RestMethod method, String uri, String description, int version) {
+	public PathConfig(String name, RestMethod method, String uri, String description, int version) {
 		__name = name;
 		__method = method;
 		__uri = uri;

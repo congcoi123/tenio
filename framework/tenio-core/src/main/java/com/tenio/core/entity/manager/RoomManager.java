@@ -29,18 +29,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.exception.DuplicatedRoomException;
+import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullRoomException;
 
 /**
- * Manage all your rooms ({@link AbstractRoom}) on the server. It is a singleton
+ * Manage all your rooms ({@link IRoom}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
  * {@link RoomApi} interface for easy management.
  * 
@@ -49,16 +48,17 @@ import com.tenio.core.exception.NullRoomException;
  * @author kong
  * 
  */
-public final class RoomManager extends AbstractLogger implements IRoomManager {
+public final class RoomManager implements IRoomManager {
 
 	/**
 	 * A map object to manage your rooms with the key must be a room's id
 	 */
-	private final Map<String, AbstractRoom> __rooms = new HashMap<String, AbstractRoom>();
+	private final Map<String, IRoom> __rooms;
 	private final IEventManager __eventManager;
 
 	public RoomManager(IEventManager eventManager) {
 		__eventManager = eventManager;
+		__rooms = new HashMap<String, IRoom>();
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public Map<String, AbstractRoom> gets() {
+	public Map<String, IRoom> gets() {
 		synchronized (__rooms) {
 			return __rooms;
 		}
@@ -88,7 +88,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public AbstractRoom get(final String roomId) {
+	public IRoom get(final String roomId) {
 		synchronized (__rooms) {
 			return __rooms.get(roomId);
 		}
@@ -102,14 +102,12 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public void add(final AbstractRoom room) {
+	public void add(final IRoom room) throws DuplicatedRoomIdException {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
 				__eventManager.getExtension().emit(ExtEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
-				var e = new DuplicatedRoomException();
-				_error(e, "room id: ", room.getId());
-				throw e;
+				throw new DuplicatedRoomIdException(room.getId());
 			}
 			__rooms.put(room.getId(), room);
 			// fire an event
@@ -118,12 +116,10 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public void remove(final AbstractRoom room) {
+	public void remove(final IRoom room) throws NullRoomException {
 		synchronized (__rooms) {
 			if (!__rooms.containsKey(room.getId())) {
-				var e = new NullRoomException();
-				_error(e, "room id: ", room.getId());
-				throw e;
+				throw new NullRoomException(room.getId());
 			}
 
 			// fire an event
@@ -141,10 +137,10 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	 * you want to kick someone from his room because of his cheating or something
 	 * else.
 	 *
-	 * @param room the corresponding room @see {@link AbstractRoom}
+	 * @param room the corresponding room @see {@link IRoom}
 	 */
-	private void __forceAllPlayersLeaveRoom(final AbstractRoom room) {
-		final List<AbstractPlayer> removePlayers = new ArrayList<AbstractPlayer>();
+	private void __forceAllPlayersLeaveRoom(final IRoom room) {
+		final List<IPlayer> removePlayers = new ArrayList<IPlayer>();
 		room.getPlayers().values().forEach(player -> {
 			removePlayers.add(player);
 		});
@@ -155,7 +151,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerJoinRoom(final AbstractRoom room, final AbstractPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player) {
 		if (room.contain(player.getName())) {
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
@@ -163,7 +159,8 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		}
 
 		if (room.isFull()) {
-			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false, CoreMessageCode.ROOM_IS_FULL);
+			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
+					CoreMessageCode.ROOM_IS_FULL);
 			return CoreMessageCode.ROOM_IS_FULL;
 		}
 
@@ -171,7 +168,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		makePlayerLeaveRoom(player, false);
 
 		room.add(player);
-		player.setRoom(room);
+		player.setCurrentRoom(room);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true);
 
@@ -179,8 +176,8 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerLeaveRoom(final AbstractPlayer player, final boolean force) {
-		var room = player.getRoom();
+	public CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force) {
+		var room = player.getCurrentRoom();
 		if (room == null) {
 			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
 		}
@@ -188,7 +185,7 @@ public final class RoomManager extends AbstractLogger implements IRoomManager {
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.remove(player);
-		player.setRoom(null);
+		player.setCurrentRoom(null);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
 

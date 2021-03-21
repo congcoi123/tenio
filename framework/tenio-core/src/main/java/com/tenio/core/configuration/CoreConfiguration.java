@@ -33,9 +33,9 @@ import org.w3c.dom.Node;
 
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
-import com.tenio.core.configuration.define.ConnectionType;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.configuration.define.TransportType;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -52,17 +52,17 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	/**
 	 * All ports in sockets zone
 	 */
-	private final List<Sock> __socketPorts = new ArrayList<Sock>();
+	private final List<SocketConfig> __socketPorts;
 
 	/**
 	 * All ports in web sockets zone
 	 */
-	private final List<Sock> __webSocketPorts = new ArrayList<Sock>();
+	private final List<SocketConfig> __webSocketPorts;
 
 	/**
 	 * All ports in http zone
 	 */
-	private final List<Http> __httpPorts = new ArrayList<Http>();
+	private final List<HttpConfig> __httpPorts;
 
 	/**
 	 * The constructor
@@ -71,6 +71,10 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 *             in same folder with your application
 	 */
 	public CoreConfiguration(final String file) {
+		__socketPorts = new ArrayList<SocketConfig>();
+		__webSocketPorts = new ArrayList<SocketConfig>();
+		__httpPorts = new ArrayList<HttpConfig>();
+
 		try {
 			__load(file);
 		} catch (Exception e) {
@@ -103,28 +107,29 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		var attrNetworkSockets = XMLUtility.getNodeList(root, "//Server/Network/Sockets/Port");
 		for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
 			var pDataNode = attrNetworkSockets.item(j);
-			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					__getConnectionType(pDataNode.getAttributes().getNamedItem("type").getTextContent()),
+			var port = new SocketConfig(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
+					TransportType.getByValue(pDataNode.getAttributes().getNamedItem("type").getTextContent()),
 					Integer.parseInt(pDataNode.getTextContent()));
+
 			__socketPorts.add(port);
 		}
 		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
-			var port = new Sock(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					ConnectionType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
+			var port = new SocketConfig(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
+					TransportType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
 			__webSocketPorts.add(port);
 		}
 		var attrNetworkHttps = XMLUtility.getNodeList(root, "//Server/Network/Http/Port");
 		for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
 			var pPortNode = attrNetworkHttps.item(i);
-			var port = new Http(pPortNode.getAttributes().getNamedItem("name").getTextContent(),
+			var port = new HttpConfig(pPortNode.getAttributes().getNamedItem("name").getTextContent(),
 					Integer.parseInt(pPortNode.getAttributes().getNamedItem("value").getTextContent()));
 
 			var attrHttpPaths = XMLUtility.getNodeList(attrNetworkHttps.item(i), "//Path");
 			for (int j = 0; j < attrHttpPaths.getLength(); j++) {
 				var pPathNode = attrHttpPaths.item(j);
-				var path = new Path(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
+				var path = new PathConfig(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
 						__getRestMethod(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
 						pPathNode.getTextContent(), pPathNode.getAttributes().getNamedItem("desc").getTextContent(),
 						Integer.parseInt(pPathNode.getAttributes().getNamedItem("version").getTextContent()));
@@ -157,22 +162,8 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			var value = pDataNode.getTextContent();
 			extProperties.put(key, value);
 		}
-		
-		_extend(extProperties);
-	}
 
-	/**
-	 * @param type the type name in text
-	 * @return the connection type in {@link ConnectionType} type
-	 */
-	private ConnectionType __getConnectionType(final String type) {
-		switch (type.toLowerCase()) {
-		case "tcp":
-			return ConnectionType.SOCKET;
-		case "udp":
-			return ConnectionType.DATAGRAM;
-		}
-		return null;
+		_extend(extProperties);
 	}
 
 	/**

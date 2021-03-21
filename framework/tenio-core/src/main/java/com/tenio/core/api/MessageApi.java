@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
-import com.tenio.common.element.MessageObject;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 
@@ -46,12 +46,12 @@ import com.tenio.core.network.Connection;
  */
 public final class MessageApi extends AbstractLogger {
 
-	private final IElementPool<MessageObject> __msgObjectPool;
-	private final IElementPool<MessageObjectArray> __msgArrayPool;
+	private final IElementPool<CommonObject> __msgObjectPool;
+	private final IElementPool<CommonObjectArray> __msgArrayPool;
 	private final IEventManager __eventManager;
 
-	public MessageApi(IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
-			IElementPool<MessageObjectArray> msgArrayPool) {
+	public MessageApi(IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
+			IElementPool<CommonObjectArray> msgArrayPool) {
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
 		__msgArrayPool = msgArrayPool;
@@ -69,8 +69,8 @@ public final class MessageApi extends AbstractLogger {
 		message.put(key, value);
 		connection.send(message);
 		__msgObjectPool.repay(message);
-		if (value instanceof MessageObjectArray) {
-			__msgArrayPool.repay((MessageObjectArray) value);
+		if (value instanceof CommonObjectArray) {
+			__msgArrayPool.repay((CommonObjectArray) value);
 		}
 	}
 
@@ -84,10 +84,10 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
-	 * @param data       the main data of message, see: {@link MessageObjectArray}
+	 * @param data       the main data of message, see: {@link CommonObjectArray}
 	 */
 	public void sendToConnection(Connection connection, String key, Object value, String keyData,
-			MessageObjectArray data) {
+			CommonObjectArray data) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -99,11 +99,11 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player  See {@link AbstractPlayer}
+	 * @param player  See {@link IPlayer}
 	 * @param index   the index of connection in current player
 	 * @param message the sending message
 	 */
-	private void __send(AbstractPlayer player, int index, MessageObject message) {
+	private void __send(IPlayer player, int index, CommonObject message) {
 		player.setCurrentWriterTime(); // update time to check TIMEOUT
 		// send to CLIENT (connection)
 		if (player.hasConnection(index)) {
@@ -115,18 +115,18 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message to player via his connection
 	 * 
-	 * @param player See {@link AbstractPlayer}
+	 * @param player See {@link IPlayer}
 	 * @param index  the index of connection in current player
 	 * @param key    the key of message
 	 * @param value  the value of message
 	 */
-	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value) {
+	public void sendToPlayer(IPlayer player, int index, String key, Object value) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		__send(player, index, message);
 		__msgObjectPool.repay(message);
-		if (value instanceof MessageObjectArray) {
-			__msgArrayPool.repay((MessageObjectArray) value);
+		if (value instanceof CommonObjectArray) {
+			__msgArrayPool.repay((CommonObjectArray) value);
 		}
 	}
 
@@ -141,10 +141,10 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message data, see: {@link MessageObjectArray}
+	 * @param data    the message data, see: {@link CommonObjectArray}
 	 */
-	public void sendToPlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
-			MessageObjectArray data) {
+	public void sendToPlayer(IPlayer player, int index, String key, Object value, String keyData,
+			CommonObjectArray data) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -168,8 +168,8 @@ public final class MessageApi extends AbstractLogger {
 			__send(player, index, message);
 		}
 		__msgObjectPool.repay(message);
-		if (value instanceof MessageObjectArray) {
-			__msgArrayPool.repay((MessageObjectArray) value);
+		if (value instanceof CommonObjectArray) {
+			__msgArrayPool.repay((CommonObjectArray) value);
 		}
 	}
 
@@ -184,10 +184,10 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link MessageObjectArray}
+	 * @param data    the message's data, see: {@link CommonObjectArray}
 	 */
 	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData,
-			MessageObjectArray data) {
+			CommonObjectArray data) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -206,8 +206,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key    the key of message
 	 * @param value  the value of message
 	 */
-	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value) {
-		var room = player.getRoom();
+	public void sendToRoomIgnorePlayer(IPlayer player, int index, String key, Object value) {
+		var room = player.getCurrentRoom();
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		for (var p : room.getPlayers().values()) {
@@ -216,8 +216,8 @@ public final class MessageApi extends AbstractLogger {
 			}
 		}
 		__msgObjectPool.repay(message);
-		if (value instanceof MessageObjectArray) {
-			__msgArrayPool.repay((MessageObjectArray) value);
+		if (value instanceof CommonObjectArray) {
+			__msgArrayPool.repay((CommonObjectArray) value);
 		}
 	}
 
@@ -232,11 +232,11 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key     the key of message
 	 * @param value   the value of message
 	 * @param keyData the key of message's data
-	 * @param data    the message's data, see: {@link MessageObjectArray}
+	 * @param data    the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoomIgnorePlayer(AbstractPlayer player, int index, String key, Object value, String keyData,
-			MessageObjectArray data) {
-		var room = player.getRoom();
+	public void sendToRoomIgnorePlayer(IPlayer player, int index, String key, Object value, String keyData,
+			CommonObjectArray data) {
+		var room = player.getCurrentRoom();
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		message.put(keyData, data);
@@ -257,15 +257,15 @@ public final class MessageApi extends AbstractLogger {
 	 * @param index   the index of connection in current player
 	 * @param message the message instance
 	 */
-	public void sendToInternalServer(AbstractPlayer player, int index, MessageObject message) {
+	public void sendToInternalServer(IPlayer player, int index, CommonObject message) {
 		player.setCurrentReaderTime();
 		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
 	}
 
 	/**
-	 * @return a {@link MessageObjectArray} object from the pooling mechanism
+	 * @return a {@link CommonObjectArray} object from the pooling mechanism
 	 */
-	public MessageObjectArray getMessageObjectArray() {
+	public CommonObjectArray getMessageObjectArray() {
 		return __msgArrayPool.get();
 	}
 

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
@@ -87,10 +87,10 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link MessageObject} type
+	 * @return a value in {@link CommonObject} type
 	 */
-	protected MessageObject _getMessageObject(Object object) {
-		return (MessageObject) object;
+	protected CommonObject _getMessageObject(Object object) {
+		return (CommonObject) object;
 	}
 
 	/**

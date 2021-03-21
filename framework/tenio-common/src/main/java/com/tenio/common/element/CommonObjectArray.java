@@ -21,40 +21,63 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
+package com.tenio.common.element;
 
-import com.tenio.core.configuration.define.ConnectionType;
+import java.util.ArrayList;
 
 /**
+ * This is an element object in your server. You can use it for holding array
+ * data and make it serialize to send through the network.
+ * 
  * @author kong
+ * 
  */
-public final class Sock {
+public final class CommonObjectArray extends ArrayList<Object> {
 
-	private String __name;
-	private ConnectionType __type;
-	private int __port;
+	private static final long serialVersionUID = -5100842875580575666L;
 
-	public Sock(String name, ConnectionType type, int port) {
-		__name = name;
-		__type = type;
-		__port = port;
+	public static CommonObjectArray newInstance() {
+		return new CommonObjectArray();
 	}
 
-	public String getName() {
-		return __name;
+	private CommonObjectArray() {
 	}
 
-	public ConnectionType getType() {
-		return __type;
+	public CommonObjectArray put(final Object e) {
+		add(e);
+		return this;
 	}
 
-	public int getPort() {
-		return __port;
+	public double getDouble(final int index) {
+		return (double) get(index);
 	}
 
-	@Override
-	public final String toString() {
-		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+	public float getFloat(final int index) {
+		return (float) get(index);
+	}
+
+	public long getLong(final int index) {
+		return (long) get(index);
+	}
+
+	public int getInt(final int index) {
+		return (int) get(index);
+	}
+
+	public boolean getBoolean(final int index) {
+		return (boolean) get(index);
+	}
+
+	public String getString(final int index) {
+		return (String) get(index);
+	}
+
+	public Object getObject(final int index) {
+		return get(index);
+	}
+
+	public CommonObjectArray getObjectAt(final int index) {
+		return (CommonObjectArray) get(index);
 	}
 
 }

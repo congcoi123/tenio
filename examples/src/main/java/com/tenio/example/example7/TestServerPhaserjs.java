@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example7;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -110,7 +110,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var players = room.getPlayers();
 				for (var p : players.values()) {
 					var pjs = (PlayerPhaserjs) p;
-					var data = MessageObjectArray.newInstance();
+					var data = CommonObjectArray.newInstance();
 					data.add(pjs.getName());
 					data.add(pjs.getX());
 					data.add(pjs.getY());

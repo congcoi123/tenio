@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
+import io.netty.channel.nio.NioEventLoopGroup;
+
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
@@ -72,6 +74,10 @@ public final class CoreConstants {
 	 */
 	public static final String KEY_SCHEDULE_DEADLOCK_SCAN = "t.schedule.deadlock.scan";
 
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	public static final int NIO_NUMBER_THREADS = 1;
 	/**
 	 * 0 or a limit in bytes/s
 	 */

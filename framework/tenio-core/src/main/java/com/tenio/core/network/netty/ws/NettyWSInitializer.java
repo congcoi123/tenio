@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.ws;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.event.IEventManager;
@@ -43,13 +43,13 @@ import io.netty.handler.codec.http.HttpServerCodec;
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<MessageObject> __msgObjectPool;
+	private final IElementPool<CommonObject> __msgObjectPool;
 	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
 	private final int __index;
 
-	public NettyWSInitializer(int index, IEventManager eventManager, IElementPool<MessageObject> msgObjectPool,
+	public NettyWSInitializer(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
 			IElementPool<ByteArrayInputStream> byteArrayPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
 			IConfiguration configuration) {
 		__index = index;

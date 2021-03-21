@@ -26,10 +26,10 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class DuplicatedRoomException extends RuntimeException {
+public final class MessagePacketQueueFullException extends Exception {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8043860755039088519L;
+	private static final long serialVersionUID = -2526342485508899328L;
 
 }

@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
-import com.tenio.common.element.MessageObject;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.example.client.IDatagramListener;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
@@ -65,7 +65,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		__udp.receive(this);
 
 		// send a login request
-		var message = MessageObject.newInstance();
+		var message = CommonObject.newInstance();
 		message.put("u", "kong");
 		__tcp.send(message);
 		System.out.println("Login Request -> " + message);
@@ -73,13 +73,13 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 	}
 
 	@Override
-	public void onReceivedTCP(MessageObject message) {
+	public void onReceivedTCP(CommonObject message) {
 		System.err.println("[RECV FROM SERVER TCP] -> " + message);
 
 		switch ((String) message.get("c")) {
 		case "udp": {
 			// now you can send request for UDP connection request
-			var request = MessageObject.newInstance();
+			var request = CommonObject.newInstance();
 			request.put("u", "kong");
 			__udp.send(request);
 			System.out.println("Request a UDP connection -> " + request);
@@ -90,8 +90,8 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 			// the UDP connected successful, you now can send test requests
 			System.out.println("Start the conversation ...");
 			for (int i = 1; i <= 10; i++) {
-				var request = MessageObject.newInstance();
-				request.put("fc", MessageObjectArray.newInstance().put("F").put("r").put(0).put(false));
+				var request = CommonObject.newInstance();
+				request.put("fc", CommonObjectArray.newInstance().put("F").put("r").put(0).put(false));
 				__udp.send(request);
 				System.out.println("[SENT TO SERVER " + i + "] -> " + request);
 				try {
@@ -111,7 +111,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 	}
 
 	@Override
-	public void onReceivedUDP(MessageObject message) {
+	public void onReceivedUDP(CommonObject message) {
 		System.err.println("[RECV FROM SERVER UDP] -> " + message);
 	}
 

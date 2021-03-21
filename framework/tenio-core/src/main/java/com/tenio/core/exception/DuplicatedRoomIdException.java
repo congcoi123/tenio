@@ -21,45 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.tenio.core.exception;
 
 /**
  * @author kong
  */
-public final class Http {
+public final class DuplicatedRoomIdException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8043860755039088519L;
 
-	private String __name;
-	private int __port;
-	private List<Path> __paths;
-
-	public Http(String name, int port) {
-		__paths = new ArrayList<Path>();
-		__name = name;
-		__port = port;
-	}
-
-	public String getName() {
-		return __name;
-	}
-
-	public List<Path> getPaths() {
-		return __paths;
-	}
-
-	public void addPath(Path path) {
-		__paths.add(path);
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
-	@Override
-	public final String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
+	public DuplicatedRoomIdException(final String roomId) {
+		super(roomId);
 	}
 
 }

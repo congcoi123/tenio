@@ -239,6 +239,32 @@ public abstract class AbstractLogger {
 	}
 
 	/**
+	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
+	 * to avoid memory leak. Generate log in <b>error</b> level
+	 * 
+	 * Only use for EXCEPTION detection in the server system. Be careful when using
+	 * it yourself. You are warned!
+	 * 
+	 * @param cause the reason for this exception
+	 * @param msg   the extra information
+	 */
+	protected final void _error(final Throwable cause, final StringBuilder msg) {
+		if (!__logger.isErrorEnabled()) {
+			return;
+		}
+		StringBuilder builder = __stringPool.get();
+		builder.append(Throwables.getStackTraceAsString(cause));
+		if (msg.length() > 0) {
+			builder.append("\n=========== BEGIN ERROR INFORMATION ===========\n");
+			builder.append(msg);
+			builder.append("\n============ END ERROR INFORMATION ============\n");
+		}
+		__logger.error(builder.toString());
+		__stringPool.repay(builder);
+		__stringPool.repay(msg);
+	}
+
+	/**
 	 * To generate {@code StringBuilder} for logging information by the
 	 * corresponding objects
 	 * 
