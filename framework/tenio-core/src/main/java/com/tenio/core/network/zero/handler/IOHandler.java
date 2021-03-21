@@ -21,26 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.define;
+package com.tenio.core.network.zero.handler;
+
+import java.nio.channels.SocketChannel;
 
 /**
+ * UNDER CONSTRUCTION
+ * 
  * @author kong
  */
-public enum ConnectionType {
-	/**
-	 * TCP
-	 */
-	SOCKET,
-	/**
-	 * UDP
-	 */
-	DATAGRAM,
-	/**
-	 * Web Socket
-	 */
-	WEB_SOCKET,
-	/**
-	 * HTTP
-	 */
-	HTTP
+public interface IOHandler {
+
+	void channelActive(SocketChannel socketChannel);
+
+	void channelRead(SocketChannel channel, byte[] binaryData);
+	
+	void channelWrite(SocketChannel channel, byte[] binaryData);
+	
+	void channelInactive(SocketChannel socketChannel);
+
 }

@@ -60,15 +60,15 @@ public final class TestServerMovement extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");
 	}
-	
+
 	@Override
 	public void onStarted() {
-		
+
 	}
-	
+
 	@Override
 	public void onShutdown() {
-		
+
 	}
 
 	/**
@@ -92,7 +92,7 @@ public final class TestServerMovement extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// the player has login successful
-				var player = this.<Inspector>_getPlayer(args[0]);
+				var player = (Inspector) _getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 
 				// now we can allow that client send request for UDP connection
@@ -114,7 +114,7 @@ public final class TestServerMovement extends AbstractApp {
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var player = this.<Inspector>_getPlayer(args[1]);
+				var player = (Inspector) _getPlayer(args[1]);
 
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 

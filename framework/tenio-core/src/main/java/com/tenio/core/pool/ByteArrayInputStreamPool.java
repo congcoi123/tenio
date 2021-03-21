@@ -97,9 +97,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 			}
 		}
 		if (!flagFound) {
-			var e = new NullElementPoolException();
-			_error(e);
-			throw e;
+			throw new NullElementPoolException();
 		}
 	}
 

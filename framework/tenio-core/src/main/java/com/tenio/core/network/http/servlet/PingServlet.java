@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
 
 /**
@@ -64,10 +64,10 @@ public final class PingServlet extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 			try {
 				var json = new JSONObject();
-				json.putAll(MessageObject.newInstance().add("status", "ok").add("message", "PING PONG"));
+				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "PING PONG"));
 				response.getWriter().println(json.toString());
 			} catch (IOException e) {
-				_error(e, "EXCEPTION SERVLET", "system");
+				_error(e);
 			}
 		}
 	}

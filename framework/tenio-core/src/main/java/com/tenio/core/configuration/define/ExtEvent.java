@@ -26,10 +26,9 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.element.MessageObject;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;
@@ -53,7 +52,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> a valid connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message that sent from the client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -66,7 +65,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the current connection, see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message that sent from the client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -91,7 +90,7 @@ public enum ExtEvent {
 	 * This event let you know when one connection has login successful and became a
 	 * valid player. You can now inform the client with a message. <br>
 	 * <ul>
-	 * <li><b>@parameter[0]</b> a new valid player, see {@link AbstractPlayer}</li>
+	 * <li><b>@parameter[0]</b> a new valid player, see {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -104,7 +103,7 @@ public enum ExtEvent {
 	 * to the current "player" connection. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> an invalid player, it will be removed after this
-	 * event, see {@link AbstractPlayer}</li>
+	 * event, see {@link IPlayer}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
 	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
@@ -124,11 +123,11 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> a new connection from the current client (the old one
 	 * was removed automatically), see {@link Connection}</li>
 	 * <li><b>parameter[1]</b> a message from the current client which needs to hold
-	 * some credentials information, see {@link MessageObject}</li>
+	 * some credentials information, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return if you allow the client can be re-connected, return the corresponding
-	 * player: {@link AbstractPlayer}, return <b>null</b> otherwise
+	 * player: {@link IPlayer}, return <b>null</b> otherwise
 	 */
 	PLAYER_RECONNECT_REQUEST_HANDLE,
 
@@ -137,7 +136,7 @@ public enum ExtEvent {
 	 * message. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> a corresponding player, see
-	 * {@link AbstractPlayer}</li>
+	 * {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -152,7 +151,7 @@ public enum ExtEvent {
 	 * server. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> a will-be-log-out player, you can inform him by a
-	 * message, see {@link AbstractPlayer}</li>
+	 * message, see {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -164,10 +163,10 @@ public enum ExtEvent {
 	 * This is helpful in case you want your BOTs to know what's happening. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player which will be received your message, see
-	 * {@link AbstractPlayer}</li>
+	 * {@link IPlayer}</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
 	 * {@link Integer}. Notice that, 0 value means main connection.
-	 * <li><b>parameter[2]</b> the sent message, see {@link MessageObject}</li>
+	 * <li><b>parameter[2]</b> the sent message, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -179,10 +178,10 @@ public enum ExtEvent {
 	 * a client to your server. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player which sent message, see
-	 * {@link AbstractPlayer} to your server</li>
+	 * {@link IPlayer} to your server</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
 	 * {@link Integer}. Notice that, 0 value means main connection.
-	 * <li><b>parameter[2]</b> the received message, see {@link MessageObject}</li>
+	 * <li><b>parameter[2]</b> the received message, see {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -190,10 +189,10 @@ public enum ExtEvent {
 	RECEIVED_MESSAGE_FROM_PLAYER,
 
 	/**
-	 * Created a new room. A room ({@link AbstractRoom}) is a group of some players.
+	 * Created a new room. A room ({@link IRoom}) is a group of some players.
 	 * <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> a new created room, see {@link AbstractRoom}</li>
+	 * <li><b>parameter[0]</b> a new created room, see {@link IRoom}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
 	 * {@link CoreMessageCode} class in string type</li>
 	 * </ul>
@@ -208,7 +207,7 @@ public enum ExtEvent {
 	 * of this room (include players' data) will be deleted and the room is removed
 	 * from the room's list. All players in this room will be forced to leave. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> a will-be-deleted room, see {@link AbstractRoom}</li>
+	 * <li><b>parameter[0]</b> a will-be-deleted room, see {@link IRoom}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -221,8 +220,8 @@ public enum ExtEvent {
 	 * the player leaves his current room and joins a new room. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> a player that wants to join one room, see
-	 * {@link AbstractPlayer}</li>
-	 * <li><b>parameter[1]</b> the desired room, see {@link AbstractRoom}</li>
+	 * {@link IPlayer}</li>
+	 * <li><b>parameter[1]</b> the desired room, see {@link IRoom}</li>
 	 * <li><b>parameter[2]</b> this event's result. If the player joins his desired
 	 * room successful, it will return <b>true</b>. Otherwise, it will return
 	 * <b>false</b></li>
@@ -242,9 +241,9 @@ public enum ExtEvent {
 	 * be removed, as well as, this player reference will be removed from a players
 	 * list in the current room. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the current player, see {@link AbstractPlayer}</li>
+	 * <li><b>parameter[0]</b> the current player, see {@link IPlayer}</li>
 	 * <li><b>parameter[1]</b> the player's current room, see
-	 * {@link AbstractRoom}</li>
+	 * {@link IRoom}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -255,9 +254,9 @@ public enum ExtEvent {
 	 * The player just finished left his current room. Now all related data between
 	 * this player and the room has been deleted. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the current player, see {@link AbstractPlayer}</li>
+	 * <li><b>parameter[0]</b> the current player, see {@link IPlayer}</li>
 	 * <li><b>parameter[1]</b> the room without the player above, see
-	 * {@link AbstractRoom}</li>
+	 * {@link IRoom}</li>
 	 * <li><b>parameter[2]</b> <i>force flag</i> for some reason, a player will be
 	 * left his room unexpected. it returns <b>true</b> if the player is forced to
 	 * leave. Otherwise, return <b>false</b></li>
@@ -272,7 +271,7 @@ public enum ExtEvent {
 	 * reason), this event occurs. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the disconnected player, see
-	 * {@link AbstractPlayer}</li>
+	 * {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -301,11 +300,11 @@ public enum ExtEvent {
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message from one client needs to hold some
 	 * credentials data so that you can return him a corresponding value, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * </ul>
 	 * 
 	 * Return if the client is allowed to attach a sub connection, return the
-	 * corresponding player, see {@link AbstractPlayer}. Otherwise, return
+	 * corresponding player, see {@link IPlayer}. Otherwise, return
 	 * <b>null</b>
 	 */
 	ATTACH_CONNECTION_REQUEST_VALIDATE,
@@ -317,7 +316,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> the index of in-comming connection, see
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the corresponding player, see
-	 * {@link AbstractPlayer}</li>
+	 * {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -333,7 +332,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[0]</b> the index of in-comming connection, see
 	 * {@link Integer}</li>
 	 * <li><b>parameter[1]</b> the message received from one client, see
-	 * {@link MessageObject}</li>
+	 * {@link CommonObject}</li>
 	 * <li><b>parameter[2]</b> the reason for failed, see {@link CoreMessageCode} in
 	 * string type</li>
 	 * </ul>

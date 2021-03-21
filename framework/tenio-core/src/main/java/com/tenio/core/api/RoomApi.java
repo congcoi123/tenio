@@ -26,8 +26,10 @@ package com.tenio.core.api;
 import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.entity.manager.IRoomManager;
+import com.tenio.core.exception.DuplicatedRoomIdException;
+import com.tenio.core.exception.NullRoomException;
 
 /**
  * This class provides you a necessary interface for managing rooms.
@@ -48,17 +50,21 @@ public final class RoomApi extends AbstractLogger {
 	/**
 	 * @return all the current rooms in your server
 	 */
-	public Map<String, AbstractRoom> gets() {
+	public Map<String, IRoom> gets() {
 		return __roomManager.gets();
 	}
 
 	/**
 	 * Add a new room to your server. You need create your own room first.
 	 * 
-	 * @param room that is added, see {@link AbstractRoom}
+	 * @param room that is added, see {@link IRoom}
 	 */
-	public void add(final AbstractRoom room) {
-		__roomManager.add(room);
+	public void add(final IRoom room) {
+		try {
+			__roomManager.add(room);
+		} catch (DuplicatedRoomIdException e) {
+			_error(e, e.getMessage());
+		}
 	}
 
 	/**
@@ -77,17 +83,21 @@ public final class RoomApi extends AbstractLogger {
 	 * @param roomId the unique ID
 	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
 	 */
-	public AbstractRoom get(final String roomId) {
+	public IRoom get(final String roomId) {
 		return __roomManager.get(roomId);
 	}
 
 	/**
 	 * Remove a room from your server.
 	 * 
-	 * @param room that is removed, see {@link AbstractRoom}
+	 * @param room that is removed, see {@link IRoom}
 	 */
-	public void remove(final AbstractRoom room) {
-		__roomManager.remove(room);
+	public void remove(final IRoom room) {
+		try {
+			__roomManager.remove(room);
+		} catch (NullRoomException e) {
+			_error(e, e.getMessage());
+		}
 	}
 
 }

@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.common.pool;
 
+import com.tenio.common.exception.NullElementPoolException;
+
 /**
  * In an application, you can have resources that are limited or time-consuming
  * to create a new one. A solution is to create a limited resource once and
@@ -46,8 +48,10 @@ public interface IElementPool<Element> {
 	 * When you finished using an element, repay (free) it for the reusing
 	 * 
 	 * @param element the finished using element
+	 * 
+	 * @throws NullElementPoolException
 	 */
-	void repay(Element element);
+	void repay(Element element) throws NullElementPoolException;
 
 	/**
 	 * Clean up, after that all arrays will be set to <b>null</b>

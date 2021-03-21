@@ -21,53 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
+package com.tenio.core.message.packet;
 
-import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.exception.MessagePacketQueueFullException;
 
 /**
+ * UNDER CONSTRUCTION
+ * 
  * @author kong
  */
-public final class Path {
+public interface IPacketQueue {
 
-	private String __name;
-	private String __description;
-	private int __version;
-	private RestMethod __method;
-	private String __uri;
+	byte[] peek();
 
-	public Path(String name, RestMethod method, String uri, String description, int version) {
-		__name = name;
-		__method = method;
-		__uri = uri;
-		__description = description;
-		__version = version;
-	}
+	byte[] take();
 
-	public String getName() {
-		return __name;
-	}
+	boolean isEmpty();
 
-	public RestMethod getMethod() {
-		return __method;
-	}
+	boolean isFull();
 
-	public String getUri() {
-		return __uri;
-	}
+	int count();
 
-	public String getDescription() {
-		return __description;
-	}
+	int getSize();
 
-	public int getVersion() {
-		return __version;
-	}
+	void setSize(int size);
 
-	@Override
-	public final String toString() {
-		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
-				__uri, __description, __version);
-	}
+	float getPercentageUsed();
+
+	void put(byte[] packet) throws MessagePacketQueueFullException;
+
+	void clear();
 
 }

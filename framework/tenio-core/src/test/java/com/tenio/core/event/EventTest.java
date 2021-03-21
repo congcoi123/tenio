@@ -36,6 +36,7 @@ import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.model.PlayerModel;
 
 /**
@@ -55,7 +56,11 @@ public final class EventTest {
 
 		// Create new player
 		var player = new PlayerModel("kong");
-		__playerManager.add(player);
+		try {
+			__playerManager.add(player);
+		} catch (DuplicatedPlayerException e) {
+			e.printStackTrace();
+		}
 
 		// Handle events
 		__eventManager.getExtension().on(ExtEvent.FETCHED_CCU_NUMBER, args -> {

@@ -34,7 +34,7 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IRoom;
 
 /**
  * To remove the empty room (a room without any players) in period time. You can
@@ -49,11 +49,11 @@ public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 	/**
 	 * The current list of rooms
 	 */
-	private final Map<String, AbstractRoom> __rooms;
+	private final Map<String, IRoom> __rooms;
 	/**
 	 * Removable list of rooms
 	 */
-	private final List<AbstractRoom> __removables = new ArrayList<AbstractRoom>();
+	private final List<IRoom> __removableRooms;
 	/**
 	 * The period time for scanning empty rooms and delete those
 	 */
@@ -63,6 +63,7 @@ public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 		__roomApi = roomApi;
 		__emptyRoomScanPeriod = emptyRoomScanPeriod;
 		__rooms = __roomApi.gets();
+		__removableRooms = new ArrayList<IRoom>();
 	}
 
 	@Override
@@ -73,16 +74,16 @@ public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 			__rooms.forEach((key, value) -> {
 				if (value.isEmpty()) {
 					synchronized (__rooms) {
-						__removables.add(value);
+						__removableRooms.add(value);
 					}
 				}
 			});
 
-			__removables.forEach((room) -> {
+			__removableRooms.forEach((room) -> {
 				__roomApi.remove(room);
 			});
 
-			__removables.clear();
+			__removableRooms.clear();
 
 		}, 0, __emptyRoomScanPeriod, TimeUnit.SECONDS);
 	}

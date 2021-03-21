@@ -24,13 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;
@@ -66,7 +66,7 @@ final class InternalLogicManager extends AbstractLogger {
 			var connection = __getConnection(args[0]);
 
 			if (connection != null) { // the connection has existed
-				String username = connection.getUsername();
+				String username = connection.getPlayerName();
 				if (username != null) { // the player maybe exist
 					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
@@ -91,7 +91,7 @@ final class InternalLogicManager extends AbstractLogger {
 			var cause = __getThrowable(args[2]);
 
 			if (connection != null) { // the old connection
-				String username = connection.getUsername();
+				String username = connection.getPlayerName();
 				if (username != null) { // the player maybe exist
 					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
@@ -135,7 +135,7 @@ final class InternalLogicManager extends AbstractLogger {
 			if (connection == null) {
 				__createNewConnection(configuration, index, tempConnection, message);
 			} else {
-				var username = connection.getUsername();
+				var username = connection.getPlayerName();
 				if (username != null) {
 					var player = __playerManager.get(username);
 					if (player != null) { // the player has existed
@@ -154,13 +154,13 @@ final class InternalLogicManager extends AbstractLogger {
 	}
 
 	private void __createNewConnection(final IConfiguration configuration, final int index,
-			final Connection connection, final MessageObject message) {
+			final Connection connection, final CommonObject message) {
 		if (index == 0) { // is main connection
 			// check reconnection request first
-			var player = (AbstractPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, connection,
+			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, connection,
 					message);
 			if (player != null) {
-				connection.setUsername(player.getName());
+				connection.setPlayerName(player.getName());
 				player.setConnection(connection, 0); // main connection
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
@@ -176,7 +176,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 		} else {
 			// the condition for creating sub-connection
-			var player = (AbstractPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, index,
+			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, index,
 					message);
 
 			if (player == null) {
@@ -186,7 +186,7 @@ final class InternalLogicManager extends AbstractLogger {
 				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
 						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
-				connection.setUsername(player.getName());
+				connection.setPlayerName(player.getName());
 				player.setConnection(connection, index);
 				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, index, player);
 			}
@@ -199,10 +199,10 @@ final class InternalLogicManager extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link MessageObject}
+	 * @return a value in, see {@link CommonObject}
 	 */
-	private MessageObject __getMessageObject(Object object) {
-		return (MessageObject) object;
+	private CommonObject __getMessageObject(Object object) {
+		return (CommonObject) object;
 	}
 
 	/**
@@ -215,10 +215,10 @@ final class InternalLogicManager extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link AbstractPlayer}
+	 * @return a value in, see {@link IPlayer}
 	 */
-	private AbstractPlayer __getPlayer(Object object) {
-		return (AbstractPlayer) object;
+	private IPlayer __getPlayer(Object object) {
+		return (IPlayer) object;
 	}
 
 	/**
@@ -245,12 +245,12 @@ final class InternalLogicManager extends AbstractLogger {
 		return (Throwable) object;
 	}
 
-	private void __handle(AbstractPlayer player, int index, MessageObject message) {
+	private void __handle(IPlayer player, int index, CommonObject message) {
 		player.setCurrentReaderTime();
 		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
 	}
 
-	private void __exception(AbstractPlayer player, Throwable cause) {
+	private void __exception(IPlayer player, Throwable cause) {
 		_error(cause, "player name: ", player.getName());
 	}
 

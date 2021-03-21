@@ -31,7 +31,7 @@ import com.tenio.core.entity.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players, see {@link AbstractPlayer}.
+ * A room or simpler is a group of related players, see {@link IPlayer}.
  * These players can be played in the same game or in the same location. This
  * class is only for logic handling. You can manage a list of players in a room
  * as well as hold the players' common data for sharing. For simple handling,
@@ -43,13 +43,13 @@ import com.tenio.core.entity.manager.PlayerManager;
  * 
  */
 @Entity
-public abstract class AbstractRoom {
+public abstract class AbstractRoom implements IRoom {
 
 	/**
 	 * List of reference players
 	 */
 	@Column(name = "players")
-	private Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
+	private Map<String, IPlayer> __players;
 	/**
 	 * Each room has its own unique id
 	 */
@@ -70,93 +70,81 @@ public abstract class AbstractRoom {
 		__id = id;
 		__name = name;
 		__capacity = capacity;
+		__players = new HashMap<String, IPlayer>();
 	}
 
+	@Override
 	public boolean contain(final String playerName) {
 		return __players.containsKey(playerName);
 	}
 
-	public AbstractPlayer getFirstPlayer() {
+	@Override
+	public IPlayer getFirstPlayer() {
 		if (isEmpty()) {
 			return null;
 		}
-		return (AbstractPlayer) __players.values().stream().findFirst().get();
+		return (IPlayer) __players.values().stream().findFirst().get();
 	}
 
-	/**
-	 * Add a player to this room, this action was handled by system logic. Be
-	 * careful when handling it yourself. You are warned!
-	 * 
-	 * @param player the player ({@link AbstractPlayer}) who wants to join this room
-	 */
-	public void add(final AbstractPlayer player) {
+	@Override
+	public void add(final IPlayer player) {
 		__players.put(player.getName(), player);
 	}
 
-	/**
-	 * Remove a player from this room, this action was handled by system logic. Be
-	 * careful when handling it yourself. You are warned!
-	 * 
-	 * @param player the player ({@link AbstractPlayer}) who wants to leave or be
-	 *               forced to leave this room
-	 */
-	public void remove(final AbstractPlayer player) {
+	@Override
+	public void remove(final IPlayer player) {
 		__players.remove(player.getName());
 	}
 
-	/**
-	 * Remove all players from this room
-	 */
+	@Override
 	public void clear() {
 		__players.clear();
 	}
 
+	@Override
 	public int getCapacity() {
 		return __capacity;
 	}
 
+	@Override
 	public void setCapacity(final int capacity) {
 		__capacity = capacity;
 	}
 
+	@Override
 	public String getId() {
 		return __id;
 	}
 
+	@Override
 	public String getName() {
 		return __name;
 	}
 
+	@Override
 	public void setName(final String name) {
 		__name = name;
 	}
 
-	/**
-	 * @return the number of players in this room
-	 */
+	@Override
 	public int count() {
 		return __players.size();
 	}
 
-	public Map<String, AbstractPlayer> getPlayers() {
+	@Override
+	public Map<String, IPlayer> getPlayers() {
 		return __players;
 	}
 
-	/**
-	 * @return <b>true</b> if this room is full, <b>false</b> otherwise
-	 */
+	@Override
 	public boolean isFull() {
 		// the counter starts from element 0, remember it
 		return (count() >= __capacity);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return __players.isEmpty();
 	}
 
-	@Override
-	public String toString() {
-		return getId();
-	}
-	
 }

@@ -21,45 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
+package com.tenio.core.network.zero.engine;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.core.network.zero.handler.IOHandler;
+import com.tenio.core.network.zero.security.IConnectionFilter;
 
 /**
+ * UNDER CONSTRUCTION
+ * 
  * @author kong
  */
-public final class Http {
+public interface IEngineAcceptor {
 
-	private String __name;
-	private int __port;
-	private List<Path> __paths;
+	void setConfiguration(final IConfiguration configuration);
+	
+	void setConnectionFilter(final IConnectionFilter connectionFilter);
+	
+	void setIoHandler(final IOHandler ioHandler);
 
-	public Http(String name, int port) {
-		__paths = new ArrayList<Path>();
-		__name = name;
-		__port = port;
-	}
+	void setEngineReader(final IEngineReader engineReader);
 
-	public String getName() {
-		return __name;
-	}
+	void handleAcceptableChannels();
 
-	public List<Path> getPaths() {
-		return __paths;
-	}
+	void setup() throws UnsupportedOperationException, IOException;
+	
+	void start();
 
-	public void addPath(Path path) {
-		__paths.add(path);
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
-	@Override
-	public final String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
-	}
+	void stop();
 
 }

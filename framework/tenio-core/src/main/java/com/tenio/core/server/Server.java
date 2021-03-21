@@ -29,8 +29,8 @@ import java.util.List;
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.element.MessageObject;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
@@ -39,8 +39,8 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.Http;
-import com.tenio.core.configuration.Sock;
+import com.tenio.core.configuration.HttpConfig;
+import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -116,8 +116,8 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private IConfiguration __configuration;
 
-	private IElementPool<MessageObject> __msgObjectPool;
-	private IElementPool<MessageObjectArray> __msgArrayPool;
+	private IElementPool<CommonObject> __msgObjectPool;
+	private IElementPool<CommonObjectArray> __msgArrayPool;
 	private IElementPool<ByteArrayInputStream> __byteArrayPool;
 
 	private IEventManager __eventManager;
@@ -135,9 +135,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private IExtension __extension;
 	private INetwork __network;
 
-	private List<Sock> __socketPorts;
-	private List<Sock> __webSocketPorts;
-	private List<Http> __httpPorts;
+	private List<SocketConfig> __socketPorts;
+	private List<SocketConfig> __webSocketPorts;
+	private List<HttpConfig> __httpPorts;
 	private int __socketPortsSize;
 	private int __webSocketPortsSize;
 	private String __serverName;
@@ -161,9 +161,9 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("CONFIGURATION", configuration.toString());
 
 		// create all ports information
-		__socketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		__webSocketPorts = (List<Sock>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__httpPorts = (List<Http>) (configuration.get(CoreConfigurationType.HTTP_PORTS));
+		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		__webSocketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
+		__httpPorts = (List<HttpConfig>) (configuration.get(CoreConfigurationType.HTTP_PORTS));
 
 		__socketPortsSize = __socketPorts.size();
 		__webSocketPortsSize = __webSocketPorts.size();
@@ -205,7 +205,7 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration, IElementPool<MessageObject> msgObjectPool,
+	private void __startNetwork(IConfiguration configuration, IElementPool<CommonObject> msgObjectPool,
 			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);

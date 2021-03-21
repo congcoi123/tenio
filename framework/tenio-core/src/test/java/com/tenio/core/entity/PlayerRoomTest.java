@@ -46,7 +46,7 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
-import com.tenio.core.exception.DuplicatedRoomException;
+import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.model.PlayerModel;
 import com.tenio.core.model.RoomModel;
@@ -101,8 +101,8 @@ public final class PlayerRoomTest {
 	public void addDupplicatedPlayerShouldCauseException() {
 		assertThrows(DuplicatedPlayerException.class, () -> {
 			var player = new PlayerModel(__testPlayerName);
-			__playerApi.login(player);
-			__playerApi.login(player);
+			__playerManager.add(player);
+			__playerManager.add(player);
 		});
 	}
 
@@ -110,7 +110,7 @@ public final class PlayerRoomTest {
 	public void addNullPlayerNameShouldCauseException() {
 		assertThrows(NullPlayerNameException.class, () -> {
 			var player = new PlayerModel(null);
-			__playerApi.login(player, null);
+			__playerManager.add(player, null);
 		});
 	}
 
@@ -161,10 +161,10 @@ public final class PlayerRoomTest {
 
 	@Test
 	public void createDuplicatedRoomShouldCauseException() {
-		assertThrows(DuplicatedRoomException.class, () -> {
+		assertThrows(DuplicatedRoomIdException.class, () -> {
 			var room = new RoomModel(__testRoomId, "Test Room", 3);
-			__roomApi.add(room);
-			__roomApi.add(room);
+			__roomManager.add(room);
+			__roomManager.add(room);
 		});
 	}
 
@@ -175,7 +175,8 @@ public final class PlayerRoomTest {
 		var room = new RoomModel(__testRoomId, "Test Room", 3);
 		__roomApi.add(room);
 
-		assertEquals(null, __playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
+		assertEquals(null,
+				__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName)));
 	}
 
 	@Test
@@ -202,7 +203,7 @@ public final class PlayerRoomTest {
 		__playerApi.makePlayerLeaveRoom(__playerApi.get(__testPlayerName), true);
 
 		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).contain(__testPlayerName)),
-				() -> assertEquals(null, __playerApi.get(__testPlayerName).getRoom()));
+				() -> assertEquals(null, __playerApi.get(__testPlayerName).getCurrentRoom()));
 	}
 
 	@Test
@@ -248,7 +249,7 @@ public final class PlayerRoomTest {
 		__roomApi.remove(__roomApi.get(__testRoomId));
 		boolean allRemoved = true;
 		for (var player : __playerApi.gets().values()) {
-			if (player.getRoom() != null) {
+			if (player.getCurrentRoom() != null) {
 				allRemoved = false;
 				break;
 			}

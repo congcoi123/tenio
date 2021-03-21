@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.server.Server;
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.IMessageListener;
@@ -58,12 +58,12 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	/**
 	 * @see PlayerApi#gets()
 	 */
-	private final Collection<AbstractPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	private final Collection<IPlayer> __inspectors;
 
 	/**
 	 * @see MessageApi
 	 */
-	private final MessageApi __messageApi = Server.getInstance().getMessageApi();
+	private final MessageApi __messageApi;
 
 	/**
 	 * Making slow steps to inspect what happening
@@ -71,6 +71,9 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	private float __tick = 0;
 
 	public LifeCycle() {
+		__inspectors = Server.getInstance().getPlayerApi().gets().values();
+		__messageApi = Server.getInstance().getMessageApi();
+
 		// create a manager
 		__entities = new EntityManager();
 		__dispatcher = new MessageDispatcher(__entities);

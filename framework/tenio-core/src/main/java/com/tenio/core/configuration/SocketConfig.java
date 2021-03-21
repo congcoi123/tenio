@@ -21,15 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exception;
+package com.tenio.core.configuration;
+
+import com.tenio.core.configuration.define.TransportType;
 
 /**
  * @author kong
  */
-public final class DuplicatedRoomException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8043860755039088519L;
+public final class SocketConfig {
+
+	private String __name;
+	private TransportType __type;
+	private int __port;
+
+	public SocketConfig(String name, TransportType type, int port) {
+		__name = name;
+		__type = type;
+		__port = port;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public TransportType getType() {
+		return __type;
+	}
+
+	public int getPort() {
+		return __port;
+	}
+
+	@Override
+	public final String toString() {
+		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+	}
 
 }

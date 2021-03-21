@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.define;
 
-import com.tenio.common.element.MessageObject;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.common.element.CommonObject;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.network.Connection;
 
 /**
@@ -63,7 +63,7 @@ public enum InternalEvent {
 	 * This event is called when you let the player leave by his desire. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the player's name, see
-	 * {@link AbstractPlayer#getName()}</li>
+	 * {@link IPlayer#getName()}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -75,7 +75,7 @@ public enum InternalEvent {
 	 * kicked by the host or the entire room was removed. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> a player who was forced to leave, see
-	 * {@link AbstractPlayer}</li>
+	 * {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -89,7 +89,7 @@ public enum InternalEvent {
 	 * from <b>0</b>)</li>
 	 * <li><b>parameter[1]</b> the connection (can be <b>null</b>) that is retrieved
 	 * from the corresponding channel, see {@link Connection}</li>
-	 * <li><b>parameter[2]</b> the message, see {@link MessageObject} which is sent by its
+	 * <li><b>parameter[2]</b> the message, see {@link CommonObject} which is sent by its
 	 * corresponding connection</li>
 	 * <li><b>parameter[3]</b> the connection object which is used to assigned to a
 	 * player (can be <b>null</b>, see {@link Connection}</li>

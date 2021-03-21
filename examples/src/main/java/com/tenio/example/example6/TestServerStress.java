@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example6;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.MessageObjectArray;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -92,7 +92,7 @@ public final class TestServerStress extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerStress>_getPlayer(args[0]);
+				var player = (PlayerStress) _getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 
 				// Now you can send messages to the client
@@ -100,13 +100,13 @@ public final class TestServerStress extends AbstractApp {
 				var data = _messageApi.getMessageObjectArray();
 				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
 						data.put("H").put("3").put("L").put("O").put(true)
-								.put(MessageObjectArray.newInstance().put("Sub").put("Value").put(100)));
+								.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 				return null;
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
+				var player = (PlayerStress) _getPlayer(args[0]);
 
 				var pack = __getSortRandomNumberArray();
 				// Sending, the data need to be packed

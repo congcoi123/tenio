@@ -21,63 +21,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.element;
+package com.tenio.core.configuration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This is an element object in your server. You can use it for holding array
- * data and make it serialize to send through the network.
- * 
  * @author kong
- * 
  */
-public final class MessageObjectArray extends ArrayList<Object> {
+public final class HttpConfig {
 
-	private static final long serialVersionUID = -5100842875580575666L;
+	private String __name;
+	private int __port;
+	private List<PathConfig> __paths;
 
-	public static MessageObjectArray newInstance() {
-		return new MessageObjectArray();
+	public HttpConfig(String name, int port) {
+		__paths = new ArrayList<PathConfig>();
+		__name = name;
+		__port = port;
 	}
 
-	private MessageObjectArray() {
+	public String getName() {
+		return __name;
 	}
 
-	public MessageObjectArray put(final Object e) {
-		add(e);
-		return this;
+	public List<PathConfig> getPaths() {
+		return __paths;
 	}
 
-	public double getDouble(final int index) {
-		return (double) get(index);
+	public void addPath(PathConfig path) {
+		__paths.add(path);
 	}
 
-	public float getFloat(final int index) {
-		return (float) get(index);
+	public int getPort() {
+		return __port;
 	}
 
-	public long getLong(final int index) {
-		return (long) get(index);
-	}
-
-	public int getInt(final int index) {
-		return (int) get(index);
-	}
-
-	public boolean getBoolean(final int index) {
-		return (boolean) get(index);
-	}
-
-	public String getString(final int index) {
-		return (String) get(index);
-	}
-
-	public Object getObject(final int index) {
-		return get(index);
-	}
-
-	public MessageObjectArray getMessageObjectArray(final int index) {
-		return (MessageObjectArray) get(index);
+	@Override
+	public final String toString() {
+		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
 	}
 
 }

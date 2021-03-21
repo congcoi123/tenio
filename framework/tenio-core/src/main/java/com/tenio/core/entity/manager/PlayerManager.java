@@ -28,53 +28,53 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.Sock;
-import com.tenio.core.configuration.define.ConnectionType;
+import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 /**
- * Manage all your players ({@link AbstractPlayer}) on the server. It is a
- * singleton pattern class, which can be called anywhere. But it's better that
- * you use the {@link PlayerApi} interface for easy management.
+ * Manage all your players ({@link IPlayer}) on the server. It is a singleton
+ * pattern class, which can be called anywhere. But it's better that you use the
+ * {@link PlayerApi} interface for easy management.
  * 
  * @see IPlayerManager
  * 
  * @author kong
  * 
  */
-public final class PlayerManager extends AbstractLogger implements IPlayerManager {
+public final class PlayerManager implements IPlayerManager {
 
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
-	private final Map<String, AbstractPlayer> __players = new HashMap<String, AbstractPlayer>();
+	private final Map<String, IPlayer> __players;
 	private final IEventManager __eventManager;
 	private IConfiguration __configuration;
-	private List<Sock> __socketPorts;
-	private List<Sock> __webSocketPorts;
+	private List<SocketConfig> __socketPorts;
+	private List<SocketConfig> __webSocketPorts;
 	private int __socketPortsSize;
 	private int __webSocketPortsSize;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
+		__players = new HashMap<String, IPlayer>();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(IConfiguration configuration) {
 		__configuration = configuration;
-		__socketPorts = (List<Sock>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		__webSocketPorts = (List<Sock>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
+		__socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		__webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
 		__socketPortsSize = __socketPorts.size();
 		__webSocketPortsSize = __webSocketPorts.size();
 	}
@@ -94,7 +94,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	}
 
 	@Override
-	public Map<String, AbstractPlayer> gets() {
+	public Map<String, IPlayer> gets() {
 		synchronized (__players) {
 			return __players;
 		}
@@ -115,21 +115,20 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	}
 
 	@Override
-	public AbstractPlayer get(final String name) {
+	public IPlayer get(final String name) {
 		synchronized (__players) {
 			return __players.get(name);
 		}
 	}
 
 	@Override
-	public void add(final AbstractPlayer player, final Connection connection) {
+	public void add(final IPlayer player, final IConnection connection)
+			throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 					CoreMessageCode.PLAYER_INFO_IS_INVALID);
-			var e = new NullPlayerNameException();
-			_error(e);
-			throw e;
+			throw new NullPlayerNameException();
 		}
 
 		synchronized (__players) {
@@ -137,15 +136,13 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 				// fire an event
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
-				var e = new DuplicatedPlayerException();
-				_error(e, "player name: ", player.getName());
-				throw e;
+				throw new DuplicatedPlayerException(player.getName());
 			}
 
 			// add the main connection
-			connection.setUsername(player.getName());
+			connection.setPlayerName(player.getName());
 			int size = 0;
-			if (connection.isType(ConnectionType.WEB_SOCKET)) {
+			if (connection.isType(TransportType.WEB_SOCKET)) {
 				size = __webSocketPortsSize;
 			} else {
 				size = __socketPortsSize;
@@ -162,15 +159,13 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	}
 
 	@Override
-	public void add(final AbstractPlayer player) {
+	public void add(final IPlayer player) throws DuplicatedPlayerException {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
-				var e = new DuplicatedPlayerException();
-				_error(e, "player name: ", player.getName());
-				throw e;
+				throw new DuplicatedPlayerException(player.getName());
 			}
 
 			__players.put(player.getName(), player);
@@ -181,7 +176,7 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	}
 
 	@Override
-	public void remove(final AbstractPlayer player) {
+	public void remove(final IPlayer player) {
 		if (player == null) {
 			return;
 		}
@@ -203,12 +198,12 @@ public final class PlayerManager extends AbstractLogger implements IPlayerManage
 	}
 
 	@Override
-	public void removeAllConnections(final AbstractPlayer player) {
+	public void removeAllConnections(final IPlayer player) {
 		player.closeAllConnections();
 	}
 
 	@Override
-	public void clean(final AbstractPlayer player) {
+	public void clean(final IPlayer player) {
 		if (player == null) {
 			return;
 		}

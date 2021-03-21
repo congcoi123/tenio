@@ -27,15 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.element.MessageObject;
+import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
-import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.network.Connection;
 import com.tenio.core.server.Server;
@@ -87,10 +87,10 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link MessageObject} type
+	 * @return a value in {@link CommonObject} type
 	 */
-	protected MessageObject _getMessageObject(Object object) {
-		return (MessageObject) object;
+	protected CommonObject _getMessageObject(Object object) {
+		return (CommonObject) object;
 	}
 
 	/**
@@ -101,24 +101,22 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 		return (Connection) object;
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link AbstractPlayer} type
+	 * @return a value in {@link IPlayer} type
 	 */
-	protected <T extends AbstractPlayer> T _getPlayer(Object object) {
-		return (T) object;
+	protected IPlayer _getPlayer(Object object) {
+		return (IPlayer) object;
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link AbstractRoom} type
+	 * @return a value in {@link IRoom} type
 	 */
-	protected <T extends AbstractRoom> T _getRoom(Object object) {
-		return (T) object;
+	protected IRoom _getRoom(Object object) {
+		return (IRoom) object;
 	}
 
 	/**

@@ -26,10 +26,14 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class NullRoomException extends RuntimeException {
+public final class NullRoomException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1303721781114060707L;
+
+	public NullRoomException(final String roomId) {
+		super(roomId);
+	}
 
 }
