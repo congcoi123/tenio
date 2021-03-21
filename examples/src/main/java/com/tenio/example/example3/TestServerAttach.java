@@ -61,15 +61,15 @@ public final class TestServerAttach extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.attach.xml");
 	}
-	
+
 	@Override
 	public void onStarted() {
-		
+
 	}
-	
+
 	@Override
 	public void onShutdown() {
-		
+
 	}
 
 	/**
@@ -95,7 +95,7 @@ public final class TestServerAttach extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
+				var player = (PlayerAttach) _getPlayer(args[0]);
 
 				// Now you can allow the player make a UDP connection request
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
@@ -104,7 +104,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[0]);
+				var player = (PlayerAttach) _getPlayer(args[0]);
 				int index = _getInt(args[1]);
 
 				_messageApi.sendToPlayer(player, index, "hello",
@@ -126,7 +126,7 @@ public final class TestServerAttach extends AbstractApp {
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var player = this.<PlayerAttach>_getPlayer(args[1]);
+				var player = (PlayerAttach) _getPlayer(args[1]);
 
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 

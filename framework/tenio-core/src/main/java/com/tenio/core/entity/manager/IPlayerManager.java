@@ -26,7 +26,6 @@ package com.tenio.core.entity.manager;
 import java.util.Map;
 
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
@@ -123,7 +122,7 @@ public interface IPlayerManager extends IManager {
 	 * server). It is used when you don't want your player can re-connect with any
 	 * interruption's reason.
 	 * 
-	 * @param player that is removed, see {@link AbstractPlayer}
+	 * @param player that is removed, see {@link IPlayer}
 	 */
 	void clean(final IPlayer player);
 

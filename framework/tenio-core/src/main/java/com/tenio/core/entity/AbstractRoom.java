@@ -31,7 +31,7 @@ import com.tenio.core.entity.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players, see {@link AbstractPlayer}.
+ * A room or simpler is a group of related players, see {@link IPlayer}.
  * These players can be played in the same game or in the same location. This
  * class is only for logic handling. You can manage a list of players in a room
  * as well as hold the players' common data for sharing. For simple handling,

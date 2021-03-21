@@ -27,7 +27,6 @@ import java.util.Map;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.AbstractPlayer;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
@@ -145,7 +144,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * Allow a player to leave his current room. You can handle your own logic in
 	 * the corresponding events.
 	 * 
-	 * @param player that will be left his current room, see {@link AbstractPlayer}
+	 * @param player that will be left his current room, see {@link IRoom}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},

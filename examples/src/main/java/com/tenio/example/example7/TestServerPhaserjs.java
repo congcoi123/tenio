@@ -57,14 +57,15 @@ public final class TestServerPhaserjs extends AbstractApp {
 	public Configuration getConfiguration() {
 		return new Configuration("TenIOConfig.xml");
 	}
-	
+
 	@Override
 	public void onStarted() {
-		
+
 	}
+
 	@Override
 	public void onShutdown() {
-		
+
 	}
 
 	/**
@@ -91,7 +92,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
+				var player = (PlayerPhaserjs) _getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 				// create the initial position
 				int x = MathUtility.randInt(100, 400);
@@ -104,7 +105,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 			});
 
 			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
-				var room = this.<RoomPhaserjs>_getRoom(args[1]);
+				var room = (RoomPhaserjs) _getRoom(args[1]);
 
 				var pack = _messageApi.getMessageObjectArray();
 				var players = room.getPlayers();
@@ -122,7 +123,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = this.<PlayerPhaserjs>_getPlayer(args[0]);
+				var player = (PlayerPhaserjs) _getPlayer(args[0]);
 				var message = _getMessageObject(args[2]);
 				var move = message.getMessageObjectArray("d");
 

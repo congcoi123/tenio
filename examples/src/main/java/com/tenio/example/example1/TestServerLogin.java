@@ -94,7 +94,7 @@ public final class TestServerLogin extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerLogin>_getPlayer(args[0]);
+				var player = (PlayerLogin) _getPlayer(args[0]);
 
 				try {
 					_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));

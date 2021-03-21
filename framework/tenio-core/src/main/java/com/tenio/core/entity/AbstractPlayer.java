@@ -71,7 +71,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
-	 * {@link AbstractRoom}
+	 * {@link IRoom}
 	 */
 	@Column(name = "room")
 	private IRoom __room;

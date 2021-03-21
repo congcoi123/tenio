@@ -92,7 +92,7 @@ public final class TestServerStress extends AbstractApp {
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
 				// The player has login successful
-				var player = this.<PlayerStress>_getPlayer(args[0]);
+				var player = (PlayerStress) _getPlayer(args[0]);
 				player.setIgnoreTimeout(true);
 
 				// Now you can send messages to the client
@@ -106,7 +106,7 @@ public final class TestServerStress extends AbstractApp {
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = this.<PlayerStress>_getPlayer(args[0]);
+				var player = (PlayerStress) _getPlayer(args[0]);
 
 				var pack = __getSortRandomNumberArray();
 				// Sending, the data need to be packed

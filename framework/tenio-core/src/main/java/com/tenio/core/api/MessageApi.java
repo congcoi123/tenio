@@ -28,7 +28,7 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
@@ -161,7 +161,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key   the key of message
 	 * @param value the value of message
 	 */
-	public void sendToRoom(AbstractRoom room, int index, String key, Object value) {
+	public void sendToRoom(IRoom room, int index, String key, Object value) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		for (var player : room.getPlayers().values()) {
@@ -186,7 +186,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData the key of message's data
 	 * @param data    the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoom(AbstractRoom room, int index, String key, Object value, String keyData,
+	public void sendToRoom(IRoom room, int index, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
