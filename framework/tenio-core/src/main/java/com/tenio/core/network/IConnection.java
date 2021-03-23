@@ -109,44 +109,44 @@ public interface IConnection {
 	 * 
 	 * @param message the message content, see {@link CommonObject}
 	 */
-	public abstract void send(CommonObject packet);
+	void send(CommonObject packet);
 
 	/**
 	 * Close a "connection" between a client with the server
 	 */
-	public abstract void close();
+	void close();
 
 	/**
 	 * Delete the keys which are used to identify a player in one "connection". This
 	 * method need to be implemented when the "connection" type is Socket or
 	 * WebSocket
 	 */
-	public abstract void clean();
+	void clean();
 
 	/**
 	 * Set the current address for your "connection" (only need for Socket type)
 	 * 
 	 * @param remote, see {@link InetSocketAddress}
 	 */
-	public abstract void setRemote(InetSocketAddress remote);
+	void setRemote(InetSocketAddress remote);
 
 	/**
 	 * Retrieve this connection itself by channel
 	 * 
 	 * @return the current connection
 	 */
-	public abstract IConnection getThis();
+	IConnection getThis();
 
 	/**
 	 * Set this connection into current channel Note: Set value for one key. You can
 	 * set your custom data to one connection to quick access. These keys and values
 	 * should be saved to channel (which is defined by NIO mechanism)
 	 */
-	public abstract void setThis();
+	void setThis();
 
 	/**
 	 * Remove the connection object from channel cache
 	 */
-	public abstract void removeThis();
+	void removeThis();
 
 }
