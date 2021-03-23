@@ -47,11 +47,11 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.message.packet.DefaultPacketQueue;
+import com.tenio.core.network.security.IConnectionFilter;
 import com.tenio.core.network.zero.DefaultSocketOption;
 import com.tenio.core.network.zero.engine.IEngineAcceptor;
 import com.tenio.core.network.zero.engine.IEngineReader;
 import com.tenio.core.network.zero.handler.IOHandler;
-import com.tenio.core.network.zero.security.IConnectionFilter;
 
 /**
  * UNDER CONSTRUCTION

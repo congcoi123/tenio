@@ -1,4 +1,4 @@
-package com.tenio.core.network.zero.security;
+package com.tenio.core.network.security;
 
 import java.util.ArrayList;
 import java.util.List;
