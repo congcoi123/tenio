@@ -91,13 +91,4 @@ public interface IRoom {
 
 	boolean isEmpty();
 
-	@Override
-	String toString();
-
-	@Override
-	int hashCode();
-	
-	@Override
-	boolean equals(Object obj);
-
 }

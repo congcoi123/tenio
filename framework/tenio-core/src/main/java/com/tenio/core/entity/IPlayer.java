@@ -93,13 +93,4 @@ public interface IPlayer {
 
 	void setIgnoreTimeout(final boolean flagIgnoreTimeout);
 
-	@Override
-	String toString();
-
-	@Override
-	int hashCode();
-
-	@Override
-	boolean equals(Object obj);
-
 }
