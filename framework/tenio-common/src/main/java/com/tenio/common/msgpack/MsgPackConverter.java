@@ -68,8 +68,7 @@ public final class MsgPackConverter {
 	 * @param msgRaw         an array of bytes data
 	 * @return an message object in <b>MessageObject</b> type
 	 */
-	public static CommonObject unserialize(CommonObject msgObject, ByteArrayInputStream byteArrayInput,
-			byte[] msgRaw) {
+	public static CommonObject unserialize(CommonObject msgObject, ByteArrayInputStream byteArrayInput, byte[] msgRaw) {
 		var dstMap = MsgPackUtil.unpack(byteArrayInput, msgRaw);
 		if (dstMap == null || dstMap.isEmpty()) {
 			return null;

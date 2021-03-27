@@ -170,7 +170,7 @@ public final class RoomManager implements IRoomManager {
 		room.add(player);
 		player.setCurrentRoom(room);
 		// fire an event
-		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true);
+		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
 
 		return null;
 	}
