@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.common.element;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +33,7 @@ import java.util.ArrayList;
  * @author kong
  * 
  */
-public final class CommonObjectArray extends ArrayList<Object> {
+public final class CommonObjectArray extends ArrayList<Object> implements Serializable {
 
 	private static final long serialVersionUID = -5100842875580575666L;
 
@@ -40,7 +41,7 @@ public final class CommonObjectArray extends ArrayList<Object> {
 		return new CommonObjectArray();
 	}
 
-	private CommonObjectArray() {
+	public CommonObjectArray() {
 	}
 
 	public CommonObjectArray put(final Object e) {
