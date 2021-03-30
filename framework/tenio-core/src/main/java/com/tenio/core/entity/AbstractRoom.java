@@ -31,13 +31,13 @@ import com.tenio.core.entity.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players, see {@link IPlayer}.
- * These players can be played in the same game or in the same location. This
- * class is only for logic handling. You can manage a list of players in a room
- * as well as hold the players' common data for sharing. For simple handling,
- * one room can hold a number of players, but one player only appears in one
- * room at a time. The player can be a free one and no need to join any rooms,
- * there, it is only under the {@link PlayerManager} class' management.
+ * A room or simpler is a group of related players, see {@link IPlayer}. These
+ * players can be played in the same game or in the same location. This class is
+ * only for logic handling. You can manage a list of players in a room as well
+ * as hold the players' common data for sharing. For simple handling, one room
+ * can hold a number of players, but one player only appears in one room at a
+ * time. The player can be a free one and no need to join any rooms, there, it
+ * is only under the {@link PlayerManager} class' management.
  * 
  * @author kong
  * 
@@ -83,7 +83,9 @@ public abstract class AbstractRoom implements IRoom {
 		if (isEmpty()) {
 			return null;
 		}
-		return (IPlayer) __players.values().stream().findFirst().get();
+		synchronized (__players) {
+			return (IPlayer) __players.values().stream().findFirst().get();
+		}
 	}
 
 	@Override
@@ -128,12 +130,16 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public int count() {
-		return __players.size();
+		synchronized (__players) {
+			return __players.size();
+		}
 	}
 
 	@Override
 	public Map<String, IPlayer> getPlayers() {
-		return __players;
+		synchronized (__players) {
+			return __players;
+		}
 	}
 
 	@Override
@@ -144,7 +150,7 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public boolean isEmpty() {
-		return __players.isEmpty();
+		return (count() == 0);
 	}
 
 }
