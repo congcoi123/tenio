@@ -48,19 +48,19 @@ public abstract class Connection implements IConnection {
 	/**
 	 * {@link IPlayer#getName()}
 	 */
-	private String __playerName;
+	private volatile String __playerName;
 	/**
 	 * Save the client's address
 	 */
-	private String __address;
+	private volatile String __address;
 	/**
 	 * Type of the connection
 	 */
-	private TransportType __type;
+	private volatile TransportType __type;
 	/**
 	 * The order of connection in one player
 	 */
-	private int __index;
+	private volatile int __index;
 
 	public Connection(final IEventManager eventManager, final TransportType type, final int index) {
 		__eventManager = eventManager;

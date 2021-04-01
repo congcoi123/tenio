@@ -26,14 +26,14 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class NullRoomException extends Exception {
+public final class ExtensionValueCastException extends Exception {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5751546751756362752L;
+	private static final long serialVersionUID = -6137016366847120400L;
 
-	public NullRoomException(final String roomId) {
-		super(roomId);
+	public ExtensionValueCastException(final String message) {
+		super(message);
 	}
 
 }

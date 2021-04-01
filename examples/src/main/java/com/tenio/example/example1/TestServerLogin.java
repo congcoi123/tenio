@@ -32,6 +32,7 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.annotation.EntityProcess;
+import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -80,63 +81,72 @@ public final class TestServerLogin extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				var connection = _getConnection(args[0]);
-				var message = _getMessageObject(args[1]);
+				try {
+					var connection = _getConnection(args[0]);
+					var message = _getCommonObject(args[1]);
 
-				// Allow the connection login into server (become a player)
-				String username = message.getString("u");
-				// Should confirm that credentials by data from database or other services, here
-				// is only for testing
-				_playerApi.login(new PlayerLogin(username), connection);
+					// Allow the connection login into server (become a player)
+					String username = message.getString("u");
+					// Should confirm that credentials by data from database or other services, here
+					// is only for testing
+					_playerApi.login(new PlayerLogin(username), connection);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				// The player has login successful
-				var player = (PlayerLogin) _getPlayer(args[0]);
-
 				try {
-					_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				// Now you can send messages to the client
-				_taskApi.run(player.getName(), Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-					// Only sent 10 messages
-					if (player.counter >= 10) {
-						_taskApi.kill(player.getName());
-						_playerApi.logOut(player);
-					}
-
-					player.counter++;
-
-					// Sending, the data need to be packed
-					var data = _messageApi.getMessageObjectArray();
-					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
-							data.put("H").put("3").put("L").put("O").put(true)
-									.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
-
-					// Attempt to send internal message
-					_messageApi.sendToInternalServer(player, 1,
-							CommonObject.newInstance().add("internal", "this is a message in external server"));
+					// The player has login successful
+					var player = (PlayerLogin) _getPlayer(args[0]);
 
 					try {
 						_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
 					} catch (Exception e) {
-						e.printStackTrace();
+						_error(e, player.getName());
 					}
 
-				}, 0, 1, TimeUnit.SECONDS));
+					// Now you can send messages to the client
+					_taskApi.run(player.getName(),
+							Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+								// Only sent 10 messages
+								if (player.counter >= 10) {
+									_taskApi.kill(player.getName());
+									_playerApi.logOut(player);
+								}
+
+								player.counter++;
+
+								// Sending, the data need to be packed
+								var data = _messageApi.getMessageObjectArray();
+								_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
+										data.put("H").put("3").put("L").put("O").put(true)
+												.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
+
+								// Attempt to send internal message
+								_messageApi.sendToInternalServer(player, 1, CommonObject.newInstance().add("internal",
+										"this is a message in external server"));
+
+							}, 0, 1, TimeUnit.SECONDS));
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var message = _getMessageObject(args[1]);
+				try {
+					var index = _getInteger(args[1]);
+					var message = _getCommonObject(args[2]);
 
-				_info(_buildgen("RECEIVED INTERNAL MESSAGE").toString(), message.toString());
+					_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", index, " Content: ", message));
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});

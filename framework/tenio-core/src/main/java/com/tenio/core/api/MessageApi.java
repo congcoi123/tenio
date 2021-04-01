@@ -28,10 +28,10 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IRoom;
 import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 /**
  * This class provides you a necessary interface for sending messages from the
@@ -60,11 +60,11 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message for a connection
 	 * 
-	 * @param connection See {@link Connection}
+	 * @param connection See {@link IConnection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 */
-	public void sendToConnection(Connection connection, String key, Object value) {
+	public void sendToConnection(IConnection connection, String key, Object value) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);
 		connection.send(message);
@@ -80,13 +80,13 @@ public final class MessageApi extends AbstractLogger {
 	 * Must use {@link #getMessageObjectArray()} to create data array package for
 	 * avoiding memory leak.
 	 * 
-	 * @param connection See {@link Connection}
+	 * @param connection See {@link IConnection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
 	 * @param data       the main data of message, see: {@link CommonObjectArray}
 	 */
-	public void sendToConnection(Connection connection, String key, Object value, String keyData,
+	public void sendToConnection(IConnection connection, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __msgObjectPool.get();
 		message.put(key, value);

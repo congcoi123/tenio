@@ -36,19 +36,19 @@ import com.tenio.core.entity.annotation.IBackup;
  */
 @Entity
 public final class PlayerLogin extends AbstractPlayer implements IBackup<PlayerLogin> {
-	
+
 	public static final int MAIN_CHANNEL = 0;
 
 	/**
 	 * For counting the number of messages that sent to this player
 	 */
-	
+
 	@Column(name = "counter")
-	public int counter;
+	public volatile int counter;
 
 	public PlayerLogin(String name) {
 		super(name);
-		
+
 		counter = 0;
 	}
 

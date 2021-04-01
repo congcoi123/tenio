@@ -26,6 +26,7 @@ package com.tenio.example.example4;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -80,43 +81,62 @@ public final class TestServerMovement extends AbstractApp {
 		public void initialize(IConfiguration configuration) {
 
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				var connection = _getConnection(args[0]);
-				var message = _getMessageObject(args[1]);
+				try {
+					var connection = _getConnection(args[0]);
+					var message = _getCommonObject(args[1]);
 
-				// can make a login request for this connection
-				String username = message.getString("u");
-				_playerApi.login(new Inspector(username), connection);
+					// can make a login request for this connection
+					String username = message.getString("u");
+					_playerApi.login(new Inspector(username), connection);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				// the player has login successful
-				var player = (Inspector) _getPlayer(args[0]);
-				player.setIgnoreTimeout(true);
+				try {
+					// the player has login successful
+					var player = (Inspector) _getPlayer(args[0]);
+					player.setIgnoreTimeout(true);
 
-				// now we can allow that client send request for UDP connection
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
+					// now we can allow that client send request for UDP connection
+					_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
-				var message = _getMessageObject(args[1]);
-				String name = message.getString("u");
+				try {
+					var message = _getCommonObject(args[1]);
+					String name = message.getString("u");
 
-				// It should be ...
-				// 1. check if player has sub connection
-				// 2. confirm with player's name and main connection
+					// It should be ...
+					// 1. check if player has sub connection
+					// 2. confirm with player's name and main connection
 
-				// But now temporary returns a player by his name
-				return _playerApi.get(name);
+					// But now temporary returns a player by his name
+					return _playerApi.get(name);
+
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
+
+				return null;
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var player = (Inspector) _getPlayer(args[1]);
+				try {
+					var player = (Inspector) _getPlayer(args[1]);
 
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
+					_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});

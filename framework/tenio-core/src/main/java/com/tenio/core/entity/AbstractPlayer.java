@@ -62,40 +62,40 @@ public abstract class AbstractPlayer implements IPlayer {
 	 * The unique name in the server
 	 */
 	@Column(name = "name")
-	private String __name;
+	private volatile String __name;
 	/**
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
 	@Column(name = "entity_id")
-	private String __entityId;
+	private volatile String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
 	 * {@link IRoom}
 	 */
 	@Column(name = "room")
-	private IRoom __room;
+	private volatile IRoom __room;
 	/**
 	 * The current system time when a new message from the client comes
 	 */
-	private long __readerTime;
+	private volatile long __readerTime;
 	/**
 	 * The current system time when a new message is sent to the client from your
 	 * server
 	 */
-	private long __writerTime;
+	private volatile long __writerTime;
 	/**
 	 * This flag (enabled state) allows the player not affected by the system
 	 * timeouts rule. The default value is <b>false</b>
 	 */
 	@Column(name = "ignore_timeout")
-	private boolean __flagIgnoreTimeout;
+	private volatile boolean __flagIgnoreTimeout;
 
 	/**
 	 * This flag for quick checking if a player is a NPC or not
 	 */
 	@Column(name = "flag_npc")
-	private boolean __flagNPC;
+	private volatile boolean __flagNPC;
 
 	/**
 	 * Create a new player
@@ -135,7 +135,9 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return false;
 		}
-		return (__connections[index] != null);
+		synchronized (__connections) {
+			return (__connections[index] != null);
+		}
 	}
 
 	@Override
@@ -143,11 +145,13 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return null;
 		}
-		return __connections[index];
+		synchronized (__connections) {
+			return __connections[index];
+		}
 	}
 
 	@Override
-	public void initializeConnections(int size) {
+	public synchronized void initializeConnections(int size) {
 		__connections = new IConnection[size];
 		__flagNPC = false;
 	}
@@ -157,7 +161,9 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return;
 		}
-		__connections[index] = connection;
+		synchronized (connection) {
+			__connections[index] = connection;
+		}
 	}
 
 	@Override
@@ -165,9 +171,8 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return;
 		}
-		if (hasConnection(index)) {
-			__connections[index].close();
-			setConnection(null, index);
+		synchronized (__connections) {
+			__closeConnection(index);
 		}
 	}
 
@@ -176,8 +181,25 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return;
 		}
-		for (int i = 0; i < __connections.length; i++) {
-			closeConnection(i);
+		synchronized (__connections) {
+			for (int i = 0; i < __connections.length; i++) {
+				__closeConnection(i);
+			}
+		}
+	}
+
+	/**
+	 * Non thread-safe method
+	 * 
+	 * @param index the connection's index
+	 */
+	private void __closeConnection(int index) {
+		if (index < 0 || index > __connections.length) {
+			return;
+		}
+		if (__connections[index] != null) {
+			__connections[index].close();
+			__connections[index] = null;
 		}
 	}
 
@@ -189,14 +211,18 @@ public abstract class AbstractPlayer implements IPlayer {
 	@Override
 	public void setCurrentRoom(final IRoom room) {
 		__room = room;
-		if (room != null) {
-			__tracedPassedRoom.addLast(room.getId());
+		if (__room != null) {
+			synchronized (__tracedPassedRoom) {
+				__tracedPassedRoom.addLast(room.getId());
+			}
 		}
 	}
 
 	@Override
 	public List<String> getTracedRoomsList() {
-		return __tracedPassedRoom;
+		synchronized (__tracedPassedRoom) {
+			return __tracedPassedRoom;
+		}
 	}
 
 	@Override

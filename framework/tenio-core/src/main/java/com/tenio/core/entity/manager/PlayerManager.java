@@ -71,7 +71,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initialize(IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		__configuration = configuration;
 		__socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		__webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));

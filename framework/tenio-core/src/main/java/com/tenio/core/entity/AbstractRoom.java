@@ -26,6 +26,7 @@ package com.tenio.core.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.tenio.core.entity.annotation.Column;
 import com.tenio.core.entity.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -49,22 +50,23 @@ public abstract class AbstractRoom implements IRoom {
 	 * List of reference players
 	 */
 	@Column(name = "players")
+	@GuardedBy("this")
 	private Map<String, IPlayer> __players;
 	/**
 	 * Each room has its own unique id
 	 */
 	@Column(name = "id")
-	private String __id;
+	private volatile String __id;
 	/**
 	 * Should be set a human-readable name
 	 */
 	@Column(name = "name")
-	private String __name;
+	private volatile String __name;
 	/**
 	 * The maximum of players that this room can handle
 	 */
 	@Column(name = "capacity")
-	private int __capacity;
+	private volatile int __capacity;
 
 	public AbstractRoom(final String id, final String name, final int capacity) {
 		__id = id;
@@ -83,23 +85,23 @@ public abstract class AbstractRoom implements IRoom {
 		if (isEmpty()) {
 			return null;
 		}
-		synchronized (__players) {
+		synchronized (this) {
 			return (IPlayer) __players.values().stream().findFirst().get();
 		}
 	}
 
 	@Override
-	public void add(final IPlayer player) {
+	public synchronized void add(final IPlayer player) {
 		__players.put(player.getName(), player);
 	}
 
 	@Override
-	public void remove(final IPlayer player) {
+	public synchronized void remove(final IPlayer player) {
 		__players.remove(player.getName());
 	}
 
 	@Override
-	public void clear() {
+	public synchronized void clear() {
 		__players.clear();
 	}
 
@@ -129,17 +131,13 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public int count() {
-		synchronized (__players) {
-			return __players.size();
-		}
+	public synchronized int count() {
+		return __players.size();
 	}
 
 	@Override
-	public Map<String, IPlayer> getPlayers() {
-		synchronized (__players) {
-			return __players;
-		}
+	public synchronized Map<String, IPlayer> getPlayers() {
+		return __players;
 	}
 
 	@Override

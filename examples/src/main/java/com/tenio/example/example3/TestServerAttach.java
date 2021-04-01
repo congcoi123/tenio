@@ -32,6 +32,7 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -81,88 +82,119 @@ public final class TestServerAttach extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				var connection = _getConnection(args[0]);
-				var message = _getMessageObject(args[1]);
+				try {
+					var connection = _getConnection(args[0]);
+					var message = _getCommonObject(args[1]);
 
-				// Allow the connection login into server (become a player)
-				String username = message.getString("u");
-				// Should confirm that credentials by data from database or other services, here
-				// is only for testing
-				_playerApi.login(new PlayerAttach(username), connection);
+					// Allow the connection login into server (become a player)
+					String username = message.getString("u");
+					// Should confirm that credentials by data from database or other services, here
+					// is only for testing
+					_playerApi.login(new PlayerAttach(username), connection);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				// The player has login successful
-				var player = (PlayerAttach) _getPlayer(args[0]);
+				try {
+					// The player has login successful
+					var player = (PlayerAttach) _getPlayer(args[0]);
 
-				// Now you can allow the player make a UDP connection request
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
+					// Now you can allow the player make a UDP connection request
+					_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = (PlayerAttach) _getPlayer(args[0]);
-				int index = _getInt(args[1]);
+				try {
+					var player = (PlayerAttach) _getPlayer(args[0]);
+					int index = _getInteger(args[1]);
 
-				_messageApi.sendToPlayer(player, index, "hello",
-						"from server > " + index + " > " + player.getConnection(index).getAddress());
+					_messageApi.sendToPlayer(player, index, "hello",
+							"from server > " + index + " > " + player.getConnection(index).getAddress());
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
-				var message = _getMessageObject(args[1]);
-				String name = message.getString("u");
+				try {
+					var message = _getCommonObject(args[1]);
+					String name = message.getString("u");
 
-				// It should be ...
-				// 1. check if player has sub connection
-				// 2. confirm with player's name and main connection
+					// It should be ...
+					// 1. check if player has sub connection
+					// 2. confirm with player's name and main connection
 
-				// But now temporary returns a player by his name
-				return _playerApi.get(name);
+					// But now temporary returns a player by his name
+					return _playerApi.get(name);
+
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
+
+				return null;
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var player = (PlayerAttach) _getPlayer(args[1]);
+				try {
+					var player = (PlayerAttach) _getPlayer(args[1]);
 
-				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
+					_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
 
 				return null;
 			});
 
 			_on(ExtEvent.HTTP_REQUEST_VALIDATE, args -> {
-				var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
+				try {
+					var method = _getRestMethod(args[0]);
+					// var request = _getHttpServletRequest(args[1]);
+					var response = _getHttpServletResponse(args[2]);
 
-				if (method.equals(RestMethod.DELETE)) {
-					var json = new JSONObject();
-					json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
-					try {
-						response.getWriter().println(json.toString());
-					} catch (IOException e) {
-						_error(e, "request");
+					if (method.equals(RestMethod.DELETE)) {
+						var json = new JSONObject();
+						json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
+						try {
+							response.getWriter().println(json.toString());
+						} catch (IOException e) {
+							_error(e, "request");
+						}
+						return response;
 					}
-					return response;
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
 				}
 
 				return null;
 			});
 
 			_on(ExtEvent.HTTP_REQUEST_HANDLE, args -> {
-				// var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
-
-				var json = new JSONObject();
-				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
 				try {
-					response.getWriter().println(json.toString());
-				} catch (IOException e) {
-					_error(e, "handler");
+					// var method = _getRestMethod(args[0]);
+					// var request = _getHttpServletRequest(args[1]);
+					var response = _getHttpServletResponse(args[2]);
+
+					var json = new JSONObject();
+					json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
+					try {
+						response.getWriter().println(json.toString());
+					} catch (IOException e) {
+						_error(e, "handler");
+					}
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
 				}
 
 				return null;

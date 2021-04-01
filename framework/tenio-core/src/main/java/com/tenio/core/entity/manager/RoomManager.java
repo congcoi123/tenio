@@ -62,7 +62,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public void initialize(IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		// temporary do nothing
 	}
 
