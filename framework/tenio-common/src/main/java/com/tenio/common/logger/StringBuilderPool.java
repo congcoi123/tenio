@@ -45,19 +45,19 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 	// preventing Singleton object instantiation from outside
 	// creates multiple instance if two thread access this method simultaneously
 	public static StringBuilderPool getInstance() {
-		var ref = __instance;
-		if (ref == null) {
+		var reference = __instance;
+		if (reference == null) {
 			synchronized (StringBuilderPool.class) {
-				ref = __instance;
-				if (ref == null) {
-					__instance = ref = new StringBuilderPool();
+				reference = __instance;
+				if (reference == null) {
+					__instance = reference = new StringBuilderPool();
 				}
 			}
 		}
-		return ref;
+		return reference;
 	}
 
-	private Logger __logger = LogManager.getLogger(getClass());
+	private final Logger __logger = LogManager.getLogger(getClass());
 	@GuardedBy("this")
 	private StringBuilder[] __pool;
 	@GuardedBy("this")

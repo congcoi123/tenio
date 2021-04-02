@@ -216,6 +216,19 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 		if (__consumer != null) {
 			__consumer.shutdownGracefully();
 		}
+
+		__cleanup();
+	}
+
+	private void __cleanup() {
+		__sockets.clear();
+		__sockets = null;
+		__websockets.clear();
+		__websockets = null;
+
+		__producer = null;
+		__consumer = null;
+		__traficCounter = null;
 	}
 
 	/**

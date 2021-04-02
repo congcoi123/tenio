@@ -25,6 +25,7 @@ package com.tenio.core.monitoring.system;
 
 import java.lang.management.ManagementFactory;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.sun.management.OperatingSystemMXBean;
 
 /**
@@ -47,8 +48,11 @@ import com.sun.management.OperatingSystemMXBean;
  */
 public final class SystemMonitoring {
 
+	@GuardedBy("this")
 	private final OperatingSystemMXBean __osMxBean;
+	@GuardedBy("this")
 	private long __lastSystemTime;
+	@GuardedBy("this")
 	private long __lastProcessCpuTime;
 
 	public SystemMonitoring() {

@@ -66,9 +66,9 @@ final class InternalLogicManager extends AbstractLogger {
 			var connection = __getConnection(args[0]);
 
 			if (connection != null) { // the connection has existed
-				String username = connection.getPlayerName();
-				if (username != null) { // the player maybe exist
-					var player = __playerManager.get(username);
+				String playerName = connection.getPlayerName();
+				if (playerName != null) { // the player maybe exist
+					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
 						__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
@@ -114,7 +114,6 @@ final class InternalLogicManager extends AbstractLogger {
 			return null;
 		});
 
-		// This event will trigger the LEvent.CONNECTION_CLOSE event effect
 		__on(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, args -> {
 			String name = __getString(args[0]);
 
@@ -135,9 +134,9 @@ final class InternalLogicManager extends AbstractLogger {
 			if (connection == null) {
 				__createNewConnection(configuration, index, tempConnection, message);
 			} else {
-				var username = connection.getPlayerName();
-				if (username != null) {
-					var player = __playerManager.get(username);
+				var playerName = connection.getPlayerName();
+				if (playerName != null) {
+					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
 						__handle(player, index, message);
 					} else {

@@ -26,7 +26,6 @@ package com.tenio.core.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.tenio.core.entity.annotation.Column;
 import com.tenio.core.entity.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -50,13 +49,12 @@ public abstract class AbstractRoom implements IRoom {
 	 * List of reference players
 	 */
 	@Column(name = "players")
-	@GuardedBy("this")
-	private Map<String, IPlayer> __players;
+	private final Map<String, IPlayer> __players;
 	/**
 	 * Each room has its own unique id
 	 */
 	@Column(name = "id")
-	private volatile String __id;
+	private final String __id;
 	/**
 	 * Should be set a human-readable name
 	 */
@@ -76,8 +74,10 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public boolean contain(final String playerName) {
-		return __players.containsKey(playerName);
+	public boolean containPlayerName(final String playerName) {
+		synchronized (playerName) {
+			return __players.containsKey(playerName);
+		}
 	}
 
 	@Override
@@ -85,24 +85,28 @@ public abstract class AbstractRoom implements IRoom {
 		if (isEmpty()) {
 			return null;
 		}
-		synchronized (this) {
+		synchronized (__players) {
 			return (IPlayer) __players.values().stream().findFirst().get();
 		}
 	}
 
 	@Override
-	public synchronized void add(final IPlayer player) {
-		__players.put(player.getName(), player);
+	public void addPlayer(final IPlayer player) {
+		synchronized (player) {
+			__players.put(player.getName(), player);
+		}
 	}
 
 	@Override
-	public synchronized void remove(final IPlayer player) {
+	public synchronized void removePlayer(final IPlayer player) {
 		__players.remove(player.getName());
 	}
 
 	@Override
-	public synchronized void clear() {
-		__players.clear();
+	public synchronized void removeAllPlayers() {
+		synchronized (__players) {
+			__players.clear();
+		}
 	}
 
 	@Override
@@ -131,24 +135,28 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public synchronized int count() {
-		return __players.size();
+	public int countPlayers() {
+		synchronized (__players) {
+			return __players.size();
+		}
 	}
 
 	@Override
-	public synchronized Map<String, IPlayer> getPlayers() {
-		return __players;
+	public Map<String, IPlayer> getPlayers() {
+		synchronized (__id) {
+			return __players;
+		}
 	}
 
 	@Override
 	public boolean isFull() {
 		// the counter starts from element 0, remember it
-		return (count() >= __capacity);
+		return (countPlayers() >= __capacity);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return (count() == 0);
+		return (countPlayers() == 0);
 	}
 
 }

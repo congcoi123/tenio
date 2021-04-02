@@ -43,6 +43,6 @@ public interface IExtension {
 	 * 
 	 * @param configuration base configuration in server
 	 */
-	void initialize(IConfiguration configuration);
+	void initialize(final IConfiguration configuration);
 	
 }

@@ -57,18 +57,18 @@ public abstract class AbstractPlayer implements IPlayer {
 	/**
 	 * Tracing the room which they player has been in
 	 */
-	private LinkedList<String> __tracedPassedRoom;
+	private final LinkedList<String> __tracedPassedRoom;
 	/**
 	 * The unique name in the server
 	 */
 	@Column(name = "name")
-	private volatile String __name;
+	private final String __name;
 	/**
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
 	@Column(name = "entity_id")
-	private volatile String __entityId;
+	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
 	 * {@link IRoom}

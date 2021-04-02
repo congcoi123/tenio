@@ -36,7 +36,11 @@ public final class ExtEventProducer {
 	/**
 	 * @see ExtEventHandler
 	 */
-	private final ExtEventHandler<Object> __eventHandler = new ExtEventHandler<Object>();
+	private final ExtEventHandler<Object> __eventHandler;
+
+	public ExtEventProducer() {
+		__eventHandler = new ExtEventHandler<Object>();
+	}
 
 	/**
 	 * Retrieves an event handler

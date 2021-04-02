@@ -43,8 +43,9 @@ public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficSha
 
 	private final IEventManager __eventManager;
 
-	public GlobalTrafficShapingHandlerCustomize(IEventManager eventManager, ScheduledExecutorService executor,
-			long writeLimit, long readLimit, long checkInterval) {
+	public GlobalTrafficShapingHandlerCustomize(final IEventManager eventManager,
+			final ScheduledExecutorService executor, final long writeLimit, final long readLimit,
+			final long checkInterval) {
 		super(executor, writeLimit, readLimit, checkInterval);
 		__eventManager = eventManager;
 	}

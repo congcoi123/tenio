@@ -41,11 +41,16 @@ public final class InternalEventManager extends AbstractLogger {
 	/**
 	 * A list of subscribers
 	 */
-	private final List<InternalSubscriber> __subscribers = new ArrayList<InternalSubscriber>();
+	private final List<InternalSubscriber> __subscribers;
 	/**
 	 * @see InternalEventProducer
 	 */
-	private final InternalEventProducer __producer = new InternalEventProducer();
+	private final InternalEventProducer __producer;
+
+	public InternalEventManager() {
+		__subscribers = new ArrayList<InternalSubscriber>();
+		__producer = new InternalEventProducer();
+	}
 
 	/**
 	 * Emit an event with its parameters

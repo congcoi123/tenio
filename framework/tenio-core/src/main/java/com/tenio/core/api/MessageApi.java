@@ -104,7 +104,8 @@ public final class MessageApi extends AbstractLogger {
 	 * @param message the sending message
 	 */
 	private void __send(IPlayer player, int index, CommonObject message) {
-		player.setCurrentWriterTime(); // update time to check TIMEOUT
+		// update time to check TIMEOUT
+		player.setCurrentWriterTime();
 		// send to CLIENT (connection)
 		if (player.hasConnection(index)) {
 			player.getConnection(index).send(message);

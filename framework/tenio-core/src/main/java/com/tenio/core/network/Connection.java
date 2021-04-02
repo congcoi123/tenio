@@ -56,11 +56,11 @@ public abstract class Connection implements IConnection {
 	/**
 	 * Type of the connection
 	 */
-	private volatile TransportType __type;
+	private final TransportType __type;
 	/**
 	 * The order of connection in one player
 	 */
-	private volatile int __index;
+	private final int __index;
 
 	public Connection(final IEventManager eventManager, final TransportType type, final int index) {
 		__eventManager = eventManager;

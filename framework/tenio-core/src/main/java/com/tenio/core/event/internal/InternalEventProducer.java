@@ -36,7 +36,11 @@ public final class InternalEventProducer {
 	/**
 	 * @see InternalEventHandler
 	 */
-	private final InternalEventHandler<Object> __eventHandler = new InternalEventHandler<Object>();
+	private final InternalEventHandler<Object> __eventHandler;
+
+	public InternalEventProducer() {
+		__eventHandler = new InternalEventHandler<Object>();
+	}
 
 	/**
 	 * Retrieves an event handler

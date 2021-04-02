@@ -68,15 +68,15 @@ public class NettyWSHandler extends BaseNettyHandler {
 			buffer.release();
 
 			// retrieve an object from pool
-			var msgObject = getMsgObjectPool().get();
-			var byteArray = getByteArrayPool().get();
+			var msgObject = getCommonObjectPool().get();
+			var byteArray = getByteArrayInputPool().get();
 
 			// create a new message
 			var message = MsgPackConverter.unserialize(msgObject, byteArray, bytes);
 			if (message == null) {
 				// repay
-				getMsgObjectPool().repay(msgObject);
-				getByteArrayPool().repay(byteArray);
+				getCommonObjectPool().repay(msgObject);
+				getByteArrayInputPool().repay(byteArray);
 				return;
 			}
 
@@ -84,8 +84,8 @@ public class NettyWSHandler extends BaseNettyHandler {
 			_channelRead(ctx, message, null);
 
 			// repay
-			getMsgObjectPool().repay(msgObject);
-			getByteArrayPool().repay(byteArray);
+			getCommonObjectPool().repay(msgObject);
+			getByteArrayInputPool().repay(byteArray);
 		}
 
 	}

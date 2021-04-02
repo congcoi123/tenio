@@ -99,7 +99,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
-		// print out the framework's icon
+		// print out the framework's preface
 		for (var line : CommonConstants.LOGO) {
 			_info("", "", line);
 		}
@@ -214,6 +214,12 @@ public final class Server extends AbstractLogger implements IServer {
 	@Override
 	public void shutdown() {
 		_info("SERVER", __serverName, "Stopping ...");
+		__shutdown();
+		_info("SERVER", __serverName, "Stopped!");
+		__cleanup();
+	}
+
+	private void __shutdown() {
 		if (__network != null) {
 			__network.shutdown();
 		}
@@ -232,8 +238,9 @@ public final class Server extends AbstractLogger implements IServer {
 		__socketPorts.clear();
 		__webSocketPorts.clear();
 		__httpPorts.clear();
-		// show log
-		_info("SERVER", __serverName, "Stopped!");
+	}
+
+	private void __cleanup() {
 		// assign by null
 		__configuration = null;
 		__msgObjectPool = null;

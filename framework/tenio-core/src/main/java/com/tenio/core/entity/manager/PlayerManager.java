@@ -59,10 +59,8 @@ public final class PlayerManager implements IPlayerManager {
 	private final Map<String, IPlayer> __players;
 	private final IEventManager __eventManager;
 	private IConfiguration __configuration;
-	private List<SocketConfig> __socketPorts;
-	private List<SocketConfig> __webSocketPorts;
-	private int __socketPortsSize;
-	private int __webSocketPortsSize;
+	private volatile int __socketPortsSize;
+	private volatile int __webSocketPortsSize;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
@@ -71,12 +69,12 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public synchronized void initialize(IConfiguration configuration) {
+	public synchronized void initialize(final IConfiguration configuration) {
 		__configuration = configuration;
-		__socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		__webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__socketPortsSize = __socketPorts.size();
-		__webSocketPortsSize = __webSocketPorts.size();
+		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
+		__socketPortsSize = socketPorts.size();
+		__webSocketPortsSize = webSocketPorts.size();
 	}
 
 	@Override

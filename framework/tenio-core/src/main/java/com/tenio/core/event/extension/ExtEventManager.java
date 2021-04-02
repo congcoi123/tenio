@@ -41,11 +41,16 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	/**
 	 * A list of subscribers.
 	 */
-	private final List<ExtSubscriber> __subscribers = new ArrayList<ExtSubscriber>();
+	private final List<ExtSubscriber> __subscribers;
 	/**
 	 * @see ExtEventProducer
 	 */
-	private final ExtEventProducer __producer = new ExtEventProducer();
+	private final ExtEventProducer __producer;
+
+	public ExtEventManager() {
+		__subscribers = new ArrayList<ExtSubscriber>();
+		__producer = new ExtEventProducer();
+	}
 
 	/**
 	 * Emit an event with its parameters.
@@ -57,7 +62,7 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	 * @see ExtEventProducer#emit(ExtEvent, Object...)
 	 */
 	public Object emit(final ExtEvent type, final Object... args) {
-		if (__canShowTraceLog(type)) {
+		if (__isOnlyShowInTracedLog(type)) {
 			_trace(type.name(), args);
 		} else {
 			_debug(type.name(), args);
@@ -112,13 +117,14 @@ public final class ExtEventManager extends SystemAbstractLogger {
 		__subscribers.clear();
 		__producer.clear();
 	}
-	
+
 	/**
 	 * Special events will be traced by trace log
+	 * 
 	 * @param type the event's type
 	 * @return <b>true</b> if an event can be traced
 	 */
-	private boolean __canShowTraceLog(final ExtEvent type) {
+	private boolean __isOnlyShowInTracedLog(final ExtEvent type) {
 		switch (type) {
 		case RECEIVED_MESSAGE_FROM_CONNECTION:
 		case RECEIVED_MESSAGE_FROM_PLAYER:

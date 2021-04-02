@@ -59,15 +59,15 @@ public final class NettySocketHandler extends BaseNettyHandler {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
 		// retrieve an object from pool
-		var msgObject = getMsgObjectPool().get();
-		var byteArray = getByteArrayPool().get();
+		var msgObject = getCommonObjectPool().get();
+		var byteArray = getByteArrayInputPool().get();
 
 		// convert the bytes' array to a game message
 		var message = MsgPackConverter.unserialize(msgObject, byteArray, (byte[]) msgRaw);
 		if (message == null) {
 			// repay
-			getMsgObjectPool().repay(msgObject);
-			getByteArrayPool().repay(byteArray);
+			getCommonObjectPool().repay(msgObject);
+			getByteArrayInputPool().repay(byteArray);
 			return;
 		}
 
@@ -75,8 +75,8 @@ public final class NettySocketHandler extends BaseNettyHandler {
 		_channelRead(ctx, message, null);
 
 		// repay
-		getMsgObjectPool().repay(msgObject);
-		getByteArrayPool().repay(byteArray);
+		getCommonObjectPool().repay(msgObject);
+		getByteArrayInputPool().repay(byteArray);
 	}
 
 	@Override

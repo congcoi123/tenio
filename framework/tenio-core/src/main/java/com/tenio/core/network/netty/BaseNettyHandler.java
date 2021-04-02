@@ -48,18 +48,18 @@ import io.netty.util.AttributeKey;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementPool<CommonObject> __commmonObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final IEventManager __eventManager;
 	private Connection __connection;
 	private final TransportType __type;
 	private final int __index;
 
-	public BaseNettyHandler(IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, int index, TransportType type) {
+	public BaseNettyHandler(IEventManager eventManager, IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool, int index, TransportType type) {
 		__eventManager = eventManager;
-		__msgObjectPool = msgObjectPool;
-		__byteArrayPool = byteArrayPool;
+		__commmonObjectPool = commonObjectPool;
+		__byteArrayInputPool = byteArrayInputPool;
 		__index = index;
 		__type = type;
 	}
@@ -133,15 +133,15 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * @return the message object manager pool instance
 	 */
-	protected IElementPool<CommonObject> getMsgObjectPool() {
-		return __msgObjectPool;
+	protected IElementPool<CommonObject> getCommonObjectPool() {
+		return __commmonObjectPool;
 	}
 
 	/**
 	 * @return the byte array input steam manager pool instance
 	 */
-	protected IElementPool<ByteArrayInputStream> getByteArrayPool() {
-		return __byteArrayPool;
+	protected IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
+		return __byteArrayInputPool;
 	}
 
 }

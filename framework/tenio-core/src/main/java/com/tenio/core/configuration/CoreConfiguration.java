@@ -130,7 +130,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			for (int j = 0; j < attrHttpPaths.getLength(); j++) {
 				var pPathNode = attrHttpPaths.item(j);
 				var path = new PathConfig(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
-						__getRestMethod(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
+						RestMethod.getByValue(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
 						pPathNode.getTextContent(), pPathNode.getAttributes().getNamedItem("desc").getTextContent(),
 						Integer.parseInt(pPathNode.getAttributes().getNamedItem("version").getTextContent()));
 
@@ -164,24 +164,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		}
 
 		_extend(extProperties);
-	}
-
-	/**
-	 * @param method the method name in text
-	 * @return the method in {@link RestMethod} type
-	 */
-	private RestMethod __getRestMethod(final String method) {
-		switch (method.toLowerCase()) {
-		case "get":
-			return RestMethod.GET;
-		case "post":
-			return RestMethod.POST;
-		case "put":
-			return RestMethod.PUT;
-		case "delete":
-			return RestMethod.DELETE;
-		}
-		return null;
 	}
 
 }

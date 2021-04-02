@@ -41,8 +41,14 @@ import com.tenio.core.entity.manager.PlayerManager;
  */
 public interface IRoom {
 
-	boolean contain(final String playerName);
+	boolean containPlayerName(final String playerName);
 
+	/**
+	 * Retrieve a first player in this room. Remember that it doesn't guarantee the
+	 * order
+	 * 
+	 * @return the player ({@link IPlayer})
+	 */
 	IPlayer getFirstPlayer();
 
 	/**
@@ -51,7 +57,7 @@ public interface IRoom {
 	 * 
 	 * @param player the player ({@link IPlayer}) who wants to join this room
 	 */
-	void add(final IPlayer player);
+	void addPlayer(final IPlayer player);
 
 	/**
 	 * Remove a player from this room, this action was handled by system logic. Be
@@ -60,12 +66,12 @@ public interface IRoom {
 	 * @param player the player ({@link IPlayer}) who wants to leave or be forced to
 	 *               leave this room
 	 */
-	void remove(final IPlayer player);
+	void removePlayer(final IPlayer player);
 
 	/**
 	 * Remove all players from this room
 	 */
-	void clear();
+	void removeAllPlayers();
 
 	int getCapacity();
 
@@ -78,9 +84,9 @@ public interface IRoom {
 	void setName(final String name);
 
 	/**
-	 * @return the number of players in this room
+	 * @return the current number of players in this room
 	 */
-	int count();
+	int countPlayers();
 
 	public Map<String, IPlayer> getPlayers();
 

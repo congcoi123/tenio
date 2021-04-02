@@ -70,15 +70,15 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		}
 
 		// retrieve an object from pool
-		var msgObject = getMsgObjectPool().get();
-		var byteArray = getByteArrayPool().get();
+		var msgObject = getCommonObjectPool().get();
+		var byteArray = getByteArrayInputPool().get();
 
 		// create a new message
 		var message = MsgPackConverter.unserialize(msgObject, byteArray, content);
 		if (message == null) {
 			// repay
-			getMsgObjectPool().repay(msgObject);
-			getByteArrayPool().repay(byteArray);
+			getCommonObjectPool().repay(msgObject);
+			getByteArrayInputPool().repay(byteArray);
 			return;
 		}
 
@@ -86,8 +86,8 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		_channelRead(ctx, message, datagram.sender());
 
 		// repay
-		getMsgObjectPool().repay(msgObject);
-		getByteArrayPool().repay(byteArray);
+		getCommonObjectPool().repay(msgObject);
+		getByteArrayInputPool().repay(byteArray);
 	}
 
 }

@@ -56,24 +56,24 @@ import com.tenio.core.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	private Server __server = Server.getInstance();
+	private final Server __server = Server.getInstance();
 
 	/**
 	 * @see MessageApi
 	 */
-	protected MessageApi _messageApi = __server.getMessageApi();
+	protected final MessageApi _messageApi = __server.getMessageApi();
 	/**
 	 * @see PlayerApi
 	 */
-	protected PlayerApi _playerApi = __server.getPlayerApi();
+	protected final PlayerApi _playerApi = __server.getPlayerApi();
 	/**
 	 * @see RoomApi
 	 */
-	protected RoomApi _roomApi = __server.getRoomApi();
+	protected final RoomApi _roomApi = __server.getRoomApi();
 	/**
 	 * @see TaskApi
 	 */
-	protected TaskApi _taskApi = __server.getTaskApi();
+	protected final TaskApi _taskApi = __server.getTaskApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type
@@ -183,7 +183,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}
-	
+
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link Boolean} type

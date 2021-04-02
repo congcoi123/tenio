@@ -56,7 +56,7 @@ public final class DeadlockScanTask extends AbstractLogger implements ITask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		_info("CCU SCAN TASK", "Running ...");
+		_info("DEADLOCK SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			__checkForDeadlockedThreads();

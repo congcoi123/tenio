@@ -43,7 +43,11 @@ public final class InternalEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<InternalEvent, IEvent<T>> __delegate = new HashMap<InternalEvent, IEvent<T>>();
+	private final Map<InternalEvent, IEvent<T>> __delegate;
+
+	public InternalEventHandler() {
+		__delegate = new HashMap<InternalEvent, IEvent<T>>();
+	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.

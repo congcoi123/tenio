@@ -56,13 +56,13 @@ public final class RoomManager implements IRoomManager {
 	private final Map<String, IRoom> __rooms;
 	private final IEventManager __eventManager;
 
-	public RoomManager(IEventManager eventManager) {
+	public RoomManager(final IEventManager eventManager) {
 		__eventManager = eventManager;
 		__rooms = new HashMap<String, IRoom>();
 	}
 
 	@Override
-	public synchronized void initialize(IConfiguration configuration) {
+	public synchronized void initialize(final IConfiguration configuration) {
 		// temporary do nothing
 	}
 
@@ -152,7 +152,7 @@ public final class RoomManager implements IRoomManager {
 
 	@Override
 	public CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player) {
-		if (room.contain(player.getName())) {
+		if (room.containPlayerName(player.getName())) {
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
 			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
@@ -167,7 +167,7 @@ public final class RoomManager implements IRoomManager {
 		// the player need to leave his room (if existed) first
 		makePlayerLeaveRoom(player, false);
 
-		room.add(player);
+		room.addPlayer(player);
 		player.setCurrentRoom(room);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
@@ -184,7 +184,7 @@ public final class RoomManager implements IRoomManager {
 
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
-		room.remove(player);
+		room.removePlayer(player);
 		player.setCurrentRoom(null);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);

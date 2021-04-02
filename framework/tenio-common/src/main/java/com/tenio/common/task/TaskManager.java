@@ -51,7 +51,11 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 	 * A list of tasks in the server
 	 */
 	@GuardedBy("this")
-	private final Map<String, ScheduledFuture<?>> __tasks = new HashMap<String, ScheduledFuture<?>>();
+	private final Map<String, ScheduledFuture<?>> __tasks;
+
+	public TaskManager() {
+		__tasks = new HashMap<String, ScheduledFuture<?>>();
+	}
 
 	@Override
 	public synchronized void create(String id, ScheduledFuture<?> task) {

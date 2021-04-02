@@ -45,7 +45,7 @@ public final class ComponentPool extends AbstractLogger implements IElementPool<
 	private IComponent[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
-	private Class<?> __clazz;
+	private final Class<?> __clazz;
 
 	public ComponentPool(Class<?> clazz) {
 		__clazz = clazz;

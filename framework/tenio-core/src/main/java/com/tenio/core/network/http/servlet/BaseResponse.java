@@ -37,7 +37,7 @@ import com.tenio.common.logger.AbstractLogger;
  */
 public abstract class BaseResponse extends AbstractLogger {
 
-	public abstract void process(String admin, HttpServletRequest request, JSONObject body,
+	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
 			HttpServletResponse response);
 
 	protected final boolean _hasHeaderKey(HttpServletRequest request, String key) {

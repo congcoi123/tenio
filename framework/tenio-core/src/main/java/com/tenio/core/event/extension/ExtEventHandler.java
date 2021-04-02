@@ -45,7 +45,11 @@ public final class ExtEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<ExtEvent, List<IEvent<T>>> __delegate = new HashMap<ExtEvent, List<IEvent<T>>>();
+	private final Map<ExtEvent, List<IEvent<T>>> __delegate;
+
+	public ExtEventHandler() {
+		__delegate = new HashMap<ExtEvent, List<IEvent<T>>>();
+	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.
