@@ -35,7 +35,7 @@ import com.tenio.core.exception.NullRoomException;
 /**
  * Manage all your rooms ({@link IRoom}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
- * {@link RoomApi} interface for easy management.
+ * {@link RoomApi} interface for easier management.
  * 
  * @author kong
  * 
@@ -48,6 +48,9 @@ public interface IRoomManager extends IManager {
 	int count();
 
 	/**
+	 * We let all rooms escape from their scope, so the associating process need to
+	 * be thread-safe.
+	 * 
 	 * @return all the current rooms in your server
 	 */
 	Map<String, IRoom> gets();
@@ -58,9 +61,10 @@ public interface IRoomManager extends IManager {
 	void clear();
 
 	/**
-	 * Retrieve a room by its ID.
+	 * Retrieve a room by its id. We let a room escape from its scope, so the
+	 * associating process need to be thread-safe.
 	 * 
-	 * @param roomId the unique ID
+	 * @param roomId the unique id
 	 * @return a room's instance if it has existed, <b>null</b> otherwise
 	 */
 	IRoom get(final String roomId);

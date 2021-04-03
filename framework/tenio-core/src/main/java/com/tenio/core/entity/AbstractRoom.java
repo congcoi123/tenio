@@ -26,6 +26,8 @@ package com.tenio.core.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -43,6 +45,7 @@ import com.tenio.core.entity.manager.PlayerManager;
  * 
  */
 @Entity
+@ThreadSafe
 public abstract class AbstractRoom implements IRoom {
 
 	/**
@@ -143,14 +146,13 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public Map<String, IPlayer> getPlayers() {
-		synchronized (__id) {
+		synchronized (__players) {
 			return __players;
 		}
 	}
 
 	@Override
 	public boolean isFull() {
-		// the counter starts from element 0, remember it
 		return (countPlayers() >= __capacity);
 	}
 

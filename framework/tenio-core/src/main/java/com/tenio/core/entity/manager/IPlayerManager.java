@@ -53,6 +53,9 @@ public interface IPlayerManager extends IManager {
 	int countPlayers();
 
 	/**
+	 * We let all players escape from their scope, so make sure you take a
+	 * thread-safe action with them.
+	 * 
 	 * @return all current players
 	 */
 	Map<String, IPlayer> gets();
@@ -71,7 +74,8 @@ public interface IPlayerManager extends IManager {
 	boolean contain(final String name);
 
 	/**
-	 * Retrieve a player by the player's name.
+	 * Retrieve a player by the player's name. We let a player escape from its
+	 * scope, so make sure you take a thread-safe action with it.
 	 * 
 	 * @param name the player's name (unique ID)
 	 * @return the player's instance if that player has existed, <b>null</b>

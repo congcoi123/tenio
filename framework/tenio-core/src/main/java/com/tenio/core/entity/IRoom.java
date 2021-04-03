@@ -45,7 +45,8 @@ public interface IRoom {
 
 	/**
 	 * Retrieve a first player in this room. Remember that it doesn't guarantee the
-	 * order
+	 * order. We let a player escape from its scope, so it is necessary to make sure
+	 * that the player after process is thread-safe.
 	 * 
 	 * @return the player ({@link IPlayer})
 	 */
@@ -88,6 +89,12 @@ public interface IRoom {
 	 */
 	int countPlayers();
 
+	/**
+	 * We let a player escape from its scope, so it is necessary to make sure that
+	 * the player after process is thread-safe.
+	 * 
+	 * @return a synchronized list of players
+	 */
 	public Map<String, IPlayer> getPlayers();
 
 	/**

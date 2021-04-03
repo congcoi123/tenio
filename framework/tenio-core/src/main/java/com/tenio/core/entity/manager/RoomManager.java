@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
@@ -48,6 +50,7 @@ import com.tenio.core.exception.NullRoomException;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class RoomManager implements IRoomManager {
 
 	/**
@@ -124,7 +127,7 @@ public final class RoomManager implements IRoomManager {
 
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
-			// force all players leave this room
+			// force all players to leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
 			__rooms.remove(room.getId());
@@ -133,15 +136,16 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	/**
-	 * Force all players remove in one room without their desire. It's useful when
-	 * you want to kick someone from his room because of his cheating or something
-	 * else.
+	 * Force all players to remove in one room without their desires. It's useful
+	 * when you want to kick someone from his room because of his cheating or
+	 * something else.
 	 *
 	 * @param room the corresponding room @see {@link IRoom}
 	 */
 	private void __forceAllPlayersLeaveRoom(final IRoom room) {
 		final List<IPlayer> removePlayers = new ArrayList<IPlayer>();
-		room.getPlayers().values().forEach(player -> {
+		var players = room.getPlayers().values();
+		players.forEach(player -> {
 			removePlayers.add(player);
 		});
 		for (var player : removePlayers) {
@@ -163,9 +167,6 @@ public final class RoomManager implements IRoomManager {
 					CoreMessageCode.ROOM_IS_FULL);
 			return CoreMessageCode.ROOM_IS_FULL;
 		}
-
-		// the player need to leave his room (if existed) first
-		makePlayerLeaveRoom(player, false);
 
 		room.addPlayer(player);
 		player.setCurrentRoom(room);

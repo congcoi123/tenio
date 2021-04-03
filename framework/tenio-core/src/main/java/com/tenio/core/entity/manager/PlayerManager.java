@@ -27,8 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.PlayerApi;
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -51,6 +54,7 @@ import com.tenio.core.network.IConnection;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class PlayerManager implements IPlayerManager {
 
 	/**
@@ -146,7 +150,7 @@ public final class PlayerManager implements IPlayerManager {
 				size = __socketPortsSize;
 			}
 			player.initializeConnections(size);
-			player.setConnection(connection, 0);
+			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
 
 			__players.put(player.getName(), player);
 
@@ -184,10 +188,10 @@ public final class PlayerManager implements IPlayerManager {
 				return;
 			}
 
-			// force player leave room, fire a logic event
+			// force player to leave its current room, fire a logic event
 			__eventManager.getInternal().emit(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, player);
 
-			// remove all player's connections, player
+			// remove all player's connections from the player
 			removeAllConnections(player);
 
 			__players.remove(player.getName());

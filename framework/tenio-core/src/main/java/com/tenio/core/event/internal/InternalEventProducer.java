@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.internal;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import com.tenio.core.configuration.define.InternalEvent;
 
 /**
@@ -31,6 +33,7 @@ import com.tenio.core.configuration.define.InternalEvent;
  * @author kong
  * 
  */
+@NotThreadSafe
 public final class InternalEventProducer {
 
 	/**
@@ -54,14 +57,14 @@ public final class InternalEventProducer {
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link InternalEvent}
-	 * @param args a list parameters of this event
+	 * @param event  see {@link InternalEvent}
+	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 * @see InternalEventHandler#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public Object emit(final InternalEvent event, final Object... params) {
+		return __eventHandler.emit(event, params);
 	}
 
 	/**

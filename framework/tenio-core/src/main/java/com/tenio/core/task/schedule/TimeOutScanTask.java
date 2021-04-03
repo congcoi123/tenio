@@ -87,7 +87,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 
 			for (var player : __playerApi.gets().values()) {
 				// normal state, can check time out
-				if (!player.isIgnoreTimeout()) {
+				if (!player.isIgnoredTimeout()) {
 					long writerTime = player.getWriterTime();
 					if (currentTime - writerTime >= (__idleWriter * 1000)) { // check writer time first
 						__removeablePlayers.add(player);

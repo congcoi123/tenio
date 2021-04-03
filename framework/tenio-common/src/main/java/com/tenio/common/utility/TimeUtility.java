@@ -33,8 +33,15 @@ public final class TimeUtility {
 	/**
 	 * @return the current time in seconds
 	 */
-	public static double currentTimeSeconds() {
-		return System.currentTimeMillis() * 0.001;
+	public static long currentTimeSeconds() {
+		return System.currentTimeMillis() * 1000;
+	}
+
+	/**
+	 * @return {@link System#currentTimeMillis()}
+	 */
+	public static long currentTimeMillis() {
+		return System.currentTimeMillis();
 	}
 
 }

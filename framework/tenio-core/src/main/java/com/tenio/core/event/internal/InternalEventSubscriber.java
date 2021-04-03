@@ -21,57 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.extension;
+package com.tenio.core.event.internal;
 
-import com.tenio.core.configuration.define.ExtEvent;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
- * An object which creates a mapping between an event type with a subscriber.
+ * An object which creates a mapping between an event type with a subscriber
  * 
  * @author kong
  * 
  */
-public final class ExtSubscriber {
+@ThreadSafe
+public final class InternalEventSubscriber {
 
 	/**
-	 * @see ExtEvent
+	 * @see InternalEvent
 	 */
-	private final ExtEvent __type;
+	private final InternalEvent __event;
 	/**
 	 * @see ISubscriber
 	 */
-	private final ISubscriber __sub;
+	private final ISubscriber __subscriber;
 
-	public static ExtSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
-		return new ExtSubscriber(type, sub);
+	public static InternalEventSubscriber newInstance(final InternalEvent event, final ISubscriber subscriber) {
+		return new InternalEventSubscriber(event, subscriber);
 	}
 
-	private ExtSubscriber(final ExtEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
-	}
-
-	/**
-	 * @return see {@link ExtEvent}
-	 */
-	public ExtEvent getType() {
-		return __type;
+	private InternalEventSubscriber(final InternalEvent event, final ISubscriber subscriber) {
+		__event = event;
+		__subscriber = subscriber;
 	}
 
 	/**
-	 * @param type the comparison event value
-	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
+	 * @return see {@link InternalEvent}
 	 */
-	public boolean isType(ExtEvent type) {
-		return __type == type;
+	public InternalEvent getEvent() {
+		return __event;
 	}
 
 	/**
 	 * @return see {@link ISubscriber}
 	 */
-	public ISubscriber getSub() {
-		return __sub;
+	public ISubscriber getSubscriber() {
+		return __subscriber;
 	}
 
 }

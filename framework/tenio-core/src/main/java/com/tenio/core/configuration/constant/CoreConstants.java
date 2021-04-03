@@ -45,6 +45,12 @@ public final class CoreConstants {
 	public static final int HEADER_BYTES = 2;
 
 	/**
+	 * A player can hold a list of connections, and it is the first connection
+	 * order.
+	 */
+	public static final int MAIN_CONNECTION_INDEX = 0;
+
+	/**
 	 * A unique key for the CCU scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_CCU_SCAN = "t.schedule.ccu.scan";

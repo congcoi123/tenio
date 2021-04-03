@@ -46,10 +46,22 @@ import com.tenio.core.network.IConnection;
  */
 public interface IPlayer {
 
+	/**
+	 * @return the entity who associated with the current player
+	 */
 	String getEntityId();
 
-	void setEntityId(String entityId);
+	/**
+	 * A player should be a inspector with the control capacity, set the entity who
+	 * associated with the current player.
+	 * 
+	 * @param entityId the entity' id
+	 */
+	void setEntityId(final String entityId);
 
+	/**
+	 * @return the player's name
+	 */
 	String getName();
 
 	/**
@@ -60,11 +72,16 @@ public interface IPlayer {
 	 */
 	boolean isNPC();
 
+	/**
+	 * @param connectionIndex the order of connection.
+	 * @return <b>true</b> if the connection is available, otherwise returns
+	 *         <b>false</b>
+	 */
 	boolean hasConnection(final int connectionIndex);
 
 	IConnection getConnection(final int connectionIndex);
 
-	void initializeConnections(final int connectionSize);
+	void initializeConnections(final int connectionsSize);
 
 	void setConnection(final IConnection connection, final int connectionIndex);
 
@@ -72,14 +89,23 @@ public interface IPlayer {
 
 	void closeAllConnections();
 
+	/**
+	 * We let the room instance escape from its scope, so the concerning process
+	 * with this room need to be thread-safe.
+	 * 
+	 * @return the synchronized room instance
+	 */
 	IRoom getCurrentRoom();
 
 	void setCurrentRoom(final IRoom room);
 
 	/**
-	 * @return the list of rooms that player has been in
+	 * We let the list escape from its scope, so the concerning process with this
+	 * room need to be thread-safe.
+	 * 
+	 * @return the list of rooms that the player has been in
 	 */
-	List<String> getTracedRoomsList();
+	List<String> getTracedRoomIdsList();
 
 	long getReaderTime();
 
@@ -89,7 +115,7 @@ public interface IPlayer {
 
 	void setCurrentWriterTime();
 
-	boolean isIgnoreTimeout();
+	boolean isIgnoredTimeout();
 
 	void setIgnoreTimeout(final boolean flagIgnoreTimeout);
 

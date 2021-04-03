@@ -36,9 +36,9 @@ public interface ISubscriber {
 	/**
 	 * To dispatch results from one event.
 	 * 
-	 * @param args all the results in an array
+	 * @param params all the results in an array
 	 * @return an object or <b>null</b>
 	 */
-	Object dispatch(Object... args);
+	Object dispatch(Object... params);
 
 }

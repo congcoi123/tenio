@@ -30,14 +30,14 @@ package com.tenio.core.event;
  * 
  */
 @FunctionalInterface
-public interface IEvent<T extends Object> {
+public interface IEmitter<T> {
 
 	/**
 	 * To invoke an event.
 	 * 
-	 * @param args the parameters those will be sent to subscribers
+	 * @param params the parameters those will be sent to subscribers
 	 * @return the subsribe's result
 	 */
-	Object emit(@SuppressWarnings("unchecked") T... args);
+	Object emit(@SuppressWarnings("unchecked") T... params);
 
 }
