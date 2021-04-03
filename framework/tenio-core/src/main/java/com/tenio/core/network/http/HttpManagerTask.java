@@ -57,19 +57,20 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	private final IEventManager __eventManager;
 	private final String __name;
 	private final int __port;
-	private final List<PathConfig> __paths;
+	private final List<PathConfig> __pathConfigs;
 
-	public HttpManagerTask(IEventManager eventManager, String name, int port, List<PathConfig> paths) {
+	public HttpManagerTask(final IEventManager eventManager, final String name, final int port,
+			final List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;
-		__paths = paths;
+		__pathConfigs = pathConfigs;
 	}
 
 	public void setup() throws DuplicatedUriAndMethodException {
 		// Collect the same URI path for one servlet
 		Map<String, List<PathConfig>> servlets = new HashMap<String, List<PathConfig>>();
-		for (var path : __paths) {
+		for (var path : __pathConfigs) {
 			if (!servlets.containsKey(path.getUri())) {
 				var servlet = new ArrayList<PathConfig>();
 				servlet.add(path);
@@ -113,18 +114,19 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	public ScheduledFuture<?> run() {
 		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 			try {
-				_info("HTTP", _buildgen("Name: ", __name, " > Start at port: ", __port));
+				_info("HTTP SERVICE", _buildgen("Name: ", __name, " > Start at port: ", __port));
 
 				__server.start();
 				__server.join();
 			} catch (Exception e) {
-				_error(e, "EXCEPTION START", "system");
+				_error(e);
 			}
 		}, 0, TimeUnit.SECONDS);
 	}
 
-	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<PathConfig> servlet) {
-		return servlet.stream().filter(s -> s.getMethod().equals(method)).count() > 1 ? true : false;
+	private boolean __isUriHasDuplicatedMethod(final RestMethod method, final List<PathConfig> pathConfigs) {
+		return pathConfigs.stream().filter(pathConfig -> pathConfig.getMethod().equals(method)).count() > 1 ? true
+				: false;
 	}
 
 }

@@ -25,6 +25,8 @@ package com.tenio.core.monitoring.traffic;
 
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 
@@ -39,6 +41,7 @@ import io.netty.handler.traffic.TrafficCounter;
  * @author kong
  *
  */
+@ThreadSafe
 public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficShapingHandler {
 
 	private final IEventManager __eventManager;

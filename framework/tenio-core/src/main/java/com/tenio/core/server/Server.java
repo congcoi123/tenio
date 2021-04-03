@@ -151,9 +151,10 @@ public final class Server extends AbstractLogger implements IServer {
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
 		// show system information
-		SystemInfo.getInstance().logSystemInfo();
-		SystemInfo.getInstance().logNetCardsInfo();
-		SystemInfo.getInstance().logDiskInfo();
+		var systemInfo = new SystemInfo();
+		systemInfo.logSystemInfo();
+		systemInfo.logNetCardsInfo();
+		systemInfo.logDiskInfo();
 
 		_info("SERVER", __serverName, "Starting ...");
 

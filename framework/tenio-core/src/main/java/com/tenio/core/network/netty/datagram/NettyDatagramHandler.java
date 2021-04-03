@@ -48,9 +48,10 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
-	public NettyDatagramHandler(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
-		super(eventManager, msgObjectPool, byteArrayPool, index, TransportType.UDP);
+	public NettyDatagramHandler(final int connectionIndex, final IEventManager eventManager,
+			final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final IConfiguration configuration) {
+		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.UDP);
 	}
 
 	@Override

@@ -36,13 +36,13 @@ import com.tenio.core.network.http.servlet.IServletHandler;
 public abstract class BaseProcessServlet extends AbstractLogger implements IServletHandler {
 
 	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response) {
+	public void handle(final HttpServletRequest request, final HttpServletResponse response) {
 		response.setContentType(CoreConstants.CONTENT_TYPE_JSON);
 		response.setContentType(CoreConstants.CONTENT_TYPE_TEXT);
 		response.setCharacterEncoding(CoreConstants.UTF_8);
 		_handleImpl(request, response);
 	}
 
-	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
+	protected abstract void _handleImpl(final HttpServletRequest request, final HttpServletResponse response);
 
 }

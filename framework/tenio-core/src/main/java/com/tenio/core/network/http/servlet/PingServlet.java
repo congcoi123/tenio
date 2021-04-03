@@ -47,12 +47,13 @@ public final class PingServlet extends HttpServlet {
 	private Process __process = new Process();
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
 		doPost(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException {
 		__process.handle(request, response);
 	}
 
@@ -60,7 +61,7 @@ public final class PingServlet extends HttpServlet {
 
 		@SuppressWarnings({ "unchecked" })
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void _handleImpl(final HttpServletRequest request, final HttpServletResponse response) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			try {
 				var json = new JSONObject();

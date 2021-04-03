@@ -44,19 +44,20 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public final class NettyDatagramInitializer extends ChannelInitializer<DatagramChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementPool<CommonObject> __commonObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
-	private final int __index;
+	private final int __connectionIndex;
 
-	public NettyDatagramInitializer(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			IConfiguration configuration) {
-		__index = index;
+	public NettyDatagramInitializer(final int connectionIndex, final IEventManager eventManager,
+			final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final GlobalTrafficShapingHandlerCustomize trafficCounter,
+			final IConfiguration configuration) {
+		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
-		__msgObjectPool = msgObjectPool;
-		__byteArrayPool = byteArrayPool;
+		__commonObjectPool = commonObjectPool;
+		__byteArrayInputPool = byteArrayInputPool;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
@@ -75,7 +76,7 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 
 		// the logic handler
 		pipeline.addLast("handler",
-				new NettyDatagramHandler(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
+				new NettyDatagramHandler(__connectionIndex, __eventManager, __commonObjectPool, __byteArrayInputPool, __configuration));
 	}
 
 }

@@ -25,6 +25,8 @@ package com.tenio.core.monitoring.system;
 
 import java.lang.management.ManagementFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -46,6 +48,7 @@ import com.sun.management.OperatingSystemMXBean;
  * @author kong
  *
  */
+@ThreadSafe
 public final class SystemMonitoring {
 
 	@GuardedBy("this")
