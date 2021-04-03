@@ -45,45 +45,49 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<ConfigurationType, Object> __configuration = new HashMap<ConfigurationType, Object>();
+	private final Map<ConfigurationType, Object> __configuration;
+
+	public CommonConfiguration() {
+		__configuration = new HashMap<ConfigurationType, Object>();
+	}
 
 	@Override
-	public boolean getBoolean(final ConfigurationType key) {
+	public final boolean getBoolean(final ConfigurationType key) {
 		return Boolean.parseBoolean((String) __configuration.get(key));
 	}
 
 	@Override
-	public int getInt(final ConfigurationType key) {
+	public final int getInt(final ConfigurationType key) {
 		return Integer.parseInt((String) __configuration.get(key));
 	}
 
 	@Override
-	public float getFloat(final ConfigurationType key) {
+	public final float getFloat(final ConfigurationType key) {
 		return Float.parseFloat((String) __configuration.get(key));
 	}
 
 	@Override
-	public String getString(final ConfigurationType key) {
+	public final String getString(final ConfigurationType key) {
 		return (String) __configuration.get(key);
 	}
 
 	@Override
-	public Object get(final ConfigurationType key) {
+	public final Object get(final ConfigurationType key) {
 		return __configuration.get(key);
 	}
 
 	@Override
-	public boolean isDefined(final ConfigurationType key) {
+	public final boolean isDefined(final ConfigurationType key) {
 		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return __configuration.toString();
 	}
 
 	@Override
-	public void clear() {
+	public final void clear() {
 		__configuration.clear();
 	}
 
@@ -93,7 +97,7 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(final ConfigurationType key, final Object value) {
+	protected final void _push(final ConfigurationType key, final Object value) {
 		if (key == null) {
 			return;
 		}
@@ -111,6 +115,6 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * 
 	 * @param extProperties the extension data in key-value format (see {@link Map})
 	 */
-	protected abstract void _extend(Map<String, String> extProperties);
+	protected abstract void _extend(final Map<String, String> extProperties);
 
 }

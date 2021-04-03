@@ -25,6 +25,8 @@ package com.tenio.core.api;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.entity.IRoom;
 import com.tenio.core.entity.manager.IRoomManager;
@@ -39,6 +41,7 @@ import com.tenio.core.exception.NullRoomException;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class RoomApi extends AbstractLogger {
 
 	private final IRoomManager __roomManager;

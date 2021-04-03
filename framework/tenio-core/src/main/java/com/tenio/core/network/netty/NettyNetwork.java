@@ -32,9 +32,9 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.INetwork;
@@ -72,8 +72,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	public void start(final IEventManager eventManager, final IConfiguration configuration,
 			final IElementPool<CommonObject> msgObjectPool, final IElementPool<ByteArrayInputStream> byteArrayPool)
 			throws IOException, InterruptedException {
-		__producer = new NioEventLoopGroup();
-		__consumer = new NioEventLoopGroup();
+		__producer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.PRODUCER_THREAD_POOL_SIZE));
+		__consumer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.CONSUMER_THREAD_POOL_SIZE));
 
 		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __consumer,
 				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,

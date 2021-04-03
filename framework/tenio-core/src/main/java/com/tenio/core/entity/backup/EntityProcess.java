@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entity.annotation;
+package com.tenio.core.entity.backup;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,6 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
+import com.tenio.core.entity.backup.annotation.Sanitizer;
 
 /**
  * This class is used to export game objects with supported annotation to JSON

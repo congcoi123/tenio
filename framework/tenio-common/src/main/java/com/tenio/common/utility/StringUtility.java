@@ -64,7 +64,7 @@ public final class StringUtility {
 	 * @param length limited size of the text
 	 * @return a randomized string that could be duplicated
 	 */
-	public static String getRandomTextByLength(int length) {
+	public static String getRandomTextByLength(final int length) {
 		// create StringBuffer size of AlphaNumericString
 		StringBuilder sb = new StringBuilder(length);
 

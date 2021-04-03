@@ -39,11 +39,11 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.HttpConfig;
-import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.entity.HttpConfig;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -326,7 +326,7 @@ public final class Server extends AbstractLogger implements IServer {
 				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
 
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
-				(new DeadlockScanTask(CoreConstants.DEADLOCKED_THREAD_SCAN_INTERVAL)).run());
+				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {

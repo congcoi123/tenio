@@ -26,8 +26,8 @@ package com.tenio.core.entity;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.tenio.core.entity.annotation.Column;
-import com.tenio.core.entity.annotation.Entity;
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.network.IConnection;
 
 /**

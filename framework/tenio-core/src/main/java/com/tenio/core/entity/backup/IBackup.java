@@ -21,21 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entity.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.tenio.core.entity.backup;
 
 /**
- * This annotation is to standardized data.
+ * This interface is used for backing up and restoring an object. The object is
+ * serialized to a JSON string and can be saved somewhere. Otherwise, a JSON
+ * object can be established to the corresponding one.
+ *
+ * @param <T> the template class
  * 
  * @author kong
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Sanitizer {
+public interface IBackup<T> {
+
+	/**
+	 * Convert an object data to a JSON data
+	 * 
+	 * @return <b>true</b> if it's success, <b>false</b> otherwise
+	 */
+	boolean backup();
+
+	/**
+	 * Convert a JSON data to an object data
+	 * 
+	 * @return an object or <b>null</b> in failed cases
+	 */
+	T restore();
 
 }

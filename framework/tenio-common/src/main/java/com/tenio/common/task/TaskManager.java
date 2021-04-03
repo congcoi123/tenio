@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.exception.RunningScheduledTaskException;
 import com.tenio.common.logger.AbstractLogger;
@@ -45,6 +46,7 @@ import com.tenio.common.logger.AbstractLogger;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	/**

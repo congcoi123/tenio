@@ -21,32 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entity.annotation;
+package com.tenio.core.configuration.entity;
+
+import com.tenio.core.configuration.define.TransportType;
 
 /**
- * This interface is used for backing up and restoring an object. The object is
- * serialized to a JSON string and can be saved somewhere. Otherwise, a JSON
- * object can be established to the corresponding one.
- *
- * @param <T> the template class
- * 
  * @author kong
- * 
  */
-public interface IBackup<T> {
+public final class SocketConfig {
 
-	/**
-	 * Convert an object data to a JSON data
-	 * 
-	 * @return <b>true</b> if it's success, <b>false</b> otherwise
-	 */
-	boolean backup();
+	private final String __name;
+	private final TransportType __type;
+	private final int __port;
 
-	/**
-	 * Convert a JSON data to an object data
-	 * 
-	 * @return an object or <b>null</b> in failed cases
-	 */
-	T restore();
+	public SocketConfig(final String name, final TransportType type, final int port) {
+		__name = name;
+		__type = type;
+		__port = port;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public TransportType getType() {
+		return __type;
+	}
+
+	public int getPort() {
+		return __port;
+	}
+
+	@Override
+	public final String toString() {
+		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+	}
 
 }

@@ -55,20 +55,20 @@ public interface IPlayer {
 	/**
 	 * Check the player's role
 	 * 
-	 * @return <b>true</b> if the player is a NPC (non player character), otherwise
-	 *         return <b>false</b> (A NPC is a player without a connection).
+	 * @return <b>true</b> if the player is an NPC (non player character), otherwise
+	 *         return <b>false</b> (An NPC is a player has no connection).
 	 */
 	boolean isNPC();
 
-	boolean hasConnection(final int index);
+	boolean hasConnection(final int connectionIndex);
 
-	IConnection getConnection(final int index);
+	IConnection getConnection(final int connectionIndex);
 
-	void initializeConnections(final int size);
+	void initializeConnections(final int connectionSize);
 
-	void setConnection(final IConnection connection, final int index);
+	void setConnection(final IConnection connection, final int connectionIndex);
 
-	void closeConnection(int index);
+	void closeConnection(final int connectionIndex);
 
 	void closeAllConnections();
 

@@ -21,40 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
+package com.tenio.core.entity.backup.annotation;
 
-import com.tenio.core.configuration.define.TransportType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation is to standardized data.
+ * 
  * @author kong
+ * 
  */
-public final class SocketConfig {
-
-	private String __name;
-	private TransportType __type;
-	private int __port;
-
-	public SocketConfig(String name, TransportType type, int port) {
-		__name = name;
-		__type = type;
-		__port = port;
-	}
-
-	public String getName() {
-		return __name;
-	}
-
-	public TransportType getType() {
-		return __type;
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
-	@Override
-	public final String toString() {
-		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Sanitizer {
 
 }

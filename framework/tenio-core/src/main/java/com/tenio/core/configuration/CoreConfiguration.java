@@ -36,6 +36,9 @@ import com.tenio.common.utility.XMLUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.HttpConfig;
+import com.tenio.core.configuration.entity.PathConfig;
+import com.tenio.core.configuration.entity.SocketConfig;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -49,6 +52,7 @@ import com.tenio.core.configuration.define.TransportType;
  * 
  */
 public abstract class CoreConfiguration extends CommonConfiguration {
+	
 	/**
 	 * All ports in sockets zone
 	 */
@@ -95,7 +99,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 
-		// Properties
+		// Server's Properties
 		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
 		for (int j = 0; j < attrRootProperties.getLength(); j++) {
 			var pDataNode = attrRootProperties.item(j);
@@ -140,7 +144,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			__httpPorts.add(port);
 		}
 
-		// Configuration
+		// Ports' Configuration
 		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
 		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
 		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);

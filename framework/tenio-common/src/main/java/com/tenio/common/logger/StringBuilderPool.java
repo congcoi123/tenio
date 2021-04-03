@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.common.logger;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,7 @@ import com.tenio.common.pool.IElementPool;
  * @author kong
  * 
  */
+@ThreadSafe
 final class StringBuilderPool implements IElementPool<StringBuilder> {
 
 	private static volatile StringBuilderPool __instance;

@@ -26,8 +26,8 @@ package com.tenio.core.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.core.entity.annotation.Column;
-import com.tenio.core.entity.annotation.Entity;
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**

@@ -29,12 +29,12 @@ import java.util.Map;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;

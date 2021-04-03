@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 
 import com.tenio.common.element.CommonObject;
-import com.tenio.core.configuration.PathConfig;
 import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.configuration.entity.PathConfig;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;

@@ -164,7 +164,7 @@ final class InternalLogicManager extends AbstractLogger {
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
-				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_PLAYER)) {
+				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_NUMBER_PLAYERS)) {
 					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
 							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();

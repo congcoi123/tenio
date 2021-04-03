@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
-import io.netty.channel.nio.NioEventLoopGroup;
-
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
@@ -65,19 +63,17 @@ public final class CoreConstants {
 	 * A unique key for the Time Out scan schedule.
 	 */
 	public static final String KEY_SCHEDULE_TIME_OUT_SCAN = "t.schedule.time.out.scan";
+
 	/**
-	 * A unique key for the Http manager schedule.
+	 * A unique key for the HTTP manager schedule.
 	 */
 	public static final String KEY_SCHEDULE_HTTP_MANAGER = "t.schedule.http.manager";
+
 	/**
 	 * A unique key for the deadlocked thread detector schedule.
 	 */
 	public static final String KEY_SCHEDULE_DEADLOCK_SCAN = "t.schedule.deadlock.scan";
 
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	public static final int NIO_NUMBER_THREADS = 1;
 	/**
 	 * 0 or a limit in bytes/s
 	 */
@@ -87,11 +83,6 @@ public final class CoreConstants {
 	 * 0 or a limit in bytes/s
 	 */
 	public static final long TRAFFIC_COUNTER_READ_LIMIT = 0L;
-
-	/**
-	 * Schedule detecting deadlocked threads every 60 seconds
-	 */
-	public static final int DEADLOCKED_THREAD_SCAN_INTERVAL = 60;
 
 	/**
 	 * The HTTP response with UTF-8 encoding

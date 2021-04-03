@@ -24,9 +24,9 @@ THE SOFTWARE.
 package com.tenio.example.example1;
 
 import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.annotation.Column;
-import com.tenio.core.entity.annotation.Entity;
-import com.tenio.core.entity.annotation.IBackup;
+import com.tenio.core.entity.backup.IBackup;
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
 
 /**
  * The player in server

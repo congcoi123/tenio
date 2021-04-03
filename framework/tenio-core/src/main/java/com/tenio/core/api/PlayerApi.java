@@ -25,6 +25,8 @@ package com.tenio.core.api;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.entity.IPlayer;
@@ -43,6 +45,7 @@ import com.tenio.core.network.IConnection;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class PlayerApi extends AbstractLogger {
 
 	private final IPlayerManager __playerManager;

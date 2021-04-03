@@ -40,6 +40,7 @@ import com.tenio.common.configuration.ConfigurationType;
  * 
  */
 public enum CoreConfigurationType implements ConfigurationType {
+	
 	/**
 	 * The server name
 	 */
@@ -51,12 +52,20 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * This current version code of your server in integer type (can be compared)
 	 */
-	VERSION_CODE("versionCode"),
+	SERVER_VERSION_CODE("versionCode"),
 	/**
 	 * This current version name of your server in string type
 	 */
-	VERSION_NAME("versionName"),
+	SERVER_VERSION_NAME("versionName"),
 
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	PRODUCER_THREAD_POOL_SIZE("producerThreadPoolSize"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	CONSUMER_THREAD_POOL_SIZE("consumerThreadPoolSize"),
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout
@@ -65,7 +74,7 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * The maximum number of players which game can handle
 	 */
-	MAX_PLAYER("maxPlayer"),
+	MAX_NUMBER_PLAYERS("maxNumberPlayers"),
 	/**
 	 * The max IDLE time in seconds which server can wait from the last getting
 	 * message from client
@@ -89,28 +98,26 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 */
 	CCU_SCAN_INTERVAL("ccuScanInterval"),
 	/**
+	 * Schedule detecting deadlocked threads
+	 */
+	DEADLOCK_SCAN_INTERVAL("deadlockScanInterval"),
+	/**
 	 * The period monitoring system
 	 */
 	SYSTEM_MONITORING_INTERVAL("systemMonitoringInterval"),
 	/**
 	 * The delay between two computations of performances for channels or 0 if no
-	 * stats are to be computed
+	 * statics are to be computed
 	 */
 	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
 
 	//====== UNDER CONTRUCTION ======//
 	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
-
 	NUMBER_READER_WORKER("numberReaderWorker"),
-
 	NUMBER_WRITER_WORKER("numberWriterWorker"),
-	
 	READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
-	
 	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
-	
 	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
-
 	SERVER_ADDRESS("serverAddress"),
 	//====== UNDER CONTRUCTION ======//
 	
@@ -123,7 +130,7 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 */
 	WEBSOCKET_PORTS("webSocketPorts"),
 	/**
-	 * The list of http ports in configuration
+	 * The list of HTTP ports in configuration
 	 */
 	HTTP_PORTS("httpPorts");
 

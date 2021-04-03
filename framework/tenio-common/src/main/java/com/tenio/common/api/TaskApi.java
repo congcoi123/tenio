@@ -25,6 +25,8 @@ package com.tenio.common.api;
 
 import java.util.concurrent.ScheduledFuture;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.ITaskManager;
 
@@ -36,6 +38,7 @@ import com.tenio.common.task.ITaskManager;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class TaskApi extends AbstractLogger {
 
 	private final ITaskManager __taskManager;

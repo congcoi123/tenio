@@ -42,14 +42,15 @@ import com.tenio.common.pool.IElementPool;
 public abstract class AbstractLogger {
 
 	/**
-	 * A Log4j object
-	 */
-	final Logger __logger = LogManager.getLogger(getClass());
-	/**
-	 * An object creation pool instance, which is used for re-use string objects,
+	 * An object creation pool instance, which is used for re-using string objects,
 	 * see {@link IElementPool}
 	 */
 	static final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
+	
+	/**
+	 * A Log4j object for each logged class
+	 */
+	final Logger __logger = LogManager.getLogger(getClass());
 
 	/**
 	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
