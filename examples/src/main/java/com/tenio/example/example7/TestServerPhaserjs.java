@@ -28,7 +28,6 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -44,7 +43,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerPhaserjs();
 		game.start();
 	}
@@ -78,91 +77,71 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// Allow the connection login into server (become a player)
-					String username = message.getString("u");
-					// Should confirm that credentials by data from database or other services, here
-					// is only for testing
-					_playerApi.login(new PlayerPhaserjs(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Allow the connection login into server (become a player)
+				String username = message.getString("u");
+				// Should confirm that credentials by data from database or other services, here
+				// is only for testing
+				_playerApi.login(new PlayerPhaserjs(username), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				try {
-					// The player has login successful
-					var player = (PlayerPhaserjs) _getPlayer(args[0]);
-					player.setIgnoreTimeout(true);
-					// create the initial position
-					int x = MathUtility.randInt(100, 400);
-					int y = MathUtility.randInt(100, 400);
-					player.setPosition(x, y);
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+				// The player has login successful
+				var player = (PlayerPhaserjs) _getPlayer(params[0]);
+				player.setIgnoreTimeout(true);
+				// create the initial position
+				int x = MathUtility.randInt(100, 400);
+				int y = MathUtility.randInt(100, 400);
+				player.setPosition(x, y);
 
-					_playerApi.makePlayerJoinRoom(phaserjsRoom, player);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_playerApi.makePlayerJoinRoom(phaserjsRoom, player);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
-				try {
-					var room = (RoomPhaserjs) _getRoom(args[1]);
+			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, params -> {
+				var room = (RoomPhaserjs) _getRoom(params[1]);
 
-					var pack = _messageApi.getMessageObjectArray();
-					var players = room.getPlayers();
-					for (var p : players.values()) {
-						var pjs = (PlayerPhaserjs) p;
-						var data = CommonObjectArray.newInstance();
-						data.add(pjs.getName());
-						data.add(pjs.getX());
-						data.add(pjs.getY());
-						pack.add(data);
-					}
-					_messageApi.sendToRoom(room, PlayerPhaserjs.MAIN_CHANNEL, "c", "i", "d", pack);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
+				var pack = _messageApi.getMessageObjectArray();
+				var players = room.getPlayers();
+				for (var p : players.values()) {
+					var pjs = (PlayerPhaserjs) p;
+					var data = CommonObjectArray.newInstance();
+					data.add(pjs.getName());
+					data.add(pjs.getX());
+					data.add(pjs.getY());
+					pack.add(data);
 				}
+				_messageApi.sendToRoom(room, PlayerPhaserjs.MAIN_CHANNEL, "c", "i", "d", pack);
 
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				try {
-					var player = (PlayerPhaserjs) _getPlayer(args[0]);
-					var message = _getCommonObject(args[2]);
-					var move = message.getMessageObjectArray("d");
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = (PlayerPhaserjs) _getPlayer(params[0]);
+				var message = _getCommonObject(params[2]);
+				var move = message.getMessageObjectArray("d");
 
-					player.setPosition(move.getInt(0), move.getInt(1));
+				player.setPosition(move.getInt(0), move.getInt(1));
 
-					var pack = _messageApi.getMessageObjectArray();
-					pack.add(player.getName());
-					pack.add(move.get(0));
-					pack.add(move.get(1));
-					_messageApi.sendToRoom(phaserjsRoom, PlayerPhaserjs.MAIN_CHANNEL, "c", "m", "d", pack);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				var pack = _messageApi.getMessageObjectArray();
+				pack.add(player.getName());
+				pack.add(move.get(0));
+				pack.add(move.get(1));
+				_messageApi.sendToRoom(phaserjsRoom, PlayerPhaserjs.MAIN_CHANNEL, "c", "m", "d", pack);
 
 				return null;
 			});
 
-			_on(ExtEvent.FETCHED_CCU_NUMBER, args -> {
-				try {
-					var ccu = _getInteger(args[0]);
+			_on(ExtEvent.FETCHED_CCU_NUMBER, params -> {
+				var ccu = _getInteger(params[0]);
 
-					_info("FETCHED_CCU_INFO", ccu);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_info("FETCHED_CCU_INFO", ccu);
 
 				return null;
 			});

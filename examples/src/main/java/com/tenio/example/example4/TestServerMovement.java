@@ -26,7 +26,6 @@ package com.tenio.example.example4;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -45,9 +44,9 @@ public final class TestServerMovement extends AbstractApp {
 	/**
 	 * The entry point
 	 * 
-	 * @param args
+	 * @param params
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerMovement();
 		game.start();
 	}
@@ -80,63 +79,44 @@ public final class TestServerMovement extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// can make a login request for this connection
-					String username = message.getString("u");
-					_playerApi.login(new Inspector(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// can make a login request for this connection
+				String username = message.getString("u");
+				_playerApi.login(new Inspector(username), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				try {
-					// the player has login successful
-					var player = (Inspector) _getPlayer(args[0]);
-					player.setIgnoreTimeout(true);
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+				// the player has login successful
+				var player = (Inspector) _getPlayer(params[0]);
+				player.setIgnoreTimeout(true);
 
-					// now we can allow that client send request for UDP connection
-					_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// now we can allow that client send request for UDP connection
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
 
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
-				try {
-					var message = _getCommonObject(args[1]);
-					String name = message.getString("u");
+			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
+				var message = _getCommonObject(params[1]);
+				String name = message.getString("u");
 
-					// It should be ...
-					// 1. check if player has sub connection
-					// 2. confirm with player's name and main connection
+				// It should be ...
+				// 1. check if player has sub connection
+				// 2. confirm with player's name and main connection
 
-					// But now temporary returns a player by his name
-					return _playerApi.get(name);
-
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
-
-				return null;
+				// But now temporary returns a player by his name
+				return _playerApi.get(name);
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				try {
-					var player = (Inspector) _getPlayer(args[1]);
+			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
+				var player = (Inspector) _getPlayer(params[1]);
 
-					_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});

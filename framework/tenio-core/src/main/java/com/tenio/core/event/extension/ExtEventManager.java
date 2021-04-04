@@ -31,6 +31,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.tenio.common.logger.SystemAbstractLogger;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
+import com.tenio.core.exception.ExtensionValueCastException;
 
 /**
  * This class for managing events and these subscribers.
@@ -99,8 +100,14 @@ public final class ExtEventManager extends SystemAbstractLogger {
 		// start handling
 		__eventSubscribers.forEach(eventSubscriber -> {
 			events.add(eventSubscriber.getEvent());
-			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(),
-					eventSubscriber.getSubscriber()::dispatch);
+			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(), params -> {
+				try {
+					return eventSubscriber.getSubscriber().dispatch(params);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
+				return null;
+			});
 		});
 		_info("EXTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}

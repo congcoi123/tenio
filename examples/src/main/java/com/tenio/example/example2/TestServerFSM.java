@@ -26,7 +26,6 @@ package com.tenio.example.example2;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -45,7 +44,7 @@ public final class TestServerFSM extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerFSM();
 		game.start();
 	}
@@ -78,17 +77,13 @@ public final class TestServerFSM extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// allow a connection login to the server
-					String username = message.getString("u");
-					_playerApi.login(new Inspector(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// allow a connection login to the server
+				String username = message.getString("u");
+				_playerApi.login(new Inspector(username), connection);
 
 				return null;
 			});

@@ -28,7 +28,6 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -44,7 +43,7 @@ public final class TestServerStress extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerStress();
 		game.start();
 	}
@@ -78,110 +77,86 @@ public final class TestServerStress extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// Allow the connection login into server (become a player)
-					String username = message.getString("u");
-					// Should confirm that credentials by data from database or other services, here
-					// is only for testing
-					_playerApi.login(new PlayerStress(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Allow the connection login into server (become a player)
+				String username = message.getString("u");
+				// Should confirm that credentials by data from database or other services, here
+				// is only for testing
+				_playerApi.login(new PlayerStress(username), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				try {
-					// The player has login successful
-					var player = (PlayerStress) _getPlayer(args[0]);
-					player.setIgnoreTimeout(true);
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+				// The player has login successful
+				var player = (PlayerStress) _getPlayer(params[0]);
+				player.setIgnoreTimeout(true);
 
-					// Now you can send messages to the client
-					// Sending, the data need to be packed
-					var data = _messageApi.getMessageObjectArray();
-					_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
-							data.put("H").put("3").put("L").put("O").put(true)
-									.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Now you can send messages to the client
+				// Sending, the data need to be packed
+				var data = _messageApi.getMessageObjectArray();
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d",
+						data.put("H").put("3").put("L").put("O").put(true)
+								.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				try {
-					var player = (PlayerStress) _getPlayer(args[0]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = (PlayerStress) _getPlayer(params[0]);
 
-					var pack = __getSortRandomNumberArray();
-					// Sending, the data need to be packed
-					var data = _messageApi.getMessageObjectArray();
-					for (int i = 0; i < pack.length; i++) {
-						data.put(pack[i]);
-					}
-
-					_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d", data);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
+				var pack = __getSortRandomNumberArray();
+				// Sending, the data need to be packed
+				var data = _messageApi.getMessageObjectArray();
+				for (int i = 0; i < pack.length; i++) {
+					data.put(pack[i]);
 				}
+
+				_messageApi.sendToPlayer(player, PlayerStress.MAIN_CHANNEL, "p", player.getName(), "d", data);
 
 				return null;
 			});
 
-			_on(ExtEvent.FETCHED_CCU_NUMBER, args -> {
-				try {
-					var ccu = _getInteger(args[0]);
+			_on(ExtEvent.FETCHED_CCU_NUMBER, params -> {
+				var ccu = _getInteger(params[0]);
 
-					_info("FETCHED_CCU_NUMBER", ccu);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_info("FETCHED_CCU_NUMBER", ccu);
 
 				return null;
 			});
 
-			_on(ExtEvent.FETCHED_BANDWIDTH_INFO, args -> {
-				try {
-					long lastReadThroughput = _getLong(args[0]);
-					long lastWriteThroughput = _getLong(args[1]);
-					long realWriteThroughput = _getLong(args[2]);
-					long currentReadBytes = _getLong(args[3]);
-					long currentWrittenBytes = _getLong(args[4]);
-					long realWrittenBytes = _getLong(args[5]);
+			_on(ExtEvent.FETCHED_BANDWIDTH_INFO, params -> {
+				long lastReadThroughput = _getLong(params[0]);
+				long lastWriteThroughput = _getLong(params[1]);
+				long realWriteThroughput = _getLong(params[2]);
+				long currentReadBytes = _getLong(params[3]);
+				long currentWrittenBytes = _getLong(params[4]);
+				long realWrittenBytes = _getLong(params[5]);
 
-					var bandwidth = String.format(
-							"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
-							lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
-							currentWrittenBytes, realWrittenBytes);
+				var bandwidth = String.format(
+						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						currentWrittenBytes, realWrittenBytes);
 
-					_info("FETCHED_BANDWIDTH_INFO", bandwidth);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
 
 				return null;
 			});
 
-			_on(ExtEvent.MONITORING_SYSTEM, args -> {
-				try {
-					double cpuUsage = _getDouble(args[0]);
-					long totalMemory = _getLong(args[1]);
-					long usedMemory = _getLong(args[2]);
-					long freeMemory = _getLong(args[3]);
+			_on(ExtEvent.MONITORING_SYSTEM, params -> {
+				double cpuUsage = _getDouble(params[0]);
+				long totalMemory = _getLong(params[1]);
+				long usedMemory = _getLong(params[2]);
+				long freeMemory = _getLong(params[3]);
 
-					var info = String.format("cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB",
-							cpuUsage, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
-							(float) freeMemory / CONVERT_TO_MB);
+				var info = String.format("cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
+						(float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB);
 
-					_info("MONITORING_SYSTEM", info);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_info("MONITORING_SYSTEM", info);
 
 				return null;
 			});

@@ -32,7 +32,6 @@ import com.tenio.common.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.backup.EntityProcess;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -48,7 +47,7 @@ public final class TestServerLogin extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerLogin();
 		game.start();
 	}
@@ -80,73 +79,60 @@ public final class TestServerLogin extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// Allow the connection login into server (become a player)
-					String username = message.getString("u");
-					// Should confirm that credentials by data from database or other services, here
-					// is only for testing
-					_playerApi.login(new PlayerLogin(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Allow the connection login into server (become a player)
+				String username = message.getString("u");
+				// Should confirm that credentials by data from database or other services, here
+				// is only for testing
+				_playerApi.login(new PlayerLogin(username), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				try {
-					// The player has login successful
-					var player = (PlayerLogin) _getPlayer(args[0]);
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+				// The player has login successful
+				var player = (PlayerLogin) _getPlayer(params[0]);
 
-					try {
-						_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
-					} catch (Exception e) {
-						_error(e, player.getName());
+				try {
+					_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+				} catch (Exception e) {
+					_error(e, player.getName());
+				}
+
+				// Now you can send messages to the client
+				_taskApi.run(player.getName(), Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+					// Only sent 10 messages
+					if (player.counter >= 10) {
+						_taskApi.kill(player.getName());
+						_playerApi.logOut(player);
 					}
 
-					// Now you can send messages to the client
-					_taskApi.run(player.getName(),
-							Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+					player.counter++;
 
-								// Only sent 10 messages
-								if (player.counter >= 10) {
-									_taskApi.kill(player.getName());
-									_playerApi.logOut(player);
-								}
+					// Sending, the data need to be packed
+					var data = _messageApi.getMessageObjectArray();
+					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
+							data.put("H").put("3").put("L").put("O").put(true)
+									.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
 
-								player.counter++;
+					// Attempt to send internal message
+					_messageApi.sendToInternalServer(player, 1,
+							CommonObject.newInstance().add("internal", "this is a message in external server"));
 
-								// Sending, the data need to be packed
-								var data = _messageApi.getMessageObjectArray();
-								_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
-										data.put("H").put("3").put("L").put("O").put(true)
-												.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
-
-								// Attempt to send internal message
-								_messageApi.sendToInternalServer(player, 1, CommonObject.newInstance().add("internal",
-										"this is a message in external server"));
-
-							}, 0, 1, TimeUnit.SECONDS));
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				}, 0, 1, TimeUnit.SECONDS));
 
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				try {
-					var index = _getInteger(args[1]);
-					var message = _getCommonObject(args[2]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var index = _getInteger(params[1]);
+				var message = _getCommonObject(params[2]);
 
-					_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", index, " Content: ", message));
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", index, " Content: ", message));
 
 				return null;
 			});

@@ -26,7 +26,7 @@ package com.tenio.core.exception;
 /**
  * @author kong
  */
-public final class ExtensionValueCastException extends Exception {
+public final class ExtensionValueCastException extends RuntimeException {
 	/**
 	 * 
 	 */

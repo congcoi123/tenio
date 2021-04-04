@@ -32,7 +32,6 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
-import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -48,7 +47,7 @@ public final class TestServerAttach extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerAttach();
 		game.start();
 	}
@@ -81,120 +80,89 @@ public final class TestServerAttach extends AbstractApp {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				try {
-					var connection = _getConnection(args[0]);
-					var message = _getCommonObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
-					// Allow the connection login into server (become a player)
-					String username = message.getString("u");
-					// Should confirm that credentials by data from database or other services, here
-					// is only for testing
-					_playerApi.login(new PlayerAttach(username), connection);
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Allow the connection login into server (become a player)
+				String username = message.getString("u");
+				// Should confirm that credentials by data from database or other services, here
+				// is only for testing
+				_playerApi.login(new PlayerAttach(username), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
-				try {
-					// The player has login successful
-					var player = (PlayerAttach) _getPlayer(args[0]);
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+				// The player has login successful
+				var player = (PlayerAttach) _getPlayer(params[0]);
 
-					// Now you can allow the player make a UDP connection request
-					_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				// Now you can allow the player make a UDP connection request
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
 
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				try {
-					var player = (PlayerAttach) _getPlayer(args[0]);
-					int index = _getInteger(args[1]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = (PlayerAttach) _getPlayer(params[0]);
+				int index = _getInteger(params[1]);
 
-					_messageApi.sendToPlayer(player, index, "hello",
-							"from server > " + index + " > " + player.getConnection(index).getAddress());
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+				_messageApi.sendToPlayer(player, index, "hello",
+						"from server > " + index + " > " + player.getConnection(index).getAddress());
 
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
-				try {
-					var message = _getCommonObject(args[1]);
-					String name = message.getString("u");
+			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
+				var message = _getCommonObject(params[1]);
+				String name = message.getString("u");
 
-					// It should be ...
-					// 1. check if player has sub connection
-					// 2. confirm with player's name and main connection
+				// It should be ...
+				// 1. check if player has sub connection
+				// 2. confirm with player's name and main connection
 
-					// But now temporary returns a player by his name
-					return _playerApi.get(name);
+				// But now temporary returns a player by his name
+				return _playerApi.get(name);
+			});
 
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
+			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
+				var player = (PlayerAttach) _getPlayer(params[1]);
+
+				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				try {
-					var player = (PlayerAttach) _getPlayer(args[1]);
+			_on(ExtEvent.HTTP_REQUEST_VALIDATE, params -> {
+				var method = _getRestMethod(params[0]);
+				// var request = _getHttpServletRequest(params[1]);
+				var response = _getHttpServletResponse(params[2]);
 
-					_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
-
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_VALIDATE, args -> {
-				try {
-					var method = _getRestMethod(args[0]);
-					// var request = _getHttpServletRequest(args[1]);
-					var response = _getHttpServletResponse(args[2]);
-
-					if (method.equals(RestMethod.DELETE)) {
-						var json = new JSONObject();
-						json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
-						try {
-							response.getWriter().println(json.toString());
-						} catch (IOException e) {
-							_error(e, "request");
-						}
-						return response;
-					}
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
-				}
-
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_HANDLE, args -> {
-				try {
-					// var method = _getRestMethod(args[0]);
-					// var request = _getHttpServletRequest(args[1]);
-					var response = _getHttpServletResponse(args[2]);
-
+				if (method.equals(RestMethod.DELETE)) {
 					var json = new JSONObject();
-					json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
+					json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
 					try {
 						response.getWriter().println(json.toString());
 					} catch (IOException e) {
-						_error(e, "handler");
+						_error(e, "request");
 					}
-				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
+					return response;
+				}
+
+				return null;
+			});
+
+			_on(ExtEvent.HTTP_REQUEST_HANDLE, params -> {
+				// var method = _getRestMethod(params[0]);
+				// var request = _getHttpServletRequest(params[1]);
+				var response = _getHttpServletResponse(params[2]);
+
+				var json = new JSONObject();
+				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					_error(e, "handler");
 				}
 
 				return null;
