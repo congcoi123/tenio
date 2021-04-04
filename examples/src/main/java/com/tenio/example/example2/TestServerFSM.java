@@ -82,8 +82,8 @@ public final class TestServerFSM extends AbstractApp {
 				var message = _getCommonObject(params[1]);
 
 				// allow a connection login to the server
-				String username = message.getString("u");
-				_playerApi.login(new Inspector(username), connection);
+				var playerName = message.getString("u");
+				_playerApi.login(new Inspector(playerName), connection);
 
 				return null;
 			});

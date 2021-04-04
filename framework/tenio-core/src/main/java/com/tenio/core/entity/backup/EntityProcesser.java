@@ -48,7 +48,7 @@ import com.tenio.core.entity.backup.annotation.Sanitizer;
  * @author kong
  *
  */
-public final class EntityProcess {
+public final class EntityProcesser {
 
 	/**
 	 * Execute an object method (included private level access)

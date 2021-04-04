@@ -21,55 +21,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.entity;
+package com.tenio.common.pool;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.google.errorprone.annotations.concurrent.GuardedBy;
+import com.tenio.common.exception.NullElementPoolException;
 
 /**
+ * In an application, you can have resources that are limited or time-consuming
+ * to create a new one. A solution is to create a limited resource once and
+ * reuse it. The object pool design will have the mechanism to create a bulk of
+ * objects to pooling use. If the requirements of resources increases, the
+ * current bulk's size will be also automatically increased.
+ * 
  * @author kong
+ * 
  */
-@ThreadSafe
-public final class HttpConfig {
+public interface IElementsPool<Element> {
 
-	private final String __name;
-	private final int __port;
-	@GuardedBy("this")
-	private final List<PathConfig> __paths;
+	/**
+	 * Retrieves an element in the current pool
+	 * 
+	 * @return an element in the pool
+	 */
+	Element get();
 
-	public HttpConfig(String name, int port) {
-		__paths = new ArrayList<PathConfig>();
-		__name = name;
-		__port = port;
-	}
+	/**
+	 * When you finished using an element, repay (free) it for the reusing
+	 * 
+	 * @param element the finished using element
+	 * 
+	 * @throws NullElementPoolException
+	 */
+	void repay(Element element) throws NullElementPoolException;
 
-	public String getName() {
-		return __name;
-	}
+	/**
+	 * Clean up, after that all arrays will be set to <b>null</b>
+	 */
+	void cleanup();
 
-	public List<PathConfig> getPaths() {
-		synchronized (__paths) {
-			return __paths;
-		}
-	}
-
-	public void addPath(PathConfig path) {
-		synchronized (__paths) {
-			__paths.add(path);
-		}
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
-	}
+	/**
+	 * Retrieves the pool size
+	 * 
+	 * @return the total number of element or <b>-1</b> if any exceptions caused
+	 */
+	int getPoolSize();
 
 }

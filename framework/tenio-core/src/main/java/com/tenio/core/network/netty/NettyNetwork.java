@@ -34,7 +34,7 @@ import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.entity.SocketConfig;
@@ -78,8 +78,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void start(IEventManager eventManager, IConfiguration configuration,
-			IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool) throws IOException, InterruptedException {
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool) throws IOException, InterruptedException {
 		__producer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.PRODUCER_THREAD_POOL_SIZE));
 		__consumer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.CONSUMER_THREAD_POOL_SIZE));
 
@@ -137,8 +137,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindUDP(int connectionIndex, IEventManager eventManager,
-			IConfiguration configuration, IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
+			IConfiguration configuration, IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
@@ -167,8 +167,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindTCP(int connectionIndex, IEventManager eventManager,
-			IConfiguration configuration, IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
+			IConfiguration configuration, IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)
@@ -199,8 +199,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	 * @return the channel, see {@link Channel}
 	 */
 	private Channel __bindWS(int connectionIndex, IEventManager eventManager,
-			IConfiguration configuration, IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
+			IConfiguration configuration, IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, SocketConfig socketConfig)
 			throws IOException, InterruptedException {
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__producer, __consumer).channel(NioServerSocketChannel.class)

@@ -28,7 +28,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
@@ -49,12 +49,12 @@ import com.tenio.core.network.IConnection;
 @ThreadSafe
 public final class MessageApi extends AbstractLogger {
 
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<CommonObjectArray> __msgArrayPool;
+	private final IElementsPool<CommonObject> __msgObjectPool;
+	private final IElementsPool<CommonObjectArray> __msgArrayPool;
 	private final IEventManager __eventManager;
 
-	public MessageApi(IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<CommonObjectArray> msgArrayPool) {
+	public MessageApi(IEventManager eventManager, IElementsPool<CommonObject> msgObjectPool,
+			IElementsPool<CommonObjectArray> msgArrayPool) {
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
 		__msgArrayPool = msgArrayPool;

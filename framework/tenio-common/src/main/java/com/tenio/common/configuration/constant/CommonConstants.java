@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.common.configuration.constant;
 
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * All base constants' values for the server are defined here. This class should
@@ -72,7 +72,7 @@ public final class CommonConstants {
 	/**
 	 * The number of elements in a bulk those created for the first time.
 	 * 
-	 * @see IElementPool
+	 * @see IElementsPool
 	 */
 	public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 32;
 
@@ -80,7 +80,7 @@ public final class CommonConstants {
 	 * When the desired number of elements exceeded the first configuration. The new
 	 * number of elements will be added.
 	 * 
-	 * @see IElementPool
+	 * @see IElementsPool
 	 */
 	public static final int ADDED_NUMBER_ELEMENTS_POOL = 10;
 	

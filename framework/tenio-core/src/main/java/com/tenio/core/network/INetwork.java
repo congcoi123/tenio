@@ -28,7 +28,7 @@ import java.io.IOException;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 
@@ -58,8 +58,8 @@ public interface INetwork {
 	 *                              occurred.
 	 */
 	void start(IEventManager eventManager, IConfiguration configuration,
-			IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool)
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException;
 
 	/**

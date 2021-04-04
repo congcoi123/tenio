@@ -31,7 +31,7 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.backup.EntityProcess;
+import com.tenio.core.entity.backup.EntityProcesser;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -97,7 +97,7 @@ public final class TestServerLogin extends AbstractApp {
 				var player = (PlayerLogin) _getPlayer(params[0]);
 
 				try {
-					_info("PLAYER BACKUP", EntityProcess.exportToJSON(player));
+					_info("PLAYER BACKUP", EntityProcesser.exportToJSON(player));
 				} catch (Exception e) {
 					_error(e, player.getName());
 				}

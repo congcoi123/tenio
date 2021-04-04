@@ -30,7 +30,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The object pool mechanism for {@link CommonObjectArray}.
@@ -39,7 +39,7 @@ import com.tenio.common.pool.IElementPool;
  * 
  */
 @ThreadSafe
-public final class CommonObjectArrayPool extends AbstractLogger implements IElementPool<CommonObjectArray> {
+public final class CommonObjectArrayPool extends AbstractLogger implements IElementsPool<CommonObjectArray> {
 
 	@GuardedBy("this")
 	private CommonObjectArray[] __pool;
@@ -51,7 +51,7 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = CommonObjectArray.newInstance();
+			__pool[i] = CommonObjectArray.newInstance(i);
 			__used[i] = false;
 		}
 	}
@@ -76,7 +76,7 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = CommonObjectArray.newInstance();
+			__pool[i] = CommonObjectArray.newInstance(i);
 			__used[i] = false;
 		}
 
@@ -90,18 +90,15 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 
 	@Override
 	public synchronized void repay(CommonObjectArray element) {
-		boolean flagFound = false;
-		for (int i = 0; i < __pool.length; i++) {
-			if (__pool[i] == element) {
-				__used[i] = false;
-				// Clear array
-				element.clear();
-				flagFound = true;
-				break;
-			}
-		}
-		if (!flagFound) {
-			throw new NullElementPoolException("Make sure to use {@link MessageApi#getMessageObjectArray()}!");
+		// the element with its index is in use
+		if (__used[element.getIndex()]) {
+			element.clear();
+			__used[element.getIndex()] = false;
+		} else { // something went wrong, the element is not in use but had to be repaid
+			var e = new NullElementPoolException(
+					"Something went wrong, the element is not in use but had to be repaid. Make sure to use {@link MessageApi#getMessageObjectArray()}!");
+			_error(e, e.getMessage());
+			throw e;
 		}
 	}
 

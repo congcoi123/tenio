@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
@@ -52,7 +53,7 @@ import com.tenio.core.network.IConnection;
  */
 @Entity
 @ThreadSafe
-public abstract class AbstractPlayer implements IPlayer {
+public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 
 	/**
 	 * The list of socket/web socket connections
@@ -171,9 +172,10 @@ public abstract class AbstractPlayer implements IPlayer {
 			return;
 		}
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			throw new ArrayIndexOutOfBoundsException(connectionIndex);
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
 		}
-		synchronized (connection) {
+		synchronized (__connections) {
 			__connections[connectionIndex] = connection;
 		}
 	}
@@ -184,7 +186,8 @@ public abstract class AbstractPlayer implements IPlayer {
 			return;
 		}
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			throw new ArrayIndexOutOfBoundsException(connectionIndex);
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
 		}
 		synchronized (__connections) {
 			__closeConnection(connectionIndex);
@@ -210,7 +213,8 @@ public abstract class AbstractPlayer implements IPlayer {
 	 */
 	private void __closeConnection(int connectionIndex) {
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			throw new ArrayIndexOutOfBoundsException(connectionIndex);
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
 		}
 		if (__connections[connectionIndex] != null) {
 			__connections[connectionIndex].close();

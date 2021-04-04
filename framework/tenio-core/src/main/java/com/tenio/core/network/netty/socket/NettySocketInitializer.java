@@ -26,7 +26,7 @@ package com.tenio.core.network.netty.socket;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
@@ -47,15 +47,15 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public final class NettySocketInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __commonObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final IElementsPool<CommonObject> __commonObjectPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
 	private final int __connectionIndex;
 
 	public NettySocketInitializer(int connectionIndex, IEventManager eventManager,
-			IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool,
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;

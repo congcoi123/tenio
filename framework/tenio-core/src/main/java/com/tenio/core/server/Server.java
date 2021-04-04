@@ -35,7 +35,7 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
 import com.tenio.core.api.MessageApi;
@@ -119,9 +119,9 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private IConfiguration __configuration;
 
-	private IElementPool<CommonObject> __commonObjectPool;
-	private IElementPool<CommonObjectArray> __commonObjectArrayPool;
-	private IElementPool<ByteArrayInputStream> __byteArrayInputPool;
+	private IElementsPool<CommonObject> __commonObjectPool;
+	private IElementsPool<CommonObjectArray> __commonObjectArrayPool;
+	private IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 
 	private IEventManager __eventManager;
 
@@ -209,8 +209,8 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration, IElementsPool<CommonObject> msgObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}

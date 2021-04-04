@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.pool.CommonObjectArrayPool;
 
 /**
@@ -44,7 +44,7 @@ import com.tenio.core.pool.CommonObjectArrayPool;
  */
 public final class MessageObjectArrayPoolTest {
 
-	private IElementPool<CommonObjectArray> __arrayPool;
+	private IElementsPool<CommonObjectArray> __arrayPool;
 
 	@BeforeEach
 	public void initialize() {

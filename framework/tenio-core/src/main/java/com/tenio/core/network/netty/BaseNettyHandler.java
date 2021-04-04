@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
@@ -47,15 +47,15 @@ import io.netty.util.AttributeKey;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	private final IElementPool<CommonObject> __commmonObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final IElementsPool<CommonObject> __commmonObjectPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final IEventManager __eventManager;
 	private IConnection __connection;
 	private final TransportType __transportType;
 	private final int __connectionIndex;
 
-	public BaseNettyHandler(IEventManager eventManager, IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex,
+	public BaseNettyHandler(IEventManager eventManager, IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex,
 			TransportType transportType) {
 		__eventManager = eventManager;
 		__commmonObjectPool = commonObjectPool;
@@ -134,14 +134,14 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * @return the message object manager pool instance
 	 */
-	protected IElementPool<CommonObject> getCommonObjectPool() {
+	protected IElementsPool<CommonObject> getCommonObjectPool() {
 		return __commmonObjectPool;
 	}
 
 	/**
 	 * @return the byte array input steam manager pool instance
 	 */
-	protected IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
+	protected IElementsPool<ByteArrayInputStream> getByteArrayInputPool() {
 		return __byteArrayInputPool;
 	}
 

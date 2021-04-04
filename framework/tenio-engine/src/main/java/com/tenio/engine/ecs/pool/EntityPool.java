@@ -31,7 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.Entity;
 import com.tenio.engine.ecs.base.IEntity;
@@ -42,7 +42,7 @@ import com.tenio.engine.ecs.base.IEntity;
  * @author kong
  * 
  */
-public final class EntityPool extends AbstractLogger implements IElementPool<IEntity> {
+public final class EntityPool extends AbstractLogger implements IElementsPool<IEntity> {
 
 	@GuardedBy("this")
 	private IEntity[] __pool;

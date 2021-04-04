@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Throwables;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The recording logs of a developer is important for every system. This class
@@ -43,9 +43,9 @@ public abstract class AbstractLogger {
 
 	/**
 	 * An object creation pool instance, which is used for re-using string objects,
-	 * see {@link IElementPool}
+	 * see {@link IElementsPool}
 	 */
-	static final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
+	static final IElementsPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 	
 	/**
 	 * A Log4j object for each logged class

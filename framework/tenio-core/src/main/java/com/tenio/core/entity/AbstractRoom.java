@@ -78,7 +78,7 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public boolean containPlayerName(String playerName) {
-		synchronized (playerName) {
+		synchronized (__players) {
 			return __players.containsKey(playerName);
 		}
 	}
@@ -95,14 +95,16 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public void addPlayer(IPlayer player) {
-		synchronized (player) {
+		synchronized (__players) {
 			__players.put(player.getName(), player);
 		}
 	}
 
 	@Override
-	public synchronized void removePlayer(IPlayer player) {
-		__players.remove(player.getName());
+	public void removePlayer(IPlayer player) {
+		synchronized (__players) {
+			__players.remove(player.getName());
+		}
 	}
 
 	@Override

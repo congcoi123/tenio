@@ -26,7 +26,7 @@ package com.tenio.core.network.netty.datagram;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
 
@@ -44,15 +44,15 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public final class NettyDatagramInitializer extends ChannelInitializer<DatagramChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __commonObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final IElementsPool<CommonObject> __commonObjectPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
 	private final int __connectionIndex;
 
 	public NettyDatagramInitializer(int connectionIndex, IEventManager eventManager,
-			IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
 			IConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;

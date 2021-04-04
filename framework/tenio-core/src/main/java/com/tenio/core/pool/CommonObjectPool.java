@@ -30,7 +30,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The object pool mechanism for {@link CommonObject}.
@@ -39,7 +39,7 @@ import com.tenio.common.pool.IElementPool;
  * 
  */
 @ThreadSafe
-public final class CommonObjectPool extends AbstractLogger implements IElementPool<CommonObject> {
+public final class CommonObjectPool extends AbstractLogger implements IElementsPool<CommonObject> {
 
 	@GuardedBy("this")
 	private CommonObject[] __pool;
@@ -51,7 +51,7 @@ public final class CommonObjectPool extends AbstractLogger implements IElementPo
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance();
+			__pool[i] = CommonObject.newInstance(i);
 			__used[i] = false;
 		}
 	}
@@ -76,7 +76,7 @@ public final class CommonObjectPool extends AbstractLogger implements IElementPo
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance();
+			__pool[i] = CommonObject.newInstance(i);
 			__used[i] = false;
 		}
 
@@ -90,18 +90,15 @@ public final class CommonObjectPool extends AbstractLogger implements IElementPo
 
 	@Override
 	public synchronized void repay(CommonObject element) {
-		boolean flagFound = false;
-		for (int i = 0; i < __pool.length; i++) {
-			if (__pool[i] == element) {
-				__used[i] = false;
-				// Clear object
-				element.clear();
-				flagFound = true;
-				break;
-			}
-		}
-		if (!flagFound) {
-			throw new NullElementPoolException();
+		// the element with its index is in use
+		if (__used[element.getIndex()]) {
+			element.clear();
+			__used[element.getIndex()] = false;
+		} else { // something went wrong, the element is not in use but had to be repaid
+			var e = new NullElementPoolException(
+					"Something went wrong, the element is not in use but had to be repaid.");
+			_error(e, e.getMessage());
+			throw e;
 		}
 	}
 

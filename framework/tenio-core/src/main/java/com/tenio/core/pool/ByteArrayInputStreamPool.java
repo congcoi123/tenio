@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.pool;
 
+import java.io.IOException;
+
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -30,7 +32,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The object pool mechanism for {@link ByteArrayInputStream}.
@@ -39,7 +41,7 @@ import com.tenio.common.pool.IElementPool;
  * 
  */
 @ThreadSafe
-public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementPool<ByteArrayInputStream> {
+public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementsPool<ByteArrayInputStream> {
 
 	@GuardedBy("this")
 	private ByteArrayInputStream[] __pool;
@@ -51,7 +53,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance();
+			__pool[i] = ByteArrayInputStream.newInstance(i);
 			__used[i] = false;
 		}
 	}
@@ -76,7 +78,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance();
+			__pool[i] = ByteArrayInputStream.newInstance(i);
 			__used[i] = false;
 		}
 
@@ -90,16 +92,19 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 
 	@Override
 	public synchronized void repay(ByteArrayInputStream element) {
-		boolean flagFound = false;
-		for (int i = 0; i < __pool.length; i++) {
-			if (__pool[i] == element) {
-				__used[i] = false;
-				flagFound = true;
-				break;
+		// the element with its index is in use
+		if (__used[element.getIndex()]) {
+			try {
+				element.reset();
+			} catch (IOException e) {
+				_error(e, e.getMessage());
 			}
-		}
-		if (!flagFound) {
-			throw new NullElementPoolException();
+			__used[element.getIndex()] = false;
+		} else { // something went wrong, the element is not in use but had to be repaid
+			var e = new NullElementPoolException(
+					"Something went wrong, the element is not in use but had to be repaid.");
+			_error(e, e.getMessage());
+			throw e;
 		}
 	}
 
