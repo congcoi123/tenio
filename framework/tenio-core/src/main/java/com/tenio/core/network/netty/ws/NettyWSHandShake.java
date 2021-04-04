@@ -61,17 +61,18 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	private WebSocketServerHandshaker __handshaker;
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementPool<CommonObject> __commonObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final IConfiguration __configuration;
 	private final int __index;
 
-	public NettyWSHandShake(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
-		__index = index;
+	public NettyWSHandShake(final int connectionIndex, final IEventManager eventManager,
+			final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final IConfiguration configuration) {
+		__index = connectionIndex;
 		__eventManager = eventManager;
-		__msgObjectPool = msgObjectPool;
-		__byteArrayPool = byteArrayPool;
+		__commonObjectPool = commonObjectPool;
+		__byteArrayInputPool = byteArrayInputPool;
 		__configuration = configuration;
 	}
 
@@ -89,8 +90,8 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 				// add new handler to the existing pipeline to handle HandShake-WebSocket
 				// Messages
-				ctx.pipeline().replace(this, "handler",
-						new NettyWSHandler(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
+				ctx.pipeline().replace(this, "handler", new NettyWSHandler(__index, __eventManager, __commonObjectPool,
+						__byteArrayInputPool, __configuration));
 
 				// do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				__handleHandshake(ctx, httpRequest);

@@ -69,47 +69,47 @@ public abstract class Connection implements IConnection {
 	}
 
 	@Override
-	public IEventManager getEventManager() {
+	public final IEventManager getEventManager() {
 		return __eventManager;
 	}
 
 	@Override
-	public TransportType getType() {
+	public final TransportType getType() {
 		return __type;
 	}
 
 	@Override
-	public boolean isType(TransportType type) {
+	public final boolean isType(TransportType type) {
 		return (__type == type);
 	}
 
 	@Override
-	public int getIndex() {
+	public final int getIndex() {
 		return __index;
 	}
 
 	@Override
-	public String getPlayerName() {
+	public final String getPlayerName() {
 		return __playerName;
 	}
 
 	@Override
-	public void setPlayerName(String playerName) {
+	public final void setPlayerName(String playerName) {
 		__playerName = playerName;
 	}
 
 	@Override
-	public void removePlayerName() {
+	public final void removePlayerName() {
 		__playerName = null;
 	}
 
 	@Override
-	public void setAddress(String address) {
+	public final void setAddress(String address) {
 		__address = address;
 	}
 
 	@Override
-	public String getAddress() {
+	public final String getAddress() {
 		return __address;
 	}
 

@@ -37,7 +37,7 @@ import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementPool;
-import com.tenio.core.pool.MessageObjectArrayPool;
+import com.tenio.core.pool.CommonObjectArrayPool;
 
 /**
  * @author kong
@@ -48,7 +48,7 @@ public final class MessageObjectArrayPoolTest {
 
 	@BeforeEach
 	public void initialize() {
-		__arrayPool = new MessageObjectArrayPool();
+		__arrayPool = new CommonObjectArrayPool();
 	}
 
 	@AfterEach

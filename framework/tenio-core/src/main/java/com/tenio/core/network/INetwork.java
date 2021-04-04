@@ -47,8 +47,8 @@ public interface INetwork {
 	 * 
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
-	 * @param msgObjectPool the pool of message objects
-	 * @param byteArrayPool the pool of byte array input stream objects
+	 * @param commonObjectPool the pool of message objects
+	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * 
 	 * @throws InterruptedException thrown when a thread is waiting, sleeping, or
 	 *                              otherwise occupied, and the thread is
@@ -58,7 +58,8 @@ public interface INetwork {
 	 *                              occurred.
 	 */
 	void start(final IEventManager eventManager, final IConfiguration configuration,
-			final IElementPool<CommonObject> msgObjectPool, final IElementPool<ByteArrayInputStream> byteArrayPool)
+			final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException;
 
 	/**

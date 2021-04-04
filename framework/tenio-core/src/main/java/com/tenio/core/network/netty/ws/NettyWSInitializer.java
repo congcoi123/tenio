@@ -43,19 +43,20 @@ import io.netty.handler.codec.http.HttpServerCodec;
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementPool<CommonObject> __commonObjectPool;
+	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
-	private final int __index;
+	private final int __connectionIndex;
 
-	public NettyWSInitializer(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			IConfiguration configuration) {
-		__index = index;
+	public NettyWSInitializer(final int connectionIndex, final IEventManager eventManager,
+			final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool,
+			final GlobalTrafficShapingHandlerCustomize trafficCounter, final IConfiguration configuration) {
+		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
-		__msgObjectPool = msgObjectPool;
-		__byteArrayPool = byteArrayPool;
+		__commonObjectPool = commonObjectPool;
+		__byteArrayInputPool = byteArrayInputPool;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
@@ -71,8 +72,8 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());
 
 		// the logic handler
-		pipeline.addLast("http-handshake",
-				new NettyWSHandShake(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
+		pipeline.addLast("http-handshake", new NettyWSHandShake(__connectionIndex, __eventManager, __commonObjectPool,
+				__byteArrayInputPool, __configuration));
 	}
 
 }

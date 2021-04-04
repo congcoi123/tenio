@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.pool;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
@@ -37,6 +38,7 @@ import com.tenio.common.pool.IElementPool;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementPool<ByteArrayInputStream> {
 
 	@GuardedBy("this")

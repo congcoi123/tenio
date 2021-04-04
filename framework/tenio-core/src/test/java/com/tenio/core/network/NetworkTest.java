@@ -39,7 +39,7 @@ import com.tenio.core.event.EventManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.NettyNetwork;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.MessageObjectPool;
+import com.tenio.core.pool.CommonObjectPool;
 
 /**
  * @author kong
@@ -56,7 +56,7 @@ public final class NetworkTest {
 	public void initialize() throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__eventManager = new EventManager();
-		__msgObjectPool = new MessageObjectPool();
+		__msgObjectPool = new CommonObjectPool();
 		__byteArrayPool = new ByteArrayInputStreamPool();
 		__configuration = new Configuration("TenIOConfig.example.xml");
 		__network.start(__eventManager, __configuration, __msgObjectPool, __byteArrayPool);

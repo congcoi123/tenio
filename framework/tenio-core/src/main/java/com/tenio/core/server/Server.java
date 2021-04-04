@@ -26,6 +26,8 @@ package com.tenio.core.server;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
@@ -59,8 +61,8 @@ import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.MessageObjectArrayPool;
-import com.tenio.core.pool.MessageObjectPool;
+import com.tenio.core.pool.CommonObjectArrayPool;
+import com.tenio.core.pool.CommonObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
 import com.tenio.core.task.schedule.DeadlockScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
@@ -77,14 +79,15 @@ import com.tenio.core.task.schedule.TimeOutScanTask;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class Server extends AbstractLogger implements IServer {
 
 	private static Server __instance;
 
 	private Server() {
-		__msgObjectPool = new MessageObjectPool();
-		__msgArrayPool = new MessageObjectArrayPool();
-		__byteArrayPool = new ByteArrayInputStreamPool();
+		__commonObjectPool = new CommonObjectPool();
+		__commonObjectArrayPool = new CommonObjectArrayPool();
+		__byteArrayInputPool = new ByteArrayInputStreamPool();
 
 		__eventManager = new EventManager();
 
@@ -95,7 +98,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager, __msgObjectPool, __msgArrayPool);
+		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool);
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
@@ -116,9 +119,9 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private IConfiguration __configuration;
 
-	private IElementPool<CommonObject> __msgObjectPool;
-	private IElementPool<CommonObjectArray> __msgArrayPool;
-	private IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private IElementPool<CommonObject> __commonObjectPool;
+	private IElementPool<CommonObjectArray> __commonObjectArrayPool;
+	private IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 
 	private IEventManager __eventManager;
 
@@ -144,7 +147,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(IConfiguration configuration) throws IOException, InterruptedException,
+	public void start(final IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		__configuration = configuration;
 
@@ -192,7 +195,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__createHttpManagers(configuration);
 
 		// start network
-		__startNetwork(configuration, __msgObjectPool, __byteArrayPool);
+		__startNetwork(configuration, __commonObjectPool, __byteArrayInputPool);
 
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
@@ -213,7 +216,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	@Override
-	public void shutdown() {
+	public synchronized void shutdown() {
 		_info("SERVER", __serverName, "Stopping ...");
 		__shutdown();
 		_info("SERVER", __serverName, "Stopped!");
@@ -232,9 +235,9 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskManager.clear();
 		__eventManager.clear();
 		// clear all pools
-		__msgObjectPool.cleanup();
-		__msgArrayPool.cleanup();
-		__byteArrayPool.cleanup();
+		__commonObjectPool.cleanup();
+		__commonObjectArrayPool.cleanup();
+		__byteArrayInputPool.cleanup();
 		// clear all ports
 		__socketPorts.clear();
 		__webSocketPorts.clear();
@@ -244,9 +247,9 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __cleanup() {
 		// assign by null
 		__configuration = null;
-		__msgObjectPool = null;
-		__msgArrayPool = null;
-		__byteArrayPool = null;
+		__commonObjectPool = null;
+		__commonObjectArrayPool = null;
+		__byteArrayInputPool = null;
 		__eventManager = null;
 		__roomManager = null;
 		__playerManager = null;
@@ -269,7 +272,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	@Override
-	public void setExtension(IExtension extension) {
+	public void setExtension(final IExtension extension) {
 		__extension = extension;
 	}
 

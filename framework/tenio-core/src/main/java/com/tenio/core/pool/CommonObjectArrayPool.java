@@ -24,38 +24,40 @@ THE SOFTWARE.
 package com.tenio.core.pool;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.pool.IElementPool;
 
 /**
- * The object pool mechanism for {@link CommonObject}.
+ * The object pool mechanism for {@link CommonObjectArray}.
  * 
  * @author kong
  * 
  */
-public final class MessageObjectPool extends AbstractLogger implements IElementPool<CommonObject> {
+@ThreadSafe
+public final class CommonObjectArrayPool extends AbstractLogger implements IElementPool<CommonObjectArray> {
 
 	@GuardedBy("this")
-	private CommonObject[] __pool;
+	private CommonObjectArray[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 
-	public MessageObjectPool() {
-		__pool = new CommonObject[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
+	public CommonObjectArrayPool() {
+		__pool = new CommonObjectArray[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance();
+			__pool[i] = CommonObjectArray.newInstance();
 			__used[i] = false;
 		}
 	}
 
 	@Override
-	public synchronized CommonObject get() {
+	public synchronized CommonObjectArray get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -70,15 +72,15 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new CommonObject[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__pool = new CommonObjectArray[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance();
+			__pool[i] = CommonObjectArray.newInstance();
 			__used[i] = false;
 		}
 
-		_info("MESSAGE OBJECT POOL", _buildgen("Increased the number of elements by ",
+		_info("MESSAGE OBJECT ARRAY POOL", _buildgen("Increased the number of elements by ",
 				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
@@ -87,19 +89,19 @@ public final class MessageObjectPool extends AbstractLogger implements IElementP
 	}
 
 	@Override
-	public synchronized void repay(CommonObject element) {
+	public synchronized void repay(CommonObjectArray element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {
 				__used[i] = false;
-				// Clear object
+				// Clear array
 				element.clear();
 				flagFound = true;
 				break;
 			}
 		}
 		if (!flagFound) {
-			throw new NullElementPoolException();
+			throw new NullElementPoolException("Make sure to use {@link MessageApi#getMessageObjectArray()}!");
 		}
 	}
 

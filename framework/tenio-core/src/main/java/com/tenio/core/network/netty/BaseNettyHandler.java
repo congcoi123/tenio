@@ -31,7 +31,6 @@ import com.tenio.common.pool.IElementPool;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.Connection;
 import com.tenio.core.network.IConnection;
 
 import io.netty.channel.Channel;
@@ -51,51 +50,53 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	private final IElementPool<CommonObject> __commmonObjectPool;
 	private final IElementPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final IEventManager __eventManager;
-	private Connection __connection;
-	private final TransportType __type;
-	private final int __index;
+	private IConnection __connection;
+	private final TransportType __transportType;
+	private final int __connectionIndex;
 
-	public BaseNettyHandler(IEventManager eventManager, IElementPool<CommonObject> commonObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayInputPool, int index, TransportType type) {
+	public BaseNettyHandler(final IEventManager eventManager, final IElementPool<CommonObject> commonObjectPool,
+			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final int connectionIndex,
+			final TransportType transportType) {
 		__eventManager = eventManager;
 		__commmonObjectPool = commonObjectPool;
 		__byteArrayInputPool = byteArrayInputPool;
-		__index = index;
-		__type = type;
+		__connectionIndex = connectionIndex;
+		__transportType = transportType;
 	}
 
 	/**
 	 * Retrieve a connection by its channel
 	 * 
-	 * @param channel, see {@link Channel}
-	 * @param remote   the current address (in use for Datagram channel)
+	 * @param channel,     see {@link Channel}
+	 * @param remoteAdress the current address (in use for Datagram channel)
 	 * @return a connection
 	 */
-	private IConnection __getConnection(Channel channel, InetSocketAddress remote) {
-		if (remote == null) {
+	private IConnection __getConnection(Channel channel, InetSocketAddress remoteAdress) {
+		if (remoteAdress == null) {
 			return channel.attr(NettyConnectionOption.CONNECTION).get();
 		}
-		return (Connection) channel.attr(AttributeKey.valueOf(remote.toString())).get();
+		return (IConnection) channel.attr(AttributeKey.valueOf(remoteAdress.toString())).get();
 	}
 
 	/**
 	 * Handle in-comming messages for the channel
 	 * 
-	 * @param ctx     the channel, see {@link ChannelHandlerContext}
-	 * @param message the message, see {@link MessageObject}
-	 * @param remote  the current remote address (in use for Datagram channel)
+	 * @param ctx          the channel, see {@link ChannelHandlerContext}
+	 * @param message      the message, see {@link MessageObject}
+	 * @param remoteAdress the current remote address (in use for Datagram channel)
 	 */
-	protected void _channelRead(ChannelHandlerContext ctx, CommonObject message, InetSocketAddress remote) {
-		var connection = __getConnection(ctx.channel(), remote);
+	protected final void _channelRead(ChannelHandlerContext ctx, CommonObject message, InetSocketAddress remoteAdress) {
+		var connection = __getConnection(ctx.channel(), remoteAdress);
 
 		if (connection == null) {
-			__connection = NettyConnection.newInstance(__index, __eventManager, __type, ctx.channel());
-			__connection.setRemote(remote);
+			__connection = NettyConnection.newInstance(__connectionIndex, __eventManager, __transportType,
+					ctx.channel());
+			__connection.setRemote(remoteAdress);
 			__connection.setThis();
 		}
 
-		__eventManager.getInternal().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, __index, connection, message,
-				__connection);
+		__eventManager.getInternal().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, __connectionIndex, connection,
+				message, __connection);
 	}
 
 	/**
@@ -104,8 +105,8 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * 
 	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
-	protected void _channelInactive(ChannelHandlerContext ctx) {
-		if (__type == TransportType.UDP) {
+	protected final void _channelInactive(ChannelHandlerContext ctx) {
+		if (__transportType == TransportType.UDP) {
 			return;
 		}
 		// get the connection first
@@ -120,8 +121,8 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param ctx   the channel, see {@link ChannelHandlerContext}
 	 * @param cause the exception will occur
 	 */
-	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		if (__type == TransportType.UDP) {
+	protected final void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		if (__transportType == TransportType.UDP) {
 			return;
 		}
 		// get the connection first
@@ -133,14 +134,14 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * @return the message object manager pool instance
 	 */
-	protected IElementPool<CommonObject> getCommonObjectPool() {
+	protected final IElementPool<CommonObject> getCommonObjectPool() {
 		return __commmonObjectPool;
 	}
 
 	/**
 	 * @return the byte array input steam manager pool instance
 	 */
-	protected IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
+	protected final IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
 		return __byteArrayInputPool;
 	}
 
