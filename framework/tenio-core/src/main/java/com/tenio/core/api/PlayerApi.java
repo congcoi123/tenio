@@ -62,7 +62,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @param name the player's name (unique ID)
 	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
 	 */
-	public boolean contain(final String name) {
+	public boolean contain(String name) {
 		return __playerManager.contain(name);
 	}
 
@@ -73,7 +73,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the player's instance if that player has existed, <b>null</b>
 	 *         otherwise
 	 */
-	public IPlayer get(final String name) {
+	public IPlayer get(String name) {
 		return __playerManager.get(name);
 	}
 
@@ -106,7 +106,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @param player     that is created from your server, see: {@link IPlayer}
 	 * @param connection the corresponding connection, see: {@link IConnection}
 	 */
-	public void login(final IPlayer player, final IConnection connection) {
+	public void login(IPlayer player, IConnection connection) {
 		try {
 			__playerManager.add(player, connection);
 		} catch (NullPlayerNameException e1) {
@@ -122,7 +122,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * 
 	 * @param player that is created from your server, see: {@link IPlayer}
 	 */
-	public void login(final IPlayer player) {
+	public void login(IPlayer player) {
 		try {
 			__playerManager.add(player);
 		} catch (DuplicatedPlayerException e) {
@@ -139,7 +139,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(IRoom room, IPlayer player) {
 		return __roomManager.makePlayerJoinRoom(room, player);
 	}
 
@@ -153,7 +153,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(IPlayer player, boolean force) {
 		return __roomManager.makePlayerLeaveRoom(player, force);
 	}
 
@@ -162,7 +162,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * 
 	 * @param name the player with this name that is removed, see {@link IPlayer}
 	 */
-	public void logOut(final String name) {
+	public void logOut(String name) {
 		logOut(get(name));
 	}
 
@@ -171,7 +171,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * 
 	 * @param player that is removed, see {@link IPlayer}
 	 */
-	public void logOut(final IPlayer player) {
+	public void logOut(IPlayer player) {
 		__playerManager.remove(player);
 	}
 

@@ -65,7 +65,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 *         {@link Object} or <b>null</b>
 	 * @see InternalEventProducer#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent event, final Object... params) {
+	public Object emit(InternalEvent event, Object... params) {
 		return __producer.emit(event, params);
 	}
 
@@ -75,7 +75,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 * @param event      see {@link InternalEvent}
 	 * @param subscriber see {@link ISubscriber}
 	 */
-	public void on(final InternalEvent event, final ISubscriber subscriber) {
+	public void on(InternalEvent event, ISubscriber subscriber) {
 		if (hasSubscriber(event)) {
 			_info("INTERNAL EVENT WARNING", "Duplicated", event);
 		}
@@ -113,7 +113,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 * @param event see {@link InternalEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final InternalEvent event) {
+	public boolean hasSubscriber(InternalEvent event) {
 		for (var subscriber : __eventSubscribers) {
 			if (subscriber.getEvent() == event) {
 				return true;

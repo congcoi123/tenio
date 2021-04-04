@@ -57,7 +57,7 @@ public interface IConnection {
 	 * @param type the comparison type
 	 * @return <b>true</b> is the current type is matched, <b>false</b> otherwise.
 	 */
-	boolean isType(final TransportType type);
+	boolean isType(TransportType type);
 
 	/**
 	 * @return the current index of connection in one player
@@ -78,7 +78,7 @@ public interface IConnection {
 	 * 
 	 * @param playerName the identify of this connection
 	 */
-	void setPlayerName(final String playerName);
+	void setPlayerName(String playerName);
 
 	/**
 	 * Remove the player's name value from the channel cache
@@ -90,7 +90,7 @@ public interface IConnection {
 	 * 
 	 * @param address the new address value
 	 */
-	void setAddress(final String address);
+	void setAddress(String address);
 
 	/**
 	 * Retrieve the "connection" address in string type
@@ -109,7 +109,7 @@ public interface IConnection {
 	 * 
 	 * @param message the message content, see {@link CommonObject}
 	 */
-	void send(final CommonObject msgObject);
+	void send(CommonObject msgObject);
 
 	/**
 	 * Close a "connection" between a client with the server
@@ -128,7 +128,7 @@ public interface IConnection {
 	 * 
 	 * @param remote, see {@link InetSocketAddress}
 	 */
-	void setRemote(final InetSocketAddress remoteAdress);
+	void setRemote(InetSocketAddress remoteAdress);
 
 	/**
 	 * Retrieve this connection itself by channel

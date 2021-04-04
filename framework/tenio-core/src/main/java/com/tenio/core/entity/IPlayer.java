@@ -57,7 +57,7 @@ public interface IPlayer {
 	 * 
 	 * @param entityId the entity' id
 	 */
-	void setEntityId(final String entityId);
+	void setEntityId(String entityId);
 
 	/**
 	 * @return the player's name
@@ -77,15 +77,15 @@ public interface IPlayer {
 	 * @return <b>true</b> if the connection is available, otherwise returns
 	 *         <b>false</b>
 	 */
-	boolean hasConnection(final int connectionIndex);
+	boolean hasConnection(int connectionIndex);
 
-	IConnection getConnection(final int connectionIndex);
+	IConnection getConnection(int connectionIndex);
 
-	void initializeConnections(final int connectionsSize);
+	void initializeConnections(int connectionsSize);
 
-	void setConnection(final IConnection connection, final int connectionIndex);
+	void setConnection(IConnection connection, int connectionIndex);
 
-	void closeConnection(final int connectionIndex);
+	void closeConnection(int connectionIndex);
 
 	void closeAllConnections();
 
@@ -97,7 +97,7 @@ public interface IPlayer {
 	 */
 	IRoom getCurrentRoom();
 
-	void setCurrentRoom(final IRoom room);
+	void setCurrentRoom(IRoom room);
 
 	/**
 	 * We let the list escape from its scope, so the concerning process with this
@@ -117,6 +117,6 @@ public interface IPlayer {
 
 	boolean isIgnoredTimeout();
 
-	void setIgnoreTimeout(final boolean flagIgnoreTimeout);
+	void setIgnoreTimeout(boolean flagIgnoreTimeout);
 
 }

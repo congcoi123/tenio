@@ -46,11 +46,11 @@ public final class InternalEventSubscriber {
 	 */
 	private final ISubscriber __subscriber;
 
-	public static InternalEventSubscriber newInstance(final InternalEvent event, final ISubscriber subscriber) {
+	public static InternalEventSubscriber newInstance(InternalEvent event, ISubscriber subscriber) {
 		return new InternalEventSubscriber(event, subscriber);
 	}
 
-	private InternalEventSubscriber(final InternalEvent event, final ISubscriber subscriber) {
+	private InternalEventSubscriber(InternalEvent event, ISubscriber subscriber) {
 		__event = event;
 		__subscriber = subscriber;
 	}

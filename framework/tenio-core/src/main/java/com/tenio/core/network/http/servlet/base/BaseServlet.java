@@ -41,7 +41,7 @@ public abstract class BaseServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5030886807666928581L;
 
-	protected final boolean _hasHeaderKey(final HttpServletRequest request, final String key) {
+	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		if (headerNames != null) {
 			while (headerNames.hasMoreElements()) {
@@ -52,7 +52,7 @@ public abstract class BaseServlet extends HttpServlet {
 		return false;
 	}
 
-	protected final JSONObject _getBody(final HttpServletRequest request) {
+	protected JSONObject _getBody(HttpServletRequest request) {
 		String body = "{}";
 		if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")
 				|| request.getMethod().equals("DELETE")) {

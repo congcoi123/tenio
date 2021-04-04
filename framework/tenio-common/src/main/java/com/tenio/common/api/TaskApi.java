@@ -50,40 +50,40 @@ public final class TaskApi extends AbstractLogger {
 	/**
 	 * Create a new task.
 	 * 
-	 * @param id   the unique id for management
+	 * @param taskId   the unique taskId for management
 	 * @param task the running task, see {@link ScheduledFuture}
 	 */
-	public void run(String id, ScheduledFuture<?> task) {
-		__taskManager.create(id, task);
+	public void run(String taskId, ScheduledFuture<?> task) {
+		__taskManager.create(taskId, task);
 	}
 
 	/**
 	 * Kill or stop a running task.
 	 * 
-	 * @param id the unique id
+	 * @param taskId the unique taskId
 	 */
-	public void kill(String id) {
-		__taskManager.kill(id);
+	public void kill(String taskId) {
+		__taskManager.kill(taskId);
 	}
 
 	/**
 	 * Check if the desired task is running or not.
 	 * 
-	 * @param id the task's id
+	 * @param taskId the task's taskId
 	 * @return <b>true</b> if this task is running
 	 */
-	public boolean isRunningTask(String id) {
-		return getTaskRemainTime(id) > 0 ? true : false;
+	public boolean isRunningTask(String taskId) {
+		return getTaskRemainTime(taskId) > 0 ? true : false;
 	}
 
 	/**
 	 * Retrieve the remain time of one task.
 	 * 
-	 * @param id the unique for retrieving the desired task
+	 * @param taskId the unique for retrieving the desired task
 	 * @return the left time
 	 */
-	public int getTaskRemainTime(String id) {
-		return __taskManager.getRemainTime(id);
+	public int getTaskRemainTime(String taskId) {
+		return __taskManager.getRemainTime(taskId);
 	}
 
 }

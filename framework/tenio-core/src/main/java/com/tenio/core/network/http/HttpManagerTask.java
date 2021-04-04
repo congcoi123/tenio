@@ -59,8 +59,8 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	private final int __port;
 	private final List<PathConfig> __pathConfigs;
 
-	public HttpManagerTask(final IEventManager eventManager, final String name, final int port,
-			final List<PathConfig> pathConfigs) {
+	public HttpManagerTask(IEventManager eventManager, String name, int port,
+			List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;
@@ -124,7 +124,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 		}, 0, TimeUnit.SECONDS);
 	}
 
-	private boolean __isUriHasDuplicatedMethod(final RestMethod method, final List<PathConfig> pathConfigs) {
+	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<PathConfig> pathConfigs) {
 		return pathConfigs.stream().filter(pathConfig -> pathConfig.getMethod().equals(method)).count() > 1 ? true
 				: false;
 	}

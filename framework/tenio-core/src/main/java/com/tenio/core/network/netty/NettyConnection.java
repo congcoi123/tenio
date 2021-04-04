@@ -46,7 +46,7 @@ import io.netty.util.AttributeKey;
  * @author kong
  * 
  */
-public class NettyConnection extends Connection {
+public final class NettyConnection extends Connection {
 
 	/**
 	 * @see Channel
@@ -58,8 +58,8 @@ public class NettyConnection extends Connection {
 	 */
 	protected InetSocketAddress __remoteAddress;
 
-	private NettyConnection(final int connectionIndex, final IEventManager eventManager,
-			final TransportType transportType, final Channel channel) {
+	private NettyConnection(int connectionIndex, IEventManager eventManager,
+			TransportType transportType, Channel channel) {
 		super(eventManager, transportType, connectionIndex);
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
@@ -71,13 +71,13 @@ public class NettyConnection extends Connection {
 		}
 	}
 
-	public static NettyConnection newInstance(final int connectionIndex, final IEventManager eventManager,
-			final TransportType transportType, final Channel channel) {
+	public static NettyConnection newInstance(int connectionIndex, IEventManager eventManager,
+			TransportType transportType, Channel channel) {
 		return new NettyConnection(connectionIndex, eventManager, transportType, channel);
 	}
 
 	@Override
-	public void send(final CommonObject message) {
+	public void send(CommonObject message) {
 		if (isType(TransportType.TCP)) {
 			__channel.writeAndFlush(MsgPackConverter.serialize(message));
 		} else if (isType(TransportType.WEB_SOCKET)) {

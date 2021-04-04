@@ -59,13 +59,13 @@ public final class RoomManager implements IRoomManager {
 	private final Map<String, IRoom> __rooms;
 	private final IEventManager __eventManager;
 
-	public RoomManager(final IEventManager eventManager) {
+	public RoomManager(IEventManager eventManager) {
 		__eventManager = eventManager;
 		__rooms = new HashMap<String, IRoom>();
 	}
 
 	@Override
-	public synchronized void initialize(final IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		// temporary do nothing
 	}
 
@@ -91,21 +91,21 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public IRoom get(final String roomId) {
+	public IRoom get(String roomId) {
 		synchronized (__rooms) {
 			return __rooms.get(roomId);
 		}
 	}
 
 	@Override
-	public boolean contain(final String roomId) {
+	public boolean contain(String roomId) {
 		synchronized (__rooms) {
 			return __rooms.containsKey(roomId);
 		}
 	}
 
 	@Override
-	public void add(final IRoom room) throws DuplicatedRoomIdException {
+	public void add(IRoom room) throws DuplicatedRoomIdException {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
@@ -119,7 +119,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public void remove(final IRoom room) throws NullRoomException {
+	public void remove(IRoom room) throws NullRoomException {
 		synchronized (__rooms) {
 			if (!__rooms.containsKey(room.getId())) {
 				throw new NullRoomException(room.getId());
@@ -142,7 +142,7 @@ public final class RoomManager implements IRoomManager {
 	 *
 	 * @param room the corresponding room @see {@link IRoom}
 	 */
-	private void __forceAllPlayersLeaveRoom(final IRoom room) {
+	private void __forceAllPlayersLeaveRoom(IRoom room) {
 		final List<IPlayer> removePlayers = new ArrayList<IPlayer>();
 		var players = room.getPlayers().values();
 		players.forEach(player -> {
@@ -155,7 +155,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(IRoom room, IPlayer player) {
 		if (room.containPlayerName(player.getName())) {
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
@@ -177,7 +177,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(IPlayer player, boolean force) {
 		var room = player.getCurrentRoom();
 		if (room == null) {
 			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;

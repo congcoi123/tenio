@@ -37,10 +37,10 @@ import com.tenio.common.logger.AbstractLogger;
  */
 public abstract class BaseResponse extends AbstractLogger {
 
-	public abstract void process(final String requestedAgent, final HttpServletRequest request, final JSONObject body,
-			final HttpServletResponse response);
+	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
+			HttpServletResponse response);
 
-	protected final boolean _hasHeaderKey(final HttpServletRequest request, final String key) {
+	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		if (headerNames != null) {
 			while (headerNames.hasMoreElements()) {

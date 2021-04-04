@@ -46,11 +46,11 @@ public final class ExtEventSubscriber {
 	 */
 	private final ISubscriber __subscriber;
 
-	public static ExtEventSubscriber newInstance(final ExtEvent event, final ISubscriber subscriber) {
+	public static ExtEventSubscriber newInstance(ExtEvent event, ISubscriber subscriber) {
 		return new ExtEventSubscriber(event, subscriber);
 	}
 
-	private ExtEventSubscriber(final ExtEvent event, final ISubscriber subscriber) {
+	private ExtEventSubscriber(ExtEvent event, ISubscriber subscriber) {
 		__event = event;
 		__subscriber = subscriber;
 	}
@@ -66,7 +66,7 @@ public final class ExtEventSubscriber {
 	 * @param event the comparison event value
 	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
 	 */
-	public boolean hasEvent(final ExtEvent event) {
+	public boolean hasEvent(ExtEvent event) {
 		return __event == event;
 	}
 

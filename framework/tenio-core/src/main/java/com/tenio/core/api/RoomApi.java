@@ -62,7 +62,7 @@ public final class RoomApi extends AbstractLogger {
 	 * 
 	 * @param room that is added, see {@link IRoom}
 	 */
-	public void add(final IRoom room) {
+	public void add(IRoom room) {
 		try {
 			__roomManager.add(room);
 		} catch (DuplicatedRoomIdException e) {
@@ -76,7 +76,7 @@ public final class RoomApi extends AbstractLogger {
 	 * @param roomId the unique ID
 	 * @return Returns <b>true</b> if the room has existed, <b>null</b> otherwise
 	 */
-	public boolean contain(final String roomId) {
+	public boolean contain(String roomId) {
 		return __roomManager.contain(roomId);
 	}
 
@@ -86,7 +86,7 @@ public final class RoomApi extends AbstractLogger {
 	 * @param roomId the unique ID
 	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
 	 */
-	public IRoom get(final String roomId) {
+	public IRoom get(String roomId) {
 		return __roomManager.get(roomId);
 	}
 
@@ -95,7 +95,7 @@ public final class RoomApi extends AbstractLogger {
 	 * 
 	 * @param room that is removed, see {@link IRoom}
 	 */
-	public void remove(final IRoom room) {
+	public void remove(IRoom room) {
 		try {
 			__roomManager.remove(room);
 		} catch (NullRoomException e) {

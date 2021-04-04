@@ -50,10 +50,10 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 	private final IConfiguration __configuration;
 	private final int __connectionIndex;
 
-	public NettyDatagramInitializer(final int connectionIndex, final IEventManager eventManager,
-			final IElementPool<CommonObject> commonObjectPool,
-			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final GlobalTrafficShapingHandlerCustomize trafficCounter,
-			final IConfiguration configuration) {
+	public NettyDatagramInitializer(int connectionIndex, IEventManager eventManager,
+			IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
+			IConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

@@ -43,14 +43,14 @@ public final class DefaultConnectionFilter implements IConnectionFilter {
 	}
 
 	@Override
-	public void addBannedAddress(final String ipAddress) {
+	public void addBannedAddress(String ipAddress) {
 		synchronized (__bannedAddresses) {
 			__bannedAddresses.add(ipAddress);
 		}
 	}
 
 	@Override
-	public void removeBannedAddress(final String ipAddress) {
+	public void removeBannedAddress(String ipAddress) {
 		synchronized (__bannedAddresses) {
 			__bannedAddresses.remove(ipAddress);
 		}
@@ -64,13 +64,13 @@ public final class DefaultConnectionFilter implements IConnectionFilter {
 	}
 
 	@Override
-	public void validateAndAddAddress(final String ipAddress) throws RefusedAddressException {
+	public void validateAndAddAddress(String ipAddress) throws RefusedAddressException {
 		if (__isAddressBanned(ipAddress)) {
 			throw new RefusedAddressException(ipAddress);
 		}
 	}
 
-	private boolean __isAddressBanned(final String ipAddress) {
+	private boolean __isAddressBanned(String ipAddress) {
 		synchronized (__bannedAddresses) {
 			return __bannedAddresses.contains(ipAddress);
 		}

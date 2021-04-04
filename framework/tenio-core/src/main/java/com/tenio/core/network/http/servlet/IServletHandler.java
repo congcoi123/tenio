@@ -31,6 +31,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IServletHandler {
 
-	void handle(final HttpServletRequest request, final HttpServletResponse response);
+	void handle(HttpServletRequest request, HttpServletResponse response);
 
 }

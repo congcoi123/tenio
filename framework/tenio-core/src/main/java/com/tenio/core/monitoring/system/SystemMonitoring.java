@@ -85,15 +85,15 @@ public final class SystemMonitoring {
 		__lastProcessCpuTime = __osMxBean.getProcessCpuTime();
 	}
 
-	public final long getTotalMemory() {
+	public long getTotalMemory() {
 		return Runtime.getRuntime().totalMemory();
 	}
 
-	public final long getFreeMemory() {
+	public long getFreeMemory() {
 		return Runtime.getRuntime().maxMemory() - getUsedMemory();
 	}
 
-	public final long getUsedMemory() {
+	public long getUsedMemory() {
 		return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 	}
 

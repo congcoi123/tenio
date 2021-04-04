@@ -46,9 +46,9 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public final class NettySocketHandler extends BaseNettyHandler {
 
-	public NettySocketHandler(final int connectionIndex, final IEventManager eventManager,
-			final IElementPool<CommonObject> commonObjectPool,
-			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final IConfiguration configuration) {
+	public NettySocketHandler(int connectionIndex, IEventManager eventManager,
+			IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.TCP);
 	}
 

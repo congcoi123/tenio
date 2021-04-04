@@ -57,9 +57,9 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(final IEventManager eventManager, final IConfiguration configuration,
-			final IElementPool<CommonObject> commonObjectPool,
-			final IElementPool<ByteArrayInputStream> byteArrayInputPool)
+	void start(IEventManager eventManager, IConfiguration configuration,
+			IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException;
 
 	/**

@@ -71,7 +71,7 @@ public interface IPlayerManager extends IManager {
 	 * @param name the player's name (unique ID)
 	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
 	 */
-	boolean contain(final String name);
+	boolean contain(String name);
 
 	/**
 	 * Retrieve a player by the player's name. We let a player escape from its
@@ -81,7 +81,7 @@ public interface IPlayerManager extends IManager {
 	 * @return the player's instance if that player has existed, <b>null</b>
 	 *         otherwise
 	 */
-	IPlayer get(final String name);
+	IPlayer get(String name);
 
 	/**
 	 * Add a new player to your server (this player was upgraded from one
@@ -93,7 +93,7 @@ public interface IPlayerManager extends IManager {
 	 * @throws NullPlayerNameException
 	 * @throws DuplicatedPlayerException
 	 */
-	void add(final IPlayer player, final IConnection connection)
+	void add(IPlayer player, IConnection connection)
 			throws NullPlayerNameException, DuplicatedPlayerException;
 
 	/**
@@ -104,14 +104,14 @@ public interface IPlayerManager extends IManager {
 	 * 
 	 * @throws DuplicatedPlayerException
 	 */
-	void add(final IPlayer player) throws DuplicatedPlayerException;
+	void add(IPlayer player) throws DuplicatedPlayerException;
 
 	/**
 	 * Remove a player from your server.
 	 * 
 	 * @param player that is removed, see {@link IPlayer}
 	 */
-	void remove(final IPlayer player);
+	void remove(IPlayer player);
 
 	/**
 	 * When a player is disconnected, all the related connections need to be deleted
@@ -119,7 +119,7 @@ public interface IPlayerManager extends IManager {
 	 * 
 	 * @param player the corresponding player, see {@link IPlayer}
 	 */
-	void removeAllConnections(final IPlayer player);
+	void removeAllConnections(IPlayer player);
 
 	/**
 	 * Make sure one player is removed from this management (as well as your
@@ -128,6 +128,6 @@ public interface IPlayerManager extends IManager {
 	 * 
 	 * @param player that is removed, see {@link IPlayer}
 	 */
-	void clean(final IPlayer player);
+	void clean(IPlayer player);
 
 }

@@ -40,7 +40,7 @@ public final class DefaultPacketQueue implements IPacketQueue {
 	private final LinkedList<byte[]> __packetQueue;
 	private volatile int __size;
 
-	public DefaultPacketQueue(final int size) {
+	public DefaultPacketQueue(int size) {
 		__size = size;
 		__packetQueue = new LinkedList<byte[]>();
 	}

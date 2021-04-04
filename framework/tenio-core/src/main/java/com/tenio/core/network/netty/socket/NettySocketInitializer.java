@@ -53,10 +53,10 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 	private final IConfiguration __configuration;
 	private final int __connectionIndex;
 
-	public NettySocketInitializer(final int connectionIndex, final IEventManager eventManager,
-			final IElementPool<CommonObject> commonObjectPool,
-			final IElementPool<ByteArrayInputStream> byteArrayInputPool,
-			final GlobalTrafficShapingHandlerCustomize trafficCounter, final IConfiguration configuration) {
+	public NettySocketInitializer(int connectionIndex, IEventManager eventManager,
+			IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool,
+			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

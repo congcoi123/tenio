@@ -69,7 +69,7 @@ public abstract class AbstractRoom implements IRoom {
 	@Column(name = "capacity")
 	private volatile int __capacity;
 
-	public AbstractRoom(final String id, final String name, final int capacity) {
+	public AbstractRoom(String id, String name, int capacity) {
 		__id = id;
 		__name = name;
 		__capacity = capacity;
@@ -77,7 +77,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public boolean containPlayerName(final String playerName) {
+	public boolean containPlayerName(String playerName) {
 		synchronized (playerName) {
 			return __players.containsKey(playerName);
 		}
@@ -94,14 +94,14 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void addPlayer(final IPlayer player) {
+	public void addPlayer(IPlayer player) {
 		synchronized (player) {
 			__players.put(player.getName(), player);
 		}
 	}
 
 	@Override
-	public synchronized void removePlayer(final IPlayer player) {
+	public synchronized void removePlayer(IPlayer player) {
 		__players.remove(player.getName());
 	}
 
@@ -118,7 +118,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void setCapacity(final int capacity) {
+	public void setCapacity(int capacity) {
 		__capacity = capacity;
 	}
 
@@ -133,7 +133,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void setName(final String name) {
+	public void setName(String name) {
 		__name = name;
 	}
 

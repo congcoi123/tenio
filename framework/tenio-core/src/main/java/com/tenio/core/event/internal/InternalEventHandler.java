@@ -55,7 +55,7 @@ public final class InternalEventHandler<T> {
 	 * @param event   see {@link InternalEvent}
 	 * @param emitter see {@link IEmitter}
 	 */
-	public void subscribe(final InternalEvent event, final IEmitter<T> emitter) {
+	public void subscribe(InternalEvent event, IEmitter<T> emitter) {
 		__delegate.put(event, emitter);
 	}
 
@@ -67,7 +67,7 @@ public final class InternalEventHandler<T> {
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final InternalEvent event, final @SuppressWarnings("unchecked") T... params) {
+	public Object emit(InternalEvent event, @SuppressWarnings("unchecked") T... params) {
 		if (__delegate.containsKey(event)) {
 			return __delegate.get(event).emit(params);
 		}

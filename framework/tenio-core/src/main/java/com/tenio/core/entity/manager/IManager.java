@@ -36,6 +36,6 @@ public interface IManager {
 	 * 
 	 * @param configuration the configuration, see {@link CoreConfiguration}
 	 */
-	void initialize(final IConfiguration configuration);
+	void initialize(IConfiguration configuration);
 
 }

@@ -67,7 +67,7 @@ public interface IRoomManager extends IManager {
 	 * @param roomId the unique id
 	 * @return a room's instance if it has existed, <b>null</b> otherwise
 	 */
-	IRoom get(final String roomId);
+	IRoom get(String roomId);
 
 	/**
 	 * Determine if the room has existed or not.
@@ -75,7 +75,7 @@ public interface IRoomManager extends IManager {
 	 * @param roomId the unique ID
 	 * @return <b>true</b> if the room has existed, <b>null</b> otherwise
 	 */
-	boolean contain(final String roomId);
+	boolean contain(String roomId);
 
 	/**
 	 * Add a new room to your server. You need create your own room first.
@@ -84,7 +84,7 @@ public interface IRoomManager extends IManager {
 	 * 
 	 * @throws DuplicatedRoomIdException
 	 */
-	void add(final IRoom room) throws DuplicatedRoomIdException;
+	void add(IRoom room) throws DuplicatedRoomIdException;
 
 	/**
 	 * Remove a room from your server.
@@ -93,7 +93,7 @@ public interface IRoomManager extends IManager {
 	 * 
 	 * @throws NullRoomException
 	 */
-	void remove(final IRoom room) throws NullRoomException;
+	void remove(IRoom room) throws NullRoomException;
 
 	/**
 	 * Request one player to join a room. This request can be refused with some
@@ -104,7 +104,7 @@ public interface IRoomManager extends IManager {
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player);
+	CoreMessageCode makePlayerJoinRoom(IRoom room, IPlayer player);
 
 	/**
 	 * Allow a player to leave his current room. You can handle your own logic in
@@ -116,6 +116,6 @@ public interface IRoomManager extends IManager {
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force);
+	CoreMessageCode makePlayerLeaveRoom(IPlayer player, boolean force);
 
 }

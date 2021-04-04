@@ -147,7 +147,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(final IConfiguration configuration) throws IOException, InterruptedException,
+	public void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		__configuration = configuration;
 
@@ -272,7 +272,7 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	@Override
-	public void setExtension(final IExtension extension) {
+	public void setExtension(IExtension extension) {
 		__extension = extension;
 	}
 

@@ -63,7 +63,7 @@ public final class ExtEventProducer {
 	 *         {@link Object} or <b>null</b>
 	 * @see ExtEventHandler#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final ExtEvent event, final Object... params) {
+	public Object emit(ExtEvent event, Object... params) {
 		return __eventHandler.emit(event, params);
 	}
 

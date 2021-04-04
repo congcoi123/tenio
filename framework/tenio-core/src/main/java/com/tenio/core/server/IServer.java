@@ -57,7 +57,7 @@ interface IServer {
 	 * @throws NotDefinedSubscribersException
 	 * @throws DuplicatedUriAndMethodException
 	 */
-	void start(final IConfiguration configuration) throws IOException, InterruptedException,
+	void start(IConfiguration configuration) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
 
 	/**
@@ -75,7 +75,7 @@ interface IServer {
 	 * 
 	 * @param extension your own logic handling @see {@link IExtension}
 	 */
-	void setExtension(final IExtension extension);
+	void setExtension(IExtension extension);
 
 	/**
 	 * @return see {@link IEventManager}

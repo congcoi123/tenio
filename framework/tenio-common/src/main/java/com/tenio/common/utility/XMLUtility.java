@@ -54,7 +54,7 @@ public final class XMLUtility {
 	 * @return Returns a document object to easy use, see {@link Document}
 	 * @throws Exception the exception
 	 */
-	public static Document parseFile(final File file) throws Exception {
+	public static Document parseFile(File file) throws Exception {
 		var dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		var db = dbf.newDocumentBuilder();
@@ -72,7 +72,7 @@ public final class XMLUtility {
 	 * @return Returns a document object to easy use, see {@link Document}
 	 * @throws Exception the exception
 	 */
-	public static Document parseStream(final InputStream in) throws Exception {
+	public static Document parseStream(InputStream in) throws Exception {
 		var dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		var db = dbf.newDocumentBuilder();
@@ -89,7 +89,7 @@ public final class XMLUtility {
 	 * @param node the current node
 	 * @return its content in string value
 	 */
-	public static String getNodeValue(final Node node) {
+	public static String getNodeValue(Node node) {
 		String dataValue = node.getTextContent();
 		return dataValue;
 	}
@@ -102,7 +102,7 @@ public final class XMLUtility {
 	 * @return a list of nodes
 	 * @throws XPathExpressionException the exception
 	 */
-	public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
+	public static NodeList getNodeList(Node node, String xpath) throws XPathExpressionException {
 		var nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
 
 		return nodeList;
@@ -116,7 +116,7 @@ public final class XMLUtility {
 	 * @return the children node
 	 * @throws XPathExpressionException the exception
 	 */
-	public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
+	public static Node getNode(Node node, String xpath) throws XPathExpressionException {
 		var nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
 
 		return nodeRet;
@@ -129,7 +129,7 @@ public final class XMLUtility {
 	 * @param name the current attribute name
 	 * @return the value of node's attribute
 	 */
-	public static String getAttrVal(final Node node, final String name) {
+	public static String getAttrVal(Node node, String name) {
 		var eNode = (Element) node;
 
 		return eNode.getAttribute(name);

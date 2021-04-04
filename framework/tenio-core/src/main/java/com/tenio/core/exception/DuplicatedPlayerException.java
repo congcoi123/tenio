@@ -32,7 +32,7 @@ public final class DuplicatedPlayerException extends Exception {
 	 */
 	private static final long serialVersionUID = 1303721781114060707L;
 
-	public DuplicatedPlayerException(final String playerName) {
+	public DuplicatedPlayerException(String playerName) {
 		super(playerName);
 	}
 

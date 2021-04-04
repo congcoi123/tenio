@@ -32,12 +32,12 @@ import com.tenio.core.exception.RefusedAddressException;
  */
 public interface IConnectionFilter {
 
-	void addBannedAddress(final String ipAddress);
+	void addBannedAddress(String ipAddress);
 
-	void removeBannedAddress(final String ipAddress);
+	void removeBannedAddress(String ipAddress);
 
 	List<String> getBannedAddresses();
 
-	void validateAndAddAddress(final String ipAddress) throws RefusedAddressException;
+	void validateAndAddAddress(String ipAddress) throws RefusedAddressException;
 
 }

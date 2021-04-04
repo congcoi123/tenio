@@ -58,7 +58,7 @@ public final class ServletManager extends BaseServlet {
 	private ProcessGet __processGet;
 	private ProcessDelete __processDelete;
 
-	public ServletManager(final IEventManager eventManager, final List<PathConfig> pathConfigs) {
+	public ServletManager(IEventManager eventManager, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		for (var pathConfig : pathConfigs) {
 			switch (pathConfig.getMethod()) {
@@ -81,7 +81,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		if (__processGet != null) {
 			__processGet.handle(request, response);
 		} else {
@@ -90,7 +90,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException {
 		if (__processPost != null) {
 			__processPost.handle(request, response);
@@ -100,7 +100,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		if (__processPut != null) {
 			__processPut.handle(request, response);
 		} else {
@@ -109,7 +109,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doDelete(final HttpServletRequest request, final HttpServletResponse response)
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException {
 		if (__processDelete != null) {
 			__processDelete.handle(request, response);
@@ -121,7 +121,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessPost extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(final HttpServletRequest request, final HttpServletResponse response) {
+		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request,
 					response);
 			if (check == null) {
@@ -134,7 +134,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessPut extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(final HttpServletRequest request, final HttpServletResponse response) {
+		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request,
 					response);
 			if (check == null) {
@@ -147,7 +147,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessGet extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(final HttpServletRequest request, final HttpServletResponse response) {
+		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request,
 					response);
 			if (check == null) {
@@ -160,7 +160,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessDelete extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(final HttpServletRequest request, final HttpServletResponse response) {
+		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request,
 					response);
 			if (check == null) {
@@ -171,7 +171,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void __sendUnsupportedMethod(final HttpServletResponse response) {
+	private void __sendUnsupportedMethod(HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		try {
 			var json = new JSONObject();

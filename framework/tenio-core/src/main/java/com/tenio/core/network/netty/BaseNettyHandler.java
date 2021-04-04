@@ -54,9 +54,9 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	private final TransportType __transportType;
 	private final int __connectionIndex;
 
-	public BaseNettyHandler(final IEventManager eventManager, final IElementPool<CommonObject> commonObjectPool,
-			final IElementPool<ByteArrayInputStream> byteArrayInputPool, final int connectionIndex,
-			final TransportType transportType) {
+	public BaseNettyHandler(IEventManager eventManager, IElementPool<CommonObject> commonObjectPool,
+			IElementPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex,
+			TransportType transportType) {
 		__eventManager = eventManager;
 		__commmonObjectPool = commonObjectPool;
 		__byteArrayInputPool = byteArrayInputPool;
@@ -85,7 +85,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param message      the message, see {@link MessageObject}
 	 * @param remoteAdress the current remote address (in use for Datagram channel)
 	 */
-	protected final void _channelRead(ChannelHandlerContext ctx, CommonObject message, InetSocketAddress remoteAdress) {
+	protected void _channelRead(ChannelHandlerContext ctx, CommonObject message, InetSocketAddress remoteAdress) {
 		var connection = __getConnection(ctx.channel(), remoteAdress);
 
 		if (connection == null) {
@@ -105,7 +105,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * 
 	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
-	protected final void _channelInactive(ChannelHandlerContext ctx) {
+	protected void _channelInactive(ChannelHandlerContext ctx) {
 		if (__transportType == TransportType.UDP) {
 			return;
 		}
@@ -121,7 +121,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param ctx   the channel, see {@link ChannelHandlerContext}
 	 * @param cause the exception will occur
 	 */
-	protected final void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		if (__transportType == TransportType.UDP) {
 			return;
 		}
@@ -134,14 +134,14 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * @return the message object manager pool instance
 	 */
-	protected final IElementPool<CommonObject> getCommonObjectPool() {
+	protected IElementPool<CommonObject> getCommonObjectPool() {
 		return __commmonObjectPool;
 	}
 
 	/**
 	 * @return the byte array input steam manager pool instance
 	 */
-	protected final IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
+	protected IElementPool<ByteArrayInputStream> getByteArrayInputPool() {
 		return __byteArrayInputPool;
 	}
 

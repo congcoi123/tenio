@@ -63,7 +63,7 @@ public final class InternalEventProducer {
 	 *         {@link Object} or <b>null</b>
 	 * @see InternalEventHandler#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent event, final Object... params) {
+	public Object emit(InternalEvent event, Object... params) {
 		return __eventHandler.emit(event, params);
 	}
 

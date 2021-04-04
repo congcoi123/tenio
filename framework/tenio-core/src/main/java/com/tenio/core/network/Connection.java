@@ -62,54 +62,54 @@ public abstract class Connection implements IConnection {
 	 */
 	private final int __index;
 
-	public Connection(final IEventManager eventManager, final TransportType type, final int index) {
+	public Connection(IEventManager eventManager, TransportType type, int index) {
 		__eventManager = eventManager;
 		__type = type;
 		__index = index;
 	}
 
 	@Override
-	public final IEventManager getEventManager() {
+	public IEventManager getEventManager() {
 		return __eventManager;
 	}
 
 	@Override
-	public final TransportType getType() {
+	public TransportType getType() {
 		return __type;
 	}
 
 	@Override
-	public final boolean isType(TransportType type) {
+	public boolean isType(TransportType type) {
 		return (__type == type);
 	}
 
 	@Override
-	public final int getIndex() {
+	public int getIndex() {
 		return __index;
 	}
 
 	@Override
-	public final String getPlayerName() {
+	public String getPlayerName() {
 		return __playerName;
 	}
 
 	@Override
-	public final void setPlayerName(String playerName) {
+	public void setPlayerName(String playerName) {
 		__playerName = playerName;
 	}
 
 	@Override
-	public final void removePlayerName() {
+	public void removePlayerName() {
 		__playerName = null;
 	}
 
 	@Override
-	public final void setAddress(String address) {
+	public void setAddress(String address) {
 		__address = address;
 	}
 
 	@Override
-	public final String getAddress() {
+	public String getAddress() {
 		return __address;
 	}
 

@@ -58,7 +58,7 @@ public final class HttpConfig {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
 	}
 

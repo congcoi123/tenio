@@ -32,7 +32,7 @@ public final class NullRoomException extends Exception {
 	 */
 	private static final long serialVersionUID = 5751546751756362752L;
 
-	public NullRoomException(final String roomId) {
+	public NullRoomException(String roomId) {
 		super(roomId);
 	}
 

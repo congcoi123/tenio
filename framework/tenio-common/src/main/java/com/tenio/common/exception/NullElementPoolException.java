@@ -36,7 +36,7 @@ public final class NullElementPoolException extends RuntimeException {
 
 	}
 
-	public NullElementPoolException(final String message) {
+	public NullElementPoolException(String message) {
 		super(message);
 	}
 

@@ -82,7 +82,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 *                   be found in {@link ExtEvent}
 	 * @param subscriber your own subscriber-class handler
 	 */
-	protected final void _on(final ExtEvent event, final ISubscriber subscriber) {
+	protected void _on(ExtEvent event, ISubscriber subscriber) {
 		__server.getEventManager().getExtension().on(event, subscriber);
 	}
 
@@ -91,7 +91,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link CommonObject} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final CommonObject _getCommonObject(Object object) throws ExtensionValueCastException {
+	protected CommonObject _getCommonObject(Object object) throws ExtensionValueCastException {
 		if (object instanceof CommonObject) {
 			return (CommonObject) object;
 		}
@@ -103,7 +103,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link IConnection} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final IConnection _getConnection(Object object) throws ExtensionValueCastException {
+	protected IConnection _getConnection(Object object) throws ExtensionValueCastException {
 		if (object instanceof IConnection) {
 			return (IConnection) object;
 		}
@@ -116,7 +116,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link IPlayer} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final IPlayer _getPlayer(Object object) throws ExtensionValueCastException {
+	protected IPlayer _getPlayer(Object object) throws ExtensionValueCastException {
 		if (object instanceof IPlayer) {
 			return (IPlayer) object;
 		}
@@ -129,7 +129,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link IRoom} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final IRoom _getRoom(Object object) throws ExtensionValueCastException {
+	protected IRoom _getRoom(Object object) throws ExtensionValueCastException {
 		if (object instanceof IRoom) {
 			return (IRoom) object;
 		}
@@ -141,7 +141,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link RestMethod} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final RestMethod _getRestMethod(Object object) throws ExtensionValueCastException {
+	protected RestMethod _getRestMethod(Object object) throws ExtensionValueCastException {
 		if (object instanceof RestMethod) {
 			return (RestMethod) object;
 		}
@@ -153,7 +153,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link HttpServletRequest} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final HttpServletRequest _getHttpServletRequest(Object object) throws ExtensionValueCastException {
+	protected HttpServletRequest _getHttpServletRequest(Object object) throws ExtensionValueCastException {
 		if (object instanceof HttpServletRequest) {
 			return (HttpServletRequest) object;
 		}
@@ -165,7 +165,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link HttpServletResponse} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final HttpServletResponse _getHttpServletResponse(Object object) throws ExtensionValueCastException {
+	protected HttpServletResponse _getHttpServletResponse(Object object) throws ExtensionValueCastException {
 		if (object instanceof HttpServletResponse) {
 			return (HttpServletResponse) object;
 		}
@@ -177,7 +177,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link Throwable} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final Throwable _getThrowable(Object object) throws ExtensionValueCastException {
+	protected Throwable _getThrowable(Object object) throws ExtensionValueCastException {
 		if (object instanceof Throwable) {
 			return (Throwable) object;
 		}
@@ -189,7 +189,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link Boolean} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final boolean _getBoolean(Object object) throws ExtensionValueCastException {
+	protected boolean _getBoolean(Object object) throws ExtensionValueCastException {
 		if (object instanceof Boolean) {
 			return (boolean) object;
 		}
@@ -201,7 +201,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return value in {@link String} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final String _getString(Object object) throws ExtensionValueCastException {
+	protected String _getString(Object object) throws ExtensionValueCastException {
 		if (object instanceof String) {
 			return (String) object;
 		}
@@ -213,7 +213,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link Integer} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final int _getInteger(Object object) throws ExtensionValueCastException {
+	protected int _getInteger(Object object) throws ExtensionValueCastException {
 		if (object instanceof Integer) {
 			return (int) object;
 		}
@@ -225,7 +225,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link Long} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final long _getLong(Object object) throws ExtensionValueCastException {
+	protected long _getLong(Object object) throws ExtensionValueCastException {
 		if (object instanceof Long) {
 			return (long) object;
 		}
@@ -237,7 +237,7 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * @return a value in {@link Double} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected final double _getDouble(Object object) throws ExtensionValueCastException {
+	protected double _getDouble(Object object) throws ExtensionValueCastException {
 		if (object instanceof Double) {
 			return (double) object;
 		}

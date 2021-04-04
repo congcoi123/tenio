@@ -74,7 +74,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
 	 */
-	public CoreConfiguration(final String file) {
+	public CoreConfiguration(String file) {
 		__socketPorts = new ArrayList<SocketConfig>();
 		__webSocketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
@@ -94,7 +94,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @throws Exception some exceptions, which can be occurred in reading or
 	 *                   parsing the file
 	 */
-	private void __load(final String file) throws Exception {
+	private void __load(String file) throws Exception {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();

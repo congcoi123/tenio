@@ -54,8 +54,8 @@ final class InternalLogicManager extends AbstractLogger {
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogicManager(final IEventManager eventManager, final IPlayerManager playerManager,
-			final IRoomManager roomManager) {
+	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager,
+			IRoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -64,7 +64,7 @@ final class InternalLogicManager extends AbstractLogger {
 	/**
 	 * Start handling
 	 */
-	public void init(final IConfiguration configuration) {
+	public void init(IConfiguration configuration) {
 
 		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
@@ -158,8 +158,8 @@ final class InternalLogicManager extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final IConfiguration configuration, final int connectionIndex,
-			final IConnection connection, final CommonObject message) {
+	private void __createNewConnection(IConfiguration configuration, int connectionIndex,
+			IConnection connection, CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
 			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
@@ -198,7 +198,7 @@ final class InternalLogicManager extends AbstractLogger {
 		}
 	}
 
-	private void __on(final InternalEvent event, ISubscriber sub) {
+	private void __on(InternalEvent event, ISubscriber sub) {
 		__eventManager.getInternal().on(event, sub);
 	}
 

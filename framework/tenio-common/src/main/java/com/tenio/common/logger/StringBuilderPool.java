@@ -145,7 +145,7 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	private final void __infoWithoutPool(final String tag, final String msg) {
+	private void __infoWithoutPool(String tag, String msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
@@ -161,7 +161,7 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 	 * @param objects the corresponding objects, see {@link Object}
 	 * @return a string value
 	 */
-	private final String __strgen(final Object... objects) {
+	private String __strgen(Object... objects) {
 		var builder = new StringBuilder();
 		for (var object : objects) {
 			builder.append(object);

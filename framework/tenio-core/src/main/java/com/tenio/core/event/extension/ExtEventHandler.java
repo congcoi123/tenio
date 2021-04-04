@@ -60,7 +60,7 @@ public final class ExtEventHandler<T> {
 	 * @param event  see {@link ExtEvent}
 	 * @param emitter see {@link IEmitter}
 	 */
-	public void subscribe(final ExtEvent event, final IEmitter<T> emitter) {
+	public void subscribe(ExtEvent event, IEmitter<T> emitter) {
 		if (__delegate.containsKey(event)) {
 			__delegate.get(event).add(emitter);
 		} else {
@@ -80,7 +80,7 @@ public final class ExtEventHandler<T> {
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final ExtEvent event, final @SuppressWarnings("unchecked") T... params) {
+	public Object emit(ExtEvent event, @SuppressWarnings("unchecked") T... params) {
 		if (!__delegate.isEmpty()) {
 			Object object = null;
 			if (__delegate.containsKey(event)) {

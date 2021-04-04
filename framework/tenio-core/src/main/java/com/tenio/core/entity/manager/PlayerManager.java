@@ -73,7 +73,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public synchronized void initialize(final IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		__configuration = configuration;
 		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
@@ -110,21 +110,21 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public boolean contain(final String name) {
+	public boolean contain(String name) {
 		synchronized (__players) {
 			return __players.containsKey(name);
 		}
 	}
 
 	@Override
-	public IPlayer get(final String name) {
+	public IPlayer get(String name) {
 		synchronized (__players) {
 			return __players.get(name);
 		}
 	}
 
 	@Override
-	public void add(final IPlayer player, final IConnection connection)
+	public void add(IPlayer player, IConnection connection)
 			throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
@@ -161,7 +161,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void add(final IPlayer player) throws DuplicatedPlayerException {
+	public void add(IPlayer player) throws DuplicatedPlayerException {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
@@ -178,7 +178,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void remove(final IPlayer player) {
+	public void remove(IPlayer player) {
 		if (player == null) {
 			return;
 		}
@@ -200,12 +200,12 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void removeAllConnections(final IPlayer player) {
+	public void removeAllConnections(IPlayer player) {
 		player.closeAllConnections();
 	}
 
 	@Override
-	public void clean(final IPlayer player) {
+	public void clean(IPlayer player) {
 		if (player == null) {
 			return;
 		}

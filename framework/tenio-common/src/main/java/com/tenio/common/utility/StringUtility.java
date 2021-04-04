@@ -41,7 +41,7 @@ public final class StringUtility {
 	 * @param objects the corresponding objects, {@link Object}
 	 * @return a string value
 	 */
-	public static String strgen(final Object... objects) {
+	public static String strgen(Object... objects) {
 		StringBuilder builder = new StringBuilder();
 		for (var object : objects) {
 			builder.append(object);
@@ -64,7 +64,7 @@ public final class StringUtility {
 	 * @param length limited size of the text
 	 * @return a randomized string that could be duplicated
 	 */
-	public static String getRandomTextByLength(final int length) {
+	public static String getRandomTextByLength(int length) {
 		// create StringBuffer size of AlphaNumericString
 		StringBuilder sb = new StringBuilder(length);
 

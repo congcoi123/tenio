@@ -32,7 +32,7 @@ public final class ExtensionValueCastException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = -6137016366847120400L;
 
-	public ExtensionValueCastException(final String message) {
+	public ExtensionValueCastException(String message) {
 		super(message);
 	}
 

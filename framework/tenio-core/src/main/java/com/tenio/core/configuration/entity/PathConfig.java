@@ -36,8 +36,8 @@ public final class PathConfig {
 	private final RestMethod __method;
 	private final String __uri;
 
-	public PathConfig(final String name, final RestMethod method, final String uri, final String description,
-			final int version) {
+	public PathConfig(String name, RestMethod method, String uri, String description,
+			int version) {
 		__name = name;
 		__method = method;
 		__uri = uri;
@@ -66,7 +66,7 @@ public final class PathConfig {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
 				__uri, __description, __version);
 	}

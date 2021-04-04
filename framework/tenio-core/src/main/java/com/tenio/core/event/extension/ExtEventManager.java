@@ -65,7 +65,7 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	 *         {@link Object} or <b>null</b>
 	 * @see ExtEventProducer#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final ExtEvent event, final Object... params) {
+	public Object emit(ExtEvent event, Object... params) {
 		if (__isOnlyShownInTracedLog(event)) {
 			_trace(event.name(), params);
 		} else {
@@ -80,7 +80,7 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	 * @param event      see {@link ExtEvent}
 	 * @param subscriber see {@link ISubscriber}
 	 */
-	public void on(final ExtEvent event, final ISubscriber subscriber) {
+	public void on(ExtEvent event, ISubscriber subscriber) {
 		if (hasSubscriber(event)) {
 			_info("EXTERNAL EVENT WARNING", "Duplicated", event);
 		}
@@ -118,7 +118,7 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	 * @param event see {@link ExtEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final ExtEvent event) {
+	public boolean hasSubscriber(ExtEvent event) {
 		return __eventSubscribers.stream().anyMatch(eventSubscriber -> eventSubscriber.hasEvent(event));
 	}
 
@@ -136,7 +136,7 @@ public final class ExtEventManager extends SystemAbstractLogger {
 	 * @param event the event's type
 	 * @return <b>true</b> if an event can be traced
 	 */
-	private boolean __isOnlyShownInTracedLog(final ExtEvent event) {
+	private boolean __isOnlyShownInTracedLog(ExtEvent event) {
 		switch (event) {
 		case RECEIVED_MESSAGE_FROM_CONNECTION:
 		case RECEIVED_MESSAGE_FROM_PLAYER:

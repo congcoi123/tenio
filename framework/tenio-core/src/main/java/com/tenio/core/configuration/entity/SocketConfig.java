@@ -34,7 +34,7 @@ public final class SocketConfig {
 	private final TransportType __type;
 	private final int __port;
 
-	public SocketConfig(final String name, final TransportType type, final int port) {
+	public SocketConfig(String name, TransportType type, int port) {
 		__name = name;
 		__type = type;
 		__port = port;
@@ -53,7 +53,7 @@ public final class SocketConfig {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
 	}
 

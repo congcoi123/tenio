@@ -32,7 +32,7 @@ public final class DuplicatedRoomIdException extends Exception {
 	 */
 	private static final long serialVersionUID = -8043860755039088519L;
 
-	public DuplicatedRoomIdException(final String roomId) {
+	public DuplicatedRoomIdException(String roomId) {
 		super(roomId);
 	}
 

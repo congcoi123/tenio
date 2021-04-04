@@ -110,7 +110,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	 * 
 	 * @param name the unique name
 	 */
-	public AbstractPlayer(final String name) {
+	public AbstractPlayer(String name) {
 		__name = name;
 		__flagNPC = true;
 		__tracedPassedRoom = new LinkedList<String>();
@@ -119,27 +119,27 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final String getEntityId() {
+	public String getEntityId() {
 		return __entityId;
 	}
 
 	@Override
-	public final void setEntityId(final String entityId) {
+	public void setEntityId(String entityId) {
 		__entityId = entityId;
 	}
 
 	@Override
-	public final String getName() {
+	public String getName() {
 		return __name;
 	}
 
 	@Override
-	public final boolean isNPC() {
+	public boolean isNPC() {
 		return __flagNPC;
 	}
 
 	@Override
-	public final boolean hasConnection(final int connectionIndex) {
+	public boolean hasConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return false;
 		}
@@ -149,7 +149,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final IConnection getConnection(final int connectionIndex) {
+	public IConnection getConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return null;
 		}
@@ -159,14 +159,14 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final synchronized void initializeConnections(final int connectionsSize) {
+	public synchronized void initializeConnections(int connectionsSize) {
 		__connectionsSize = connectionsSize;
 		__connections = new IConnection[__connectionsSize];
 		__flagNPC = false;
 	}
 
 	@Override
-	public final void setConnection(final IConnection connection, final int connectionIndex) {
+	public void setConnection(IConnection connection, int connectionIndex) {
 		if (__flagNPC) {
 			return;
 		}
@@ -179,7 +179,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final void closeConnection(final int connectionIndex) {
+	public void closeConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return;
 		}
@@ -192,7 +192,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final void closeAllConnections() {
+	public void closeAllConnections() {
 		if (__flagNPC) {
 			return;
 		}
@@ -208,7 +208,7 @@ public abstract class AbstractPlayer implements IPlayer {
 	 * 
 	 * @param connectionIndex the connection's index
 	 */
-	private void __closeConnection(final int connectionIndex) {
+	private void __closeConnection(int connectionIndex) {
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
 			throw new ArrayIndexOutOfBoundsException(connectionIndex);
 		}
@@ -219,12 +219,12 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final IRoom getCurrentRoom() {
+	public IRoom getCurrentRoom() {
 		return __room;
 	}
 
 	@Override
-	public final void setCurrentRoom(final IRoom room) {
+	public void setCurrentRoom(IRoom room) {
 		__room = room;
 		if (__room != null) {
 			synchronized (__tracedPassedRoom) {
@@ -234,39 +234,39 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public final List<String> getTracedRoomIdsList() {
+	public List<String> getTracedRoomIdsList() {
 		synchronized (__tracedPassedRoom) {
 			return __tracedPassedRoom;
 		}
 	}
 
 	@Override
-	public final long getReaderTime() {
+	public long getReaderTime() {
 		return __readerTime;
 	}
 
 	@Override
-	public final void setCurrentReaderTime() {
+	public void setCurrentReaderTime() {
 		__readerTime = TimeUtility.currentTimeMillis();
 	}
 
 	@Override
-	public final long getWriterTime() {
+	public long getWriterTime() {
 		return __writerTime;
 	}
 
 	@Override
-	public final void setCurrentWriterTime() {
+	public void setCurrentWriterTime() {
 		__writerTime = TimeUtility.currentTimeMillis();
 	}
 
 	@Override
-	public final boolean isIgnoredTimeout() {
+	public boolean isIgnoredTimeout() {
 		return __flagIgnoreTimeout;
 	}
 
 	@Override
-	public final void setIgnoreTimeout(final boolean flagIgnoreTimeout) {
+	public void setIgnoreTimeout(boolean flagIgnoreTimeout) {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
 		setCurrentReaderTime();
 		setCurrentWriterTime();

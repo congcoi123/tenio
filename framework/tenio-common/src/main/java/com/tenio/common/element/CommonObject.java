@@ -45,43 +45,43 @@ public final class CommonObject extends HashMap<String, Object> implements Seria
 	public CommonObject() {
 	}
 
-	public double getDouble(final String key) {
+	public double getDouble(String key) {
 		return (double) get(key);
 	}
 
-	public float getFloat(final String key) {
+	public float getFloat(String key) {
 		return (float) get(key);
 	}
 
-	public long getLong(final String key) {
+	public long getLong(String key) {
 		return (long) get(key);
 	}
 
-	public int getInt(final String key) {
+	public int getInt(String key) {
 		return (int) get(key);
 	}
 
-	public boolean getBoolean(final String key) {
+	public boolean getBoolean(String key) {
 		return (boolean) get(key);
 	}
 
-	public String getString(final String key) {
+	public String getString(String key) {
 		return (String) get(key);
 	}
 
-	public Object getObject(final String key) {
+	public Object getObject(String key) {
 		return get(key);
 	}
 
-	public CommonObject getMessageObject(final String key) {
+	public CommonObject getMessageObject(String key) {
 		return (CommonObject) get(key);
 	}
 
-	public CommonObjectArray getMessageObjectArray(final String key) {
+	public CommonObjectArray getMessageObjectArray(String key) {
 		return (CommonObjectArray) get(key);
 	}
 
-	public boolean contain(final String key) {
+	public boolean contain(String key) {
 		return containsKey(key);
 	}
 
