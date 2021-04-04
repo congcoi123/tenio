@@ -61,11 +61,11 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	PRODUCER_THREAD_POOL_SIZE("producerThreadPoolSize"),
+	PRODUCER_THREADS_POOL_SIZE("producerThreadsPoolSize"),
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	CONSUMER_THREAD_POOL_SIZE("consumerThreadPoolSize"),
+	CONSUMER_THREADS_POOL_SIZE("consumerThreadsPoolSize"),
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout

@@ -119,22 +119,22 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private IConfiguration __configuration;
 
-	private IElementsPool<CommonObject> __commonObjectPool;
-	private IElementsPool<CommonObjectArray> __commonObjectArrayPool;
-	private IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final IElementsPool<CommonObject> __commonObjectPool;
+	private final IElementsPool<CommonObjectArray> __commonObjectArrayPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 
-	private IEventManager __eventManager;
+	private final IEventManager __eventManager;
 
-	private IRoomManager __roomManager;
-	private IPlayerManager __playerManager;
-	private ITaskManager __taskManager;
+	private final IRoomManager __roomManager;
+	private final IPlayerManager __playerManager;
+	private final ITaskManager __taskManager;
 
-	private PlayerApi __playerApi;
-	private RoomApi __roomApi;
-	private TaskApi __taskApi;
-	private MessageApi __messageApi;
+	private final PlayerApi __playerApi;
+	private final RoomApi __roomApi;
+	private final TaskApi __taskApi;
+	private final MessageApi __messageApi;
 
-	private InternalLogicManager __internalLogic;
+	private final InternalLogicManager __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
@@ -220,7 +220,6 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", __serverName, "Stopping ...");
 		__shutdown();
 		_info("SERVER", __serverName, "Stopped!");
-		__cleanup();
 	}
 
 	private void __shutdown() {
@@ -242,28 +241,6 @@ public final class Server extends AbstractLogger implements IServer {
 		__socketPorts.clear();
 		__webSocketPorts.clear();
 		__httpPorts.clear();
-	}
-
-	private void __cleanup() {
-		// assign by null
-		__configuration = null;
-		__commonObjectPool = null;
-		__commonObjectArrayPool = null;
-		__byteArrayInputPool = null;
-		__eventManager = null;
-		__roomManager = null;
-		__playerManager = null;
-		__taskManager = null;
-		__playerApi = null;
-		__roomApi = null;
-		__taskApi = null;
-		__messageApi = null;
-		__internalLogic = null;
-		__extension = null;
-		__network = null;
-		__socketPorts = null;
-		__webSocketPorts = null;
-		__httpPorts = null;
 	}
 
 	@Override

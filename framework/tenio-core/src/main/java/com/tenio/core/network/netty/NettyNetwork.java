@@ -80,8 +80,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 	public void start(IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayInputPool) throws IOException, InterruptedException {
-		__producer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.PRODUCER_THREAD_POOL_SIZE));
-		__consumer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.CONSUMER_THREAD_POOL_SIZE));
+		__producer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.PRODUCER_THREADS_POOL_SIZE));
+		__consumer = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.CONSUMER_THREADS_POOL_SIZE));
 
 		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __consumer,
 				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
