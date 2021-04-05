@@ -84,8 +84,8 @@ public final class TestServerMovement extends AbstractApp {
 				var message = _getCommonObject(params[1]);
 
 				// can make a login request for this connection
-				String username = message.getString("u");
-				_playerApi.login(new Inspector(username), connection);
+				var playerName = message.getString("u");
+				_playerApi.login(new Inspector(playerName), connection);
 
 				return null;
 			});
@@ -103,14 +103,14 @@ public final class TestServerMovement extends AbstractApp {
 
 			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
 				var message = _getCommonObject(params[1]);
-				String name = message.getString("u");
+				var playerName = message.getString("u");
 
 				// It should be ...
 				// 1. check if player has sub connection
 				// 2. confirm with player's name and main connection
 
 				// But now temporary returns a player by his name
-				return _playerApi.get(name);
+				return _playerApi.get(playerName);
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {

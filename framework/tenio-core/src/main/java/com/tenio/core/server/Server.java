@@ -38,6 +38,7 @@ import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
@@ -311,10 +312,12 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {
-		for (var port : __httpPorts) {
-			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
-			http.setup();
-			__taskManager.create(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
+		for (int i = 0; i < __httpPorts.size(); i++) {
+			var port = __httpPorts.get(i);
+			var httpManager = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
+			httpManager.setup();
+			__taskManager.create(StringUtility.strgen(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
+					httpManager.run());
 		}
 		return null;
 	}

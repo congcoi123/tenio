@@ -29,6 +29,7 @@ import org.json.simple.JSONObject;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
@@ -107,8 +108,8 @@ public final class TestServerAttach extends AbstractApp {
 				var player = (PlayerAttach) _getPlayer(params[0]);
 				int index = _getInteger(params[1]);
 
-				_messageApi.sendToPlayer(player, index, "hello",
-						"from server > " + index + " > " + player.getConnection(index).getAddress());
+				_messageApi.sendToPlayer(player, index, "response", StringUtility.strgen("echo from server > ", index,
+						" > ", player.getConnection(index).getAddress()));
 
 				return null;
 			});
@@ -130,6 +131,11 @@ public final class TestServerAttach extends AbstractApp {
 
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
+				return null;
+			});
+
+			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
+				// do nothing but need to be declared
 				return null;
 			});
 

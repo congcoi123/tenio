@@ -59,8 +59,7 @@ public final class HttpManagerTask extends AbstractLogger implements ITask {
 	private final int __port;
 	private final List<PathConfig> __pathConfigs;
 
-	public HttpManagerTask(IEventManager eventManager, String name, int port,
-			List<PathConfig> pathConfigs) {
+	public HttpManagerTask(IEventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;

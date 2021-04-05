@@ -82,10 +82,10 @@ public final class TestServerPhaserjs extends AbstractApp {
 				var message = _getCommonObject(params[1]);
 
 				// Allow the connection login into server (become a player)
-				String username = message.getString("u");
+				var playerName = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
 				// is only for testing
-				_playerApi.login(new PlayerPhaserjs(username), connection);
+				_playerApi.login(new PlayerPhaserjs(playerName), connection);
 
 				return null;
 			});

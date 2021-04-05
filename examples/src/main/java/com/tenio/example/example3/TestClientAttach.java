@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
+import java.security.SecureRandom;
+
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.example.client.IDatagramListener;
@@ -45,6 +47,13 @@ import com.tenio.example.client.UDP;
  */
 public final class TestClientAttach implements ISocketListener, IDatagramListener {
 
+	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+	private static final String NUMBER = "0123456789";
+
+	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+	private static SecureRandom RANDOM = new SecureRandom();
+
 	/**
 	 * The entry point
 	 */
@@ -54,8 +63,11 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 
 	private final TCP __tcp;
 	private final UDP __udp;
+	private final String __playerName;
 
 	public TestClientAttach() {
+		__playerName = __generateRandomString(6);
+
 		// create a new TCP object and listen for this port
 		__tcp = new TCP(8032);
 		__tcp.receive(this);
@@ -66,7 +78,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 
 		// send a login request
 		var message = CommonObject.newInstance();
-		message.put("u", "kong");
+		message.put("u", __playerName);
 		__tcp.send(message);
 		System.out.println("Login Request -> " + message);
 
@@ -80,7 +92,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		case "udp": {
 			// now you can send request for UDP connection request
 			var request = CommonObject.newInstance();
-			request.put("u", "kong");
+			request.put("u", __playerName);
 			__udp.send(request);
 			System.out.println("Request a UDP connection -> " + request);
 		}
@@ -89,7 +101,7 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 		case "udp-done": {
 			// the UDP connected successful, you now can send test requests
 			System.out.println("Start the conversation ...");
-			for (int i = 1; i <= 10; i++) {
+			for (int i = 1; i <= 100; i++) {
 				var request = CommonObject.newInstance();
 				request.put("fc", CommonObjectArray.newInstance().put("F").put("r").put(0).put(false));
 				__udp.send(request);
@@ -113,6 +125,23 @@ public final class TestClientAttach implements ISocketListener, IDatagramListene
 	@Override
 	public void onReceivedUDP(CommonObject message) {
 		System.err.println("[RECV FROM SERVER UDP] -> " + message);
+	}
+
+	private String __generateRandomString(int length) {
+		if (length < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		var sb = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			// 0-62 (exclusive), random returns 0-61
+			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+			sb.append(rndChar);
+		}
+
+		return sb.toString();
 	}
 
 }
