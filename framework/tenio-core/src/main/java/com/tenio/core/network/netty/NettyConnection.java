@@ -46,7 +46,7 @@ import io.netty.util.AttributeKey;
  * @author kong
  * 
  */
-public class NettyConnection extends Connection {
+public final class NettyConnection extends Connection {
 
 	/**
 	 * @see Channel
@@ -56,10 +56,11 @@ public class NettyConnection extends Connection {
 	 * Save the client's address, in Datagram connection it is used for saving as a
 	 * key of the {@link #getUsername()}
 	 */
-	protected InetSocketAddress __remote;
+	protected InetSocketAddress __remoteAddress;
 
-	private NettyConnection(int index, IEventManager eventManager, TransportType type, Channel channel) {
-		super(eventManager, type, index);
+	private NettyConnection(int connectionIndex, IEventManager eventManager,
+			TransportType transportType, Channel channel) {
+		super(eventManager, transportType, connectionIndex);
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
@@ -70,9 +71,9 @@ public class NettyConnection extends Connection {
 		}
 	}
 
-	public static NettyConnection newInstance(int index, IEventManager eventManager, TransportType type,
-			Channel channel) {
-		return new NettyConnection(index, eventManager, type, channel);
+	public static NettyConnection newInstance(int connectionIndex, IEventManager eventManager,
+			TransportType transportType, Channel channel) {
+		return new NettyConnection(connectionIndex, eventManager, transportType, channel);
 	}
 
 	@Override
@@ -83,9 +84,9 @@ public class NettyConnection extends Connection {
 			__channel.writeAndFlush(
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
 		} else if (isType(TransportType.UDP)) {
-			if (__remote != null) {
-				__channel.writeAndFlush(
-						new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remote));
+			if (__remoteAddress != null) {
+				__channel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)),
+						__remoteAddress));
 			}
 		}
 	}
@@ -128,8 +129,8 @@ public class NettyConnection extends Connection {
 	public void setRemote(InetSocketAddress remote) {
 		// only need for the Datagram connection
 		if (isType(TransportType.UDP)) {
-			__remote = remote;
-			setAddress(__remote.toString());
+			__remoteAddress = remote;
+			setAddress(__remoteAddress.toString());
 		}
 	}
 

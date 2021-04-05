@@ -21,53 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
+package com.tenio.core.event.internal;
 
-import com.tenio.core.configuration.define.RestMethod;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.event.ISubscriber;
 
 /**
+ * An object which creates a mapping between an event type with a subscriber
+ * 
  * @author kong
+ * 
  */
-public final class PathConfig {
+@ThreadSafe
+public final class InternalEventSubscriber {
 
-	private String __name;
-	private String __description;
-	private int __version;
-	private RestMethod __method;
-	private String __uri;
+	/**
+	 * @see InternalEvent
+	 */
+	private final InternalEvent __event;
+	/**
+	 * @see ISubscriber
+	 */
+	private final ISubscriber __subscriber;
 
-	public PathConfig(String name, RestMethod method, String uri, String description, int version) {
-		__name = name;
-		__method = method;
-		__uri = uri;
-		__description = description;
-		__version = version;
+	public static InternalEventSubscriber newInstance(InternalEvent event, ISubscriber subscriber) {
+		return new InternalEventSubscriber(event, subscriber);
 	}
 
-	public String getName() {
-		return __name;
+	private InternalEventSubscriber(InternalEvent event, ISubscriber subscriber) {
+		__event = event;
+		__subscriber = subscriber;
 	}
 
-	public RestMethod getMethod() {
-		return __method;
+	/**
+	 * @return see {@link InternalEvent}
+	 */
+	public InternalEvent getEvent() {
+		return __event;
 	}
 
-	public String getUri() {
-		return __uri;
-	}
-
-	public String getDescription() {
-		return __description;
-	}
-
-	public int getVersion() {
-		return __version;
-	}
-
-	@Override
-	public final String toString() {
-		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
-				__uri, __description, __version);
+	/**
+	 * @return see {@link ISubscriber}
+	 */
+	public ISubscriber getSubscriber() {
+		return __subscriber;
 	}
 
 }

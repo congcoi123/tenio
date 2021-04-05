@@ -202,7 +202,7 @@ public final class PlayerRoomTest {
 		__playerApi.makePlayerJoinRoom(__roomApi.get(__testRoomId), __playerApi.get(__testPlayerName));
 		__playerApi.makePlayerLeaveRoom(__playerApi.get(__testPlayerName), true);
 
-		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).contain(__testPlayerName)),
+		assertAll("playerLeaveRoom", () -> assertFalse(__roomApi.get(__testRoomId).containPlayerName(__testPlayerName)),
 				() -> assertEquals(null, __playerApi.get(__testPlayerName).getCurrentRoom()));
 	}
 

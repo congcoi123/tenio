@@ -25,6 +25,8 @@ package com.tenio.core.message.packet;
 
 import java.util.LinkedList;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.core.exception.MessagePacketQueueFullException;
 
 /**
@@ -32,12 +34,13 @@ import com.tenio.core.exception.MessagePacketQueueFullException;
  * 
  * @author kong
  */
+@ThreadSafe
 public final class DefaultPacketQueue implements IPacketQueue {
 
 	private final LinkedList<byte[]> __packetQueue;
-	private int __size;
+	private volatile int __size;
 
-	public DefaultPacketQueue(final int size) {
+	public DefaultPacketQueue(int size) {
 		__size = size;
 		__packetQueue = new LinkedList<byte[]>();
 	}
@@ -45,7 +48,7 @@ public final class DefaultPacketQueue implements IPacketQueue {
 	@Override
 	public byte[] peek() {
 		synchronized (__packetQueue) {
-			if (!isEmpty()) {
+			if (!__packetQueue.isEmpty()) {
 				return __packetQueue.getFirst();
 			}
 			return null;
@@ -55,7 +58,7 @@ public final class DefaultPacketQueue implements IPacketQueue {
 	@Override
 	public byte[] take() {
 		synchronized (__packetQueue) {
-			if (!isEmpty()) {
+			if (!__packetQueue.isEmpty()) {
 				return __packetQueue.removeFirst();
 			}
 			return null;
@@ -64,17 +67,23 @@ public final class DefaultPacketQueue implements IPacketQueue {
 
 	@Override
 	public boolean isEmpty() {
-		return __packetQueue.isEmpty();
+		synchronized (__packetQueue) {
+			return __packetQueue.isEmpty();
+		}
 	}
 
 	@Override
 	public boolean isFull() {
-		return __packetQueue.size() >= __size;
+		synchronized (__packetQueue) {
+			return __packetQueue.size() >= __size;
+		}
 	}
 
 	@Override
 	public int count() {
-		return __packetQueue.size();
+		synchronized (__packetQueue) {
+			return __packetQueue.size();
+		}
 	}
 
 	@Override
@@ -89,10 +98,10 @@ public final class DefaultPacketQueue implements IPacketQueue {
 
 	@Override
 	public void put(byte[] packet) throws MessagePacketQueueFullException {
-		if (isFull()) {
-			throw new MessagePacketQueueFullException();
-		} else {
-			synchronized (__packetQueue) {
+		synchronized (__packetQueue) {
+			if (__packetQueue.size() >= __size) {
+				throw new MessagePacketQueueFullException();
+			} else {
 				__packetQueue.addLast(packet);
 			}
 		}
@@ -100,7 +109,9 @@ public final class DefaultPacketQueue implements IPacketQueue {
 
 	@Override
 	public float getPercentageUsed() {
-		return __size == 0 ? 0.0F : (float) (__packetQueue.size() * 100) / (float) __size;
+		synchronized (__packetQueue) {
+			return __size == 0 ? 0.0F : (float) (__packetQueue.size() * 100) / (float) __size;
+		}
 	}
 
 	@Override

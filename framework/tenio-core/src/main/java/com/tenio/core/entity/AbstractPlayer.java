@@ -26,8 +26,12 @@ package com.tenio.core.entity;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.tenio.core.entity.annotation.Column;
-import com.tenio.core.entity.annotation.Entity;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.network.IConnection;
 
 /**
@@ -48,7 +52,8 @@ import com.tenio.core.network.IConnection;
  * 
  */
 @Entity
-public abstract class AbstractPlayer implements IPlayer {
+@ThreadSafe
+public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 
 	/**
 	 * The list of socket/web socket connections
@@ -57,52 +62,56 @@ public abstract class AbstractPlayer implements IPlayer {
 	/**
 	 * Tracing the room which they player has been in
 	 */
-	private LinkedList<String> __tracedPassedRoom;
+	private final LinkedList<String> __tracedPassedRoom;
 	/**
 	 * The unique name in the server
 	 */
 	@Column(name = "name")
-	private String __name;
+	private final String __name;
 	/**
 	 * This value for make a link between a player with his corresponding entity in
 	 * one game
 	 */
 	@Column(name = "entity_id")
-	private String __entityId;
+	private volatile String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
 	 * {@link IRoom}
 	 */
 	@Column(name = "room")
-	private IRoom __room;
+	private volatile IRoom __room;
+	/**
+	 * A number of connections the one player can hold
+	 */
+	private volatile int __connectionsSize;
 	/**
 	 * The current system time when a new message from the client comes
 	 */
-	private long __readerTime;
+	private volatile long __readerTime;
 	/**
 	 * The current system time when a new message is sent to the client from your
 	 * server
 	 */
-	private long __writerTime;
+	private volatile long __writerTime;
 	/**
 	 * This flag (enabled state) allows the player not affected by the system
 	 * timeouts rule. The default value is <b>false</b>
 	 */
 	@Column(name = "ignore_timeout")
-	private boolean __flagIgnoreTimeout;
+	private volatile boolean __flagIgnoreTimeout;
 
 	/**
 	 * This flag for quick checking if a player is a NPC or not
 	 */
 	@Column(name = "flag_npc")
-	private boolean __flagNPC;
+	private volatile boolean __flagNPC;
 
 	/**
 	 * Create a new player
 	 * 
 	 * @param name the unique name
 	 */
-	public AbstractPlayer(final String name) {
+	public AbstractPlayer(String name) {
 		__name = name;
 		__flagNPC = true;
 		__tracedPassedRoom = new LinkedList<String>();
@@ -131,43 +140,57 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public boolean hasConnection(int index) {
+	public boolean hasConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return false;
 		}
-		return (__connections[index] != null);
+		synchronized (__connections) {
+			return (__connections[connectionIndex] != null);
+		}
 	}
 
 	@Override
-	public IConnection getConnection(int index) {
+	public IConnection getConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return null;
 		}
-		return __connections[index];
+		synchronized (__connections) {
+			return __connections[connectionIndex];
+		}
 	}
 
 	@Override
-	public void initializeConnections(int size) {
-		__connections = new IConnection[size];
+	public synchronized void initializeConnections(int connectionsSize) {
+		__connectionsSize = connectionsSize;
+		__connections = new IConnection[__connectionsSize];
 		__flagNPC = false;
 	}
 
 	@Override
-	public void setConnection(final IConnection connection, int index) {
+	public void setConnection(IConnection connection, int connectionIndex) {
 		if (__flagNPC) {
 			return;
 		}
-		__connections[index] = connection;
+		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
+		}
+		synchronized (__connections) {
+			__connections[connectionIndex] = connection;
+		}
 	}
 
 	@Override
-	public void closeConnection(int index) {
+	public void closeConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return;
 		}
-		if (hasConnection(index)) {
-			__connections[index].close();
-			setConnection(null, index);
+		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
+		}
+		synchronized (__connections) {
+			__closeConnection(connectionIndex);
 		}
 	}
 
@@ -176,8 +199,26 @@ public abstract class AbstractPlayer implements IPlayer {
 		if (__flagNPC) {
 			return;
 		}
-		for (int i = 0; i < __connections.length; i++) {
-			closeConnection(i);
+		synchronized (__connections) {
+			for (int i = 0; i < __connectionsSize; i++) {
+				__closeConnection(i);
+			}
+		}
+	}
+
+	/**
+	 * Non thread-safe method
+	 * 
+	 * @param connectionIndex the connection's index
+	 */
+	private void __closeConnection(int connectionIndex) {
+		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return;
+		}
+		if (__connections[connectionIndex] != null) {
+			__connections[connectionIndex].close();
+			__connections[connectionIndex] = null;
 		}
 	}
 
@@ -187,16 +228,20 @@ public abstract class AbstractPlayer implements IPlayer {
 	}
 
 	@Override
-	public void setCurrentRoom(final IRoom room) {
+	public void setCurrentRoom(IRoom room) {
 		__room = room;
-		if (room != null) {
-			__tracedPassedRoom.addLast(room.getId());
+		if (__room != null) {
+			synchronized (__tracedPassedRoom) {
+				__tracedPassedRoom.addLast(room.getId());
+			}
 		}
 	}
 
 	@Override
-	public List<String> getTracedRoomsList() {
-		return __tracedPassedRoom;
+	public List<String> getTracedRoomIdsList() {
+		synchronized (__tracedPassedRoom) {
+			return __tracedPassedRoom;
+		}
 	}
 
 	@Override
@@ -206,7 +251,7 @@ public abstract class AbstractPlayer implements IPlayer {
 
 	@Override
 	public void setCurrentReaderTime() {
-		__readerTime = System.currentTimeMillis();
+		__readerTime = TimeUtility.currentTimeMillis();
 	}
 
 	@Override
@@ -216,16 +261,16 @@ public abstract class AbstractPlayer implements IPlayer {
 
 	@Override
 	public void setCurrentWriterTime() {
-		__writerTime = System.currentTimeMillis();
+		__writerTime = TimeUtility.currentTimeMillis();
 	}
 
 	@Override
-	public boolean isIgnoreTimeout() {
+	public boolean isIgnoredTimeout() {
 		return __flagIgnoreTimeout;
 	}
 
 	@Override
-	public void setIgnoreTimeout(final boolean flagIgnoreTimeout) {
+	public void setIgnoreTimeout(boolean flagIgnoreTimeout) {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
 		setCurrentReaderTime();
 		setCurrentWriterTime();

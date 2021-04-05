@@ -39,11 +39,16 @@ public final class EventManager implements IEventManager {
 	/**
 	 * @see ExtEventManager
 	 */
-	private ExtEventManager __extEventManager = new ExtEventManager();
+	private final ExtEventManager __extEventManager;
 	/**
 	 * @see InternalEventManager
 	 */
-	private InternalEventManager __internalEventManager = new InternalEventManager();
+	private final InternalEventManager __internalEventManager;
+
+	public EventManager() {
+		__extEventManager = new ExtEventManager();
+		__internalEventManager = new InternalEventManager();
+	}
 
 	@Override
 	public ExtEventManager getExtension() {

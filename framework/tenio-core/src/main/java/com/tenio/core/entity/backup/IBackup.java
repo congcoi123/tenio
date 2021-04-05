@@ -21,34 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.http.servlet;
-
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
-
-import com.tenio.common.logger.AbstractLogger;
+package com.tenio.core.entity.backup;
 
 /**
+ * This interface is used for backing up and restoring an object. The object is
+ * serialized to a JSON string and can be saved somewhere. Otherwise, a JSON
+ * object can be established to the corresponding one.
+ *
+ * @param <T> the template class
+ * 
  * @author kong
+ * 
  */
-public abstract class BaseResponse extends AbstractLogger {
+public interface IBackup<T> {
 
-	public abstract void process(String admin, HttpServletRequest request, JSONObject body,
-			HttpServletResponse response);
+	/**
+	 * Convert an object data to a JSON data
+	 * 
+	 * @return <b>true</b> if it's success, <b>false</b> otherwise
+	 */
+	boolean backup();
 
-	protected final boolean _hasHeaderKey(HttpServletRequest request, String key) {
-		Enumeration<String> headerNames = request.getHeaderNames();
-		if (headerNames != null) {
-			while (headerNames.hasMoreElements()) {
-				if (headerNames.nextElement().equals(key))
-					return true;
-			}
-		}
-		return false;
-	}
+	/**
+	 * Convert a JSON data to an object data
+	 * 
+	 * @return an object or <b>null</b> in failed cases
+	 */
+	T restore();
 
 }

@@ -26,6 +26,8 @@ package com.tenio.common.element;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import com.tenio.common.pool.IPoolable;
+
 /**
  * This is an element object in your server. It can be used to hold your map
  * data. All message comes from a client will be converted to this object. That
@@ -34,7 +36,7 @@ import java.util.HashMap;
  * @author kong
  * 
  */
-public final class CommonObject extends HashMap<String, Object> implements Serializable {
+public final class CommonObject extends HashMap<String, Object> implements Serializable, IPoolable {
 
 	private static final long serialVersionUID = 8818783476027583633L;
 
@@ -42,52 +44,70 @@ public final class CommonObject extends HashMap<String, Object> implements Seria
 		return new CommonObject();
 	}
 
+	public static CommonObject newInstance(int index) {
+		return new CommonObject(index);
+	}
+
+	/**
+	 * Its index in a pool
+	 */
+	private int __index;
+
 	public CommonObject() {
 	}
 
-	public double getDouble(final String key) {
+	public CommonObject(int index) {
+		__index = index;
+	}
+
+	public double getDouble(String key) {
 		return (double) get(key);
 	}
 
-	public float getFloat(final String key) {
+	public float getFloat(String key) {
 		return (float) get(key);
 	}
 
-	public long getLong(final String key) {
+	public long getLong(String key) {
 		return (long) get(key);
 	}
 
-	public int getInt(final String key) {
+	public int getInt(String key) {
 		return (int) get(key);
 	}
 
-	public boolean getBoolean(final String key) {
+	public boolean getBoolean(String key) {
 		return (boolean) get(key);
 	}
 
-	public String getString(final String key) {
+	public String getString(String key) {
 		return (String) get(key);
 	}
 
-	public Object getObject(final String key) {
+	public Object getObject(String key) {
 		return get(key);
 	}
 
-	public CommonObject getMessageObject(final String key) {
+	public CommonObject getMessageObject(String key) {
 		return (CommonObject) get(key);
 	}
 
-	public CommonObjectArray getMessageObjectArray(final String key) {
+	public CommonObjectArray getMessageObjectArray(String key) {
 		return (CommonObjectArray) get(key);
 	}
 
-	public boolean contain(final String key) {
+	public boolean contain(String key) {
 		return containsKey(key);
 	}
 
 	public CommonObject add(String key, Object value) {
 		put(key, value);
 		return this;
+	}
+
+	@Override
+	public int getIndex() {
+		return __index;
 	}
 
 }

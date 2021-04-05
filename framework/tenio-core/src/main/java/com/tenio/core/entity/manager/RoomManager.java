@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
@@ -48,6 +50,7 @@ import com.tenio.core.exception.NullRoomException;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class RoomManager implements IRoomManager {
 
 	/**
@@ -62,7 +65,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public void initialize(IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		// temporary do nothing
 	}
 
@@ -88,21 +91,21 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public IRoom get(final String roomId) {
+	public IRoom get(String roomId) {
 		synchronized (__rooms) {
 			return __rooms.get(roomId);
 		}
 	}
 
 	@Override
-	public boolean contain(final String roomId) {
+	public boolean contain(String roomId) {
 		synchronized (__rooms) {
 			return __rooms.containsKey(roomId);
 		}
 	}
 
 	@Override
-	public void add(final IRoom room) throws DuplicatedRoomIdException {
+	public void add(IRoom room) throws DuplicatedRoomIdException {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
@@ -116,7 +119,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public void remove(final IRoom room) throws NullRoomException {
+	public void remove(IRoom room) throws NullRoomException {
 		synchronized (__rooms) {
 			if (!__rooms.containsKey(room.getId())) {
 				throw new NullRoomException(room.getId());
@@ -124,7 +127,7 @@ public final class RoomManager implements IRoomManager {
 
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
-			// force all players leave this room
+			// force all players to leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
 			__rooms.remove(room.getId());
@@ -133,15 +136,16 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	/**
-	 * Force all players remove in one room without their desire. It's useful when
-	 * you want to kick someone from his room because of his cheating or something
-	 * else.
+	 * Force all players to remove in one room without their desires. It's useful
+	 * when you want to kick someone from his room because of his cheating or
+	 * something else.
 	 *
 	 * @param room the corresponding room @see {@link IRoom}
 	 */
-	private void __forceAllPlayersLeaveRoom(final IRoom room) {
+	private void __forceAllPlayersLeaveRoom(IRoom room) {
 		final List<IPlayer> removePlayers = new ArrayList<IPlayer>();
-		room.getPlayers().values().forEach(player -> {
+		var players = room.getPlayers().values();
+		players.forEach(player -> {
 			removePlayers.add(player);
 		});
 		for (var player : removePlayers) {
@@ -151,8 +155,8 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerJoinRoom(final IRoom room, final IPlayer player) {
-		if (room.contain(player.getName())) {
+	public CoreMessageCode makePlayerJoinRoom(IRoom room, IPlayer player) {
+		if (room.containPlayerName(player.getName())) {
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
 			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
@@ -164,10 +168,7 @@ public final class RoomManager implements IRoomManager {
 			return CoreMessageCode.ROOM_IS_FULL;
 		}
 
-		// the player need to leave his room (if existed) first
-		makePlayerLeaveRoom(player, false);
-
-		room.add(player);
+		room.addPlayer(player);
 		player.setCurrentRoom(room);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
@@ -176,7 +177,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public CoreMessageCode makePlayerLeaveRoom(final IPlayer player, final boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(IPlayer player, boolean force) {
 		var room = player.getCurrentRoom();
 		if (room == null) {
 			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
@@ -184,7 +185,7 @@ public final class RoomManager implements IRoomManager {
 
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
-		room.remove(player);
+		room.removePlayer(player);
 		player.setCurrentRoom(null);
 		// fire an event
 		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);

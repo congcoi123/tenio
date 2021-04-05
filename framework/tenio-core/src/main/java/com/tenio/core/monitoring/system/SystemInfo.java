@@ -30,6 +30,7 @@ import java.net.SocketException;
 import java.nio.charset.Charset;
 
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.core.monitoring.define.SytemInfoType;
 
 /**
  * For logging the system information
@@ -52,21 +53,7 @@ import com.tenio.common.logger.AbstractLogger;
  */
 public final class SystemInfo extends AbstractLogger {
 
-	private static SystemInfo __instance;
-
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static SystemInfo getInstance() {
-		if (__instance == null) {
-			__instance = new SystemInfo();
-		}
-		return __instance;
-	}
-
-	private SystemInfo() {
-	}
-
-	public final void logSystemInfo() {
+	public void logSystemInfo() {
 		var logger = _buildgen("\n");
 		var runtime = Runtime.getRuntime();
 
@@ -84,7 +71,7 @@ public final class SystemInfo extends AbstractLogger {
 		_info("SYSTEM INFORMATION", logger);
 	}
 
-	public final void logNetCardsInfo() {
+	public void logNetCardsInfo() {
 		var logger = _buildgen("\n");
 
 		try {
@@ -109,7 +96,7 @@ public final class SystemInfo extends AbstractLogger {
 		}
 	}
 
-	public final void logDiskInfo() {
+	public void logDiskInfo() {
 		var logger = _buildgen("\n");
 
 		/* Get a list of all file system roots on this system */

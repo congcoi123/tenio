@@ -26,6 +26,8 @@ package com.tenio.common.element;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.tenio.common.pool.IPoolable;
+
 /**
  * This is an element object in your server. You can use it for holding array
  * data and make it serialize to send through the network.
@@ -33,7 +35,7 @@ import java.util.ArrayList;
  * @author kong
  * 
  */
-public final class CommonObjectArray extends ArrayList<Object> implements Serializable {
+public final class CommonObjectArray extends ArrayList<Object> implements Serializable, IPoolable {
 
 	private static final long serialVersionUID = -5100842875580575666L;
 
@@ -41,44 +43,62 @@ public final class CommonObjectArray extends ArrayList<Object> implements Serial
 		return new CommonObjectArray();
 	}
 
+	public static CommonObjectArray newInstance(int index) {
+		return new CommonObjectArray(index);
+	}
+
+	/**
+	 * Its index in a pool
+	 */
+	private int __index;
+
 	public CommonObjectArray() {
 	}
 
-	public CommonObjectArray put(final Object e) {
-		add(e);
+	public CommonObjectArray(int index) {
+		__index = index;
+	}
+
+	public CommonObjectArray put(Object value) {
+		add(value);
 		return this;
 	}
 
-	public double getDouble(final int index) {
+	public double getDouble(int index) {
 		return (double) get(index);
 	}
 
-	public float getFloat(final int index) {
+	public float getFloat(int index) {
 		return (float) get(index);
 	}
 
-	public long getLong(final int index) {
+	public long getLong(int index) {
 		return (long) get(index);
 	}
 
-	public int getInt(final int index) {
+	public int getInt(int index) {
 		return (int) get(index);
 	}
 
-	public boolean getBoolean(final int index) {
+	public boolean getBoolean(int index) {
 		return (boolean) get(index);
 	}
 
-	public String getString(final int index) {
+	public String getString(int index) {
 		return (String) get(index);
 	}
 
-	public Object getObject(final int index) {
+	public Object getObject(int index) {
 		return get(index);
 	}
 
-	public CommonObjectArray getObjectAt(final int index) {
+	public CommonObjectArray getObjectAt(int index) {
 		return (CommonObjectArray) get(index);
+	}
+
+	@Override
+	public int getIndex() {
+		return __index;
 	}
 
 }

@@ -33,13 +33,13 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.Configuration;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.NettyNetwork;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.MessageObjectPool;
+import com.tenio.core.pool.CommonObjectPool;
 
 /**
  * @author kong
@@ -47,8 +47,8 @@ import com.tenio.core.pool.MessageObjectPool;
 public final class NetworkTest {
 
 	private INetwork __network;
-	private IElementPool<CommonObject> __msgObjectPool;
-	private IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private IElementsPool<CommonObject> __msgObjectPool;
+	private IElementsPool<ByteArrayInputStream> __byteArrayPool;
 	private IEventManager __eventManager;
 	private Configuration __configuration;
 
@@ -56,7 +56,7 @@ public final class NetworkTest {
 	public void initialize() throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__eventManager = new EventManager();
-		__msgObjectPool = new MessageObjectPool();
+		__msgObjectPool = new CommonObjectPool();
 		__byteArrayPool = new ByteArrayInputStreamPool();
 		__configuration = new Configuration("TenIOConfig.example.xml");
 		__network.start(__eventManager, __configuration, __msgObjectPool, __byteArrayPool);

@@ -26,6 +26,7 @@ package com.tenio.core.network.http.servlet;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,9 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 
 import com.tenio.common.element.CommonObject;
-import com.tenio.core.configuration.PathConfig;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.configuration.entity.PathConfig;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.core.network.http.servlet.base.BaseServlet;
@@ -43,6 +44,7 @@ import com.tenio.core.network.http.servlet.base.BaseServlet;
 /**
  * @author kong
  */
+@ThreadSafe
 public final class ServletManager extends BaseServlet {
 	/**
 	 * 
@@ -56,10 +58,10 @@ public final class ServletManager extends BaseServlet {
 	private ProcessGet __processGet;
 	private ProcessDelete __processDelete;
 
-	public ServletManager(IEventManager eventManager, List<PathConfig> paths) {
+	public ServletManager(IEventManager eventManager, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
-		for (var path : paths) {
-			switch (path.getMethod()) {
+		for (var pathConfig : pathConfigs) {
+			switch (pathConfig.getMethod()) {
 			case POST:
 				__processPost = new ProcessPost();
 				break;
@@ -88,7 +90,8 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException {
 		if (__processPost != null) {
 			__processPost.handle(request, response);
 		} else {
@@ -106,7 +109,8 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException {
 		if (__processDelete != null) {
 			__processDelete.handle(request, response);
 		} else {
@@ -118,7 +122,8 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request, response);
+			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request,
+					response);
 			if (check == null) {
 				__eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
 			}
@@ -130,7 +135,8 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request, response);
+			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request,
+					response);
 			if (check == null) {
 				__eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
 			}
@@ -142,7 +148,8 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request, response);
+			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request,
+					response);
 			if (check == null) {
 				__eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
 			}
@@ -154,7 +161,8 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request, response);
+			var check = __eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request,
+					response);
 			if (check == null) {
 				__eventManager.getExtension().emit(ExtEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
 			}

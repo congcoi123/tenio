@@ -46,40 +46,66 @@ import com.tenio.core.network.IConnection;
  */
 public interface IPlayer {
 
+	/**
+	 * @return the entity who associated with the current player
+	 */
 	String getEntityId();
 
+	/**
+	 * A player should be a inspector with the control capacity, set the entity who
+	 * associated with the current player.
+	 * 
+	 * @param entityId the entity' id
+	 */
 	void setEntityId(String entityId);
 
+	/**
+	 * @return the player's name
+	 */
 	String getName();
 
 	/**
 	 * Check the player's role
 	 * 
-	 * @return <b>true</b> if the player is a NPC (non player character), otherwise
-	 *         return <b>false</b> (A NPC is a player without a connection).
+	 * @return <b>true</b> if the player is an NPC (non player character), otherwise
+	 *         return <b>false</b> (An NPC is a player has no connection).
 	 */
 	boolean isNPC();
 
-	boolean hasConnection(final int index);
+	/**
+	 * @param connectionIndex the order of connection.
+	 * @return <b>true</b> if the connection is available, otherwise returns
+	 *         <b>false</b>
+	 */
+	boolean hasConnection(int connectionIndex);
 
-	IConnection getConnection(final int index);
+	IConnection getConnection(int connectionIndex);
 
-	void initializeConnections(final int size);
+	void initializeConnections(int connectionsSize);
 
-	void setConnection(final IConnection connection, final int index);
+	void setConnection(IConnection connection, int connectionIndex);
 
-	void closeConnection(int index);
+	void closeConnection(int connectionIndex);
 
 	void closeAllConnections();
 
+	/**
+	 * We let the room instance escape from its scope, so the concerning process
+	 * with this room need to be thread-safe.
+	 * 
+	 * @return the synchronized room instance
+	 */
 	IRoom getCurrentRoom();
 
-	void setCurrentRoom(final IRoom room);
+	void setCurrentRoom(IRoom room);
 
 	/**
-	 * @return the list of rooms that player has been in
+	 * We let the list escape from its scope, so the concerning process with this
+	 * room need to be thread-safe.
+	 * 
+	 * @return the list of rooms that the player has been in
 	 */
-	List<String> getTracedRoomsList();
+	List<String> getTracedRoomIdsList();
 
 	long getReaderTime();
 
@@ -89,8 +115,8 @@ public interface IPlayer {
 
 	void setCurrentWriterTime();
 
-	boolean isIgnoreTimeout();
+	boolean isIgnoredTimeout();
 
-	void setIgnoreTimeout(final boolean flagIgnoreTimeout);
+	void setIgnoreTimeout(boolean flagIgnoreTimeout);
 
 }

@@ -27,14 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.SocketConfig;
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
@@ -51,6 +54,7 @@ import com.tenio.core.network.IConnection;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class PlayerManager implements IPlayerManager {
 
 	/**
@@ -59,10 +63,8 @@ public final class PlayerManager implements IPlayerManager {
 	private final Map<String, IPlayer> __players;
 	private final IEventManager __eventManager;
 	private IConfiguration __configuration;
-	private List<SocketConfig> __socketPorts;
-	private List<SocketConfig> __webSocketPorts;
-	private int __socketPortsSize;
-	private int __webSocketPortsSize;
+	private volatile int __socketPortsSize;
+	private volatile int __webSocketPortsSize;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
@@ -71,12 +73,12 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initialize(IConfiguration configuration) {
+	public synchronized void initialize(IConfiguration configuration) {
 		__configuration = configuration;
-		__socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		__webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__socketPortsSize = __socketPorts.size();
-		__webSocketPortsSize = __webSocketPorts.size();
+		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
+		__socketPortsSize = socketPorts.size();
+		__webSocketPortsSize = webSocketPorts.size();
 	}
 
 	@Override
@@ -108,21 +110,21 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public boolean contain(final String name) {
+	public boolean contain(String name) {
 		synchronized (__players) {
 			return __players.containsKey(name);
 		}
 	}
 
 	@Override
-	public IPlayer get(final String name) {
+	public IPlayer get(String name) {
 		synchronized (__players) {
 			return __players.get(name);
 		}
 	}
 
 	@Override
-	public void add(final IPlayer player, final IConnection connection)
+	public void add(IPlayer player, IConnection connection)
 			throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
@@ -148,7 +150,7 @@ public final class PlayerManager implements IPlayerManager {
 				size = __socketPortsSize;
 			}
 			player.initializeConnections(size);
-			player.setConnection(connection, 0);
+			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
 
 			__players.put(player.getName(), player);
 
@@ -159,7 +161,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void add(final IPlayer player) throws DuplicatedPlayerException {
+	public void add(IPlayer player) throws DuplicatedPlayerException {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
@@ -176,7 +178,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void remove(final IPlayer player) {
+	public void remove(IPlayer player) {
 		if (player == null) {
 			return;
 		}
@@ -186,10 +188,10 @@ public final class PlayerManager implements IPlayerManager {
 				return;
 			}
 
-			// force player leave room, fire a logic event
+			// force player to leave its current room, fire a logic event
 			__eventManager.getInternal().emit(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, player);
 
-			// remove all player's connections, player
+			// remove all player's connections from the player
 			removeAllConnections(player);
 
 			__players.remove(player.getName());
@@ -198,12 +200,12 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void removeAllConnections(final IPlayer player) {
+	public void removeAllConnections(IPlayer player) {
 		player.closeAllConnections();
 	}
 
 	@Override
-	public void clean(final IPlayer player) {
+	public void clean(IPlayer player) {
 		if (player == null) {
 			return;
 		}

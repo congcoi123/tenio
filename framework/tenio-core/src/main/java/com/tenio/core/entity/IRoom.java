@@ -41,8 +41,15 @@ import com.tenio.core.entity.manager.PlayerManager;
  */
 public interface IRoom {
 
-	boolean contain(final String playerName);
+	boolean containPlayerName(String playerName);
 
+	/**
+	 * Retrieve a first player in this room. Remember that it doesn't guarantee the
+	 * order. We let a player escape from its scope, so it is necessary to make sure
+	 * that the player after process is thread-safe.
+	 * 
+	 * @return the player ({@link IPlayer})
+	 */
 	IPlayer getFirstPlayer();
 
 	/**
@@ -51,7 +58,7 @@ public interface IRoom {
 	 * 
 	 * @param player the player ({@link IPlayer}) who wants to join this room
 	 */
-	void add(final IPlayer player);
+	void addPlayer(IPlayer player);
 
 	/**
 	 * Remove a player from this room, this action was handled by system logic. Be
@@ -60,28 +67,34 @@ public interface IRoom {
 	 * @param player the player ({@link IPlayer}) who wants to leave or be forced to
 	 *               leave this room
 	 */
-	void remove(final IPlayer player);
+	void removePlayer(IPlayer player);
 
 	/**
 	 * Remove all players from this room
 	 */
-	void clear();
+	void removeAllPlayers();
 
 	int getCapacity();
 
-	void setCapacity(final int capacity);
+	void setCapacity(int capacity);
 
 	String getId();
 
 	String getName();
 
-	void setName(final String name);
+	void setName(String name);
 
 	/**
-	 * @return the number of players in this room
+	 * @return the current number of players in this room
 	 */
-	int count();
+	int countPlayers();
 
+	/**
+	 * We let a player escape from its scope, so it is necessary to make sure that
+	 * the player after process is thread-safe.
+	 * 
+	 * @return a synchronized list of players
+	 */
 	public Map<String, IPlayer> getPlayers();
 
 	/**

@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.exception.RunningScheduledTaskException;
 import com.tenio.common.logger.AbstractLogger;
@@ -45,13 +46,18 @@ import com.tenio.common.logger.AbstractLogger;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	/**
 	 * A list of tasks in the server
 	 */
 	@GuardedBy("this")
-	private final Map<String, ScheduledFuture<?>> __tasks = new HashMap<String, ScheduledFuture<?>>();
+	private final Map<String, ScheduledFuture<?>> __tasks;
+
+	public TaskManager() {
+		__tasks = new HashMap<String, ScheduledFuture<?>>();
+	}
 
 	@Override
 	public synchronized void create(String id, ScheduledFuture<?> task) {

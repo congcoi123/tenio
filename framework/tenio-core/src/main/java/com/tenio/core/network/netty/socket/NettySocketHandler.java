@@ -27,7 +27,7 @@ import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
@@ -46,9 +46,10 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public final class NettySocketHandler extends BaseNettyHandler {
 
-	public NettySocketHandler(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, IConfiguration configuration) {
-		super(eventManager, msgObjectPool, byteArrayPool, index, TransportType.TCP);
+	public NettySocketHandler(int connectionIndex, IEventManager eventManager,
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
+		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.TCP);
 	}
 
 	@Override
@@ -59,15 +60,15 @@ public final class NettySocketHandler extends BaseNettyHandler {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
 		// retrieve an object from pool
-		var msgObject = getMsgObjectPool().get();
-		var byteArray = getByteArrayPool().get();
+		var msgObject = getCommonObjectPool().get();
+		var byteArray = getByteArrayInputPool().get();
 
 		// convert the bytes' array to a game message
 		var message = MsgPackConverter.unserialize(msgObject, byteArray, (byte[]) msgRaw);
 		if (message == null) {
 			// repay
-			getMsgObjectPool().repay(msgObject);
-			getByteArrayPool().repay(byteArray);
+			getCommonObjectPool().repay(msgObject);
+			getByteArrayInputPool().repay(byteArray);
 			return;
 		}
 
@@ -75,8 +76,8 @@ public final class NettySocketHandler extends BaseNettyHandler {
 		_channelRead(ctx, message, null);
 
 		// repay
-		getMsgObjectPool().repay(msgObject);
-		getByteArrayPool().repay(byteArray);
+		getCommonObjectPool().repay(msgObject);
+		getByteArrayInputPool().repay(byteArray);
 	}
 
 	@Override

@@ -24,13 +24,15 @@ THE SOFTWARE.
 package com.tenio.common.logger;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.base.Throwables;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The object pool mechanism for {@link StringBuilder}.
@@ -38,26 +40,27 @@ import com.tenio.common.pool.IElementPool;
  * @author kong
  * 
  */
-final class StringBuilderPool implements IElementPool<StringBuilder> {
+@ThreadSafe
+final class StringBuilderPool implements IElementsPool<StringBuilder> {
 
 	private static volatile StringBuilderPool __instance;
 
 	// preventing Singleton object instantiation from outside
 	// creates multiple instance if two thread access this method simultaneously
 	public static StringBuilderPool getInstance() {
-		var ref = __instance;
-		if (ref == null) {
+		var reference = __instance;
+		if (reference == null) {
 			synchronized (StringBuilderPool.class) {
-				ref = __instance;
-				if (ref == null) {
-					__instance = ref = new StringBuilderPool();
+				reference = __instance;
+				if (reference == null) {
+					__instance = reference = new StringBuilderPool();
 				}
 			}
 		}
-		return ref;
+		return reference;
 	}
 
-	private Logger __logger = LogManager.getLogger(getClass());
+	private final Logger __logger = LogManager.getLogger(getClass());
 	@GuardedBy("this")
 	private StringBuilder[] __pool;
 	@GuardedBy("this")
@@ -118,7 +121,9 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 			}
 		}
 		if (!flagFound) {
-			throw new NullElementPoolException();
+			var e = new NullElementPoolException();
+			__errorWithoutPool(e);
+			throw e;
 		}
 	}
 
@@ -143,7 +148,7 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	private final void __infoWithoutPool(final String tag, final String msg) {
+	private void __infoWithoutPool(String tag, String msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
@@ -153,13 +158,28 @@ final class StringBuilderPool implements IElementPool<StringBuilder> {
 	}
 
 	/**
+	 * Only use for {@link StringBuilderPool}. It might cause out of memory, so be
+	 * careful if you use it. You are warned!
+	 * 
+	 * @param cause the throwable
+	 */
+	private void __errorWithoutPool(Throwable cause) {
+		if (!__logger.isErrorEnabled()) {
+			return;
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append(Throwables.getStackTraceAsString(cause));
+		__logger.error(builder.toString());
+	}
+
+	/**
 	 * To generate {@code String} for logging information by the corresponding
 	 * objects
 	 * 
 	 * @param objects the corresponding objects, see {@link Object}
 	 * @return a string value
 	 */
-	private final String __strgen(final Object... objects) {
+	private String __strgen(Object... objects) {
 		var builder = new StringBuilder();
 		for (var object : objects) {
 			builder.append(object);

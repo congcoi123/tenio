@@ -45,35 +45,39 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * All configuration values will be held in this map. You access values by your
 	 * defined keys.
 	 */
-	private final Map<ConfigurationType, Object> __configuration = new HashMap<ConfigurationType, Object>();
+	private final Map<ConfigurationType, Object> __configuration;
+
+	public CommonConfiguration() {
+		__configuration = new HashMap<ConfigurationType, Object>();
+	}
 
 	@Override
-	public boolean getBoolean(final ConfigurationType key) {
+	public boolean getBoolean(ConfigurationType key) {
 		return Boolean.parseBoolean((String) __configuration.get(key));
 	}
 
 	@Override
-	public int getInt(final ConfigurationType key) {
+	public int getInt(ConfigurationType key) {
 		return Integer.parseInt((String) __configuration.get(key));
 	}
 
 	@Override
-	public float getFloat(final ConfigurationType key) {
+	public float getFloat(ConfigurationType key) {
 		return Float.parseFloat((String) __configuration.get(key));
 	}
 
 	@Override
-	public String getString(final ConfigurationType key) {
+	public String getString(ConfigurationType key) {
 		return (String) __configuration.get(key);
 	}
 
 	@Override
-	public Object get(final ConfigurationType key) {
+	public Object get(ConfigurationType key) {
 		return __configuration.get(key);
 	}
 
 	@Override
-	public boolean isDefined(final ConfigurationType key) {
+	public boolean isDefined(ConfigurationType key) {
 		return __configuration.get(key) == null ? false : (getString(key).equals("-1") ? false : true);
 	}
 
@@ -93,7 +97,7 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(final ConfigurationType key, final Object value) {
+	protected void _push(ConfigurationType key, Object value) {
 		if (key == null) {
 			return;
 		}

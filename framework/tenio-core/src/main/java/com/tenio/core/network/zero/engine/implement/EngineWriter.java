@@ -205,12 +205,12 @@ public final class EngineWriter extends SystemAbstractLogger implements IEngineW
 	}
 
 	@Override
-	public void setConfiguration(final IConfiguration configuration) {
+	public void setConfiguration(IConfiguration configuration) {
 		__configuration = configuration;
 	}
 
 	@Override
-	public void setIoHandler(final IOHandler ioHandler) {
+	public void setIoHandler(IOHandler ioHandler) {
 		__ioHandler = ioHandler;
 	}
 

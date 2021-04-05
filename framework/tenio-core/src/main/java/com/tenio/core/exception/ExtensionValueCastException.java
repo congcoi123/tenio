@@ -21,27 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.utility;
+package com.tenio.core.exception;
 
 /**
- * A collection of utility methods for time.
- * 
  * @author kong
  */
-public final class TimeUtility {
-
+public final class ExtensionValueCastException extends RuntimeException {
 	/**
-	 * @return the current time in seconds
+	 * 
 	 */
-	public static long currentTimeSeconds() {
-		return System.currentTimeMillis() * 1000;
-	}
+	private static final long serialVersionUID = -6137016366847120400L;
 
-	/**
-	 * @return {@link System#currentTimeMillis()}
-	 */
-	public static long currentTimeMillis() {
-		return System.currentTimeMillis();
+	public ExtensionValueCastException(String message) {
+		super(message);
 	}
 
 }

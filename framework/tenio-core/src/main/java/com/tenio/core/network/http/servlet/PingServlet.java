@@ -52,7 +52,8 @@ public final class PingServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException {
 		__process.handle(request, response);
 	}
 

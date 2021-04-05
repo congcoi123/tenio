@@ -23,46 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.common.pool;
 
-import com.tenio.common.exception.NullElementPoolException;
-
 /**
- * In an application, you can have resources that are limited or time-consuming
- * to create a new one. A solution is to create a limited resource once and
- * reuse it. The object pool design will have the mechanism to create a bulk of
- * objects to pooling use. If the requirements of resources increases, the
- * current bulk's size will be also automatically increased.
- * 
  * @author kong
- * 
  */
-public interface IElementPool<Element> {
+public interface IPoolable {
 
-	/**
-	 * Retrieves an element in the current pool
-	 * 
-	 * @return an element in the pool
-	 */
-	Element get();
-
-	/**
-	 * When you finished using an element, repay (free) it for the reusing
-	 * 
-	 * @param element the finished using element
-	 * 
-	 * @throws NullElementPoolException
-	 */
-	void repay(Element element) throws NullElementPoolException;
-
-	/**
-	 * Clean up, after that all arrays will be set to <b>null</b>
-	 */
-	void cleanup();
-
-	/**
-	 * Retrieves the pool size
-	 * 
-	 * @return the total number of element or <b>-1</b> if any exceptions caused
-	 */
-	int getPoolSize();
+	int getIndex();
 
 }

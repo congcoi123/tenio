@@ -21,49 +21,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.internal;
+package com.tenio.common.pool;
 
-import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.common.exception.NullElementPoolException;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
+ * In an application, you can have resources that are limited or time-consuming
+ * to create a new one. A solution is to create a limited resource once and
+ * reuse it. The object pool design will have the mechanism to create a bulk of
+ * objects to pooling use. If the requirements of resources increases, the
+ * current bulk's size will be also automatically increased.
  * 
  * @author kong
  * 
  */
-public final class InternalSubscriber {
+public interface IElementsPool<Element> {
 
 	/**
-	 * @see InternalEvent
+	 * Retrieves an element in the current pool
+	 * 
+	 * @return an element in the pool
 	 */
-	private final InternalEvent __type;
-	/**
-	 * @see ISubscriber
-	 */
-	private final ISubscriber __sub;
-
-	public static InternalSubscriber newInstance(final InternalEvent type, final ISubscriber sub) {
-		return new InternalSubscriber(type, sub);
-	}
-
-	private InternalSubscriber(final InternalEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
-	}
+	Element get();
 
 	/**
-	 * @return see {@link InternalEvent}
+	 * When you finished using an element, repay (free) it for the reusing
+	 * 
+	 * @param element the finished using element
+	 * 
+	 * @throws NullElementPoolException
 	 */
-	public InternalEvent getType() {
-		return __type;
-	}
+	void repay(Element element) throws NullElementPoolException;
 
 	/**
-	 * @return see {@link ISubscriber}
+	 * Clean up, after that all arrays will be set to <b>null</b>
 	 */
-	public ISubscriber getSub() {
-		return __sub;
-	}
+	void cleanup();
+
+	/**
+	 * Retrieves the pool size
+	 * 
+	 * @return the total number of element or <b>-1</b> if any exceptions caused
+	 */
+	int getPoolSize();
 
 }

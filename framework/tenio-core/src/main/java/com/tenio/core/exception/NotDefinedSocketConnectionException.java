@@ -33,7 +33,7 @@ public final class NotDefinedSocketConnectionException extends Exception {
 	private static final long serialVersionUID = 1645612374740770611L;
 
 	public NotDefinedSocketConnectionException() {
-		super("Datagram connection can not stand alone, please define the Socket connection too");
+		super("A Datagram Connection can not stand alone, please define a Socket Connection first");
 	}
 
 	public NotDefinedSocketConnectionException(String message) {

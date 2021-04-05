@@ -26,47 +26,50 @@ package com.tenio.core.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.core.entity.annotation.Column;
-import com.tenio.core.entity.annotation.Entity;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.core.entity.backup.annotation.Column;
+import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players, see {@link IPlayer}.
- * These players can be played in the same game or in the same location. This
- * class is only for logic handling. You can manage a list of players in a room
- * as well as hold the players' common data for sharing. For simple handling,
- * one room can hold a number of players, but one player only appears in one
- * room at a time. The player can be a free one and no need to join any rooms,
- * there, it is only under the {@link PlayerManager} class' management.
+ * A room or simpler is a group of related players, see {@link IPlayer}. These
+ * players can be played in the same game or in the same location. This class is
+ * only for logic handling. You can manage a list of players in a room as well
+ * as hold the players' common data for sharing. For simple handling, one room
+ * can hold a number of players, but one player only appears in one room at a
+ * time. The player can be a free one and no need to join any rooms, there, it
+ * is only under the {@link PlayerManager} class' management.
  * 
  * @author kong
  * 
  */
 @Entity
+@ThreadSafe
 public abstract class AbstractRoom implements IRoom {
 
 	/**
 	 * List of reference players
 	 */
 	@Column(name = "players")
-	private Map<String, IPlayer> __players;
+	private final Map<String, IPlayer> __players;
 	/**
 	 * Each room has its own unique id
 	 */
 	@Column(name = "id")
-	private String __id;
+	private final String __id;
 	/**
 	 * Should be set a human-readable name
 	 */
 	@Column(name = "name")
-	private String __name;
+	private volatile String __name;
 	/**
 	 * The maximum of players that this room can handle
 	 */
 	@Column(name = "capacity")
-	private int __capacity;
+	private volatile int __capacity;
 
-	public AbstractRoom(final String id, final String name, final int capacity) {
+	public AbstractRoom(String id, String name, int capacity) {
 		__id = id;
 		__name = name;
 		__capacity = capacity;
@@ -74,8 +77,10 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public boolean contain(final String playerName) {
-		return __players.containsKey(playerName);
+	public boolean containPlayerName(String playerName) {
+		synchronized (__players) {
+			return __players.containsKey(playerName);
+		}
 	}
 
 	@Override
@@ -83,22 +88,30 @@ public abstract class AbstractRoom implements IRoom {
 		if (isEmpty()) {
 			return null;
 		}
-		return (IPlayer) __players.values().stream().findFirst().get();
+		synchronized (__players) {
+			return (IPlayer) __players.values().stream().findFirst().get();
+		}
 	}
 
 	@Override
-	public void add(final IPlayer player) {
-		__players.put(player.getName(), player);
+	public void addPlayer(IPlayer player) {
+		synchronized (__players) {
+			__players.put(player.getName(), player);
+		}
 	}
 
 	@Override
-	public void remove(final IPlayer player) {
-		__players.remove(player.getName());
+	public void removePlayer(IPlayer player) {
+		synchronized (__players) {
+			__players.remove(player.getName());
+		}
 	}
 
 	@Override
-	public void clear() {
-		__players.clear();
+	public synchronized void removeAllPlayers() {
+		synchronized (__players) {
+			__players.clear();
+		}
 	}
 
 	@Override
@@ -107,7 +120,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void setCapacity(final int capacity) {
+	public void setCapacity(int capacity) {
 		__capacity = capacity;
 	}
 
@@ -122,29 +135,32 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void setName(final String name) {
+	public void setName(String name) {
 		__name = name;
 	}
 
 	@Override
-	public int count() {
-		return __players.size();
+	public int countPlayers() {
+		synchronized (__players) {
+			return __players.size();
+		}
 	}
 
 	@Override
 	public Map<String, IPlayer> getPlayers() {
-		return __players;
+		synchronized (__players) {
+			return __players;
+		}
 	}
 
 	@Override
 	public boolean isFull() {
-		// the counter starts from element 0, remember it
-		return (count() >= __capacity);
+		return (countPlayers() >= __capacity);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return __players.isEmpty();
+		return (countPlayers() == 0);
 	}
 
 }

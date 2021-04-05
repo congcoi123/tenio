@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.IEvent;
+import com.tenio.core.event.IEmitter;
 
 /**
  * This class for handling events and these subscribers.
@@ -43,29 +43,33 @@ public final class InternalEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<InternalEvent, IEvent<T>> __delegate = new HashMap<InternalEvent, IEvent<T>>();
+	private final Map<InternalEvent, IEmitter<T>> __delegate;
+
+	public InternalEventHandler() {
+		__delegate = new HashMap<InternalEvent, IEmitter<T>>();
+	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param type  see {@link InternalEvent}
-	 * @param event see {@link IEvent}
+	 * @param event   see {@link InternalEvent}
+	 * @param emitter see {@link IEmitter}
 	 */
-	public void subscribe(final InternalEvent type, final IEvent<T> event) {
-		__delegate.put(type, event);
+	public void subscribe(InternalEvent event, IEmitter<T> emitter) {
+		__delegate.put(event, emitter);
 	}
 
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link InternalEvent}
-	 * @param args a list parameters of this event
+	 * @param event  see {@link InternalEvent}
+	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(final InternalEvent type, final @SuppressWarnings("unchecked") T... args) {
-		if (__delegate.containsKey(type)) {
-			return __delegate.get(type).emit(args);
+	public Object emit(InternalEvent event, @SuppressWarnings("unchecked") T... params) {
+		if (__delegate.containsKey(event)) {
+			return __delegate.get(event).emit(params);
 		}
 		return null;
 	}

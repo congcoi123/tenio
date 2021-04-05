@@ -23,9 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -36,6 +39,7 @@ import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 /**
  * Handle the main logic of the server.
@@ -43,13 +47,15 @@ import com.tenio.core.network.Connection;
  * @author kong
  *
  */
+@ThreadSafe
 final class InternalLogicManager extends AbstractLogger {
 
 	private final IEventManager __eventManager;
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
+	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager,
+			IRoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -61,14 +67,14 @@ final class InternalLogicManager extends AbstractLogger {
 	public void init(IConfiguration configuration) {
 
 		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
-		
-		__on(InternalEvent.CONNECTION_WAS_CLOSED, args -> {
-			var connection = __getConnection(args[0]);
+
+		__on(InternalEvent.CONNECTION_WAS_CLOSED, params -> {
+			var connection = __getConnection(params[0]);
 
 			if (connection != null) { // the connection has existed
-				String username = connection.getPlayerName();
-				if (username != null) { // the player maybe exist
-					var player = __playerManager.get(username);
+				var playerName = connection.getPlayerName();
+				if (playerName != null) { // the player maybe exist
+					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
 						__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
@@ -85,15 +91,15 @@ final class InternalLogicManager extends AbstractLogger {
 			return null;
 		});
 
-		__on(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, args -> {
-			String channelId = __getString(args[0]);
-			var connection = __getConnection(args[1]);
-			var cause = __getThrowable(args[2]);
+		__on(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, params -> {
+			String channelId = __getString(params[0]);
+			var connection = __getConnection(params[1]);
+			var cause = __getThrowable(params[2]);
 
 			if (connection != null) { // the old connection
-				String username = connection.getPlayerName();
-				if (username != null) { // the player maybe exist
-					var player = __playerManager.get(username);
+				var playerName = connection.getPlayerName();
+				if (playerName != null) { // the player maybe exist
+					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
 						__exception(player, cause);
 						return null;
@@ -106,17 +112,16 @@ final class InternalLogicManager extends AbstractLogger {
 			return null;
 		});
 
-		__on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
-			var player = __getPlayer(args[0]);
+		__on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, params -> {
+			var player = __getPlayer(params[0]);
 
 			__roomManager.makePlayerLeaveRoom(player, true);
 
 			return null;
 		});
 
-		// This event will trigger the LEvent.CONNECTION_CLOSE event effect
-		__on(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, args -> {
-			String name = __getString(args[0]);
+		__on(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, params -> {
+			String name = __getString(params[0]);
 
 			var player = __playerManager.get(name);
 			if (player != null) {
@@ -126,20 +131,20 @@ final class InternalLogicManager extends AbstractLogger {
 			return null;
 		});
 
-		__on(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, args -> {
-			var index = __getInt(args[0]);
-			var connection = __getConnection(args[1]);
-			var message = __getMessageObject(args[2]);
-			var tempConnection = __getConnection(args[3]);
+		__on(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, params -> {
+			var connectionIndex = __getInt(params[0]);
+			var connection = __getConnection(params[1]);
+			var message = __getMessageObject(params[2]);
+			var tempConnection = __getConnection(params[3]);
 
 			if (connection == null) {
-				__createNewConnection(configuration, index, tempConnection, message);
+				__createNewConnection(configuration, connectionIndex, tempConnection, message);
 			} else {
-				var username = connection.getPlayerName();
-				if (username != null) {
-					var player = __playerManager.get(username);
+				var playerName = connection.getPlayerName();
+				if (playerName != null) {
+					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
-						__handle(player, index, message);
+						__handle(player, connectionIndex, message);
 					} else {
 						// Can handle free connection here
 					}
@@ -153,19 +158,19 @@ final class InternalLogicManager extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(final IConfiguration configuration, final int index,
-			final Connection connection, final CommonObject message) {
-		if (index == 0) { // is main connection
+	private void __createNewConnection(IConfiguration configuration, int connectionIndex,
+			IConnection connection, CommonObject message) {
+		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
-			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, connection,
-					message);
+			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+					connection, message);
 			if (player != null) {
 				connection.setPlayerName(player.getName());
 				player.setConnection(connection, 0); // main connection
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
-				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_PLAYER)) {
+				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_NUMBER_PLAYERS)) {
 					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
 							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();
@@ -176,24 +181,24 @@ final class InternalLogicManager extends AbstractLogger {
 
 		} else {
 			// the condition for creating sub-connection
-			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, index,
-					message);
+			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+					connectionIndex, message);
 
 			if (player == null) {
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.PLAYER_NOT_FOUND);
 			} else if (!player.hasConnection(0)) {
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, index, message,
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				connection.setPlayerName(player.getName());
-				player.setConnection(connection, index);
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, index, player);
+				player.setConnection(connection, connectionIndex);
+				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, connectionIndex, player);
 			}
 		}
 	}
 
-	private void __on(final InternalEvent event, ISubscriber sub) {
+	private void __on(InternalEvent event, ISubscriber sub) {
 		__eventManager.getInternal().on(event, sub);
 	}
 
@@ -209,8 +214,8 @@ final class InternalLogicManager extends AbstractLogger {
 	 * @param object the corresponding object
 	 * @return a value in ,see {@link Connection}
 	 */
-	private Connection __getConnection(Object object) {
-		return (Connection) object;
+	private IConnection __getConnection(Object object) {
+		return (IConnection) object;
 	}
 
 	/**
@@ -245,9 +250,9 @@ final class InternalLogicManager extends AbstractLogger {
 		return (Throwable) object;
 	}
 
-	private void __handle(IPlayer player, int index, CommonObject message) {
+	private void __handle(IPlayer player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
-		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, index, message);
+		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
 	}
 
 	private void __exception(IPlayer player, Throwable cause) {

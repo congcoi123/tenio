@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.event.extension;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import com.tenio.core.configuration.define.ExtEvent;
 
 /**
@@ -31,12 +33,17 @@ import com.tenio.core.configuration.define.ExtEvent;
  * @author kong
  * 
  */
+@NotThreadSafe
 public final class ExtEventProducer {
 
 	/**
 	 * @see ExtEventHandler
 	 */
-	private final ExtEventHandler<Object> __eventHandler = new ExtEventHandler<Object>();
+	private final ExtEventHandler<Object> __eventHandler;
+
+	public ExtEventProducer() {
+		__eventHandler = new ExtEventHandler<Object>();
+	}
 
 	/**
 	 * Retrieves an event handler
@@ -50,14 +57,14 @@ public final class ExtEventProducer {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link ExtEvent}
-	 * @param args a list parameters of this event
+	 * @param event see {@link ExtEvent}
+	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 * @see ExtEventHandler#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final ExtEvent type, final Object... args) {
-		return __eventHandler.emit(type, args);
+	public Object emit(ExtEvent event, Object... params) {
+		return __eventHandler.emit(event, params);
 	}
 
 	/**

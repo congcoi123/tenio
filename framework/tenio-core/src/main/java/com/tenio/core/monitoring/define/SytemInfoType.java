@@ -21,45 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.tenio.core.monitoring.define;
 
 /**
  * @author kong
  */
-public final class HttpConfig {
+public enum SytemInfoType {
 
-	private String __name;
-	private int __port;
-	private List<PathConfig> __paths;
-
-	public HttpConfig(String name, int port) {
-		__paths = new ArrayList<PathConfig>();
-		__name = name;
-		__port = port;
+	OS_NAME("os.name"),
+	OS_ARCH("os.arch"),
+	OS_VERSION("os.version"),
+	JAVA_VERSION("java.version"),
+	JAVA_VENDOR("java.vendor"),
+	JAVA_VENDOR_URL("java.vendor.url"),
+	JAVA_VM_SPEC_VERSION("java.vm.specification.version"),
+	JAVA_VM_VERSION("java.vm.version"),
+	JAVA_VM_VENDOR("java.vm.vendor"),
+	JAVA_VM_NAME("java.vm.name"),
+	JAVA_IO_TMPDIR("java.io.tmpdir");
+	
+	private final String value;
+	
+	private SytemInfoType(final String value) {
+		this.value = value;
 	}
-
-	public String getName() {
-		return __name;
+	
+	public final String getValue() {
+		return this.value;
 	}
-
-	public List<PathConfig> getPaths() {
-		return __paths;
-	}
-
-	public void addPath(PathConfig path) {
-		__paths.add(path);
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
+	
 	@Override
-	public final String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
+	public String toString() {
+		return this.name();
 	}
-
+	
 }

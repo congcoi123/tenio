@@ -42,7 +42,7 @@ public abstract class SystemAbstractLogger extends AbstractLogger {
 	 * @param type		the event's type
 	 * @param msg 		the extra information for "type"
 	 */
-	protected final void _debug(final String type, final Object... msg) {
+	protected void _debug(String type, Object... msg) {
 		if (!__logger.isDebugEnabled()) {
 			return;
 		}
@@ -68,7 +68,7 @@ public abstract class SystemAbstractLogger extends AbstractLogger {
 	 * @param type		the event's type
 	 * @param msg 		the extra information for "type"
 	 */
-	protected final void _trace(final String type, final Object... msg) {
+	protected void _trace(String type, Object... msg) {
 		if (!__logger.isTraceEnabled()) {
 			return;
 		}
@@ -96,7 +96,7 @@ public abstract class SystemAbstractLogger extends AbstractLogger {
 	 * @param tag      the tag type
 	 * @param msg      the message content
 	 */
-	protected final void _trace(final String where, final Object subWhere, final String tag, final String msg) {
+	protected void _trace(String where, Object subWhere, String tag, String msg) {
 		if (!__logger.isTraceEnabled()) {
 			return;
 		}

@@ -26,9 +26,12 @@ package com.tenio.core.event.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.ISubscriber;
+import com.tenio.core.exception.ExtensionValueCastException;
 
 /**
  * This class for managing events and these subscribers.
@@ -36,69 +39,83 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
+@NotThreadSafe
 public final class InternalEventManager extends AbstractLogger {
 
 	/**
 	 * A list of subscribers
 	 */
-	private final List<InternalSubscriber> __subscribers = new ArrayList<InternalSubscriber>();
+	private final List<InternalEventSubscriber> __eventSubscribers;
 	/**
 	 * @see InternalEventProducer
 	 */
-	private final InternalEventProducer __producer = new InternalEventProducer();
+	private final InternalEventProducer __producer;
+
+	public InternalEventManager() {
+		__eventSubscribers = new ArrayList<InternalEventSubscriber>();
+		__producer = new InternalEventProducer();
+	}
 
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param type see {@link InternalEvent}
-	 * @param args a list parameters of this event
+	 * @param event  see {@link InternalEvent}
+	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 * @see InternalEventProducer#emit(InternalEvent, Object...)
 	 */
-	public Object emit(final InternalEvent type, final Object... args) {
-		return __producer.emit(type, args);
+	public Object emit(InternalEvent event, Object... params) {
+		return __producer.emit(event, params);
 	}
 
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type see {@link InternalEvent}
-	 * @param sub  see {@link ISubscriber}
+	 * @param event      see {@link InternalEvent}
+	 * @param subscriber see {@link ISubscriber}
 	 */
-	public void on(final InternalEvent type, final ISubscriber sub) {
-		if (hasSubscriber(type)) {
-			_info("INTERNAL EVENT WARNING", "Duplicated", type);
+	public void on(InternalEvent event, ISubscriber subscriber) {
+		if (hasSubscriber(event)) {
+			_info("INTERNAL EVENT WARNING", "Duplicated", event);
 		}
 
-		__subscribers.add(InternalSubscriber.newInstance(type, sub));
+		__eventSubscribers.add(InternalEventSubscriber.newInstance(event, subscriber));
 	}
 
 	/**
 	 * Collect all subscribers and these corresponding events.
 	 */
 	public void subscribe() {
-		__producer.clear(); // clear the old first
+		// clear the old first
+		__producer.clear();
 
 		// only for log recording
-		var subs = new ArrayList<InternalEvent>();
+		var events = new ArrayList<InternalEvent>();
 		// start handling
-		__subscribers.forEach(s -> {
-			subs.add(s.getType());
-			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
+		__eventSubscribers.forEach(eventSubscriber -> {
+			events.add(eventSubscriber.getEvent());
+			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(), params -> {
+				try {
+					return eventSubscriber.getSubscriber().dispatch(params);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
+				return null;
+			});
 		});
-		_info("INTERNAL EVENT UPDATED", "Subscribers", subs.toString());
+		_info("INTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}
 
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type see {@link InternalEvent}
+	 * @param event see {@link InternalEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final InternalEvent type) {
-		for (var subscriber : __subscribers) {
-			if (subscriber.getType() == type) {
+	public boolean hasSubscriber(InternalEvent event) {
+		for (var subscriber : __eventSubscribers) {
+			if (subscriber.getEvent() == event) {
 				return true;
 			}
 		}
@@ -109,7 +126,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 * Clear all subscribers and these corresponding events.
 	 */
 	public void clear() {
-		__subscribers.clear();
+		__eventSubscribers.clear();
 		__producer.clear();
 	}
 

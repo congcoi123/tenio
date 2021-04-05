@@ -109,7 +109,7 @@ public interface IConnection {
 	 * 
 	 * @param message the message content, see {@link CommonObject}
 	 */
-	void send(CommonObject packet);
+	void send(CommonObject msgObject);
 
 	/**
 	 * Close a "connection" between a client with the server
@@ -128,7 +128,7 @@ public interface IConnection {
 	 * 
 	 * @param remote, see {@link InetSocketAddress}
 	 */
-	void setRemote(InetSocketAddress remote);
+	void setRemote(InetSocketAddress remoteAdress);
 
 	/**
 	 * Retrieve this connection itself by channel

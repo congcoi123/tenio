@@ -26,6 +26,8 @@ package com.tenio.core.server;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
@@ -33,17 +35,18 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.HttpConfig;
-import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.entity.HttpConfig;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -59,8 +62,8 @@ import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.MessageObjectArrayPool;
-import com.tenio.core.pool.MessageObjectPool;
+import com.tenio.core.pool.CommonObjectArrayPool;
+import com.tenio.core.pool.CommonObjectPool;
 import com.tenio.core.task.schedule.CCUScanTask;
 import com.tenio.core.task.schedule.DeadlockScanTask;
 import com.tenio.core.task.schedule.EmptyRoomScanTask;
@@ -77,14 +80,15 @@ import com.tenio.core.task.schedule.TimeOutScanTask;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class Server extends AbstractLogger implements IServer {
 
 	private static Server __instance;
 
 	private Server() {
-		__msgObjectPool = new MessageObjectPool();
-		__msgArrayPool = new MessageObjectArrayPool();
-		__byteArrayPool = new ByteArrayInputStreamPool();
+		__commonObjectPool = new CommonObjectPool();
+		__commonObjectArrayPool = new CommonObjectArrayPool();
+		__byteArrayInputPool = new ByteArrayInputStreamPool();
 
 		__eventManager = new EventManager();
 
@@ -95,11 +99,11 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager, __msgObjectPool, __msgArrayPool);
+		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool);
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
-		// print out the framework's icon
+		// print out the framework's preface
 		for (var line : CommonConstants.LOGO) {
 			_info("", "", line);
 		}
@@ -116,22 +120,22 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private IConfiguration __configuration;
 
-	private IElementPool<CommonObject> __msgObjectPool;
-	private IElementPool<CommonObjectArray> __msgArrayPool;
-	private IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementsPool<CommonObject> __commonObjectPool;
+	private final IElementsPool<CommonObjectArray> __commonObjectArrayPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 
-	private IEventManager __eventManager;
+	private final IEventManager __eventManager;
 
-	private IRoomManager __roomManager;
-	private IPlayerManager __playerManager;
-	private ITaskManager __taskManager;
+	private final IRoomManager __roomManager;
+	private final IPlayerManager __playerManager;
+	private final ITaskManager __taskManager;
 
-	private PlayerApi __playerApi;
-	private RoomApi __roomApi;
-	private TaskApi __taskApi;
-	private MessageApi __messageApi;
+	private final PlayerApi __playerApi;
+	private final RoomApi __roomApi;
+	private final TaskApi __taskApi;
+	private final MessageApi __messageApi;
 
-	private InternalLogicManager __internalLogic;
+	private final InternalLogicManager __internalLogic;
 	private IExtension __extension;
 	private INetwork __network;
 
@@ -151,9 +155,10 @@ public final class Server extends AbstractLogger implements IServer {
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
 		// show system information
-		SystemInfo.getInstance().logSystemInfo();
-		SystemInfo.getInstance().logNetCardsInfo();
-		SystemInfo.getInstance().logDiskInfo();
+		var systemInfo = new SystemInfo();
+		systemInfo.logSystemInfo();
+		systemInfo.logNetCardsInfo();
+		systemInfo.logDiskInfo();
 
 		_info("SERVER", __serverName, "Starting ...");
 
@@ -191,7 +196,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__createHttpManagers(configuration);
 
 		// start network
-		__startNetwork(configuration, __msgObjectPool, __byteArrayPool);
+		__startNetwork(configuration, __commonObjectPool, __byteArrayInputPool);
 
 		// check subscribers must handle subscribers for UDP attachment
 		__checkSubscriberSubConnectionAttach(configuration);
@@ -205,15 +210,20 @@ public final class Server extends AbstractLogger implements IServer {
 		_info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(IConfiguration configuration, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
+	private void __startNetwork(IConfiguration configuration, IElementsPool<CommonObject> msgObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network = new NettyNetwork();
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
 
 	@Override
-	public void shutdown() {
+	public synchronized void shutdown() {
 		_info("SERVER", __serverName, "Stopping ...");
+		__shutdown();
+		_info("SERVER", __serverName, "Stopped!");
+	}
+
+	private void __shutdown() {
 		if (__network != null) {
 			__network.shutdown();
 		}
@@ -225,34 +235,13 @@ public final class Server extends AbstractLogger implements IServer {
 		__taskManager.clear();
 		__eventManager.clear();
 		// clear all pools
-		__msgObjectPool.cleanup();
-		__msgArrayPool.cleanup();
-		__byteArrayPool.cleanup();
+		__commonObjectPool.cleanup();
+		__commonObjectArrayPool.cleanup();
+		__byteArrayInputPool.cleanup();
 		// clear all ports
 		__socketPorts.clear();
 		__webSocketPorts.clear();
 		__httpPorts.clear();
-		// show log
-		_info("SERVER", __serverName, "Stopped!");
-		// assign by null
-		__configuration = null;
-		__msgObjectPool = null;
-		__msgArrayPool = null;
-		__byteArrayPool = null;
-		__eventManager = null;
-		__roomManager = null;
-		__playerManager = null;
-		__taskManager = null;
-		__playerApi = null;
-		__roomApi = null;
-		__taskApi = null;
-		__messageApi = null;
-		__internalLogic = null;
-		__extension = null;
-		__network = null;
-		__socketPorts = null;
-		__webSocketPorts = null;
-		__httpPorts = null;
 	}
 
 	@Override
@@ -319,14 +308,16 @@ public final class Server extends AbstractLogger implements IServer {
 				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
 
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
-				(new DeadlockScanTask(CoreConstants.DEADLOCKED_THREAD_SCAN_INTERVAL)).run());
+				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
 	}
 
 	private String __createHttpManagers(IConfiguration configuration) throws DuplicatedUriAndMethodException {
-		for (var port : __httpPorts) {
-			var http = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
-			http.setup();
-			__taskManager.create(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, http.run());
+		for (int i = 0; i < __httpPorts.size(); i++) {
+			var port = __httpPorts.get(i);
+			var httpManager = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
+			httpManager.setup();
+			__taskManager.create(StringUtility.strgen(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
+					httpManager.run());
 		}
 		return null;
 	}

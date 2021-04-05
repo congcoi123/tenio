@@ -32,14 +32,14 @@ public final class DuplicatedUriAndMethodException extends Exception {
 	 */
 	private static final long serialVersionUID = -5226506274080400540L;
 
-	public DuplicatedUriAndMethodException(String message) {
-		super(__getMessage(message));
+	public DuplicatedUriAndMethodException(String errorCode) {
+		super(__getMessage(errorCode));
 	}
 
-	private static String __getMessage(String error) {
+	private static String __getMessage(String errorCode) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Error code: ");
-		builder.append(error);
+		builder.append(errorCode);
 		return builder.toString();
 	}
 
