@@ -21,23 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entity.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.tenio.core.event;
 
 /**
- * This annotation is treated as a "Column".
+ * This function interface provides one method for invoking an event.
  * 
  * @author kong
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Column {
+@FunctionalInterface
+public interface IEmitter<T> {
 
-	public String name() default "";
+	/**
+	 * To invoke an event.
+	 * 
+	 * @param params the parameters those will be sent to subscribers
+	 * @return the subsribe's result
+	 */
+	Object emit(@SuppressWarnings("unchecked") T... params);
 
 }

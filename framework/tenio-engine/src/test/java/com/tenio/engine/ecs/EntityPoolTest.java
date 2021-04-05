@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.IEntity;
 import com.tenio.engine.ecs.model.GameComponents;
@@ -47,7 +47,7 @@ import com.tenio.engine.ecs.pool.EntityPool;
  */
 public final class EntityPoolTest {
 
-	private IElementPool<IEntity> __entityPool;
+	private IElementsPool<IEntity> __entityPool;
 
 	@BeforeEach
 	public void initialize() {

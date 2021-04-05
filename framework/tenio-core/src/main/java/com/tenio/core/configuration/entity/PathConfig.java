@@ -21,21 +21,54 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entity.annotation;
+package com.tenio.core.configuration.entity;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.tenio.core.configuration.define.RestMethod;
 
 /**
- * This annotation is treated as a "Table".
- * 
  * @author kong
- * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Entity {
+public final class PathConfig {
+
+	private final String __name;
+	private final String __description;
+	private final int __version;
+	private final RestMethod __method;
+	private final String __uri;
+
+	public PathConfig(String name, RestMethod method, String uri, String description,
+			int version) {
+		__name = name;
+		__method = method;
+		__uri = uri;
+		__description = description;
+		__version = version;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public RestMethod getMethod() {
+		return __method;
+	}
+
+	public String getUri() {
+		return __uri;
+	}
+
+	public String getDescription() {
+		return __description;
+	}
+
+	public int getVersion() {
+		return __version;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
+				__uri, __description, __version);
+	}
 
 }

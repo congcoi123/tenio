@@ -30,7 +30,7 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.ecs.base.IComponent;
 
 /**
@@ -39,13 +39,13 @@ import com.tenio.engine.ecs.base.IComponent;
  * @author kong
  * 
  */
-public final class ComponentPool extends AbstractLogger implements IElementPool<IComponent> {
+public final class ComponentPool extends AbstractLogger implements IElementsPool<IComponent> {
 
 	@GuardedBy("this")
 	private IComponent[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
-	private Class<?> __clazz;
+	private final Class<?> __clazz;
 
 	public ComponentPool(Class<?> clazz) {
 		__clazz = clazz;

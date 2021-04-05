@@ -40,11 +40,13 @@
 
 	<Configuration>
 		<Properties>
+			<Property name="producerThreadsPoolSize">1</Property>
+			<Property name="consumerThreadsPoolSize">2</Property>
 			<!-- When the server get disconnection of one client, can be hold its 
 				player instance until timeout -->
 			<Property name="keepPlayerOnDisconnect">true</Property>
 			<!-- The maximum number of players which game can handle -->
-			<Property name="maxPlayer">1000</Property>
+			<Property name="maxNumberPlayers">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				getting message from client -->
 			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->
@@ -58,8 +60,10 @@
 			<Property name="timeoutScanInterval">45</Property>		<!-- Unit: Seconds -->
 			<!-- The period checking CCU in seconds -->
 			<Property name="ccuScanInterval">60</Property>			<!-- Unit: Seconds -->
+			<!-- Schedule detecting deadlocked threads -->
+			<Property name="deadlockScanInterval">60</Property>			<!-- Unit: Seconds -->
 			<!-- The delay between two computations of performances for channels or 
-				0 if no stats are to be computed -->
+				0 if no statics are to be computed -->
 			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
 			<!-- The period monitoring system -->
 			<Property name="systemMonitoringInterval">60</Property>		<!-- Unit: Seconds -->

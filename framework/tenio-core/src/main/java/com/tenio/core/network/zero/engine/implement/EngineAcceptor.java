@@ -42,9 +42,9 @@ import java.util.concurrent.Executors;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.SystemAbstractLogger;
 import com.tenio.common.utility.StringUtility;
-import com.tenio.core.configuration.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.message.packet.DefaultPacketQueue;
 import com.tenio.core.network.security.IConnectionFilter;
@@ -105,7 +105,7 @@ public final class EngineAcceptor extends SystemAbstractLogger implements IEngin
 		}
 	}
 
-	private void __bindSocket(final String serverAddresss, final SocketConfig socketConfig)
+	private void __bindSocket(String serverAddresss, SocketConfig socketConfig)
 			throws UnsupportedOperationException, IOException {
 		if (socketConfig.getType() == TransportType.TCP) {
 			__bindTcpSocket(serverAddresss, socketConfig.getPort());
@@ -115,7 +115,7 @@ public final class EngineAcceptor extends SystemAbstractLogger implements IEngin
 
 	}
 
-	private void __bindTcpSocket(final String serverAddress, final int port) throws IOException {
+	private void __bindTcpSocket(String serverAddress, int port) throws IOException {
 		ServerSocketChannel socketChannel = ServerSocketChannel.open();
 
 		socketChannel.configureBlocking(false);
@@ -326,7 +326,7 @@ public final class EngineAcceptor extends SystemAbstractLogger implements IEngin
 	}
 
 	@Override
-	public void setConfiguration(final IConfiguration configuration) {
+	public void setConfiguration(IConfiguration configuration) {
 		__configuration = configuration;
 	}
 
@@ -336,12 +336,12 @@ public final class EngineAcceptor extends SystemAbstractLogger implements IEngin
 	}
 
 	@Override
-	public void setIoHandler(final IOHandler ioHandler) {
+	public void setIoHandler(IOHandler ioHandler) {
 		__ioHandler = ioHandler;
 	}
 
 	@Override
-	public void setEngineReader(final IEngineReader engineReader) {
+	public void setEngineReader(IEngineReader engineReader) {
 		__engineReader = engineReader;
 	}
 

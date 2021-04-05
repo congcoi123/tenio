@@ -41,7 +41,7 @@ public abstract class BaseServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5030886807666928581L;
 
-	protected final boolean _hasHeaderKey(HttpServletRequest request, String key) {
+	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		if (headerNames != null) {
 			while (headerNames.hasMoreElements()) {

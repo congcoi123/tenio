@@ -36,13 +36,13 @@ import com.tenio.core.network.zero.handler.IOHandler;
  */
 public interface IEngineAcceptor {
 
-	void setConfiguration(final IConfiguration configuration);
+	void setConfiguration(IConfiguration configuration);
 	
-	void setConnectionFilter(final IConnectionFilter connectionFilter);
+	void setConnectionFilter(IConnectionFilter connectionFilter);
 	
-	void setIoHandler(final IOHandler ioHandler);
+	void setIoHandler(IOHandler ioHandler);
 
-	void setEngineReader(final IEngineReader engineReader);
+	void setEngineReader(IEngineReader engineReader);
 
 	void handleAcceptableChannels();
 

@@ -37,21 +37,21 @@ public interface IEventManager {
 	/**
 	 * @return see {@link ExtEventManager}
 	 */
-	public ExtEventManager getExtension();
+	ExtEventManager getExtension();
 
 	/**
 	 * @return see {@link InternalEventManager}
 	 */
-	public InternalEventManager getInternal();
+	InternalEventManager getInternal();
 
 	/**
 	 * Collect all subscribers and these corresponding events.
 	 */
-	public void subscribe();
+	void subscribe();
 
 	/**
 	 * Clear all subscribers and these corresponding events.
 	 */
-	public void clear();
+	void clear();
 
 }

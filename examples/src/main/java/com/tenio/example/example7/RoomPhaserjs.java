@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example7;
 
 import com.tenio.core.entity.AbstractRoom;
-import com.tenio.core.entity.annotation.Entity;
+import com.tenio.core.entity.backup.annotation.Entity;
 
 /**
  * The room in server

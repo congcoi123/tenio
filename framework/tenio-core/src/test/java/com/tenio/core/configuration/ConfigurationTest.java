@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.SocketConfig;
 
 /**
  * @author kong

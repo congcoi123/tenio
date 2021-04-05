@@ -21,57 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.event.extension;
+package com.tenio.core.network.http.servlet.base;
 
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.event.ISubscriber;
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.tenio.common.logger.AbstractLogger;
 
 /**
- * An object which creates a mapping between an event type with a subscriber.
- * 
  * @author kong
- * 
  */
-public final class ExtSubscriber {
+public abstract class BaseResponse extends AbstractLogger {
 
-	/**
-	 * @see ExtEvent
-	 */
-	private final ExtEvent __type;
-	/**
-	 * @see ISubscriber
-	 */
-	private final ISubscriber __sub;
+	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
+			HttpServletResponse response);
 
-	public static ExtSubscriber newInstance(final ExtEvent type, final ISubscriber sub) {
-		return new ExtSubscriber(type, sub);
-	}
-
-	private ExtSubscriber(final ExtEvent type, final ISubscriber sub) {
-		__type = type;
-		__sub = sub;
-	}
-
-	/**
-	 * @return see {@link ExtEvent}
-	 */
-	public ExtEvent getType() {
-		return __type;
-	}
-
-	/**
-	 * @param type the comparison event value
-	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
-	 */
-	public boolean isType(ExtEvent type) {
-		return __type == type;
-	}
-
-	/**
-	 * @return see {@link ISubscriber}
-	 */
-	public ISubscriber getSub() {
-		return __sub;
+	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
+		Enumeration<String> headerNames = request.getHeaderNames();
+		if (headerNames != null) {
+			while (headerNames.hasMoreElements()) {
+				if (headerNames.nextElement().equals(key))
+					return true;
+			}
+		}
+		return false;
 	}
 
 }

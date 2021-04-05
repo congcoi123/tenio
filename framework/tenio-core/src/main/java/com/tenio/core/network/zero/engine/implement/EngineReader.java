@@ -134,7 +134,7 @@ public final class EngineReader extends SystemAbstractLogger implements IEngineR
 		_info("ENGINE READER", _buildgen("Stopping worker: ", __threadId));
 	}
 
-	private void __readLoop(final ByteBuffer readBuffer) {
+	private void __readLoop(ByteBuffer readBuffer) {
 		while (true) {
 			try {
 				__engineAcceptor.handleAcceptableChannels();
@@ -227,22 +227,22 @@ public final class EngineReader extends SystemAbstractLogger implements IEngineR
 	}
 
 	@Override
-	public void setConfiguration(final IConfiguration configuration) {
+	public void setConfiguration(IConfiguration configuration) {
 		__configuration = configuration;
 	}
 
 	@Override
-	public void setIoHandler(final IOHandler ioHandler) {
+	public void setIoHandler(IOHandler ioHandler) {
 		__ioHandler = ioHandler;
 	}
 
 	@Override
-	public void setEngineAcceptor(final IEngineAcceptor engineAcceptor) {
+	public void setEngineAcceptor(IEngineAcceptor engineAcceptor) {
 		__engineAcceptor = engineAcceptor;
 	}
 
 	@Override
-	public void setEngineWriter(final IEngineWriter engineWriter) {
+	public void setEngineWriter(IEngineWriter engineWriter) {
 		__engineWriter = engineWriter;
 	}
 

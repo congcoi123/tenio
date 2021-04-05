@@ -41,7 +41,7 @@ public final class StringUtility {
 	 * @param objects the corresponding objects, {@link Object}
 	 * @return a string value
 	 */
-	public static String strgen(final Object... objects) {
+	public static String strgen(Object... objects) {
 		StringBuilder builder = new StringBuilder();
 		for (var object : objects) {
 			builder.append(object);

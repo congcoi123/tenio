@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Throwables;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 
 /**
  * The recording logs of a developer is important for every system. This class
@@ -42,14 +42,15 @@ import com.tenio.common.pool.IElementPool;
 public abstract class AbstractLogger {
 
 	/**
-	 * A Log4j object
+	 * An object creation pool instance, which is used for re-using string objects,
+	 * see {@link IElementsPool}
+	 */
+	static final IElementsPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
+	
+	/**
+	 * A Log4j object for each logged class
 	 */
 	final Logger __logger = LogManager.getLogger(getClass());
-	/**
-	 * An object creation pool instance, which is used for re-use string objects,
-	 * see {@link IElementPool}
-	 */
-	static final IElementPool<StringBuilder> __stringPool = StringBuilderPool.getInstance();
 
 	/**
 	 * Always use {@link #_buildgen(Object...)} for creating {@code StringBuilder}
@@ -59,7 +60,7 @@ public abstract class AbstractLogger {
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	protected final void _info(final StringBuilder where, final StringBuilder tag, final StringBuilder msg) {
+	protected void _info(StringBuilder where, StringBuilder tag, StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(tag);
@@ -83,7 +84,7 @@ public abstract class AbstractLogger {
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	protected final void _info(final StringBuilder where, final String tag, final StringBuilder msg) {
+	protected void _info(StringBuilder where, String tag, StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(msg);
@@ -105,7 +106,7 @@ public abstract class AbstractLogger {
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	protected final void _info(final StringBuilder where, final StringBuilder tag, final Object msg) {
+	protected void _info(StringBuilder where, StringBuilder tag, Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(where);
 			__stringPool.repay(tag);
@@ -127,7 +128,7 @@ public abstract class AbstractLogger {
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	protected final void _info(final String where, final String tag, final StringBuilder msg) {
+	protected void _info(String where, String tag, StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(msg);
 			return;
@@ -147,7 +148,7 @@ public abstract class AbstractLogger {
 	 * @param tag   the tag type
 	 * @param msg   the message content
 	 */
-	protected final void _info(final String where, final String tag, final Object msg) {
+	protected void _info(String where, String tag, Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
@@ -164,7 +165,7 @@ public abstract class AbstractLogger {
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	protected final void _info(final StringBuilder tag, final StringBuilder msg) {
+	protected void _info(StringBuilder tag, StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(tag);
 			__stringPool.repay(msg);
@@ -185,7 +186,7 @@ public abstract class AbstractLogger {
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	protected final void _info(final String tag, final StringBuilder msg) {
+	protected void _info(String tag, StringBuilder msg) {
 		if (!__logger.isInfoEnabled()) {
 			__stringPool.repay(msg);
 			return;
@@ -204,7 +205,7 @@ public abstract class AbstractLogger {
 	 * @param tag the tag type
 	 * @param msg the message content
 	 */
-	protected final void _info(final String tag, final Object msg) {
+	protected void _info(String tag, Object msg) {
 		if (!__logger.isInfoEnabled()) {
 			return;
 		}
@@ -221,7 +222,7 @@ public abstract class AbstractLogger {
 	 * @param cause the reason for this exception
 	 * @param extra the extra information
 	 */
-	protected final void _error(final Throwable cause, final Object... extra) {
+	protected void _error(Throwable cause, Object... extra) {
 		if (!__logger.isErrorEnabled()) {
 			return;
 		}
@@ -248,7 +249,7 @@ public abstract class AbstractLogger {
 	 * @param cause the reason for this exception
 	 * @param msg   the extra information
 	 */
-	protected final void _error(final Throwable cause, final StringBuilder msg) {
+	protected void _error(Throwable cause, StringBuilder msg) {
 		if (!__logger.isErrorEnabled()) {
 			return;
 		}
@@ -271,7 +272,7 @@ public abstract class AbstractLogger {
 	 * @param objects the corresponding objects, see {@link Object}
 	 * @return an instance of the <b>StringBuilder</b>
 	 */
-	protected final StringBuilder _buildgen(final Object... objects) {
+	protected StringBuilder _buildgen(Object... objects) {
 		StringBuilder builder = __stringPool.get();
 		for (var object : objects) {
 			builder.append(object);

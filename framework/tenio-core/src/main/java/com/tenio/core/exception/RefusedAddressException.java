@@ -32,7 +32,7 @@ public final class RefusedAddressException extends Exception {
 	 */
 	private static final long serialVersionUID = -1063120976899708365L;
 
-	public RefusedAddressException(final String address) {
+	public RefusedAddressException(String address) {
 		super(address);
 	}
 

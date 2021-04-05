@@ -29,6 +29,7 @@ import org.json.simple.JSONObject;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
@@ -47,7 +48,7 @@ public final class TestServerAttach extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerAttach();
 		game.start();
 	}
@@ -80,22 +81,22 @@ public final class TestServerAttach extends AbstractApp {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				var connection = _getConnection(args[0]);
-				var message = _getMessageObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
 				// Allow the connection login into server (become a player)
-				String username = message.getString("u");
+				var playerName = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
 				// is only for testing
-				_playerApi.login(new PlayerAttach(username), connection);
+				_playerApi.login(new PlayerAttach(playerName), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// The player has login successful
-				var player = (PlayerAttach) _getPlayer(args[0]);
+				var player = (PlayerAttach) _getPlayer(params[0]);
 
 				// Now you can allow the player make a UDP connection request
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp");
@@ -103,40 +104,45 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = (PlayerAttach) _getPlayer(args[0]);
-				int index = _getInt(args[1]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = (PlayerAttach) _getPlayer(params[0]);
+				int index = _getInteger(params[1]);
 
-				_messageApi.sendToPlayer(player, index, "hello",
-						"from server > " + index + " > " + player.getConnection(index).getAddress());
+				_messageApi.sendToPlayer(player, index, "response", StringUtility.strgen("echo from server > ", index,
+						" > ", player.getConnection(index).getAddress()));
 
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, args -> {
-				var message = _getMessageObject(args[1]);
-				String name = message.getString("u");
+			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
+				var message = _getCommonObject(params[1]);
+				var playerName = message.getString("u");
 
 				// It should be ...
 				// 1. check if player has sub connection
 				// 2. confirm with player's name and main connection
 
 				// But now temporary returns a player by his name
-				return _playerApi.get(name);
+				return _playerApi.get(playerName);
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, args -> {
-				var player = (PlayerAttach) _getPlayer(args[1]);
+			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
+				var player = (PlayerAttach) _getPlayer(params[1]);
 
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});
 
-			_on(ExtEvent.HTTP_REQUEST_VALIDATE, args -> {
-				var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
+			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
+				// do nothing but need to be declared
+				return null;
+			});
+
+			_on(ExtEvent.HTTP_REQUEST_VALIDATE, params -> {
+				var method = _getRestMethod(params[0]);
+				// var request = _getHttpServletRequest(params[1]);
+				var response = _getHttpServletResponse(params[2]);
 
 				if (method.equals(RestMethod.DELETE)) {
 					var json = new JSONObject();
@@ -152,10 +158,10 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.HTTP_REQUEST_HANDLE, args -> {
-				// var method = _getRestMethod(args[0]);
-				// var request = _getHttpServletRequest(args[1]);
-				var response = _getHttpServletResponse(args[2]);
+			_on(ExtEvent.HTTP_REQUEST_HANDLE, params -> {
+				// var method = _getRestMethod(params[0]);
+				// var request = _getHttpServletRequest(params[1]);
+				var response = _getHttpServletResponse(params[2]);
 
 				var json = new JSONObject();
 				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));

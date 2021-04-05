@@ -31,7 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.Entity;
 import com.tenio.engine.ecs.base.IEntity;
@@ -42,14 +42,14 @@ import com.tenio.engine.ecs.base.IEntity;
  * @author kong
  * 
  */
-public final class EntityPool extends AbstractLogger implements IElementPool<IEntity> {
+public final class EntityPool extends AbstractLogger implements IElementsPool<IEntity> {
 
 	@GuardedBy("this")
 	private IEntity[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
-	private Class<? extends Entity> __clazz;
-	private ContextInfo __contextInfo;
+	private final Class<? extends Entity> __clazz;
+	private final ContextInfo __contextInfo;
 
 	public EntityPool(Class<? extends Entity> clazz, ContextInfo contextInfo) {
 		__clazz = clazz;
@@ -103,8 +103,8 @@ public final class EntityPool extends AbstractLogger implements IElementPool<IEn
 			}
 		}
 
-		_info("COMPONENT POOL",
-				_buildgen("Increase the number of elements by ", CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		_info("COMPONENT POOL", _buildgen("Increase the number of elements by ",
+				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;

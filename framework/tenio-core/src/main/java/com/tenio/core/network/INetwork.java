@@ -28,7 +28,7 @@ import java.io.IOException;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.IEventManager;
 
@@ -47,8 +47,8 @@ public interface INetwork {
 	 * 
 	 * @param eventManager  the system event management
 	 * @param configuration your own configuration
-	 * @param msgObjectPool the pool of message objects
-	 * @param byteArrayPool the pool of byte array input stream objects
+	 * @param commonObjectPool the pool of message objects
+	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * 
 	 * @throws InterruptedException thrown when a thread is waiting, sleeping, or
 	 *                              otherwise occupied, and the thread is
@@ -57,8 +57,9 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(final IEventManager eventManager, final IConfiguration configuration,
-			final IElementPool<CommonObject> msgObjectPool, final IElementPool<ByteArrayInputStream> byteArrayPool)
+	void start(IEventManager eventManager, IConfiguration configuration,
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException;
 
 	/**

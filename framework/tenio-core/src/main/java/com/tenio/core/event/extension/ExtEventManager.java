@@ -26,9 +26,12 @@ package com.tenio.core.event.extension;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import com.tenio.common.logger.SystemAbstractLogger;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.ISubscriber;
+import com.tenio.core.exception.ExtensionValueCastException;
 
 /**
  * This class for managing events and these subscribers.
@@ -36,90 +39,105 @@ import com.tenio.core.event.ISubscriber;
  * @author kong
  * 
  */
+@NotThreadSafe
 public final class ExtEventManager extends SystemAbstractLogger {
 
 	/**
-	 * A list of subscribers.
+	 * A list of event and subscribers.
 	 */
-	private final List<ExtSubscriber> __subscribers = new ArrayList<ExtSubscriber>();
+	private final List<ExtEventSubscriber> __eventSubscribers;
 	/**
 	 * @see ExtEventProducer
 	 */
-	private final ExtEventProducer __producer = new ExtEventProducer();
+	private final ExtEventProducer __producer;
+
+	public ExtEventManager() {
+		__eventSubscribers = new ArrayList<ExtEventSubscriber>();
+		__producer = new ExtEventProducer();
+	}
 
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param type see {@link ExtEvent}
-	 * @param args a list parameters of this event
+	 * @param event  see {@link ExtEvent}
+	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 * @see ExtEventProducer#emit(ExtEvent, Object...)
 	 */
-	public Object emit(final ExtEvent type, final Object... args) {
-		if (__canShowTraceLog(type)) {
-			_trace(type.name(), args);
+	public Object emit(ExtEvent event, Object... params) {
+		if (__isOnlyShownInTracedLog(event)) {
+			_trace(event.name(), params);
 		} else {
-			_debug(type.name(), args);
+			_debug(event.name(), params);
 		}
-		return __producer.emit(type, args);
+		return __producer.emit(event, params);
 	}
 
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param type see {@link ExtEvent}
-	 * @param sub  see {@link ISubscriber}
+	 * @param event      see {@link ExtEvent}
+	 * @param subscriber see {@link ISubscriber}
 	 */
-	public void on(final ExtEvent type, final ISubscriber sub) {
-		if (hasSubscriber(type)) {
-			_info("EXTERNAL EVENT WARNING", "Duplicated", type);
+	public void on(ExtEvent event, ISubscriber subscriber) {
+		if (hasSubscriber(event)) {
+			_info("EXTERNAL EVENT WARNING", "Duplicated", event);
 		}
 
-		__subscribers.add(ExtSubscriber.newInstance(type, sub));
+		__eventSubscribers.add(ExtEventSubscriber.newInstance(event, subscriber));
 	}
 
 	/**
 	 * Collect all subscribers and these corresponding events.
 	 */
 	public void subscribe() {
-		__producer.clear(); // clear the old first
+		// clear the old first
+		__producer.clear();
 
 		// only for log recording
-		var subs = new ArrayList<ExtEvent>();
+		var events = new ArrayList<ExtEvent>();
 		// start handling
-		__subscribers.forEach(s -> {
-			subs.add(s.getType());
-			__producer.getEventHandler().subscribe(s.getType(), s.getSub()::dispatch);
+		__eventSubscribers.forEach(eventSubscriber -> {
+			events.add(eventSubscriber.getEvent());
+			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(), params -> {
+				try {
+					return eventSubscriber.getSubscriber().dispatch(params);
+				} catch (ExtensionValueCastException e) {
+					_error(e, e.getMessage());
+				}
+				return null;
+			});
 		});
-		_info("EXTERNAL EVENT UPDATED", "Subscribers", subs.toString());
+		_info("EXTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}
 
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param type see {@link ExtEvent}
+	 * @param event see {@link ExtEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(final ExtEvent type) {
-		return __subscribers.stream().anyMatch(subscribe -> subscribe.isType(type));
+	public boolean hasSubscriber(ExtEvent event) {
+		return __eventSubscribers.stream().anyMatch(eventSubscriber -> eventSubscriber.hasEvent(event));
 	}
 
 	/**
 	 * Clear all subscribers and these corresponding events.
 	 */
 	public void clear() {
-		__subscribers.clear();
+		__eventSubscribers.clear();
 		__producer.clear();
 	}
-	
+
 	/**
 	 * Special events will be traced by trace log
-	 * @param type the event's type
+	 * 
+	 * @param event the event's type
 	 * @return <b>true</b> if an event can be traced
 	 */
-	private boolean __canShowTraceLog(final ExtEvent type) {
-		switch (type) {
+	private boolean __isOnlyShownInTracedLog(ExtEvent event) {
+		switch (event) {
 		case RECEIVED_MESSAGE_FROM_CONNECTION:
 		case RECEIVED_MESSAGE_FROM_PLAYER:
 		case HTTP_REQUEST_VALIDATE:

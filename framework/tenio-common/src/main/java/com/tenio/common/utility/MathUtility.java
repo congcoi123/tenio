@@ -191,7 +191,7 @@ public final class MathUtility {
 	}
 
 	// Clamps the first argument between the second two
-	public static <T extends Number> T clamp(final T arg, final T minVal, final T maxVal) {
+	public static <T extends Number> T clamp(T arg, T minVal, T maxVal) {
 		if (arg.doubleValue() < minVal.doubleValue()) {
 			return minVal;
 		}

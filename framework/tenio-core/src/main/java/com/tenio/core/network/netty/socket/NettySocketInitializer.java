@@ -26,7 +26,7 @@ package com.tenio.core.network.netty.socket;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
@@ -47,19 +47,20 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public final class NettySocketInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final IEventManager __eventManager;
-	private final IElementPool<CommonObject> __msgObjectPool;
-	private final IElementPool<ByteArrayInputStream> __byteArrayPool;
+	private final IElementsPool<CommonObject> __commonObjectPool;
+	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final IConfiguration __configuration;
-	private final int __index;
+	private final int __connectionIndex;
 
-	public NettySocketInitializer(int index, IEventManager eventManager, IElementPool<CommonObject> msgObjectPool,
-			IElementPool<ByteArrayInputStream> byteArrayPool, GlobalTrafficShapingHandlerCustomize trafficCounter,
-			IConfiguration configuration) {
-		__index = index;
+	public NettySocketInitializer(int connectionIndex, IEventManager eventManager,
+			IElementsPool<CommonObject> commonObjectPool,
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
+		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
-		__msgObjectPool = msgObjectPool;
-		__byteArrayPool = byteArrayPool;
+		__commonObjectPool = commonObjectPool;
+		__byteArrayInputPool = byteArrayInputPool;
 		__trafficCounter = trafficCounter;
 		__configuration = configuration;
 	}
@@ -82,8 +83,8 @@ public final class NettySocketInitializer extends ChannelInitializer<SocketChann
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
 		// the logic handler
-		pipeline.addLast("handler",
-				new NettySocketHandler(__index, __eventManager, __msgObjectPool, __byteArrayPool, __configuration));
+		pipeline.addLast("handler", new NettySocketHandler(__connectionIndex, __eventManager, __commonObjectPool,
+				__byteArrayInputPool, __configuration));
 
 	}
 

@@ -44,9 +44,9 @@ public interface IEngineWriter {
 
 	long getWrittenPackets();
 
-	void setConfiguration(final IConfiguration configuration);
+	void setConfiguration(IConfiguration configuration);
 
-	void setIoHandler(final IOHandler ioHandler);
+	void setIoHandler(IOHandler ioHandler);
 
 	void setup() throws IOException;
 

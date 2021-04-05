@@ -21,27 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.utility;
+package com.tenio.core.event.extension;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.event.ISubscriber;
 
 /**
- * A collection of utility methods for time.
+ * An object which creates a mapping between an event type with a subscriber.
  * 
  * @author kong
+ * 
  */
-public final class TimeUtility {
+@ThreadSafe
+public final class ExtEventSubscriber {
 
 	/**
-	 * @return the current time in seconds
+	 * @see ExtEvent
 	 */
-	public static long currentTimeSeconds() {
-		return System.currentTimeMillis() * 1000;
+	private final ExtEvent __event;
+	/**
+	 * @see ISubscriber
+	 */
+	private final ISubscriber __subscriber;
+
+	public static ExtEventSubscriber newInstance(ExtEvent event, ISubscriber subscriber) {
+		return new ExtEventSubscriber(event, subscriber);
+	}
+
+	private ExtEventSubscriber(ExtEvent event, ISubscriber subscriber) {
+		__event = event;
+		__subscriber = subscriber;
 	}
 
 	/**
-	 * @return {@link System#currentTimeMillis()}
+	 * @return see {@link ExtEvent}
 	 */
-	public static long currentTimeMillis() {
-		return System.currentTimeMillis();
+	public ExtEvent getEvent() {
+		return __event;
+	}
+
+	/**
+	 * @param event the comparison event value
+	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
+	 */
+	public boolean hasEvent(ExtEvent event) {
+		return __event == event;
+	}
+
+	/**
+	 * @return see {@link ISubscriber}
+	 */
+	public ISubscriber getSubscriber() {
+		return __subscriber;
 	}
 
 }

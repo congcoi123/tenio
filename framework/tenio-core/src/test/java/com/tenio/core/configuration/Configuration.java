@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  */
 public final class Configuration extends CoreConfiguration {
 
-	public Configuration(final String file) {
+	public Configuration(String file) {
 		super(file);
 	}
 

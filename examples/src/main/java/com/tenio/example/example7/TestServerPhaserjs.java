@@ -43,7 +43,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 	/**
 	 * The entry point
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] params) {
 		var game = new TestServerPhaserjs();
 		game.start();
 	}
@@ -77,22 +77,22 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, args -> {
-				var connection = _getConnection(args[0]);
-				var message = _getMessageObject(args[1]);
+			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+				var connection = _getConnection(params[0]);
+				var message = _getCommonObject(params[1]);
 
 				// Allow the connection login into server (become a player)
-				String username = message.getString("u");
+				var playerName = message.getString("u");
 				// Should confirm that credentials by data from database or other services, here
 				// is only for testing
-				_playerApi.login(new PlayerPhaserjs(username), connection);
+				_playerApi.login(new PlayerPhaserjs(playerName), connection);
 
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, args -> {
+			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// The player has login successful
-				var player = (PlayerPhaserjs) _getPlayer(args[0]);
+				var player = (PlayerPhaserjs) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
 				// create the initial position
 				int x = MathUtility.randInt(100, 400);
@@ -104,8 +104,8 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, args -> {
-				var room = (RoomPhaserjs) _getRoom(args[1]);
+			_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, params -> {
+				var room = (RoomPhaserjs) _getRoom(params[1]);
 
 				var pack = _messageApi.getMessageObjectArray();
 				var players = room.getPlayers();
@@ -122,9 +122,9 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, args -> {
-				var player = (PlayerPhaserjs) _getPlayer(args[0]);
-				var message = _getMessageObject(args[2]);
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = (PlayerPhaserjs) _getPlayer(params[0]);
+				var message = _getCommonObject(params[2]);
 				var move = message.getMessageObjectArray("d");
 
 				player.setPosition(move.getInt(0), move.getInt(1));
@@ -138,8 +138,8 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.FETCHED_CCU_NUMBER, args -> {
-				var ccu = _getInt(args[0]);
+			_on(ExtEvent.FETCHED_CCU_NUMBER, params -> {
+				var ccu = _getInteger(params[0]);
 
 				_info("FETCHED_CCU_INFO", ccu);
 

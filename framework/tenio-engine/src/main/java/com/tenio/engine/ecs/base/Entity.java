@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.base;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementPool;
+import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.exception.ComponentIsNotExistedException;
 import com.tenio.engine.exception.DuplicatedComponentException;
 
@@ -41,7 +41,7 @@ import com.tenio.engine.exception.DuplicatedComponentException;
  **/
 public class Entity extends AbstractLogger implements IEntity {
 
-	private IElementPool<IComponent>[] __componentPools = null;
+	private IElementsPool<IComponent>[] __componentPools = null;
 	private IComponent[] __components = null;
 	private ContextInfo __contextInfo = null;
 	private String __id = null;
@@ -67,14 +67,14 @@ public class Entity extends AbstractLogger implements IEntity {
 	}
 
 	@Override
-	public void setComponentPools(IElementPool<IComponent>[] componentPools) {
+	public void setComponentPools(IElementsPool<IComponent>[] componentPools) {
 		if (__componentPools == null) {
 			__componentPools = componentPools;
 		}
 	}
 
 	@Override
-	public IElementPool<IComponent>[] getComponentPools() {
+	public IElementsPool<IComponent>[] getComponentPools() {
 		return __componentPools;
 	}
 

@@ -37,7 +37,8 @@ import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
 import com.tenio.core.event.ISubscriber;
-import com.tenio.core.network.Connection;
+import com.tenio.core.exception.ExtensionValueCastException;
+import com.tenio.core.network.IConnection;
 import com.tenio.core.server.Server;
 
 /**
@@ -55,140 +56,192 @@ import com.tenio.core.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	private Server __server = Server.getInstance();
+	private final Server __server = Server.getInstance();
 
 	/**
 	 * @see MessageApi
 	 */
-	protected MessageApi _messageApi = __server.getMessageApi();
+	protected final MessageApi _messageApi = __server.getMessageApi();
 	/**
 	 * @see PlayerApi
 	 */
-	protected PlayerApi _playerApi = __server.getPlayerApi();
+	protected final PlayerApi _playerApi = __server.getPlayerApi();
 	/**
 	 * @see RoomApi
 	 */
-	protected RoomApi _roomApi = __server.getRoomApi();
+	protected final RoomApi _roomApi = __server.getRoomApi();
 	/**
 	 * @see TaskApi
 	 */
-	protected TaskApi _taskApi = __server.getTaskApi();
+	protected final TaskApi _taskApi = __server.getTaskApi();
 
 	/**
 	 * Handle your own logic with the corresponding event type
 	 * 
-	 * @param type the type of this current event. All the supported type can be
-	 *             found in {@link ExtEvent}
-	 * @param sub  your own subscriber-class handler
+	 * @param event      the type of this current event. All the supported type can
+	 *                   be found in {@link ExtEvent}
+	 * @param subscriber your own subscriber-class handler
 	 */
-	protected void _on(final ExtEvent type, final ISubscriber sub) {
-		__server.getEventManager().getExtension().on(type, sub);
+	protected void _on(ExtEvent event, ISubscriber subscriber) {
+		__server.getEventManager().getExtension().on(event, subscriber);
 	}
 
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link CommonObject} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected CommonObject _getMessageObject(Object object) {
-		return (CommonObject) object;
+	protected CommonObject _getCommonObject(Object object) throws ExtensionValueCastException {
+		if (object instanceof CommonObject) {
+			return (CommonObject) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link Connection} type
+	 * @return a value in {@link IConnection} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected Connection _getConnection(Object object) {
-		return (Connection) object;
+	protected IConnection _getConnection(Object object) throws ExtensionValueCastException {
+		if (object instanceof IConnection) {
+			return (IConnection) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
 	 * @return a value in {@link IPlayer} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected IPlayer _getPlayer(Object object) {
-		return (IPlayer) object;
+	protected IPlayer _getPlayer(Object object) throws ExtensionValueCastException {
+		if (object instanceof IPlayer) {
+			return (IPlayer) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
 	 * @return a value in {@link IRoom} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected IRoom _getRoom(Object object) {
-		return (IRoom) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Boolean} type
-	 */
-	protected boolean _getBoolean(Object object) {
-		return (boolean) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return value in {@link String} type
-	 */
-	protected String _getString(Object object) {
-		return (String) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Integer} type
-	 */
-	protected int _getInt(Object object) {
-		return (int) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Long} type
-	 */
-	protected long _getLong(Object object) {
-		return (long) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Double} type
-	 */
-	protected double _getDouble(Object object) {
-		return (double) object;
+	protected IRoom _getRoom(Object object) throws ExtensionValueCastException {
+		if (object instanceof IRoom) {
+			return (IRoom) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link RestMethod} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected RestMethod _getRestMethod(Object object) {
-		return (RestMethod) object;
+	protected RestMethod _getRestMethod(Object object) throws ExtensionValueCastException {
+		if (object instanceof RestMethod) {
+			return (RestMethod) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link HttpServletRequest} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected HttpServletRequest _getHttpServletRequest(Object object) {
-		return (HttpServletRequest) object;
+	protected HttpServletRequest _getHttpServletRequest(Object object) throws ExtensionValueCastException {
+		if (object instanceof HttpServletRequest) {
+			return (HttpServletRequest) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link HttpServletResponse} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected HttpServletResponse _getHttpServletResponse(Object object) {
-		return (HttpServletResponse) object;
+	protected HttpServletResponse _getHttpServletResponse(Object object) throws ExtensionValueCastException {
+		if (object instanceof HttpServletResponse) {
+			return (HttpServletResponse) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
 	 * @return a value in {@link Throwable} type
+	 * @throws ExtensionValueCastException
 	 */
-	protected Throwable _getThrowable(Object object) {
-		return (Throwable) object;
+	protected Throwable _getThrowable(Object object) throws ExtensionValueCastException {
+		if (object instanceof Throwable) {
+			return (Throwable) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Boolean} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected boolean _getBoolean(Object object) throws ExtensionValueCastException {
+		if (object instanceof Boolean) {
+			return (boolean) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return value in {@link String} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected String _getString(Object object) throws ExtensionValueCastException {
+		if (object instanceof String) {
+			return (String) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Integer} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected int _getInteger(Object object) throws ExtensionValueCastException {
+		if (object instanceof Integer) {
+			return (int) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Long} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected long _getLong(Object object) throws ExtensionValueCastException {
+		if (object instanceof Long) {
+			return (long) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link Double} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected double _getDouble(Object object) throws ExtensionValueCastException {
+		if (object instanceof Double) {
+			return (double) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 }

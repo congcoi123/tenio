@@ -23,6 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.define;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author kong
  */
@@ -30,17 +33,45 @@ public enum RestMethod {
 	/**
 	 * Create
 	 */
-	POST,
+	POST("post"),
 	/**
 	 * Update
 	 */
-	PUT,
+	PUT("put"),
 	/**
 	 * Retrieve
 	 */
-	GET,
+	GET("get"),
 	/**
 	 * Delete
 	 */
-	DELETE
+	DELETE("delete");
+
+	// Reverse-lookup map for getting a type from a value
+	private static final Map<String, RestMethod> lookup = new HashMap<String, RestMethod>();
+
+	static {
+		for (var method : RestMethod.values()) {
+			lookup.put(method.getValue(), method);
+		}
+	}
+
+	private final String value;
+
+	private RestMethod(final String value) {
+		this.value = value;
+	}
+
+	public final String getValue() {
+		return this.value;
+	}
+
+	@Override
+	public final String toString() {
+		return this.name();
+	}
+
+	public static RestMethod getByValue(String value) {
+		return lookup.get(value);
+	}
 }

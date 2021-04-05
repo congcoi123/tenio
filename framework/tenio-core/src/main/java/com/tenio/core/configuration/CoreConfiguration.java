@@ -36,6 +36,9 @@ import com.tenio.common.utility.XMLUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.HttpConfig;
+import com.tenio.core.configuration.entity.PathConfig;
+import com.tenio.core.configuration.entity.SocketConfig;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -49,6 +52,7 @@ import com.tenio.core.configuration.define.TransportType;
  * 
  */
 public abstract class CoreConfiguration extends CommonConfiguration {
+	
 	/**
 	 * All ports in sockets zone
 	 */
@@ -70,7 +74,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
 	 */
-	public CoreConfiguration(final String file) {
+	public CoreConfiguration(String file) {
 		__socketPorts = new ArrayList<SocketConfig>();
 		__webSocketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
@@ -90,12 +94,12 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @throws Exception some exceptions, which can be occurred in reading or
 	 *                   parsing the file
 	 */
-	private void __load(final String file) throws Exception {
+	private void __load(String file) throws Exception {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 
-		// Properties
+		// Server's Properties
 		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
 		for (int j = 0; j < attrRootProperties.getLength(); j++) {
 			var pDataNode = attrRootProperties.item(j);
@@ -130,7 +134,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			for (int j = 0; j < attrHttpPaths.getLength(); j++) {
 				var pPathNode = attrHttpPaths.item(j);
 				var path = new PathConfig(pPathNode.getAttributes().getNamedItem("name").getTextContent(),
-						__getRestMethod(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
+						RestMethod.getByValue(pPathNode.getAttributes().getNamedItem("method").getTextContent()),
 						pPathNode.getTextContent(), pPathNode.getAttributes().getNamedItem("desc").getTextContent(),
 						Integer.parseInt(pPathNode.getAttributes().getNamedItem("version").getTextContent()));
 
@@ -140,7 +144,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 			__httpPorts.add(port);
 		}
 
-		// Configuration
+		// Ports' Configuration
 		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
 		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
 		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
@@ -164,24 +168,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		}
 
 		_extend(extProperties);
-	}
-
-	/**
-	 * @param method the method name in text
-	 * @return the method in {@link RestMethod} type
-	 */
-	private RestMethod __getRestMethod(final String method) {
-		switch (method.toLowerCase()) {
-		case "get":
-			return RestMethod.GET;
-		case "post":
-			return RestMethod.POST;
-		case "put":
-			return RestMethod.PUT;
-		case "delete":
-			return RestMethod.DELETE;
-		}
-		return null;
 	}
 
 }
