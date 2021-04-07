@@ -73,7 +73,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	 * one game
 	 */
 	@Column(name = "entity_id")
-	private volatile String __entityId;
+	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
 	 * {@link IRoom}
@@ -83,7 +83,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	/**
 	 * A number of connections the one player can hold
 	 */
-	private volatile int __connectionsSize;
+	private int __connectionsSize;
 	/**
 	 * The current system time when a new message from the client comes
 	 */

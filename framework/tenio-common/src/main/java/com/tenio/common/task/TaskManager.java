@@ -78,19 +78,23 @@ public final class TaskManager extends AbstractLogger implements ITaskManager {
 
 	@Override
 	public synchronized void kill(String id) {
-		var task = __tasks.get(id);
-		if (task != null) {
-			task.cancel(true);
-			_info("KILLED TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		if (__tasks.containsKey(id)) {
+			_info("KILLED TASK", id);
 			__tasks.remove(id);
+			var task = __tasks.get(id);
+			if (task != null && (!task.isDone() || !task.isCancelled())) {
+				task.cancel(true);
+			}
 		}
 	}
 
 	@Override
 	public synchronized void clear() {
 		__tasks.forEach((id, task) -> {
-			task.cancel(true);
-			_info("KILLED TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+			_info("KILLED TASK", id);
+			if (task != null && (!task.isDone() || !task.isCancelled())) {
+				task.cancel(true);
+			}
 		});
 		__tasks.clear();
 	}
