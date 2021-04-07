@@ -62,12 +62,12 @@ public abstract class AbstractRoom implements IRoom {
 	 * Should be set a human-readable name
 	 */
 	@Column(name = "name")
-	private volatile String __name;
+	private String __name;
 	/**
 	 * The maximum of players that this room can handle
 	 */
 	@Column(name = "capacity")
-	private volatile int __capacity;
+	private int __capacity;
 
 	public AbstractRoom(String id, String name, int capacity) {
 		__id = id;
