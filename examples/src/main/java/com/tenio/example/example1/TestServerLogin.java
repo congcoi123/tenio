@@ -63,7 +63,7 @@ public final class TestServerLogin extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted() {
+	public void onStarted(IExtension extension, IConfiguration configuration) {
 
 	}
 

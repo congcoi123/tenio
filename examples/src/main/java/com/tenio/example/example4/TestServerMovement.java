@@ -62,7 +62,7 @@ public final class TestServerMovement extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted() {
+	public void onStarted(IExtension extension, IConfiguration configuration) {
 
 	}
 

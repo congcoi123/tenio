@@ -55,7 +55,7 @@ public final class TestServerFSM extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted() {
+	public void onStarted(IExtension extension, IConfiguration configuration) {
 
 	}
 

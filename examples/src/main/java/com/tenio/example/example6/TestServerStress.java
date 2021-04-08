@@ -59,7 +59,7 @@ public final class TestServerStress extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted() {
+	public void onStarted(IExtension extension, IConfiguration configuration) {
 
 	}
 
