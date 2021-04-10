@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2020 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
-import java.io.IOException;
-
-import org.json.simple.JSONObject;
-
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -64,7 +58,7 @@ public final class TestServerAttach extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted() {
+	public void onStarted(IExtension extension, IConfiguration configuration) {
 
 	}
 
@@ -78,7 +72,6 @@ public final class TestServerAttach extends AbstractApp {
 	 */
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void initialize(IConfiguration configuration) {
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
@@ -136,41 +129,6 @@ public final class TestServerAttach extends AbstractApp {
 
 			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
 				// do nothing but need to be declared
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_VALIDATE, params -> {
-				var method = _getRestMethod(params[0]);
-				// var request = _getHttpServletRequest(params[1]);
-				var response = _getHttpServletResponse(params[2]);
-
-				if (method.equals(RestMethod.DELETE)) {
-					var json = new JSONObject();
-					json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
-					try {
-						response.getWriter().println(json.toString());
-					} catch (IOException e) {
-						_error(e, "request");
-					}
-					return response;
-				}
-
-				return null;
-			});
-
-			_on(ExtEvent.HTTP_REQUEST_HANDLE, params -> {
-				// var method = _getRestMethod(params[0]);
-				// var request = _getHttpServletRequest(params[1]);
-				var response = _getHttpServletResponse(params[2]);
-
-				var json = new JSONObject();
-				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
-				try {
-					response.getWriter().println(json.toString());
-				} catch (IOException e) {
-					_error(e, "handler");
-				}
-
 				return null;
 			});
 

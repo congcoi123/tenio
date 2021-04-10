@@ -134,6 +134,9 @@ Please start the server before its corresponding client in each example package.
     |   |-- TestServerStress.java
     |-- example7
     |   |-- TestServerPhaserjs.java
+    |-- example8
+    |   |-- TestClientRestful.java
+    |   |-- TestServerRestful.java
 ```
 
 > Happy coding !

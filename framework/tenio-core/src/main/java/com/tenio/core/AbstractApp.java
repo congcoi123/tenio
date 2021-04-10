@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2020 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,10 @@ public abstract class AbstractApp extends AbstractLogger {
 	 */
 	public void start() {
 		var configuration = getConfiguration();
+		var extension = getExtension();
+
 		var server = Server.getInstance();
-		server.setExtension(getExtension());
+		server.setExtension(extension);
 		try {
 			server.start(configuration);
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
@@ -64,7 +66,7 @@ public abstract class AbstractApp extends AbstractLogger {
 			onShutdown();
 		}));
 		// The server was ready
-		onStarted();
+		onStarted(extension, configuration);
 	}
 
 	/**
@@ -80,7 +82,7 @@ public abstract class AbstractApp extends AbstractLogger {
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted();
+	public abstract void onStarted(IExtension extension, IConfiguration configuration);
 
 	/**
 	 * The trigger is called when server was tear down
