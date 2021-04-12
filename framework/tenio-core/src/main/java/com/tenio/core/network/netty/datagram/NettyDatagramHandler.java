@@ -49,8 +49,8 @@ import io.netty.channel.socket.DatagramPacket;
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
 	public NettyDatagramHandler(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
+			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+			IConfiguration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.UDP);
 	}
 
@@ -66,6 +66,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			int readableBytes = buffer.readableBytes();
 			content = new byte[readableBytes];
 			buffer.readBytes(content);
+			buffer.release();
 		} else {
 			return;
 		}
@@ -76,6 +77,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 
 		// create a new message
 		var message = MsgPackConverter.unserialize(msgObject, byteArray, content);
+		content = null;
 		if (message == null) {
 			// repay
 			getCommonObjectPool().repay(msgObject);

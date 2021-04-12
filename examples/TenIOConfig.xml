@@ -21,8 +21,8 @@
 
 	<Configuration>
 		<Properties>
-			<Property name="producerThreadsPoolSize">1</Property>
-			<Property name="consumerThreadsPoolSize">2</Property>
+			<Property name="producerThreadsPoolSize">3</Property>
+			<Property name="consumerThreadsPoolSize">15</Property>
 			<Property name="keepPlayerOnDisconnect">false</Property>
 			<Property name="maxNumberPlayers">1000</Property>
 			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->

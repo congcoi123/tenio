@@ -23,20 +23,115 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.tenio.common.element.CommonObject;
+import com.tenio.example.client.IDatagramListener;
+import com.tenio.example.client.ISocketListener;
+import com.tenio.example.client.TCP;
+import com.tenio.example.client.UDP;
+
 /**
- * Nothing in here, please check out the TenIO-Ligdx project for this example.
- * More details can be found in README.md file.
+ * This class shows how a client communicates with the server:<br>
+ * 1. Create connections.<br>
+ * 2. Send a login request.<br>
+ * 3. Receive a response for login success and send a UDP connection
+ * request.<br>
+ * 4. Receive a response for allowed UDP connection.<br>
  * 
  * @author kong
  *
  */
-public final class TestClientMovement {
+public final class TestClientMovement implements ISocketListener, IDatagramListener {
+
+	private static boolean DELAY_CREATION = true;
+
+	private static int NUMBER_OF_PLAYERS = 50;
+	private static int EXPECT_RECEIVE_PACKETS = 60;
 
 	/**
 	 * The entry point
+	 * 
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) {
-		System.err.println("Nothing here! Please back to the README file for more details. Thank you!");
+	public static void main(String[] args) throws InterruptedException {
+		for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
+			new TestClientMovement(String.valueOf(i));
+			if (DELAY_CREATION) {
+				Thread.sleep(1000);
+			}
+		}
+	}
+
+	private final TCP __tcp;
+	private final UDP __udp;
+	private final String __playerName;
+	private int __countPacketSize;
+	private int __countUdpPacket;
+
+	public TestClientMovement(String playerName) {
+		__playerName = playerName;
+		__countUdpPacket = 0;
+		__countPacketSize = 0;
+
+		// logging
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+			System.out.println(String.format("Player %s -> Packet Count: %d (Loss: %.2f) -> Received Data: %.2f KB",
+					__playerName, __countUdpPacket,
+					(float) ((EXPECT_RECEIVE_PACKETS - __countPacketSize) / EXPECT_RECEIVE_PACKETS * 100),
+					(float) __countPacketSize / 1000));
+			__countPacketSize = 0;
+			__countUdpPacket = 0;
+
+		}, 0, 1, TimeUnit.MINUTES);
+
+		// create a new TCP object and listen for this port
+		__tcp = new TCP(8032);
+		__tcp.receive(this);
+
+		// create a new UDP object and listen for this port
+		__udp = new UDP(8031);
+		__udp.receive(this);
+
+		// send a login request
+		var message = CommonObject.newInstance();
+		message.put("u", __playerName);
+		__tcp.send(message);
+		System.out.println("Login Request -> " + message);
+
+	}
+
+	@Override
+	public void onReceivedTCP(CommonObject message) {
+		System.err.println("[RECV FROM SERVER TCP] -> " + message);
+
+		switch ((String) message.get("c")) {
+		case "udp": {
+			// now you can send request for UDP connection request
+			var request = CommonObject.newInstance();
+			request.put("u", __playerName);
+			__udp.send(request);
+			System.out.println("Request a UDP connection -> " + request);
+		}
+			break;
+
+		case "udp-done": {
+			// the UDP connected successful, you now can send test requests
+			System.out.println("Start the conversation ...");
+		}
+			break;
+
+		}
+	}
+
+	@Override
+	public void onReceivedUDP(CommonObject message) {
+		__countUdpPacket++;
+		__countPacketSize += SerializationUtils.serialize(message).length;
 	}
 
 }

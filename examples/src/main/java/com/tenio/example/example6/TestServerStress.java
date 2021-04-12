@@ -151,10 +151,12 @@ public final class TestServerStress extends AbstractApp {
 				long totalMemory = _getLong(params[1]);
 				long usedMemory = _getLong(params[2]);
 				long freeMemory = _getLong(params[3]);
+				int countRunningThreads = _getInteger(params[4]);
 
-				var info = String.format("cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
-						(float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
-						(float) freeMemory / CONVERT_TO_MB);
+				var info = String.format(
+						"cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
+						cpuUsage, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB, countRunningThreads);
 
 				_info("MONITORING_SYSTEM", info);
 

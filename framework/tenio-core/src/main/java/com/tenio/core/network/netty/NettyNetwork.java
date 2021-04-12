@@ -142,7 +142,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork {
 			throws IOException, InterruptedException {
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__consumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, false)
-				.option(ChannelOption.SO_RCVBUF, 1024).option(ChannelOption.SO_SNDBUF, 1024)
+				.option(ChannelOption.SO_RCVBUF, 10240).option(ChannelOption.SO_SNDBUF, 10240)
 				.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
 						byteArrayInputPool, __traficCounter, configuration));
 

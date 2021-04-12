@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.pool;
 
-import java.io.IOException;
-
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -53,7 +51,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance(i);
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 	}
@@ -78,7 +76,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance(i);
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 
@@ -92,19 +90,16 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 
 	@Override
 	public synchronized void repay(ByteArrayInputStream element) {
-		// the element with its index is in use
-		if (__used[element.getIndex()]) {
-			try {
-				element.reset();
-			} catch (IOException e) {
-				_error(e, e.getMessage());
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				flagFound = true;
+				break;
 			}
-			__used[element.getIndex()] = false;
-		} else { // something went wrong, the element is not in use but had to be repaid
-			var e = new NullElementPoolException(
-					"Something went wrong, the element is not in use but had to be repaid.");
-			_error(e, e.getMessage());
-			throw e;
+		}
+		if (!flagFound) {
+			throw new NullElementPoolException();
 		}
 	}
 

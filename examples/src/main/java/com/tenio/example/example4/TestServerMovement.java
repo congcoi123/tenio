@@ -41,6 +41,8 @@ import com.tenio.example.server.Configuration;
  */
 public final class TestServerMovement extends AbstractApp {
 
+	private static final int CONVERT_TO_MB = 1024 * 1024;
+
 	/**
 	 * The entry point
 	 * 
@@ -95,6 +97,8 @@ public final class TestServerMovement extends AbstractApp {
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
 
+				_info("PLAYER_LOGINED_SUCCESS", player.getName());
+
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
 
@@ -125,9 +129,52 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
+			_on(ExtEvent.FETCHED_CCU_NUMBER, params -> {
+				var ccu = _getInteger(params[0]);
+
+				_info("FETCHED_CCU_NUMBER", ccu);
+
+				return null;
+			});
+
+			_on(ExtEvent.FETCHED_BANDWIDTH_INFO, params -> {
+				long lastReadThroughput = _getLong(params[0]);
+				long lastWriteThroughput = _getLong(params[1]);
+				long realWriteThroughput = _getLong(params[2]);
+				long currentReadBytes = _getLong(params[3]);
+				long currentWrittenBytes = _getLong(params[4]);
+				long realWrittenBytes = _getLong(params[5]);
+
+				var bandwidth = String.format(
+						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						currentWrittenBytes, realWrittenBytes);
+
+				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
+
+				return null;
+			});
+
+			_on(ExtEvent.MONITORING_SYSTEM, params -> {
+				double cpuUsage = _getDouble(params[0]);
+				long totalMemory = _getLong(params[1]);
+				long usedMemory = _getLong(params[2]);
+				long freeMemory = _getLong(params[3]);
+				int countRunningThreads = _getInteger(params[4]);
+
+				var info = String.format(
+						"cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
+						cpuUsage, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB, countRunningThreads);
+
+				_info("MONITORING_SYSTEM", info);
+
+				return null;
+			});
+
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-			world.debug("[TenIO] Server Debugger : Movement Simulation");
+			// world.debug("[TenIO] Server Debugger : Movement Simulation");
 			var hearbeatManager = new HeartBeatManager();
 			try {
 				hearbeatManager.initialize(1);

@@ -51,7 +51,7 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance(i);
+			__pool[i] = CommonObject.newInstance();
 			__used[i] = false;
 		}
 	}
@@ -76,7 +76,7 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = CommonObject.newInstance(i);
+			__pool[i] = CommonObject.newInstance();
 			__used[i] = false;
 		}
 
@@ -90,15 +90,18 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 
 	@Override
 	public synchronized void repay(CommonObject element) {
-		// the element with its index is in use
-		if (__used[element.getIndex()]) {
-			element.clear();
-			__used[element.getIndex()] = false;
-		} else { // something went wrong, the element is not in use but had to be repaid
-			var e = new NullElementPoolException(
-					"Something went wrong, the element is not in use but had to be repaid.");
-			_error(e, e.getMessage());
-			throw e;
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				// Clear object
+				element.clear();
+				flagFound = true;
+				break;
+			}
+		}
+		if (!flagFound) {
+			throw new NullElementPoolException();
 		}
 	}
 
