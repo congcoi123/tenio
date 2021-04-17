@@ -32,7 +32,9 @@ import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
+import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.event.IEventManager;
+import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.IConnection;
 
 /**
@@ -53,13 +55,15 @@ public final class MessageApi extends AbstractLogger {
 
 	private final IElementsPool<CommonObject> __msgObjectPool;
 	private final IElementsPool<CommonObjectArray> __msgArrayPool;
+	private final IBroadcast __broadcaster;
 	private final IEventManager __eventManager;
 
 	public MessageApi(IEventManager eventManager, IElementsPool<CommonObject> msgObjectPool,
-			IElementsPool<CommonObjectArray> msgArrayPool) {
+			IElementsPool<CommonObjectArray> msgArrayPool, IPlayerManager playerManager, IBroadcast broadcaster) {
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
 		__msgArrayPool = msgArrayPool;
+		__broadcaster = broadcaster;
 	}
 
 	/**
@@ -270,6 +274,19 @@ public final class MessageApi extends AbstractLogger {
 	public void sendToInternalServer(IPlayer player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
 		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
+	}
+
+	public void sendDatagramBroadcast(String broadcastId, String key, Object value) {
+		if (!__broadcaster.isActivated()) {
+			return;
+		}
+
+		var message = __getMessageObject();
+		message.put(key, value);
+
+		__broadcaster.sendBroadcast(broadcastId, message);
+
+		__repayMessageObject(message);
 	}
 
 	/**

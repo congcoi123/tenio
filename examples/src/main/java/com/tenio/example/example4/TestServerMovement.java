@@ -60,7 +60,7 @@ public final class TestServerMovement extends AbstractApp {
 
 	@Override
 	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.attach.xml");
+		return new Configuration("TenIOConfig.broadcast.xml");
 	}
 
 	@Override
@@ -100,32 +100,8 @@ public final class TestServerMovement extends AbstractApp {
 				_info("PLAYER_LOGINED_SUCCESS", player.getName());
 
 				// now we can allow that client send request for UDP connection
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "broadcast");
 
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
-				var message = _getCommonObject(params[1]);
-				var playerName = message.getString("u");
-
-				// It should be ...
-				// 1. check if player has sub connection
-				// 2. confirm with player's name and main connection
-
-				// But now temporary returns a player by his name
-				return _playerApi.get(playerName);
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
-				var player = (Inspector) _getPlayer(params[1]);
-
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
-
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
 				return null;
 			});
 

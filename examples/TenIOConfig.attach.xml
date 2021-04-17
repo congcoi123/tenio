@@ -13,6 +13,8 @@
 			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
 			<Port name="move" type="udp">8031</Port>
 		</Sockets>
+		<Broadcasts>
+		</Broadcasts>
 		<WebSockets>
 		</WebSockets>
 	</Network>

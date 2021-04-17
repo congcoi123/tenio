@@ -2,13 +2,11 @@ package com.tenio.example.example4;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
-import com.tenio.core.entity.IPlayer;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
@@ -24,7 +22,6 @@ import com.tenio.engine.physic2d.utility.Geometry;
 import com.tenio.engine.physic2d.utility.Smoother;
 import com.tenio.example.example4.configuration.ParamLoader;
 import com.tenio.example.example4.constant.SummingMethod;
-import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.example4.entity.Obstacle;
 import com.tenio.example.example4.entity.Vehicle;
 import com.tenio.example.example4.entity.Wall;
@@ -77,7 +74,7 @@ public final class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
-	private Collection<IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	// private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private CommonObjectArray __ids = CommonObjectArray.newInstance();
 	private CommonObjectArray __pxs = CommonObjectArray.newInstance();
@@ -439,35 +436,50 @@ public final class World extends AbstractHeartBeat {
 
 	}
 
+	float beat = 0.0f;
+
 	/**
 	 * Create a smoother to smooth the frame-rate
 	 */
 	@Override
 	protected void _onUpdate(float delta) {
-		// reset array
-		__ids.clear();
-		__pxs.clear();
-		__pys.clear();
-		__prs.clear();
 
-		__fps = frameRateSmoother.update(delta);
+		beat += delta;
 
-		// update the vehicles
+		if (beat >= 0.25f) {
+			// reset array
+			__ids.clear();
+			__pxs.clear();
+			__pys.clear();
+			__prs.clear();
+
+			__fps = frameRateSmoother.update(delta);
+
+			// update the vehicles
+			for (int i = 0; i < __vehicles.size(); ++i) {
+				// package data
+				__ids.put(i);
+				__pxs.put((int) __vehicles.get(i).getPosition().x);
+				__pys.put((int) __vehicles.get(i).getPosition().y);
+				__prs.put((int) __vehicles.get(i).getRotation());
+			}
+
+			/*
+			__inspectors.forEach((name, inspector) -> {
+				__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+						__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
+			});
+			*/
+
+			__messageApi.sendDatagramBroadcast("move", "p",
+					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
+
+			beat = 0;
+		}
+
 		for (int i = 0; i < __vehicles.size(); ++i) {
 			__vehicles.get(i).update(delta);
-			// package data
-			__ids.put(i);
-			__pxs.put((int) __vehicles.get(i).getPosition().x);
-			__pys.put((int) __vehicles.get(i).getPosition().y);
-			__prs.put((int) __vehicles.get(i).getRotation());
 		}
-
-		// send to client (naive way)
-		for (var inspector : __inspectors) {
-			__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
-		}
-
 	}
 
 	@Override

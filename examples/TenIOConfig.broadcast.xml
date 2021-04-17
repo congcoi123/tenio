@@ -13,27 +13,16 @@
 			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
 		</Sockets>
 		<Broadcasts>
+			<Port id="move" name="move">8040</Port>
 		</Broadcasts>
 		<WebSockets>
 		</WebSockets>
-		<Http>
-			<Port name="main" value="9999">
-				<Path name="get" desc="retrieve a value" version="1"
-					method="get">/retrieve/*</Path>
-				<Path name="add" desc="add a new value" version="1"
-					method="post">/add/*</Path>
-				<Path name="change" desc="change a current value" version="1"
-					method="put">/change/*</Path>
-				<Path name="delete" desc="delete a existing value" version="1"
-					method="delete">/delete/*</Path>
-			</Port>
-		</Http>
 	</Network>
 
 	<Configuration>
 		<Properties>
-			<Property name="producerThreadsPoolSize">1</Property>
-			<Property name="consumerThreadsPoolSize">2</Property>
+			<Property name="producerThreadsPoolSize">10</Property>
+			<Property name="consumerThreadsPoolSize">50</Property>
 			<Property name="keepPlayerOnDisconnect">false</Property>
 			<Property name="maxNumberPlayers">1000</Property>
 			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->

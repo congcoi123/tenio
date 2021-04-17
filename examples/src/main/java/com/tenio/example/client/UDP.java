@@ -28,12 +28,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.common.utility.OsUtility;
+import com.tenio.common.utility.OsUtility.OSType;
 
 /**
  * Create an object for handling a Datagram socket connection. It is used to
@@ -43,6 +46,8 @@ import com.tenio.common.msgpack.MsgPackConverter;
  * 
  */
 public final class UDP {
+
+	private static final String BROADCAST_ADDRESS = "0.0.0.0";
 
 	private Future<?> __future;
 	private DatagramSocket __socket;
@@ -57,10 +62,24 @@ public final class UDP {
 	 * 
 	 * @param port the desired port
 	 */
-	public UDP(int port) {
+	public UDP(int port, boolean broadcast) {
 		try {
-			__socket = new DatagramSocket();
+			if (broadcast) {
+				__socket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
+				__socket.setBroadcast(true);
+				if (OsUtility.getOperatingSystemType() == OSType.Windows) {
+					__socket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+				} else {
+					__socket.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+				}
+			} else {
+				__socket = new DatagramSocket();
+			}
 		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -69,6 +88,10 @@ public final class UDP {
 			e.printStackTrace();
 		}
 		__port = port;
+	}
+
+	public UDP(int port) {
+		this(port, false);
 	}
 
 	/**

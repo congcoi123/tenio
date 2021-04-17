@@ -58,6 +58,7 @@ import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.monitoring.system.SystemInfo;
+import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.INetwork;
 import com.tenio.core.network.http.HttpManagerTask;
 import com.tenio.core.network.netty.NettyNetwork;
@@ -91,6 +92,7 @@ public final class Server extends AbstractLogger implements IServer {
 		__byteArrayInputPool = new ByteArrayInputStreamPool();
 
 		__eventManager = new EventManager();
+		__network = new NettyNetwork();
 
 		__roomManager = new RoomManager(__eventManager);
 		__playerManager = new PlayerManager(__eventManager);
@@ -99,7 +101,8 @@ public final class Server extends AbstractLogger implements IServer {
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);
 		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool);
+		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool, __playerManager,
+				(IBroadcast) __network);
 
 		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
 
@@ -136,8 +139,8 @@ public final class Server extends AbstractLogger implements IServer {
 	private final MessageApi __messageApi;
 
 	private final InternalLogicManager __internalLogic;
+	private final INetwork __network;
 	private IExtension __extension;
-	private INetwork __network;
 
 	private List<SocketConfig> __socketPorts;
 	private List<SocketConfig> __webSocketPorts;
@@ -212,7 +215,6 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __startNetwork(IConfiguration configuration, IElementsPool<CommonObject> msgObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
-		__network = new NettyNetwork();
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
 

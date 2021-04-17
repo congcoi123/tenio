@@ -58,8 +58,8 @@ public final class NettyConnection extends Connection {
 	 */
 	protected InetSocketAddress __remoteAddress;
 
-	private NettyConnection(int connectionIndex, IEventManager eventManager,
-			TransportType transportType, Channel channel) {
+	private NettyConnection(int connectionIndex, IEventManager eventManager, TransportType transportType,
+			Channel channel) {
 		super(eventManager, transportType, connectionIndex);
 		__channel = channel;
 		// set fix address in a TCP and WebSocket instance

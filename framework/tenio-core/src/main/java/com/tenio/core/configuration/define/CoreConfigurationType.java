@@ -126,6 +126,10 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 */
 	SOCKET_PORTS("socketPorts"),
 	/**
+	 * The list of broadcast ports in configuration
+	 */
+	BROADCAST_PORTS("broadcastPorts"),
+	/**
 	 * The list of web socket ports in configuration
 	 */
 	WEBSOCKET_PORTS("webSocketPorts"),

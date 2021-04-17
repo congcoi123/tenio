@@ -65,10 +65,12 @@ public final class PlayerManager implements IPlayerManager {
 	private IConfiguration __configuration;
 	private volatile int __socketPortsSize;
 	private volatile int __webSocketPortsSize;
+	private volatile int __size;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
 		__players = new HashMap<String, IPlayer>();
+		__size = 0;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,9 +85,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	@Override
 	public int count() {
-		synchronized (__players) {
-			return __players.size();
-		}
+		return __size;
 	}
 
 	@Override
@@ -124,8 +124,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void add(IPlayer player, IConnection connection)
-			throws DuplicatedPlayerException, NullPlayerNameException {
+	public void add(IPlayer player, IConnection connection) throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
@@ -153,6 +152,7 @@ public final class PlayerManager implements IPlayerManager {
 			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
 
 			__players.put(player.getName(), player);
+			__size = __players.size();
 
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
@@ -171,6 +171,7 @@ public final class PlayerManager implements IPlayerManager {
 			}
 
 			__players.put(player.getName(), player);
+			__size = __players.size();
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
@@ -195,6 +196,7 @@ public final class PlayerManager implements IPlayerManager {
 			removeAllConnections(player);
 
 			__players.remove(player.getName());
+			__size = __players.size();
 		}
 
 	}
@@ -216,8 +218,14 @@ public final class PlayerManager implements IPlayerManager {
 			}
 
 			__players.remove(player.getName());
+			__size = __players.size();
 		}
 
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return __size == 0;
 	}
 
 }

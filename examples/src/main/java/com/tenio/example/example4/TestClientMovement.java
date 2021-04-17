@@ -47,10 +47,8 @@ import com.tenio.example.client.UDP;
  */
 public final class TestClientMovement implements ISocketListener, IDatagramListener {
 
-	private static boolean DELAY_CREATION = true;
-
-	private static int NUMBER_OF_PLAYERS = 50;
-	private static int EXPECT_RECEIVE_PACKETS = 60;
+	// Expects 240 packets per second in one minute
+	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60;
 
 	/**
 	 * The entry point
@@ -58,34 +56,31 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
-		for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
-			new TestClientMovement(String.valueOf(i));
-			if (DELAY_CREATION) {
-				Thread.sleep(1000);
-			}
-		}
+		new TestClientMovement(String.format("broadcaster%d", 0));
 	}
 
 	private final TCP __tcp;
 	private final UDP __udp;
 	private final String __playerName;
-	private int __countPacketSize;
-	private int __countUdpPacket;
+	private int __countReceivedPacketSizeOneMinute;
+	private int __countUdpPacketsOneMinute;
 
 	public TestClientMovement(String playerName) {
 		__playerName = playerName;
-		__countUdpPacket = 0;
-		__countPacketSize = 0;
+		__countUdpPacketsOneMinute = 0;
+		__countReceivedPacketSizeOneMinute = 0;
 
 		// logging
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
-			System.out.println(String.format("Player %s -> Packet Count: %d (Loss: %.2f) -> Received Data: %.2f KB",
-					__playerName, __countUdpPacket,
-					(float) ((EXPECT_RECEIVE_PACKETS - __countPacketSize) / EXPECT_RECEIVE_PACKETS * 100),
-					(float) __countPacketSize / 1000));
-			__countPacketSize = 0;
-			__countUdpPacket = 0;
+			System.out.println(String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
+					__playerName, __countUdpPacketsOneMinute,
+					(float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
+							/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100),
+					(float) __countReceivedPacketSizeOneMinute / 1000));
+
+			__countReceivedPacketSizeOneMinute = 0;
+			__countUdpPacketsOneMinute = 0;
 
 		}, 0, 1, TimeUnit.MINUTES);
 
@@ -94,7 +89,7 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 		__tcp.receive(this);
 
 		// create a new UDP object and listen for this port
-		__udp = new UDP(8031);
+		__udp = new UDP(8040, true);
 		__udp.receive(this);
 
 		// send a login request
@@ -108,30 +103,13 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 	@Override
 	public void onReceivedTCP(CommonObject message) {
 		System.err.println("[RECV FROM SERVER TCP] -> " + message);
-
-		switch ((String) message.get("c")) {
-		case "udp": {
-			// now you can send request for UDP connection request
-			var request = CommonObject.newInstance();
-			request.put("u", __playerName);
-			__udp.send(request);
-			System.out.println("Request a UDP connection -> " + request);
-		}
-			break;
-
-		case "udp-done": {
-			// the UDP connected successful, you now can send test requests
-			System.out.println("Start the conversation ...");
-		}
-			break;
-
-		}
 	}
 
 	@Override
 	public void onReceivedUDP(CommonObject message) {
-		__countUdpPacket++;
-		__countPacketSize += SerializationUtils.serialize(message).length;
+		// System.out.println("Received from UDP: " + message);
+		__countUdpPacketsOneMinute++;
+		__countReceivedPacketSizeOneMinute += SerializationUtils.serialize(message).length;
 	}
 
 }
