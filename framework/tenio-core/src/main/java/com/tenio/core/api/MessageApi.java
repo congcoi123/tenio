@@ -51,7 +51,7 @@ import com.tenio.core.network.IConnection;
 @ThreadSafe
 public final class MessageApi extends AbstractLogger {
 
-	private final boolean USING_POOL = false;
+	private final boolean IS_USING_POOL = false;
 
 	private final IElementsPool<CommonObject> __msgObjectPool;
 	private final IElementsPool<CommonObjectArray> __msgArrayPool;
@@ -113,12 +113,17 @@ public final class MessageApi extends AbstractLogger {
 	 * @param message         the sending message
 	 */
 	private void __send(IPlayer player, int connectionIndex, CommonObject message) {
-		// update time to check TIMEOUT
+		// update time to check the TIMEOUT
 		player.setCurrentWriterTime();
-		// send to CLIENT (connection)
-		if (player.hasConnection(connectionIndex)) {
-			player.getConnection(connectionIndex).send(message);
+		// send to a CLIENT (connection)
+//		System.err.println(player.getName());
+//		if (player.hasConnection(connectionIndex)) {
+		var connection = player.getConnection(connectionIndex);
+		if (connection != null) {
+			connection.send(message);
 		}
+//			player.getConnection(connectionIndex).send(message);
+//		}
 		__eventManager.getExtension().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, connectionIndex, message);
 	}
 
@@ -293,7 +298,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @return a {@link CommonObjectArray} object from the pooling mechanism
 	 */
 	public CommonObjectArray getMessageObjectArray() {
-		if (USING_POOL) {
+		if (IS_USING_POOL) {
 			return __msgArrayPool.get();
 		} else {
 			return CommonObjectArray.newInstance();
@@ -301,7 +306,7 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	private CommonObject __getMessageObject() {
-		if (USING_POOL) {
+		if (IS_USING_POOL) {
 			return __msgObjectPool.get();
 		} else {
 			return CommonObject.newInstance();
@@ -309,14 +314,14 @@ public final class MessageApi extends AbstractLogger {
 	}
 
 	private void __repayMessageObject(CommonObject message) {
-		if (!USING_POOL) {
+		if (!IS_USING_POOL) {
 			return;
 		}
 		__msgObjectPool.repay(message);
 	}
 
 	private void __repayMessageObjectArray(CommonObjectArray data) {
-		if (!USING_POOL) {
+		if (!IS_USING_POOL) {
 			return;
 		}
 		__msgArrayPool.repay(data);

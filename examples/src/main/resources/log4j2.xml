@@ -30,7 +30,7 @@
 
 	<Loggers>
 
-		<Logger name="io.netty" level="debug" additivity="false">
+		<Logger name="io.netty" level="all" additivity="false">
 			<AppenderRef ref="${target}" />
 		</Logger>
 

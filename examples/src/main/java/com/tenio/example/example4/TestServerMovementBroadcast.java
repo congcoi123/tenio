@@ -39,7 +39,7 @@ import com.tenio.example.server.Configuration;
  * @author kong
  *
  */
-public final class TestServerMovement extends AbstractApp {
+public final class TestServerMovementBroadcast extends AbstractApp {
 
 	private static final int CONVERT_TO_MB = 1024 * 1024;
 
@@ -49,7 +49,7 @@ public final class TestServerMovement extends AbstractApp {
 	 * @param params
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerMovement();
+		var game = new TestServerMovementBroadcast();
 		game.start();
 	}
 
@@ -60,7 +60,7 @@ public final class TestServerMovement extends AbstractApp {
 
 	@Override
 	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.attach.xml");
+		return new Configuration("TenIOConfig.broadcast.xml");
 	}
 
 	@Override
@@ -100,37 +100,7 @@ public final class TestServerMovement extends AbstractApp {
 				_info("PLAYER_LOGINED_SUCCESS", player.getName());
 
 				// now we can allow that client send request for UDP connection
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
-
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
-				var message = _getCommonObject(params[1]);
-				var playerName = message.getString("u");
-
-				// It should be ...
-				// 1. check if player has sub connection
-				// 2. confirm with player's name and main connection
-
-				// But now temporary returns a player by his name
-				return _playerApi.get(playerName);
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
-				var player = (Inspector) _getPlayer(params[1]);
-
-				_info("ATTACH_CONNECTION_SUCCESS", player.toString());
-
-				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
-
-				return null;
-			});
-
-			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
-				var message = _getCoreMessageCode(params[2]);
-
-				_info("ATTACH_CONNECTION_FAILED", message);
+				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "broadcast");
 
 				return null;
 			});
@@ -180,7 +150,7 @@ public final class TestServerMovement extends AbstractApp {
 
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
+			// world.debug("[TenIO] Server Debugger : Movement Simulation");
 			var hearbeatManager = new HeartBeatManager();
 			try {
 				hearbeatManager.initialize(1);

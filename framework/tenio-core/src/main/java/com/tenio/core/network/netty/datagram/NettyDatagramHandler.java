@@ -92,5 +92,10 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 		getCommonObjectPool().repay(msgObject);
 		getByteArrayInputPool().repay(byteArray);
 	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		_exceptionCaught(ctx, cause);
+	}
 
 }

@@ -139,21 +139,26 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 		return __flagNPC;
 	}
 
-	@Override
-	public boolean hasConnection(int connectionIndex) {
-		if (__flagNPC) {
-			return false;
-		}
-		synchronized (__connections) {
-			return (__connections[connectionIndex] != null);
-		}
-	}
+//	@Override
+//	public boolean hasConnection(int connectionIndex) {
+//		if (__flagNPC) {
+//			return false;
+//		}
+//		synchronized (__connections) {
+//			return (__connections[connectionIndex] != null);
+//		}
+//	}
 
 	@Override
 	public IConnection getConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return null;
 		}
+		if (connectionIndex < 0 || connectionIndex > __connectionsSize) {
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			return null;
+		}
+//		System.out.println("got");
 		synchronized (__connections) {
 			return __connections[connectionIndex];
 		}
@@ -274,6 +279,11 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
 		setCurrentReaderTime();
 		setCurrentWriterTime();
+	}
+
+	@Override
+	public String toString() {
+		return __name;
 	}
 
 }

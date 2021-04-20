@@ -106,9 +106,6 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param ctx the channel, see {@link ChannelHandlerContext}
 	 */
 	protected void _channelInactive(ChannelHandlerContext ctx) {
-		if (__transportType == TransportType.UDP) {
-			return;
-		}
 		// get the connection first
 		var connection = __getConnection(ctx.channel(), null);
 		__eventManager.getInternal().emit(InternalEvent.CONNECTION_WAS_CLOSED, connection);
@@ -122,9 +119,6 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param cause the exception will occur
 	 */
 	protected void _exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		if (__transportType == TransportType.UDP) {
-			return;
-		}
 		// get the connection first
 		var connection = __getConnection(ctx.channel(), null);
 		__eventManager.getInternal().emit(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION,

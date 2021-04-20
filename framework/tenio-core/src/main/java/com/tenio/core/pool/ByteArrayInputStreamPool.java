@@ -80,6 +80,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 			__used[i] = false;
 		}
 
+		// FIXME: EOF exception
 		_info("BYTE ARRAY POOL", _buildgen("Increased the number of elements by ",
 				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 

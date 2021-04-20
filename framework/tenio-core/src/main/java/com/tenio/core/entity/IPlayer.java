@@ -77,7 +77,7 @@ public interface IPlayer {
 	 * @return <b>true</b> if the connection is available, otherwise returns
 	 *         <b>false</b>
 	 */
-	boolean hasConnection(int connectionIndex);
+//	boolean hasConnection(int connectionIndex);
 
 	IConnection getConnection(int connectionIndex);
 

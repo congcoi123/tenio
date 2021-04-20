@@ -38,7 +38,7 @@ import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.event.ISubscriber;
-import com.tenio.core.network.Connection;
+import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.IConnection;
 
 /**
@@ -54,8 +54,7 @@ final class InternalLogicManager extends AbstractLogger {
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
 
-	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager,
-			IRoomManager roomManager) {
+	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -132,9 +131,9 @@ final class InternalLogicManager extends AbstractLogger {
 		});
 
 		__on(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, params -> {
-			var connectionIndex = __getInt(params[0]);
-			var connection = __getConnection(params[1]);
-			var message = __getMessageObject(params[2]);
+			var connectionIndex = __getInteger(params[0]);
+			var connection = params[1] == null ? null : __getConnection(params[1]);
+			var message = __getCommonObject(params[2]);
 			var tempConnection = __getConnection(params[3]);
 
 			if (connection == null) {
@@ -147,9 +146,11 @@ final class InternalLogicManager extends AbstractLogger {
 						__handle(player, connectionIndex, message);
 					} else {
 						// Can handle free connection here
+						connection.close();
 					}
 				} else {
 					// Can handle free connection here
+					connection.close();
 				}
 			}
 
@@ -158,15 +159,15 @@ final class InternalLogicManager extends AbstractLogger {
 
 	}
 
-	private void __createNewConnection(IConfiguration configuration, int connectionIndex,
-			IConnection connection, CommonObject message) {
+	private void __createNewConnection(IConfiguration configuration, int connectionIndex, IConnection connection,
+			CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
 			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
 					connection, message);
 			if (player != null) {
 				connection.setPlayerName(player.getName());
-				player.setConnection(connection, 0); // main connection
+				player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX); // main connection
 				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
@@ -187,7 +188,7 @@ final class InternalLogicManager extends AbstractLogger {
 			if (player == null) {
 				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.PLAYER_NOT_FOUND);
-			} else if (!player.hasConnection(0)) {
+			} else if (player.getConnection(0) == null) {
 				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
@@ -204,50 +205,75 @@ final class InternalLogicManager extends AbstractLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link CommonObject}
+	 * @return a value in {@link CommonObject} type
+	 * @throws ExtensionValueCastException
 	 */
-	private CommonObject __getMessageObject(Object object) {
-		return (CommonObject) object;
+	private CommonObject __getCommonObject(Object object) throws ExtensionValueCastException {
+		if (object instanceof CommonObject) {
+			return (CommonObject) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in ,see {@link Connection}
+	 * @return a value in {@link IConnection} type
+	 * @throws ExtensionValueCastException
 	 */
-	private IConnection __getConnection(Object object) {
-		return (IConnection) object;
+	private IConnection __getConnection(Object object) throws ExtensionValueCastException {
+		if (object instanceof IConnection) {
+			return (IConnection) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param <T>    the corresponding return type
+	 * @param object the corresponding object
+	 * @return a value in {@link IPlayer} type
+	 * @throws ExtensionValueCastException
+	 */
+	private IPlayer __getPlayer(Object object) throws ExtensionValueCastException {
+		if (object instanceof IPlayer) {
+			return (IPlayer) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link IPlayer}
+	 * @return a value in {@link Throwable} type
+	 * @throws ExtensionValueCastException
 	 */
-	private IPlayer __getPlayer(Object object) {
-		return (IPlayer) object;
+	private Throwable __getThrowable(Object object) throws ExtensionValueCastException {
+		if (object instanceof Throwable) {
+			return (Throwable) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link String}
+	 * @return value in {@link String} type
+	 * @throws ExtensionValueCastException
 	 */
-	private String __getString(Object object) {
-		return (String) object;
+	private String __getString(Object object) throws ExtensionValueCastException {
+		if (object instanceof String) {
+			return (String) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in, see {@link Integer}
+	 * @return a value in {@link Integer} type
+	 * @throws ExtensionValueCastException
 	 */
-	private int __getInt(Object object) {
-		return (int) object;
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return value in, see {@link Throwable}
-	 */
-	private Throwable __getThrowable(Object object) {
-		return (Throwable) object;
+	private int __getInteger(Object object) throws ExtensionValueCastException {
+		if (object instanceof Integer) {
+			return (int) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
 	}
 
 	private void __handle(IPlayer player, int connectionIndex, CommonObject message) {
@@ -256,7 +282,7 @@ final class InternalLogicManager extends AbstractLogger {
 	}
 
 	private void __exception(IPlayer player, Throwable cause) {
-		_error(cause, "player name: ", player.getName());
+		_error(cause, "player's name: ", player.getName());
 	}
 
 	private void __exception(String identify, Throwable cause) {

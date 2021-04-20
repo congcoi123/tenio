@@ -2,11 +2,17 @@ package com.tenio.example.example4;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
+import com.tenio.core.entity.IPlayer;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
@@ -22,6 +28,7 @@ import com.tenio.engine.physic2d.utility.Geometry;
 import com.tenio.engine.physic2d.utility.Smoother;
 import com.tenio.example.example4.configuration.ParamLoader;
 import com.tenio.example.example4.constant.SummingMethod;
+import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.example4.entity.Obstacle;
 import com.tenio.example.example4.entity.Vehicle;
 import com.tenio.example.example4.entity.Wall;
@@ -74,7 +81,8 @@ public final class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
-	// private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
+	private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
+	private Map<String, IPlayer> __inspectorsBuffer = new HashMap<String, IPlayer>();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private CommonObjectArray __ids = CommonObjectArray.newInstance();
 	private CommonObjectArray __pxs = CommonObjectArray.newInstance();
@@ -433,10 +441,26 @@ public final class World extends AbstractHeartBeat {
 
 	@Override
 	protected void _onCreate() {
+		// When your program starts up
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
+		// then, when you want to schedule a task
+		Runnable task = new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				canSend = true;
+			}
+		};
+		executor.schedule(task, 1, TimeUnit.MINUTES);
+
+		// and finally, when your program wants to exit
+		executor.shutdown();
 	}
 
 	float beat = 0.0f;
+	boolean canSend = true;
 
 	/**
 	 * Create a smoother to smooth the frame-rate
@@ -446,33 +470,46 @@ public final class World extends AbstractHeartBeat {
 
 		beat += delta;
 
-		if (beat >= 0.25f) {
+		if (beat >= 0.25f && canSend) {
 			// reset array
-			__ids.clear();
-			__pxs.clear();
-			__pys.clear();
-			__prs.clear();
+//			__ids.clear();
+//			__pxs.clear();
+//			__pys.clear();
+//			__prs.clear();
 
 			__fps = frameRateSmoother.update(delta);
 
+			__inspectorsBuffer.clear();
+			__inspectors.forEach((name, inspector) -> {
+				__inspectorsBuffer.put(name, inspector);
+			});
+
 			// update the vehicles
 			for (int i = 0; i < __vehicles.size(); ++i) {
+				final int j = i;
 				// package data
-				__ids.put(i);
-				__pxs.put((int) __vehicles.get(i).getPosition().x);
-				__pys.put((int) __vehicles.get(i).getPosition().y);
-				__prs.put((int) __vehicles.get(i).getRotation());
+//				__ids.put(i);
+//				__pxs.put((int) __vehicles.get(i).getPosition().x);
+//				__pys.put((int) __vehicles.get(i).getPosition().y);
+//				__prs.put((int) __vehicles.get(i).getRotation());
+				var vehicle = __vehicles.get(i);
+				// System.err.println("check");
+				__inspectorsBuffer.forEach((name, inspector) -> {
+					__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+							__messageApi.getMessageObjectArray().put(j).put(vehicle.getPositionX())
+									.put(vehicle.getPositionY()).put(vehicle.getRotation()));
+				});
 			}
 
 			/*
-			__inspectors.forEach((name, inspector) -> {
-				__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-						__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
-			});
-			*/
+			 * __inspectors.forEach((name, inspector) -> {
+			 * __messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+			 * __messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(
+			 * __prs)); });
+			 */
 
-			__messageApi.sendDatagramBroadcast("move", "p",
-					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
+//			__messageApi.sendDatagramBroadcast("move", "p",
+//					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
 
 			beat = 0;
 		}
