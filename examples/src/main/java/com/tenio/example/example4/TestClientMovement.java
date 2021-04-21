@@ -49,7 +49,7 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 
 	private static float DELAY_CREATION = 0.1f;
 
-	private static int NUMBER_OF_PLAYERS = 1;
+	private static int NUMBER_OF_PLAYERS = 500;
 	// 100 objects * 4 times * 60
 	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
 

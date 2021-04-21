@@ -41,7 +41,7 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 
 	private ChannelHandlerContext __ctx;
 	private final Queue<Object> __messageQueue;
-	private int __queueSize = 0;
+	private int __queueSize;
 	private boolean __isWriting;
 
 	public WriteQueueOutboundChannelHandler() {
@@ -67,29 +67,22 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 
 	private void __poll() {
 		__isWriting = true;
-		if (!__messageQueue.isEmpty()) {
+		if (!__messageQueue.isEmpty() && __ctx.channel().isWritable()) {
 			__ctx.writeAndFlush(__messageQueue.poll()).addListener(__sendListener);
 			__queueSize--;
-			
+
 //			int size = __queueSize;
-//			System.out.println(String.format("Queue Size: %d -> Thread: %ld", size, Thread.currentThread().getId()));
-//			System.out.println("Queue Size: " + size + ", Thread: " + Thread.currentThread().getId());
+//			System.out.println(String.format("Queue Size: %d -> Thread: %s", size, Thread.currentThread().getName()));
 		} else {
 			__isWriting = false;
 		}
 	}
 
 	@Override
-	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 		__ctx = ctx;
-		int size = __queueSize;
 
-		if (size > QUEUE_SIZE_WARNING) {
-			// Thread.sleep(100);
-			// __ctx.flush();
-		}
-
-		__messageQueue.offer(msg);
+		__messageQueue.offer(message);
 		__queueSize++;
 
 		if (!__isWriting) {
