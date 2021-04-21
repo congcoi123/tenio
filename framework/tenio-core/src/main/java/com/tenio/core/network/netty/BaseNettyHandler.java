@@ -32,6 +32,7 @@ import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

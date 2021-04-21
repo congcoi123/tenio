@@ -21,15 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.netty.datagram;
+package com.tenio.core.network.netty.broadcast;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
-import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
-import com.tenio.core.network.netty.option.WriteQueueOutboundChannelHandler;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.DatagramChannel;
@@ -42,24 +36,12 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
  * @author kong
  * 
  */
-public final class NettyDatagramInitializer extends ChannelInitializer<DatagramChannel> {
+public final class NettyBroadcastInitializer extends ChannelInitializer<DatagramChannel> {
 
-	private final IEventManager __eventManager;
-	private final IElementsPool<CommonObject> __commonObjectPool;
-	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final IConfiguration __configuration;
-	private final int __connectionIndex;
 
-	public NettyDatagramInitializer(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
-		__connectionIndex = connectionIndex;
-		__eventManager = eventManager;
-		__commonObjectPool = commonObjectPool;
-		__byteArrayInputPool = byteArrayInputPool;
+	public NettyBroadcastInitializer(GlobalTrafficShapingHandlerCustomize trafficCounter) {
 		__trafficCounter = trafficCounter;
-		__configuration = configuration;
 	}
 
 	@Override
@@ -71,14 +53,8 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 		// converts bytes' array to data chunk (write-down)
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
-//		pipeline.addLast("outbound-queue", new WriteQueueOutboundChannelHandler());
-
 		// traffic counter
-//		pipeline.addLast("traffic-counter", __trafficCounter);
-
-		// the logic handler
-		pipeline.addLast("handler", new NettyDatagramHandler(__connectionIndex, __eventManager, __commonObjectPool,
-				__byteArrayInputPool, __configuration));
+		pipeline.addLast("traffic-counter", __trafficCounter);
 	}
 
 }

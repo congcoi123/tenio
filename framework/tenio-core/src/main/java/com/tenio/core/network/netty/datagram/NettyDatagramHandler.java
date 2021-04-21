@@ -53,9 +53,15 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			IConfiguration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.UDP);
 	}
+	
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		System.err.println(Thread.currentThread().getName());
+	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
+		System.err.println("read");
 		
 		// get the message's content
 		byte[] content;

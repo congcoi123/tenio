@@ -21,40 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.netty.datagram;
+package com.tenio.core.network.netty.option;
 
-import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.IConnection;
+import com.tenio.core.network.netty.NettyConnection;
 
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.DatagramChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import io.netty.util.AttributeKey;
 
 /**
- * This class for initializing a channel.
- * 
  * @author kong
- * 
  */
-public final class NettyBroadcastInitializer extends ChannelInitializer<DatagramChannel> {
+public final class NettyConnectionOption {
 
-	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-
-	public NettyBroadcastInitializer(GlobalTrafficShapingHandlerCustomize trafficCounter) {
-		__trafficCounter = trafficCounter;
-	}
-
-	@Override
-	protected void initChannel(DatagramChannel channel) throws Exception {
-		var pipeline = channel.pipeline();
-
-		// converts each data chunk into a byte array (read-up)
-		pipeline.addLast("bytearray-decoder", new ByteArrayDecoder());
-		// converts bytes' array to data chunk (write-down)
-		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
-
-		// traffic counter
-		pipeline.addLast("traffic-counter", __trafficCounter);
-	}
+	/**
+	 * Save this connection itself to its channel. In case of Datagram channel, we
+	 * use {@link NettyConnection#getAddress()} as a key for the current connection
+	 */
+	public static final AttributeKey<IConnection> CONNECTION = AttributeKey.valueOf("netty-key-connection");
 
 }

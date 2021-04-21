@@ -31,7 +31,7 @@
 			<artifactId>netty-all</artifactId>
 			<version>${io.netty.version}</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-transport-native-kqueue</artifactId>
 			<version>${io.netty.version}</version>
@@ -40,7 +40,7 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-transport-native-epoll</artifactId>
 			<version>${io.netty.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>

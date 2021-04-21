@@ -49,7 +49,7 @@ import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.INetwork;
-import com.tenio.core.network.netty.datagram.NettyBroadcastInitializer;
+import com.tenio.core.network.netty.broadcast.NettyBroadcastInitializer;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
 import com.tenio.core.network.netty.socket.NettySocketInitializer;
 import com.tenio.core.network.netty.ws.NettyWSInitializer;
@@ -114,8 +114,11 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 	private volatile boolean __broadcastActive;
 
+	private final OSType __osType;
+
 	public NettyNetwork() {
 		__broadcastActive = false;
+		__osType = OsUtility.getOperatingSystemType();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -142,7 +145,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		__websocketWorkers = new NioEventLoopGroup(
 				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER), defaultWebsocketThreadFactory);
 
-		switch (OsUtility.getOperatingSystemType()) {
+		switch (__osType) {
 		case MacOS:
 			__datagramWorkers = new KQueueEventLoopGroup(
 					configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER),
@@ -233,7 +236,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 				.option(ChannelOption.SO_SNDBUF, CoreConstants.BROADCAST_SEND_BUFFER)
 				.handler(new NettyBroadcastInitializer(__traficCounterBroadcast));
 
-		var channelFuture = bootstrap.bind(CoreConstants.DEFAULT_BROADCAST_PORT).await()
+		var channelFuture = bootstrap.bind(CoreConstants.DEFAULT_BROADCAST_PORT).sync()
 				.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 					@Override
@@ -279,7 +282,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		var bootstrap = new Bootstrap();
 		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER);
 
-		switch (OsUtility.getOperatingSystemType()) {
+		switch (__osType) {
 		case MacOS:
 			bootstrap.group(__datagramWorkers).channel(KQueueDatagramChannel.class)
 					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
@@ -321,9 +324,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			break;
 		}
 
-		if (OsUtility.getOperatingSystemType() == OSType.MacOS || OsUtility.getOperatingSystemType() == OSType.Linux) {
+		if (__osType == OSType.MacOS || __osType == OSType.Linux) {
 			for (int i = 0; i < threadsPoolWorker; i++) {
-				var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+				var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
 						.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 							@Override
@@ -338,7 +341,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 				__serverSockets.add(channelFuture.channel());
 			}
 		} else {
-			var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+			var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
 					.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 						@Override
@@ -383,7 +386,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettySocketInitializer(connectionIndex,
 						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterSockets, configuration));
 
-		var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+		var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
 				.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 					@Override
@@ -428,7 +431,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettyWSInitializer(connectionIndex,
 						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterWebsockets, configuration));
 
-		var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+		var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
 				.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 					@Override
@@ -504,7 +507,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 
 		try {
-			channel.close().await().addListener(new GenericFutureListener<Future<? super Void>>() {
+			channel.close().sync().addListener(new GenericFutureListener<Future<? super Void>>() {
 
 				@Override
 				public void operationComplete(Future<? super Void> future) throws Exception {

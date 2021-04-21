@@ -35,6 +35,7 @@ import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
