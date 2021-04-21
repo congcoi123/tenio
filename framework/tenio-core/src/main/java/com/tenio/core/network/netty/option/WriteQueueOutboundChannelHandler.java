@@ -54,11 +54,9 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 		@Override
 		public void operationComplete(ChannelFuture future) {
 			if (future.isSuccess()) {
-				// __ctx.fireUserEventTriggered("WRITE_MESSAGE_COMPLETE");
 				__poll();
 			} else {
-				System.err.println("failed");
-
+				future.cause().printStackTrace();
 				future.channel().close();
 				__messageQueue.clear();
 			}
@@ -70,9 +68,9 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 		if (!__messageQueue.isEmpty() && __ctx.channel().isWritable()) {
 			__ctx.writeAndFlush(__messageQueue.poll()).addListener(__sendListener);
 			__queueSize--;
-
-//			int size = __queueSize;
-//			System.out.println(String.format("Queue Size: %d -> Thread: %s", size, Thread.currentThread().getName()));
+			
+//			System.out.println(String.format("Thread: %s", Thread.currentThread().getName()));
+			
 		} else {
 			__isWriting = false;
 		}
@@ -81,6 +79,11 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 	@Override
 	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 		__ctx = ctx;
+
+		int size = __queueSize;
+		if (size > QUEUE_SIZE_WARNING) {
+			System.out.println(String.format("Queue Size: %d -> Thread: %s", size, Thread.currentThread().getName()));
+		}
 
 		__messageQueue.offer(message);
 		__queueSize++;

@@ -37,6 +37,7 @@ import com.tenio.core.network.netty.option.NettyConnectionOption;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.group.ChannelGroup;
 import io.netty.util.AttributeKey;
 
 /**
@@ -56,8 +57,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	private final int __connectionIndex;
 
 	public BaseNettyHandler(IEventManager eventManager, IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex,
-			TransportType transportType) {
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex, TransportType transportType) {
 		__eventManager = eventManager;
 		__commmonObjectPool = commonObjectPool;
 		__byteArrayInputPool = byteArrayInputPool;
@@ -80,18 +80,21 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	/**
-	 * Handle in-comming messages for the channel
-	 * 
-	 * @param ctx          the channel, see {@link ChannelHandlerContext}
-	 * @param message      the message, see {@link MessageObject}
-	 * @param remoteAdress the current remote address (in use for Datagram channel)
+	 * Handle in-coming messages for the channel
+	 *
+	 * @param datagramChannelWorkers group of datagram channels
+	 * @param ctx                    the channel, see {@link ChannelHandlerContext}
+	 * @param message                the message, see {@link MessageObject}
+	 * @param remoteAdress           the current remote address (in use for Datagram
+	 *                               channel)
 	 */
-	protected void _channelRead(ChannelHandlerContext ctx, CommonObject message, InetSocketAddress remoteAdress) {
+	protected void _channelRead(ChannelGroup datagramChannelWorkers, ChannelHandlerContext ctx, CommonObject message,
+			InetSocketAddress remoteAdress) {
 		var connection = __getConnection(ctx.channel(), remoteAdress);
 
 		if (connection == null) {
 			__connection = NettyConnection.newInstance(__connectionIndex, __eventManager, __transportType,
-					ctx.channel());
+					ctx.channel(), datagramChannelWorkers);
 			__connection.setRemote(remoteAdress);
 			__connection.setThis();
 		}
