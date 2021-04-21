@@ -5,11 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.entity.IPlayer;
@@ -84,16 +80,19 @@ public final class World extends AbstractHeartBeat {
 	private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
 	private Map<String, IPlayer> __inspectorsBuffer = new HashMap<String, IPlayer>();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
-	private CommonObjectArray __ids = CommonObjectArray.newInstance();
-	private CommonObjectArray __pxs = CommonObjectArray.newInstance();
-	private CommonObjectArray __pys = CommonObjectArray.newInstance();
-	private CommonObjectArray __prs = CommonObjectArray.newInstance();
+	private float __sendingInterval = 0.0f;
+	private boolean __sendingBroadcast = false;
 
 	public World(int cx, int cy) {
+		this(cx, cy, false);
+	}
+
+	public World(int cx, int cy, boolean sendingBroadcast) {
 		super(cx, cy);
 
 		__clientX = cx;
 		__clientY = cy;
+		__sendingBroadcast = sendingBroadcast;
 		__pause = false;
 		__crosshair = Vector2.valueOf(getClientX() / 2, getClientX() / 2);
 		__enableShowWalls = false;
@@ -441,26 +440,8 @@ public final class World extends AbstractHeartBeat {
 
 	@Override
 	protected void _onCreate() {
-		// When your program starts up
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-		// then, when you want to schedule a task
-		Runnable task = new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				canSend = true;
-			}
-		};
-		executor.schedule(task, 1, TimeUnit.MINUTES);
-
-		// and finally, when your program wants to exit
-		executor.shutdown();
 	}
-
-	float beat = 0.0f;
-	boolean canSend = true;
 
 	/**
 	 * Create a smoother to smooth the frame-rate
@@ -468,16 +449,9 @@ public final class World extends AbstractHeartBeat {
 	@Override
 	protected void _onUpdate(float delta) {
 
-		beat += delta;
+		__sendingInterval += delta;
 
-		if (beat >= 0.25f && canSend) {
-			// reset array
-//			__ids.clear();
-//			__pxs.clear();
-//			__pys.clear();
-//			__prs.clear();
-
-			__fps = frameRateSmoother.update(delta);
+		if (__sendingInterval >= 0.25f) {
 
 			__inspectorsBuffer.clear();
 			__inspectors.forEach((name, inspector) -> {
@@ -487,32 +461,24 @@ public final class World extends AbstractHeartBeat {
 			// update the vehicles
 			for (int i = 0; i < __vehicles.size(); ++i) {
 				final int j = i;
-				// package data
-//				__ids.put(i);
-//				__pxs.put((int) __vehicles.get(i).getPosition().x);
-//				__pys.put((int) __vehicles.get(i).getPosition().y);
-//				__prs.put((int) __vehicles.get(i).getRotation());
 				var vehicle = __vehicles.get(i);
-				// System.err.println("check");
-				__inspectorsBuffer.forEach((name, inspector) -> {
-					__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-							__messageApi.getMessageObjectArray().put(j).put(vehicle.getPositionX())
-									.put(vehicle.getPositionY()).put(vehicle.getRotation()));
-				});
+
+				if (__sendingBroadcast) {
+					__messageApi.sendDatagramBroadcast("move", "p", __messageApi.getMessageObjectArray().put(j)
+							.put(vehicle.getPositionX()).put(vehicle.getPositionY()).put(vehicle.getRotation()));
+				} else {
+					__inspectorsBuffer.forEach((name, inspector) -> {
+						__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+								__messageApi.getMessageObjectArray().put(j).put(vehicle.getPositionX())
+										.put(vehicle.getPositionY()).put(vehicle.getRotation()));
+					});
+				}
 			}
 
-			/*
-			 * __inspectors.forEach((name, inspector) -> {
-			 * __messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-			 * __messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(
-			 * __prs)); });
-			 */
-
-//			__messageApi.sendDatagramBroadcast("move", "p",
-//					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
-
-			beat = 0;
+			__sendingInterval = 0;
 		}
+
+		__fps = frameRateSmoother.update(delta);
 
 		for (int i = 0; i < __vehicles.size(); ++i) {
 			__vehicles.get(i).update(delta);

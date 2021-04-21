@@ -145,7 +145,6 @@ public final class NettyConnection extends Connection {
 		// only need for WebSocket and Socket
 		removePlayerName();
 		removeThis();
-//		__channel = null;
 	}
 
 }

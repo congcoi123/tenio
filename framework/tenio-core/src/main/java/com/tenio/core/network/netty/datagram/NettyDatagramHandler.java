@@ -56,6 +56,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
+		
 		// get the message's content
 		byte[] content;
 		DatagramPacket datagram;

@@ -49,9 +49,9 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 
 	private static float DELAY_CREATION = 0.5f;
 
-	private static int NUMBER_OF_PLAYERS = 100;
+	private static int NUMBER_OF_PLAYERS = 500;
 	// 100 objects * 4 times * 60
-	private static int EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
+	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
 
 	/**
 	 * The entry point
@@ -70,23 +70,24 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 	private final TCP __tcp;
 	private final UDP __udp;
 	private final String __playerName;
-	private int __countPacketSize;
-	private int __countUdpPacket;
+	private int __countReceivedPacketSizeOneMinute;
+	private int __countUdpPacketsOneMinute;
 
 	public TestClientMovement(String playerName) {
 		__playerName = playerName;
-		__countUdpPacket = 0;
-		__countPacketSize = 0;
+		__countUdpPacketsOneMinute = 0;
+		__countReceivedPacketSizeOneMinute = 0;
 
 		// logging
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			System.out.println(String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-					__playerName, __countUdpPacket,
-					(float) ((float) (EXPECT_RECEIVE_PACKETS - __countUdpPacket) / EXPECT_RECEIVE_PACKETS * 100),
-					(float) __countPacketSize / 1000));
-			__countPacketSize = 0;
-			__countUdpPacket = 0;
+					__playerName, __countUdpPacketsOneMinute,
+					(float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
+							/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100),
+					(float) __countReceivedPacketSizeOneMinute / 1000));
+			__countReceivedPacketSizeOneMinute = 0;
+			__countUdpPacketsOneMinute = 0;
 
 		}, 1, 1, TimeUnit.MINUTES);
 
@@ -141,8 +142,8 @@ public final class TestClientMovement implements ISocketListener, IDatagramListe
 	}
 
 	private void __counting(CommonObject message) {
-		__countUdpPacket++;
-		__countPacketSize += SerializationUtils.serialize(message).length;
+		__countUdpPacketsOneMinute++;
+		__countReceivedPacketSizeOneMinute += SerializationUtils.serialize(message).length;
 	}
 
 }

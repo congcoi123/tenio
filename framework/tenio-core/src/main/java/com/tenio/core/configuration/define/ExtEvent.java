@@ -26,6 +26,7 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.common.element.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
@@ -358,6 +359,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[3]</b> Current read bytes (KB), see {@link Long}</li>
 	 * <li><b>parameter[4]</b> Current written bytes (KB), see {@link Long}</li>
 	 * <li><b>parameter[5]</b> Real written bytes (KB), see {@link Long}</li>
+	 * <li><b>parameter[6]</b> Name of the counter, see {@link String}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>

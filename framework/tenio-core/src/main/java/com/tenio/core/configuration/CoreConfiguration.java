@@ -167,6 +167,18 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
 
 		// Parsing configuration data
+		var attrConfigurationWorkers = XMLUtility.getNodeList(root, "//Server/Configuration/Workers/Worker");
+		for (int j = 0; j < attrConfigurationWorkers.getLength(); j++) {
+			var pDataNode = attrConfigurationWorkers.item(j);
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+		}
+		var attrConfigurationSchedules = XMLUtility.getNodeList(root, "//Server/Configuration/Schedules/Task");
+		for (int j = 0; j < attrConfigurationSchedules.getLength(); j++) {
+			var pDataNode = attrConfigurationSchedules.item(j);
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+		}
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			var pDataNode = attrConfigurationProperties.item(j);

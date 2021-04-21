@@ -51,7 +51,7 @@ import com.tenio.core.network.IConnection;
 @ThreadSafe
 public final class MessageApi extends AbstractLogger {
 
-	private final boolean IS_USING_POOL = false;
+	private final boolean IS_USING_POOL = true;
 
 	private final IElementsPool<CommonObject> __msgObjectPool;
 	private final IElementsPool<CommonObjectArray> __msgArrayPool;
@@ -116,14 +116,10 @@ public final class MessageApi extends AbstractLogger {
 		// update time to check the TIMEOUT
 		player.setCurrentWriterTime();
 		// send to a CLIENT (connection)
-//		System.err.println(player.getName());
-//		if (player.hasConnection(connectionIndex)) {
 		var connection = player.getConnection(connectionIndex);
 		if (connection != null) {
 			connection.send(message);
 		}
-//			player.getConnection(connectionIndex).send(message);
-//		}
 		__eventManager.getExtension().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, connectionIndex, message);
 	}
 

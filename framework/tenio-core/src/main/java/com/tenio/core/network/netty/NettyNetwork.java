@@ -56,6 +56,7 @@ import com.tenio.core.network.netty.ws.NettyWSInitializer;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -70,6 +71,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * Use <a href="https://netty.io/">Netty</a> to handle a network instance @see
@@ -81,24 +85,23 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 @ThreadSafe
 public final class NettyNetwork extends AbstractLogger implements INetwork, IBroadcast {
 
-	// private static final int DEFAULT_NUMBER_THREADS_POOL =
-	// Runtime.getRuntime().availableProcessors() * 2;
+	@GuardedBy("this")
+	private EventLoopGroup __socketAcceptors;
+	@GuardedBy("this")
+	private EventLoopGroup __socketWorkers;
+	@GuardedBy("this")
+	private EventLoopGroup __datagramWorkers;
+	@GuardedBy("this")
+	private EventLoopGroup __broadcastWorkers;
+	@GuardedBy("this")
+	private EventLoopGroup __websocketAcceptors;
+	@GuardedBy("this")
+	private EventLoopGroup __websocketWorkers;
 
-	private static final int DEFAULT_BROADCAST_PORT = 9999;
-	private static final String BROADCAST_ADDRESS = "255.255.255.255";
-	private static final int DATAGRAM_RECEIVE_BUFFER = 1024;
-	private static final int DATAGRAM_SEND_BUFFER = 1024 * 1024;
-
-	@GuardedBy("this")
-	private EventLoopGroup __socketProducer;
-	@GuardedBy("this")
-	private EventLoopGroup __socketConsumer;
-	@GuardedBy("this")
-	private EventLoopGroup __datagramConsumer;
-	@GuardedBy("this")
-	private EventLoopGroup __broadcastConsumer;
-
-	private GlobalTrafficShapingHandlerCustomize __traficCounter;
+	private GlobalTrafficShapingHandlerCustomize __traficCounterSockets;
+	private GlobalTrafficShapingHandlerCustomize __traficCounterDatagrams;
+	private GlobalTrafficShapingHandlerCustomize __traficCounterWebsockets;
+	private GlobalTrafficShapingHandlerCustomize __traficCounterBroadcast;
 
 	@GuardedBy("this")
 	private List<Channel> __serverSockets;
@@ -120,13 +123,58 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	public void start(IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException {
-		__socketProducer = new NioEventLoopGroup(
-				configuration.getInt(CoreConfigurationType.PRODUCER_THREADS_POOL_SIZE));
-		__socketConsumer = new NioEventLoopGroup(
-				configuration.getInt(CoreConfigurationType.CONSUMER_THREADS_POOL_SIZE));
 
-		__traficCounter = new GlobalTrafficShapingHandlerCustomize(eventManager, __socketConsumer,
+		var defaultSocketThreadFactory = new DefaultThreadFactory("socket", true, Thread.NORM_PRIORITY);
+		var defaultDatagramThreadFactory = new DefaultThreadFactory("datagram", true, Thread.NORM_PRIORITY);
+		var defaultBroadcastThreadFactory = new DefaultThreadFactory("broadcast", true, Thread.NORM_PRIORITY);
+		var defaultWebsocketThreadFactory = new DefaultThreadFactory("websocket", true, Thread.NORM_PRIORITY);
+
+		__socketAcceptors = new NioEventLoopGroup(
+				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR), defaultSocketThreadFactory);
+		__socketWorkers = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER),
+				defaultSocketThreadFactory);
+
+		__broadcastWorkers = new NioEventLoopGroup(1, defaultBroadcastThreadFactory);
+
+		__websocketAcceptors = new NioEventLoopGroup(
+				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR),
+				defaultWebsocketThreadFactory);
+		__websocketWorkers = new NioEventLoopGroup(
+				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER), defaultWebsocketThreadFactory);
+
+		switch (OsUtility.getOperatingSystemType()) {
+		case MacOS:
+			__datagramWorkers = new KQueueEventLoopGroup(
+					configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER),
+					defaultDatagramThreadFactory);
+			break;
+
+		case Linux:
+			__datagramWorkers = new EpollEventLoopGroup(
+					configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER),
+					defaultDatagramThreadFactory);
+			break;
+
+		case Windows:
+			__datagramWorkers = new NioEventLoopGroup(1, defaultDatagramThreadFactory);
+			break;
+
+		default:
+			__datagramWorkers = new NioEventLoopGroup(1, defaultDatagramThreadFactory);
+			break;
+		}
+
+		__traficCounterSockets = new GlobalTrafficShapingHandlerCustomize("socket", eventManager, __socketWorkers,
 				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
+		__traficCounterDatagrams = new GlobalTrafficShapingHandlerCustomize("datagram", eventManager, __datagramWorkers,
+				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
+		__traficCounterWebsockets = new GlobalTrafficShapingHandlerCustomize("websocket", eventManager,
+				__websocketWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
+		__traficCounterBroadcast = new GlobalTrafficShapingHandlerCustomize("broadcast", eventManager,
+				__broadcastWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 
 		__serverSockets = new ArrayList<Channel>();
@@ -137,8 +185,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			var socketConfig = socketPorts.get(connectionIndex);
 			switch (socketConfig.getType()) {
 			case TCP:
-				__serverSockets.add(__bindTCP(connectionIndex, eventManager, configuration, commonObjectPool,
-						byteArrayInputPool, socketConfig));
+				__bindTCP(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool,
+						socketConfig);
 				break;
 			case UDP:
 				__bindUDP(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool,
@@ -157,8 +205,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			var socket = webSocketPorts.get(connectionIndex);
 			switch (socket.getType()) {
 			case WEB_SOCKET:
-				__serverWebsockets.add(__bindWS(connectionIndex, eventManager, configuration, commonObjectPool,
-						byteArrayInputPool, socket));
+				__bindWS(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool, socket);
 				break;
 			default:
 				break;
@@ -180,18 +227,31 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 
 		var bootstrap = new Bootstrap();
-		__broadcastConsumer = new NioEventLoopGroup();
-		bootstrap.group(__broadcastConsumer).channel(NioDatagramChannel.class).option(ChannelOption.SO_REUSEADDR, true)
-				.option(ChannelOption.SO_RCVBUF, DATAGRAM_RECEIVE_BUFFER).option(ChannelOption.SO_BROADCAST, true)
-				.option(ChannelOption.SO_SNDBUF, DATAGRAM_SEND_BUFFER)
-				.handler(new NettyBroadcastInitializer(__traficCounter));
-		var channelFuture = bootstrap.bind(DEFAULT_BROADCAST_PORT).sync();
+		bootstrap.group(__broadcastWorkers).channel(NioDatagramChannel.class).option(ChannelOption.SO_REUSEADDR, true)
+				.option(ChannelOption.SO_RCVBUF, CoreConstants.BROADCAST_RECEIVE_BUFFER)
+				.option(ChannelOption.SO_BROADCAST, true)
+				.option(ChannelOption.SO_SNDBUF, CoreConstants.BROADCAST_SEND_BUFFER)
+				.handler(new NettyBroadcastInitializer(__traficCounterBroadcast));
+
+		var channelFuture = bootstrap.bind(CoreConstants.DEFAULT_BROADCAST_PORT).await()
+				.addListener(new GenericFutureListener<Future<? super Void>>() {
+
+					@Override
+					public void operationComplete(Future<? super Void> future) throws Exception {
+						if (future.isSuccess()) {
+
+						} else {
+							_error(future.cause());
+						}
+					}
+				});
 		__broadcastChannel = channelFuture.channel();
 
 		__broadcastInets = new HashMap<String, InetSocketAddress>();
 		broadcastPorts.forEach(broadcastConfig -> {
 			__broadcastInets.put(broadcastConfig.getId(),
-					new InetSocketAddress(BROADCAST_ADDRESS, broadcastConfig.getPort()));
+					new InetSocketAddress(CoreConstants.BROADCAST_ADDRESS, broadcastConfig.getPort()));
+
 			_info("BROADCAST", _buildgen("Name: ", broadcastConfig.getName(), " > Id: ", broadcastConfig.getId(),
 					" > Started at port: ", broadcastConfig.getPort()));
 		});
@@ -211,55 +271,85 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @return the channel, see {@link Channel}
 	 */
 	private void __bindUDP(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
+
 		var bootstrap = new Bootstrap();
-		var threadsPool = configuration.getInt(CoreConfigurationType.CONSUMER_THREADS_POOL_SIZE);
+		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER);
 
 		switch (OsUtility.getOperatingSystemType()) {
 		case MacOS:
-			__datagramConsumer = new KQueueEventLoopGroup(threadsPool);
-
-			bootstrap.group(__datagramConsumer).channel(KQueueDatagramChannel.class)
-					.option(ChannelOption.SO_RCVBUF, DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, DATAGRAM_SEND_BUFFER)
+			bootstrap.group(__datagramWorkers).channel(KQueueDatagramChannel.class)
+					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
 					.option(KQueueChannelOption.SO_REUSEPORT, true)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounter, configuration));
+							byteArrayInputPool, __traficCounterDatagrams, configuration));
 			break;
 
 		case Linux:
-			__datagramConsumer = new EpollEventLoopGroup(threadsPool);
-
-			bootstrap.group(__datagramConsumer).channel(EpollDatagramChannel.class)
-					.option(ChannelOption.SO_RCVBUF, DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, DATAGRAM_SEND_BUFFER).option(EpollChannelOption.SO_REUSEPORT, true)
+			bootstrap.group(__datagramWorkers).channel(EpollDatagramChannel.class)
+					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.option(EpollChannelOption.SO_REUSEPORT, true)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounter, configuration));
+							byteArrayInputPool, __traficCounterDatagrams, configuration));
+			break;
+
+		case Windows:
+			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
+					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+					.option(ChannelOption.SO_REUSEADDR, true)
+					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
+							byteArrayInputPool, __traficCounterDatagrams, configuration));
 			break;
 
 		default:
-			// includes Window
-			__datagramConsumer = new NioEventLoopGroup();
-
-			bootstrap.group(__datagramConsumer).channel(NioDatagramChannel.class)
-					.option(ChannelOption.SO_REUSEADDR, true).option(ChannelOption.SO_RCVBUF, DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, DATAGRAM_SEND_BUFFER)
+			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
+					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+					.option(ChannelOption.SO_REUSEADDR, true)
+					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounter, configuration));
+							byteArrayInputPool, __traficCounterDatagrams, configuration));
 			break;
 		}
 
 		if (OsUtility.getOperatingSystemType() == OSType.MacOS || OsUtility.getOperatingSystemType() == OSType.Linux) {
-			for (int i = 0; i < threadsPool; i++) {
-				var channelFuture = bootstrap.bind(socketConfig.getPort()).sync();
+			for (int i = 0; i < threadsPoolWorker; i++) {
+				var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+						.addListener(new GenericFutureListener<Future<? super Void>>() {
+
+							@Override
+							public void operationComplete(Future<? super Void> future) throws Exception {
+								if (future.isSuccess()) {
+
+								} else {
+									_error(future.cause());
+								}
+							}
+						});
 				__serverSockets.add(channelFuture.channel());
 			}
 		} else {
-			var channelFuture = bootstrap.bind(socketConfig.getPort()).sync();
+			var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+					.addListener(new GenericFutureListener<Future<? super Void>>() {
+
+						@Override
+						public void operationComplete(Future<? super Void> future) throws Exception {
+							if (future.isSuccess()) {
+
+							} else {
+								_error(future.cause());
+							}
+						}
+					});
 			__serverSockets.add(channelFuture.channel());
 		}
 
@@ -279,22 +369,36 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindTCP(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
+	private void __bindTCP(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
+
 		var bootstrap = new ServerBootstrap();
-		bootstrap.group(__socketProducer, __socketConsumer).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 10240)
-				.childOption(ChannelOption.SO_RCVBUF, 10240).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettySocketInitializer(connectionIndex, eventManager, commonObjectPool,
-						byteArrayInputPool, __traficCounter, configuration));
+
+		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
+				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.TCP_NODELAY, true)
+				.childOption(ChannelOption.SO_SNDBUF, CoreConstants.SOCKET_SEND_BUFFER)
+				.childOption(ChannelOption.SO_RCVBUF, CoreConstants.SOCKET_RECEIVE_BUFFER)
+				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettySocketInitializer(connectionIndex,
+						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterSockets, configuration));
+
+		var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+				.addListener(new GenericFutureListener<Future<? super Void>>() {
+
+					@Override
+					public void operationComplete(Future<? super Void> future) throws Exception {
+						if (future.isSuccess()) {
+
+						} else {
+							_error(future.cause());
+						}
+					}
+				});
+		__serverSockets.add(channelFuture.channel());
 
 		_info("SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
 				" > Started at port: ", socketConfig.getPort()));
-
-		return bootstrap.bind(socketConfig.getPort()).sync().channel();
 	}
 
 	/**
@@ -310,22 +414,36 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @return the channel, see {@link Channel}
 	 */
-	private Channel __bindWS(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
+	private void __bindWS(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
+
 		var bootstrap = new ServerBootstrap();
-		bootstrap.group(__socketProducer, __socketConsumer).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, 1024)
-				.childOption(ChannelOption.SO_RCVBUF, 1024).childOption(ChannelOption.SO_KEEPALIVE, true)
-				.childHandler(new NettyWSInitializer(connectionIndex, eventManager, commonObjectPool,
-						byteArrayInputPool, __traficCounter, configuration));
+
+		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
+				.option(ChannelOption.SO_BACKLOG, 5)
+				.childOption(ChannelOption.SO_SNDBUF, CoreConstants.WEBSOCKET_SEND_BUFFER)
+				.childOption(ChannelOption.SO_RCVBUF, CoreConstants.WEBSOCKET_RECEIVE_BUFFER)
+				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettyWSInitializer(connectionIndex,
+						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterWebsockets, configuration));
+
+		var channelFuture = bootstrap.bind(socketConfig.getPort()).await()
+				.addListener(new GenericFutureListener<Future<? super Void>>() {
+
+					@Override
+					public void operationComplete(Future<? super Void> future) throws Exception {
+						if (future.isSuccess()) {
+
+						} else {
+							_error(future.cause());
+						}
+					}
+				});
+		__serverWebsockets.add(channelFuture.channel());
 
 		_info("WEB SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
 				" > Started at port: ", socketConfig.getPort()));
-
-		return bootstrap.bind(socketConfig.getPort()).sync().channel();
 	}
 
 	@Override
@@ -338,14 +456,23 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 		__close(__broadcastChannel);
 
-		if (__socketProducer != null) {
-			__socketProducer.shutdownGracefully();
+		if (__socketAcceptors != null) {
+			__socketAcceptors.shutdownGracefully();
 		}
-		if (__socketConsumer != null) {
-			__socketConsumer.shutdownGracefully();
+		if (__socketWorkers != null) {
+			__socketWorkers.shutdownGracefully();
 		}
-		if (__datagramConsumer != null) {
-			__datagramConsumer.shutdownGracefully();
+		if (__datagramWorkers != null) {
+			__datagramWorkers.shutdownGracefully();
+		}
+		if (__broadcastWorkers != null) {
+			__broadcastWorkers.shutdownGracefully();
+		}
+		if (__websocketAcceptors != null) {
+			__websocketAcceptors.shutdownGracefully();
+		}
+		if (__websocketWorkers != null) {
+			__websocketWorkers.shutdownGracefully();
 		}
 
 		__cleanup();
@@ -359,11 +486,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		__broadcastInets.clear();
 		__broadcastInets = null;
 
-		__socketProducer = null;
-		__socketConsumer = null;
-		__datagramConsumer = null;
-		__broadcastConsumer = null;
-		__traficCounter = null;
+		__traficCounterBroadcast = null;
+		__traficCounterDatagrams = null;
+		__traficCounterSockets = null;
+		__traficCounterWebsockets = null;
 	}
 
 	/**
@@ -378,7 +504,17 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 
 		try {
-			channel.close().sync();
+			channel.close().await().addListener(new GenericFutureListener<Future<? super Void>>() {
+
+				@Override
+				public void operationComplete(Future<? super Void> future) throws Exception {
+					if (future.isSuccess()) {
+
+					} else {
+						_error(future.cause());
+					}
+				}
+			});
 			return true;
 		} catch (InterruptedException e) {
 			_error(e);
@@ -395,7 +531,6 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	public void sendBroadcast(String broadcastId, CommonObject message) {
 		__broadcastChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)),
 				__broadcastInets.get(broadcastId)));
-
 	}
 
 }

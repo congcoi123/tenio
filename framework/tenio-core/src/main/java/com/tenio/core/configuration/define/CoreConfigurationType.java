@@ -40,7 +40,7 @@ import com.tenio.common.configuration.ConfigurationType;
  * 
  */
 public enum CoreConfigurationType implements ConfigurationType {
-	
+
 	/**
 	 * The server name
 	 */
@@ -61,11 +61,23 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	PRODUCER_THREADS_POOL_SIZE("producerThreadsPoolSize"),
+	SOCKET_THREADS_POOL_ACCEPTOR("socketThreadsPoolAcceptor"),
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	CONSUMER_THREADS_POOL_SIZE("consumerThreadsPoolSize"),
+	SOCKET_THREADS_POOL_WORKER("socketThreadsPoolWorker"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	DATAGRAM_THREADS_POOL_WORKER("datagramThreadsPoolWorker"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	WEBSOCKET_THREADS_POOL_ACCEPTOR("websocketThreadsPoolAcceptor"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	WEBSOCKET_THREADS_POOL_WORKER("websocketThreadsPoolWorker"),
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout
@@ -111,16 +123,13 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 */
 	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
 
-	//====== UNDER CONTRUCTION ======//
-	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
-	NUMBER_READER_WORKER("numberReaderWorker"),
-	NUMBER_WRITER_WORKER("numberWriterWorker"),
-	READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
-	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
-	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
+	// ====== UNDER CONTRUCTION ======//
+	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"), NUMBER_READER_WORKER("numberReaderWorker"),
+	NUMBER_WRITER_WORKER("numberWriterWorker"), READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
+	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"), CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
 	SERVER_ADDRESS("serverAddress"),
-	//====== UNDER CONTRUCTION ======//
-	
+	// ====== UNDER CONTRUCTION ======//
+
 	/**
 	 * The list of socket ports in configuration
 	 */

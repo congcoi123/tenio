@@ -20,19 +20,26 @@
 	</Network>
 
 	<Configuration>
+		<Workers>
+			<Worker name="socketThreadsPoolAcceptor">10</Worker>
+			<Worker name="socketThreadsPoolWorker">100</Worker>
+			<Worker name="datagramThreadsPoolWorker">50</Worker>
+			<Worker name="websocketThreadsPoolAcceptor">1</Worker>
+			<Worker name="websocketThreadsPoolWorker">1</Worker>
+		</Workers>
+		<Schedules>
+			<Task name="emptyRoomScanInterval">30</Task>	<!-- Unit: Seconds -->
+			<Task name="timeoutScanInterval">45</Task>		<!-- Unit: Seconds -->
+			<Task name="ccuScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="deadlockScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="trafficCounterCheckInterval">60</Task>	<!-- Unit: Seconds -->
+			<Task name="systemMonitoringInterval">60</Task>		<!-- Unit: Seconds -->
+		</Schedules>
 		<Properties>
-			<Property name="producerThreadsPoolSize">10</Property>
-			<Property name="consumerThreadsPoolSize">50</Property>
 			<Property name="keepPlayerOnDisconnect">false</Property>
 			<Property name="maxNumberPlayers">1000</Property>
 			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->
 			<Property name="idleWriterTime">60</Property>		<!-- Unit: Seconds -->
-			<Property name="emptyRoomScanInterval">30</Property>	<!-- Unit: Seconds -->
-			<Property name="timeoutScanInterval">45</Property>		<!-- Unit: Seconds -->
-			<Property name="ccuScanInterval">60</Property>			<!-- Unit: Seconds -->
-			<Property name="deadlockScanInterval">60</Property>			<!-- Unit: Seconds -->
-			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
-			<Property name="systemMonitoringInterval">60</Property>		<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

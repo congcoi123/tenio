@@ -111,4 +111,15 @@ public final class CoreConstants {
 	 */
 	public static final String PING_PATH = "/ping";
 
+	public static final int DEFAULT_BROADCAST_PORT = 9999;
+	public static final String BROADCAST_ADDRESS = "255.255.255.255";
+	public static final int DATAGRAM_RECEIVE_BUFFER = 768;
+	public static final int DATAGRAM_SEND_BUFFER = 1024;
+	public static final int SOCKET_RECEIVE_BUFFER = 10240;
+	public static final int SOCKET_SEND_BUFFER = 10240;
+	public static final int WEBSOCKET_RECEIVE_BUFFER = 10240;
+	public static final int WEBSOCKET_SEND_BUFFER = 10240;
+	public static final int BROADCAST_RECEIVE_BUFFER = 768;
+	public static final int BROADCAST_SEND_BUFFER = 1024;
+
 }

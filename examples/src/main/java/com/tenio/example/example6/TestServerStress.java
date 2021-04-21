@@ -135,10 +135,11 @@ public final class TestServerStress extends AbstractApp {
 				long currentReadBytes = _getLong(params[3]);
 				long currentWrittenBytes = _getLong(params[4]);
 				long realWrittenBytes = _getLong(params[5]);
+				String name = _getString(params[6]);
 
 				var bandwidth = String.format(
-						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
-						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						"name=%s;lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						name, lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
 				_info("FETCHED_BANDWIDTH_INFO", bandwidth);

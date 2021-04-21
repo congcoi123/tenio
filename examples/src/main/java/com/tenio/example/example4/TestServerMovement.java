@@ -97,7 +97,7 @@ public final class TestServerMovement extends AbstractApp {
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
 
-				_info("PLAYER_LOGINED_SUCCESS", player.getName());
+				_info("PLAYER_LOGINED_SUCCESS", player.getName(), Thread.currentThread().getId());
 
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
@@ -120,7 +120,7 @@ public final class TestServerMovement extends AbstractApp {
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (Inspector) _getPlayer(params[1]);
 
-				_info("ATTACH_CONNECTION_SUCCESS", player.toString());
+				_info("ATTACH_CONNECTION_SUCCESS", player.toString(), Thread.currentThread().getId());
 
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
@@ -150,10 +150,11 @@ public final class TestServerMovement extends AbstractApp {
 				long currentReadBytes = _getLong(params[3]);
 				long currentWrittenBytes = _getLong(params[4]);
 				long realWrittenBytes = _getLong(params[5]);
+				String name = _getString(params[6]);
 
 				var bandwidth = String.format(
-						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
-						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						"name=%s;lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						name, lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
 				_info("FETCHED_BANDWIDTH_INFO", bandwidth);

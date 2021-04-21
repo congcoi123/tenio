@@ -72,13 +72,6 @@ public interface IPlayer {
 	 */
 	boolean isNPC();
 
-	/**
-	 * @param connectionIndex the order of connection.
-	 * @return <b>true</b> if the connection is available, otherwise returns
-	 *         <b>false</b>
-	 */
-//	boolean hasConnection(int connectionIndex);
-
 	IConnection getConnection(int connectionIndex);
 
 	void initializeConnections(int connectionsSize);

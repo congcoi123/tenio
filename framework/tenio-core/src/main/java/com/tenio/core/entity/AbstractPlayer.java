@@ -139,16 +139,6 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 		return __flagNPC;
 	}
 
-//	@Override
-//	public boolean hasConnection(int connectionIndex) {
-//		if (__flagNPC) {
-//			return false;
-//		}
-//		synchronized (__connections) {
-//			return (__connections[connectionIndex] != null);
-//		}
-//	}
-
 	@Override
 	public IConnection getConnection(int connectionIndex) {
 		if (__flagNPC) {
@@ -158,7 +148,6 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return null;
 		}
-//		System.out.println("got");
 		synchronized (__connections) {
 			return __connections[connectionIndex];
 		}

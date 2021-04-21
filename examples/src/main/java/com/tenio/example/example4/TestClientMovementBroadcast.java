@@ -38,9 +38,7 @@ import com.tenio.example.client.UDP;
  * This class shows how a client communicates with the server:<br>
  * 1. Create connections.<br>
  * 2. Send a login request.<br>
- * 3. Receive a response for login success and send a UDP connection
- * request.<br>
- * 4. Receive a response for allowed UDP connection.<br>
+ * 3. Receive broadcast messages.<br>
  * 
  * @author kong
  *
