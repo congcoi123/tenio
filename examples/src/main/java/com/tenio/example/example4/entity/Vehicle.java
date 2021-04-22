@@ -43,6 +43,8 @@ public final class Vehicle extends MoveableEntity implements IRender {
 	private float __timeElapsed;
 	// buffer for the vehicle shape
 	private List<Vector2> __shape = new ArrayList<Vector2>();
+	// index of vehicle in the list
+	private int __index;
 
 	public Vehicle(World world, Vector2 position, float rotation, Vector2 velocity, float mass, float maxForce,
 			float maxSpeed, float maxTurnRate, float scale) {
@@ -120,6 +122,25 @@ public final class Vehicle extends MoveableEntity implements IRender {
 	 */
 	public float getTimeElapsed() {
 		return __timeElapsed;
+	}
+	
+	public int getASCIIValueOfString(String question) {
+		int result = 0;
+		
+		var chars = question.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			result += (int) chars[i];
+		}
+		
+		return result;
+	}
+	
+	public int getIndex() {
+		return __index;
+	}
+	
+	public void setIndex(int index) {
+		__index = index;
 	}
 
 	/**

@@ -29,9 +29,11 @@ import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.message.IMessage;
 import com.tenio.example.example4.constant.Constants;
 import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.server.Configuration;
+import com.tenio.example.server.ExampleMessage;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
@@ -80,6 +82,17 @@ public final class TestServerMovement extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
+			
+			// Create a world
+			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
+			var hearbeatManager = new HeartBeatManager();
+			try {
+				hearbeatManager.initialize(1);
+				hearbeatManager.create("world", world);
+			} catch (Exception e) {
+				_error(e, "world");
+			}
 
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
@@ -97,7 +110,7 @@ public final class TestServerMovement extends AbstractApp {
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
 
-				_info("PLAYER_LOGINED_SUCCESS", player.getName(), Thread.currentThread().getId());
+				// _info("PLAYER_LOGINED_SUCCESS", player.getName(), Thread.currentThread().getId());
 
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
@@ -120,7 +133,7 @@ public final class TestServerMovement extends AbstractApp {
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (Inspector) _getPlayer(params[1]);
 
-				_info("ATTACH_CONNECTION_SUCCESS", player.toString(), Thread.currentThread().getId());
+				// _info("ATTACH_CONNECTION_SUCCESS", player.toString(), Thread.currentThread().getId());
 
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
@@ -186,17 +199,21 @@ public final class TestServerMovement extends AbstractApp {
 
 				return null;
 			});
-
-			// Create a world
-			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
-			var hearbeatManager = new HeartBeatManager();
-			try {
-				hearbeatManager.initialize(1);
-				hearbeatManager.create("world", world);
-			} catch (Exception e) {
-				_error(e, "world");
-			}
+			
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = _getPlayer(params[0]);
+				var connectionId = _getInteger(params[1]);
+				var request = _getCommonObject(params[2]);
+				
+				if (connectionId == Inspector.MAIN_CHANNEL) {
+					IMessage message = new ExampleMessage();
+					message.putContent("id", player.getName());
+					message.putContent("q", request.get("a"));
+					hearbeatManager.sendMessage("world", message);
+				}
+				
+				return null;
+			});
 
 		}
 

@@ -63,7 +63,7 @@
 			<AppenderRef ref="TestServerMovement" />
 		</Logger>
 
-		<Logger name="io.netty" level="all" additivity="false">
+		<Logger name="io.netty" level="warn" additivity="false">
 			<AppenderRef ref="${target}" />
 			<AppenderRef ref="TestServerMovement" />
 		</Logger>

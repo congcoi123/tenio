@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
+import java.security.SecureRandom;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.utility.TimeUtility;
 import com.tenio.example.client.IDatagramListener;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
@@ -47,6 +49,13 @@ import com.tenio.example.client.UDP;
  *
  */
 public final class TestClientMovement extends AbstractLogger implements ISocketListener, IDatagramListener {
+
+	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+	private static final String NUMBER = "0123456789";
+
+	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+	private static SecureRandom RANDOM = new SecureRandom();
 
 	private static float DELAY_CREATION = 0.1f;
 
@@ -73,25 +82,12 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	private final String __playerName;
 	private int __countReceivedPacketSizeOneMinute;
 	private int __countUdpPacketsOneMinute;
+	private long __sentTimestamp;
 
 	public TestClientMovement(String playerName) {
 		__playerName = playerName;
 		__countUdpPacketsOneMinute = 0;
 		__countReceivedPacketSizeOneMinute = 0;
-
-		// logging
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-
-			_info("COUNTING",
-					String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-							__playerName, __countUdpPacketsOneMinute,
-							(float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
-									/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100),
-							(float) __countReceivedPacketSizeOneMinute / 1000));
-			__countReceivedPacketSizeOneMinute = 0;
-			__countUdpPacketsOneMinute = 0;
-
-		}, 1, 1, TimeUnit.MINUTES);
 
 		// create a new TCP object and listen for this port
 		__tcp = new TCP(8032);
@@ -106,6 +102,23 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 		message.put("u", __playerName);
 		__tcp.send(message);
 		_info("LOGIN REQUEST", message);
+
+		// logging and requesting
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+			_info("COUNTING",
+					String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
+							__playerName, __countUdpPacketsOneMinute,
+							(float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
+									/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100),
+							(float) __countReceivedPacketSizeOneMinute / 1000));
+			__countReceivedPacketSizeOneMinute = 0;
+			__countUdpPacketsOneMinute = 0;
+
+			__sentTimestamp = TimeUtility.currentTimeMillis();
+			__tcp.send(CommonObject.newInstance().add("a", __generateRandomString(10)));
+
+		}, 1, 1, TimeUnit.MINUTES);
 
 	}
 
@@ -131,8 +144,11 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 				break;
 
 			}
-		} else if (message.contain("p")) {
-			__counting(message);
+		} else if (message.contain("r")) {
+			// _info("[RECV RESPONSE FROM SERVER TCP]", message);
+			long receivedTimestamp = TimeUtility.currentTimeMillis();
+			long latency = receivedTimestamp - __sentTimestamp;
+			_info("[LATENCY]", _buildgen("Player ", __playerName, " -> ", latency, " ms"));
 		}
 
 	}
@@ -145,6 +161,23 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	private void __counting(CommonObject message) {
 		__countUdpPacketsOneMinute++;
 		__countReceivedPacketSizeOneMinute += SerializationUtils.serialize(message).length;
+	}
+
+	private String __generateRandomString(int length) {
+		if (length < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		var sb = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			// 0-62 (exclusive), random returns 0-61
+			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+			sb.append(rndChar);
+		}
+
+		return sb.toString();
 	}
 
 }

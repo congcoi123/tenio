@@ -37,7 +37,7 @@ public final class OsUtility {
 	 * Detect the operating system from the os.name System property and cache the
 	 * result
 	 * 
-	 * @returns - The operating system detected
+	 * @return The operating system detected
 	 */
 	public static OSType getOperatingSystemType() {
 

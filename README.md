@@ -125,8 +125,10 @@ Please start the server before its corresponding client in each example package.
     |   |-- TestServerAttach.java
     |-- example4
     |   |-- TestClientMovement.java
+    |   |-- TestClientMovementBroadcast.java
     |   |-- TestMovement.java
     |   |-- TestServerMovement.java
+    |   |-- TestServerMovementBroadcast.java
     |-- example5
     |   |-- TestECS.java
     |-- example6

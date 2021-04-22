@@ -130,6 +130,8 @@ public final class World extends AbstractHeartBeat {
 					__paramLoader.MAX_TURN_RATE_PER_SECOND, // max turn rate
 					__paramLoader.VEHICLE_SCALE); // scale
 
+			pVehicle.setIndex(a);
+
 			// Set the unique id for the big guy
 			if (a == 0) {
 				pVehicle.setId("dragon");
@@ -524,7 +526,48 @@ public final class World extends AbstractHeartBeat {
 
 	@Override
 	protected void _onMessage(IMessage message) {
-		System.out.println("World._onMessage(): " + message.getContent().toString());
+		// System.out.println("World._onMessage(): " + message.getContent().toString());
+		var name = (String) message.getContentByKey("id");
+		var id = Integer.parseInt(name);
+		var request = (String) message.getContentByKey("q");
+
+		if (id > 99) {
+			id = 99;
+		}
+
+		List<Vehicle> neighbours = getNeighboursOf(id);
+		var response = __messageApi.getMessageObjectArray();
+		neighbours.forEach(neighbour -> {
+			response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
+		});
+		__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+
+	}
+
+	private List<Vehicle> getNeighboursOf(final int index) {
+
+		List<Vehicle> vehicles = new ArrayList<Vehicle>();
+		List<Vehicle> neighbours = new ArrayList<Vehicle>();
+
+		if (index > 99) {
+			return neighbours;
+		}
+
+		synchronized (__vehicles) {
+			__vehicles.forEach(vehicle -> {
+				vehicles.add(vehicle);
+			});
+		}
+
+		vehicles.forEach(vehicle -> {
+			if (vehicles.get(index) != vehicle) {
+				if (vehicles.get(index).getPosition().getDistanceValue(vehicle.getPosition()) < 50) {
+					neighbours.add(vehicle);
+				}
+			}
+		});
+
+		return neighbours;
 	}
 
 }
