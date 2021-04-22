@@ -464,13 +464,14 @@ public final class World extends AbstractHeartBeat {
 				var vehicle = __vehicles.get(i);
 
 				if (__sendingBroadcast) {
-					__messageApi.sendDatagramBroadcast("move", "p", __messageApi.getMessageObjectArray().put(j)
-							.put(vehicle.getPositionX()).put(vehicle.getPositionY()).put(vehicle.getRotation()));
+					__messageApi.sendDatagramBroadcast("move", "p",
+							__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+									.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
 				} else {
 					__inspectorsBuffer.forEach((name, inspector) -> {
 						__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-								__messageApi.getMessageObjectArray().put(j).put(vehicle.getPositionX())
-										.put(vehicle.getPositionY()).put(vehicle.getRotation()));
+								__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+										.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
 					});
 				}
 			}

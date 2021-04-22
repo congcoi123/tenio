@@ -288,6 +288,9 @@ public final class MessageApi extends AbstractLogger {
 		__broadcaster.sendBroadcast(broadcastId, message);
 
 		__repayMessageObject(message);
+		if (value instanceof CommonObjectArray) {
+			__repayMessageObjectArray((CommonObjectArray) value);
+		}
 	}
 
 	/**

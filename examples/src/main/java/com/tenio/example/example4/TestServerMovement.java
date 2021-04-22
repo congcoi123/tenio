@@ -179,6 +179,14 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
+			_on(ExtEvent.EXCEPTION, params -> {
+				var exception = _getThrowable(params[0]);
+
+				_error(exception);
+
+				return null;
+			});
+
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
 			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");

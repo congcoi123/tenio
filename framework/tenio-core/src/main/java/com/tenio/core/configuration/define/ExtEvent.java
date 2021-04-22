@@ -408,6 +408,17 @@ public enum ExtEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	HTTP_REQUEST_HANDLE
+	HTTP_REQUEST_HANDLE,
+
+	/**
+	 * Throw an exception
+	 * 
+	 * <ul>
+	 * <li><b>parameter[0]</b> Cause {@link Throwable}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	EXCEPTION
 
 }

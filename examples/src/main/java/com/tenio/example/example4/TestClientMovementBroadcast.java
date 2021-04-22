@@ -45,8 +45,8 @@ import com.tenio.example.client.UDP;
  */
 public final class TestClientMovementBroadcast implements ISocketListener, IDatagramListener {
 
-	// Expects 240 packets per second in one minute
-	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60;
+	// Expects 24000 packets per second in one minute
+	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
 
 	/**
 	 * The entry point

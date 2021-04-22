@@ -26,6 +26,10 @@ package com.tenio.core.network.netty.option;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.event.IEventManager;
+import com.tenio.core.exception.ExceededMessageQueueOutboundException;
+
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,15 +41,17 @@ import io.netty.channel.ChannelPromise;
  */
 public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandlerAdapter {
 
-	private static final int QUEUE_SIZE_WARNING = 5000;
+	private static final int QUEUE_SIZE_WARNING = 100;
 
+	private final IEventManager __eventManager;
 	private ChannelHandlerContext __ctx;
 	private final Queue<Object> __messageQueue;
 	private int __queueSize;
 	private boolean __isWriting;
 
-	public WriteQueueOutboundChannelHandler() {
+	public WriteQueueOutboundChannelHandler(IEventManager eventManager) {
 		__messageQueue = new ConcurrentLinkedQueue<Object>();
+		__eventManager = eventManager;
 		__queueSize = 0;
 		__isWriting = false;
 	}
@@ -56,7 +62,7 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 			if (future.isSuccess()) {
 				__poll();
 			} else {
-				future.cause().printStackTrace();
+				__eventManager.getExtension().emit(ExtEvent.EXCEPTION, future.cause());
 				future.channel().close();
 				__messageQueue.clear();
 			}
@@ -77,9 +83,9 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 		__ctx = ctx;
 
-		int size = __queueSize;
-		if (size > QUEUE_SIZE_WARNING) {
-			System.out.println(String.format("Queue Size: %d -> Thread: %s", size, Thread.currentThread().getName()));
+		int queueSize = __queueSize;
+		if (queueSize > QUEUE_SIZE_WARNING) {
+			__eventManager.getExtension().emit(ExtEvent.EXCEPTION, new ExceededMessageQueueOutboundException(queueSize));
 		}
 
 		__messageQueue.offer(message);

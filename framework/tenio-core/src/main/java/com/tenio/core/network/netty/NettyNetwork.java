@@ -85,6 +85,11 @@ import io.netty.util.concurrent.GenericFutureListener;
 @ThreadSafe
 public final class NettyNetwork extends AbstractLogger implements INetwork, IBroadcast {
 
+	private static final String PREFIX_SOCKET = "socket";
+	private static final String PREFIX_DATAGRAM = "datagram";
+	private static final String PREFIX_WEBSOCKET = "websocket";
+	private static final String PREFIX_BROADCAST = "broadcast";
+
 	@GuardedBy("this")
 	private EventLoopGroup __socketAcceptors;
 	@GuardedBy("this")
@@ -127,10 +132,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException {
 
-		var defaultSocketThreadFactory = new DefaultThreadFactory("socket", true, Thread.NORM_PRIORITY);
-		var defaultDatagramThreadFactory = new DefaultThreadFactory("datagram", true, Thread.NORM_PRIORITY);
-		var defaultBroadcastThreadFactory = new DefaultThreadFactory("broadcast", true, Thread.NORM_PRIORITY);
-		var defaultWebsocketThreadFactory = new DefaultThreadFactory("websocket", true, Thread.NORM_PRIORITY);
+		var defaultSocketThreadFactory = new DefaultThreadFactory(PREFIX_SOCKET, true, Thread.NORM_PRIORITY);
+		var defaultDatagramThreadFactory = new DefaultThreadFactory(PREFIX_DATAGRAM, true, Thread.NORM_PRIORITY);
+		var defaultBroadcastThreadFactory = new DefaultThreadFactory(PREFIX_BROADCAST, true, Thread.NORM_PRIORITY);
+		var defaultWebsocketThreadFactory = new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
 		__socketAcceptors = new NioEventLoopGroup(
 				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR), defaultSocketThreadFactory);
@@ -167,16 +172,16 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			break;
 		}
 
-		__traficCounterSockets = new GlobalTrafficShapingHandlerCustomize("socket", eventManager, __socketWorkers,
+		__traficCounterSockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_SOCKET, eventManager, __socketWorkers,
 				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterDatagrams = new GlobalTrafficShapingHandlerCustomize("datagram", eventManager, __datagramWorkers,
-				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+		__traficCounterDatagrams = new GlobalTrafficShapingHandlerCustomize(PREFIX_DATAGRAM, eventManager,
+				__datagramWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterWebsockets = new GlobalTrafficShapingHandlerCustomize("websocket", eventManager,
+		__traficCounterWebsockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_WEBSOCKET, eventManager,
 				__websocketWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterBroadcast = new GlobalTrafficShapingHandlerCustomize("broadcast", eventManager,
+		__traficCounterBroadcast = new GlobalTrafficShapingHandlerCustomize(PREFIX_BROADCAST, eventManager,
 				__broadcastWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 

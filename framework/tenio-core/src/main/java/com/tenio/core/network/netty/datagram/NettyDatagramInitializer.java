@@ -71,7 +71,7 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 		// converts bytes' array to data chunk (write-down)
 		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
 
-		pipeline.addLast("outbound-queue", new WriteQueueOutboundChannelHandler());
+		pipeline.addLast("outbound-queue", new WriteQueueOutboundChannelHandler(__eventManager));
 
 		// traffic counter
 		pipeline.addLast("traffic-counter", __trafficCounter);
