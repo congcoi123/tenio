@@ -59,6 +59,9 @@
 - Communication Simulation  
 ![Communication](assets/login-example-1.gif)
 
+## Testing
+Please check out the [testing directory](documentations/testing) for more details.
+
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
