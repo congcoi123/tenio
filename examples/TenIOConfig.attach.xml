@@ -21,9 +21,9 @@
 
 	<Configuration>
 		<Workers>
-			<Worker name="socketThreadsPoolAcceptor">10</Worker>
-			<Worker name="socketThreadsPoolWorker">100</Worker>
-			<Worker name="datagramThreadsPoolWorker">50</Worker>
+			<Worker name="socketThreadsPoolAcceptor">20</Worker>
+			<Worker name="socketThreadsPoolWorker">150</Worker>
+			<Worker name="datagramThreadsPoolWorker">100</Worker>
 			<Worker name="websocketThreadsPoolAcceptor">1</Worker>
 			<Worker name="websocketThreadsPoolWorker">1</Worker>
 		</Workers>

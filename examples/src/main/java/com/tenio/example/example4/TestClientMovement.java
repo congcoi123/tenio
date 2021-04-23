@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.example.example4;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -58,10 +60,16 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	private static SecureRandom RANDOM = new SecureRandom();
 
 	private static float DELAY_CREATION = 0.1f;
+	// time in minute
+	private static int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
+	// time in second
+	private static int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	private static int NUMBER_OF_PLAYERS = 500;
+	private static int NUMBER_OF_PLAYERS = 100;
 	// 100 objects * 4 times * 60
 	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
+
+	private static final List<Long> __latencyRecorder = new ArrayList<Long>();
 
 	/**
 	 * The entry point
@@ -69,20 +77,44 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
+
+		// average measurement
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+			synchronized (__latencyRecorder) {
+				long average = 0;
+				int size = __latencyRecorder.size();
+				for (int i = 0; i < size; i++) {
+					average += __latencyRecorder.get(i).longValue();
+				}
+				double result = (double) average / (double) size;
+
+				System.err.println(String.format("[AVERAGE LATENCY] Total Requests: %d -> Average Latency: %.2f ms",
+						size, result));
+
+				if (size >= Integer.MAX_VALUE) {
+					System.out.println(String.format("[AVERAGE LATENCY] Reset counter -> %d", size));
+					__latencyRecorder.clear();
+				}
+			}
+
+		}, 0, AVERAGE_LATENCY_MEASUREMENT_INTERVAL, TimeUnit.MINUTES);
+
 		for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
 			new TestClientMovement(String.valueOf(i));
 			if (DELAY_CREATION != -1) {
 				Thread.sleep((long) (DELAY_CREATION * 1000));
 			}
 		}
+
 	}
 
 	private final TCP __tcp;
 	private final UDP __udp;
 	private final String __playerName;
-	private int __countReceivedPacketSizeOneMinute;
-	private int __countUdpPacketsOneMinute;
-	private long __sentTimestamp;
+	private volatile int __countReceivedPacketSizeOneMinute;
+	private volatile int __countUdpPacketsOneMinute;
+	private volatile long __sentTimestamp;
 
 	public TestClientMovement(String playerName) {
 		__playerName = playerName;
@@ -103,7 +135,7 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 		__tcp.send(message);
 		_info("LOGIN REQUEST", message);
 
-		// logging and requesting
+		// packets counting
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			_info("COUNTING",
@@ -115,9 +147,6 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 			__countReceivedPacketSizeOneMinute = 0;
 			__countUdpPacketsOneMinute = 0;
 
-			__sentTimestamp = TimeUtility.currentTimeMillis();
-			__tcp.send(CommonObject.newInstance().add("a", __generateRandomString(10)));
-
 		}, 1, 1, TimeUnit.MINUTES);
 
 	}
@@ -126,7 +155,7 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	public void onReceivedTCP(CommonObject message) {
 
 		if (message.contain("c")) {
-			_info("[RECV FROM SERVER TCP]", message);
+			_info("RECV FROM SERVER TCP", message);
 			switch ((String) message.get("c")) {
 			case "udp": {
 				// now you can send request for UDP connection request
@@ -134,6 +163,14 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 				request.put("u", __playerName);
 				__udp.send(request);
 				_info("REQUEST UDP CONNECTION", request);
+
+				// send requests to calculate latency
+				Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+					__sentTimestamp = TimeUtility.currentTimeMillis();
+					__tcp.send(CommonObject.newInstance().add("a", __generateRandomString(10)));
+
+				}, SEND_MEASUREMENT_REQUEST_INTERVAL, SEND_MEASUREMENT_REQUEST_INTERVAL, TimeUnit.SECONDS);
 			}
 				break;
 
@@ -145,10 +182,13 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 
 			}
 		} else if (message.contain("r")) {
-			// _info("[RECV RESPONSE FROM SERVER TCP]", message);
+			// _info("RECV RESPONSE FROM SERVER TCP", message);
 			long receivedTimestamp = TimeUtility.currentTimeMillis();
 			long latency = receivedTimestamp - __sentTimestamp;
-			_info("[LATENCY]", _buildgen("Player ", __playerName, " -> ", latency, " ms"));
+			synchronized (__latencyRecorder) {
+				__latencyRecorder.add(latency);
+			}
+			_info("LATENCY", _buildgen("Player ", __playerName, " -> ", latency, " ms"));
 		}
 
 	}
