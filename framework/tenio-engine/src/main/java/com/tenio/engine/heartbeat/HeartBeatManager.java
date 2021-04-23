@@ -128,7 +128,10 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	@Override
 	public void sendMessage(String id, IMessage message, double delayTime) {
 		var container = HMessage.newInstance(message, delayTime);
-		__listeners.get(id).add(container);
+		var treeSet = __listeners.get(id);
+		synchronized (treeSet) {
+			treeSet.add(container);
+		}
 	}
 
 	@Override

@@ -155,8 +155,8 @@ public final class TestServerStress extends AbstractApp {
 				int countRunningThreads = _getInteger(params[4]);
 
 				var info = String.format(
-						"cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
-						cpuUsage, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						"cpuUsage=%.2f%%;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
+						(float) cpuUsage * 100, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
 						(float) freeMemory / CONVERT_TO_MB, countRunningThreads);
 
 				_info("MONITORING_SYSTEM", info);
