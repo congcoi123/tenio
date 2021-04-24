@@ -65,7 +65,7 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	// time in seconds
 	private static int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	private static int NUMBER_OF_PLAYERS = 100;
+	private static int NUMBER_OF_PLAYERS = 200;
 	// 100 objects * 4 times * 60
 	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
 

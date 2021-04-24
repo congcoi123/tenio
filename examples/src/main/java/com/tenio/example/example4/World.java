@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tenio.common.utility.MathUtility;
+import com.tenio.common.worker.WorkersPool;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.server.Server;
@@ -78,11 +79,11 @@ public final class World extends AbstractHeartBeat {
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
 	private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
-	private Map<String, IPlayer> __inspectorsBuffer = new HashMap<String, IPlayer>();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private float __sendingInterval = 0.0f;
 	private boolean __sendingBroadcast = false;
 	private int __currentCCU;
+	private WorkersPool __workersPool;
 
 	public World(int cx, int cy) {
 		this(cx, cy, false);
@@ -109,7 +110,8 @@ public final class World extends AbstractHeartBeat {
 		__enableRenderNeighbors = false;
 		__enableViewKeys = false;
 		__enableShowCellSpaceInfo = false;
-		__currentCCU = __inspectors.size();
+		__currentCCU = Server.getInstance().getPlayerApi().count();
+		__workersPool = new WorkersPool(100, 200);
 
 		// setup the spatial subdivision class
 		__cellSpace = new CellSpacePartition<Vehicle>((float) cx, (float) cy, __paramLoader.NUM_CELLS_X,
@@ -457,29 +459,44 @@ public final class World extends AbstractHeartBeat {
 
 		if (__sendingInterval >= 0.25f) {
 
-			__inspectorsBuffer.clear();
-			__inspectors.forEach((name, inspector) -> {
-				__inspectorsBuffer.put(name, inspector);
-			});
-			__currentCCU = __inspectorsBuffer.size();
+			__currentCCU = Server.getInstance().getPlayerApi().count();
 			setCCU(__currentCCU);
 
-			// update the vehicles
-			for (int i = 0; i < __vehicles.size(); ++i) {
-				final int j = i;
-				var vehicle = __vehicles.get(i);
-
-				if (__sendingBroadcast) {
-					__messageApi.sendDatagramBroadcast("move", "p",
-							__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
-									.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
-				} else {
-					__inspectorsBuffer.forEach((name, inspector) -> {
-						__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-								__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
-										.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
+			try {
+				__workersPool.execute(() -> {
+					Map<String, IPlayer> inspectors = new HashMap<String, IPlayer>();
+					__inspectors.forEach((name, inspector) -> {
+						inspectors.put(name, inspector);
 					});
-				}
+
+					List<Vehicle> vehicles = new ArrayList<Vehicle>();
+
+					synchronized (__vehicles) {
+						__vehicles.forEach(vehicle -> {
+							vehicles.add(vehicle);
+						});
+					}
+
+					// update the vehicles
+					for (int i = 0; i < vehicles.size(); ++i) {
+						final int j = i;
+						var vehicle = vehicles.get(i);
+
+						if (__sendingBroadcast) {
+							__messageApi.sendDatagramBroadcast("move", "p",
+									__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+											.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
+						} else {
+							inspectors.forEach((name, inspector) -> {
+								__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+										__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+												.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
+							});
+						}
+					}
+				}, "send-broadcast");
+			} catch (Exception e) {
+				_error(e);
 			}
 
 			__sendingInterval = 0;
@@ -504,7 +521,8 @@ public final class World extends AbstractHeartBeat {
 
 	@Override
 	protected void _onDispose() {
-
+		__workersPool.waitUntilAllTasksFinished();
+		__workersPool.stop();
 	}
 
 	@Override
@@ -535,17 +553,24 @@ public final class World extends AbstractHeartBeat {
 		var id = Integer.parseInt(name);
 		var request = (String) message.getContentByKey("q");
 
-		if (id > __paramLoader.NUM_AGENTS - 1) {
-			id = __paramLoader.NUM_AGENTS - 1;
-		}
+		try {
+			__workersPool.execute(() -> {
+				int entityId = id;
+				if (id > __paramLoader.NUM_AGENTS - 1) {
+					entityId = __paramLoader.NUM_AGENTS - 1;
+				}
 
-		List<Vehicle> neighbours = __getNeighboursOf(id);
-		var response = __messageApi.getMessageObjectArray();
-		response.put(_getFPS());
-		neighbours.forEach(neighbour -> {
-			response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
-		});
-		__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+				List<Vehicle> neighbours = __getNeighboursOf(entityId);
+				var response = __messageApi.getMessageObjectArray();
+				response.put(_getFPS());
+				neighbours.forEach(neighbour -> {
+					response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
+				});
+				__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+			}, name);
+		} catch (Exception e) {
+			_error(e);
+		}
 
 	}
 
