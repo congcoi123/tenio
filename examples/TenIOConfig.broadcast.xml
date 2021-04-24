@@ -13,6 +13,7 @@
 			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
 		</Sockets>
 		<Broadcasts>
+			<ServerPort>9999</ServerPort>
 			<Port id="move" name="move">8040</Port>
 		</Broadcasts>
 		<WebSockets>

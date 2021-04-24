@@ -206,7 +206,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 
 		var broadcastPorts = (List<BroadcastConfig>) configuration.get(CoreConfigurationType.BROADCAST_PORTS);
-		__bindBroadcast(broadcastPorts);
+		__bindBroadcast(configuration, broadcastPorts);
 
 		var webSocketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
 		for (int connectionIndex = 0; connectionIndex < webSocketPorts.size(); connectionIndex++) {
@@ -226,10 +226,12 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	 * Constructs a Datagram socket for broadcasting and binds it to the specified
 	 * port on the local host machine.
 	 * 
+	 * @param configuration  your own configuration, see {@link IConfiguration}
 	 * @param broadcastPorts the list of broadcast ports
 	 * @throws InterruptedException
 	 */
-	private void __bindBroadcast(List<BroadcastConfig> broadcastPorts) throws InterruptedException {
+	private void __bindBroadcast(IConfiguration configuration, List<BroadcastConfig> broadcastPorts)
+			throws InterruptedException {
 		if (broadcastPorts == null || broadcastPorts.isEmpty()) {
 			return;
 		}
@@ -241,7 +243,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 				.option(ChannelOption.SO_SNDBUF, CoreConstants.BROADCAST_SEND_BUFFER)
 				.handler(new NettyBroadcastInitializer(__traficCounterBroadcast));
 
-		var channelFuture = bootstrap.bind(CoreConstants.DEFAULT_BROADCAST_PORT).sync()
+		var channelFuture = bootstrap.bind(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)).sync()
 				.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 					@Override
@@ -254,6 +256,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 					}
 				});
 		__broadcastChannel = channelFuture.channel();
+
+		_info("BROADCAST",
+				_buildgen("Server port: ", configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
 
 		__broadcastInets = new HashMap<String, InetSocketAddress>();
 		broadcastPorts.forEach(broadcastConfig -> {

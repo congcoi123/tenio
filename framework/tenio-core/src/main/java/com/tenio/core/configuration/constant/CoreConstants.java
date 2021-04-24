@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
+import io.netty.channel.ChannelOption;
+
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
@@ -111,15 +113,57 @@ public final class CoreConstants {
 	 */
 	public static final String PING_PATH = "/ping";
 
-	public static final int DEFAULT_BROADCAST_PORT = 9999;
+	/**
+	 * Public Domain for broadcasting
+	 */
 	public static final String BROADCAST_ADDRESS = "255.255.255.255";
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
 	public static final int DATAGRAM_RECEIVE_BUFFER = 768;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
 	public static final int DATAGRAM_SEND_BUFFER = 1024;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
 	public static final int SOCKET_RECEIVE_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
 	public static final int SOCKET_SEND_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
 	public static final int WEBSOCKET_RECEIVE_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
 	public static final int WEBSOCKET_SEND_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
 	public static final int BROADCAST_RECEIVE_BUFFER = 768;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
 	public static final int BROADCAST_SEND_BUFFER = 1024;
 
 }

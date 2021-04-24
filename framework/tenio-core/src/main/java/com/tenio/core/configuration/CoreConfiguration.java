@@ -124,6 +124,11 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 			__socketPorts.add(port);
 		}
+		var attrNetworkServerBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/ServerPort");
+		for (int j = 0; j < attrNetworkServerBroadcasts.getLength(); j++) {
+			var pDataNode = attrNetworkServerBroadcasts.item(j);
+			_push(CoreConfigurationType.SERVER_BROADCAST_PORT, pDataNode.getTextContent());
+		}
 		var attrNetworkBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/Port");
 		for (int j = 0; j < attrNetworkBroadcasts.getLength(); j++) {
 			var pDataNode = attrNetworkBroadcasts.item(j);

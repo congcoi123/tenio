@@ -19,6 +19,7 @@
 			<Port name="chat" type="tcp">8034</Port>
 		</Sockets>
 		<Broadcasts>
+			<ServerPort>9999</ServerPort> <!-- only one -->
 			<Port id="move" name="move">8040</Port>
 		</Broadcasts>
 		<WebSockets>

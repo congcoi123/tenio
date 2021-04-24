@@ -531,11 +531,11 @@ public final class World extends AbstractHeartBeat {
 		var id = Integer.parseInt(name);
 		var request = (String) message.getContentByKey("q");
 
-		if (id > 99) {
-			id = 99;
+		if (id > __paramLoader.NUM_AGENTS - 1) {
+			id = __paramLoader.NUM_AGENTS - 1;
 		}
 
-		List<Vehicle> neighbours = getNeighboursOf(id);
+		List<Vehicle> neighbours = __getNeighboursOf(id);
 		var response = __messageApi.getMessageObjectArray();
 		neighbours.forEach(neighbour -> {
 			response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
@@ -544,14 +544,10 @@ public final class World extends AbstractHeartBeat {
 
 	}
 
-	private List<Vehicle> getNeighboursOf(final int index) {
+	private List<Vehicle> __getNeighboursOf(final int index) {
 
 		List<Vehicle> vehicles = new ArrayList<Vehicle>();
 		List<Vehicle> neighbours = new ArrayList<Vehicle>();
-
-		if (index > 99) {
-			return neighbours;
-		}
 
 		synchronized (__vehicles) {
 			__vehicles.forEach(vehicle -> {

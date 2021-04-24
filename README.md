@@ -60,7 +60,14 @@
 ![Communication](assets/login-example-1.gif)
 
 ## Testing
-Please check out the [testing directory](documentations/testing) for more details.
+- Testing Environment
+  Model Name:               MacBook Pro
+  Processor Speed:          2.3 GHz
+  Number of Processors:     1
+  Total Number of Cores:    4
+  Memory:                   16 GB
+
+- Please check out the [testing results](documentations/testing) for more details.
 
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.

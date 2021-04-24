@@ -122,11 +122,18 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 * statics are to be computed
 	 */
 	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
+	/**
+	 * Server opens only one port for broadcasting to other ports 
+	 */
+	SERVER_BROADCAST_PORT("serverBroadcastPort"),
 
 	// ====== UNDER CONTRUCTION ======//
-	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"), NUMBER_READER_WORKER("numberReaderWorker"),
-	NUMBER_WRITER_WORKER("numberWriterWorker"), READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
-	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"), CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
+	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
+	NUMBER_READER_WORKER("numberReaderWorker"),
+	NUMBER_WRITER_WORKER("numberWriterWorker"),
+	READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
+	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
+	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
 	SERVER_ADDRESS("serverAddress"),
 	// ====== UNDER CONTRUCTION ======//
 
