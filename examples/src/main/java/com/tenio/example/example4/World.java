@@ -82,6 +82,7 @@ public final class World extends AbstractHeartBeat {
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private float __sendingInterval = 0.0f;
 	private boolean __sendingBroadcast = false;
+	private int __currentCCU;
 
 	public World(int cx, int cy) {
 		this(cx, cy, false);
@@ -108,6 +109,7 @@ public final class World extends AbstractHeartBeat {
 		__enableRenderNeighbors = false;
 		__enableViewKeys = false;
 		__enableShowCellSpaceInfo = false;
+		__currentCCU = __inspectors.size();
 
 		// setup the spatial subdivision class
 		__cellSpace = new CellSpacePartition<Vehicle>((float) cx, (float) cy, __paramLoader.NUM_CELLS_X,
@@ -459,6 +461,8 @@ public final class World extends AbstractHeartBeat {
 			__inspectors.forEach((name, inspector) -> {
 				__inspectorsBuffer.put(name, inspector);
 			});
+			__currentCCU = __inspectorsBuffer.size();
+			setCCU(__currentCCU);
 
 			// update the vehicles
 			for (int i = 0; i < __vehicles.size(); ++i) {
