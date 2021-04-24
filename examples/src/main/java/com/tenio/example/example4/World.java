@@ -537,6 +537,7 @@ public final class World extends AbstractHeartBeat {
 
 		List<Vehicle> neighbours = __getNeighboursOf(id);
 		var response = __messageApi.getMessageObjectArray();
+		response.put(_getFPS());
 		neighbours.forEach(neighbour -> {
 			response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
 		});

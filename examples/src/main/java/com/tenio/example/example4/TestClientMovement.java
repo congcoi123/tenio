@@ -65,11 +65,12 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	// time in seconds
 	private static int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	private static int NUMBER_OF_PLAYERS = 400;
+	private static int NUMBER_OF_PLAYERS = 100;
 	// 100 objects * 4 times * 60
 	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
 
 	private static final List<Long> __latencyRecorder = new ArrayList<Long>();
+	private static final List<Integer> __fpsRecorder = new ArrayList<Integer>();
 
 	/**
 	 * The entry point
@@ -95,6 +96,23 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 				if (size >= Integer.MAX_VALUE) {
 					System.out.println(String.format("[AVERAGE LATENCY] Reset counter -> %d", size));
 					__latencyRecorder.clear();
+				}
+			}
+
+			synchronized (__fpsRecorder) {
+				int average = 0;
+				int size = __fpsRecorder.size();
+				for (int i = 0; i < size; i++) {
+					average += __fpsRecorder.get(i).intValue();
+				}
+				double result = (double) average / (double) size;
+
+				System.err
+						.println(String.format("[AVERAGE FPS] Total Requests: %d -> Average FPS: %.2f", size, result));
+
+				if (size >= Integer.MAX_VALUE) {
+					System.out.println(String.format("[AVERAGE LATENCY] Reset counter -> %d", size));
+					__fpsRecorder.clear();
 				}
 			}
 
@@ -183,12 +201,16 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 			}
 		} else if (message.contain("r")) {
 			// _info("RECV RESPONSE FROM SERVER TCP", message);
+			int fps = message.getMessageObjectArray("r").getInt(0);
 			long receivedTimestamp = TimeUtility.currentTimeMillis();
 			long latency = receivedTimestamp - __sentTimestamp;
 			synchronized (__latencyRecorder) {
 				__latencyRecorder.add(latency);
 			}
-			_info("LATENCY", _buildgen("Player ", __playerName, " -> ", latency, " ms"));
+			synchronized (__fpsRecorder) {
+				__fpsRecorder.add(fps);
+			}
+			_info("LATENCY", _buildgen("Player ", __playerName, " -> ", latency, " ms | fps -> ", fps));
 		}
 
 	}
