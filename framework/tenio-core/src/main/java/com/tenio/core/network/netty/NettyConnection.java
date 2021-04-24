@@ -24,7 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;
@@ -32,9 +38,11 @@ import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.AttributeKey;
@@ -46,34 +54,55 @@ import io.netty.util.AttributeKey;
  * @author kong
  * 
  */
+@ThreadSafe
 public final class NettyConnection extends Connection {
+
+	private final int DATAGRAM_WORKERS_SIZE;
 
 	/**
 	 * @see Channel
 	 */
-	private Channel __channel;
+	@GuardedBy("this")
+	private final Channel __channel;
 	/**
 	 * Save the client's address, in Datagram connection it is used for saving as a
 	 * key of the {@link #getUsername()}
 	 */
-	protected InetSocketAddress __remoteAddress;
+	@GuardedBy("this")
+	private InetSocketAddress __remoteAddress;
+	@GuardedBy("this")
+	private List<Channel> __datagramChannelWorkers;
+	private volatile int __roundRobinCounter;
 
-	private NettyConnection(int connectionIndex, IEventManager eventManager,
-			TransportType transportType, Channel channel) {
+	private NettyConnection(int connectionIndex, IEventManager eventManager, TransportType transportType,
+			Channel channel, ChannelGroup datagramChannelWorkers) {
 		super(eventManager, transportType, connectionIndex);
 		__channel = channel;
-		// set fix address in a TCP and WebSocket instance
+		// set fixed address in a TCP and WebSocket instance
 		// in case of Datagram connection, this value will be set later (when you
 		// receive a message from client)
 		// in the Datagram connection there is only one channel existed
 		if (!isType(TransportType.UDP)) {
 			setAddress(((InetSocketAddress) __channel.remoteAddress()).toString());
+			datagramChannelWorkers = null;
 		}
+		
+		if (datagramChannelWorkers != null) {
+			__roundRobinCounter = 0;
+			__datagramChannelWorkers = Collections.synchronizedList(new ArrayList<Channel>());
+			datagramChannelWorkers.forEach(ch -> {
+				__datagramChannelWorkers.add(ch);
+			});
+			DATAGRAM_WORKERS_SIZE = __datagramChannelWorkers.size();
+		} else {
+			DATAGRAM_WORKERS_SIZE = 0;
+		}
+
 	}
 
 	public static NettyConnection newInstance(int connectionIndex, IEventManager eventManager,
-			TransportType transportType, Channel channel) {
-		return new NettyConnection(connectionIndex, eventManager, transportType, channel);
+			TransportType transportType, Channel channel, ChannelGroup datagramChannelWorkers) {
+		return new NettyConnection(connectionIndex, eventManager, transportType, channel, datagramChannelWorkers);
 	}
 
 	@Override
@@ -85,14 +114,24 @@ public final class NettyConnection extends Connection {
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
 		} else if (isType(TransportType.UDP)) {
 			if (__remoteAddress != null) {
-				__channel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)),
-						__remoteAddress));
+				if (DATAGRAM_WORKERS_SIZE > 1) {
+					if (__roundRobinCounter >= DATAGRAM_WORKERS_SIZE) {
+						__roundRobinCounter = 0;
+					}
+					var channel = __datagramChannelWorkers.get(__roundRobinCounter);
+					channel.writeAndFlush(new DatagramPacket(
+							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));
+					__roundRobinCounter++;
+				} else {
+					__channel.writeAndFlush(new DatagramPacket(
+							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));
+				}
 			}
 		}
 	}
 
 	@Override
-	public void close() {
+	public synchronized void close() {
 		// this channel will be closed in the future
 		__channel.close();
 		// need to push event now
@@ -102,13 +141,13 @@ public final class NettyConnection extends Connection {
 	@Override
 	public IConnection getThis() {
 		if (isType(TransportType.UDP)) {
-			return (Connection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
+			return (IConnection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
 		}
 		return __channel.attr(NettyConnectionOption.CONNECTION).get();
 	}
 
 	@Override
-	public void setThis() {
+	public synchronized void setThis() {
 		if (isType(TransportType.UDP)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(this);
 		} else {
@@ -117,7 +156,7 @@ public final class NettyConnection extends Connection {
 	}
 
 	@Override
-	public void removeThis() {
+	public synchronized void removeThis() {
 		if (isType(TransportType.UDP)) {
 			__channel.attr(AttributeKey.valueOf(getAddress())).set(null);
 		} else {
@@ -126,20 +165,19 @@ public final class NettyConnection extends Connection {
 	}
 
 	@Override
-	public void setRemote(InetSocketAddress remote) {
+	public synchronized void setRemote(InetSocketAddress remoteAddress) {
 		// only need for the Datagram connection
 		if (isType(TransportType.UDP)) {
-			__remoteAddress = remote;
+			__remoteAddress = remoteAddress;
 			setAddress(__remoteAddress.toString());
 		}
 	}
 
 	@Override
-	public void clean() {
+	public synchronized void clean() {
 		// only need for WebSocket and Socket
 		removePlayerName();
 		removeThis();
-		__channel = null;
 	}
 
 }

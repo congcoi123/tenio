@@ -2,10 +2,10 @@ package com.tenio.example.example4;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.tenio.common.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.entity.IPlayer;
@@ -77,18 +77,22 @@ public final class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
-	private Collection<IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets().values();
+	private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
+	private Map<String, IPlayer> __inspectorsBuffer = new HashMap<String, IPlayer>();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
-	private CommonObjectArray __ids = CommonObjectArray.newInstance();
-	private CommonObjectArray __pxs = CommonObjectArray.newInstance();
-	private CommonObjectArray __pys = CommonObjectArray.newInstance();
-	private CommonObjectArray __prs = CommonObjectArray.newInstance();
+	private float __sendingInterval = 0.0f;
+	private boolean __sendingBroadcast = false;
 
 	public World(int cx, int cy) {
+		this(cx, cy, false);
+	}
+
+	public World(int cx, int cy, boolean sendingBroadcast) {
 		super(cx, cy);
 
 		__clientX = cx;
 		__clientY = cy;
+		__sendingBroadcast = sendingBroadcast;
 		__pause = false;
 		__crosshair = Vector2.valueOf(getClientX() / 2, getClientX() / 2);
 		__enableShowWalls = false;
@@ -125,6 +129,8 @@ public final class World extends AbstractHeartBeat {
 					__paramLoader.MAX_SPEED, // max velocity
 					__paramLoader.MAX_TURN_RATE_PER_SECOND, // max turn rate
 					__paramLoader.VEHICLE_SCALE); // scale
+
+			pVehicle.setIndex(a);
 
 			// Set the unique id for the big guy
 			if (a == 0) {
@@ -444,30 +450,42 @@ public final class World extends AbstractHeartBeat {
 	 */
 	@Override
 	protected void _onUpdate(float delta) {
-		// reset array
-		__ids.clear();
-		__pxs.clear();
-		__pys.clear();
-		__prs.clear();
+
+		__sendingInterval += delta;
+
+		if (__sendingInterval >= 0.25f) {
+
+			__inspectorsBuffer.clear();
+			__inspectors.forEach((name, inspector) -> {
+				__inspectorsBuffer.put(name, inspector);
+			});
+
+			// update the vehicles
+			for (int i = 0; i < __vehicles.size(); ++i) {
+				final int j = i;
+				var vehicle = __vehicles.get(i);
+
+				if (__sendingBroadcast) {
+					__messageApi.sendDatagramBroadcast("move", "p",
+							__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+									.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
+				} else {
+					__inspectorsBuffer.forEach((name, inspector) -> {
+						__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
+								__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
+										.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
+					});
+				}
+			}
+
+			__sendingInterval = 0;
+		}
 
 		__fps = frameRateSmoother.update(delta);
 
-		// update the vehicles
 		for (int i = 0; i < __vehicles.size(); ++i) {
 			__vehicles.get(i).update(delta);
-			// package data
-			__ids.put(i);
-			__pxs.put((int) __vehicles.get(i).getPosition().x);
-			__pys.put((int) __vehicles.get(i).getPosition().y);
-			__prs.put((int) __vehicles.get(i).getRotation());
 		}
-
-		// send to client (naive way)
-		for (var inspector : __inspectors) {
-			__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
-					__messageApi.getMessageObjectArray().put(__ids).put(__pxs).put(__pys).put(__prs));
-		}
-
 	}
 
 	@Override
@@ -508,7 +526,44 @@ public final class World extends AbstractHeartBeat {
 
 	@Override
 	protected void _onMessage(IMessage message) {
-		System.out.println("World._onMessage(): " + message.getContent().toString());
+		// System.out.println("World._onMessage(): " + message.getContent().toString());
+		var name = (String) message.getContentByKey("id");
+		var id = Integer.parseInt(name);
+		var request = (String) message.getContentByKey("q");
+
+		if (id > __paramLoader.NUM_AGENTS - 1) {
+			id = __paramLoader.NUM_AGENTS - 1;
+		}
+
+		List<Vehicle> neighbours = __getNeighboursOf(id);
+		var response = __messageApi.getMessageObjectArray();
+		neighbours.forEach(neighbour -> {
+			response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
+		});
+		__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+
+	}
+
+	private List<Vehicle> __getNeighboursOf(final int index) {
+
+		List<Vehicle> vehicles = new ArrayList<Vehicle>();
+		List<Vehicle> neighbours = new ArrayList<Vehicle>();
+
+		synchronized (__vehicles) {
+			__vehicles.forEach(vehicle -> {
+				vehicles.add(vehicle);
+			});
+		}
+
+		vehicles.forEach(vehicle -> {
+			if (vehicles.get(index) != vehicle) {
+				if (vehicles.get(index).getPosition().getDistanceValue(vehicle.getPosition()) < 50) {
+					neighbours.add(vehicle);
+				}
+			}
+		});
+
+		return neighbours;
 	}
 
 }

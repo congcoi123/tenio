@@ -140,18 +140,12 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	}
 
 	@Override
-	public boolean hasConnection(int connectionIndex) {
-		if (__flagNPC) {
-			return false;
-		}
-		synchronized (__connections) {
-			return (__connections[connectionIndex] != null);
-		}
-	}
-
-	@Override
 	public IConnection getConnection(int connectionIndex) {
 		if (__flagNPC) {
+			return null;
+		}
+		if (connectionIndex < 0 || connectionIndex > __connectionsSize) {
+			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return null;
 		}
 		synchronized (__connections) {
@@ -274,6 +268,11 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 		__flagIgnoreTimeout = flagIgnoreTimeout;
 		setCurrentReaderTime();
 		setCurrentWriterTime();
+	}
+
+	@Override
+	public String toString() {
+		return __name;
 	}
 
 }

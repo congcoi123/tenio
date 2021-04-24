@@ -23,6 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
+import com.tenio.core.exception.ExceededMessageQueueOutboundException;
+
+import io.netty.channel.ChannelOption;
+
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
@@ -110,5 +114,64 @@ public final class CoreConstants {
 	 * was started or not)
 	 */
 	public static final String PING_PATH = "/ping";
+
+	/**
+	 * Public Domain for broadcasting
+	 */
+	public static final String BROADCAST_ADDRESS = "255.255.255.255";
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
+	public static final int DATAGRAM_RECEIVE_BUFFER = 768;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
+	public static final int DATAGRAM_SEND_BUFFER = 1024;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
+	public static final int SOCKET_RECEIVE_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
+	public static final int SOCKET_SEND_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
+	public static final int WEBSOCKET_RECEIVE_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
+	public static final int WEBSOCKET_SEND_BUFFER = 10240;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_RCVBUF}
+	 */
+	public static final int BROADCAST_RECEIVE_BUFFER = 768;
+
+	/**
+	 * The size of buffer in bytes {@link Byte}, references to
+	 * {@link ChannelOption#SO_SNDBUF}
+	 */
+	public static final int BROADCAST_SEND_BUFFER = 1024;
+
+	/**
+	 * Throws {@link ExceededMessageQueueOutboundException} when the message queue
+	 * exceeded the warning size
+	 */
+	public static final int WRITE_MESSAGE_QUEUE_SIZE_WARNING = 100;
 
 }

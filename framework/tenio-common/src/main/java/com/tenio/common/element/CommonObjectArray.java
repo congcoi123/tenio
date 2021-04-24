@@ -26,8 +26,6 @@ package com.tenio.common.element;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.tenio.common.pool.IPoolable;
-
 /**
  * This is an element object in your server. You can use it for holding array
  * data and make it serialize to send through the network.
@@ -35,7 +33,7 @@ import com.tenio.common.pool.IPoolable;
  * @author kong
  * 
  */
-public final class CommonObjectArray extends ArrayList<Object> implements Serializable, IPoolable {
+public final class CommonObjectArray extends ArrayList<Object> implements Serializable {
 
 	private static final long serialVersionUID = -5100842875580575666L;
 
@@ -43,20 +41,7 @@ public final class CommonObjectArray extends ArrayList<Object> implements Serial
 		return new CommonObjectArray();
 	}
 
-	public static CommonObjectArray newInstance(int index) {
-		return new CommonObjectArray(index);
-	}
-
-	/**
-	 * Its index in a pool
-	 */
-	private int __index;
-
 	public CommonObjectArray() {
-	}
-
-	public CommonObjectArray(int index) {
-		__index = index;
 	}
 
 	public CommonObjectArray put(Object value) {
@@ -94,11 +79,6 @@ public final class CommonObjectArray extends ArrayList<Object> implements Serial
 
 	public CommonObjectArray getObjectAt(int index) {
 		return (CommonObjectArray) get(index);
-	}
-
-	@Override
-	public int getIndex() {
-		return __index;
 	}
 
 }

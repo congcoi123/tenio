@@ -26,6 +26,7 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tenio.common.element.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
@@ -135,8 +136,7 @@ public enum ExtEvent {
 	 * When a client makes reconnection successful and you can inform him here by a
 	 * message. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> a corresponding player, see
-	 * {@link IPlayer}</li>
+	 * <li><b>parameter[0]</b> a corresponding player, see {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -177,8 +177,8 @@ public enum ExtEvent {
 	 * With a valid player, his message can be seen here. This message is sent from
 	 * a client to your server. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the player which sent message, see
-	 * {@link IPlayer} to your server</li>
+	 * <li><b>parameter[0]</b> the player which sent message, see {@link IPlayer} to
+	 * your server</li>
 	 * <li><b>parameter[1]</b> this message was sent by the connection with index in
 	 * {@link Integer}. Notice that, 0 value means main connection.
 	 * <li><b>parameter[2]</b> the received message, see {@link CommonObject}</li>
@@ -189,8 +189,7 @@ public enum ExtEvent {
 	RECEIVED_MESSAGE_FROM_PLAYER,
 
 	/**
-	 * Created a new room. A room ({@link IRoom}) is a group of some players.
-	 * <br>
+	 * Created a new room. A room ({@link IRoom}) is a group of some players. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> a new created room, see {@link IRoom}</li>
 	 * <li><b>parameter[1]</b> a reason why it was refused. It was defined in
@@ -242,8 +241,7 @@ public enum ExtEvent {
 	 * list in the current room. <br>
 	 * <ul>
 	 * <li><b>parameter[0]</b> the current player, see {@link IPlayer}</li>
-	 * <li><b>parameter[1]</b> the player's current room, see
-	 * {@link IRoom}</li>
+	 * <li><b>parameter[1]</b> the player's current room, see {@link IRoom}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -270,8 +268,7 @@ public enum ExtEvent {
 	 * When a connection between one player and your service is closed (for any
 	 * reason), this event occurs. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the disconnected player, see
-	 * {@link IPlayer}</li>
+	 * <li><b>parameter[0]</b> the disconnected player, see {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -304,8 +301,7 @@ public enum ExtEvent {
 	 * </ul>
 	 * 
 	 * Return if the client is allowed to attach a sub connection, return the
-	 * corresponding player, see {@link IPlayer}. Otherwise, return
-	 * <b>null</b>
+	 * corresponding player, see {@link IPlayer}. Otherwise, return <b>null</b>
 	 */
 	ATTACH_CONNECTION_REQUEST_VALIDATE,
 
@@ -315,8 +311,7 @@ public enum ExtEvent {
 	 * <ul>
 	 * <li><b>parameter[0]</b> the index of in-comming connection, see
 	 * {@link Integer}</li>
-	 * <li><b>parameter[1]</b> the corresponding player, see
-	 * {@link IPlayer}</li>
+	 * <li><b>parameter[1]</b> the corresponding player, see {@link IPlayer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -364,6 +359,7 @@ public enum ExtEvent {
 	 * <li><b>parameter[3]</b> Current read bytes (KB), see {@link Long}</li>
 	 * <li><b>parameter[4]</b> Current written bytes (KB), see {@link Long}</li>
 	 * <li><b>parameter[5]</b> Real written bytes (KB), see {@link Long}</li>
+	 * <li><b>parameter[6]</b> Name of the counter, see {@link String}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -377,6 +373,8 @@ public enum ExtEvent {
 	 * <li><b>parameter[1]</b> Total memory (Bytes), see {@link Long}</li>
 	 * <li><b>parameter[2]</b> Used Memory (Bytes), see {@link Long}</li>
 	 * <li><b>parameter[3]</b> Free Memory (Bytes), see {@link Long}</li>
+	 * <li><b>parameter[4]</b> Number of current running threads, see
+	 * {@link Integer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
@@ -411,6 +409,17 @@ public enum ExtEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	HTTP_REQUEST_HANDLE
+	HTTP_REQUEST_HANDLE,
+
+	/**
+	 * Throw an exception
+	 * 
+	 * <ul>
+	 * <li><b>parameter[0]</b> Cause {@link Throwable}</li>
+	 * </ul>
+	 * 
+	 * Return <b>null</b>
+	 */
+	EXCEPTION
 
 }

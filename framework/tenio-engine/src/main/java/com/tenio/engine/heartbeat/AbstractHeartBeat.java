@@ -57,11 +57,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * The target frame per second
 	 */
 	private static final int TARGET_FPS = 60;
-	private static final float GAME_HERTZ = 30.0f;
 	/**
 	 * Calculate how many ns each frame should take for our target game hertz.
 	 */
-	private static final float TIME_BETWEEN_UPDATES = 1000000000 / GAME_HERTZ;
+	private static final double TIME_BETWEEN_UPDATES = 1000000000 / TARGET_FPS;
+	private static final double TIME_BETWEEN_RENDER = 1000000000 / TARGET_FPS;
 	/**
 	 * At the very most we will update the game this many times before a new render.
 	 * If you're worried about visual hitches more than perfect timing, set this to
@@ -110,21 +110,21 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * Frame per second
 	 */
-	private int __fps;
-	private long __target_time_between_renders;
+	private int __currentFps;
+	private int __frameCount;
 
-	private int __curFps = 60;
-	private int __frameCount = 1;
-
-	private boolean __running = true;
-	private boolean __debugging = false;
+	private boolean __running;
+	private boolean __debugging;
 
 	/**
 	 * Create a new instance with default FPS value, see {@value #TARGET_FPS}
 	 */
 	public AbstractHeartBeat() {
-		__fps = TARGET_FPS;
-		__target_time_between_renders = 1000000000 / __fps;
+		__currentFps = TARGET_FPS;
+		__frameCount = 0;
+
+		__running = true;
+		__debugging = false;
 	}
 
 	/**
@@ -181,7 +181,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * @return the FPS
 	 */
 	protected int _getFPS() {
-		return __fps;
+		return __currentFps;
 	}
 
 	/**
@@ -239,20 +239,20 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 */
 	private void __loop() {
 		// We will need the last update time.
-		float lastUpdateTime = System.nanoTime();
+		double lastUpdateTime = System.nanoTime();
 		// Store the last time we rendered.
-		float lastRenderTime = System.nanoTime();
+		double lastRenderTime = System.nanoTime();
 
 		// Simple way of finding FPS.
 		int lastSecondTime = (int) (lastUpdateTime / 1000000000);
 
 		while (__running) {
-			float now = System.nanoTime();
+			double now = System.nanoTime();
 			int updateCount = 0;
 
 			// Do as many game updates as we need to, potentially playing catch-up.
 			while (now - lastUpdateTime > TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BEFORE_RENDER) {
-				float delta = 1.0f / __curFps;
+				float delta = 1.0f / __currentFps;
 
 				// Message communication
 				// get current time
@@ -296,15 +296,14 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 			// Update the frames we got.
 			int thisSecond = (int) (lastUpdateTime / 1000000000);
 			if (thisSecond > lastSecondTime) {
-				__curFps = __frameCount;
-				__frameCount = 1;
+				__currentFps = __frameCount;
+				__frameCount = 0;
 				lastSecondTime = thisSecond;
 			}
 
 			// Yield until it has been at least the target time between renders. This saves
 			// the CPU from hogging.
-			while (now - lastRenderTime < __target_time_between_renders
-					&& now - lastUpdateTime < TIME_BETWEEN_UPDATES) {
+			while (now - lastRenderTime < TIME_BETWEEN_RENDER && now - lastUpdateTime < TIME_BETWEEN_UPDATES) {
 				Thread.yield();
 
 				// This stops the application from consuming all your CPU. It makes this
@@ -357,7 +356,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 
 			// show FPS
 			graphic.setColor(Color.BLACK);
-			graphic.drawString("FPS: " + __curFps, 5, 10);
+			graphic.drawString("FPS: " + __currentFps, 5, 10);
 		}
 
 	}

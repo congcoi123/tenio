@@ -26,8 +26,6 @@ package com.tenio.common.element;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import com.tenio.common.pool.IPoolable;
-
 /**
  * This is an element object in your server. It can be used to hold your map
  * data. All message comes from a client will be converted to this object. That
@@ -36,28 +34,15 @@ import com.tenio.common.pool.IPoolable;
  * @author kong
  * 
  */
-public final class CommonObject extends HashMap<String, Object> implements Serializable, IPoolable {
+public final class CommonObject extends HashMap<String, Object> implements Serializable {
 
 	private static final long serialVersionUID = 8818783476027583633L;
 
 	public static CommonObject newInstance() {
 		return new CommonObject();
 	}
-
-	public static CommonObject newInstance(int index) {
-		return new CommonObject(index);
-	}
-
-	/**
-	 * Its index in a pool
-	 */
-	private int __index;
-
+	
 	public CommonObject() {
-	}
-
-	public CommonObject(int index) {
-		__index = index;
 	}
 
 	public double getDouble(String key) {
@@ -103,11 +88,6 @@ public final class CommonObject extends HashMap<String, Object> implements Seria
 	public CommonObject add(String key, Object value) {
 		put(key, value);
 		return this;
-	}
-
-	@Override
-	public int getIndex() {
-		return __index;
 	}
 
 }

@@ -44,12 +44,13 @@ import io.netty.handler.traffic.TrafficCounter;
 @ThreadSafe
 public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficShapingHandler {
 
+	private final String __name;
 	private final IEventManager __eventManager;
 
-	public GlobalTrafficShapingHandlerCustomize(IEventManager eventManager,
-			ScheduledExecutorService executor, long writeLimit, long readLimit,
-			long checkInterval) {
+	public GlobalTrafficShapingHandlerCustomize(String name, IEventManager eventManager,
+			ScheduledExecutorService executor, long writeLimit, long readLimit, long checkInterval) {
 		super(executor, writeLimit, readLimit, checkInterval);
+		__name = name;
 		__eventManager = eventManager;
 	}
 
@@ -65,7 +66,7 @@ public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficSha
 		long realWrittenBytes = counter.getRealWrittenBytes().get() >> 10;
 
 		__eventManager.getExtension().emit(ExtEvent.FETCHED_BANDWIDTH_INFO, lastReadThroughput, lastWriteThroughput,
-				realWriteThroughput, currentReadBytes, currentWrittenBytes, realWrittenBytes);
+				realWriteThroughput, currentReadBytes, currentWrittenBytes, realWrittenBytes, __name);
 
 	}
 

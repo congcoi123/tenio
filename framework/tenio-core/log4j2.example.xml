@@ -34,11 +34,11 @@
 
 	<Loggers>
 
-		<Logger name="io.netty" level="warn" additivity="false">
+		<Logger name="io.netty" level="debug" additivity="false">
 			<AppenderRef ref="${target}" />
 		</Logger>
 
-		<Logger name="org.eclipse.jetty" level="warn"
+		<Logger name="org.eclipse.jetty" level="debug"
 			additivity="false">
 			<AppenderRef ref="${target}" />
 		</Logger>

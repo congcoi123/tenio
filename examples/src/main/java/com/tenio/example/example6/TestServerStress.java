@@ -135,10 +135,11 @@ public final class TestServerStress extends AbstractApp {
 				long currentReadBytes = _getLong(params[3]);
 				long currentWrittenBytes = _getLong(params[4]);
 				long realWrittenBytes = _getLong(params[5]);
+				String name = _getString(params[6]);
 
 				var bandwidth = String.format(
-						"lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
-						lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						"name=%s;lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						name, lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
 						currentWrittenBytes, realWrittenBytes);
 
 				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
@@ -151,10 +152,12 @@ public final class TestServerStress extends AbstractApp {
 				long totalMemory = _getLong(params[1]);
 				long usedMemory = _getLong(params[2]);
 				long freeMemory = _getLong(params[3]);
+				int countRunningThreads = _getInteger(params[4]);
 
-				var info = String.format("cpuUsage=%f;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB", cpuUsage,
-						(float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
-						(float) freeMemory / CONVERT_TO_MB);
+				var info = String.format(
+						"cpuUsage=%.2f%%;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
+						(float) cpuUsage * 100, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB, countRunningThreads);
 
 				_info("MONITORING_SYSTEM", info);
 

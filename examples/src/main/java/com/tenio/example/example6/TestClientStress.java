@@ -90,7 +90,7 @@ public final class TestClientStress implements ISocketListener {
 	@Override
 	public void onReceivedTCP(CommonObject message) {
 		if (ENABLED_DEBUG) {
-			System.out.println("x[RECV FROM SERVER TCP] -> " + message);
+			System.out.println("[RECV FROM SERVER TCP] -> " + message);
 		}
 		
 		// make an echo message

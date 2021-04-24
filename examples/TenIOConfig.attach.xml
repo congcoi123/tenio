@@ -13,24 +13,33 @@
 			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
 			<Port name="move" type="udp">8031</Port>
 		</Sockets>
+		<Broadcasts>
+		</Broadcasts>
 		<WebSockets>
 		</WebSockets>
 	</Network>
 
 	<Configuration>
+		<Workers>
+			<Worker name="socketThreadsPoolAcceptor">20</Worker>
+			<Worker name="socketThreadsPoolWorker">150</Worker>
+			<Worker name="datagramThreadsPoolWorker">100</Worker>
+			<Worker name="websocketThreadsPoolAcceptor">1</Worker>
+			<Worker name="websocketThreadsPoolWorker">1</Worker>
+		</Workers>
+		<Schedules>
+			<Task name="emptyRoomScanInterval">30</Task>	<!-- Unit: Seconds -->
+			<Task name="timeoutScanInterval">45</Task>		<!-- Unit: Seconds -->
+			<Task name="ccuScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="deadlockScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="trafficCounterCheckInterval">60</Task>	<!-- Unit: Seconds -->
+			<Task name="systemMonitoringInterval">60</Task>		<!-- Unit: Seconds -->
+		</Schedules>
 		<Properties>
-			<Property name="producerThreadsPoolSize">1</Property>
-			<Property name="consumerThreadsPoolSize">2</Property>
 			<Property name="keepPlayerOnDisconnect">false</Property>
 			<Property name="maxNumberPlayers">1000</Property>
 			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->
 			<Property name="idleWriterTime">60</Property>		<!-- Unit: Seconds -->
-			<Property name="emptyRoomScanInterval">30</Property>	<!-- Unit: Seconds -->
-			<Property name="timeoutScanInterval">45</Property>		<!-- Unit: Seconds -->
-			<Property name="ccuScanInterval">60</Property>			<!-- Unit: Seconds -->
-			<Property name="deadlockScanInterval">60</Property>			<!-- Unit: Seconds -->
-			<Property name="trafficCounterCheckInterval">60</Property>	<!-- Unit: Seconds -->
-			<Property name="systemMonitoringInterval">60</Property>		<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

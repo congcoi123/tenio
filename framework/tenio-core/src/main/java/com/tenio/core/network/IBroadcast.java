@@ -21,13 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.pool;
+package com.tenio.core.network;
+
+import com.tenio.common.element.CommonObject;
 
 /**
+ * 
  * @author kong
+ * 
  */
-public interface IPoolable {
+public interface IBroadcast {
 
-	int getIndex();
+	boolean isActivated();
+	
+	void sendBroadcast(String broadcastId, CommonObject message);
 
 }

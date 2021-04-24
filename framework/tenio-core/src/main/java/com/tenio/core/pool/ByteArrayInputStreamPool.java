@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.pool;
 
-import java.io.IOException;
-
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -53,7 +51,7 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance(i);
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 	}
@@ -70,20 +68,20 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new ByteArrayInputStream[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__pool = new ByteArrayInputStream[oldPool.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = ByteArrayInputStream.newInstance(i);
+			__pool[i] = ByteArrayInputStream.newInstance();
 			__used[i] = false;
 		}
 
 		_info("BYTE ARRAY POOL", _buildgen("Increased the number of elements by ",
-				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+				CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -92,19 +90,19 @@ public final class ByteArrayInputStreamPool extends AbstractLogger implements IE
 
 	@Override
 	public synchronized void repay(ByteArrayInputStream element) {
-		// the element with its index is in use
-		if (__used[element.getIndex()]) {
-			try {
-				element.reset();
-			} catch (IOException e) {
-				_error(e, e.getMessage());
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				flagFound = true;
+				break;
 			}
-			__used[element.getIndex()] = false;
-		} else { // something went wrong, the element is not in use but had to be repaid
-			var e = new NullElementPoolException(
+		}
+		if (!flagFound) {
+			var error = new NullElementPoolException(
 					"Something went wrong, the element is not in use but had to be repaid.");
-			_error(e, e.getMessage());
-			throw e;
+			_error(error);
+			throw error;
 		}
 	}
 

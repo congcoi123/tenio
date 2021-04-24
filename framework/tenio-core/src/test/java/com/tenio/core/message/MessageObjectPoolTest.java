@@ -93,8 +93,8 @@ public final class MessageObjectPoolTest {
 			expectedPoolSize = CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL;
 		} else {
 			double p = Math
-					.ceil((double) (numberElement - CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) / (double) CommonConstants.ADDED_NUMBER_ELEMENTS_POOL);
-			expectedPoolSize = (int) (CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL * p);
+					.ceil((double) (numberElement - CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) / (double) CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL);
+			expectedPoolSize = (int) (CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL * p);
 		}
 		final int expected = expectedPoolSize;
 		

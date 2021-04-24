@@ -40,7 +40,7 @@ import com.tenio.common.configuration.ConfigurationType;
  * 
  */
 public enum CoreConfigurationType implements ConfigurationType {
-	
+
 	/**
 	 * The server name
 	 */
@@ -61,11 +61,23 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	PRODUCER_THREADS_POOL_SIZE("producerThreadsPoolSize"),
+	SOCKET_THREADS_POOL_ACCEPTOR("socketThreadsPoolAcceptor"),
 	/**
 	 * @see NioEventLoopGroup
 	 */
-	CONSUMER_THREADS_POOL_SIZE("consumerThreadsPoolSize"),
+	SOCKET_THREADS_POOL_WORKER("socketThreadsPoolWorker"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	DATAGRAM_THREADS_POOL_WORKER("datagramThreadsPoolWorker"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	WEBSOCKET_THREADS_POOL_ACCEPTOR("websocketThreadsPoolAcceptor"),
+	/**
+	 * @see NioEventLoopGroup
+	 */
+	WEBSOCKET_THREADS_POOL_WORKER("websocketThreadsPoolWorker"),
 	/**
 	 * When the server get disconnection of one client, can be hold its player
 	 * instance until timeout
@@ -110,8 +122,12 @@ public enum CoreConfigurationType implements ConfigurationType {
 	 * statics are to be computed
 	 */
 	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
+	/**
+	 * Server opens only one port for broadcasting to other ports 
+	 */
+	SERVER_BROADCAST_PORT("serverBroadcastPort"),
 
-	//====== UNDER CONTRUCTION ======//
+	// ====== UNDER CONTRUCTION ======//
 	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
 	NUMBER_READER_WORKER("numberReaderWorker"),
 	NUMBER_WRITER_WORKER("numberWriterWorker"),
@@ -119,12 +135,16 @@ public enum CoreConfigurationType implements ConfigurationType {
 	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
 	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
 	SERVER_ADDRESS("serverAddress"),
-	//====== UNDER CONTRUCTION ======//
-	
+	// ====== UNDER CONTRUCTION ======//
+
 	/**
 	 * The list of socket ports in configuration
 	 */
 	SOCKET_PORTS("socketPorts"),
+	/**
+	 * The list of broadcast ports in configuration
+	 */
+	BROADCAST_PORTS("broadcastPorts"),
 	/**
 	 * The list of web socket ports in configuration
 	 */
