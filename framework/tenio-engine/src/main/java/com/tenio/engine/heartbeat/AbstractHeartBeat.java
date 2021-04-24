@@ -113,6 +113,8 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	private int __currentFps;
 	private int __frameCount;
 
+	private int __currentCCU;
+
 	private boolean __running;
 	private boolean __debugging;
 
@@ -122,6 +124,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	public AbstractHeartBeat() {
 		__currentFps = TARGET_FPS;
 		__frameCount = 0;
+		__currentCCU = 0;
 
 		__running = true;
 		__debugging = false;
@@ -219,6 +222,10 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 
 		__frame.setVisible(true);
 		__debugging = true;
+	}
+
+	public void setCCU(int currentCCU) {
+		__currentCCU = currentCCU;
 	}
 
 	@Override
@@ -356,7 +363,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 
 			// show FPS
 			graphic.setColor(Color.BLACK);
-			graphic.drawString("FPS: " + __currentFps, 5, 10);
+			graphic.drawString(String.format("FPS: %d", __currentFps), 5, 10);
+
+			// show CCU
+			graphic.setColor(Color.RED);
+			graphic.drawString(String.format("CCU: %d", __currentCCU), __viewWidth / 2 - 30, 10);
 		}
 
 	}
