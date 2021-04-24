@@ -98,13 +98,13 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	 * timeouts rule. The default value is <b>false</b>
 	 */
 	@Column(name = "ignore_timeout")
-	private boolean __flagIgnoreTimeout;
+	private volatile boolean __flagIgnoreTimeout;
 
 	/**
 	 * This flag for quick checking if a player is a NPC or not
 	 */
 	@Column(name = "flag_npc")
-	private boolean __flagNPC;
+	private volatile boolean __flagNPC;
 
 	/**
 	 * Create a new player
