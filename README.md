@@ -61,11 +61,13 @@
 
 ## Testing
 - Testing Environment
+```txt
   Model Name:               MacBook Pro
   Processor Speed:          2.3 GHz
   Number of Processors:     1
   Total Number of Cores:    4
   Memory:                   16 GB
+```
 
 - Please check out the [testing scripts](documentations/testing) for more details.
 
