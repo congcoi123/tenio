@@ -17,12 +17,15 @@ package com.tenio.common.msgpack;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 /**
  * @author Riyad Kalla (software@thebuzzmedia.com)
  */
-public final class ByteArrayInputStream extends InputStream {
-
+public final class ByteArrayInputStream extends InputStream implements Serializable {
+	
+	private static final long serialVersionUID = -5334077014767018880L;
+	
 	private int __offset;
 	private int __length;
 	private byte[] __buffer;

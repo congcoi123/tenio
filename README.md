@@ -67,7 +67,7 @@
   Total Number of Cores:    4
   Memory:                   16 GB
 
-- Please check out the [testing results](documentations/testing) for more details.
+- Please check out the [testing scripts](documentations/testing) for more details.
 
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.

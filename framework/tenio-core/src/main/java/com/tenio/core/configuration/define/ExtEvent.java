@@ -373,7 +373,8 @@ public enum ExtEvent {
 	 * <li><b>parameter[1]</b> Total memory (Bytes), see {@link Long}</li>
 	 * <li><b>parameter[2]</b> Used Memory (Bytes), see {@link Long}</li>
 	 * <li><b>parameter[3]</b> Free Memory (Bytes), see {@link Long}</li>
-	 * <li><b>parameter[4]</b> Current Running Threads, see {@link Integer}</li>
+	 * <li><b>parameter[4]</b> Number of current running threads, see
+	 * {@link Integer}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>

@@ -69,11 +69,14 @@ public abstract class AbstractRoom implements IRoom {
 	@Column(name = "capacity")
 	private int __capacity;
 
+	private volatile int __countPlayers;
+
 	public AbstractRoom(String id, String name, int capacity) {
 		__id = id;
 		__name = name;
 		__capacity = capacity;
 		__players = new HashMap<String, IPlayer>();
+		__countPlayers = 0;
 	}
 
 	@Override
@@ -97,6 +100,7 @@ public abstract class AbstractRoom implements IRoom {
 	public void addPlayer(IPlayer player) {
 		synchronized (__players) {
 			__players.put(player.getName(), player);
+			__countPlayers = __players.size();
 		}
 	}
 
@@ -104,6 +108,7 @@ public abstract class AbstractRoom implements IRoom {
 	public void removePlayer(IPlayer player) {
 		synchronized (__players) {
 			__players.remove(player.getName());
+			__countPlayers = __players.size();
 		}
 	}
 
@@ -111,6 +116,7 @@ public abstract class AbstractRoom implements IRoom {
 	public synchronized void removeAllPlayers() {
 		synchronized (__players) {
 			__players.clear();
+			__countPlayers = __players.size();
 		}
 	}
 
@@ -141,9 +147,7 @@ public abstract class AbstractRoom implements IRoom {
 
 	@Override
 	public int countPlayers() {
-		synchronized (__players) {
-			return __players.size();
-		}
+		return __countPlayers;
 	}
 
 	@Override
@@ -161,6 +165,11 @@ public abstract class AbstractRoom implements IRoom {
 	@Override
 	public boolean isEmpty() {
 		return (countPlayers() == 0);
+	}
+
+	@Override
+	public String toString() {
+		return __name;
 	}
 
 }

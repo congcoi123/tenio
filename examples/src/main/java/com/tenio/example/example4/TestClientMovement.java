@@ -60,9 +60,9 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	private static SecureRandom RANDOM = new SecureRandom();
 
 	private static float DELAY_CREATION = 0.1f;
-	// time in minute
+	// time in minutes
 	private static int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
-	// time in second
+	// time in seconds
 	private static int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
 	private static int NUMBER_OF_PLAYERS = 400;

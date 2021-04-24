@@ -117,7 +117,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	@GuardedBy("this")
 	private Map<String, InetSocketAddress> __broadcastInets;
 
-	private volatile boolean __broadcastActive;
+	private boolean __broadcastActive;
 
 	private final OSType __osType;
 
@@ -367,7 +367,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		}
 
 		_info("DATAGRAM", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Started at port: ", socketConfig.getPort()));
+				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
 	/**
@@ -388,6 +388,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
 		var bootstrap = new ServerBootstrap();
+		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER);
 
 		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.TCP_NODELAY, true)
@@ -411,7 +412,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		__serverSockets.add(channelFuture.channel());
 
 		_info("SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Started at port: ", socketConfig.getPort()));
+				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
 	/**
@@ -433,8 +434,9 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
 		var bootstrap = new ServerBootstrap();
+		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.WEBSOCKET_THREADS_POOL_WORKER);
 
-		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
+		bootstrap.group(__websocketAcceptors, __websocketWorkers).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5)
 				.childOption(ChannelOption.SO_SNDBUF, CoreConstants.WEBSOCKET_SEND_BUFFER)
 				.childOption(ChannelOption.SO_RCVBUF, CoreConstants.WEBSOCKET_RECEIVE_BUFFER)
@@ -456,7 +458,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		__serverWebsockets.add(channelFuture.channel());
 
 		_info("WEB SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Started at port: ", socketConfig.getPort()));
+				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
 	@Override

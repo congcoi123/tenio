@@ -114,7 +114,7 @@ public final class NettyConnection extends Connection {
 					new BinaryWebSocketFrame(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message))));
 		} else if (isType(TransportType.UDP)) {
 			if (__remoteAddress != null) {
-				if (DATAGRAM_WORKERS_SIZE != 0) {
+				if (DATAGRAM_WORKERS_SIZE > 1) {
 					if (__roundRobinCounter >= DATAGRAM_WORKERS_SIZE) {
 						__roundRobinCounter = 0;
 					}

@@ -68,11 +68,11 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new CommonObject[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__pool = new CommonObject[oldPool.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -81,7 +81,7 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 		}
 
 		_info("MESSAGE OBJECT POOL", _buildgen("Increased the number of elements by ",
-				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+				CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -101,7 +101,10 @@ public final class CommonObjectPool extends AbstractLogger implements IElementsP
 			}
 		}
 		if (!flagFound) {
-			throw new NullElementPoolException();
+			var error = new NullElementPoolException(
+					"Something went wrong, the element is not in use but had to be repaid.");
+			_error(error);
+			throw error;
 		}
 	}
 

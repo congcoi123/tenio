@@ -37,6 +37,13 @@ import com.tenio.example.server.ExampleMessage;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
+ * <h1>VM arguments:</h1>
+ * <ul>
+ *	<li>-Xms512m -Xmx2048m</li>
+ *	<li>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</li>
+ *	<li>-Dio.netty.tryReflectionSetAccessible=true</li>
+ *	<li>--illegal-access=warn</li>
+ * </ul>
  * 
  * @author kong
  *

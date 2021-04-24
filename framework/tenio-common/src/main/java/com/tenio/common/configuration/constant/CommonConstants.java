@@ -82,7 +82,7 @@ public final class CommonConstants {
 	 * 
 	 * @see IElementsPool
 	 */
-	public static final int ADDED_NUMBER_ELEMENTS_POOL = 32;
+	public static final int ADDITIONAL_NUMBER_ELEMENTS_POOL = 32;
 	
 	/**
 	 * Base FPS in server

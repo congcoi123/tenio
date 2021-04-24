@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.exception.HeartbeatNotFoundException;
@@ -48,18 +49,24 @@ import com.tenio.engine.message.IMessage;
  * @author kong
  *
  */
+@ThreadSafe
 public final class HeartBeatManager extends AbstractLogger implements IHeartBeatManager {
 
 	@GuardedBy("this")
-	private final Map<String, Future<Void>> __pool = new HashMap<String, Future<Void>>();
+	private final Map<String, Future<Void>> __threadsManager;
 	/**
 	 * A Set is used as the container for the delayed messages because of the
 	 * benefit of automatic sorting and avoidance of duplicates. Messages are sorted
 	 * by their dispatch time. @see {@link HMessage}
 	 */
 	@GuardedBy("this")
-	private final Map<String, TreeSet<HMessage>> __listeners = new HashMap<String, TreeSet<HMessage>>();
+	private final Map<String, TreeSet<HMessage>> __messagesManager;
 	private ExecutorService __executorService;
+
+	public HeartBeatManager() {
+		__threadsManager = new HashMap<String, Future<Void>>();
+		__messagesManager = new HashMap<String, TreeSet<HMessage>>();
+	}
 
 	@Override
 	public void initialize(final int maxHeartbeat) throws Exception {
@@ -74,10 +81,10 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			// Add the listener
 			var listener = new TreeSet<HMessage>();
 			heartbeat.setMessageListener(listener);
-			__listeners.put(id, listener);
+			__messagesManager.put(id, listener);
 			// Start the heart-beat
 			var future = __executorService.submit(heartbeat);
-			__pool.put(id, future);
+			__threadsManager.put(id, future);
 		} catch (Exception e) {
 			_error(e, "id: ", id);
 		}
@@ -86,23 +93,23 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	@Override
 	public synchronized void dispose(final String id) {
 		try {
-			if (!__pool.containsKey(id)) {
+			if (!__threadsManager.containsKey(id)) {
 				throw new HeartbeatNotFoundException();
 			}
 
-			var future = __pool.get(id);
+			var future = __threadsManager.get(id);
 			if (future == null) {
 				throw new NullPointerException();
 			}
 
 			future.cancel(true);
-			__pool.remove(id);
+			__threadsManager.remove(id);
 
 			_info("DISPOSE HEART BEAT", _buildgen(id));
 
 			// Remove the listener
-			__listeners.get(id).clear();
-			__listeners.remove(id);
+			__messagesManager.get(id).clear();
+			__messagesManager.remove(id);
 
 			future = null;
 
@@ -113,7 +120,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 
 	@Override
 	public synchronized boolean contains(final String id) {
-		return __pool.containsKey(id);
+		return __threadsManager.containsKey(id);
 	}
 
 	@Override
@@ -122,13 +129,13 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			__executorService.shutdownNow();
 		}
 		__executorService = null;
-		__pool.clear();
+		__threadsManager.clear();
 	}
 
 	@Override
 	public void sendMessage(String id, IMessage message, double delayTime) {
 		var container = HMessage.newInstance(message, delayTime);
-		var treeSet = __listeners.get(id);
+		var treeSet = __messagesManager.get(id);
 		synchronized (treeSet) {
 			treeSet.add(container);
 		}

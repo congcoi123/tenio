@@ -26,6 +26,7 @@ package com.tenio.core.network.netty.option;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.ExceededMessageQueueOutboundException;
@@ -40,8 +41,6 @@ import io.netty.channel.ChannelPromise;
  * @author kong
  */
 public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandlerAdapter {
-
-	private static final int QUEUE_SIZE_WARNING = 100;
 
 	private final IEventManager __eventManager;
 	private ChannelHandlerContext __ctx;
@@ -84,8 +83,9 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 		__ctx = ctx;
 
 		int queueSize = __queueSize;
-		if (queueSize > QUEUE_SIZE_WARNING) {
-			__eventManager.getExtension().emit(ExtEvent.EXCEPTION, new ExceededMessageQueueOutboundException(queueSize));
+		if (queueSize > CoreConstants.WRITE_MESSAGE_QUEUE_SIZE_WARNING) {
+			__eventManager.getExtension().emit(ExtEvent.EXCEPTION,
+					new ExceededMessageQueueOutboundException(queueSize));
 		}
 
 		__messageQueue.offer(message);
