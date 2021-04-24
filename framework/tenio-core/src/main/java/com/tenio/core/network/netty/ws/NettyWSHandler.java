@@ -47,8 +47,7 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  */
 public class NettyWSHandler extends BaseNettyHandler {
 
-	public NettyWSHandler(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool,
+	public NettyWSHandler(int connectionIndex, IEventManager eventManager, IElementsPool<CommonObject> commonObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.WEB_SOCKET);
 	}
@@ -82,7 +81,7 @@ public class NettyWSHandler extends BaseNettyHandler {
 			}
 
 			// the main process
-			_channelRead(ctx, message, null);
+			_channelRead(null, ctx, message, null);
 
 			// repay
 			getCommonObjectPool().repay(msgObject);

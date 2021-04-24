@@ -129,5 +129,7 @@ public interface IPlayerManager extends IManager {
 	 * @param player that is removed, see {@link IPlayer}
 	 */
 	void clean(IPlayer player);
+	
+	boolean isEmpty();
 
 }

@@ -33,7 +33,10 @@ import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.netty.BaseNettyHandler;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
  * In this server, a UDP connection is treated as a sub-connection. That means
@@ -48,14 +51,29 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class NettyDatagramHandler extends BaseNettyHandler {
 
+	private static final ChannelGroup __datagramChannelWorkers = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
 	public NettyDatagramHandler(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
+			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+			IConfiguration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.UDP);
 	}
 
 	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		__datagramChannelWorkers.add(ctx.channel());
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		if (!__datagramChannelWorkers.isEmpty()) {
+			__datagramChannelWorkers.clear();
+		}
+	}
+
+	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
+
 		// get the message's content
 		byte[] content;
 		DatagramPacket datagram;
@@ -66,6 +84,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			int readableBytes = buffer.readableBytes();
 			content = new byte[readableBytes];
 			buffer.readBytes(content);
+			buffer.release();
 		} else {
 			return;
 		}
@@ -76,6 +95,7 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 
 		// create a new message
 		var message = MsgPackConverter.unserialize(msgObject, byteArray, content);
+		content = null;
 		if (message == null) {
 			// repay
 			getCommonObjectPool().repay(msgObject);
@@ -83,12 +103,16 @@ public final class NettyDatagramHandler extends BaseNettyHandler {
 			return;
 		}
 
-		// the main process
-		_channelRead(ctx, message, datagram.sender());
+		_channelRead(__datagramChannelWorkers, ctx, message, datagram.sender());
 
 		// repay
 		getCommonObjectPool().repay(msgObject);
 		getByteArrayInputPool().repay(byteArray);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		_exceptionCaught(ctx, cause);
 	}
 
 }

@@ -17,15 +17,15 @@ package com.tenio.common.msgpack;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.tenio.common.pool.IPoolable;
+import java.io.Serializable;
 
 /**
  * @author Riyad Kalla (software@thebuzzmedia.com)
  */
-public final class ByteArrayInputStream extends InputStream implements IPoolable {
-
-	private int __index;
+public final class ByteArrayInputStream extends InputStream implements Serializable {
+	
+	private static final long serialVersionUID = -5334077014767018880L;
+	
 	private int __offset;
 	private int __length;
 	private byte[] __buffer;
@@ -33,16 +33,8 @@ public final class ByteArrayInputStream extends InputStream implements IPoolable
 	private ByteArrayInputStream() {
 	}
 
-	private ByteArrayInputStream(int index) {
-		__index = index;
-	}
-
 	public static ByteArrayInputStream newInstance() {
 		return new ByteArrayInputStream();
-	}
-
-	public static ByteArrayInputStream newInstance(int index) {
-		return new ByteArrayInputStream(index);
 	}
 
 	public static ByteArrayInputStream valueOf(byte[] data) throws IllegalArgumentException {
@@ -180,11 +172,6 @@ public final class ByteArrayInputStream extends InputStream implements IPoolable
 
 	public int getLength() {
 		return __length;
-	}
-
-	@Override
-	public int getIndex() {
-		return __index;
 	}
 
 }

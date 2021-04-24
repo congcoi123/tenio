@@ -85,6 +85,16 @@ public final class SystemMonitoring {
 		__lastProcessCpuTime = __osMxBean.getProcessCpuTime();
 	}
 
+	public int countRunningThreads() {
+		int countRunning = 0;
+		for (Thread thread : Thread.getAllStackTraces().keySet()) {
+			if (thread.getState() == Thread.State.RUNNABLE) {
+				countRunning++;
+			}
+		}
+		return countRunning;
+	}
+
 	public long getTotalMemory() {
 		return Runtime.getRuntime().totalMemory();
 	}

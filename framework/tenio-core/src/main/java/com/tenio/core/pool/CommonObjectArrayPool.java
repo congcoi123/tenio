@@ -51,7 +51,7 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
-			__pool[i] = CommonObjectArray.newInstance(i);
+			__pool[i] = CommonObjectArray.newInstance();
 			__used[i] = false;
 		}
 	}
@@ -68,20 +68,20 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[oldUsed.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new CommonObjectArray[oldPool.length + CommonConstants.ADDED_NUMBER_ELEMENTS_POOL];
+		__pool = new CommonObjectArray[oldPool.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
-			__pool[i] = CommonObjectArray.newInstance(i);
+			__pool[i] = CommonObjectArray.newInstance();
 			__used[i] = false;
 		}
 
 		_info("MESSAGE OBJECT ARRAY POOL", _buildgen("Increased the number of elements by ",
-				CommonConstants.ADDED_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+				CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -90,15 +90,21 @@ public final class CommonObjectArrayPool extends AbstractLogger implements IElem
 
 	@Override
 	public synchronized void repay(CommonObjectArray element) {
-		// the element with its index is in use
-		if (__used[element.getIndex()]) {
-			element.clear();
-			__used[element.getIndex()] = false;
-		} else { // something went wrong, the element is not in use but had to be repaid
-			var e = new NullElementPoolException(
+		boolean flagFound = false;
+		for (int i = 0; i < __pool.length; i++) {
+			if (__pool[i] == element) {
+				__used[i] = false;
+				// Clear array
+				element.clear();
+				flagFound = true;
+				break;
+			}
+		}
+		if (!flagFound) {
+			var error = new NullElementPoolException(
 					"Something went wrong, the element is not in use but had to be repaid. Make sure to use {@link MessageApi#getMessageObjectArray()}!");
-			_error(e, e.getMessage());
-			throw e;
+			_error(error);
+			throw error;
 		}
 	}
 

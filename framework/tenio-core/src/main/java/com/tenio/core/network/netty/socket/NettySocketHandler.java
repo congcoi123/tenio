@@ -73,7 +73,7 @@ public final class NettySocketHandler extends BaseNettyHandler {
 		}
 
 		// the main process
-		_channelRead(ctx, message, null);
+		_channelRead(null, ctx, message, null);
 
 		// repay
 		getCommonObjectPool().repay(msgObject);

@@ -29,17 +29,28 @@ import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.message.IMessage;
 import com.tenio.example.example4.constant.Constants;
 import com.tenio.example.example4.entity.Inspector;
 import com.tenio.example.server.Configuration;
+import com.tenio.example.server.ExampleMessage;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
+ * <h1>VM arguments:</h1>
+ * <ul>
+ *	<li>-Xms512m -Xmx2048m</li>
+ *	<li>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</li>
+ *	<li>-Dio.netty.tryReflectionSetAccessible=true</li>
+ *	<li>--illegal-access=warn</li>
+ * </ul>
  * 
  * @author kong
  *
  */
 public final class TestServerMovement extends AbstractApp {
+
+	private static final int CONVERT_TO_MB = 1024 * 1024;
 
 	/**
 	 * The entry point
@@ -78,6 +89,17 @@ public final class TestServerMovement extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
+			
+			// Create a world
+			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
+			var hearbeatManager = new HeartBeatManager();
+			try {
+				hearbeatManager.initialize(1);
+				hearbeatManager.create("world", world);
+			} catch (Exception e) {
+				_error(e, "world");
+			}
 
 			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
@@ -94,6 +116,8 @@ public final class TestServerMovement extends AbstractApp {
 				// the player has login successful
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
+
+				// _info("PLAYER_LOGINED_SUCCESS", player.getName(), Thread.currentThread().getId());
 
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
@@ -116,25 +140,87 @@ public final class TestServerMovement extends AbstractApp {
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (Inspector) _getPlayer(params[1]);
 
+				// _info("ATTACH_CONNECTION_SUCCESS", player.toString(), Thread.currentThread().getId());
+
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
 				return null;
 			});
 
 			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
+				var message = _getCoreMessageCode(params[2]);
+
+				_info("ATTACH_CONNECTION_FAILED", message);
+
 				return null;
 			});
 
-			// Create a world
-			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-			world.debug("[TenIO] Server Debugger : Movement Simulation");
-			var hearbeatManager = new HeartBeatManager();
-			try {
-				hearbeatManager.initialize(1);
-				hearbeatManager.create("world", world);
-			} catch (Exception e) {
-				_error(e, "world");
-			}
+			_on(ExtEvent.FETCHED_CCU_NUMBER, params -> {
+				var ccu = _getInteger(params[0]);
+
+				_info("FETCHED_CCU_NUMBER", ccu);
+
+				return null;
+			});
+
+			_on(ExtEvent.FETCHED_BANDWIDTH_INFO, params -> {
+				long lastReadThroughput = _getLong(params[0]);
+				long lastWriteThroughput = _getLong(params[1]);
+				long realWriteThroughput = _getLong(params[2]);
+				long currentReadBytes = _getLong(params[3]);
+				long currentWrittenBytes = _getLong(params[4]);
+				long realWrittenBytes = _getLong(params[5]);
+				String name = _getString(params[6]);
+
+				var bandwidth = String.format(
+						"name=%s;lastReadThroughput=%dKB/s;lastWriteThroughput=%dKB/s;realWriteThroughput=%dKB/s;currentReadBytes=%dKB;currentWrittenBytes=%dKB;realWrittenBytes=%dKB",
+						name, lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
+						currentWrittenBytes, realWrittenBytes);
+
+				_info("FETCHED_BANDWIDTH_INFO", bandwidth);
+
+				return null;
+			});
+
+			_on(ExtEvent.MONITORING_SYSTEM, params -> {
+				double cpuUsage = _getDouble(params[0]);
+				long totalMemory = _getLong(params[1]);
+				long usedMemory = _getLong(params[2]);
+				long freeMemory = _getLong(params[3]);
+				int countRunningThreads = _getInteger(params[4]);
+
+				var info = String.format(
+						"cpuUsage=%.2f%%;totalMemory=%.3fMB;usedMemory=%.3fMB;freeMemory=%.3fMB;runningThreads=%d",
+						(float) cpuUsage * 100, (float) totalMemory / CONVERT_TO_MB, (float) usedMemory / CONVERT_TO_MB,
+						(float) freeMemory / CONVERT_TO_MB, countRunningThreads);
+
+				_info("MONITORING_SYSTEM", info);
+
+				return null;
+			});
+
+			_on(ExtEvent.EXCEPTION, params -> {
+				var exception = _getThrowable(params[0]);
+
+				_error(exception);
+
+				return null;
+			});
+			
+			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+				var player = _getPlayer(params[0]);
+				var connectionId = _getInteger(params[1]);
+				var request = _getCommonObject(params[2]);
+				
+				if (connectionId == Inspector.MAIN_CHANNEL) {
+					IMessage message = new ExampleMessage();
+					message.putContent("id", player.getName());
+					message.putContent("q", request.get("a"));
+					hearbeatManager.sendMessage("world", message);
+				}
+				
+				return null;
+			});
 
 		}
 

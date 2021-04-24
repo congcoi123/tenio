@@ -63,7 +63,8 @@ public final class SystemMonitoringTask extends AbstractLogger implements ITask 
 		_info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			__eventManager.getExtension().emit(ExtEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
-					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory());
+					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
+					__monitoring.countRunningThreads());
 		}, 0, __monitoringPeriod, TimeUnit.SECONDS);
 	}
 

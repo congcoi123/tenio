@@ -36,6 +36,7 @@ import com.tenio.common.utility.XMLUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.configuration.entity.BroadcastConfig;
 import com.tenio.core.configuration.entity.HttpConfig;
 import com.tenio.core.configuration.entity.PathConfig;
 import com.tenio.core.configuration.entity.SocketConfig;
@@ -52,11 +53,16 @@ import com.tenio.core.configuration.entity.SocketConfig;
  * 
  */
 public abstract class CoreConfiguration extends CommonConfiguration {
-	
+
 	/**
 	 * All ports in sockets zone
 	 */
 	private final List<SocketConfig> __socketPorts;
+
+	/**
+	 * All ports in broadcasts zone
+	 */
+	private final List<BroadcastConfig> __broadcastPorts;
 
 	/**
 	 * All ports in web sockets zone
@@ -76,6 +82,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 */
 	public CoreConfiguration(String file) {
 		__socketPorts = new ArrayList<SocketConfig>();
+		__broadcastPorts = new ArrayList<BroadcastConfig>();
 		__webSocketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
 
@@ -117,6 +124,20 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 			__socketPorts.add(port);
 		}
+		var attrNetworkServerBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/ServerPort");
+		for (int j = 0; j < attrNetworkServerBroadcasts.getLength(); j++) {
+			var pDataNode = attrNetworkServerBroadcasts.item(j);
+			_push(CoreConfigurationType.SERVER_BROADCAST_PORT, pDataNode.getTextContent());
+		}
+		var attrNetworkBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/Port");
+		for (int j = 0; j < attrNetworkBroadcasts.getLength(); j++) {
+			var pDataNode = attrNetworkBroadcasts.item(j);
+			var port = new BroadcastConfig(pDataNode.getAttributes().getNamedItem("id").getTextContent(),
+					pDataNode.getAttributes().getNamedItem("name").getTextContent(),
+					Integer.parseInt(pDataNode.getTextContent()));
+
+			__broadcastPorts.add(port);
+		}
 		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
@@ -146,10 +167,23 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 		// Ports' Configuration
 		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
+		_push(CoreConfigurationType.BROADCAST_PORTS, __broadcastPorts);
 		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
 		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
 
 		// Parsing configuration data
+		var attrConfigurationWorkers = XMLUtility.getNodeList(root, "//Server/Configuration/Workers/Worker");
+		for (int j = 0; j < attrConfigurationWorkers.getLength(); j++) {
+			var pDataNode = attrConfigurationWorkers.item(j);
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+		}
+		var attrConfigurationSchedules = XMLUtility.getNodeList(root, "//Server/Configuration/Schedules/Task");
+		for (int j = 0; j < attrConfigurationSchedules.getLength(); j++) {
+			var pDataNode = attrConfigurationSchedules.item(j);
+			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
+			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+		}
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
 			var pDataNode = attrConfigurationProperties.item(j);

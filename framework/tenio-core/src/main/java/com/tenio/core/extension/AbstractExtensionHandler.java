@@ -32,6 +32,7 @@ import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
+import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.entity.IPlayer;
@@ -180,6 +181,18 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	protected Throwable _getThrowable(Object object) throws ExtensionValueCastException {
 		if (object instanceof Throwable) {
 			return (Throwable) object;
+		}
+		throw new ExtensionValueCastException(object.toString());
+	}
+
+	/**
+	 * @param object the corresponding object
+	 * @return a value in {@link CoreMessageCode} type
+	 * @throws ExtensionValueCastException
+	 */
+	protected CoreMessageCode _getCoreMessageCode(Object object) throws ExtensionValueCastException {
+		if (object instanceof Throwable) {
+			return (CoreMessageCode) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}

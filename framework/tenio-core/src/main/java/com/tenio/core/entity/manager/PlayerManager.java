@@ -63,12 +63,16 @@ public final class PlayerManager implements IPlayerManager {
 	private final Map<String, IPlayer> __players;
 	private final IEventManager __eventManager;
 	private IConfiguration __configuration;
-	private volatile int __socketPortsSize;
-	private volatile int __webSocketPortsSize;
+	private int __socketPortsSize;
+	private int __webSocketPortsSize;
+	private volatile int __count;
+	private volatile int __countPlayers;
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
 		__players = new HashMap<String, IPlayer>();
+		__count = 0;
+		__countPlayers = 0;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,16 +87,12 @@ public final class PlayerManager implements IPlayerManager {
 
 	@Override
 	public int count() {
-		synchronized (__players) {
-			return __players.size();
-		}
+		return __count;
 	}
 
 	@Override
 	public int countPlayers() {
-		synchronized (__players) {
-			return (int) __players.values().stream().filter(player -> !player.isNPC()).count();
-		}
+		return __countPlayers;
 	}
 
 	@Override
@@ -124,8 +124,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void add(IPlayer player, IConnection connection)
-			throws DuplicatedPlayerException, NullPlayerNameException {
+	public void add(IPlayer player, IConnection connection) throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
@@ -153,6 +152,8 @@ public final class PlayerManager implements IPlayerManager {
 			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
 
 			__players.put(player.getName(), player);
+			__count = __players.size();
+			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
@@ -171,6 +172,8 @@ public final class PlayerManager implements IPlayerManager {
 			}
 
 			__players.put(player.getName(), player);
+			__count = __players.size();
+			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 			// fire an event
 			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
@@ -195,6 +198,8 @@ public final class PlayerManager implements IPlayerManager {
 			removeAllConnections(player);
 
 			__players.remove(player.getName());
+			__count = __players.size();
+			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 		}
 
 	}
@@ -216,8 +221,15 @@ public final class PlayerManager implements IPlayerManager {
 			}
 
 			__players.remove(player.getName());
+			__count = __players.size();
+			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 		}
 
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return __count == 0;
 	}
 
 }
