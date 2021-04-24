@@ -39,10 +39,10 @@ import com.tenio.example.server.ExampleMessage;
  * This class makes a simple simulator for the physic 2d movement.
  * <h1>VM arguments:</h1>
  * <ul>
- *	<li>-Xms512m -Xmx2048m</li>
- *	<li>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</li>
- *	<li>-Dio.netty.tryReflectionSetAccessible=true</li>
- *	<li>--illegal-access=warn</li>
+ * <li>-Xms512m -Xmx2048m</li>
+ * <li>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</li>
+ * <li>-Dio.netty.tryReflectionSetAccessible=true</li>
+ * <li>--illegal-access=warn</li>
  * </ul>
  * 
  * @author kong
@@ -89,10 +89,10 @@ public final class TestServerMovement extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			
+
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
-			// world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
+			world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
 			var hearbeatManager = new HeartBeatManager();
 			try {
 				hearbeatManager.initialize(1);
@@ -117,7 +117,8 @@ public final class TestServerMovement extends AbstractApp {
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
 
-				// _info("PLAYER_LOGINED_SUCCESS", player.getName(), Thread.currentThread().getId());
+				// _info("PLAYER_LOGINED_SUCCESS", player.getName(),
+				// Thread.currentThread().getId());
 
 				// now we can allow that client send request for UDP connection
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp");
@@ -140,7 +141,8 @@ public final class TestServerMovement extends AbstractApp {
 			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (Inspector) _getPlayer(params[1]);
 
-				// _info("ATTACH_CONNECTION_SUCCESS", player.toString(), Thread.currentThread().getId());
+				// _info("ATTACH_CONNECTION_SUCCESS", player.toString(),
+				// Thread.currentThread().getId());
 
 				_messageApi.sendToPlayer(player, Inspector.MAIN_CHANNEL, "c", "udp-done");
 
@@ -206,19 +208,19 @@ public final class TestServerMovement extends AbstractApp {
 
 				return null;
 			});
-			
+
 			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
 				var player = _getPlayer(params[0]);
 				var connectionId = _getInteger(params[1]);
 				var request = _getCommonObject(params[2]);
-				
+
 				if (connectionId == Inspector.MAIN_CHANNEL) {
 					IMessage message = new ExampleMessage();
 					message.putContent("id", player.getName());
 					message.putContent("q", request.get("a"));
 					hearbeatManager.sendMessage("world", message);
 				}
-				
+
 				return null;
 			});
 
