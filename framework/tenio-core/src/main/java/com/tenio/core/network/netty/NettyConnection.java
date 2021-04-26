@@ -27,6 +27,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -72,6 +73,7 @@ public final class NettyConnection extends Connection {
 	private InetSocketAddress __remoteAddress;
 	@GuardedBy("this")
 	private List<Channel> __datagramChannelWorkers;
+	private ReentrantLock __counterDatagramLock;
 	private volatile int __roundRobinCounter;
 
 	private NettyConnection(int connectionIndex, IEventManager eventManager, TransportType transportType,
@@ -85,8 +87,10 @@ public final class NettyConnection extends Connection {
 		if (!isType(TransportType.UDP)) {
 			setAddress(((InetSocketAddress) __channel.remoteAddress()).toString());
 			datagramChannelWorkers = null;
+		} else {
+			__counterDatagramLock = new ReentrantLock();
 		}
-		
+
 		if (datagramChannelWorkers != null) {
 			__roundRobinCounter = 0;
 			__datagramChannelWorkers = Collections.synchronizedList(new ArrayList<Channel>());
@@ -115,13 +119,17 @@ public final class NettyConnection extends Connection {
 		} else if (isType(TransportType.UDP)) {
 			if (__remoteAddress != null) {
 				if (DATAGRAM_WORKERS_SIZE > 1) {
+					__counterDatagramLock.lock();
 					if (__roundRobinCounter >= DATAGRAM_WORKERS_SIZE) {
 						__roundRobinCounter = 0;
 					}
+					
 					var channel = __datagramChannelWorkers.get(__roundRobinCounter);
 					channel.writeAndFlush(new DatagramPacket(
 							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));
+
 					__roundRobinCounter++;
+					__counterDatagramLock.unlock();
 				} else {
 					__channel.writeAndFlush(new DatagramPacket(
 							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));

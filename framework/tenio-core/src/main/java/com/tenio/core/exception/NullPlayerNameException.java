@@ -32,4 +32,12 @@ public final class NullPlayerNameException extends Exception {
 	 */
 	private static final long serialVersionUID = 1303721781114060707L;
 
+	public NullPlayerNameException() {
+
+	}
+
+	public NullPlayerNameException(String name) {
+		super(name);
+	}
+
 }

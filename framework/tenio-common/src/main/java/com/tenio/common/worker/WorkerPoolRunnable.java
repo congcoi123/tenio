@@ -33,16 +33,21 @@ import com.tenio.common.logger.AbstractLogger;
 public final class WorkerPoolRunnable extends AbstractLogger implements Runnable {
 
 	private Thread __thread;
-	private BlockingQueue<Runnable> __taskQueue;
+	private final BlockingQueue<Runnable> __taskQueue;
+	private final String __name;
+	private final int __index;
 	private boolean __isStopped;
 
-	public WorkerPoolRunnable(BlockingQueue<Runnable> taskQueue) {
+	public WorkerPoolRunnable(String name, int index, BlockingQueue<Runnable> taskQueue) {
 		__taskQueue = taskQueue;
+		__name = name;
+		__index = index;
 		__isStopped = false;
 	}
 
 	public void run() {
 		__thread = Thread.currentThread();
+		__thread.setName(String.format("worker-%s-%d", __name, __index));
 		while (!isStopped()) {
 			try {
 				Runnable runnable = (Runnable) __taskQueue.take();
