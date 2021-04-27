@@ -70,7 +70,7 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 
 	private void __poll() {
 		__isWriting = true;
-		if (!__messageQueue.isEmpty()) {
+		if (!__messageQueue.isEmpty() && __ctx.channel().isWritable()) {
 			__ctx.writeAndFlush(__messageQueue.poll()).addListener(__sendListener);
 			__queueSize--;
 		} else {

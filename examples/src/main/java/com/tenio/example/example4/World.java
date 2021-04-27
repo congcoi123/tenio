@@ -3,6 +3,7 @@ package com.tenio.example.example4;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.tenio.common.utility.MathUtility;
 import com.tenio.common.worker.WorkersPool;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.entity.IPlayer;
+import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
@@ -40,7 +42,10 @@ import com.tenio.example.example4.entity.Wall;
  */
 public final class World extends AbstractHeartBeat {
 
-	public final static int SAMPLE_RATE = 10;
+	private final static int ONE_SECOND_EXPECT_SEND_PACKETS = 10;
+	private final static float SEND_PACKETS_RATE = 1.0f / (float) ONE_SECOND_EXPECT_SEND_PACKETS;
+
+	private final static int SAMPLE_RATE = 10;
 
 	private ParamLoader __paramLoader = ParamLoader.getInstance();
 
@@ -111,7 +116,7 @@ public final class World extends AbstractHeartBeat {
 		__enableViewKeys = false;
 		__enableShowCellSpaceInfo = false;
 		__currentCCU = Server.getInstance().getPlayerApi().count();
-		__workersPool = new WorkersPool(100, 200);
+		__workersPool = new WorkersPool("world", 150, 300);
 
 		// setup the spatial subdivision class
 		__cellSpace = new CellSpacePartition<Vehicle>((float) cx, (float) cy, __paramLoader.NUM_CELLS_X,
@@ -457,7 +462,7 @@ public final class World extends AbstractHeartBeat {
 
 		__sendingInterval += delta;
 
-		if (__sendingInterval >= 0.25f) {
+		if (__sendingInterval >= SEND_PACKETS_RATE) {
 
 			__currentCCU = Server.getInstance().getPlayerApi().count();
 			setCCU(__currentCCU);
@@ -465,9 +470,11 @@ public final class World extends AbstractHeartBeat {
 			try {
 				__workersPool.execute(() -> {
 					Map<String, IPlayer> inspectors = new HashMap<String, IPlayer>();
-					__inspectors.forEach((name, inspector) -> {
-						inspectors.put(name, inspector);
-					});
+					Iterator<IPlayer> iterators = __inspectors.values().iterator();
+					while (iterators.hasNext()) {
+						var inspector = iterators.next();
+						inspectors.put(inspector.getName(), inspector);
+					}
 
 					List<Vehicle> vehicles = new ArrayList<Vehicle>();
 
@@ -487,11 +494,13 @@ public final class World extends AbstractHeartBeat {
 									__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
 											.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
 						} else {
-							inspectors.forEach((name, inspector) -> {
+							Iterator<IPlayer> iterator = inspectors.values().iterator();
+							while (iterator.hasNext()) {
+								var inspector = iterator.next();
 								__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",
 										__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
 												.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
-							});
+							}
 						}
 					}
 				}, "send-broadcast");
@@ -566,7 +575,12 @@ public final class World extends AbstractHeartBeat {
 				neighbours.forEach(neighbour -> {
 					response.put(neighbour.getIndex()).put(neighbour.getASCIIValueOfString(request));
 				});
-				__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+				var inspector = __inspectors.get(name);
+				if (inspector != null) {
+					__messageApi.sendToPlayer(__inspectors.get(name), Inspector.MAIN_CHANNEL, "r", response);
+				} else {
+					_error(new NullPlayerNameException(name));
+				}
 			}, name);
 		} catch (Exception e) {
 			_error(e);

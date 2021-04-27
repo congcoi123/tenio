@@ -23,7 +23,7 @@
 		<Workers>
 			<Worker name="socketThreadsPoolAcceptor">20</Worker>
 			<Worker name="socketThreadsPoolWorker">150</Worker>
-			<Worker name="datagramThreadsPoolWorker">100</Worker>
+			<Worker name="datagramThreadsPoolWorker">250</Worker>
 			<Worker name="websocketThreadsPoolAcceptor">1</Worker>
 			<Worker name="websocketThreadsPoolWorker">1</Worker>
 		</Workers>

@@ -65,12 +65,15 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 	// time in seconds
 	private static int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	private static int NUMBER_OF_PLAYERS = 200;
-	// 100 objects * 4 times * 60
-	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;
+	private static int NUMBER_OF_PLAYERS = 180;
+
+	private static int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
+	// 100 entities * ONE_SECOND_EXPECT_RECEIVE_PACKETS times * 60
+	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = ONE_SECOND_EXPECT_RECEIVE_PACKETS * 60 * 100;
 
 	private static final List<Long> __latencyRecorder = new ArrayList<Long>();
 	private static final List<Integer> __fpsRecorder = new ArrayList<Integer>();
+	private static final List<Float> __lostPacketRecorder = new ArrayList<Float>();
 
 	/**
 	 * The entry point
@@ -116,6 +119,22 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 				}
 			}
 
+			synchronized (__lostPacketRecorder) {
+				float average = 0;
+				int size = __lostPacketRecorder.size();
+				for (int i = 0; i < size; i++) {
+					average += __lostPacketRecorder.get(i).floatValue();
+				}
+				float result = (float) average / (float) size;
+
+				System.err.println(String.format("[AVERAGE LOST PACKETS] Average Lost Packets: %.2f %%", result));
+
+				if (size >= Integer.MAX_VALUE) {
+					System.out.println(String.format("[AVERAGE LOST PACKETS] Reset counter -> %d", size));
+					__lostPacketRecorder.clear();
+				}
+			}
+
 		}, 0, AVERAGE_LATENCY_MEASUREMENT_INTERVAL, TimeUnit.MINUTES);
 
 		for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
@@ -156,14 +175,18 @@ public final class TestClientMovement extends AbstractLogger implements ISocketL
 		// packets counting
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
+			float lostPacket = (float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
+					/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100);
 			_info("COUNTING",
 					String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-							__playerName, __countUdpPacketsOneMinute,
-							(float) ((float) (ONE_MINUTE_EXPECT_RECEIVE_PACKETS - __countUdpPacketsOneMinute)
-									/ ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100),
+							__playerName, __countUdpPacketsOneMinute, lostPacket,
 							(float) __countReceivedPacketSizeOneMinute / 1000));
 			__countReceivedPacketSizeOneMinute = 0;
 			__countUdpPacketsOneMinute = 0;
+
+			synchronized (__lostPacketRecorder) {
+				__lostPacketRecorder.add(lostPacket);
+			}
 
 		}, 1, 1, TimeUnit.MINUTES);
 

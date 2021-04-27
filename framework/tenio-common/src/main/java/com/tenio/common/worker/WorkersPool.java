@@ -35,20 +35,22 @@ import com.tenio.common.logger.SystemAbstractLogger;
  */
 public final class WorkersPool extends SystemAbstractLogger {
 
-	private BlockingQueue<Runnable> __taskQueue;
-	private List<WorkerPoolRunnable> __runnables;
+	private final BlockingQueue<Runnable> __taskQueue;
+	private final List<WorkerPoolRunnable> __runnables;
+	private final String __name;
 	private boolean __isStopped;
 
-	public WorkersPool(int noOfThreads, int maxNoOfTasks) {
+	public WorkersPool(String name, int noOfThreads, int maxNoOfTasks) {
 		__taskQueue = new ArrayBlockingQueue<Runnable>(maxNoOfTasks);
 		__runnables = new ArrayList<WorkerPoolRunnable>();
+		__name = name;
 		__isStopped = false;
 
 		_info("CREATED NEW WORKERS",
 				_buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
 
 		for (int i = 0; i < noOfThreads; i++) {
-			__runnables.add(new WorkerPoolRunnable(__taskQueue));
+			__runnables.add(new WorkerPoolRunnable(__name, i, __taskQueue));
 		}
 		for (WorkerPoolRunnable runnable : __runnables) {
 			new Thread(runnable).start();

@@ -74,7 +74,7 @@ public final class CommonConstants {
 	 * 
 	 * @see IElementsPool
 	 */
-	public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 64;
+	public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 256;
 
 	/**
 	 * When the desired number of elements exceeded the first configuration. The new
