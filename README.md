@@ -56,8 +56,6 @@
 ## First Glimpse
 - Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
-- Communication Simulation  
-![Communication](assets/login-example-1.gif)
 
 ## Testing
 - Testing Environment
@@ -68,6 +66,10 @@
   Total Number of Cores:    4
   Memory:                   16 GB
 ```
+- Example 4 Testing Script
+![Example 4 Testing Script](documentations/testing/example-4-test/example-4-test-script.png)
+- Example 4 Testing Results
+![Example 4 Testing Results](documentations/testing/example-4-test/example-4-test-results.png)
 
 - Please check out the [testing scripts](documentations/testing) for more details.
 
