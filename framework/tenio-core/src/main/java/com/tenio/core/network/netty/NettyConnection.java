@@ -92,7 +92,7 @@ public final class NettyConnection extends Connection {
 		}
 
 		if (datagramChannelWorkers != null) {
-			__roundRobinCounter = 0;
+			__roundRobinCounter = -1;
 			__datagramChannelWorkers = Collections.synchronizedList(new ArrayList<Channel>());
 			datagramChannelWorkers.forEach(ch -> {
 				__datagramChannelWorkers.add(ch);
@@ -120,16 +120,16 @@ public final class NettyConnection extends Connection {
 			if (__remoteAddress != null) {
 				if (DATAGRAM_WORKERS_SIZE > 1) {
 					__counterDatagramLock.lock();
+					__roundRobinCounter++;
 					if (__roundRobinCounter >= DATAGRAM_WORKERS_SIZE) {
 						__roundRobinCounter = 0;
 					}
+					__counterDatagramLock.unlock();
 					
 					var channel = __datagramChannelWorkers.get(__roundRobinCounter);
 					channel.writeAndFlush(new DatagramPacket(
 							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));
-
-					__roundRobinCounter++;
-					__counterDatagramLock.unlock();
+					
 				} else {
 					__channel.writeAndFlush(new DatagramPacket(
 							Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)), __remoteAddress));
