@@ -21,52 +21,47 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.entity;
+package com.tenio.example.example1.injection;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.concurrent.ThreadSafe;
+import com.tenio.common.configuration.IConfiguration;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.extension.IExtension;
+import com.tenio.example.server.Configuration;
 
 /**
+ * This class shows how a server handle messages that came from a client with DI
+ * 
  * @author kong
+ *
  */
-@ThreadSafe
-public final class HttpConfig {
+public final class TestServerLoginDI extends AbstractApp {
 
-	private final String __name;
-	private final int __port;
-	private final List<PathConfig> __paths;
-
-	public HttpConfig(String name, int port) {
-		__paths = new ArrayList<PathConfig>();
-		__name = name;
-		__port = port;
-	}
-
-	public String getName() {
-		return __name;
-	}
-
-	public List<PathConfig> getPaths() {
-		synchronized (__paths) {
-			return __paths;
-		}
-	}
-
-	public void addPath(PathConfig path) {
-		synchronized (__paths) {
-			__paths.add(path);
-		}
-	}
-
-	public int getPort() {
-		return __port;
+	/**
+	 * The entry point
+	 */
+	public static void main(String[] params) {
+		var game = new TestServerLoginDI();
+		game.start(ApplicationEntryPoint.class);
 	}
 
 	@Override
-	public String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
+	public IExtension getExtension() {
+		return null;
+	}
+
+	@Override
+	public Configuration getConfiguration() {
+		return new Configuration("TenIOConfig.xml");
+	}
+
+	@Override
+	public void onStarted(IExtension extension, IConfiguration configuration) {
+
+	}
+
+	@Override
+	public void onShutdown() {
+
 	}
 
 }

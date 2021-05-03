@@ -42,6 +42,7 @@ import com.tenio.common.utility.StringUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
+import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtEvent;
@@ -151,7 +152,7 @@ public final class Server extends AbstractLogger implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(IConfiguration configuration) throws IOException, InterruptedException,
+	public void start(IConfiguration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		__configuration = configuration;
 
@@ -184,7 +185,11 @@ public final class Server extends AbstractLogger implements IServer {
 		__internalLogic.init(configuration);
 
 		// initialize the subscribers
-		getExtension().initialize(configuration);
+		var extension = getExtension();
+		if (extension != null) {
+			extension.initialize(configuration);
+		}
+		eventHandler.initialize();
 
 		// server need at least one connection to start up
 		__checkDefinedMainSocketConnection(configuration);

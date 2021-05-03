@@ -29,9 +29,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;

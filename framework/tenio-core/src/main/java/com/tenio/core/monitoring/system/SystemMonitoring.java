@@ -25,9 +25,9 @@ package com.tenio.core.monitoring.system;
 
 import java.lang.management.ManagementFactory;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.sun.management.OperatingSystemMXBean;
 
 /**

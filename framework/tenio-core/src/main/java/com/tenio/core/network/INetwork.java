@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network;
 
 import java.io.IOException;
+import java.net.BindException;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
@@ -45,9 +46,9 @@ public interface INetwork {
 	/**
 	 * Start a new network for communication
 	 * 
-	 * @param eventManager  the system event management
-	 * @param configuration your own configuration
-	 * @param commonObjectPool the pool of message objects
+	 * @param eventManager       the system event management
+	 * @param configuration      your own configuration
+	 * @param commonObjectPool   the pool of message objects
 	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * 
 	 * @throws InterruptedException thrown when a thread is waiting, sleeping, or
@@ -57,10 +58,9 @@ public interface INetwork {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, IConfiguration configuration,
-			IElementsPool<CommonObject> commonObjectPool,
+	void start(IEventManager eventManager, IConfiguration configuration, IElementsPool<CommonObject> commonObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayInputPool)
-			throws IOException, InterruptedException;
+			throws IOException, InterruptedException, BindException;
 
 	/**
 	 * Shutdown the network

@@ -24,15 +24,16 @@ THE SOFTWARE.
 package com.tenio.core.network.netty;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
@@ -130,7 +131,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 	@Override
 	public void start(IEventManager eventManager, IConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool)
-			throws IOException, InterruptedException {
+			throws IOException, InterruptedException, BindException {
 
 		var defaultSocketThreadFactory = new DefaultThreadFactory(PREFIX_SOCKET, true, Thread.NORM_PRIORITY);
 		var defaultDatagramThreadFactory = new DefaultThreadFactory(PREFIX_DATAGRAM, true, Thread.NORM_PRIORITY);
@@ -252,6 +253,8 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 						} else {
 							_error(future.cause());
+							throw new IOException(
+									String.valueOf(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
 						}
 					}
 				});
@@ -345,6 +348,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 								} else {
 									_error(future.cause());
+									throw new IOException(String.valueOf(socketConfig.getPort()));
 								}
 							}
 						});
@@ -360,6 +364,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 							} else {
 								_error(future.cause());
+								throw new IOException(String.valueOf(socketConfig.getPort()));
 							}
 						}
 					});
@@ -406,6 +411,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 						} else {
 							_error(future.cause());
+							throw new IOException(String.valueOf(socketConfig.getPort()));
 						}
 					}
 				});
@@ -452,6 +458,7 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 
 						} else {
 							_error(future.cause());
+							throw new IOException(String.valueOf(socketConfig.getPort()));
 						}
 					}
 				});
@@ -498,8 +505,10 @@ public final class NettyNetwork extends AbstractLogger implements INetwork, IBro
 		__serverSockets = null;
 		__serverWebsockets.clear();
 		__serverWebsockets = null;
-		__broadcastInets.clear();
-		__broadcastInets = null;
+		if (__broadcastInets != null) {
+			__broadcastInets.clear();
+			__broadcastInets = null;
+		}
 
 		__traficCounterBroadcast = null;
 		__traficCounterDatagrams = null;
