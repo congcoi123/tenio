@@ -29,9 +29,9 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.channel.Channel;

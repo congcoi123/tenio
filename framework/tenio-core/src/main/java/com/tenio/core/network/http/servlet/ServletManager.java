@@ -35,9 +35,9 @@ import org.json.simple.JSONObject;
 
 import com.tenio.common.element.CommonObject;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.configuration.entity.PathConfig;
 import com.tenio.core.event.IEventManager;
+import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
 import com.tenio.core.network.http.servlet.base.BaseServlet;
 

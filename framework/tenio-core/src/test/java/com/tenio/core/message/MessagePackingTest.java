@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.network.utility.MessagePacker;
 
 /**
  * @author kong

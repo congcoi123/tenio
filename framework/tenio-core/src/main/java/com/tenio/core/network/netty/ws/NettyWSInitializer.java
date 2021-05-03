@@ -28,7 +28,7 @@ import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.monitoring.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

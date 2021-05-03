@@ -31,9 +31,9 @@ import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
+import com.tenio.core.network.define.RestMethod;
 import com.tenio.example.server.Configuration;
 
 /**

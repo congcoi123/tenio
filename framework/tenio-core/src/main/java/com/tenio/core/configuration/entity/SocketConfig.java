@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.entity;
 
-import com.tenio.core.configuration.define.TransportType;
+import com.tenio.core.network.define.TransportType;
 
 /**
  * @author kong

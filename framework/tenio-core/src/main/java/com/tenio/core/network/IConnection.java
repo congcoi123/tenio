@@ -26,9 +26,9 @@ package com.tenio.core.network;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.element.CommonObject;
-import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
+import com.tenio.core.network.define.TransportType;
 
 /**
  * A connection is created when the first request from client reach and pass in

@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 import com.tenio.common.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.message.MessagePacker;
+import com.tenio.core.network.utility.MessagePacker;
 
 /**
  * Create an object for handling a socket connection. It is used to send

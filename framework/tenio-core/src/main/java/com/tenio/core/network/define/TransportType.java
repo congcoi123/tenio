@@ -21,23 +21,47 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.security;
+package com.tenio.core.network.define;
 
-import java.util.List;
-
-import com.tenio.core.exception.RefusedAddressException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author kong
  */
-public interface IConnectionFilter {
+public enum TransportType {
+	
+	TCP("tcp"),
+	UDP("udp"),
+	WEB_SOCKET("websocket"),
+	HTTP("http");
 
-	void addBannedAddress(String ipAddress);
+	// Reverse-lookup map for getting a type from a value
+	private static final Map<String, TransportType> lookup = new HashMap<String, TransportType>();
 
-	void removeBannedAddress(String ipAddress);
+	static {
+		for (var type : TransportType.values()) {
+			lookup.put(type.getValue(), type);
+		}
+	}
 
-	List<String> getBannedAddresses();
+	private final String value;
 
-	void validateAndAddAddress(String ipAddress) throws RefusedAddressException;
+	private TransportType(final String value) {
+		this.value = value;
+	}
+
+	public final String getValue() {
+		return this.value;
+	}
+
+	@Override
+	public final String toString() {
+		return this.name();
+	}
+
+	public static TransportType getByValue(String value) {
+		return lookup.get(value);
+	}
 
 }

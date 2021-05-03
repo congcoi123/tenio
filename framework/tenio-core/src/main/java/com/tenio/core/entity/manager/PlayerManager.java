@@ -36,13 +36,13 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.configuration.define.TransportType;
 import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.define.TransportType;
 
 /**
  * Manage all your players ({@link IPlayer}) on the server. It is a singleton

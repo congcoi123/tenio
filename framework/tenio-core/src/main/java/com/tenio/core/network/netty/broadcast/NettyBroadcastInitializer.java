@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.broadcast;
 
-import com.tenio.core.monitoring.traffic.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.monitoring.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.DatagramChannel;

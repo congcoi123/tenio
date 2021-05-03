@@ -21,59 +21,57 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.security;
+package com.tenio.core.network.define;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.core.exception.RefusedAddressException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author kong
  */
-@ThreadSafe
-public final class DefaultConnectionFilter implements IConnectionFilter {
+public enum RestMethod {
+	/**
+	 * Create
+	 */
+	POST("post"),
+	/**
+	 * Update
+	 */
+	PUT("put"),
+	/**
+	 * Retrieve
+	 */
+	GET("get"),
+	/**
+	 * Delete
+	 */
+	DELETE("delete");
 
-	private final List<String> __bannedAddresses;
+	// Reverse-lookup map for getting a type from a value
+	private static final Map<String, RestMethod> lookup = new HashMap<String, RestMethod>();
 
-	public DefaultConnectionFilter() {
-		__bannedAddresses = new ArrayList<String>();
+	static {
+		for (var method : RestMethod.values()) {
+			lookup.put(method.getValue(), method);
+		}
+	}
+
+	private final String value;
+
+	private RestMethod(final String value) {
+		this.value = value;
+	}
+
+	public final String getValue() {
+		return this.value;
 	}
 
 	@Override
-	public void addBannedAddress(String ipAddress) {
-		synchronized (__bannedAddresses) {
-			__bannedAddresses.add(ipAddress);
-		}
+	public final String toString() {
+		return this.name();
 	}
 
-	@Override
-	public void removeBannedAddress(String ipAddress) {
-		synchronized (__bannedAddresses) {
-			__bannedAddresses.remove(ipAddress);
-		}
+	public static RestMethod getByValue(String value) {
+		return lookup.get(value);
 	}
-
-	@Override
-	public List<String> getBannedAddresses() {
-		synchronized (__bannedAddresses) {
-			return __bannedAddresses;
-		}
-	}
-
-	@Override
-	public void validateAndAddAddress(String ipAddress) throws RefusedAddressException {
-		if (__isAddressBanned(ipAddress)) {
-			throw new RefusedAddressException(ipAddress);
-		}
-	}
-
-	private boolean __isAddressBanned(String ipAddress) {
-		synchronized (__bannedAddresses) {
-			return __bannedAddresses.contains(ipAddress);
-		}
-	}
-
 }

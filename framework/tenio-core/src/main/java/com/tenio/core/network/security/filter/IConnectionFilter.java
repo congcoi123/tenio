@@ -21,35 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.message.packet;
+package com.tenio.core.network.security.filter;
 
-import com.tenio.core.exception.MessagePacketQueueFullException;
+import java.util.List;
+
+import com.tenio.core.exception.RefusedAddressException;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
-public interface IPacketQueue {
+public interface IConnectionFilter {
 
-	byte[] peek();
+	void addBannedAddress(String ipAddress);
 
-	byte[] take();
+	void removeBannedAddress(String ipAddress);
 
-	boolean isEmpty();
+	List<String> getBannedAddresses();
 
-	boolean isFull();
+	void validateAndAddAddress(String ipAddress) throws RefusedAddressException;
 
-	int count();
+	int getMaxConnectionsPerIp();
 
-	int getSize();
-
-	void setSize(int size);
-
-	float getPercentageUsed();
-
-	void put(byte[] packet) throws MessagePacketQueueFullException;
-
-	void clear();
+	void setMaxConnectionsPerIp(int maxConnections);
 
 }

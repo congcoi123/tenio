@@ -34,12 +34,12 @@ import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.configuration.define.RestMethod;
 import com.tenio.core.entity.IPlayer;
 import com.tenio.core.entity.IRoom;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.IConnection;
+import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.server.Server;
 
 /**
