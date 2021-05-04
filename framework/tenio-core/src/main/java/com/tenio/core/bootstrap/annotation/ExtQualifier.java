@@ -21,52 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.entity;
+package com.tenio.core.bootstrap.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.concurrent.ThreadSafe;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation can be used to avoid conflict if there are multiple
+ * implementations of the same interface
+ * 
  * @author kong
+ *
  */
-@ThreadSafe
-public final class HttpConfig {
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface ExtQualifier {
 
-	private final String __name;
-	private final int __port;
-	private final List<PathConfig> __paths;
-
-	public HttpConfig(String name, int port) {
-		__paths = new ArrayList<PathConfig>();
-		__name = name;
-		__port = port;
-	}
-
-	public String getName() {
-		return __name;
-	}
-
-	public List<PathConfig> getPaths() {
-		synchronized (__paths) {
-			return __paths;
-		}
-	}
-
-	public void addPath(PathConfig path) {
-		synchronized (__paths) {
-			__paths.add(path);
-		}
-	}
-
-	public int getPort() {
-		return __port;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
-	}
+	String value() default "";
 
 }

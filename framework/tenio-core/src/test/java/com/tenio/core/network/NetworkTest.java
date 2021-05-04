@@ -26,6 +26,7 @@ package com.tenio.core.network;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.net.BindException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ public final class NetworkTest {
 
 	@Test
 	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
-		assertThrows(IOException.class, () -> {
+		assertThrows(BindException.class, () -> {
 			__network.start(__eventManager, __configuration, __msgObjectPool, __byteArrayPool);
 		});
 	}

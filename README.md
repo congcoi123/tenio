@@ -130,6 +130,8 @@ Please start the server before its corresponding client in each example package.
     |-- example1
     |   |-- TestClientLogin.java
     |   |-- TestServerLogin.java
+    |   |-- injection
+    |       |-- TestServerLoginDI.java
     |-- example2
     |   |-- TestClientFSM.java
     |   |-- TestFSM.java

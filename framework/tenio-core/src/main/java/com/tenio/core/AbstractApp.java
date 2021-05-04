@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.logger.AbstractLogger;
+import com.tenio.core.bootstrap.Bootstrap;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -45,13 +46,45 @@ public abstract class AbstractApp extends AbstractLogger {
 	 * Start The Game Server
 	 */
 	public void start() {
+		__start(null);
+	}
+	
+	/**
+	 * Start The Game Server With DI
+	 */
+	public void start(Class<?> entryClazz) {
+		__start(entryClazz);
+	}
+	
+	private void __start(Class<?> entryClazz) {
+		Bootstrap bootstrap = null;
+		boolean bootstrapRunning = false;
+		if (entryClazz != null) {
+			bootstrap = Bootstrap.newInstance();
+			try {
+				bootstrapRunning = bootstrap.run(entryClazz);
+			} catch (Exception e) {
+				_error(e, "The application started with exceptions occured");
+				System.exit(1);
+			}
+		}
+
 		var configuration = getConfiguration();
 		var extension = getExtension();
 
 		var server = Server.getInstance();
 		server.setExtension(extension);
 		try {
-			server.start(configuration);
+			if (bootstrap == null) {
+				server.start(configuration, null);
+			} else {
+				server.start(configuration, bootstrap.getEventHandler());
+			}
+			if (bootstrapRunning) {
+				_info("BOOTSTRAP", "Started");
+			} else {
+				_info("BOOTSTRAP", "Not setup");
+			}
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
 			_error(e, "The application started with exceptions occured");
