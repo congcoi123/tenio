@@ -23,22 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import com.tenio.common.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.ExtAutowired;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
-import com.tenio.core.event.ISubscriber;
-import com.tenio.core.exception.ExtensionValueCastException;
+import com.tenio.core.bootstrap.handler.ConnectionEventHandler;
+import com.tenio.core.bootstrap.handler.HttpEventHandler;
+import com.tenio.core.bootstrap.handler.MixinsEventHandler;
+import com.tenio.core.bootstrap.handler.PlayerEventHandler;
+import com.tenio.core.bootstrap.handler.RoomEventHandler;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;
-import com.tenio.core.extension.event.IEventFetchedCcuNumber;
-import com.tenio.core.extension.event.IEventPlayerLoginedSuccess;
-import com.tenio.core.extension.event.IEventReceivedMessageFromPlayer;
-import com.tenio.core.network.IConnection;
 
 /**
  * @author kong
@@ -46,104 +38,28 @@ import com.tenio.core.network.IConnection;
 @ExtComponent
 public final class EventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
-	private IEventFetchedCcuNumber __eventFetchedCcuNumber;
+	@ExtAutowired
+	private ConnectionEventHandler __connectionEventHandler;
 
-	@ExtAutowiredAcceptNull
-	private IEventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
+	@ExtAutowired
+	private PlayerEventHandler __playerEventHandler;
 
-	@ExtAutowiredAcceptNull
-	private IEventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
+	@ExtAutowired
+	private RoomEventHandler __roomEventHandler;
 
-	@ExtAutowiredAcceptNull
-	private IEventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
+	@ExtAutowired
+	private HttpEventHandler __httpEventHandler;
+
+	@ExtAutowired
+	private MixinsEventHandler __mixinsEventHandler;
 
 	public void initialize() {
-		// Declare optional instances
-		Optional<IEventFetchedCcuNumber> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
-		Optional<IEventConnectionEstablishedSuccess> eventConnectionEstablishedSuccessOp = Optional
-				.ofNullable(__eventConnectionEstablishedSuccess);
-		Optional<IEventPlayerLoginedSuccess> eventPlayerLoginedSuccessOp = Optional
-				.ofNullable(__eventPlayerLoginedSuccess);
-		Optional<IEventReceivedMessageFromPlayer> eventReceivedMessageFromPlayerOp = Optional
-				.ofNullable(__eventReceivedMessageFromPlayer);
 
-		// Handle events
-		eventFetchedCcuNumberOp.ifPresent(new Consumer<IEventFetchedCcuNumber>() {
-
-			@Override
-			public void accept(IEventFetchedCcuNumber event) {
-				_on(ExtEvent.FETCHED_CCU_NUMBER, new ISubscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						int numberPlayers = _getInteger(params[0]);
-						int numberAlls = _getInteger(params[1]);
-
-						event.handle(numberPlayers, numberAlls);
-
-						return null;
-					}
-				});
-			}
-		});
-
-		eventConnectionEstablishedSuccessOp.ifPresent(new Consumer<IEventConnectionEstablishedSuccess>() {
-
-			@Override
-			public void accept(IEventConnectionEstablishedSuccess event) {
-				_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, new ISubscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IConnection connection = _getConnection(params[0]);
-						CommonObject message = _getCommonObject(params[1]);
-
-						event.handle(connection, message);
-
-						return null;
-					}
-				});
-			}
-		});
-
-		eventPlayerLoginedSuccessOp.ifPresent(new Consumer<IEventPlayerLoginedSuccess>() {
-
-			public void accept(IEventPlayerLoginedSuccess event) {
-
-				_on(ExtEvent.PLAYER_LOGINED_SUCCESS, new ISubscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
-
-						event.handle(player);
-
-						return null;
-					}
-				});
-			}
-		});
-
-		eventReceivedMessageFromPlayerOp.ifPresent(new Consumer<IEventReceivedMessageFromPlayer>() {
-
-			@Override
-			public void accept(IEventReceivedMessageFromPlayer event) {
-				_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, new ISubscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
-						int connectionIndex = _getInteger(params[1]);
-						CommonObject message = _getCommonObject(params[2]);
-
-						event.handle(player, connectionIndex, message);
-
-						return null;
-					}
-				});
-			}
-		});
+		__connectionEventHandler.initialize();
+		__playerEventHandler.initialize();
+		__roomEventHandler.initialize();
+		__httpEventHandler.initialize();
+		__mixinsEventHandler.initialize();
 
 	}
 

@@ -21,49 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1.injection;
+package com.tenio.core.extension.event;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.core.AbstractApp;
-import com.tenio.core.bootstrap.annotation.ExtBootstrap;
-import com.tenio.core.extension.IExtension;
-import com.tenio.example.server.Configuration;
+import com.tenio.core.configuration.define.CoreMessageCode;
+import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.IRoom;
 
 /**
- * This class shows how a server handle messages that came from a client with DI
- * 
  * @author kong
- *
  */
-@ExtBootstrap
-public final class TestServerLoginDI extends AbstractApp {
+public interface IEventPlayerJoinRoomHandle {
 
-	/**
-	 * The entry point
-	 */
-	public static void main(String[] params) {
-		var game = new TestServerLoginDI();
-		game.start(TestServerLoginDI.class);
-	}
-
-	@Override
-	public IExtension getExtension() {
-		return null;
-	}
-
-	@Override
-	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.xml");
-	}
-
-	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
-	}
+	void handle(IPlayer player, IRoom room, boolean success, CoreMessageCode code);
 
 }

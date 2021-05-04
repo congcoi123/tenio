@@ -21,14 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1.injection;
+package com.tenio.core.extension.event;
 
-import com.tenio.core.bootstrap.annotation.ExtBootstrap;
+import com.tenio.core.entity.IPlayer;
 
 /**
  * @author kong
  */
-@ExtBootstrap
-public final class ApplicationEntryPoint {
+public interface IEventAttachConnectionSuccess {
+
+	void handle(int connectionIndex, IPlayer player);
 
 }

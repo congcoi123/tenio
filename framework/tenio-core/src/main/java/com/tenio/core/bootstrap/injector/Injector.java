@@ -50,8 +50,8 @@ public final class Injector {
 	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
 	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.event";
 
-	private Map<Class<?>, Class<?>> __implementedClazzsMap;
-	private Map<Class<?>, Object> __clazzInstancesMap;
+	private final Map<Class<?>, Class<?>> __implementedClazzsMap;
+	private final Map<Class<?>, Object> __clazzInstancesMap;
 
 	public Injector() {
 		__implementedClazzsMap = new HashMap<Class<?>, Class<?>>();

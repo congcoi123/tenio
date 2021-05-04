@@ -189,7 +189,9 @@ public final class Server extends AbstractLogger implements IServer {
 		if (extension != null) {
 			extension.initialize(configuration);
 		}
-		eventHandler.initialize();
+		if (eventHandler != null) {
+			eventHandler.initialize();
+		}
 
 		// server need at least one connection to start up
 		__checkDefinedMainSocketConnection(configuration);
