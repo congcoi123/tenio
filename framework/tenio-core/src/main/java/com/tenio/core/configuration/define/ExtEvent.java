@@ -33,6 +33,7 @@ import com.tenio.core.entity.IRoom;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;
+import com.tenio.core.network.IConnection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
@@ -51,7 +52,7 @@ public enum ExtEvent {
 	 * established, you can make a bi-direction communication between the server and
 	 * that client. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> a valid connection, see {@link Connection}</li>
+	 * <li><b>parameter[0]</b> a valid connection, see {@link IConnection}</li>
 	 * <li><b>parameter[1]</b> a message that sent from the client, see
 	 * {@link CommonObject}</li>
 	 * </ul>
