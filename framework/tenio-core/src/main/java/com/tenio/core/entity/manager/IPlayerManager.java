@@ -29,7 +29,7 @@ import com.tenio.core.api.PlayerApi;
 import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * Manage all your players ({@link ZeroPlayer}) on the server. It is a singleton
@@ -88,12 +88,12 @@ public interface IPlayerManager extends IManager {
 	 * connection).
 	 * 
 	 * @param player     that is created from your server, see: {@link ZeroPlayer}
-	 * @param connection the main corresponding connection, see: {@link IConnection}
+	 * @param connection the main corresponding connection, see: {@link Connection}
 	 * 
 	 * @throws NullPlayerNameException
 	 * @throws DuplicatedPlayerException
 	 */
-	void add(ZeroPlayer player, IConnection connection)
+	void add(ZeroPlayer player, Connection connection)
 			throws NullPlayerNameException, DuplicatedPlayerException;
 
 	/**

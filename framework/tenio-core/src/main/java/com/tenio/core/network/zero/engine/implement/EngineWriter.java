@@ -32,28 +32,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.message.packet.IPacketQueue;
-import com.tenio.core.network.zero.DefaultSocketOption;
-import com.tenio.core.network.zero.engine.IEngineWriter;
+import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.handler.IOHandler;
+import com.tenio.core.network.zero.option.ZeroConnectionOption;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public final class EngineWriter extends ZeroSystemLogger implements IEngineWriter, Runnable {
+public final class EngineWriter extends ZeroSystemLogger implements ZeroWriter, Runnable {
 
 	private volatile int __threadId;
 
 	private final BlockingQueue<SocketChannel> __channelTicketsQueue;
 
 	private ExecutorService __threadPool;
-	private IConfiguration __configuration;
+	private ZConfiguration __configuration;
 	private IOHandler __ioHandler;
 
 	private int __threadPoolSize;
@@ -138,7 +138,7 @@ public final class EngineWriter extends ZeroSystemLogger implements IEngineWrite
 			byte[] packet = null;
 
 			try {
-				IPacketQueue packetQueue = socketChannel.getOption(DefaultSocketOption.PACKET_QUEUE);
+				IPacketQueue packetQueue = socketChannel.getOption(ZeroConnectionOption.PACKET_QUEUE);
 				synchronized (packetQueue) {
 					if (packetQueue.isEmpty()) {
 						return;
@@ -205,7 +205,7 @@ public final class EngineWriter extends ZeroSystemLogger implements IEngineWrite
 	}
 
 	@Override
-	public void setConfiguration(IConfiguration configuration) {
+	public void setConfiguration(ZConfiguration configuration) {
 		__configuration = configuration;
 	}
 

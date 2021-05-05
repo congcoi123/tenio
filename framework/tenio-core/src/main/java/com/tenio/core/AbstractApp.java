@@ -25,7 +25,7 @@ package com.tenio.core;
 
 import java.io.IOException;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.bootstrap.Bootstrap;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
@@ -108,14 +108,14 @@ public abstract class AbstractApp extends ZeroLogger {
 	public abstract IExtension getExtension();
 
 	/**
-	 * @return your own class that derived from {@link IConfiguration} class
+	 * @return your own class that derived from {@link ZConfiguration} class
 	 */
-	public abstract IConfiguration getConfiguration();
+	public abstract ZConfiguration getConfiguration();
 
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted(IExtension extension, IConfiguration configuration);
+	public abstract void onStarted(IExtension extension, ZConfiguration configuration);
 
 	/**
 	 * The trigger is called when server was tear down

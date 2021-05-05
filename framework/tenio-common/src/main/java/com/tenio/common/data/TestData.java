@@ -2,6 +2,9 @@ package com.tenio.common.data;
 
 import java.util.ArrayList;
 
+import com.tenio.common.data.implement.ZeroArrayImpl;
+import com.tenio.common.data.implement.ZeroObjectImpl;
+
 public final class TestData {
 
 	public static void main(String[] args) {
@@ -16,6 +19,10 @@ public final class TestData {
 		testShortArray.add((short)13);
 		testShortArray.add((short)14);
 		testArray.addShortArray(testShortArray);
+		
+		var testSubArray = ZeroArrayImpl.newInstance();
+		testSubArray.addLong(1000L);
+		testArray.addZeroArray(testSubArray);
 		
 		var testStringArray = new ArrayList<String>();
 		testStringArray.add("sub");

@@ -26,9 +26,9 @@ package com.tenio.example.example1;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.backup.EntityProcesser;
@@ -63,7 +63,7 @@ public final class TestServerLogin extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 
@@ -78,7 +78,7 @@ public final class TestServerLogin extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize(IConfiguration configuration) {
+		public void initialize(ZConfiguration configuration) {
 			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);

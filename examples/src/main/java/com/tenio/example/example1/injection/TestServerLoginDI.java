@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.bootstrap.annotation.ExtBootstrap;
 import com.tenio.core.extension.IExtension;
@@ -57,7 +57,7 @@ public final class TestServerLoginDI extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 

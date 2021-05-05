@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.tenio.common.data.ZeroArray;
-import com.tenio.common.data.ZeroArrayImpl;
-import com.tenio.common.data.ZeroData;
 import com.tenio.common.data.ZeroDataType;
 import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.ZeroObjectImpl;
+import com.tenio.common.data.element.ZeroData;
+import com.tenio.common.data.implement.ZeroArrayImpl;
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.exception.IllegalCollectionLengthException;
 import com.tenio.common.exception.IllegalValueException;
 
@@ -386,12 +386,12 @@ public final class ZeroDataSerializerUtility {
 
 	private static ZeroArray __decodeZeroArray(ByteBuffer buffer) {
 		ZeroArray zeroArray = ZeroArrayImpl.newInstance();
-		byte headerBuffer = buffer.get();
+		byte headerByte = buffer.get();
 
-		if (ZeroDataType.getByValue(headerBuffer) != ZeroDataType.ZERO_ARRAY) {
+		if (ZeroDataType.getByValue(headerByte) != ZeroDataType.ZERO_ARRAY) {
 			throw new IllegalStateException(
 					String.format("Invalid ZeroDataType. Expected: %s, value: %d, but found: %d",
-							ZeroDataType.ZERO_ARRAY.toString(), ZeroDataType.ZERO_ARRAY.getValue(), headerBuffer));
+							ZeroDataType.ZERO_ARRAY.toString(), ZeroDataType.ZERO_ARRAY.getValue(), headerByte));
 		}
 
 		short arraySize = buffer.getShort();

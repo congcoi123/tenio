@@ -32,13 +32,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.Connection;
-import com.tenio.core.network.IConnection;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.connection.AbstractConnection;
+import com.tenio.core.network.entity.connection.Connection;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.buffer.Unpooled;
@@ -50,13 +50,13 @@ import io.netty.util.AttributeKey;
 
 /**
  * Use <a href="https://netty.io/">Netty</a> to create a connection
- * instance @see {@link Connection}
+ * instance @see {@link AbstractConnection}
  * 
  * @author kong
  * 
  */
 @ThreadSafe
-public final class NettyConnection extends Connection {
+public final class NettyConnection extends AbstractConnection {
 
 	private final int DATAGRAM_WORKERS_SIZE;
 
@@ -147,9 +147,9 @@ public final class NettyConnection extends Connection {
 	}
 
 	@Override
-	public IConnection getThis() {
+	public Connection getThis() {
 		if (isType(TransportType.UDP)) {
-			return (IConnection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
+			return (Connection) __channel.attr(AttributeKey.valueOf(getAddress())).get();
 		}
 		return __channel.attr(NettyConnectionOption.CONNECTION).get();
 	}

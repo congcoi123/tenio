@@ -34,8 +34,8 @@ import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
@@ -48,10 +48,10 @@ import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IBroadcast;
-import com.tenio.core.network.INetwork;
-import com.tenio.core.network.monitoring.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.Network;
 import com.tenio.core.network.netty.broadcast.NettyBroadcastInitializer;
 import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
+import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.netty.socket.NettySocketInitializer;
 import com.tenio.core.network.netty.ws.NettyWSInitializer;
 
@@ -78,13 +78,13 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * Use <a href="https://netty.io/">Netty</a> to handle a network instance @see
- * {@link INetwork}
+ * {@link Network}
  * 
  * @author kong
  * 
  */
 @ThreadSafe
-public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadcast {
+public final class NettyNetwork extends ZeroLogger implements Network, IBroadcast {
 
 	private static final String PREFIX_SOCKET = "socket";
 	private static final String PREFIX_DATAGRAM = "datagram";
@@ -129,7 +129,7 @@ public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadca
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(IEventManager eventManager, IConfiguration configuration,
+	public void start(IEventManager eventManager, ZConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException, BindException {
 
@@ -227,11 +227,11 @@ public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadca
 	 * Constructs a Datagram socket for broadcasting and binds it to the specified
 	 * port on the local host machine.
 	 * 
-	 * @param configuration  your own configuration, see {@link IConfiguration}
+	 * @param configuration  your own configuration, see {@link ZConfiguration}
 	 * @param broadcastPorts the list of broadcast ports
 	 * @throws InterruptedException
 	 */
-	private void __bindBroadcast(IConfiguration configuration, List<BroadcastConfig> broadcastPorts)
+	private void __bindBroadcast(ZConfiguration configuration, List<BroadcastConfig> broadcastPorts)
 			throws InterruptedException {
 		if (broadcastPorts == null || broadcastPorts.isEmpty()) {
 			return;
@@ -281,14 +281,14 @@ public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadca
 	 * 
 	 * @param connectionIndex    the order of socket
 	 * @param eventManager       the system event management
-	 * @param configuration      your own configuration, see {@link IConfiguration}
+	 * @param configuration      your own configuration, see {@link ZConfiguration}
 	 * @param commonObjectPool   the pool of message objects
 	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindUDP(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
+	private void __bindUDP(int connectionIndex, IEventManager eventManager, ZConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
@@ -381,14 +381,14 @@ public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadca
 	 * 
 	 * @param connectionIndex    the order of socket
 	 * @param eventManager       the system event management
-	 * @param configuration      your own configuration, see {@link IConfiguration}
+	 * @param configuration      your own configuration, see {@link ZConfiguration}
 	 * @param commonObjectPool   the pool of message objects
 	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindTCP(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
+	private void __bindTCP(int connectionIndex, IEventManager eventManager, ZConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
@@ -428,14 +428,14 @@ public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadca
 	 * @param connectionIndex    the order of socket
 	 * @param eventManager       the system event management
 	 * @param configuration      configuration your own configuration, see
-	 *                           {@link IConfiguration}
+	 *                           {@link ZConfiguration}
 	 * @param commonObjectPool   the pool of message objects
 	 * @param byteArrayInputPool the pool of byte array input stream objects
 	 * @param socketConfig       the socket information
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindWS(int connectionIndex, IEventManager eventManager, IConfiguration configuration,
+	private void __bindWS(int connectionIndex, IEventManager eventManager, ZConfiguration configuration,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 

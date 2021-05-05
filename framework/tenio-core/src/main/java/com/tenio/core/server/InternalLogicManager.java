@@ -25,8 +25,8 @@ package com.tenio.core.server;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
@@ -39,7 +39,7 @@ import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * Handle the main logic of the server.
@@ -63,7 +63,7 @@ final class InternalLogicManager extends ZeroLogger {
 	/**
 	 * Start handling
 	 */
-	public void init(IConfiguration configuration) {
+	public void init(ZConfiguration configuration) {
 
 		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
@@ -159,7 +159,7 @@ final class InternalLogicManager extends ZeroLogger {
 
 	}
 
-	private void __createNewConnection(IConfiguration configuration, int connectionIndex, IConnection connection,
+	private void __createNewConnection(ZConfiguration configuration, int connectionIndex, Connection connection,
 			CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
@@ -217,12 +217,12 @@ final class InternalLogicManager extends ZeroLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link IConnection} type
+	 * @return a value in {@link Connection} type
 	 * @throws ExtensionValueCastException
 	 */
-	private IConnection __getConnection(Object object) throws ExtensionValueCastException {
-		if (object instanceof IConnection) {
-			return (IConnection) object;
+	private Connection __getConnection(Object object) throws ExtensionValueCastException {
+		if (object instanceof Connection) {
+			return (Connection) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}

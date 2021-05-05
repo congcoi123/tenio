@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 
 /**
  * An entry point class is the first one you start to handle your own logic
@@ -43,6 +43,6 @@ public interface IExtension {
 	 * 
 	 * @param configuration base configuration in server
 	 */
-	void initialize(IConfiguration configuration);
+	void initialize(ZConfiguration configuration);
 	
 }

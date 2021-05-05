@@ -39,7 +39,7 @@ import com.tenio.common.logger.ZeroLogger;
  * @author kong
  * 
  */
-public abstract class CommonConfiguration extends ZeroLogger implements IConfiguration {
+public abstract class CommonConfiguration extends ZeroLogger implements ZConfiguration {
 
 	/**
 	 * All configuration values will be held in this map. You access values by your

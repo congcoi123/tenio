@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 import com.tenio.example.example1.PlayerLogin;
 
 /**
@@ -38,7 +38,7 @@ public final class ConnectionEstablishedSuccessHandler extends AbstractExtension
 		implements IEventConnectionEstablishedSuccess {
 
 	@Override
-	public void handle(IConnection connection, CommonObject message) {
+	public void handle(Connection connection, CommonObject message) {
 		// Allow the connection login into server (become a player)
 		var playerName = message.getString("u");
 		// Should confirm that credentials by data from database or other services, here

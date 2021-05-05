@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example4;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -73,7 +73,7 @@ public final class TestServerMovement extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 
@@ -88,7 +88,7 @@ public final class TestServerMovement extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize(IConfiguration configuration) {
+		public void initialize(ZConfiguration configuration) {
 
 			// Create a world
 			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);

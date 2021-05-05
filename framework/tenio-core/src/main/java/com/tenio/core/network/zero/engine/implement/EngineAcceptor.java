@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -39,7 +40,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.data.SocketConfig;
@@ -48,17 +49,17 @@ import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.message.packet.DefaultPacketQueue;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.security.filter.IConnectionFilter;
-import com.tenio.core.network.zero.DefaultSocketOption;
-import com.tenio.core.network.zero.engine.IEngineAcceptor;
-import com.tenio.core.network.zero.engine.IEngineReader;
+import com.tenio.core.network.zero.engine.ZeroAcceptor;
+import com.tenio.core.network.zero.engine.ZeroReader;
 import com.tenio.core.network.zero.handler.IOHandler;
+import com.tenio.core.network.zero.option.ZeroConnectionOption;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcceptor, Runnable {
+public final class EngineAcceptor extends ZeroSystemLogger implements ZeroAcceptor, Runnable {
 
 	private volatile int __threadId;
 
@@ -66,8 +67,8 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 	private List<SocketChannel> __acceptableChannels;
 	private Selector __acceptableSelector;
 
-	private IConfiguration __configuration;
-	private IEngineReader __engineReader;
+	private ZConfiguration __configuration;
+	private ZeroReader __engineReader;
 	private IConnectionFilter __connectionFilter;
 	private IOHandler __ioHandler;
 
@@ -79,17 +80,13 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 
 	@Override
 	public void setup() throws UnsupportedOperationException, IOException {
-
 		__initializeWorkers();
 		__initializeSockets();
-
 	}
 
 	@Override
 	public void start() {
-
 		__runWorkers();
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -109,6 +106,8 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 			throws UnsupportedOperationException, IOException {
 		if (socketConfig.getType() == TransportType.TCP) {
 			__bindTcpSocket(serverAddresss, socketConfig.getPort());
+		} else if (socketConfig.getType() == TransportType.UDP) {
+			__bindUdpSocket(serverAddresss, socketConfig.getPort());
 		} else {
 			throw new UnsupportedOperationException("Unsupported transport type");
 		}
@@ -124,6 +123,17 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 		socketChannel.register(__acceptableSelector, SelectionKey.OP_ACCEPT);
 
 		_info("TCP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
+	}
+
+	private void __bindUdpSocket(String serverAddress, int port) throws IOException {
+		DatagramChannel datagramChannel = DatagramChannel.open();
+
+		datagramChannel.configureBlocking(false);
+		datagramChannel.socket().bind(new InetSocketAddress(serverAddress, port));
+		datagramChannel.socket().setReuseAddress(true);
+		datagramChannel.register(__engineReader.getSelector(), SelectionKey.OP_READ);
+
+		_info("UDP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
 	}
 
 	private void __initializeWorkers() {
@@ -290,7 +300,7 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 
 										var packetQueue = new DefaultPacketQueue(__configuration
 												.getInt(CoreConfigurationType.CHANNEL_PACKET_QUEUE_SIZE));
-										socketChannel.setOption(DefaultSocketOption.PACKET_QUEUE, packetQueue);
+										socketChannel.setOption(ZeroConnectionOption.PACKET_QUEUE, packetQueue);
 
 										socketChannel.register(__engineReader.getSelector(), SelectionKey.OP_READ);
 
@@ -326,7 +336,7 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 	}
 
 	@Override
-	public void setConfiguration(IConfiguration configuration) {
+	public void setConfiguration(ZConfiguration configuration) {
 		__configuration = configuration;
 	}
 
@@ -341,7 +351,7 @@ public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcc
 	}
 
 	@Override
-	public void setEngineReader(IEngineReader engineReader) {
+	public void setEngineReader(ZeroReader engineReader) {
 		__engineReader = engineReader;
 	}
 

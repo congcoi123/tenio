@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.client;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 
 /**
  * This interface helps you listen to all messages these came from the server's

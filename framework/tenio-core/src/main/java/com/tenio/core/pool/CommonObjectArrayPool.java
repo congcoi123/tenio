@@ -27,7 +27,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.pool.IElementsPool;

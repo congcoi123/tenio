@@ -25,8 +25,8 @@ package com.tenio.example.example3;
 
 import java.security.SecureRandom;
 
-import com.tenio.common.data.CommonObject;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.example.client.IDatagramListener;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;

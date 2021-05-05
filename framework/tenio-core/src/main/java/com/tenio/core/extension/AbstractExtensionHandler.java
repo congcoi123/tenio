@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
@@ -38,8 +38,8 @@ import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
-import com.tenio.core.network.IConnection;
 import com.tenio.core.network.define.RestMethod;
+import com.tenio.core.network.entity.connection.Connection;
 import com.tenio.core.server.Server;
 
 /**
@@ -101,12 +101,12 @@ public abstract class AbstractExtensionHandler extends ZeroLogger {
 
 	/**
 	 * @param object the corresponding object
-	 * @return a value in {@link IConnection} type
+	 * @return a value in {@link Connection} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected IConnection _getConnection(Object object) throws ExtensionValueCastException {
-		if (object instanceof IConnection) {
-			return (IConnection) object;
+	protected Connection _getConnection(Object object) throws ExtensionValueCastException {
+		if (object instanceof Connection) {
+			return (Connection) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}

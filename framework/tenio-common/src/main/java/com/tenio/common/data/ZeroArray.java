@@ -3,6 +3,8 @@ package com.tenio.common.data;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.tenio.common.data.element.ZeroData;
+
 public interface ZeroArray {
 
 	byte[] toBinary();

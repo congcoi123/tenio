@@ -25,13 +25,13 @@ package com.tenio.core.network.netty;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.IConnection;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.connection.Connection;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.channel.Channel;
@@ -52,7 +52,7 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	private final IElementsPool<CommonObject> __commmonObjectPool;
 	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final IEventManager __eventManager;
-	private IConnection __connection;
+	private Connection __connection;
 	private final TransportType __transportType;
 	private final int __connectionIndex;
 
@@ -72,11 +72,11 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	 * @param remoteAdress the current address (in use for Datagram channel)
 	 * @return a connection
 	 */
-	private IConnection __getConnection(Channel channel, InetSocketAddress remoteAdress) {
+	private Connection __getConnection(Channel channel, InetSocketAddress remoteAdress) {
 		if (remoteAdress == null) {
 			return channel.attr(NettyConnectionOption.CONNECTION).get();
 		}
-		return (IConnection) channel.attr(AttributeKey.valueOf(remoteAdress.toString())).get();
+		return (Connection) channel.attr(AttributeKey.valueOf(remoteAdress.toString())).get();
 	}
 
 	/**

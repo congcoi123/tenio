@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.example.client.IDatagramListener;

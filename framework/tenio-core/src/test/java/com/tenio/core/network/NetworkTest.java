@@ -32,7 +32,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.Configuration;
@@ -47,7 +47,7 @@ import com.tenio.core.pool.CommonObjectPool;
  */
 public final class NetworkTest {
 
-	private INetwork __network;
+	private Network __network;
 	private IElementsPool<CommonObject> __msgObjectPool;
 	private IElementsPool<ByteArrayInputStream> __byteArrayPool;
 	private IEventManager __eventManager;

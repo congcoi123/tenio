@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.pool.CommonObjectArrayPool;

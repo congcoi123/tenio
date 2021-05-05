@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.example.example6;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
@@ -59,7 +59,7 @@ public final class TestServerStress extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 
@@ -76,7 +76,7 @@ public final class TestServerStress extends AbstractApp {
 		private static final int CONVERT_TO_MB = 1024 * 1024;
 
 		@Override
-		public void initialize(IConfiguration configuration) {
+		public void initialize(ZConfiguration configuration) {
 			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);

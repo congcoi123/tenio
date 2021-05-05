@@ -36,13 +36,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.network.zero.engine.IEngineAcceptor;
-import com.tenio.core.network.zero.engine.IEngineReader;
-import com.tenio.core.network.zero.engine.IEngineWriter;
+import com.tenio.core.network.zero.engine.ZeroAcceptor;
+import com.tenio.core.network.zero.engine.ZeroReader;
+import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.handler.IOHandler;
 
 /**
@@ -50,7 +50,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  * 
  * @author kong
  */
-public final class EngineReader extends ZeroSystemLogger implements IEngineReader, Runnable {
+public final class EngineReader extends ZeroSystemLogger implements ZeroReader, Runnable {
 
 	private volatile int __threadId;
 	private volatile long __readBytes;
@@ -58,9 +58,9 @@ public final class EngineReader extends ZeroSystemLogger implements IEngineReade
 	private ExecutorService __threadPool;
 	private Selector __readSelector;
 
-	private IConfiguration __configuration;
-	private IEngineAcceptor __engineAcceptor;
-	private IEngineWriter __engineWriter;
+	private ZConfiguration __configuration;
+	private ZeroAcceptor __engineAcceptor;
+	private ZeroWriter __engineWriter;
 	private IOHandler __ioHandler;
 
 	private int __threadPoolSize;
@@ -227,7 +227,7 @@ public final class EngineReader extends ZeroSystemLogger implements IEngineReade
 	}
 
 	@Override
-	public void setConfiguration(IConfiguration configuration) {
+	public void setConfiguration(ZConfiguration configuration) {
 		__configuration = configuration;
 	}
 
@@ -237,12 +237,12 @@ public final class EngineReader extends ZeroSystemLogger implements IEngineReade
 	}
 
 	@Override
-	public void setEngineAcceptor(IEngineAcceptor engineAcceptor) {
+	public void setEngineAcceptor(ZeroAcceptor engineAcceptor) {
 		__engineAcceptor = engineAcceptor;
 	}
 
 	@Override
-	public void setEngineWriter(IEngineWriter engineWriter) {
+	public void setEngineWriter(ZeroWriter engineWriter) {
 		__engineWriter = engineWriter;
 	}
 

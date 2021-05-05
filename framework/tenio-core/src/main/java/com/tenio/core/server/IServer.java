@@ -26,7 +26,7 @@ package com.tenio.core.server;
 import java.io.IOException;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
@@ -50,7 +50,7 @@ interface IServer {
 	/**
 	 * Start the server base on your own configurations
 	 * 
-	 * @param configuration, see {@link IConfiguration}
+	 * @param configuration, see {@link ZConfiguration}
 	 * @param eventHandler,  see {@link EventHandler}
 	 * 
 	 * @throws IOException
@@ -59,7 +59,7 @@ interface IServer {
 	 * @throws NotDefinedSubscribersException
 	 * @throws DuplicatedUriAndMethodException
 	 */
-	void start(IConfiguration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
+	void start(ZConfiguration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
 
 	/**

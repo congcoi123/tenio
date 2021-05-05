@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -55,7 +55,7 @@ public final class TestServerFSM extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 
@@ -75,7 +75,7 @@ public final class TestServerFSM extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize(IConfiguration configuration) {
+		public void initialize(ZConfiguration configuration) {
 
 			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);

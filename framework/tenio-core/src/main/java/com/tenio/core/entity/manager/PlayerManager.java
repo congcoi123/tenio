@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.SocketConfig;
@@ -41,8 +41,8 @@ import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.IConnection;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * Manage all your players ({@link ZeroPlayer}) on the server. It is a singleton
@@ -62,7 +62,7 @@ public final class PlayerManager implements IPlayerManager {
 	 */
 	private final Map<String, ZeroPlayer> __players;
 	private final IEventManager __eventManager;
-	private IConfiguration __configuration;
+	private ZConfiguration __configuration;
 	private int __socketPortsSize;
 	private int __webSocketPortsSize;
 	private volatile int __count;
@@ -77,7 +77,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public synchronized void initialize(IConfiguration configuration) {
+	public synchronized void initialize(ZConfiguration configuration) {
 		__configuration = configuration;
 		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
@@ -124,7 +124,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void add(ZeroPlayer player, IConnection connection) throws DuplicatedPlayerException, NullPlayerNameException {
+	public void add(ZeroPlayer player, Connection connection) throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
 			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,

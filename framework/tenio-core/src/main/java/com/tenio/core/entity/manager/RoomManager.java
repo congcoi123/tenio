@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.IConfiguration;
+import com.tenio.common.configuration.ZConfiguration;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
@@ -65,7 +65,7 @@ public final class RoomManager implements IRoomManager {
 	}
 
 	@Override
-	public synchronized void initialize(IConfiguration configuration) {
+	public synchronized void initialize(ZConfiguration configuration) {
 		// temporary do nothing
 	}
 

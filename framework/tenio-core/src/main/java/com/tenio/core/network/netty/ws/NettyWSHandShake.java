@@ -25,8 +25,8 @@ package com.tenio.core.network.netty.ws;
 
 import java.net.URISyntaxException;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.event.IEventManager;
@@ -63,12 +63,12 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	private final IEventManager __eventManager;
 	private final IElementsPool<CommonObject> __commonObjectPool;
 	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-	private final IConfiguration __configuration;
+	private final ZConfiguration __configuration;
 	private final int __connectionIndex;
 
 	public NettyWSHandShake(int connectionIndex, IEventManager eventManager,
 			IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, IConfiguration configuration) {
+			IElementsPool<ByteArrayInputStream> byteArrayInputPool, ZConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

@@ -25,8 +25,8 @@ package com.tenio.core.api;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.data.CommonObject;
-import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.ZeroEvent;
@@ -35,7 +35,7 @@ import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IBroadcast;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * This class provides you a necessary interface for sending messages from the
@@ -69,11 +69,11 @@ public final class MessageApi extends ZeroLogger {
 	/**
 	 * Send a message for a connection
 	 * 
-	 * @param connection See {@link IConnection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 */
-	public void sendToConnection(IConnection connection, String key, Object value) {
+	public void sendToConnection(Connection connection, String key, Object value) {
 		var message = __getMessageObject();
 		message.put(key, value);
 		connection.send(message);
@@ -89,13 +89,13 @@ public final class MessageApi extends ZeroLogger {
 	 * Must use {@link #getMessageObjectArray()} to create data array package for
 	 * avoiding memory leak.
 	 * 
-	 * @param connection See {@link IConnection}
+	 * @param connection See {@link Connection}
 	 * @param key        the key of message
 	 * @param value      the value of message
 	 * @param keyData    the key of message's data
 	 * @param data       the main data of message, see: {@link CommonObjectArray}
 	 */
-	public void sendToConnection(IConnection connection, String key, Object value, String keyData,
+	public void sendToConnection(Connection connection, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __getMessageObject();
 		message.put(key, value);

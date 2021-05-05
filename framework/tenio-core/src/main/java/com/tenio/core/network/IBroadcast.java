@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 
 /**
  * 

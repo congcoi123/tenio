@@ -35,7 +35,7 @@ import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * This class provides you a necessary interface for managing players.
@@ -104,9 +104,9 @@ public final class PlayerApi extends ZeroLogger {
 	 * connection).
 	 * 
 	 * @param player     that is created from your server, see: {@link ZeroPlayer}
-	 * @param connection the corresponding connection, see: {@link IConnection}
+	 * @param connection the corresponding connection, see: {@link Connection}
 	 */
-	public void login(ZeroPlayer player, IConnection connection) {
+	public void login(ZeroPlayer player, Connection connection) {
 		try {
 			__playerManager.add(player, connection);
 		} catch (NullPlayerNameException e1) {

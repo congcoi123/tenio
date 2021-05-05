@@ -32,7 +32,7 @@ import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * A player is one of the base elements in your server. It is a representation
@@ -58,7 +58,7 @@ public abstract class AbstractPlayer extends ZeroLogger implements ZeroPlayer {
 	/**
 	 * The list of socket/web socket connections
 	 */
-	private IConnection[] __connections;
+	private Connection[] __connections;
 	/**
 	 * Tracing the room which they player has been in
 	 */
@@ -140,7 +140,7 @@ public abstract class AbstractPlayer extends ZeroLogger implements ZeroPlayer {
 	}
 
 	@Override
-	public IConnection getConnection(int connectionIndex) {
+	public Connection getConnection(int connectionIndex) {
 		if (__flagNPC) {
 			return null;
 		}
@@ -156,12 +156,12 @@ public abstract class AbstractPlayer extends ZeroLogger implements ZeroPlayer {
 	@Override
 	public synchronized void initializeConnections(int connectionsSize) {
 		__connectionsSize = connectionsSize;
-		__connections = new IConnection[__connectionsSize];
+		__connections = new Connection[__connectionsSize];
 		__flagNPC = false;
 	}
 
 	@Override
-	public void setConnection(IConnection connection, int connectionIndex) {
+	public void setConnection(Connection connection, int connectionIndex) {
 		if (__flagNPC) {
 			return;
 		}

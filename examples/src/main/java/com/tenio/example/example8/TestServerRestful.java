@@ -27,8 +27,8 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -63,7 +63,7 @@ public final class TestServerRestful extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, IConfiguration configuration) {
+	public void onStarted(IExtension extension, ZConfiguration configuration) {
 
 	}
 
@@ -79,7 +79,7 @@ public final class TestServerRestful extends AbstractApp {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void initialize(IConfiguration configuration) {
+		public void initialize(ZConfiguration configuration) {
 
 			_on(ZeroEvent.HTTP_REQUEST_VALIDATE, params -> {
 				var method = _getRestMethod(params[0]);

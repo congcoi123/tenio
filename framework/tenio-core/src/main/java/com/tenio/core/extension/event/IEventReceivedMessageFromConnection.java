@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.event;
 
-import com.tenio.common.data.CommonObject;
-import com.tenio.core.network.IConnection;
+import com.tenio.common.data.element.CommonObject;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * @author kong
  */
 public interface IEventReceivedMessageFromConnection {
 
-	void handle(IConnection connection, CommonObject message);
+	void handle(Connection connection, CommonObject message);
 
 }

@@ -23,12 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.datagram;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.event.IEventManager;
-import com.tenio.core.network.monitoring.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.netty.option.WriteQueueOutboundChannelHandler;
 
 import io.netty.channel.ChannelInitializer;
@@ -48,12 +48,12 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 	private final IElementsPool<CommonObject> __commonObjectPool;
 	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final IConfiguration __configuration;
+	private final ZConfiguration __configuration;
 	private final int __connectionIndex;
 
 	public NettyDatagramInitializer(int connectionIndex, IEventManager eventManager,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, IConfiguration configuration) {
+			GlobalTrafficShapingHandlerCustomize trafficCounter, ZConfiguration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

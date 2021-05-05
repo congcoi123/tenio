@@ -24,13 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.extension.event;
 
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * @author kong
  */
 public interface IEventConnectionEstablishedFailed {
 
-	void handle(IConnection connection, CoreMessageCode code);
+	void handle(Connection connection, CoreMessageCode code);
 
 }

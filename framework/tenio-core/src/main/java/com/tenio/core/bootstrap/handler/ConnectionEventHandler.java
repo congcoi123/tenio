@@ -26,7 +26,7 @@ package com.tenio.core.bootstrap.handler;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.configuration.define.CoreMessageCode;
@@ -42,7 +42,7 @@ import com.tenio.core.extension.event.IEventConnectionEstablishedFailed;
 import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;
 import com.tenio.core.extension.event.IEventDisconnectConnection;
 import com.tenio.core.extension.event.IEventReceivedMessageFromConnection;
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * @author kong
@@ -97,7 +97,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IConnection connection = _getConnection(params[0]);
+						Connection connection = _getConnection(params[0]);
 						CommonObject message = _getCommonObject(params[1]);
 
 						event.handle(connection, message);
@@ -116,7 +116,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IConnection connection = _getConnection(params[0]);
+						Connection connection = _getConnection(params[0]);
 						CoreMessageCode code = _getCoreMessageCode(params[1]);
 
 						event.handle(connection, code);
@@ -135,7 +135,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IConnection connection = _getConnection(params[0]);
+						Connection connection = _getConnection(params[0]);
 						CommonObject message = _getCommonObject(params[1]);
 
 						event.handle(connection, message);
@@ -210,7 +210,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IConnection connection = _getConnection(params[0]);
+						Connection connection = _getConnection(params[0]);
 
 						event.handle(connection);
 

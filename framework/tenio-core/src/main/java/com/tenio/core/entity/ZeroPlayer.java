@@ -25,7 +25,7 @@ package com.tenio.core.entity;
 
 import java.util.List;
 
-import com.tenio.core.network.IConnection;
+import com.tenio.core.network.entity.connection.Connection;
 
 /**
  * A player is one of the base elements in your server. It is a representation
@@ -72,11 +72,11 @@ public interface ZeroPlayer {
 	 */
 	boolean isNPC();
 
-	IConnection getConnection(int connectionIndex);
+	Connection getConnection(int connectionIndex);
 
 	void initializeConnections(int connectionsSize);
 
-	void setConnection(IConnection connection, int connectionIndex);
+	void setConnection(Connection connection, int connectionIndex);
 
 	void closeConnection(int connectionIndex);
 

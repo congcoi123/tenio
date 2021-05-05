@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.event;
 
-import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.configuration.define.CoreMessageCode;
 
 /**
