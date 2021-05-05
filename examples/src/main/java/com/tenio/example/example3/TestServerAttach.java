@@ -26,7 +26,7 @@ package com.tenio.example.example3;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.Configuration;
@@ -74,7 +74,7 @@ public final class TestServerAttach extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 
@@ -87,7 +87,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+			_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// The player has login successful
 				var player = (PlayerAttach) _getPlayer(params[0]);
 
@@ -97,7 +97,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+			_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
 				var player = (PlayerAttach) _getPlayer(params[0]);
 				int index = _getInteger(params[1]);
 
@@ -107,7 +107,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
+			_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
 				var message = _getCommonObject(params[1]);
 				var playerName = message.getString("u");
 
@@ -119,7 +119,7 @@ public final class TestServerAttach extends AbstractApp {
 				return _playerApi.get(playerName);
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, params -> {
+			_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (PlayerAttach) _getPlayer(params[1]);
 
 				_messageApi.sendToPlayer(player, PlayerAttach.MAIN_CHANNEL, "c", "udp-done");
@@ -127,7 +127,7 @@ public final class TestServerAttach extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.ATTACH_CONNECTION_FAILED, params -> {
+			_on(ZeroEvent.ATTACH_CONNECTION_FAILED, params -> {
 				// do nothing but need to be declared
 				return null;
 			});

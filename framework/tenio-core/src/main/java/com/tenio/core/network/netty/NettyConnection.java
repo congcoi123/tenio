@@ -32,7 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.IEventManager;

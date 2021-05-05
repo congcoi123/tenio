@@ -28,7 +28,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 
@@ -39,7 +39,7 @@ import com.tenio.common.pool.IElementsPool;
  * 
  */
 @ThreadSafe
-public final class ByteArrayInputStreamPool extends AbstractLogger implements IElementsPool<ByteArrayInputStream> {
+public final class ByteArrayInputStreamPool extends ZeroLogger implements IElementsPool<ByteArrayInputStream> {
 
 	@GuardedBy("this")
 	private ByteArrayInputStream[] __pool;

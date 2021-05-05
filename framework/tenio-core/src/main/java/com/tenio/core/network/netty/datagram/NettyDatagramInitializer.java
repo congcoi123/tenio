@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.datagram;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.event.IEventManager;

@@ -27,10 +27,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.monitoring.system.SystemMonitoring;
 
@@ -41,7 +41,7 @@ import com.tenio.core.monitoring.system.SystemMonitoring;
  * @author kong
  * 
  */
-public final class SystemMonitoringTask extends AbstractLogger implements ITask {
+public final class SystemMonitoringTask extends ZeroLogger implements ITask {
 
 	private final SystemMonitoring __monitoring;
 
@@ -62,7 +62,7 @@ public final class SystemMonitoringTask extends AbstractLogger implements ITask 
 	public ScheduledFuture<?> run() {
 		_info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ExtEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
+			__eventManager.getExtension().emit(ZeroEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
 					__monitoring.countRunningThreads());
 		}, 0, __monitoringPeriod, TimeUnit.SECONDS);

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network;
 
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.define.TransportType;
 
@@ -46,7 +46,7 @@ public abstract class Connection implements IConnection {
 	 */
 	private final IEventManager __eventManager;
 	/**
-	 * {@link IPlayer#getName()}
+	 * {@link ZeroPlayer#getName()}
 	 */
 	private volatile String __playerName;
 	/**

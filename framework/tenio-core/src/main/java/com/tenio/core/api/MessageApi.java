@@ -25,13 +25,13 @@ package com.tenio.core.api;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.element.CommonObjectArray;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.pool.IElementsPool;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IBroadcast;
@@ -49,7 +49,7 @@ import com.tenio.core.network.IConnection;
  * 
  */
 @ThreadSafe
-public final class MessageApi extends AbstractLogger {
+public final class MessageApi extends ZeroLogger {
 
 	private final boolean IS_USING_POOL = true;
 
@@ -108,11 +108,11 @@ public final class MessageApi extends AbstractLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player          See {@link IPlayer}
+	 * @param player          See {@link ZeroPlayer}
 	 * @param connectionIndex the index of connection in current player
 	 * @param message         the sending message
 	 */
-	private void __send(IPlayer player, int connectionIndex, CommonObject message) {
+	private void __send(ZeroPlayer player, int connectionIndex, CommonObject message) {
 		// update time to check the TIMEOUT
 		player.setCurrentWriterTime();
 		// send to a CLIENT (connection)
@@ -120,18 +120,18 @@ public final class MessageApi extends AbstractLogger {
 		if (connection != null) {
 			connection.send(message);
 		}
-		__eventManager.getExtension().emit(ExtEvent.SEND_MESSAGE_TO_PLAYER, player, connectionIndex, message);
+		__eventManager.getExtension().emit(ZeroEvent.SEND_MESSAGE_TO_PLAYER, player, connectionIndex, message);
 	}
 
 	/**
 	 * Send a message to player via his connection
 	 * 
-	 * @param player          See {@link IPlayer}
+	 * @param player          See {@link ZeroPlayer}
 	 * @param connectionIndex the index of connection in current player
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToPlayer(IPlayer player, int connectionIndex, String key, Object value) {
+	public void sendToPlayer(ZeroPlayer player, int connectionIndex, String key, Object value) {
 		var message = __getMessageObject();
 		message.put(key, value);
 		__send(player, connectionIndex, message);
@@ -154,7 +154,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message data, see: {@link CommonObjectArray}
 	 */
-	public void sendToPlayer(IPlayer player, int connectionIndex, String key, Object value, String keyData,
+	public void sendToPlayer(ZeroPlayer player, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -172,7 +172,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToRoom(IRoom room, int connectionIndex, String key, Object value) {
+	public void sendToRoom(ZeroRoom room, int connectionIndex, String key, Object value) {
 		var message = __getMessageObject();
 		message.put(key, value);
 		var players = room.getPlayers().values();
@@ -198,7 +198,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoom(IRoom room, int connectionIndex, String key, Object value, String keyData,
+	public void sendToRoom(ZeroRoom room, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -219,7 +219,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToRoomIgnorePlayer(IPlayer player, int connectionIndex, String key, Object value) {
+	public void sendToRoomIgnorePlayer(ZeroPlayer player, int connectionIndex, String key, Object value) {
 		var room = player.getCurrentRoom();
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -248,7 +248,7 @@ public final class MessageApi extends AbstractLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoomIgnorePlayer(IPlayer player, int connectionIndex, String key, Object value, String keyData,
+	public void sendToRoomIgnorePlayer(ZeroPlayer player, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var room = player.getCurrentRoom();
 		var message = __getMessageObject();
@@ -272,9 +272,9 @@ public final class MessageApi extends AbstractLogger {
 	 * @param connectionIndex the index of connection in current player
 	 * @param message         the message instance
 	 */
-	public void sendToInternalServer(IPlayer player, int connectionIndex, CommonObject message) {
+	public void sendToInternalServer(ZeroPlayer player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
-		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
+		__eventManager.getExtension().emit(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
 	}
 
 	public void sendDatagramBroadcast(String broadcastId, String key, Object value) {

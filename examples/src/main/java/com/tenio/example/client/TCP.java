@@ -31,10 +31,10 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.network.utility.MessagePacker;
+import com.tenio.core.network.utility.MessagePackerUtitlity;
 
 /**
  * Create an object for handling a socket connection. It is used to send
@@ -85,7 +85,7 @@ public final class TCP {
 		// convert message object to bytes data
 		var pack = MsgPackConverter.serialize(message);
 		// attach the packet's length to packet's header
-		var bytes = MessagePacker.pack(pack);
+		var bytes = MessagePackerUtitlity.pack(pack);
 		try {
 			__out.write(bytes);
 			__out.flush();
@@ -130,7 +130,7 @@ public final class TCP {
 	private void __updateRecvHeaderData(byte[] bytes) {
 		if (bytes.length >= CoreConstants.HEADER_BYTES) { // header length
 			var header = Arrays.copyOfRange(bytes, 0, CoreConstants.HEADER_BYTES);
-			__dataSize = MessagePacker.byteToShort(header); // network to host short
+			__dataSize = MessagePackerUtitlity.byteToShort(header); // network to host short
 			__flagRecvHeader = false;
 			// package = |2 bytes header| <content bytes> |
 			var data = Arrays.copyOfRange(bytes, CoreConstants.HEADER_BYTES, __dataSize + CoreConstants.HEADER_BYTES);

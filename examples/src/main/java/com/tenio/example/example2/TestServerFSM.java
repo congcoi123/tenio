@@ -25,7 +25,7 @@ package com.tenio.example.example2;
 
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -77,7 +77,7 @@ public final class TestServerFSM extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 

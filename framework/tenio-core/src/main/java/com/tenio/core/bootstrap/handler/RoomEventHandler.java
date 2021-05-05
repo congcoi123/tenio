@@ -29,9 +29,9 @@ import java.util.function.Consumer;
 import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -77,12 +77,12 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventPlayerAfterLeftRoom event) {
-				_on(ExtEvent.PLAYER_AFTER_LEFT_ROOM, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_AFTER_LEFT_ROOM, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
-						IRoom room = _getRoom(params[1]);
+						ZeroPlayer player = _getPlayer(params[0]);
+						ZeroRoom room = _getRoom(params[1]);
 						boolean force = _getBoolean(params[2]);
 
 						event.handle(player, room, force);
@@ -97,12 +97,12 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventPlayerBeforeLeaveRoom event) {
-				_on(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_BEFORE_LEAVE_ROOM, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
-						IRoom room = _getRoom(params[1]);
+						ZeroPlayer player = _getPlayer(params[0]);
+						ZeroRoom room = _getRoom(params[1]);
 
 						event.handle(player, room);
 
@@ -116,12 +116,12 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventPlayerJoinRoomHandle event) {
-				_on(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
-						IRoom room = _getRoom(params[1]);
+						ZeroPlayer player = _getPlayer(params[0]);
+						ZeroRoom room = _getRoom(params[1]);
 						boolean success = _getBoolean(params[2]);
 						CoreMessageCode code = _getCoreMessageCode(params[3]);
 
@@ -137,11 +137,11 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventRoomWasCreated event) {
-				_on(ExtEvent.ROOM_WAS_CREATED, new ISubscriber() {
+				_on(ZeroEvent.ROOM_WAS_CREATED, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IRoom room = _getRoom(params[0]);
+						ZeroRoom room = _getRoom(params[0]);
 						CoreMessageCode code = _getCoreMessageCode(params[1]);
 
 						event.handle(room, code);
@@ -156,11 +156,11 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventRoomWillBeRemoved event) {
-				_on(ExtEvent.ROOM_WILL_BE_REMOVED, new ISubscriber() {
+				_on(ZeroEvent.ROOM_WILL_BE_REMOVED, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IRoom room = _getRoom(params[0]);
+						ZeroRoom room = _getRoom(params[0]);
 
 						event.handle(room);
 

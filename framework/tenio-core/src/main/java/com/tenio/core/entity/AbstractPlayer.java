@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
@@ -53,7 +53,7 @@ import com.tenio.core.network.IConnection;
  */
 @Entity
 @ThreadSafe
-public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
+public abstract class AbstractPlayer extends ZeroLogger implements ZeroPlayer {
 
 	/**
 	 * The list of socket/web socket connections
@@ -76,10 +76,10 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	private String __entityId;
 	/**
 	 * A reference to its contained room. This value may be set <b>null</b> @see
-	 * {@link IRoom}
+	 * {@link ZeroRoom}
 	 */
 	@Column(name = "room")
-	private volatile IRoom __room;
+	private volatile ZeroRoom __room;
 	/**
 	 * A number of connections the one player can hold
 	 */
@@ -217,12 +217,12 @@ public abstract class AbstractPlayer extends AbstractLogger implements IPlayer {
 	}
 
 	@Override
-	public IRoom getCurrentRoom() {
+	public ZeroRoom getCurrentRoom() {
 		return __room;
 	}
 
 	@Override
-	public void setCurrentRoom(IRoom room) {
+	public void setCurrentRoom(ZeroRoom room) {
 		__room = room;
 		if (__room != null) {
 			synchronized (__tracedPassedRoom) {

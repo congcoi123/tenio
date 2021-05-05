@@ -31,9 +31,9 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.element.CommonObjectArray;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.CommonObjectArray;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.task.ITaskManager;
@@ -44,10 +44,10 @@ import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.data.HttpConfig;
+import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.configuration.entity.HttpConfig;
-import com.tenio.core.configuration.entity.SocketConfig;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -83,7 +83,7 @@ import com.tenio.core.task.schedule.TimeOutScanTask;
  * 
  */
 @ThreadSafe
-public final class Server extends AbstractLogger implements IServer {
+public final class Server extends ZeroLogger implements IServer {
 
 	private static Server __instance;
 
@@ -265,10 +265,10 @@ public final class Server extends AbstractLogger implements IServer {
 
 	private void __checkSubscriberReconnection(IConfiguration configuration) throws NotDefinedSubscribersException {
 		if (configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
-					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.PLAYER_RECONNECT_SUCCESS)) {
-				throw new NotDefinedSubscribersException(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
-						ExtEvent.PLAYER_RECONNECT_SUCCESS);
+			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
+					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_SUCCESS)) {
+				throw new NotDefinedSubscribersException(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+						ZeroEvent.PLAYER_RECONNECT_SUCCESS);
 			}
 		}
 	}
@@ -276,11 +276,11 @@ public final class Server extends AbstractLogger implements IServer {
 	private void __checkSubscriberSubConnectionAttach(IConfiguration configuration)
 			throws NotDefinedSubscribersException {
 		if (__socketPortsSize > 1 || __webSocketPortsSize > 1) {
-			if (!__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
-					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExtension().hasSubscriber(ExtEvent.ATTACH_CONNECTION_FAILED)) {
-				throw new NotDefinedSubscribersException(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
-						ExtEvent.ATTACH_CONNECTION_SUCCESS, ExtEvent.ATTACH_CONNECTION_FAILED);
+			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
+					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_SUCCESS)
+					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_FAILED)) {
+				throw new NotDefinedSubscribersException(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+						ZeroEvent.ATTACH_CONNECTION_SUCCESS, ZeroEvent.ATTACH_CONNECTION_FAILED);
 			}
 		}
 	}
@@ -293,9 +293,9 @@ public final class Server extends AbstractLogger implements IServer {
 	}
 
 	private void __checkSubscriberHttpHandler(IConfiguration configuration) throws NotDefinedSubscribersException {
-		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_VALIDATE)
-				|| !__eventManager.getExtension().hasSubscriber(ExtEvent.HTTP_REQUEST_HANDLE))) {
-			throw new NotDefinedSubscribersException(ExtEvent.HTTP_REQUEST_VALIDATE, ExtEvent.HTTP_REQUEST_HANDLE);
+		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_VALIDATE)
+				|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_HANDLE))) {
+			throw new NotDefinedSubscribersException(ZeroEvent.HTTP_REQUEST_VALIDATE, ZeroEvent.HTTP_REQUEST_HANDLE);
 		}
 	}
 

@@ -33,7 +33,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.common.utility.OsUtility.OSType;

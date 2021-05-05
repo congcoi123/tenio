@@ -28,12 +28,12 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.logger.SystemAbstractLogger;
+import com.tenio.common.logger.ZeroSystemLogger;
 
 /**
  * @author kong
  */
-public final class WorkersPool extends SystemAbstractLogger {
+public final class WorkersPool extends ZeroSystemLogger {
 
 	private final BlockingQueue<Runnable> __taskQueue;
 	private final List<WorkerPoolRunnable> __runnables;

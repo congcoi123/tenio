@@ -35,17 +35,17 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.common.utility.OsUtility.OSType;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.data.BroadcastConfig;
+import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.entity.BroadcastConfig;
-import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.INetwork;
@@ -84,7 +84,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  */
 @ThreadSafe
-public final class NettyNetwork extends AbstractLogger implements INetwork, IBroadcast {
+public final class NettyNetwork extends ZeroLogger implements INetwork, IBroadcast {
 
 	private static final String PREFIX_SOCKET = "socket";
 	private static final String PREFIX_DATAGRAM = "datagram";

@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.example.client.IDatagramListener;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;

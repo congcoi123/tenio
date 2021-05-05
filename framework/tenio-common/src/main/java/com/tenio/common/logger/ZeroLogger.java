@@ -39,7 +39,7 @@ import com.tenio.common.pool.IElementsPool;
  * @author kong
  * 
  */
-public abstract class AbstractLogger {
+public abstract class ZeroLogger {
 
 	/**
 	 * An object creation pool instance, which is used for re-using string objects,

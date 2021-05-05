@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.element.CommonObjectArray;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.CommonObjectArray;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.entity.backup.EntityProcesser;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventPlayerLoginedSuccess;
@@ -39,7 +39,7 @@ import com.tenio.example.example1.PlayerLogin;
 public final class PlayerLoginSuccessHandler extends AbstractExtensionHandler implements IEventPlayerLoginedSuccess {
 
 	@Override
-	public void handle(IPlayer iplayer) {
+	public void handle(ZeroPlayer iplayer) {
 		var player = (PlayerLogin) iplayer;
 
 		try {

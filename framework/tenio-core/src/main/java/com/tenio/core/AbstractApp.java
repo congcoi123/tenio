@@ -26,7 +26,7 @@ package com.tenio.core;
 import java.io.IOException;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.bootstrap.Bootstrap;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
@@ -40,7 +40,7 @@ import com.tenio.core.server.Server;
  * @author kong
  * 
  */
-public abstract class AbstractApp extends AbstractLogger {
+public abstract class AbstractApp extends ZeroLogger {
 
 	/**
 	 * Start The Game Server

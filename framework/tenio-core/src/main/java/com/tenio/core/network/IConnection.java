@@ -25,8 +25,8 @@ package com.tenio.core.network;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.common.data.CommonObject;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.define.TransportType;
 
@@ -66,7 +66,7 @@ public interface IConnection {
 
 	/**
 	 * Retrieve the "connection" id, this id is player's name, see
-	 * {@link IPlayer#getName()}
+	 * {@link ZeroPlayer#getName()}
 	 * 
 	 * @return the player's name in {@link String}
 	 */
@@ -74,7 +74,7 @@ public interface IConnection {
 
 	/**
 	 * Set id for the "connection", this id is player's name, see
-	 * {@link IPlayer#getName()}
+	 * {@link ZeroPlayer#getName()}
 	 * 
 	 * @param playerName the identify of this connection
 	 */

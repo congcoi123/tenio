@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.event;
 
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.entity.ZeroRoom;
 
 /**
  * @author kong
  */
 public interface IEventRoomWillBeRemoved {
 
-	void handle(IRoom room);
+	void handle(ZeroRoom room);
 
 }

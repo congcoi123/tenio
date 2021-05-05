@@ -27,10 +27,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.element.CommonObjectArray;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.CommonObjectArray;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.backup.EntityProcesser;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
@@ -79,7 +79,7 @@ public final class TestServerLogin extends AbstractApp {
 
 		@Override
 		public void initialize(IConfiguration configuration) {
-			_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 
@@ -92,7 +92,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.PLAYER_LOGINED_SUCCESS, params -> {
+			_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// The player has login successful
 				var player = (PlayerLogin) _getPlayer(params[0]);
 
@@ -128,7 +128,7 @@ public final class TestServerLogin extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+			_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
 				var index = _getInteger(params[1]);
 				var message = _getCommonObject(params[2]);
 

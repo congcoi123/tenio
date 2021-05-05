@@ -36,7 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.engine.message.IMessage;
@@ -51,7 +51,7 @@ import com.tenio.engine.physic2d.graphic.Paint;
  * @author kong
  *
  */
-public abstract class AbstractHeartBeat extends AbstractLogger implements Callable<Void>, ActionListener {
+public abstract class AbstractHeartBeat extends ZeroLogger implements Callable<Void>, ActionListener {
 
 	/**
 	 * The target frame per second

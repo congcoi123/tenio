@@ -37,7 +37,7 @@ import com.tenio.core.configuration.constant.CoreConstants;
  * @author kong
  * 
  */
-public final class MessagePacker {
+public final class MessagePackerUtitlity {
 
 	/**
 	 * Add the header-length value to the package's header

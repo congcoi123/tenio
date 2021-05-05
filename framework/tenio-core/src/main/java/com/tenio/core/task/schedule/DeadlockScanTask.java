@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.CoreConfiguration;
 
@@ -41,7 +41,7 @@ import com.tenio.core.configuration.CoreConfiguration;
  * @author kong
  * 
  */
-public final class DeadlockScanTask extends AbstractLogger implements ITask {
+public final class DeadlockScanTask extends ZeroLogger implements ITask {
 
 	/**
 	 * The period time for detecting deadlock

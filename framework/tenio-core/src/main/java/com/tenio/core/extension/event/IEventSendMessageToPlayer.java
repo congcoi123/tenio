@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.event;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.common.data.CommonObject;
+import com.tenio.core.entity.ZeroPlayer;
 
 /**
  * @author kong
  */
 public interface IEventSendMessageToPlayer {
 
-	void handle(IPlayer player, int connectionIndex, CommonObject message);
+	void handle(ZeroPlayer player, int connectionIndex, CommonObject message);
 
 }

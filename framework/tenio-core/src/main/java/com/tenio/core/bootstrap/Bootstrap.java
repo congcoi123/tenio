@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.bootstrap.annotation.ExtBootstrap;
 import com.tenio.core.bootstrap.injector.Injector;
 
 /**
  * @author kong
  */
-public final class Bootstrap extends AbstractLogger {
+public final class Bootstrap extends ZeroLogger {
 
 	private final Injector __injector;
 	private EventHandler __eventHandler;

@@ -40,10 +40,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.SystemAbstractLogger;
+import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
+import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.entity.SocketConfig;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.message.packet.DefaultPacketQueue;
 import com.tenio.core.network.define.TransportType;
@@ -58,7 +58,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  * 
  * @author kong
  */
-public final class EngineAcceptor extends SystemAbstractLogger implements IEngineAcceptor, Runnable {
+public final class EngineAcceptor extends ZeroSystemLogger implements IEngineAcceptor, Runnable {
 
 	private volatile int __threadId;
 

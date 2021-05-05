@@ -44,7 +44,7 @@ import com.tenio.core.network.IConnection;
  * @author kong
  * 
  */
-public interface IPlayer {
+public interface ZeroPlayer {
 
 	/**
 	 * @return the entity who associated with the current player
@@ -88,9 +88,9 @@ public interface IPlayer {
 	 * 
 	 * @return the synchronized room instance
 	 */
-	IRoom getCurrentRoom();
+	ZeroRoom getCurrentRoom();
 
-	void setCurrentRoom(IRoom room);
+	void setCurrentRoom(ZeroRoom room);
 
 	/**
 	 * We let the list escape from its scope, so the concerning process with this

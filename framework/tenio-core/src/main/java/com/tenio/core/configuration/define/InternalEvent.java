@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.define;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.common.data.CommonObject;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.network.Connection;
 
 /**

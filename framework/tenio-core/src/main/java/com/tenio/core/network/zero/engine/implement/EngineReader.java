@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.SystemAbstractLogger;
+import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.network.zero.engine.IEngineAcceptor;
@@ -50,7 +50,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  * 
  * @author kong
  */
-public final class EngineReader extends SystemAbstractLogger implements IEngineReader, Runnable {
+public final class EngineReader extends ZeroSystemLogger implements IEngineReader, Runnable {
 
 	private volatile int __threadId;
 	private volatile long __readBytes;

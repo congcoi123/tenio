@@ -10,7 +10,7 @@ import java.util.Map;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.common.worker.WorkersPool;
 import com.tenio.core.api.MessageApi;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.server.Server;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
@@ -83,7 +83,7 @@ public final class World extends AbstractHeartBeat {
 	private boolean __enableShowCellSpaceInfo;
 	private Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
 	// for network communication
-	private Map<String, IPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
+	private Map<String, ZeroPlayer> __inspectors = Server.getInstance().getPlayerApi().gets();
 	private MessageApi __messageApi = Server.getInstance().getMessageApi();
 	private float __sendingInterval = 0.0f;
 	private boolean __sendingBroadcast = false;
@@ -469,8 +469,8 @@ public final class World extends AbstractHeartBeat {
 
 			try {
 				__workersPool.execute(() -> {
-					Map<String, IPlayer> inspectors = new HashMap<String, IPlayer>();
-					Iterator<IPlayer> iterators = __inspectors.values().iterator();
+					Map<String, ZeroPlayer> inspectors = new HashMap<String, ZeroPlayer>();
+					Iterator<ZeroPlayer> iterators = __inspectors.values().iterator();
 					while (iterators.hasNext()) {
 						var inspector = iterators.next();
 						inspectors.put(inspector.getName(), inspector);
@@ -494,7 +494,7 @@ public final class World extends AbstractHeartBeat {
 									__messageApi.getMessageObjectArray().put(j).put((int) vehicle.getPositionX())
 											.put((int) vehicle.getPositionY()).put((int) vehicle.getRotation()));
 						} else {
-							Iterator<IPlayer> iterator = inspectors.values().iterator();
+							Iterator<ZeroPlayer> iterator = inspectors.values().iterator();
 							while (iterator.hasNext()) {
 								var inspector = iterator.next();
 								__messageApi.sendToPlayer(inspector, Inspector.MOVE_CHANNEL, "p",

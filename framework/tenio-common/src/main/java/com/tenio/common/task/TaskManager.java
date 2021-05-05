@@ -32,7 +32,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.exception.RunningScheduledTaskException;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 
 /**
  * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
@@ -47,7 +47,7 @@ import com.tenio.common.logger.AbstractLogger;
  * 
  */
 @ThreadSafe
-public final class TaskManager extends AbstractLogger implements ITaskManager {
+public final class TaskManager extends ZeroLogger implements ITaskManager {
 
 	/**
 	 * A list of tasks in the server

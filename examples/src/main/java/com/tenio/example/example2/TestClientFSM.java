@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
 

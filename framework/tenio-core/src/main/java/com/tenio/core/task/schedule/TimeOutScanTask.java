@@ -29,12 +29,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.IEventManager;
 
 /**
@@ -46,14 +46,14 @@ import com.tenio.core.event.IEventManager;
  * @author kong
  * 
  */
-public final class TimeOutScanTask extends AbstractLogger implements ITask {
+public final class TimeOutScanTask extends ZeroLogger implements ITask {
 
 	private final IEventManager __eventManager;
 	private final PlayerApi __playerApi;
 	/**
 	 * The removable list of players
 	 */
-	private final List<IPlayer> __removeablePlayers;
+	private final List<ZeroPlayer> __removeablePlayers;
 	/**
 	 * After a number of seconds without any message from the client. It can be
 	 * configured in your configurations, see {@link CoreConfiguration}
@@ -76,7 +76,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 		__idleReader = idleReader;
 		__idleWriter = idleWriter;
 		__timeoutScanPeriod = timeoutScanPeriod;
-		__removeablePlayers = new ArrayList<IPlayer>();
+		__removeablePlayers = new ArrayList<ZeroPlayer>();
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 			}
 
 			__removeablePlayers.forEach((player) -> {
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_GOT_TIMEOUT, player);
+				__eventManager.getExtension().emit(ZeroEvent.PLAYER_GOT_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 

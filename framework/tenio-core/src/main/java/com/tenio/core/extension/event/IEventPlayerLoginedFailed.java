@@ -24,13 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.extension.event;
 
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 
 /**
  * @author kong
  */
 public interface IEventPlayerLoginedFailed {
 
-	void handle(IPlayer player, CoreMessageCode code);
+	void handle(ZeroPlayer player, CoreMessageCode code);
 
 }

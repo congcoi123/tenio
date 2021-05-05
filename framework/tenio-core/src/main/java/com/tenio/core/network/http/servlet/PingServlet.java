@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.network.http.servlet.base.BaseProcessServlet;
 
 /**

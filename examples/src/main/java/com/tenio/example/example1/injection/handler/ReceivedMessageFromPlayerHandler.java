@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventReceivedMessageFromPlayer;
 
@@ -37,7 +37,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtensionHan
 		implements IEventReceivedMessageFromPlayer {
 
 	@Override
-	public void handle(IPlayer player, int connectionIndex, CommonObject message) {
+	public void handle(ZeroPlayer player, int connectionIndex, CommonObject message) {
 		_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", connectionIndex, " Content: ", message));
 	}
 

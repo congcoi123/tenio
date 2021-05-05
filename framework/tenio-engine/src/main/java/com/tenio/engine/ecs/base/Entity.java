@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.base;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.common.pool.IElementsPool;
 import com.tenio.engine.exception.ComponentIsNotExistedException;
 import com.tenio.engine.exception.DuplicatedComponentException;
@@ -39,7 +39,7 @@ import com.tenio.engine.exception.DuplicatedComponentException;
  * 
  * @author kong
  **/
-public class Entity extends AbstractLogger implements IEntity {
+public class Entity extends ZeroLogger implements IEntity {
 
 	private IElementsPool<IComponent>[] __componentPools = null;
 	private IComponent[] __components = null;

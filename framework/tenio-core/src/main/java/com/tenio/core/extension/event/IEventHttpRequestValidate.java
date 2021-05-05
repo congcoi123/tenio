@@ -26,7 +26,7 @@ package com.tenio.core.extension.event;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.core.configuration.define.RestMethod;
+import com.tenio.core.network.define.RestMethod;
 
 /**
  * @author kong

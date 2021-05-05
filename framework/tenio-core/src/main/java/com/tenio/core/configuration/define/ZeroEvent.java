@@ -26,10 +26,10 @@ package com.tenio.core.configuration.define;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entity.IPlayer;
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.Connection;
@@ -44,7 +44,7 @@ import com.tenio.core.network.IConnection;
  * @author kong
  *
  */
-public enum ExtEvent {
+public enum ZeroEvent {
 
 	/**
 	 * When the client sends its first request to your server and is made a valid

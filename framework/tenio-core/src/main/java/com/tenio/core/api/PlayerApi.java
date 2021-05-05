@@ -27,10 +27,10 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.IPlayer;
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.ZeroRoom;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
@@ -46,7 +46,7 @@ import com.tenio.core.network.IConnection;
  * 
  */
 @ThreadSafe
-public final class PlayerApi extends AbstractLogger {
+public final class PlayerApi extends ZeroLogger {
 
 	private final IPlayerManager __playerManager;
 	private final IRoomManager __roomManager;
@@ -73,7 +73,7 @@ public final class PlayerApi extends AbstractLogger {
 	 * @return the player's instance if that player has existed, <b>null</b>
 	 *         otherwise
 	 */
-	public IPlayer get(String name) {
+	public ZeroPlayer get(String name) {
 		return __playerManager.get(name);
 	}
 
@@ -95,7 +95,7 @@ public final class PlayerApi extends AbstractLogger {
 	/**
 	 * @return all current players
 	 */
-	public Map<String, IPlayer> gets() {
+	public Map<String, ZeroPlayer> gets() {
 		return __playerManager.gets();
 	}
 
@@ -103,10 +103,10 @@ public final class PlayerApi extends AbstractLogger {
 	 * Add a new player to your server (this player was upgraded from one
 	 * connection).
 	 * 
-	 * @param player     that is created from your server, see: {@link IPlayer}
+	 * @param player     that is created from your server, see: {@link ZeroPlayer}
 	 * @param connection the corresponding connection, see: {@link IConnection}
 	 */
-	public void login(IPlayer player, IConnection connection) {
+	public void login(ZeroPlayer player, IConnection connection) {
 		try {
 			__playerManager.add(player, connection);
 		} catch (NullPlayerNameException e1) {
@@ -120,9 +120,9 @@ public final class PlayerApi extends AbstractLogger {
 	 * Add a new player to your server (this player is known as one NCP or a BOT)
 	 * without a attached connection.
 	 * 
-	 * @param player that is created from your server, see: {@link IPlayer}
+	 * @param player that is created from your server, see: {@link ZeroPlayer}
 	 */
-	public void login(IPlayer player) {
+	public void login(ZeroPlayer player) {
 		try {
 			__playerManager.add(player);
 		} catch (DuplicatedPlayerException e) {
@@ -134,12 +134,12 @@ public final class PlayerApi extends AbstractLogger {
 	 * Request one player to join a room. This request can be refused with some
 	 * reason. You can handle these results in the corresponding events.
 	 * 
-	 * @param room   the desired room, see: {@link IRoom}
-	 * @param player the current player, see: {@link IPlayer}
+	 * @param room   the desired room, see: {@link ZeroRoom}
+	 * @param player the current player, see: {@link ZeroPlayer}
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerJoinRoom(IRoom room, IPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(ZeroRoom room, ZeroPlayer player) {
 		return __roomManager.makePlayerJoinRoom(room, player);
 	}
 
@@ -147,20 +147,20 @@ public final class PlayerApi extends AbstractLogger {
 	 * Allow a player to leave his current room. You can handle your own logic in
 	 * the corresponding events.
 	 * 
-	 * @param player that will be left his current room, see {@link IRoom}
+	 * @param player that will be left his current room, see {@link ZeroRoom}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerLeaveRoom(IPlayer player, boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(ZeroPlayer player, boolean force) {
 		return __roomManager.makePlayerLeaveRoom(player, force);
 	}
 
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param name the player with this name that is removed, see {@link IPlayer}
+	 * @param name the player with this name that is removed, see {@link ZeroPlayer}
 	 */
 	public void logOut(String name) {
 		logOut(get(name));
@@ -169,9 +169,9 @@ public final class PlayerApi extends AbstractLogger {
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param player that is removed, see {@link IPlayer}
+	 * @param player that is removed, see {@link ZeroPlayer}
 	 */
-	public void logOut(IPlayer player) {
+	public void logOut(ZeroPlayer player) {
 		__playerManager.remove(player);
 	}
 

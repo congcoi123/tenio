@@ -26,12 +26,12 @@ package com.tenio.core.bootstrap.handler;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -93,7 +93,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventConnectionEstablishedSuccess event) {
-				_on(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -112,7 +112,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventConnectionEstablishedFailed event) {
-				_on(ExtEvent.CONNECTION_ESTABLISHED_FAILED, new ISubscriber() {
+				_on(ZeroEvent.CONNECTION_ESTABLISHED_FAILED, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -131,7 +131,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventReceivedMessageFromConnection event) {
-				_on(ExtEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new ISubscriber() {
+				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -150,7 +150,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventAttachConnectionRequestValidate event) {
-				_on(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new ISubscriber() {
+				_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -167,12 +167,12 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventAttachConnectionSuccess event) {
-				_on(ExtEvent.ATTACH_CONNECTION_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
 						int connectionIndex = _getInteger(params[0]);
-						IPlayer player = _getPlayer(params[1]);
+						ZeroPlayer player = _getPlayer(params[1]);
 
 						event.handle(connectionIndex, player);
 
@@ -186,7 +186,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventAttachConnectionFailed event) {
-				_on(ExtEvent.ATTACH_CONNECTION_FAILED, new ISubscriber() {
+				_on(ZeroEvent.ATTACH_CONNECTION_FAILED, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -206,7 +206,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventDisconnectConnection event) {
-				_on(ExtEvent.DISCONNECT_CONNECTION, new ISubscriber() {
+				_on(ZeroEvent.DISCONNECT_CONNECTION, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

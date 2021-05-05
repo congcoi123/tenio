@@ -27,7 +27,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.ExceededMessageQueueOutboundException;
 
@@ -61,7 +61,7 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 			if (future.isSuccess()) {
 				__poll();
 			} else {
-				__eventManager.getExtension().emit(ExtEvent.EXCEPTION, future.cause());
+				__eventManager.getExtension().emit(ZeroEvent.EXCEPTION, future.cause());
 				future.channel().close();
 				__messageQueue.clear();
 			}
@@ -84,7 +84,7 @@ public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandl
 
 		int queueSize = __queueSize;
 		if (queueSize > CoreConstants.WRITE_MESSAGE_QUEUE_SIZE_WARNING) {
-			__eventManager.getExtension().emit(ExtEvent.EXCEPTION,
+			__eventManager.getExtension().emit(ZeroEvent.EXCEPTION,
 					new ExceededMessageQueueOutboundException(queueSize));
 		}
 

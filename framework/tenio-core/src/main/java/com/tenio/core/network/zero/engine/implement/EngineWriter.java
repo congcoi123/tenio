@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.SystemAbstractLogger;
+import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.message.packet.IPacketQueue;
@@ -46,7 +46,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  * 
  * @author kong
  */
-public final class EngineWriter extends SystemAbstractLogger implements IEngineWriter, Runnable {
+public final class EngineWriter extends ZeroSystemLogger implements IEngineWriter, Runnable {
 
 	private volatile int __threadId;
 

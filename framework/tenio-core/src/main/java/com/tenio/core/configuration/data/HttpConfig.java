@@ -21,29 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.entity;
+package com.tenio.core.configuration.data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * @author kong
  */
-public final class BroadcastConfig {
+@ThreadSafe
+public final class HttpConfig {
 
-	private final String __id;
 	private final String __name;
 	private final int __port;
+	private final List<PathConfig> __paths;
 
-	public BroadcastConfig(String id, String name, int port) {
-		__id = id;
+	public HttpConfig(String name, int port) {
+		__paths = new ArrayList<PathConfig>();
 		__name = name;
 		__port = port;
 	}
 
-	public String getId() {
-		return __id;
-	}
-
 	public String getName() {
 		return __name;
+	}
+
+	public List<PathConfig> getPaths() {
+		synchronized (__paths) {
+			return __paths;
+		}
+	}
+
+	public void addPath(PathConfig path) {
+		synchronized (__paths) {
+			__paths.add(path);
+		}
 	}
 
 	public int getPort() {
@@ -52,7 +66,7 @@ public final class BroadcastConfig {
 
 	@Override
 	public String toString() {
-		return String.format("{ id:%s, name:%s, port:%d }", __id, __name, __port);
+		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
 	}
 
 }

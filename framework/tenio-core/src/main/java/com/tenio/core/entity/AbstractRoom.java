@@ -33,7 +33,7 @@ import com.tenio.core.entity.backup.annotation.Entity;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * A room or simpler is a group of related players, see {@link IPlayer}. These
+ * A room or simpler is a group of related players, see {@link ZeroPlayer}. These
  * players can be played in the same game or in the same location. This class is
  * only for logic handling. You can manage a list of players in a room as well
  * as hold the players' common data for sharing. For simple handling, one room
@@ -46,13 +46,13 @@ import com.tenio.core.entity.manager.PlayerManager;
  */
 @Entity
 @ThreadSafe
-public abstract class AbstractRoom implements IRoom {
+public abstract class AbstractRoom implements ZeroRoom {
 
 	/**
 	 * List of reference players
 	 */
 	@Column(name = "players")
-	private final Map<String, IPlayer> __players;
+	private final Map<String, ZeroPlayer> __players;
 	/**
 	 * Each room has its own unique id
 	 */
@@ -75,7 +75,7 @@ public abstract class AbstractRoom implements IRoom {
 		__id = id;
 		__name = name;
 		__capacity = capacity;
-		__players = new HashMap<String, IPlayer>();
+		__players = new HashMap<String, ZeroPlayer>();
 		__countPlayers = 0;
 	}
 
@@ -87,17 +87,17 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public IPlayer getFirstPlayer() {
+	public ZeroPlayer getFirstPlayer() {
 		if (isEmpty()) {
 			return null;
 		}
 		synchronized (__players) {
-			return (IPlayer) __players.values().stream().findFirst().get();
+			return (ZeroPlayer) __players.values().stream().findFirst().get();
 		}
 	}
 
 	@Override
-	public void addPlayer(IPlayer player) {
+	public void addPlayer(ZeroPlayer player) {
 		synchronized (__players) {
 			__players.put(player.getName(), player);
 			__countPlayers = __players.size();
@@ -105,7 +105,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public void removePlayer(IPlayer player) {
+	public void removePlayer(ZeroPlayer player) {
 		synchronized (__players) {
 			__players.remove(player.getName());
 			__countPlayers = __players.size();
@@ -151,7 +151,7 @@ public abstract class AbstractRoom implements IRoom {
 	}
 
 	@Override
-	public Map<String, IPlayer> getPlayers() {
+	public Map<String, ZeroPlayer> getPlayers() {
 		synchronized (__players) {
 			return __players;
 		}

@@ -26,13 +26,13 @@ package com.tenio.core.entity.manager;
 import java.util.Map;
 
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.IConnection;
 
 /**
- * Manage all your players ({@link IPlayer}) on the server. It is a singleton
+ * Manage all your players ({@link ZeroPlayer}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
  * {@link PlayerApi} interface for easy management.
  * 
@@ -58,7 +58,7 @@ public interface IPlayerManager extends IManager {
 	 * 
 	 * @return all current players
 	 */
-	Map<String, IPlayer> gets();
+	Map<String, ZeroPlayer> gets();
 
 	/**
 	 * Remove all players.
@@ -81,54 +81,54 @@ public interface IPlayerManager extends IManager {
 	 * @return the player's instance if that player has existed, <b>null</b>
 	 *         otherwise
 	 */
-	IPlayer get(String name);
+	ZeroPlayer get(String name);
 
 	/**
 	 * Add a new player to your server (this player was upgraded from one
 	 * connection).
 	 * 
-	 * @param player     that is created from your server, see: {@link IPlayer}
+	 * @param player     that is created from your server, see: {@link ZeroPlayer}
 	 * @param connection the main corresponding connection, see: {@link IConnection}
 	 * 
 	 * @throws NullPlayerNameException
 	 * @throws DuplicatedPlayerException
 	 */
-	void add(IPlayer player, IConnection connection)
+	void add(ZeroPlayer player, IConnection connection)
 			throws NullPlayerNameException, DuplicatedPlayerException;
 
 	/**
 	 * Add a new player to your server (this player is known as one NCP or a BOT)
 	 * without a attached connection.
 	 * 
-	 * @param player that is created from your server, see: {@link IPlayer}
+	 * @param player that is created from your server, see: {@link ZeroPlayer}
 	 * 
 	 * @throws DuplicatedPlayerException
 	 */
-	void add(IPlayer player) throws DuplicatedPlayerException;
+	void add(ZeroPlayer player) throws DuplicatedPlayerException;
 
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param player that is removed, see {@link IPlayer}
+	 * @param player that is removed, see {@link ZeroPlayer}
 	 */
-	void remove(IPlayer player);
+	void remove(ZeroPlayer player);
 
 	/**
 	 * When a player is disconnected, all the related connections need to be deleted
 	 * too.
 	 * 
-	 * @param player the corresponding player, see {@link IPlayer}
+	 * @param player the corresponding player, see {@link ZeroPlayer}
 	 */
-	void removeAllConnections(IPlayer player);
+	void removeAllConnections(ZeroPlayer player);
 
 	/**
 	 * Make sure one player is removed from this management (as well as your
 	 * server). It is used when you don't want your player can re-connect with any
 	 * interruption's reason.
 	 * 
-	 * @param player that is removed, see {@link IPlayer}
+	 * @param player that is removed, see {@link ZeroPlayer}
 	 */
-	void clean(IPlayer player);
+	void clean(ZeroPlayer player);
 	
 	boolean isEmpty();
 

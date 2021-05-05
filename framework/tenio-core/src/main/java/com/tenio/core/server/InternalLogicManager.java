@@ -26,14 +26,14 @@ package com.tenio.core.server;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.event.IEventManager;
@@ -48,7 +48,7 @@ import com.tenio.core.network.IConnection;
  *
  */
 @ThreadSafe
-final class InternalLogicManager extends AbstractLogger {
+final class InternalLogicManager extends ZeroLogger {
 
 	private final IEventManager __eventManager;
 	private final IPlayerManager __playerManager;
@@ -75,14 +75,14 @@ final class InternalLogicManager extends AbstractLogger {
 				if (playerName != null) { // the player maybe exist
 					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
-						__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
+						__eventManager.getExtension().emit(ZeroEvent.DISCONNECT_PLAYER, player);
 						__playerManager.removeAllConnections(player);
 						if (!keepPlayerOnDisconnect) {
 							__playerManager.clean(player);
 						}
 					}
 				} else { // the free connection (without a corresponding player)
-					__eventManager.getExtension().emit(ExtEvent.DISCONNECT_CONNECTION, connection);
+					__eventManager.getExtension().emit(ZeroEvent.DISCONNECT_CONNECTION, connection);
 				}
 				connection.clean();
 			}
@@ -124,7 +124,7 @@ final class InternalLogicManager extends AbstractLogger {
 
 			var player = __playerManager.get(name);
 			if (player != null) {
-				__eventManager.getExtension().emit(ExtEvent.DISCONNECT_PLAYER, player);
+				__eventManager.getExtension().emit(ZeroEvent.DISCONNECT_PLAYER, player);
 			}
 
 			return null;
@@ -163,38 +163,38 @@ final class InternalLogicManager extends AbstractLogger {
 			CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
-			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+			var player = (ZeroPlayer) __eventManager.getExtension().emit(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
 					connection, message);
 			if (player != null) {
 				connection.setPlayerName(player.getName());
 				player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX); // main connection
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_RECONNECT_SUCCESS, player);
+				__eventManager.getExtension().emit(ZeroEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players
 				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_NUMBER_PLAYERS)) {
-					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_FAILED, connection,
+					__eventManager.getExtension().emit(ZeroEvent.CONNECTION_ESTABLISHED_FAILED, connection,
 							CoreMessageCode.REACHED_MAX_CONNECTION);
 					connection.close();
 				} else {
-					__eventManager.getExtension().emit(ExtEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
+					__eventManager.getExtension().emit(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
 				}
 			}
 
 		} else {
 			// the condition for creating sub-connection
-			var player = (IPlayer) __eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+			var player = (ZeroPlayer) __eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
 					connectionIndex, message);
 
 			if (player == null) {
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
+				__eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.PLAYER_NOT_FOUND);
 			} else if (player.getConnection(0) == null) {
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
+				__eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
 						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
 			} else {
 				connection.setPlayerName(player.getName());
 				player.setConnection(connection, connectionIndex);
-				__eventManager.getExtension().emit(ExtEvent.ATTACH_CONNECTION_SUCCESS, connectionIndex, player);
+				__eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_SUCCESS, connectionIndex, player);
 			}
 		}
 	}
@@ -230,12 +230,12 @@ final class InternalLogicManager extends AbstractLogger {
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link IPlayer} type
+	 * @return a value in {@link ZeroPlayer} type
 	 * @throws ExtensionValueCastException
 	 */
-	private IPlayer __getPlayer(Object object) throws ExtensionValueCastException {
-		if (object instanceof IPlayer) {
-			return (IPlayer) object;
+	private ZeroPlayer __getPlayer(Object object) throws ExtensionValueCastException {
+		if (object instanceof ZeroPlayer) {
+			return (ZeroPlayer) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}
@@ -276,12 +276,12 @@ final class InternalLogicManager extends AbstractLogger {
 		throw new ExtensionValueCastException(object.toString());
 	}
 
-	private void __handle(IPlayer player, int connectionIndex, CommonObject message) {
+	private void __handle(ZeroPlayer player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
-		__eventManager.getExtension().emit(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
+		__eventManager.getExtension().emit(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
 	}
 
-	private void __exception(IPlayer player, Throwable cause) {
+	private void __exception(ZeroPlayer player, Throwable cause) {
 		_error(cause, "player's name: ", player.getName());
 	}
 

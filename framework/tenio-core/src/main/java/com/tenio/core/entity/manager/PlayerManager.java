@@ -32,12 +32,12 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.IConfiguration;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.configuration.entity.SocketConfig;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
@@ -45,7 +45,7 @@ import com.tenio.core.network.IConnection;
 import com.tenio.core.network.define.TransportType;
 
 /**
- * Manage all your players ({@link IPlayer}) on the server. It is a singleton
+ * Manage all your players ({@link ZeroPlayer}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
  * {@link PlayerApi} interface for easy management.
  * 
@@ -60,7 +60,7 @@ public final class PlayerManager implements IPlayerManager {
 	/**
 	 * A map object to manage your players with the key must be a player's name
 	 */
-	private final Map<String, IPlayer> __players;
+	private final Map<String, ZeroPlayer> __players;
 	private final IEventManager __eventManager;
 	private IConfiguration __configuration;
 	private int __socketPortsSize;
@@ -70,7 +70,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	public PlayerManager(IEventManager eventManager) {
 		__eventManager = eventManager;
-		__players = new HashMap<String, IPlayer>();
+		__players = new HashMap<String, ZeroPlayer>();
 		__count = 0;
 		__countPlayers = 0;
 	}
@@ -96,7 +96,7 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public Map<String, IPlayer> gets() {
+	public Map<String, ZeroPlayer> gets() {
 		synchronized (__players) {
 			return __players;
 		}
@@ -117,17 +117,17 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public IPlayer get(String name) {
+	public ZeroPlayer get(String name) {
 		synchronized (__players) {
 			return __players.get(name);
 		}
 	}
 
 	@Override
-	public void add(IPlayer player, IConnection connection) throws DuplicatedPlayerException, NullPlayerNameException {
+	public void add(ZeroPlayer player, IConnection connection) throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
-			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
 					CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			throw new NullPlayerNameException();
 		}
@@ -135,7 +135,7 @@ public final class PlayerManager implements IPlayerManager {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				throw new DuplicatedPlayerException(player.getName());
 			}
@@ -156,17 +156,17 @@ public final class PlayerManager implements IPlayerManager {
 			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 
 			// fire an event
-			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}
 
 	@Override
-	public void add(IPlayer player) throws DuplicatedPlayerException {
+	public void add(ZeroPlayer player) throws DuplicatedPlayerException {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_FAILED, player,
+				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				throw new DuplicatedPlayerException(player.getName());
 			}
@@ -175,13 +175,13 @@ public final class PlayerManager implements IPlayerManager {
 			__count = __players.size();
 			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 			// fire an event
-			__eventManager.getExtension().emit(ExtEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}
 
 	@Override
-	public void remove(IPlayer player) {
+	public void remove(ZeroPlayer player) {
 		if (player == null) {
 			return;
 		}
@@ -205,12 +205,12 @@ public final class PlayerManager implements IPlayerManager {
 	}
 
 	@Override
-	public void removeAllConnections(IPlayer player) {
+	public void removeAllConnections(ZeroPlayer player) {
 		player.closeAllConnections();
 	}
 
 	@Override
-	public void clean(IPlayer player) {
+	public void clean(ZeroPlayer player) {
 		if (player == null) {
 			return;
 		}

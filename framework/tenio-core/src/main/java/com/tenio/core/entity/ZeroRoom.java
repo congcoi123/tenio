@@ -39,7 +39,7 @@ import com.tenio.core.entity.manager.PlayerManager;
  * @author kong
  * 
  */
-public interface IRoom {
+public interface ZeroRoom {
 
 	boolean containPlayerName(String playerName);
 
@@ -48,26 +48,26 @@ public interface IRoom {
 	 * order. We let a player escape from its scope, so it is necessary to make sure
 	 * that the player after process is thread-safe.
 	 * 
-	 * @return the player ({@link IPlayer})
+	 * @return the player ({@link ZeroPlayer})
 	 */
-	IPlayer getFirstPlayer();
+	ZeroPlayer getFirstPlayer();
 
 	/**
 	 * Add a player to this room, this action was handled by system logic. Be
 	 * careful when handling it yourself. You are warned!
 	 * 
-	 * @param player the player ({@link IPlayer}) who wants to join this room
+	 * @param player the player ({@link ZeroPlayer}) who wants to join this room
 	 */
-	void addPlayer(IPlayer player);
+	void addPlayer(ZeroPlayer player);
 
 	/**
 	 * Remove a player from this room, this action was handled by system logic. Be
 	 * careful when handling it yourself. You are warned!
 	 * 
-	 * @param player the player ({@link IPlayer}) who wants to leave or be forced to
+	 * @param player the player ({@link ZeroPlayer}) who wants to leave or be forced to
 	 *               leave this room
 	 */
-	void removePlayer(IPlayer player);
+	void removePlayer(ZeroPlayer player);
 
 	/**
 	 * Remove all players from this room
@@ -95,7 +95,7 @@ public interface IRoom {
 	 * 
 	 * @return a synchronized list of players
 	 */
-	public Map<String, IPlayer> getPlayers();
+	public Map<String, ZeroPlayer> getPlayers();
 
 	/**
 	 * @return <b>true</b> if this room is full, <b>false</b> otherwise

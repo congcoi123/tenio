@@ -33,7 +33,7 @@ package com.tenio.common.logger;
  * @author kong
  * 
  */
-public abstract class SystemAbstractLogger extends AbstractLogger {
+public abstract class ZeroSystemLogger extends ZeroLogger {
 
 	/**
 	 * Only use for debugging EVENTS in the server system. Be careful when using it

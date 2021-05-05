@@ -30,12 +30,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 
 /**
  * @author kong
  */
-public abstract class BaseResponse extends AbstractLogger {
+public abstract class BaseResponse extends ZeroLogger {
 
 	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
 			HttpServletResponse response);

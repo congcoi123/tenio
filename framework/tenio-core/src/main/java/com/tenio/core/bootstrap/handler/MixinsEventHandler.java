@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -66,7 +66,7 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventException event) {
-				_on(ExtEvent.EXCEPTION, new ISubscriber() {
+				_on(ZeroEvent.EXCEPTION, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -84,7 +84,7 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventFetchedBandwidthInfo event) {
-				_on(ExtEvent.FETCHED_BANDWIDTH_INFO, new ISubscriber() {
+				_on(ZeroEvent.FETCHED_BANDWIDTH_INFO, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -109,7 +109,7 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventFetchedCcuNumber event) {
-				_on(ExtEvent.FETCHED_CCU_NUMBER, new ISubscriber() {
+				_on(ZeroEvent.FETCHED_CCU_NUMBER, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -128,7 +128,7 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventMonitoringSystem event) {
-				_on(ExtEvent.MONITORING_SYSTEM, new ISubscriber() {
+				_on(ZeroEvent.MONITORING_SYSTEM, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

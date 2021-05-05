@@ -28,9 +28,9 @@ import java.io.IOException;
 import org.json.simple.JSONObject;
 
 import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.define.RestMethod;
@@ -81,7 +81,7 @@ public final class TestServerRestful extends AbstractApp {
 		@Override
 		public void initialize(IConfiguration configuration) {
 
-			_on(ExtEvent.HTTP_REQUEST_VALIDATE, params -> {
+			_on(ZeroEvent.HTTP_REQUEST_VALIDATE, params -> {
 				var method = _getRestMethod(params[0]);
 				// var request = _getHttpServletRequest(params[1]);
 				var response = _getHttpServletResponse(params[2]);
@@ -100,7 +100,7 @@ public final class TestServerRestful extends AbstractApp {
 				return null;
 			});
 
-			_on(ExtEvent.HTTP_REQUEST_HANDLE, params -> {
+			_on(ZeroEvent.HTTP_REQUEST_HANDLE, params -> {
 				// var method = _getRestMethod(params[0]);
 				// var request = _getHttpServletRequest(params[1]);
 				var response = _getHttpServletResponse(params[2]);

@@ -26,12 +26,12 @@ package com.tenio.core.bootstrap.handler;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtEvent;
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -98,11 +98,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(IEventPlayerLoginedFailed event) {
 
-				_on(ExtEvent.PLAYER_LOGINED_FAILED, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_LOGINED_FAILED, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 						CoreMessageCode code = _getCoreMessageCode(params[1]);
 
 						event.handle(player, code);
@@ -117,11 +117,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(IEventPlayerLoginedSuccess event) {
 
-				_on(ExtEvent.PLAYER_LOGINED_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -135,7 +135,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(IEventPlayerReconnectRequestHandle event) {
 
-				_on(ExtEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -154,11 +154,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(IEventPlayerReconnectSuccess event) {
 
-				_on(ExtEvent.PLAYER_RECONNECT_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_RECONNECT_SUCCESS, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -172,11 +172,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(IEventPlayerGotTimeout event) {
 
-				_on(ExtEvent.PLAYER_GOT_TIMEOUT, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_GOT_TIMEOUT, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -190,11 +190,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventReceivedMessageFromPlayer event) {
-				_on(ExtEvent.RECEIVED_MESSAGE_FROM_PLAYER, new ISubscriber() {
+				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 						int connectionIndex = _getInteger(params[1]);
 						CommonObject message = _getCommonObject(params[2]);
 
@@ -210,11 +210,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventSendMessageToPlayer event) {
-				_on(ExtEvent.SEND_MESSAGE_TO_PLAYER, new ISubscriber() {
+				_on(ZeroEvent.SEND_MESSAGE_TO_PLAYER, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 						int connectionIndex = _getInteger(params[1]);
 						CommonObject message = _getCommonObject(params[2]);
 
@@ -230,11 +230,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(IEventDisconnectPlayer event) {
-				_on(ExtEvent.DISCONNECT_PLAYER, new ISubscriber() {
+				_on(ZeroEvent.DISCONNECT_PLAYER, new ISubscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						IPlayer player = _getPlayer(params[0]);
+						ZeroPlayer player = _getPlayer(params[0]);
 
 						event.handle(player);
 

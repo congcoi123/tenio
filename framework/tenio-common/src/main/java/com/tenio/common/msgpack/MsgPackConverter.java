@@ -33,8 +33,8 @@ import java.util.Map;
 import org.msgpack.MessagePack;
 import org.msgpack.type.Value;
 
-import com.tenio.common.element.CommonObject;
-import com.tenio.common.element.CommonObjectArray;
+import com.tenio.common.data.CommonObject;
+import com.tenio.common.data.CommonObjectArray;
 
 /**
  * <a href="https://msgpack.org/index.html">MessagePack</a> is an efficient

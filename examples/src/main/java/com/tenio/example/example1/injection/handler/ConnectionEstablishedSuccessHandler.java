@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.bootstrap.annotation.ExtComponent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;

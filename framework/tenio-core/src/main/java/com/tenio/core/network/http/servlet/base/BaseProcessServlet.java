@@ -26,14 +26,14 @@ package com.tenio.core.network.http.servlet.base;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.network.http.servlet.IServletHandler;
 
 /**
  * @author kong
  */
-public abstract class BaseProcessServlet extends AbstractLogger implements IServletHandler {
+public abstract class BaseProcessServlet extends ZeroLogger implements IServletHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response) {

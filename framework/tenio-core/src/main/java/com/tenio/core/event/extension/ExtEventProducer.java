@@ -25,7 +25,7 @@ package com.tenio.core.event.extension;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 
 /**
  * Only for creating an event handler object, see {@link ExtEventHandler}
@@ -57,13 +57,13 @@ public final class ExtEventProducer {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param event see {@link ExtEvent}
+	 * @param event see {@link ZeroEvent}
 	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see ExtEventHandler#emit(ExtEvent, Object...)
+	 * @see ExtEventHandler#emit(ZeroEvent, Object...)
 	 */
-	public Object emit(ExtEvent event, Object... params) {
+	public Object emit(ZeroEvent event, Object... params) {
 		return __eventHandler.emit(event, params);
 	}
 

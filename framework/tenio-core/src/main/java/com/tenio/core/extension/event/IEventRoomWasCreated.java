@@ -24,13 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.extension.event;
 
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.IRoom;
+import com.tenio.core.entity.ZeroRoom;
 
 /**
  * @author kong
  */
 public interface IEventRoomWasCreated {
 
-	void handle(IRoom room, CoreMessageCode code);
+	void handle(ZeroRoom room, CoreMessageCode code);
 
 }

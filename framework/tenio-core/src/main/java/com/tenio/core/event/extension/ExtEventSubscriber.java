@@ -25,7 +25,7 @@ package com.tenio.core.event.extension;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.core.configuration.define.ExtEvent;
+import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.ISubscriber;
 
 /**
@@ -38,27 +38,27 @@ import com.tenio.core.event.ISubscriber;
 public final class ExtEventSubscriber {
 
 	/**
-	 * @see ExtEvent
+	 * @see ZeroEvent
 	 */
-	private final ExtEvent __event;
+	private final ZeroEvent __event;
 	/**
 	 * @see ISubscriber
 	 */
 	private final ISubscriber __subscriber;
 
-	public static ExtEventSubscriber newInstance(ExtEvent event, ISubscriber subscriber) {
+	public static ExtEventSubscriber newInstance(ZeroEvent event, ISubscriber subscriber) {
 		return new ExtEventSubscriber(event, subscriber);
 	}
 
-	private ExtEventSubscriber(ExtEvent event, ISubscriber subscriber) {
+	private ExtEventSubscriber(ZeroEvent event, ISubscriber subscriber) {
 		__event = event;
 		__subscriber = subscriber;
 	}
 
 	/**
-	 * @return see {@link ExtEvent}
+	 * @return see {@link ZeroEvent}
 	 */
-	public ExtEvent getEvent() {
+	public ZeroEvent getEvent() {
 		return __event;
 	}
 
@@ -66,7 +66,7 @@ public final class ExtEventSubscriber {
 	 * @param event the comparison event value
 	 * @return Return <b>true</b> if they are equal, <b>false</b> otherwise
 	 */
-	public boolean hasEvent(ExtEvent event) {
+	public boolean hasEvent(ZeroEvent event) {
 		return __event == event;
 	}
 

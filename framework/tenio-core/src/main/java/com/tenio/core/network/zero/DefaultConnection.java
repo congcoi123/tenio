@@ -25,7 +25,7 @@ package com.tenio.core.network.zero;
 
 import java.net.InetSocketAddress;
 
-import com.tenio.common.element.CommonObject;
+import com.tenio.common.data.CommonObject;
 import com.tenio.core.event.IEventManager;
 import com.tenio.core.network.Connection;
 import com.tenio.core.network.IConnection;

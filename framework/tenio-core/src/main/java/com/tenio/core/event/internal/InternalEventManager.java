@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
@@ -40,7 +40,7 @@ import com.tenio.core.exception.ExtensionValueCastException;
  * 
  */
 @NotThreadSafe
-public final class InternalEventManager extends AbstractLogger {
+public final class InternalEventManager extends ZeroLogger {
 
 	/**
 	 * A list of subscribers

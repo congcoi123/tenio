@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.event;
 
-import com.tenio.core.entity.IPlayer;
+import com.tenio.core.entity.ZeroPlayer;
 
 /**
  * @author kong
  */
 public interface IEventAttachConnectionSuccess {
 
-	void handle(int connectionIndex, IPlayer player);
+	void handle(int connectionIndex, ZeroPlayer player);
 
 }
