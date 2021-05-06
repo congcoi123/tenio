@@ -27,14 +27,14 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.core.network.define.RestMethod;
-import com.tenio.example.server.Configuration;
+import com.tenio.example.server.TestConfiguration;
 
 /**
  * This class demonstrate how to handle HTTP requests
@@ -58,12 +58,12 @@ public final class TestServerRestful extends AbstractApp {
 	}
 
 	@Override
-	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.restful.xml");
+	public TestConfiguration getConfiguration() {
+		return new TestConfiguration("TenIOConfig.restful.xml");
 	}
 
 	@Override
-	public void onStarted(IExtension extension, ZConfiguration configuration) {
+	public void onStarted(IExtension extension, Configuration configuration) {
 
 	}
 
@@ -79,7 +79,7 @@ public final class TestServerRestful extends AbstractApp {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void initialize(ZConfiguration configuration) {
+		public void initialize(Configuration configuration) {
 
 			_on(ZeroEvent.HTTP_REQUEST_VALIDATE, params -> {
 				var method = _getRestMethod(params[0]);

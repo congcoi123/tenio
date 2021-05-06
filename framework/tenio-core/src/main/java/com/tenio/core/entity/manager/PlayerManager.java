@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.SocketConfig;
@@ -62,7 +62,7 @@ public final class PlayerManager implements IPlayerManager {
 	 */
 	private final Map<String, ZeroPlayer> __players;
 	private final IEventManager __eventManager;
-	private ZConfiguration __configuration;
+	private Configuration __configuration;
 	private int __socketPortsSize;
 	private int __webSocketPortsSize;
 	private volatile int __count;
@@ -77,7 +77,7 @@ public final class PlayerManager implements IPlayerManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public synchronized void initialize(ZConfiguration configuration) {
+	public synchronized void initialize(Configuration configuration) {
 		__configuration = configuration;
 		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
 		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));

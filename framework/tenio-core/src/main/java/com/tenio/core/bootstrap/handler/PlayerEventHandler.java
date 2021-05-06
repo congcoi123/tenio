@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.ZeroPlayer;
@@ -48,31 +48,31 @@ import com.tenio.core.network.entity.connection.Connection;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class PlayerEventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerLoginedFailed __eventPlayerLoginedFailed;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerReconnectRequestHandle __eventPlayerReconnectRequestHandle;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerReconnectSuccess __eventPlayerReconnectSuccess;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerGotTimeout __eventPlayerGotTimeout;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventSendMessageToPlayer __eventSendMessageToPlayer;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventDisconnectPlayer __eventDisconnectPlayer;
 
 	public void initialize() {

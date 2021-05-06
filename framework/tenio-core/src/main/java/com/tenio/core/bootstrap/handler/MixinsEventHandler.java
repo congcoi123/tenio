@@ -26,8 +26,8 @@ package com.tenio.core.bootstrap.handler;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
@@ -40,19 +40,19 @@ import com.tenio.core.extension.event.IEventMonitoringSystem;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class MixinsEventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventException __eventException;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventFetchedCcuNumber __eventFetchedCcuNumber;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventMonitoringSystem __eventMonitoringSystem;
 
 	public void initialize() {

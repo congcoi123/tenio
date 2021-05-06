@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.event.ISubscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
@@ -42,13 +42,13 @@ import com.tenio.core.network.define.RestMethod;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class HttpEventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventHttpRequestHandle __eventHttpRequestHandle;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventHttpRequestValidate __eventHttpRequestValidate;
 
 	public void initialize() {

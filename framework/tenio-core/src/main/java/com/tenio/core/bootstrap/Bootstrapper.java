@@ -21,18 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.annotation;
+package com.tenio.core.bootstrap;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.tenio.common.logger.ZeroLogger;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.bootstrap.injector.Injector;
 
 /**
  * @author kong
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ExtBootstrap {
-	
+public final class Bootstrapper extends ZeroLogger {
+
+	private final Injector __injector;
+	private EventHandler __eventHandler;
+
+	public static Bootstrapper newInstance() {
+		return new Bootstrapper();
+	}
+
+	private Bootstrapper() {
+		__injector = new Injector();
+	}
+
+	public boolean run(Class<?> entryClazz) throws Exception {
+		boolean hasExtApplicationAnnotation = entryClazz.isAnnotationPresent(Bootstrap.class);
+
+		if (hasExtApplicationAnnotation) {
+			__start(entryClazz);
+			__eventHandler = __injector.getInstance(EventHandler.class);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void __start(Class<?> entryClazz) {
+		try {
+			synchronized (Bootstrapper.class) {
+				__injector.scanPackages(entryClazz);
+			}
+		} catch (Exception e) {
+			_error(e);
+		}
+	}
+
+	public EventHandler getEventHandler() {
+		return __eventHandler;
+	}
+
 }

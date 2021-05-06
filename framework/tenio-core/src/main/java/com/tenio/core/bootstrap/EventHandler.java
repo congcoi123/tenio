@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowired;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.handler.ConnectionEventHandler;
 import com.tenio.core.bootstrap.handler.HttpEventHandler;
 import com.tenio.core.bootstrap.handler.MixinsEventHandler;
@@ -35,22 +35,22 @@ import com.tenio.core.extension.AbstractExtensionHandler;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class EventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowired
+	@Autowired
 	private ConnectionEventHandler __connectionEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private PlayerEventHandler __playerEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private RoomEventHandler __roomEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private HttpEventHandler __httpEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private MixinsEventHandler __mixinsEventHandler;
 
 	public void initialize() {

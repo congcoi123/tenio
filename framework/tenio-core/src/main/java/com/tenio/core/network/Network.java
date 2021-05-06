@@ -26,7 +26,7 @@ package com.tenio.core.network;
 import java.io.IOException;
 import java.net.BindException;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
@@ -58,7 +58,7 @@ public interface Network {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, ZConfiguration configuration, IElementsPool<CommonObject> commonObjectPool,
+	void start(IEventManager eventManager, Configuration configuration, IElementsPool<CommonObject> commonObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException, BindException;
 

@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
@@ -53,7 +53,7 @@ public final class EngineWriter extends ZeroSystemLogger implements ZeroWriter, 
 	private final BlockingQueue<SocketChannel> __channelTicketsQueue;
 
 	private ExecutorService __threadPool;
-	private ZConfiguration __configuration;
+	private Configuration __configuration;
 	private IOHandler __ioHandler;
 
 	private int __threadPoolSize;
@@ -138,7 +138,7 @@ public final class EngineWriter extends ZeroSystemLogger implements ZeroWriter, 
 			byte[] packet = null;
 
 			try {
-				IPacketQueue packetQueue = socketChannel.getOption(ZeroConnectionOption.PACKET_QUEUE);
+				PacketQueue packetQueue = socketChannel.getOption(ZeroConnectionOption.PACKET_QUEUE);
 				synchronized (packetQueue) {
 					if (packetQueue.isEmpty()) {
 						return;
@@ -205,7 +205,7 @@ public final class EngineWriter extends ZeroSystemLogger implements ZeroWriter, 
 	}
 
 	@Override
-	public void setConfiguration(ZConfiguration configuration) {
+	public void setConfiguration(Configuration configuration) {
 		__configuration = configuration;
 	}
 

@@ -21,52 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap;
-
-import com.tenio.common.logger.ZeroLogger;
-import com.tenio.core.bootstrap.annotation.ExtBootstrap;
-import com.tenio.core.bootstrap.injector.Injector;
+package com.tenio.core.exception;
 
 /**
  * @author kong
  */
-public final class Bootstrap extends ZeroLogger {
-
-	private final Injector __injector;
-	private EventHandler __eventHandler;
-
-	public static Bootstrap newInstance() {
-		return new Bootstrap();
-	}
-
-	private Bootstrap() {
-		__injector = new Injector();
-	}
-
-	public boolean run(Class<?> entryClazz) throws Exception {
-		boolean hasExtApplicationAnnotation = entryClazz.isAnnotationPresent(ExtBootstrap.class);
-
-		if (hasExtApplicationAnnotation) {
-			__start(entryClazz);
-			__eventHandler = __injector.getInstance(EventHandler.class);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private void __start(Class<?> entryClazz) {
-		try {
-			synchronized (Bootstrap.class) {
-				__injector.scanPackages(entryClazz);
-			}
-		} catch (Exception e) {
-			_error(e);
-		}
-	}
-
-	public EventHandler getEventHandler() {
-		return __eventHandler;
-	}
+public final class PacketQueueFullException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2526342485508899328L;
 
 }

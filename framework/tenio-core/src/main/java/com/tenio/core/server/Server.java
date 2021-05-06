@@ -29,7 +29,7 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
@@ -122,7 +122,7 @@ public final class Server extends ZeroLogger implements IServer {
 		return __instance;
 	}
 
-	private ZConfiguration __configuration;
+	private Configuration __configuration;
 
 	private final IElementsPool<CommonObject> __commonObjectPool;
 	private final IElementsPool<CommonObjectArray> __commonObjectArrayPool;
@@ -152,7 +152,7 @@ public final class Server extends ZeroLogger implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(ZConfiguration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
+	public void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		__configuration = configuration;
 
@@ -220,7 +220,7 @@ public final class Server extends ZeroLogger implements IServer {
 		_info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(ZConfiguration configuration, IElementsPool<CommonObject> msgObjectPool,
+	private void __startNetwork(Configuration configuration, IElementsPool<CommonObject> msgObjectPool,
 			IElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
@@ -263,7 +263,7 @@ public final class Server extends ZeroLogger implements IServer {
 		__extension = extension;
 	}
 
-	private void __checkSubscriberReconnection(ZConfiguration configuration) throws NotDefinedSubscribersException {
+	private void __checkSubscriberReconnection(Configuration configuration) throws NotDefinedSubscribersException {
 		if (configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT)) {
 			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
 					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_SUCCESS)) {
@@ -273,7 +273,7 @@ public final class Server extends ZeroLogger implements IServer {
 		}
 	}
 
-	private void __checkSubscriberSubConnectionAttach(ZConfiguration configuration)
+	private void __checkSubscriberSubConnectionAttach(Configuration configuration)
 			throws NotDefinedSubscribersException {
 		if (__socketPortsSize > 1 || __webSocketPortsSize > 1) {
 			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
@@ -285,21 +285,21 @@ public final class Server extends ZeroLogger implements IServer {
 		}
 	}
 
-	private void __checkDefinedMainSocketConnection(ZConfiguration configuration)
+	private void __checkDefinedMainSocketConnection(Configuration configuration)
 			throws NotDefinedSocketConnectionException {
 		if (__socketPorts.isEmpty() && __webSocketPorts.isEmpty()) {
 			throw new NotDefinedSocketConnectionException();
 		}
 	}
 
-	private void __checkSubscriberHttpHandler(ZConfiguration configuration) throws NotDefinedSubscribersException {
+	private void __checkSubscriberHttpHandler(Configuration configuration) throws NotDefinedSubscribersException {
 		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_VALIDATE)
 				|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_HANDLE))) {
 			throw new NotDefinedSubscribersException(ZeroEvent.HTTP_REQUEST_VALIDATE, ZeroEvent.HTTP_REQUEST_HANDLE);
 		}
 	}
 
-	private void __createAllSchedules(ZConfiguration configuration) {
+	private void __createAllSchedules(Configuration configuration) {
 		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi,
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
@@ -320,7 +320,7 @@ public final class Server extends ZeroLogger implements IServer {
 				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
 	}
 
-	private String __createHttpManagers(ZConfiguration configuration) throws DuplicatedUriAndMethodException {
+	private String __createHttpManagers(Configuration configuration) throws DuplicatedUriAndMethodException {
 		for (int i = 0; i < __httpPorts.size(); i++) {
 			var port = __httpPorts.get(i);
 			var httpManager = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());

@@ -1,6 +1,6 @@
 package com.tenio.core.network.entity.protocol;
 
-public interface ZeroMessage {
+public interface Message {
      Object getId();
 
      void setId(Object id);

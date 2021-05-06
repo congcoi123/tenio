@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.datagram;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.IElementsPool;
@@ -48,12 +48,12 @@ public final class NettyDatagramInitializer extends ChannelInitializer<DatagramC
 	private final IElementsPool<CommonObject> __commonObjectPool;
 	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final ZConfiguration __configuration;
+	private final Configuration __configuration;
 	private final int __connectionIndex;
 
 	public NettyDatagramInitializer(int connectionIndex, IEventManager eventManager,
 			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, ZConfiguration configuration) {
+			GlobalTrafficShapingHandlerCustomize trafficCounter, Configuration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

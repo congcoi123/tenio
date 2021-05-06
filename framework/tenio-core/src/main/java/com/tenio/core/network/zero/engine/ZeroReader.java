@@ -26,7 +26,7 @@ package com.tenio.core.network.zero.engine;
 import java.io.IOException;
 import java.nio.channels.Selector;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.network.zero.handler.IOHandler;
 
 /**
@@ -36,7 +36,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  */
 public interface ZeroReader {
 
-	void setConfiguration(ZConfiguration configuration);
+	void setConfiguration(Configuration configuration);
 
 	void setIoHandler(IOHandler ioHandler);
 	

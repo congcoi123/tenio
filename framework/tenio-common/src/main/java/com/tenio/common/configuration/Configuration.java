@@ -34,7 +34,7 @@ package com.tenio.common.configuration;
  * @author kong
  * 
  */
-public interface ZConfiguration {
+public interface Configuration {
 
 	/**
 	 * @param key the configuration's key

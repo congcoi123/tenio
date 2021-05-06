@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
-import com.tenio.example.server.Configuration;
+import com.tenio.example.server.TestConfiguration;
 
 /**
  * This class shows how a server handle messages that came from a client
@@ -53,12 +53,12 @@ public final class TestServerAttach extends AbstractApp {
 	}
 
 	@Override
-	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.attach.xml");
+	public TestConfiguration getConfiguration() {
+		return new TestConfiguration("TenIOConfig.attach.xml");
 	}
 
 	@Override
-	public void onStarted(IExtension extension, ZConfiguration configuration) {
+	public void onStarted(IExtension extension, Configuration configuration) {
 
 	}
 
@@ -73,7 +73,7 @@ public final class TestServerAttach extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize(ZConfiguration configuration) {
+		public void initialize(Configuration configuration) {
 			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);

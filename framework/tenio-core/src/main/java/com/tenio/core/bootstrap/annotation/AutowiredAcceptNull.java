@@ -21,15 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exception;
+package com.tenio.core.bootstrap.annotation;
+
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author kong
  */
-public final class MessagePacketQueueFullException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2526342485508899328L;
+@Target({ METHOD, CONSTRUCTOR, FIELD })
+@Retention(RUNTIME)
+@Documented
+public @interface AutowiredAcceptNull {
 
 }

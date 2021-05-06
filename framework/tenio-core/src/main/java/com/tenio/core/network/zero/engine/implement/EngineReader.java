@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
@@ -58,7 +58,7 @@ public final class EngineReader extends ZeroSystemLogger implements ZeroReader, 
 	private ExecutorService __threadPool;
 	private Selector __readSelector;
 
-	private ZConfiguration __configuration;
+	private Configuration __configuration;
 	private ZeroAcceptor __engineAcceptor;
 	private ZeroWriter __engineWriter;
 	private IOHandler __ioHandler;
@@ -227,7 +227,7 @@ public final class EngineReader extends ZeroSystemLogger implements ZeroReader, 
 	}
 
 	@Override
-	public void setConfiguration(ZConfiguration configuration) {
+	public void setConfiguration(Configuration configuration) {
 		__configuration = configuration;
 	}
 

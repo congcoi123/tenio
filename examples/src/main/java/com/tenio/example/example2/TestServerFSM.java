@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.example.example2.entity.Inspector;
-import com.tenio.example.server.Configuration;
+import com.tenio.example.server.TestConfiguration;
 
 /**
  * This class is used to send to clients all the daily life of our miner and his
@@ -55,7 +55,7 @@ public final class TestServerFSM extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, ZConfiguration configuration) {
+	public void onStarted(IExtension extension, Configuration configuration) {
 
 	}
 
@@ -65,8 +65,8 @@ public final class TestServerFSM extends AbstractApp {
 	}
 
 	@Override
-	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.xml");
+	public TestConfiguration getConfiguration() {
+		return new TestConfiguration("TenIOConfig.xml");
 	}
 
 	/**
@@ -75,7 +75,7 @@ public final class TestServerFSM extends AbstractApp {
 	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
 
 		@Override
-		public void initialize(ZConfiguration configuration) {
+		public void initialize(Configuration configuration) {
 
 			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);

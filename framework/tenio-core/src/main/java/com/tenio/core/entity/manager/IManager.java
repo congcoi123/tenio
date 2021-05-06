@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.entity.manager;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.CoreConfiguration;
 
 /**
@@ -36,6 +36,6 @@ public interface IManager {
 	 * 
 	 * @param configuration the configuration, see {@link CoreConfiguration}
 	 */
-	void initialize(ZConfiguration configuration);
+	void initialize(Configuration configuration);
 
 }

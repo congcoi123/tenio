@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example1.injection.handler;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;
 import com.tenio.core.network.entity.connection.Connection;
@@ -33,7 +33,7 @@ import com.tenio.example.example1.PlayerLogin;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class ConnectionEstablishedSuccessHandler extends AbstractExtensionHandler
 		implements IEventConnectionEstablishedSuccess {
 

@@ -1,9 +1,11 @@
-package com.tenio.core.network.entity.protocol;
+package com.tenio.core.network.entity.protocol.implement;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractMessage implements ZeroMessage {
+import com.tenio.core.network.entity.protocol.Message;
+
+public abstract class AbstractMessage implements Message {
      protected Object id;
      protected Object content;
      protected Map attributes;

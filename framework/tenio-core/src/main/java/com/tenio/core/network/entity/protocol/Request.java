@@ -2,62 +2,28 @@ package com.tenio.core.network.entity.protocol;
 
 import com.tenio.core.network.define.MessagePriority;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.ISession;
+import com.tenio.core.network.entity.connection.Session;
 
-public final class Request extends AbstractMessage implements IRequest {
-     private ISession sender;
-     private TransportType type;
-     private MessagePriority priority;
-     private long timeStamp;
+public interface Request extends Message {
+     TransportType getTransportType();
 
-     public Request() {
-          this.type = TransportType.TCP;
-          this.priority = MessagePriority.NORMAL;
-          this.timeStamp = System.nanoTime();
-     }
+     void setTransportType(TransportType type);
 
-     public ISession getSender() {
-          return this.sender;
-     }
+     Session getSender();
 
-     public TransportType getTransportType() {
-          return this.type;
-     }
+     void setSender(Session session);
 
-     public void setSender(ISession session) {
-          this.sender = session;
-     }
+     MessagePriority getPriority();
 
-     public void setTransportType(TransportType type) {
-          this.type = type;
-     }
+     void setPriority(MessagePriority priority);
 
-     public MessagePriority getPriority() {
-          return this.priority;
-     }
+     long getTimeStamp();
 
-     public void setPriority(MessagePriority priority) {
-          this.priority = priority;
-     }
+     void setTimeStamp(long timestamp);
 
-     public long getTimeStamp() {
-          return this.timeStamp;
-     }
+     boolean isTcp();
 
-     public void setTimeStamp(long timeStamp) {
-          this.timeStamp = timeStamp;
-     }
+     boolean isUdp();
 
-     public boolean isTcp() {
-          return this.type == TransportType.TCP;
-     }
-
-     public boolean isUdp() {
-          return this.type == TransportType.UDP;
-     }
-
-     public boolean isWebsocket() {
-    	 return this.type == TransportType.WEB_SOCKET;
-     }
-
+     boolean isWebsocket();
 }

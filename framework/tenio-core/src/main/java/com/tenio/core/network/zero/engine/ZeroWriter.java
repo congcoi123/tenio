@@ -26,7 +26,7 @@ package com.tenio.core.network.zero.engine;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.network.zero.handler.IOHandler;
 
 /**
@@ -44,7 +44,7 @@ public interface ZeroWriter {
 
 	long getWrittenPackets();
 
-	void setConfiguration(ZConfiguration configuration);
+	void setConfiguration(Configuration configuration);
 
 	void setIoHandler(IOHandler ioHandler);
 

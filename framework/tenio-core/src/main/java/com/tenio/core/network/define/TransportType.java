@@ -31,6 +31,7 @@ import java.util.Map;
  */
 public enum TransportType {
 	
+	UNKNOWN("unknown"),
 	TCP("tcp"),
 	UDP("udp"),
 	WEB_SOCKET("websocket"),

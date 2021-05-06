@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.IEventFetchedCcuNumber;
 
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class FetchedCcuNumberHandler extends AbstractExtensionHandler implements IEventFetchedCcuNumber {
 
 	@Override

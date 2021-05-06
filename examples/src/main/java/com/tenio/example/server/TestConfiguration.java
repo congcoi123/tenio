@@ -21,23 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.annotation;
+package com.tenio.example.server;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Map;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import com.tenio.core.configuration.CoreConfiguration;
 
 /**
+ * Create your own configurations
+ * 
+ * @see CoreConfiguration
+ * 
  * @author kong
+ *
  */
-@Target({ METHOD, CONSTRUCTOR, FIELD })
-@Retention(RUNTIME)
-@Documented
-public @interface ExtAutowired {
+public final class TestConfiguration extends CoreConfiguration {
+
+	public TestConfiguration(final String file) {
+		super(file);
+	}
+
+	@Override
+	protected void _extend(Map<String, String> extProperties) {
+		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+			var paramName = entry.getKey();
+			_push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+		}
+	}
 
 }

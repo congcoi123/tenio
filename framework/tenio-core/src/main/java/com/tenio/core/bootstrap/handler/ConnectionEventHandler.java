@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.ZeroPlayer;
@@ -47,28 +47,28 @@ import com.tenio.core.network.entity.connection.Connection;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventConnectionEstablishedFailed __eventConnectionEstablishedFailed;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventReceivedMessageFromConnection __eventReceivedMessageFromConnection;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventAttachConnectionRequestValidate __eventAttachConnectionRequestValidate;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventAttachConnectionSuccess __eventAttachConnectionSuccess;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventAttachConnectionFailed __eventAttachConnectionFailed;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventDisconnectConnection __eventDisconnectConnection;
 
 	public void initialize() {

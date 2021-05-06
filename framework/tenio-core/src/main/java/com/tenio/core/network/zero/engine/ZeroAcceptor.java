@@ -25,7 +25,7 @@ package com.tenio.core.network.zero.engine;
 
 import java.io.IOException;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.network.security.filter.IConnectionFilter;
 import com.tenio.core.network.zero.handler.IOHandler;
 
@@ -36,7 +36,7 @@ import com.tenio.core.network.zero.handler.IOHandler;
  */
 public interface ZeroAcceptor {
 
-	void setConfiguration(ZConfiguration configuration);
+	void setConfiguration(Configuration configuration);
 	
 	void setConnectionFilter(IConnectionFilter connectionFilter);
 	

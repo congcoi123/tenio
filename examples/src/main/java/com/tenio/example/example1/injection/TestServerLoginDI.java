@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.bootstrap.annotation.ExtBootstrap;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
 import com.tenio.core.extension.IExtension;
-import com.tenio.example.server.Configuration;
+import com.tenio.example.server.TestConfiguration;
 
 /**
  * This class shows how a server handle messages that came from a client with DI
@@ -35,7 +35,7 @@ import com.tenio.example.server.Configuration;
  * @author kong
  *
  */
-@ExtBootstrap
+@Bootstrap
 public final class TestServerLoginDI extends AbstractApp {
 
 	/**
@@ -52,12 +52,12 @@ public final class TestServerLoginDI extends AbstractApp {
 	}
 
 	@Override
-	public Configuration getConfiguration() {
-		return new Configuration("TenIOConfig.xml");
+	public TestConfiguration getConfiguration() {
+		return new TestConfiguration("TenIOConfig.xml");
 	}
 
 	@Override
-	public void onStarted(IExtension extension, ZConfiguration configuration) {
+	public void onStarted(IExtension extension, Configuration configuration) {
 
 	}
 

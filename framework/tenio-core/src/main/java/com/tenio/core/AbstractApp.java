@@ -25,9 +25,9 @@ package com.tenio.core;
 
 import java.io.IOException;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.ZeroLogger;
-import com.tenio.core.bootstrap.Bootstrap;
+import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -57,10 +57,10 @@ public abstract class AbstractApp extends ZeroLogger {
 	}
 	
 	private void __start(Class<?> entryClazz) {
-		Bootstrap bootstrap = null;
+		Bootstrapper bootstrap = null;
 		boolean bootstrapRunning = false;
 		if (entryClazz != null) {
-			bootstrap = Bootstrap.newInstance();
+			bootstrap = Bootstrapper.newInstance();
 			try {
 				bootstrapRunning = bootstrap.run(entryClazz);
 			} catch (Exception e) {
@@ -108,14 +108,14 @@ public abstract class AbstractApp extends ZeroLogger {
 	public abstract IExtension getExtension();
 
 	/**
-	 * @return your own class that derived from {@link ZConfiguration} class
+	 * @return your own class that derived from {@link Configuration} class
 	 */
-	public abstract ZConfiguration getConfiguration();
+	public abstract Configuration getConfiguration();
 
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted(IExtension extension, ZConfiguration configuration);
+	public abstract void onStarted(IExtension extension, Configuration configuration);
 
 	/**
 	 * The trigger is called when server was tear down

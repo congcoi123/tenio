@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.ZeroSystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.configuration.data.SocketConfig;
@@ -67,7 +67,7 @@ public final class EngineAcceptor extends ZeroSystemLogger implements ZeroAccept
 	private List<SocketChannel> __acceptableChannels;
 	private Selector __acceptableSelector;
 
-	private ZConfiguration __configuration;
+	private Configuration __configuration;
 	private ZeroReader __engineReader;
 	private IConnectionFilter __connectionFilter;
 	private IOHandler __ioHandler;
@@ -336,7 +336,7 @@ public final class EngineAcceptor extends ZeroSystemLogger implements ZeroAccept
 	}
 
 	@Override
-	public void setConfiguration(ZConfiguration configuration) {
+	public void setConfiguration(Configuration configuration) {
 		__configuration = configuration;
 	}
 

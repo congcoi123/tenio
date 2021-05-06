@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface ExtQualifier {
+public @interface ComponentQualifier {
 
 	String value() default "";
 

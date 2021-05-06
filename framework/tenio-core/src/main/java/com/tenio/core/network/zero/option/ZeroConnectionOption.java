@@ -34,8 +34,8 @@ import com.tenio.core.message.packet.IPacketQueue;
  */
 public final class ZeroConnectionOption {
 
-    public static final SocketOption<IPacketQueue> PACKET_QUEUE =
-            new DefSocketOption<IPacketQueue>("PACKET_QUEUE", IPacketQueue.class);
+    public static final SocketOption<PacketQueue> PACKET_QUEUE =
+            new DefSocketOption<PacketQueue>("PACKET_QUEUE", PacketQueue.class);
     
     private static class DefSocketOption<T> implements SocketOption<T> {
         private final String name;

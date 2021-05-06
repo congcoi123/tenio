@@ -25,7 +25,7 @@ package com.tenio.example.example1.injection.handler;
 
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.entity.ZeroPlayer;
 import com.tenio.core.entity.backup.EntityProcesser;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -35,7 +35,7 @@ import com.tenio.example.example1.PlayerLogin;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class PlayerLoginSuccessHandler extends AbstractExtensionHandler implements IEventPlayerLoginedSuccess {
 
 	@Override

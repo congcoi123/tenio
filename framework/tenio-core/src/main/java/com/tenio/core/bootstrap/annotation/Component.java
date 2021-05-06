@@ -21,32 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.server;
+package com.tenio.core.bootstrap.annotation;
 
-import java.util.Map;
-
-import com.tenio.core.configuration.CoreConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Create your own configurations
- * 
- * @see CoreConfiguration
- * 
  * @author kong
- *
  */
-public final class Configuration extends CoreConfiguration {
-
-	public Configuration(final String file) {
-		super(file);
-	}
-
-	@Override
-	protected void _extend(Map<String, String> extProperties) {
-		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-			var paramName = entry.getKey();
-			_push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-		}
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Component {
 
 }

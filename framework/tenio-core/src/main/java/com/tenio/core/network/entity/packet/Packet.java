@@ -1,200 +1,56 @@
 package com.tenio.core.network.entity.packet;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
 import com.tenio.core.network.define.MessagePriority;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.ISession;
+import com.tenio.core.network.entity.connection.Session;
 
-public class Packet implements IPacket, Comparable<Packet> {
-	protected Short id = Short.valueOf((short) 0);
-	protected long creationTime = System.nanoTime();
-	protected Object data;
-	protected String ownerNode;
-	protected MessagePriority priority;
-	protected ISession sender;
-	protected TransportType transportType;
-	protected int originalSize = -1;
-	protected ConcurrentMap attributes;
-	protected Collection recipients;
-	protected byte[] fragmentBuffer;
+public interface Packet {
 
-	public Packet() {
-		this.priority = MessagePriority.NORMAL;
-		this.transportType = TransportType.TCP;
-	}
+	long getId();
 
-	public Object getAttribute(String key) {
-		return this.attributes == null ? null : this.attributes.get(key);
-	}
+	byte[] getData();
 
-	public void setAttribute(String key, Object attr) {
-		if (this.attributes == null) {
-			this.attributes = new ConcurrentHashMap();
-		}
+	void setData(byte[] binary);
 
-		this.attributes.put(key, attr);
-	}
+	TransportType getTransportType();
 
-	public long getCreationTime() {
-		return this.creationTime;
-	}
+	void setTransportType(TransportType type);
 
-	public void setCreationTime(long creationTime) {
-		this.creationTime = creationTime;
-	}
+	MessagePriority getPriority();
 
-	public Object getData() {
-		return this.data;
-	}
+	void setPriority(MessagePriority priority);
 
-	public void setData(Object data) {
-		this.data = data;
-	}
+	Collection<Session> getRecipients();
 
-	public boolean isFragmented() {
-		return this.fragmentBuffer != null;
-	}
+	void setRecipients(Collection<Session> recipients);
 
-	public byte[] getFragmentBuffer() {
-		return this.fragmentBuffer;
-	}
+	Session getSender();
 
-	public void setFragmentBuffer(byte[] bb) {
-		this.fragmentBuffer = bb;
-	}
+	void setSender(Session session);
 
-	private byte[] cloneData(Object data) {
-		if (data instanceof byte[]) {
-			byte[] newData = new byte[((byte[]) ((byte[]) data)).length];
-			System.arraycopy(data, 0, newData, 0, newData.length);
-			return newData;
-		} else {
-			return null;
-		}
-	}
+	Object getAttribute(String key);
 
-	public String getOwnerNode() {
-		return this.ownerNode;
-	}
+	void setAttribute(String key, Object value);
+	
+	void setAttributes(Map<String, Object> attributes);
 
-	public void setOwnerNode(String ownerNode) {
-		this.ownerNode = ownerNode;
-	}
+	long getCreatedTime();
 
-	public MessagePriority getPriority() {
-		return this.priority;
-	}
+	int getOriginalSize();
 
-	public void setPriority(MessagePriority priority) {
-		this.priority = priority;
-	}
+	boolean isTcp();
 
-	public ISession getSender() {
-		return this.sender;
-	}
+	boolean isUdp();
 
-	public void setSender(ISession sender) {
-		this.sender = sender;
-	}
+	boolean isWebSocket();
 
-	public TransportType getTransportType() {
-		return this.transportType;
-	}
+	byte[] getFragmentBuffer();
 
-	public void setTransportType(TransportType transportType) {
-		this.transportType = transportType;
-	}
+	void setFragmentBuffer(byte[] binary);
 
-	public Collection getRecipients() {
-		return this.recipients;
-	}
-
-	public void setRecipients(Collection recipients) {
-		this.recipients = recipients;
-	}
-
-	public boolean isTcp() {
-		return this.transportType == TransportType.TCP;
-	}
-
-	public boolean isUdp() {
-		return this.transportType == TransportType.UDP;
-	}
-
-	public int getOriginalSize() {
-		return this.originalSize;
-	}
-
-	public void setOriginalSize(int originalSize) {
-		if (this.originalSize == -1) {
-			this.originalSize = originalSize;
-		}
-
-	}
-
-	public String toString() {
-		return String.format("{ Packet: %s, data: %s, Pri: %s }", this.transportType, this.data.getClass().getName(),
-				this.priority);
-	}
-
-	public IPacket clone() {
-		IPacket newPacket = new Packet();
-		newPacket.setCreationTime(this.getCreationTime());
-		newPacket.setId(this.getId());
-		newPacket.setData(this.getData());
-		newPacket.setOriginalSize(this.getOriginalSize());
-		newPacket.setOwnerNode(this.getOwnerNode());
-		newPacket.setPriority(this.getPriority());
-		newPacket.setRecipients((Collection) null);
-		newPacket.setSender(this.getSender());
-		newPacket.setTransportType(this.getTransportType());
-		return newPacket;
-	}
-
-	public Short getId() {
-		return this.id;
-	}
-
-	public void setId(Short _id) {
-		this.id = _id;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Packet)) {
-			return false;
-		}
-		var t1 = this;
-		var t2 = (Packet) o;
-		return t1.getPriority() == t2.getPriority();
-	}
-
-	/**
-	 * It is generally necessary to override the <b>hashCode</b> method whenever
-	 * equals method is overridden, so as to maintain the general contract for the
-	 * hashCode method, which states that equal objects must have equal hash codes.
-	 */
-	@Override
-	public int hashCode() {
-		int c = (int) id + (int) (creationTime ^ (creationTime >>> 32)) + data.hashCode() + this.priority.hashCode()
-				+ fragmentBuffer.hashCode();
-
-		int hash = 3;
-		hash = 89 * hash + c;
-		return hash;
-	}
-
-	@Override
-	public int compareTo(Packet t2) {
-		var t1 = this;
-		if (t1 == t2) {
-			return 0;
-		} else {
-			return Integer.compare(t1.getPriority().getValue(), t2.getPriority().getValue());
-		}
-	}
+	boolean isFragmented();
 
 }

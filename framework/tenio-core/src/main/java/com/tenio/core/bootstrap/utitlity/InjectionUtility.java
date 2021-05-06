@@ -28,9 +28,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowired;
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtQualifier;
+import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.ComponentQualifier;
 import com.tenio.core.bootstrap.injector.Injector;
 import com.tenio.core.exception.NoImplementedClassFoundException;
 
@@ -57,10 +57,10 @@ public final class InjectionUtility {
 
 		Set<Field> fields = __findFields(clazz);
 		for (Field field : fields) {
-			String qualifier = field.isAnnotationPresent(ExtQualifier.class)
-					? field.getAnnotation(ExtQualifier.class).value()
+			String qualifier = field.isAnnotationPresent(ComponentQualifier.class)
+					? field.getAnnotation(ComponentQualifier.class).value()
 					: null;
-			if (field.isAnnotationPresent(ExtAutowiredAcceptNull.class)) {
+			if (field.isAnnotationPresent(AutowiredAcceptNull.class)) {
 				try {
 					Object fieldInstance = injector.getBeanInstance(field.getType(), field.getName(), qualifier);
 					field.set(clazzInstance, fieldInstance);
@@ -77,8 +77,8 @@ public final class InjectionUtility {
 	}
 
 	/**
-	 * Get all the fields having {@link ExtAutowired} or
-	 * {@link ExtAutowiredAcceptNull} annotation used while declaration
+	 * Get all the fields having {@link Autowired} or
+	 * {@link AutowiredAcceptNull} annotation used while declaration
 	 * 
 	 * @param clazz
 	 * @return a set of fields
@@ -88,8 +88,8 @@ public final class InjectionUtility {
 
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (field.isAnnotationPresent(ExtAutowired.class)
-						|| field.isAnnotationPresent(ExtAutowiredAcceptNull.class)) {
+				if (field.isAnnotationPresent(Autowired.class)
+						|| field.isAnnotationPresent(AutowiredAcceptNull.class)) {
 					field.setAccessible(true);
 					fields.add(field);
 				}

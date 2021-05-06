@@ -25,7 +25,7 @@ package com.tenio.core.server;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.ZConfiguration;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.ZeroLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
@@ -63,7 +63,7 @@ final class InternalLogicManager extends ZeroLogger {
 	/**
 	 * Start handling
 	 */
-	public void init(ZConfiguration configuration) {
+	public void init(Configuration configuration) {
 
 		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
@@ -159,7 +159,7 @@ final class InternalLogicManager extends ZeroLogger {
 
 	}
 
-	private void __createNewConnection(ZConfiguration configuration, int connectionIndex, Connection connection,
+	private void __createNewConnection(Configuration configuration, int connectionIndex, Connection connection,
 			CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first

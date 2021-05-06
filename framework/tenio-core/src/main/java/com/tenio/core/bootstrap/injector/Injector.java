@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.utitlity.ClazzLoaderUtility;
 import com.tenio.core.bootstrap.utitlity.InjectionUtility;
 import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
@@ -77,7 +77,7 @@ public final class Injector {
 		Reflections reflections = new Reflections(entryClazz.getPackage().getName());
 		reflections = reflections.merge(reflectionsBootstrap).merge(reflectionsEvent);
 
-		Set<Class<?>> implementedClazzs = reflections.getTypesAnnotatedWith(ExtComponent.class);
+		Set<Class<?>> implementedClazzs = reflections.getTypesAnnotatedWith(Component.class);
 
 		// scan all interface with its implemented classes
 		for (Class<?> implementedClazz : implementedClazzs) {
@@ -93,7 +93,7 @@ public final class Injector {
 
 		// create class instance based on annotations
 		for (Class<?> clazz : clazzs) {
-			if (clazz.isAnnotationPresent(ExtComponent.class)) {
+			if (clazz.isAnnotationPresent(Component.class)) {
 				Object clazzInstance = clazz.getDeclaredConstructor().newInstance();
 				__clazzInstancesMap.put(clazz, clazzInstance);
 				// recursively create field instance for this class instance

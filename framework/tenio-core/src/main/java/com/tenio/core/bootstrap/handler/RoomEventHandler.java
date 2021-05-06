@@ -26,8 +26,8 @@ package com.tenio.core.bootstrap.handler;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.entity.ZeroPlayer;
@@ -44,22 +44,22 @@ import com.tenio.core.extension.event.IEventRoomWillBeRemoved;
 /**
  * @author kong
  */
-@ExtComponent
+@Component
 public final class RoomEventHandler extends AbstractExtensionHandler {
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerAfterLeftRoom __eventPlayerAfterLeftRoom;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerBeforeLeaveRoom __eventPlayerBeforeLeaveRoom;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventPlayerJoinRoomHandle __eventPlayerJoinRoomHandle;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventRoomWasCreated __eventRoomWasCreated;
 
-	@ExtAutowiredAcceptNull
+	@AutowiredAcceptNull
 	private IEventRoomWillBeRemoved __eventRoomWillBeRemoved;
 
 	public void initialize() {

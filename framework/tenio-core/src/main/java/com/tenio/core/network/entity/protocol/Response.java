@@ -1,73 +1,30 @@
 package com.tenio.core.network.entity.protocol;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.ISession;
+import com.tenio.core.network.entity.connection.Session;
 
-public class Response extends AbstractMessage implements IResponse {
-     private Collection recipients;
-     private TransportType type;
-     private Object targetController;
+public interface Response extends Message {
+     TransportType getTransportType();
 
-     public Response() {
-          this.type = TransportType.TCP;
-     }
+     void setTransportType(TransportType type);
 
-     public Collection getRecipients() {
-          return this.recipients;
-     }
+     Object getTargetController();
 
-     public TransportType getTransportType() {
-          return this.type;
-     }
+     void setTargetController(Object controller);
 
-     public boolean isTCP() {
-          return this.type == TransportType.TCP;
-     }
+     Collection getRecipients();
 
-     public boolean isUDP() {
-          return this.type == TransportType.UDP;
-     }
+     void setRecipients(Collection collection);
 
-     public void setRecipients(Collection recipents) {
-          this.recipients = recipents;
-     }
+     void setRecipients(Session session);
 
-     public void setRecipients(ISession session) {
-          List recipients = new ArrayList();
-          recipients.add(session);
-          this.setRecipients((Collection)recipients);
-     }
+     boolean isTCP();
 
-     public void setTransportType(TransportType type) {
-          this.type = type;
-     }
+     boolean isUDP();
 
-     public void write() {
-          // engine write this
-     }
+     void write();
 
-     public void write(int delay) {
-          // write delay
-     }
-
-     public Object getTargetController() {
-          return this.targetController;
-     }
-
-     public void setTargetController(Object o) {
-          this.targetController = o;
-     }
-
-     public static IResponse clone(IResponse original) {
-          IResponse newResponse = new Response();
-          newResponse.setContent(original.getContent());
-          newResponse.setTargetController(original.getTargetController());
-          newResponse.setId(original.getId());
-          newResponse.setTransportType(original.getTransportType());
-          return newResponse;
-     }
+     void write(int delay);
 }
