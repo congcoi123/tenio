@@ -29,13 +29,13 @@ import java.util.function.Consumer;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventException;
-import com.tenio.core.extension.event.IEventFetchedBandwidthInfo;
-import com.tenio.core.extension.event.IEventFetchedCcuNumber;
-import com.tenio.core.extension.event.IEventMonitoringSystem;
+import com.tenio.core.extension.event.EventException;
+import com.tenio.core.extension.event.EventFetchedBandwidthInfo;
+import com.tenio.core.extension.event.EventFetchedCcuNumber;
+import com.tenio.core.extension.event.EventMonitoringSystem;
 
 /**
  * @author kong
@@ -44,29 +44,29 @@ import com.tenio.core.extension.event.IEventMonitoringSystem;
 public final class MixinsEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull
-	private IEventException __eventException;
+	private EventException __eventException;
 
 	@AutowiredAcceptNull
-	private IEventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
+	private EventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
 
 	@AutowiredAcceptNull
-	private IEventFetchedCcuNumber __eventFetchedCcuNumber;
+	private EventFetchedCcuNumber __eventFetchedCcuNumber;
 
 	@AutowiredAcceptNull
-	private IEventMonitoringSystem __eventMonitoringSystem;
+	private EventMonitoringSystem __eventMonitoringSystem;
 
 	public void initialize() {
-		Optional<IEventException> eventExceptionOp = Optional.ofNullable(__eventException);
-		Optional<IEventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
+		Optional<EventException> eventExceptionOp = Optional.ofNullable(__eventException);
+		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);
-		Optional<IEventFetchedCcuNumber> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
-		Optional<IEventMonitoringSystem> eventMonitoringSystemOp = Optional.ofNullable(__eventMonitoringSystem);
+		Optional<EventFetchedCcuNumber> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
+		Optional<EventMonitoringSystem> eventMonitoringSystemOp = Optional.ofNullable(__eventMonitoringSystem);
 
-		eventExceptionOp.ifPresent(new Consumer<IEventException>() {
+		eventExceptionOp.ifPresent(new Consumer<EventException>() {
 
 			@Override
-			public void accept(IEventException event) {
-				_on(ZeroEvent.EXCEPTION, new ISubscriber() {
+			public void accept(EventException event) {
+				_on(ZeroEvent.EXCEPTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -80,11 +80,11 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventFetchedBandwidthInfoOp.ifPresent(new Consumer<IEventFetchedBandwidthInfo>() {
+		eventFetchedBandwidthInfoOp.ifPresent(new Consumer<EventFetchedBandwidthInfo>() {
 
 			@Override
-			public void accept(IEventFetchedBandwidthInfo event) {
-				_on(ZeroEvent.FETCHED_BANDWIDTH_INFO, new ISubscriber() {
+			public void accept(EventFetchedBandwidthInfo event) {
+				_on(ZeroEvent.FETCHED_BANDWIDTH_INFO, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -105,11 +105,11 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventFetchedCcuNumberOp.ifPresent(new Consumer<IEventFetchedCcuNumber>() {
+		eventFetchedCcuNumberOp.ifPresent(new Consumer<EventFetchedCcuNumber>() {
 
 			@Override
-			public void accept(IEventFetchedCcuNumber event) {
-				_on(ZeroEvent.FETCHED_CCU_NUMBER, new ISubscriber() {
+			public void accept(EventFetchedCcuNumber event) {
+				_on(ZeroEvent.FETCHED_CCU_NUMBER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -124,11 +124,11 @@ public final class MixinsEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventMonitoringSystemOp.ifPresent(new Consumer<IEventMonitoringSystem>() {
+		eventMonitoringSystemOp.ifPresent(new Consumer<EventMonitoringSystem>() {
 
 			@Override
-			public void accept(IEventMonitoringSystem event) {
-				_on(ZeroEvent.MONITORING_SYSTEM, new ISubscriber() {
+			public void accept(EventMonitoringSystem event) {
+				_on(ZeroEvent.MONITORING_SYSTEM, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

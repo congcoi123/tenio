@@ -27,12 +27,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 
 /**
  * To retrieve the CCU in period time. You can configure this time in your own
@@ -41,16 +41,16 @@ import com.tenio.core.event.IEventManager;
  * @author kong
  * 
  */
-public final class CCUScanTask extends ZeroLogger implements ITask {
+public final class CCUScanTask extends AbstractLogger implements ITask {
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 	/**
 	 * The period time for retrieving CCU
 	 */
 	private final int __ccuScanPeriod;
 	private final PlayerApi __playerApi;
 
-	public CCUScanTask(IEventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
+	public CCUScanTask(EventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
 		__eventManager = eventManager;
 		__playerApi = playerApi;
 		__ccuScanPeriod = ccuScanPeriod;

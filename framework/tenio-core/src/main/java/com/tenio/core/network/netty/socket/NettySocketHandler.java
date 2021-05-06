@@ -25,10 +25,10 @@ package com.tenio.core.network.netty.socket;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.common.pool.IElementsPool;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.netty.BaseNettyHandler;
 
@@ -46,9 +46,9 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public final class NettySocketHandler extends BaseNettyHandler {
 
-	public NettySocketHandler(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
+	public NettySocketHandler(int connectionIndex, EventManager eventManager,
+			ElementsPool<CommonObject> commonObjectPool,
+			ElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.TCP);
 	}
 

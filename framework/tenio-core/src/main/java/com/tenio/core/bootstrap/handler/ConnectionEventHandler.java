@@ -31,17 +31,17 @@ import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.entity.Player;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventAttachConnectionFailed;
-import com.tenio.core.extension.event.IEventAttachConnectionRequestValidate;
-import com.tenio.core.extension.event.IEventAttachConnectionSuccess;
-import com.tenio.core.extension.event.IEventConnectionEstablishedFailed;
-import com.tenio.core.extension.event.IEventConnectionEstablishedSuccess;
-import com.tenio.core.extension.event.IEventDisconnectConnection;
-import com.tenio.core.extension.event.IEventReceivedMessageFromConnection;
+import com.tenio.core.extension.event.EventAttachConnectionFailed;
+import com.tenio.core.extension.event.EventAttachConnectionRequestValidate;
+import com.tenio.core.extension.event.EventAttachConnectionSuccess;
+import com.tenio.core.extension.event.EventConnectionEstablishedFailed;
+import com.tenio.core.extension.event.EventConnectionEstablishedSuccess;
+import com.tenio.core.extension.event.EventDisconnectConnection;
+import com.tenio.core.extension.event.EventReceivedMessageFromConnection;
 import com.tenio.core.network.entity.connection.Connection;
 
 /**
@@ -51,49 +51,49 @@ import com.tenio.core.network.entity.connection.Connection;
 public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull
-	private IEventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
+	private EventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
 
 	@AutowiredAcceptNull
-	private IEventConnectionEstablishedFailed __eventConnectionEstablishedFailed;
+	private EventConnectionEstablishedFailed __eventConnectionEstablishedFailed;
 
 	@AutowiredAcceptNull
-	private IEventReceivedMessageFromConnection __eventReceivedMessageFromConnection;
+	private EventReceivedMessageFromConnection __eventReceivedMessageFromConnection;
 
 	@AutowiredAcceptNull
-	private IEventAttachConnectionRequestValidate __eventAttachConnectionRequestValidate;
+	private EventAttachConnectionRequestValidate __eventAttachConnectionRequestValidate;
 
 	@AutowiredAcceptNull
-	private IEventAttachConnectionSuccess __eventAttachConnectionSuccess;
+	private EventAttachConnectionSuccess __eventAttachConnectionSuccess;
 
 	@AutowiredAcceptNull
-	private IEventAttachConnectionFailed __eventAttachConnectionFailed;
+	private EventAttachConnectionFailed __eventAttachConnectionFailed;
 
 	@AutowiredAcceptNull
-	private IEventDisconnectConnection __eventDisconnectConnection;
+	private EventDisconnectConnection __eventDisconnectConnection;
 
 	public void initialize() {
-		Optional<IEventConnectionEstablishedSuccess> eventConnectionEstablishedSuccessOp = Optional
+		Optional<EventConnectionEstablishedSuccess> eventConnectionEstablishedSuccessOp = Optional
 				.ofNullable(__eventConnectionEstablishedSuccess);
-		Optional<IEventConnectionEstablishedFailed> eventConnectionEstablishedFailedOp = Optional
+		Optional<EventConnectionEstablishedFailed> eventConnectionEstablishedFailedOp = Optional
 				.ofNullable(__eventConnectionEstablishedFailed);
-		Optional<IEventReceivedMessageFromConnection> eventReceivedMessageFromConnectionOp = Optional
+		Optional<EventReceivedMessageFromConnection> eventReceivedMessageFromConnectionOp = Optional
 				.ofNullable(__eventReceivedMessageFromConnection);
 
-		Optional<IEventAttachConnectionRequestValidate> eventAttachConnectionRequestValidateOp = Optional
+		Optional<EventAttachConnectionRequestValidate> eventAttachConnectionRequestValidateOp = Optional
 				.ofNullable(__eventAttachConnectionRequestValidate);
-		Optional<IEventAttachConnectionSuccess> eventAttachConnectionSuccessOp = Optional
+		Optional<EventAttachConnectionSuccess> eventAttachConnectionSuccessOp = Optional
 				.ofNullable(__eventAttachConnectionSuccess);
-		Optional<IEventAttachConnectionFailed> eventAttachConnectionFailedOp = Optional
+		Optional<EventAttachConnectionFailed> eventAttachConnectionFailedOp = Optional
 				.ofNullable(__eventAttachConnectionFailed);
 
-		Optional<IEventDisconnectConnection> eventDisconnectConnectionOp = Optional
+		Optional<EventDisconnectConnection> eventDisconnectConnectionOp = Optional
 				.ofNullable(__eventDisconnectConnection);
 
-		eventConnectionEstablishedSuccessOp.ifPresent(new Consumer<IEventConnectionEstablishedSuccess>() {
+		eventConnectionEstablishedSuccessOp.ifPresent(new Consumer<EventConnectionEstablishedSuccess>() {
 
 			@Override
-			public void accept(IEventConnectionEstablishedSuccess event) {
-				_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, new ISubscriber() {
+			public void accept(EventConnectionEstablishedSuccess event) {
+				_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -108,11 +108,11 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventConnectionEstablishedFailedOp.ifPresent(new Consumer<IEventConnectionEstablishedFailed>() {
+		eventConnectionEstablishedFailedOp.ifPresent(new Consumer<EventConnectionEstablishedFailed>() {
 
 			@Override
-			public void accept(IEventConnectionEstablishedFailed event) {
-				_on(ZeroEvent.CONNECTION_ESTABLISHED_FAILED, new ISubscriber() {
+			public void accept(EventConnectionEstablishedFailed event) {
+				_on(ZeroEvent.CONNECTION_ESTABLISHED_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -127,11 +127,11 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventReceivedMessageFromConnectionOp.ifPresent(new Consumer<IEventReceivedMessageFromConnection>() {
+		eventReceivedMessageFromConnectionOp.ifPresent(new Consumer<EventReceivedMessageFromConnection>() {
 
 			@Override
-			public void accept(IEventReceivedMessageFromConnection event) {
-				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new ISubscriber() {
+			public void accept(EventReceivedMessageFromConnection event) {
+				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -146,11 +146,11 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventAttachConnectionRequestValidateOp.ifPresent(new Consumer<IEventAttachConnectionRequestValidate>() {
+		eventAttachConnectionRequestValidateOp.ifPresent(new Consumer<EventAttachConnectionRequestValidate>() {
 
 			@Override
-			public void accept(IEventAttachConnectionRequestValidate event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new ISubscriber() {
+			public void accept(EventAttachConnectionRequestValidate event) {
+				_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -163,16 +163,16 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventAttachConnectionSuccessOp.ifPresent(new Consumer<IEventAttachConnectionSuccess>() {
+		eventAttachConnectionSuccessOp.ifPresent(new Consumer<EventAttachConnectionSuccess>() {
 
 			@Override
-			public void accept(IEventAttachConnectionSuccess event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, new ISubscriber() {
+			public void accept(EventAttachConnectionSuccess event) {
+				_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
 						int connectionIndex = _getInteger(params[0]);
-						ZeroPlayer player = _getPlayer(params[1]);
+						Player player = _getPlayer(params[1]);
 
 						event.handle(connectionIndex, player);
 
@@ -182,11 +182,11 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventAttachConnectionFailedOp.ifPresent(new Consumer<IEventAttachConnectionFailed>() {
+		eventAttachConnectionFailedOp.ifPresent(new Consumer<EventAttachConnectionFailed>() {
 
 			@Override
-			public void accept(IEventAttachConnectionFailed event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_FAILED, new ISubscriber() {
+			public void accept(EventAttachConnectionFailed event) {
+				_on(ZeroEvent.ATTACH_CONNECTION_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -202,11 +202,11 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventDisconnectConnectionOp.ifPresent(new Consumer<IEventDisconnectConnection>() {
+		eventDisconnectConnectionOp.ifPresent(new Consumer<EventDisconnectConnection>() {
 
 			@Override
-			public void accept(IEventDisconnectConnection event) {
-				_on(ZeroEvent.DISCONNECT_CONNECTION, new ISubscriber() {
+			public void accept(EventDisconnectConnection event) {
+				_on(ZeroEvent.DISCONNECT_CONNECTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

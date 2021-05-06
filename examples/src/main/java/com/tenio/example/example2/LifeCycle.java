@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.Player;
 import com.tenio.core.server.Server;
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.IMessageListener;
@@ -58,7 +58,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	/**
 	 * @see PlayerApi#gets()
 	 */
-	private final Collection<ZeroPlayer> __inspectors;
+	private final Collection<Player> __inspectors;
 
 	/**
 	 * @see MessageApi

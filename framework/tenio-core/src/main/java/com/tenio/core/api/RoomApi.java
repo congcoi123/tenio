@@ -27,42 +27,42 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.ZeroLogger;
-import com.tenio.core.entity.ZeroRoom;
-import com.tenio.core.entity.manager.IRoomManager;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullRoomException;
 
 /**
  * This class provides you a necessary interface for managing rooms.
  * 
- * @see IRoomManager
+ * @see RoomManager
  * 
  * @author kong
  * 
  */
 @ThreadSafe
-public final class RoomApi extends ZeroLogger {
+public final class RoomApi extends AbstractLogger {
 
-	private final IRoomManager __roomManager;
+	private final RoomManager __roomManager;
 
-	public RoomApi(IRoomManager roomManager) {
+	public RoomApi(RoomManager roomManager) {
 		__roomManager = roomManager;
 	}
 
 	/**
 	 * @return all the current rooms in your server
 	 */
-	public Map<String, ZeroRoom> gets() {
+	public Map<String, Room> gets() {
 		return __roomManager.gets();
 	}
 
 	/**
 	 * Add a new room to your server. You need create your own room first.
 	 * 
-	 * @param room that is added, see {@link ZeroRoom}
+	 * @param room that is added, see {@link Room}
 	 */
-	public void add(ZeroRoom room) {
+	public void add(Room room) {
 		try {
 			__roomManager.add(room);
 		} catch (DuplicatedRoomIdException e) {
@@ -86,16 +86,16 @@ public final class RoomApi extends ZeroLogger {
 	 * @param roomId the unique ID
 	 * @return Returns a room's instance if it has existed, <b>null</b> otherwise
 	 */
-	public ZeroRoom get(String roomId) {
+	public Room get(String roomId) {
 		return __roomManager.get(roomId);
 	}
 
 	/**
 	 * Remove a room from your server.
 	 * 
-	 * @param room that is removed, see {@link ZeroRoom}
+	 * @param room that is removed, see {@link Room}
 	 */
-	public void remove(ZeroRoom room) {
+	public void remove(Room room) {
 		try {
 			__roomManager.remove(room);
 		} catch (NullRoomException e) {

@@ -25,7 +25,7 @@ package com.tenio.engine.fsm.entity;
 
 import java.util.UUID;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.fsm.MessageDispatcher;
 
 /**
@@ -34,7 +34,7 @@ import com.tenio.engine.fsm.MessageDispatcher;
  * @author kong
  * 
  */
-public abstract class AbstractEntity extends ZeroLogger {
+public abstract class AbstractEntity extends AbstractLogger {
 
 	/**
 	 * Every entity must have a unique identifying number

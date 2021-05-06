@@ -30,11 +30,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entity.ZeroRoom;
+import com.tenio.core.entity.Room;
 
 /**
  * To remove the empty room (a room without any players) in period time. You can
@@ -43,17 +43,17 @@ import com.tenio.core.entity.ZeroRoom;
  * @author kong
  * 
  */
-public final class EmptyRoomScanTask extends ZeroLogger implements ITask {
+public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
 
 	private final RoomApi __roomApi;
 	/**
 	 * The current list of rooms
 	 */
-	private final Map<String, ZeroRoom> __rooms;
+	private final Map<String, Room> __rooms;
 	/**
 	 * Removable list of rooms
 	 */
-	private final List<ZeroRoom> __removableRooms;
+	private final List<Room> __removableRooms;
 	/**
 	 * The period time for scanning empty rooms and delete those
 	 */
@@ -63,7 +63,7 @@ public final class EmptyRoomScanTask extends ZeroLogger implements ITask {
 		__roomApi = roomApi;
 		__emptyRoomScanPeriod = emptyRoomScanPeriod;
 		__rooms = __roomApi.gets();
-		__removableRooms = new ArrayList<ZeroRoom>();
+		__removableRooms = new ArrayList<Room>();
 	}
 
 	@Override

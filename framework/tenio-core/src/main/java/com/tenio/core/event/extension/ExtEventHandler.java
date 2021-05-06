@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEmitter;
+import com.tenio.core.event.Emitter;
 
 /**
  * This class for handling events and these subscribers.
@@ -48,24 +48,24 @@ public final class ExtEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<ZeroEvent, List<IEmitter<T>>> __delegate;
+	private final Map<ZeroEvent, List<Emitter<T>>> __delegate;
 
 	public ExtEventHandler() {
-		__delegate = new HashMap<ZeroEvent, List<IEmitter<T>>>();
+		__delegate = new HashMap<ZeroEvent, List<Emitter<T>>>();
 	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
 	 * @param event  see {@link ZeroEvent}
-	 * @param emitter see {@link IEmitter}
+	 * @param emitter see {@link Emitter}
 	 */
-	public void subscribe(ZeroEvent event, IEmitter<T> emitter) {
+	public void subscribe(ZeroEvent event, Emitter<T> emitter) {
 		if (__delegate.containsKey(event)) {
 			__delegate.get(event).add(emitter);
 		} else {
 			// create a new array of event processes
-			var emitters = new ArrayList<IEmitter<T>>();
+			var emitters = new ArrayList<Emitter<T>>();
 			// add the first event
 			emitters.add(emitter);
 			__delegate.put(event, emitters);
@@ -84,7 +84,7 @@ public final class ExtEventHandler<T> {
 		if (!__delegate.isEmpty()) {
 			Object object = null;
 			if (__delegate.containsKey(event)) {
-				for (IEmitter<T> emitter : __delegate.get(event)) {
+				for (Emitter<T> emitter : __delegate.get(event)) {
 					object = emitter.emit(params);
 				}
 			}

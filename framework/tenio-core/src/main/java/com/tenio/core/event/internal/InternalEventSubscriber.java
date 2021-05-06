@@ -26,7 +26,7 @@ package com.tenio.core.event.internal;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 
 /**
  * An object which creates a mapping between an event type with a subscriber
@@ -42,15 +42,15 @@ public final class InternalEventSubscriber {
 	 */
 	private final InternalEvent __event;
 	/**
-	 * @see ISubscriber
+	 * @see Subscriber
 	 */
-	private final ISubscriber __subscriber;
+	private final Subscriber __subscriber;
 
-	public static InternalEventSubscriber newInstance(InternalEvent event, ISubscriber subscriber) {
+	public static InternalEventSubscriber newInstance(InternalEvent event, Subscriber subscriber) {
 		return new InternalEventSubscriber(event, subscriber);
 	}
 
-	private InternalEventSubscriber(InternalEvent event, ISubscriber subscriber) {
+	private InternalEventSubscriber(InternalEvent event, Subscriber subscriber) {
 		__event = event;
 		__subscriber = subscriber;
 	}
@@ -63,9 +63,9 @@ public final class InternalEventSubscriber {
 	}
 
 	/**
-	 * @return see {@link ISubscriber}
+	 * @return see {@link Subscriber}
 	 */
-	public ISubscriber getSubscriber() {
+	public Subscriber getSubscriber() {
 		return __subscriber;
 	}
 

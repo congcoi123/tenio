@@ -30,7 +30,7 @@ import java.util.Set;
 
 import com.tenio.core.bootstrap.annotation.Autowired;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.ComponentQualifier;
+import com.tenio.core.bootstrap.annotation.AutowiredQualifier;
 import com.tenio.core.bootstrap.injector.Injector;
 import com.tenio.core.exception.NoImplementedClassFoundException;
 
@@ -57,8 +57,8 @@ public final class InjectionUtility {
 
 		Set<Field> fields = __findFields(clazz);
 		for (Field field : fields) {
-			String qualifier = field.isAnnotationPresent(ComponentQualifier.class)
-					? field.getAnnotation(ComponentQualifier.class).value()
+			String qualifier = field.isAnnotationPresent(AutowiredQualifier.class)
+					? field.getAnnotation(AutowiredQualifier.class).value()
 					: null;
 			if (field.isAnnotationPresent(AutowiredAcceptNull.class)) {
 				try {

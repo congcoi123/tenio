@@ -25,13 +25,13 @@ package com.tenio.example.example1.injection.handler;
 
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventFetchedCcuNumber;
+import com.tenio.core.extension.event.EventFetchedCcuNumber;
 
 /**
  * @author kong
  */
 @Component
-public final class FetchedCcuNumberHandler extends AbstractExtensionHandler implements IEventFetchedCcuNumber {
+public final class FetchedCcuNumberHandler extends AbstractExtensionHandler implements EventFetchedCcuNumber {
 
 	@Override
 	public void handle(int numberPlayers, int numberAlls) {

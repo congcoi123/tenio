@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.exception.HeartbeatNotFoundException;
 import com.tenio.engine.message.IMessage;
 
@@ -50,7 +50,7 @@ import com.tenio.engine.message.IMessage;
  *
  */
 @ThreadSafe
-public final class HeartBeatManager extends ZeroLogger implements IHeartBeatManager {
+public final class HeartBeatManager extends AbstractLogger implements IHeartBeatManager {
 
 	@GuardedBy("this")
 	private final Map<String, Future<Void>> __threadsManager;

@@ -33,11 +33,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.Configuration;
 import com.tenio.core.event.EventManager;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.network.netty.NettyNetwork;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.CommonObjectPool;
@@ -48,15 +48,15 @@ import com.tenio.core.pool.CommonObjectPool;
 public final class NetworkTest {
 
 	private Network __network;
-	private IElementsPool<CommonObject> __msgObjectPool;
-	private IElementsPool<ByteArrayInputStream> __byteArrayPool;
-	private IEventManager __eventManager;
+	private ElementsPool<CommonObject> __msgObjectPool;
+	private ElementsPool<ByteArrayInputStream> __byteArrayPool;
+	private EventManager __eventManager;
 	private Configuration __configuration;
 
 	@BeforeEach
 	public void initialize() throws IOException, InterruptedException {
 		__network = new NettyNetwork();
-		__eventManager = new EventManager();
+		__eventManager = new EventManagerImpl();
 		__msgObjectPool = new CommonObjectPool();
 		__byteArrayPool = new ByteArrayInputStreamPool();
 		__configuration = new Configuration("TenIOConfig.example.xml");

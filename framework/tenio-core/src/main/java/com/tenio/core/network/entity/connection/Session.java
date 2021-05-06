@@ -3,6 +3,7 @@ package com.tenio.core.network.entity.connection;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.core.network.define.TransportType;
@@ -43,6 +44,10 @@ public interface Session {
 	SocketChannel getSocketChannel();
 
 	void setSocketChannel(SocketChannel socketChannel) throws IllegalArgumentException;
+	
+	SelectionKey getSelectionKey();
+	
+	void setSelectionKey(SelectionKey selectionKey);
 
 	DatagramChannel getDatagramChannel();
 

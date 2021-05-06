@@ -29,13 +29,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.entity.Player;
+import com.tenio.core.event.EventManager;
 
 /**
  * For a player which is in IDLE mode, that means for a long time without
@@ -46,14 +46,14 @@ import com.tenio.core.event.IEventManager;
  * @author kong
  * 
  */
-public final class TimeOutScanTask extends ZeroLogger implements ITask {
+public final class TimeOutScanTask extends AbstractLogger implements ITask {
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 	private final PlayerApi __playerApi;
 	/**
 	 * The removable list of players
 	 */
-	private final List<ZeroPlayer> __removeablePlayers;
+	private final List<Player> __removeablePlayers;
 	/**
 	 * After a number of seconds without any message from the client. It can be
 	 * configured in your configurations, see {@link CoreConfiguration}
@@ -69,14 +69,14 @@ public final class TimeOutScanTask extends ZeroLogger implements ITask {
 	 */
 	private final int __timeoutScanPeriod;
 
-	public TimeOutScanTask(IEventManager eventManager, PlayerApi playerApi, int idleReader, int idleWriter,
+	public TimeOutScanTask(EventManager eventManager, PlayerApi playerApi, int idleReader, int idleWriter,
 			int timeoutScanPeriod) {
 		__eventManager = eventManager;
 		__playerApi = playerApi;
 		__idleReader = idleReader;
 		__idleWriter = idleWriter;
 		__timeoutScanPeriod = timeoutScanPeriod;
-		__removeablePlayers = new ArrayList<ZeroPlayer>();
+		__removeablePlayers = new ArrayList<Player>();
 	}
 
 	@Override

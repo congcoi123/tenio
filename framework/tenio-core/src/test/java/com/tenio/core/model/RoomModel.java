@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.model;
 
-import com.tenio.core.entity.AbstractRoom;
+import com.tenio.core.entity.implement.AbstractRoom;
 
 /**
  * @author kong

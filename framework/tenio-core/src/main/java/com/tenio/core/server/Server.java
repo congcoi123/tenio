@@ -33,9 +33,9 @@ import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.task.ITaskManager;
 import com.tenio.common.task.TaskManager;
 import com.tenio.common.utility.StringUtility;
@@ -48,12 +48,12 @@ import com.tenio.core.configuration.data.HttpConfig;
 import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.manager.IPlayerManager;
-import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
+import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.EventManager;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -83,7 +83,7 @@ import com.tenio.core.task.schedule.TimeOutScanTask;
  * 
  */
 @ThreadSafe
-public final class Server extends ZeroLogger implements IServer {
+public final class Server extends AbstractLogger implements IServer {
 
 	private static Server __instance;
 
@@ -92,11 +92,11 @@ public final class Server extends ZeroLogger implements IServer {
 		__commonObjectArrayPool = new CommonObjectArrayPool();
 		__byteArrayInputPool = new ByteArrayInputStreamPool();
 
-		__eventManager = new EventManager();
+		__eventManager = new EventManagerImpl();
 		__network = new NettyNetwork();
 
-		__roomManager = new RoomManager(__eventManager);
-		__playerManager = new PlayerManager(__eventManager);
+		__roomManager = new RoomManagerImpl(__eventManager);
+		__playerManager = new PlayerManagerImpl(__eventManager);
 		__taskManager = new TaskManager();
 
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
@@ -124,14 +124,14 @@ public final class Server extends ZeroLogger implements IServer {
 
 	private Configuration __configuration;
 
-	private final IElementsPool<CommonObject> __commonObjectPool;
-	private final IElementsPool<CommonObjectArray> __commonObjectArrayPool;
-	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final ElementsPool<CommonObject> __commonObjectPool;
+	private final ElementsPool<CommonObjectArray> __commonObjectArrayPool;
+	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 
-	private final IRoomManager __roomManager;
-	private final IPlayerManager __playerManager;
+	private final RoomManager __roomManager;
+	private final PlayerManager __playerManager;
 	private final ITaskManager __taskManager;
 
 	private final PlayerApi __playerApi;
@@ -220,8 +220,8 @@ public final class Server extends ZeroLogger implements IServer {
 		_info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(Configuration configuration, IElementsPool<CommonObject> msgObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
+	private void __startNetwork(Configuration configuration, ElementsPool<CommonObject> msgObjectPool,
+			ElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
 		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
 	}
 
@@ -352,7 +352,7 @@ public final class Server extends ZeroLogger implements IServer {
 	}
 
 	@Override
-	public IEventManager getEventManager() {
+	public EventManager getEventManager() {
 		return __eventManager;
 	}
 

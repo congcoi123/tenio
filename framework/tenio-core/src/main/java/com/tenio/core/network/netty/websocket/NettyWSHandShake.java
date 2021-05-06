@@ -27,9 +27,9 @@ import java.net.URISyntaxException;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -60,15 +60,15 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	 */
 	private WebSocketServerHandshaker __handshaker;
 
-	private final IEventManager __eventManager;
-	private final IElementsPool<CommonObject> __commonObjectPool;
-	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final EventManager __eventManager;
+	private final ElementsPool<CommonObject> __commonObjectPool;
+	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
 	private final Configuration __configuration;
 	private final int __connectionIndex;
 
-	public NettyWSHandShake(int connectionIndex, IEventManager eventManager,
-			IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
+	public NettyWSHandShake(int connectionIndex, EventManager eventManager,
+			ElementsPool<CommonObject> commonObjectPool,
+			ElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
 		__connectionIndex = connectionIndex;
 		__eventManager = eventManager;
 		__commonObjectPool = commonObjectPool;

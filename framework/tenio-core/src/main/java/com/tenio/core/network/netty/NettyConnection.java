@@ -35,10 +35,10 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.AbstractConnection;
 import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.connection.implement.AbstractConnection;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.buffer.Unpooled;
@@ -76,7 +76,7 @@ public final class NettyConnection extends AbstractConnection {
 	private ReentrantLock __counterDatagramLock;
 	private volatile int __roundRobinCounter;
 
-	private NettyConnection(int connectionIndex, IEventManager eventManager, TransportType transportType,
+	private NettyConnection(int connectionIndex, EventManager eventManager, TransportType transportType,
 			Channel channel, ChannelGroup datagramChannelWorkers) {
 		super(eventManager, transportType, connectionIndex);
 		__channel = channel;
@@ -104,7 +104,7 @@ public final class NettyConnection extends AbstractConnection {
 
 	}
 
-	public static NettyConnection newInstance(int connectionIndex, IEventManager eventManager,
+	public static NettyConnection newInstance(int connectionIndex, EventManager eventManager,
 			TransportType transportType, Channel channel, ChannelGroup datagramChannelWorkers) {
 		return new NettyConnection(connectionIndex, eventManager, transportType, channel, datagramChannelWorkers);
 	}

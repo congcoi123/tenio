@@ -27,17 +27,17 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.entity.manager.IPlayerManager;
-import com.tenio.core.entity.manager.IRoomManager;
-import com.tenio.core.event.IEventManager;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.event.EventManager;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.entity.connection.Connection;
 
@@ -48,13 +48,13 @@ import com.tenio.core.network.entity.connection.Connection;
  *
  */
 @ThreadSafe
-final class InternalLogicManager extends ZeroLogger {
+final class InternalLogicManager extends AbstractLogger {
 
-	private final IEventManager __eventManager;
-	private final IPlayerManager __playerManager;
-	private final IRoomManager __roomManager;
+	private final EventManager __eventManager;
+	private final PlayerManager __playerManager;
+	private final RoomManager __roomManager;
 
-	public InternalLogicManager(IEventManager eventManager, IPlayerManager playerManager, IRoomManager roomManager) {
+	public InternalLogicManager(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;
@@ -163,7 +163,7 @@ final class InternalLogicManager extends ZeroLogger {
 			CommonObject message) {
 		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
-			var player = (ZeroPlayer) __eventManager.getExtension().emit(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
+			var player = (Player) __eventManager.getExtension().emit(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
 					connection, message);
 			if (player != null) {
 				connection.setPlayerName(player.getName());
@@ -182,7 +182,7 @@ final class InternalLogicManager extends ZeroLogger {
 
 		} else {
 			// the condition for creating sub-connection
-			var player = (ZeroPlayer) __eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
+			var player = (Player) __eventManager.getExtension().emit(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
 					connectionIndex, message);
 
 			if (player == null) {
@@ -199,7 +199,7 @@ final class InternalLogicManager extends ZeroLogger {
 		}
 	}
 
-	private void __on(InternalEvent event, ISubscriber sub) {
+	private void __on(InternalEvent event, Subscriber sub) {
 		__eventManager.getInternal().on(event, sub);
 	}
 
@@ -230,12 +230,12 @@ final class InternalLogicManager extends ZeroLogger {
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link ZeroPlayer} type
+	 * @return a value in {@link Player} type
 	 * @throws ExtensionValueCastException
 	 */
-	private ZeroPlayer __getPlayer(Object object) throws ExtensionValueCastException {
-		if (object instanceof ZeroPlayer) {
-			return (ZeroPlayer) object;
+	private Player __getPlayer(Object object) throws ExtensionValueCastException {
+		if (object instanceof Player) {
+			return (Player) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}
@@ -276,12 +276,12 @@ final class InternalLogicManager extends ZeroLogger {
 		throw new ExtensionValueCastException(object.toString());
 	}
 
-	private void __handle(ZeroPlayer player, int connectionIndex, CommonObject message) {
+	private void __handle(Player player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
 		__eventManager.getExtension().emit(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
 	}
 
-	private void __exception(ZeroPlayer player, Throwable cause) {
+	private void __exception(Player player, Throwable cause) {
 		_error(cause, "player's name: ", player.getName());
 	}
 

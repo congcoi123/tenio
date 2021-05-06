@@ -27,12 +27,12 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.entity.ZeroRoom;
-import com.tenio.core.entity.manager.IPlayerManager;
-import com.tenio.core.entity.manager.IRoomManager;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.entity.connection.Connection;
@@ -40,18 +40,18 @@ import com.tenio.core.network.entity.connection.Connection;
 /**
  * This class provides you a necessary interface for managing players.
  * 
- * @see IPlayerManager
+ * @see PlayerManager
  * 
  * @author kong
  * 
  */
 @ThreadSafe
-public final class PlayerApi extends ZeroLogger {
+public final class PlayerApi extends AbstractLogger {
 
-	private final IPlayerManager __playerManager;
-	private final IRoomManager __roomManager;
+	private final PlayerManager __playerManager;
+	private final RoomManager __roomManager;
 
-	public PlayerApi(IPlayerManager playerManager, IRoomManager roomManager) {
+	public PlayerApi(PlayerManager playerManager, RoomManager roomManager) {
 		__playerManager = playerManager;
 		__roomManager = roomManager;
 	}
@@ -73,7 +73,7 @@ public final class PlayerApi extends ZeroLogger {
 	 * @return the player's instance if that player has existed, <b>null</b>
 	 *         otherwise
 	 */
-	public ZeroPlayer get(String name) {
+	public Player get(String name) {
 		return __playerManager.get(name);
 	}
 
@@ -95,7 +95,7 @@ public final class PlayerApi extends ZeroLogger {
 	/**
 	 * @return all current players
 	 */
-	public Map<String, ZeroPlayer> gets() {
+	public Map<String, Player> gets() {
 		return __playerManager.gets();
 	}
 
@@ -103,10 +103,10 @@ public final class PlayerApi extends ZeroLogger {
 	 * Add a new player to your server (this player was upgraded from one
 	 * connection).
 	 * 
-	 * @param player     that is created from your server, see: {@link ZeroPlayer}
+	 * @param player     that is created from your server, see: {@link Player}
 	 * @param connection the corresponding connection, see: {@link Connection}
 	 */
-	public void login(ZeroPlayer player, Connection connection) {
+	public void login(Player player, Connection connection) {
 		try {
 			__playerManager.add(player, connection);
 		} catch (NullPlayerNameException e1) {
@@ -120,9 +120,9 @@ public final class PlayerApi extends ZeroLogger {
 	 * Add a new player to your server (this player is known as one NCP or a BOT)
 	 * without a attached connection.
 	 * 
-	 * @param player that is created from your server, see: {@link ZeroPlayer}
+	 * @param player that is created from your server, see: {@link Player}
 	 */
-	public void login(ZeroPlayer player) {
+	public void login(Player player) {
 		try {
 			__playerManager.add(player);
 		} catch (DuplicatedPlayerException e) {
@@ -134,12 +134,12 @@ public final class PlayerApi extends ZeroLogger {
 	 * Request one player to join a room. This request can be refused with some
 	 * reason. You can handle these results in the corresponding events.
 	 * 
-	 * @param room   the desired room, see: {@link ZeroRoom}
-	 * @param player the current player, see: {@link ZeroPlayer}
+	 * @param room   the desired room, see: {@link Room}
+	 * @param player the current player, see: {@link Player}
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerJoinRoom(ZeroRoom room, ZeroPlayer player) {
+	public CoreMessageCode makePlayerJoinRoom(Room room, Player player) {
 		return __roomManager.makePlayerJoinRoom(room, player);
 	}
 
@@ -147,20 +147,20 @@ public final class PlayerApi extends ZeroLogger {
 	 * Allow a player to leave his current room. You can handle your own logic in
 	 * the corresponding events.
 	 * 
-	 * @param player that will be left his current room, see {@link ZeroRoom}
+	 * @param player that will be left his current room, see {@link Room}
 	 * @param force  it's set <b>true</b> if you want to force the player leave.
 	 *               Otherwise, it's set <b>false</b>
 	 * @return the action' result if it existed in, see {@link CoreMessageCode},
 	 *         <b>null</b> otherwise
 	 */
-	public CoreMessageCode makePlayerLeaveRoom(ZeroPlayer player, boolean force) {
+	public CoreMessageCode makePlayerLeaveRoom(Player player, boolean force) {
 		return __roomManager.makePlayerLeaveRoom(player, force);
 	}
 
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param name the player with this name that is removed, see {@link ZeroPlayer}
+	 * @param name the player with this name that is removed, see {@link Player}
 	 */
 	public void logOut(String name) {
 		logOut(get(name));
@@ -169,9 +169,9 @@ public final class PlayerApi extends ZeroLogger {
 	/**
 	 * Remove a player from your server.
 	 * 
-	 * @param player that is removed, see {@link ZeroPlayer}
+	 * @param player that is removed, see {@link Player}
 	 */
-	public void logOut(ZeroPlayer player) {
+	public void logOut(Player player) {
 		__playerManager.remove(player);
 	}
 

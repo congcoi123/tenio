@@ -26,20 +26,20 @@ package com.tenio.example.example1.injection.handler;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.entity.ZeroPlayer;
+import com.tenio.core.entity.Player;
 import com.tenio.core.entity.backup.EntityProcesser;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventPlayerLoginedSuccess;
+import com.tenio.core.extension.event.EventPlayerLoginedSuccess;
 import com.tenio.example.example1.PlayerLogin;
 
 /**
  * @author kong
  */
 @Component
-public final class PlayerLoginSuccessHandler extends AbstractExtensionHandler implements IEventPlayerLoginedSuccess {
+public final class PlayerLoginSuccessHandler extends AbstractExtensionHandler implements EventPlayerLoginedSuccess {
 
 	@Override
-	public void handle(ZeroPlayer iplayer) {
+	public void handle(Player iplayer) {
 		var player = (PlayerLogin) iplayer;
 
 		try {

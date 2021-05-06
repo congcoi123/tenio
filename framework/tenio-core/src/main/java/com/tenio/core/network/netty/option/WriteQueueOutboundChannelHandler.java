@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.ExceededMessageQueueOutboundException;
 
 import io.netty.channel.ChannelFuture;
@@ -42,13 +42,13 @@ import io.netty.channel.ChannelPromise;
  */
 public final class WriteQueueOutboundChannelHandler extends ChannelOutboundHandlerAdapter {
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 	private ChannelHandlerContext __ctx;
 	private final Queue<Object> __messageQueue;
 	private int __queueSize;
 	private boolean __isWriting;
 
-	public WriteQueueOutboundChannelHandler(IEventManager eventManager) {
+	public WriteQueueOutboundChannelHandler(EventManager eventManager) {
 		__messageQueue = new ConcurrentLinkedQueue<Object>();
 		__eventManager = eventManager;
 		__queueSize = 0;

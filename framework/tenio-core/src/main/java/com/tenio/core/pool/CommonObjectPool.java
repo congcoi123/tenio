@@ -29,8 +29,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.ZeroLogger;
-import com.tenio.common.pool.IElementsPool;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.pool.ElementsPool;
 
 /**
  * The object pool mechanism for {@link CommonObject}.
@@ -39,7 +39,7 @@ import com.tenio.common.pool.IElementsPool;
  * 
  */
 @ThreadSafe
-public final class CommonObjectPool extends ZeroLogger implements IElementsPool<CommonObject> {
+public final class CommonObjectPool extends AbstractLogger implements ElementsPool<CommonObject> {
 
 	@GuardedBy("this")
 	private CommonObject[] __pool;

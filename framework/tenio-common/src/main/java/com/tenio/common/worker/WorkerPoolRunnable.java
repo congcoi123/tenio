@@ -25,12 +25,12 @@ package com.tenio.common.worker;
 
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 
 /**
  * @author kong
  */
-public final class WorkerPoolRunnable extends ZeroLogger implements Runnable {
+public final class WorkerPoolRunnable extends AbstractLogger implements Runnable {
 
 	private Thread __thread;
 	private final BlockingQueue<Runnable> __taskQueue;

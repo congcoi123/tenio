@@ -26,7 +26,7 @@ package com.tenio.common.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -39,7 +39,7 @@ import com.tenio.common.logger.ZeroLogger;
  * @author kong
  * 
  */
-public abstract class CommonConfiguration extends ZeroLogger implements Configuration {
+public abstract class CommonConfiguration extends AbstractLogger implements Configuration {
 
 	/**
 	 * All configuration values will be held in this map. You access values by your

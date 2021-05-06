@@ -26,7 +26,7 @@ package com.tenio.core.event.extension;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 
 /**
  * An object which creates a mapping between an event type with a subscriber.
@@ -42,15 +42,15 @@ public final class ExtEventSubscriber {
 	 */
 	private final ZeroEvent __event;
 	/**
-	 * @see ISubscriber
+	 * @see Subscriber
 	 */
-	private final ISubscriber __subscriber;
+	private final Subscriber __subscriber;
 
-	public static ExtEventSubscriber newInstance(ZeroEvent event, ISubscriber subscriber) {
+	public static ExtEventSubscriber newInstance(ZeroEvent event, Subscriber subscriber) {
 		return new ExtEventSubscriber(event, subscriber);
 	}
 
-	private ExtEventSubscriber(ZeroEvent event, ISubscriber subscriber) {
+	private ExtEventSubscriber(ZeroEvent event, Subscriber subscriber) {
 		__event = event;
 		__subscriber = subscriber;
 	}
@@ -71,9 +71,9 @@ public final class ExtEventSubscriber {
 	}
 
 	/**
-	 * @return see {@link ISubscriber}
+	 * @return see {@link Subscriber}
 	 */
-	public ISubscriber getSubscriber() {
+	public Subscriber getSubscriber() {
 		return __subscriber;
 	}
 

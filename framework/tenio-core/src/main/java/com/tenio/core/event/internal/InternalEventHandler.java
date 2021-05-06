@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.IEmitter;
+import com.tenio.core.event.Emitter;
 
 /**
  * This class for handling events and these subscribers.
@@ -43,19 +43,19 @@ public final class InternalEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<InternalEvent, IEmitter<T>> __delegate;
+	private final Map<InternalEvent, Emitter<T>> __delegate;
 
 	public InternalEventHandler() {
-		__delegate = new HashMap<InternalEvent, IEmitter<T>>();
+		__delegate = new HashMap<InternalEvent, Emitter<T>>();
 	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
 	 * @param event   see {@link InternalEvent}
-	 * @param emitter see {@link IEmitter}
+	 * @param emitter see {@link Emitter}
 	 */
-	public void subscribe(InternalEvent event, IEmitter<T> emitter) {
+	public void subscribe(InternalEvent event, Emitter<T> emitter) {
 		__delegate.put(event, emitter);
 	}
 

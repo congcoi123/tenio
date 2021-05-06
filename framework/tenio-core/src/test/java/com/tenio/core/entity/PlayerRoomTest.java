@@ -39,12 +39,12 @@ import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.Configuration;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.entity.manager.IPlayerManager;
-import com.tenio.core.entity.manager.IRoomManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
+import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.EventManager;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullPlayerNameException;
@@ -56,10 +56,10 @@ import com.tenio.core.model.RoomModel;
  */
 public final class PlayerRoomTest {
 
-	private IEventManager __eventManager;
+	private EventManager __eventManager;
 
-	private IPlayerManager __playerManager;
-	private IRoomManager __roomManager;
+	private PlayerManager __playerManager;
+	private RoomManager __roomManager;
 	private PlayerApi __playerApi;
 	private RoomApi __roomApi;
 
@@ -70,10 +70,10 @@ public final class PlayerRoomTest {
 	public void initialize() {
 		var configuration = new Configuration("TenIOConfig.example.xml");
 
-		__eventManager = new EventManager();
-		__playerManager = new PlayerManager(__eventManager);
+		__eventManager = new EventManagerImpl();
+		__playerManager = new PlayerManagerImpl(__eventManager);
 		__playerManager.initialize(configuration);
-		__roomManager = new RoomManager(__eventManager);
+		__roomManager = new RoomManagerImpl(__eventManager);
 		__roomManager.initialize(configuration);
 		__playerApi = new PlayerApi(__playerManager, __roomManager);
 		__roomApi = new RoomApi(__roomManager);

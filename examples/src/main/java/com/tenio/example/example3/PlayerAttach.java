@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example3;
 
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.implement.AbstractPlayer;
 
 /**
  * The player in server

@@ -36,17 +36,17 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.common.utility.OsUtility.OSType;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.BroadcastConfig;
 import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.Network;
 import com.tenio.core.network.netty.broadcast.NettyBroadcastInitializer;
@@ -84,7 +84,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  */
 @ThreadSafe
-public final class NettyNetwork extends ZeroLogger implements Network, IBroadcast {
+public final class NettyNetwork extends AbstractLogger implements Network, IBroadcast {
 
 	private static final String PREFIX_SOCKET = "socket";
 	private static final String PREFIX_DATAGRAM = "datagram";
@@ -129,8 +129,8 @@ public final class NettyNetwork extends ZeroLogger implements Network, IBroadcas
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(IEventManager eventManager, Configuration configuration,
-			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool)
+	public void start(EventManager eventManager, Configuration configuration,
+			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException, BindException {
 
 		var defaultSocketThreadFactory = new DefaultThreadFactory(PREFIX_SOCKET, true, Thread.NORM_PRIORITY);
@@ -288,8 +288,8 @@ public final class NettyNetwork extends ZeroLogger implements Network, IBroadcas
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindUDP(int connectionIndex, IEventManager eventManager, Configuration configuration,
-			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+	private void __bindUDP(int connectionIndex, EventManager eventManager, Configuration configuration,
+			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
 		var bootstrap = new Bootstrap();
@@ -388,8 +388,8 @@ public final class NettyNetwork extends ZeroLogger implements Network, IBroadcas
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindTCP(int connectionIndex, IEventManager eventManager, Configuration configuration,
-			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+	private void __bindTCP(int connectionIndex, EventManager eventManager, Configuration configuration,
+			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
 		var bootstrap = new ServerBootstrap();
@@ -435,8 +435,8 @@ public final class NettyNetwork extends ZeroLogger implements Network, IBroadcas
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void __bindWS(int connectionIndex, IEventManager eventManager, Configuration configuration,
-			IElementsPool<CommonObject> commonObjectPool, IElementsPool<ByteArrayInputStream> byteArrayInputPool,
+	private void __bindWS(int connectionIndex, EventManager eventManager, Configuration configuration,
+			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
 			SocketConfig socketConfig) throws IOException, InterruptedException {
 
 		var bootstrap = new ServerBootstrap();

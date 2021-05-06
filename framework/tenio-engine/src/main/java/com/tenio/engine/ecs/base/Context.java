@@ -26,7 +26,7 @@ package com.tenio.engine.ecs.base;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.pool.IElementsPool;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
 
@@ -42,8 +42,8 @@ public class Context<TEntity extends Entity> implements IContext<TEntity> {
 
 	private final Map<String, TEntity> __entities;
 	private final ContextInfo __contextInfo;
-	private final IElementsPool<IEntity> __entityPool;
-	private final IElementsPool<IComponent>[] __componentPools;
+	private final ElementsPool<IEntity> __entityPool;
+	private final ElementsPool<IComponent>[] __componentPools;
 
 	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
 		__contextInfo = contextInfo;

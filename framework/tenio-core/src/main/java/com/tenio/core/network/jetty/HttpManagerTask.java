@@ -35,11 +35,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.PathConfig;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.jetty.servlet.PingServlet;
@@ -51,15 +51,15 @@ import com.tenio.core.network.jetty.servlet.ServletManager;
  * @author kong
  *
  */
-public final class HttpManagerTask extends ZeroLogger implements ITask {
+public final class HttpManagerTask extends AbstractLogger implements ITask {
 
 	private Server __server;
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 	private final String __name;
 	private final int __port;
 	private final List<PathConfig> __pathConfigs;
 
-	public HttpManagerTask(IEventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
+	public HttpManagerTask(EventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;

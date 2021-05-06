@@ -23,213 +23,113 @@ THE SOFTWARE.
 */
 package com.tenio.core.entity.manager;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.configuration.data.SocketConfig;
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.entity.Player;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.connection.Connection;
 
 /**
- * Manage all your players ({@link ZeroPlayer}) on the server. It is a singleton
+ * Manage all your players ({@link Player}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
  * {@link PlayerApi} interface for easy management.
- * 
- * @see IPlayerManager
  * 
  * @author kong
  * 
  */
-@ThreadSafe
-public final class PlayerManager implements IPlayerManager {
+public interface PlayerManager extends Manager {
 
 	/**
-	 * A map object to manage your players with the key must be a player's name
+	 * @return the number of all current players' instance (include NPC or BOT)
 	 */
-	private final Map<String, ZeroPlayer> __players;
-	private final IEventManager __eventManager;
-	private Configuration __configuration;
-	private int __socketPortsSize;
-	private int __webSocketPortsSize;
-	private volatile int __count;
-	private volatile int __countPlayers;
+	int count();
 
-	public PlayerManager(IEventManager eventManager) {
-		__eventManager = eventManager;
-		__players = new HashMap<String, ZeroPlayer>();
-		__count = 0;
-		__countPlayers = 0;
-	}
+	/**
+	 * @return the number of all current players that have connections (without NPC
+	 *         or BOT)
+	 */
+	int countPlayers();
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public synchronized void initialize(Configuration configuration) {
-		__configuration = configuration;
-		var socketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		var webSocketPorts = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__socketPortsSize = socketPorts.size();
-		__webSocketPortsSize = webSocketPorts.size();
-	}
+	/**
+	 * We let all players escape from their scope, so make sure you take a
+	 * thread-safe action with them.
+	 * 
+	 * @return all current players
+	 */
+	Map<String, Player> gets();
 
-	@Override
-	public int count() {
-		return __count;
-	}
+	/**
+	 * Remove all players.
+	 */
+	public void clear();
 
-	@Override
-	public int countPlayers() {
-		return __countPlayers;
-	}
+	/**
+	 * Determine if the player has existed or not.
+	 * 
+	 * @param name the player's name (unique ID)
+	 * @return <b>true</b> if the player has existed, <b>false</b> otherwise
+	 */
+	boolean contain(String name);
 
-	@Override
-	public Map<String, ZeroPlayer> gets() {
-		synchronized (__players) {
-			return __players;
-		}
-	}
+	/**
+	 * Retrieve a player by the player's name. We let a player escape from its
+	 * scope, so make sure you take a thread-safe action with it.
+	 * 
+	 * @param name the player's name (unique ID)
+	 * @return the player's instance if that player has existed, <b>null</b>
+	 *         otherwise
+	 */
+	Player get(String name);
 
-	@Override
-	public void clear() {
-		synchronized (__players) {
-			__players.clear();
-		}
-	}
+	/**
+	 * Add a new player to your server (this player was upgraded from one
+	 * connection).
+	 * 
+	 * @param player     that is created from your server, see: {@link Player}
+	 * @param connection the main corresponding connection, see: {@link Connection}
+	 * 
+	 * @throws NullPlayerNameException
+	 * @throws DuplicatedPlayerException
+	 */
+	void add(Player player, Connection connection)
+			throws NullPlayerNameException, DuplicatedPlayerException;
 
-	@Override
-	public boolean contain(String name) {
-		synchronized (__players) {
-			return __players.containsKey(name);
-		}
-	}
+	/**
+	 * Add a new player to your server (this player is known as one NCP or a BOT)
+	 * without a attached connection.
+	 * 
+	 * @param player that is created from your server, see: {@link Player}
+	 * 
+	 * @throws DuplicatedPlayerException
+	 */
+	void add(Player player) throws DuplicatedPlayerException;
 
-	@Override
-	public ZeroPlayer get(String name) {
-		synchronized (__players) {
-			return __players.get(name);
-		}
-	}
+	/**
+	 * Remove a player from your server.
+	 * 
+	 * @param player that is removed, see {@link Player}
+	 */
+	void remove(Player player);
 
-	@Override
-	public void add(ZeroPlayer player, Connection connection) throws DuplicatedPlayerException, NullPlayerNameException {
-		if (player.getName() == null) {
-			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
-					CoreMessageCode.PLAYER_INFO_IS_INVALID);
-			throw new NullPlayerNameException();
-		}
+	/**
+	 * When a player is disconnected, all the related connections need to be deleted
+	 * too.
+	 * 
+	 * @param player the corresponding player, see {@link Player}
+	 */
+	void removeAllConnections(Player player);
 
-		synchronized (__players) {
-			if (__players.containsKey(player.getName())) {
-				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
-						CoreMessageCode.PLAYER_WAS_EXISTED);
-				throw new DuplicatedPlayerException(player.getName());
-			}
-
-			// add the main connection
-			connection.setPlayerName(player.getName());
-			int size = 0;
-			if (connection.isType(TransportType.WEB_SOCKET)) {
-				size = __webSocketPortsSize;
-			} else {
-				size = __socketPortsSize;
-			}
-			player.initializeConnections(size);
-			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
-
-			__players.put(player.getName(), player);
-			__count = __players.size();
-			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
-
-			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
-		}
-
-	}
-
-	@Override
-	public void add(ZeroPlayer player) throws DuplicatedPlayerException {
-		synchronized (__players) {
-			if (__players.containsKey(player.getName())) {
-				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
-						CoreMessageCode.PLAYER_WAS_EXISTED);
-				throw new DuplicatedPlayerException(player.getName());
-			}
-
-			__players.put(player.getName(), player);
-			__count = __players.size();
-			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
-			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
-		}
-
-	}
-
-	@Override
-	public void remove(ZeroPlayer player) {
-		if (player == null) {
-			return;
-		}
-
-		synchronized (__players) {
-			if (!__players.containsKey(player.getName())) {
-				return;
-			}
-
-			// force player to leave its current room, fire a logic event
-			__eventManager.getInternal().emit(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, player);
-
-			// remove all player's connections from the player
-			removeAllConnections(player);
-
-			__players.remove(player.getName());
-			__count = __players.size();
-			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
-		}
-
-	}
-
-	@Override
-	public void removeAllConnections(ZeroPlayer player) {
-		player.closeAllConnections();
-	}
-
-	@Override
-	public void clean(ZeroPlayer player) {
-		if (player == null) {
-			return;
-		}
-
-		synchronized (__players) {
-			if (!__players.containsKey(player.getName())) {
-				return;
-			}
-
-			__players.remove(player.getName());
-			__count = __players.size();
-			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
-		}
-
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return __count == 0;
-	}
+	/**
+	 * Make sure one player is removed from this management (as well as your
+	 * server). It is used when you don't want your player can re-connect with any
+	 * interruption's reason.
+	 * 
+	 * @param player that is removed, see {@link Player}
+	 */
+	void clean(Player player);
+	
+	boolean isEmpty();
 
 }

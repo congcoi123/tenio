@@ -28,15 +28,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.entity.ZeroRoom;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.entity.connection.Connection;
@@ -55,7 +55,7 @@ import com.tenio.core.server.Server;
  * @author kong
  * 
  */
-public abstract class AbstractExtensionHandler extends ZeroLogger {
+public abstract class AbstractExtensionHandler extends AbstractLogger {
 
 	private final Server __server = Server.getInstance();
 
@@ -83,7 +83,7 @@ public abstract class AbstractExtensionHandler extends ZeroLogger {
 	 *                   be found in {@link ZeroEvent}
 	 * @param subscriber your own subscriber-class handler
 	 */
-	protected void _on(ZeroEvent event, ISubscriber subscriber) {
+	protected void _on(ZeroEvent event, Subscriber subscriber) {
 		__server.getEventManager().getExtension().on(event, subscriber);
 	}
 
@@ -114,12 +114,12 @@ public abstract class AbstractExtensionHandler extends ZeroLogger {
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link ZeroPlayer} type
+	 * @return a value in {@link Player} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected ZeroPlayer _getPlayer(Object object) throws ExtensionValueCastException {
-		if (object instanceof ZeroPlayer) {
-			return (ZeroPlayer) object;
+	protected Player _getPlayer(Object object) throws ExtensionValueCastException {
+		if (object instanceof Player) {
+			return (Player) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}
@@ -127,12 +127,12 @@ public abstract class AbstractExtensionHandler extends ZeroLogger {
 	/**
 	 * @param <T>    the corresponding return type
 	 * @param object the corresponding object
-	 * @return a value in {@link ZeroRoom} type
+	 * @return a value in {@link Room} type
 	 * @throws ExtensionValueCastException
 	 */
-	protected ZeroRoom _getRoom(Object object) throws ExtensionValueCastException {
-		if (object instanceof ZeroRoom) {
-			return (ZeroRoom) object;
+	protected Room _getRoom(Object object) throws ExtensionValueCastException {
+		if (object instanceof Room) {
+			return (Room) object;
 		}
 		throw new ExtensionValueCastException(object.toString());
 	}

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.example2.entity;
 
-import com.tenio.core.entity.AbstractPlayer;
+import com.tenio.core.entity.implement.AbstractPlayer;
 
 /**
  * A player should work as an inspector.

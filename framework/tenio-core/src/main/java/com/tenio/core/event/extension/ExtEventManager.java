@@ -28,9 +28,9 @@ import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.common.logger.ZeroSystemLogger;
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 
 /**
@@ -40,7 +40,7 @@ import com.tenio.core.exception.ExtensionValueCastException;
  * 
  */
 @NotThreadSafe
-public final class ExtEventManager extends ZeroSystemLogger {
+public final class ExtEventManager extends SystemLogger {
 
 	/**
 	 * A list of event and subscribers.
@@ -78,9 +78,9 @@ public final class ExtEventManager extends ZeroSystemLogger {
 	 * Add a subscriber's handler.
 	 * 
 	 * @param event      see {@link ZeroEvent}
-	 * @param subscriber see {@link ISubscriber}
+	 * @param subscriber see {@link Subscriber}
 	 */
-	public void on(ZeroEvent event, ISubscriber subscriber) {
+	public void on(ZeroEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
 			_info("EXTERNAL EVENT WARNING", "Duplicated", event);
 		}

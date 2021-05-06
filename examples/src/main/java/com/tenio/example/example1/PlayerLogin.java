@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1;
 
-import com.tenio.core.entity.AbstractPlayer;
-import com.tenio.core.entity.backup.IBackup;
+import com.tenio.core.entity.backup.Backup;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
+import com.tenio.core.entity.implement.AbstractPlayer;
 
 /**
  * The player in server
@@ -35,7 +35,7 @@ import com.tenio.core.entity.backup.annotation.Entity;
  *
  */
 @Entity
-public final class PlayerLogin extends AbstractPlayer implements IBackup<PlayerLogin> {
+public final class PlayerLogin extends AbstractPlayer implements Backup<PlayerLogin> {
 
 	public static final int MAIN_CHANNEL = 0;
 

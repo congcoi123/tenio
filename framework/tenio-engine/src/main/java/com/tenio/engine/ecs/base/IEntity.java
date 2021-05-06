@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.base;
 
-import com.tenio.common.pool.IElementsPool;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.engine.ecs.pool.ComponentPool;
 
 /**
@@ -64,14 +64,14 @@ public interface IEntity {
 	 * 
 	 * @param __componentPools an array of {@link ComponentPool}
 	 */
-	void setComponentPools(IElementsPool<IComponent>[] __componentPools);
+	void setComponentPools(ElementsPool<IComponent>[] __componentPools);
 
 	/**
 	 * Retrieves the list of component pools
 	 * 
 	 * @return an array of {@link ComponentPool}
 	 */
-	IElementsPool<IComponent>[] getComponentPools();
+	ElementsPool<IComponent>[] getComponentPools();
 
 	/**
 	 * Retrieves the context information

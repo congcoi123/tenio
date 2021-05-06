@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.handler.traffic.TrafficCounter;
@@ -45,9 +45,9 @@ import io.netty.handler.traffic.TrafficCounter;
 public final class GlobalTrafficShapingHandlerCustomize extends GlobalTrafficShapingHandler {
 
 	private final String __name;
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 
-	public GlobalTrafficShapingHandlerCustomize(String name, IEventManager eventManager,
+	public GlobalTrafficShapingHandlerCustomize(String name, EventManager eventManager,
 			ScheduledExecutorService executor, long writeLimit, long readLimit, long checkInterval) {
 		super(executor, writeLimit, readLimit, checkInterval);
 		__name = name;

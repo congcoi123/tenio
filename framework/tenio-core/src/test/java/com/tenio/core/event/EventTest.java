@@ -34,8 +34,9 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.manager.IPlayerManager;
 import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
+import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.model.PlayerModel;
 
@@ -44,14 +45,14 @@ import com.tenio.core.model.PlayerModel;
  */
 public final class EventTest {
 
-	private IEventManager __eventManager;
-	private IPlayerManager __playerManager;
+	private EventManager __eventManager;
+	private PlayerManager __playerManager;
 	private int[] __testCCU;
 
 	@BeforeEach
 	public void initialize() {
-		__eventManager = new EventManager();
-		__playerManager = new PlayerManager(__eventManager);
+		__eventManager = new EventManagerImpl();
+		__playerManager = new PlayerManagerImpl(__eventManager);
 		__testCCU = new int[2];
 
 		// Create new player

@@ -23,174 +23,99 @@ THE SOFTWARE.
 */
 package com.tenio.core.entity.manager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.entity.ZeroRoom;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
 import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullRoomException;
 
 /**
- * Manage all your rooms ({@link ZeroRoom}) on the server. It is a singleton
+ * Manage all your rooms ({@link Room}) on the server. It is a singleton
  * pattern class, which can be called anywhere. But it's better that you use the
- * {@link RoomApi} interface for easy management.
- * 
- * @see IRoomManager
+ * {@link RoomApi} interface for easier management.
  * 
  * @author kong
  * 
  */
-@ThreadSafe
-public final class RoomManager implements IRoomManager {
+public interface RoomManager extends Manager {
 
 	/**
-	 * A map object to manage your rooms with the key must be a room's id
+	 * @return the number of rooms in your server
 	 */
-	private final Map<String, ZeroRoom> __rooms;
-	private final IEventManager __eventManager;
-
-	public RoomManager(IEventManager eventManager) {
-		__eventManager = eventManager;
-		__rooms = new HashMap<String, ZeroRoom>();
-	}
-
-	@Override
-	public synchronized void initialize(Configuration configuration) {
-		// temporary do nothing
-	}
-
-	@Override
-	public int count() {
-		synchronized (__rooms) {
-			return __rooms.size();
-		}
-	}
-
-	@Override
-	public Map<String, ZeroRoom> gets() {
-		synchronized (__rooms) {
-			return __rooms;
-		}
-	}
-
-	@Override
-	public void clear() {
-		synchronized (__rooms) {
-			__rooms.clear();
-		}
-	}
-
-	@Override
-	public ZeroRoom get(String roomId) {
-		synchronized (__rooms) {
-			return __rooms.get(roomId);
-		}
-	}
-
-	@Override
-	public boolean contain(String roomId) {
-		synchronized (__rooms) {
-			return __rooms.containsKey(roomId);
-		}
-	}
-
-	@Override
-	public void add(ZeroRoom room) throws DuplicatedRoomIdException {
-		synchronized (__rooms) {
-			if (__rooms.containsKey(room.getId())) {
-				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
-				throw new DuplicatedRoomIdException(room.getId());
-			}
-			__rooms.put(room.getId(), room);
-			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.ROOM_WAS_CREATED, room);
-		}
-	}
-
-	@Override
-	public void remove(ZeroRoom room) throws NullRoomException {
-		synchronized (__rooms) {
-			if (!__rooms.containsKey(room.getId())) {
-				throw new NullRoomException(room.getId());
-			}
-
-			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.ROOM_WILL_BE_REMOVED, room);
-			// force all players to leave this room
-			__forceAllPlayersLeaveRoom(room);
-			// remove itself from the current list
-			__rooms.remove(room.getId());
-		}
-
-	}
+	int count();
 
 	/**
-	 * Force all players to remove in one room without their desires. It's useful
-	 * when you want to kick someone from his room because of his cheating or
-	 * something else.
-	 *
-	 * @param room the corresponding room @see {@link ZeroRoom}
+	 * We let all rooms escape from their scope, so the associating process need to
+	 * be thread-safe.
+	 * 
+	 * @return all the current rooms in your server
 	 */
-	private void __forceAllPlayersLeaveRoom(ZeroRoom room) {
-		final List<ZeroPlayer> removePlayers = new ArrayList<ZeroPlayer>();
-		var players = room.getPlayers().values();
-		players.forEach(player -> {
-			removePlayers.add(player);
-		});
-		for (var player : removePlayers) {
-			makePlayerLeaveRoom(player, true);
-		}
-		removePlayers.clear();
-	}
+	Map<String, Room> gets();
 
-	@Override
-	public CoreMessageCode makePlayerJoinRoom(ZeroRoom room, ZeroPlayer player) {
-		if (room.containPlayerName(player.getName())) {
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
-					CoreMessageCode.PLAYER_WAS_IN_ROOM);
-			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
-		}
+	/**
+	 * Remove all rooms
+	 */
+	void clear();
 
-		if (room.isFull()) {
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
-					CoreMessageCode.ROOM_IS_FULL);
-			return CoreMessageCode.ROOM_IS_FULL;
-		}
+	/**
+	 * Retrieve a room by its id. We let a room escape from its scope, so the
+	 * associating process need to be thread-safe.
+	 * 
+	 * @param roomId the unique id
+	 * @return a room's instance if it has existed, <b>null</b> otherwise
+	 */
+	Room get(String roomId);
 
-		room.addPlayer(player);
-		player.setCurrentRoom(room);
-		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
+	/**
+	 * Determine if the room has existed or not.
+	 * 
+	 * @param roomId the unique ID
+	 * @return <b>true</b> if the room has existed, <b>null</b> otherwise
+	 */
+	boolean contain(String roomId);
 
-		return null;
-	}
+	/**
+	 * Add a new room to your server. You need create your own room first.
+	 * 
+	 * @param room that is added, see {@link Room}
+	 * 
+	 * @throws DuplicatedRoomIdException
+	 */
+	void add(Room room) throws DuplicatedRoomIdException;
 
-	@Override
-	public CoreMessageCode makePlayerLeaveRoom(ZeroPlayer player, boolean force) {
-		var room = player.getCurrentRoom();
-		if (room == null) {
-			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
-		}
+	/**
+	 * Remove a room from your server.
+	 * 
+	 * @param room that is removed, see {@link Room}
+	 * 
+	 * @throws NullRoomException
+	 */
+	void remove(Room room) throws NullRoomException;
 
-		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
-		room.removePlayer(player);
-		player.setCurrentRoom(null);
-		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
+	/**
+	 * Request one player to join a room. This request can be refused with some
+	 * reason. You can handle these results in the corresponding events.
+	 * 
+	 * @param room   the desired room, see {@link Room}
+	 * @param player the current player, see {@link Player}
+	 * @return the action' result if it existed in, see {@link CoreMessageCode},
+	 *         <b>null</b> otherwise
+	 */
+	CoreMessageCode makePlayerJoinRoom(Room room, Player player);
 
-		return null;
-	}
+	/**
+	 * Allow a player to leave his current room. You can handle your own logic in
+	 * the corresponding events.
+	 * 
+	 * @param player that will be left his current room, see {@link Player}
+	 * @param force  it's set <b>true</b> if you want to force the player leave.
+	 *               Otherwise, it's set <b>false</b>
+	 * @return the action' result if it existed in, see {@link CoreMessageCode},
+	 *         <b>null</b> otherwise
+	 */
+	CoreMessageCode makePlayerLeaveRoom(Player player, boolean force);
 
 }

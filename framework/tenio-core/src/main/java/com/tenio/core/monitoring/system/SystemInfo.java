@@ -29,7 +29,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.monitoring.define.SytemInfoType;
 
 /**
@@ -51,7 +51,7 @@ import com.tenio.core.monitoring.define.SytemInfoType;
  * @author kong
  *
  */
-public final class SystemInfo extends ZeroLogger {
+public final class SystemInfo extends AbstractLogger {
 
 	public void logSystemInfo() {
 		var logger = _buildgen("\n");

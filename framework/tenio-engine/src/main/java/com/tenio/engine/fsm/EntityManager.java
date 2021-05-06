@@ -26,7 +26,7 @@ package com.tenio.engine.fsm;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.engine.exception.DuplicatedEntityException;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 
@@ -36,7 +36,7 @@ import com.tenio.engine.fsm.entity.AbstractEntity;
  * @author kong
  * 
  */
-public final class EntityManager extends ZeroLogger {
+public final class EntityManager extends AbstractLogger {
 
 	/**
 	 * The list of entities

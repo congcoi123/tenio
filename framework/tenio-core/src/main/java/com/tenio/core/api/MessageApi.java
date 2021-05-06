@@ -27,13 +27,13 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
-import com.tenio.common.logger.ZeroLogger;
-import com.tenio.common.pool.IElementsPool;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.entity.ZeroRoom;
-import com.tenio.core.entity.manager.IPlayerManager;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.entity.connection.Connection;
 
@@ -49,17 +49,17 @@ import com.tenio.core.network.entity.connection.Connection;
  * 
  */
 @ThreadSafe
-public final class MessageApi extends ZeroLogger {
+public final class MessageApi extends AbstractLogger {
 
 	private final boolean IS_USING_POOL = true;
 
-	private final IElementsPool<CommonObject> __msgObjectPool;
-	private final IElementsPool<CommonObjectArray> __msgArrayPool;
+	private final ElementsPool<CommonObject> __msgObjectPool;
+	private final ElementsPool<CommonObjectArray> __msgArrayPool;
 	private final IBroadcast __broadcaster;
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 
-	public MessageApi(IEventManager eventManager, IElementsPool<CommonObject> msgObjectPool,
-			IElementsPool<CommonObjectArray> msgArrayPool, IPlayerManager playerManager, IBroadcast broadcaster) {
+	public MessageApi(EventManager eventManager, ElementsPool<CommonObject> msgObjectPool,
+			ElementsPool<CommonObjectArray> msgArrayPool, PlayerManager playerManager, IBroadcast broadcaster) {
 		__eventManager = eventManager;
 		__msgObjectPool = msgObjectPool;
 		__msgArrayPool = msgArrayPool;
@@ -108,11 +108,11 @@ public final class MessageApi extends ZeroLogger {
 	/**
 	 * Send a message method to a player
 	 * 
-	 * @param player          See {@link ZeroPlayer}
+	 * @param player          See {@link Player}
 	 * @param connectionIndex the index of connection in current player
 	 * @param message         the sending message
 	 */
-	private void __send(ZeroPlayer player, int connectionIndex, CommonObject message) {
+	private void __send(Player player, int connectionIndex, CommonObject message) {
 		// update time to check the TIMEOUT
 		player.setCurrentWriterTime();
 		// send to a CLIENT (connection)
@@ -126,12 +126,12 @@ public final class MessageApi extends ZeroLogger {
 	/**
 	 * Send a message to player via his connection
 	 * 
-	 * @param player          See {@link ZeroPlayer}
+	 * @param player          See {@link Player}
 	 * @param connectionIndex the index of connection in current player
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToPlayer(ZeroPlayer player, int connectionIndex, String key, Object value) {
+	public void sendToPlayer(Player player, int connectionIndex, String key, Object value) {
 		var message = __getMessageObject();
 		message.put(key, value);
 		__send(player, connectionIndex, message);
@@ -154,7 +154,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message data, see: {@link CommonObjectArray}
 	 */
-	public void sendToPlayer(ZeroPlayer player, int connectionIndex, String key, Object value, String keyData,
+	public void sendToPlayer(Player player, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -172,7 +172,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToRoom(ZeroRoom room, int connectionIndex, String key, Object value) {
+	public void sendToRoom(Room room, int connectionIndex, String key, Object value) {
 		var message = __getMessageObject();
 		message.put(key, value);
 		var players = room.getPlayers().values();
@@ -198,7 +198,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoom(ZeroRoom room, int connectionIndex, String key, Object value, String keyData,
+	public void sendToRoom(Room room, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -219,7 +219,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param key             the key of message
 	 * @param value           the value of message
 	 */
-	public void sendToRoomIgnorePlayer(ZeroPlayer player, int connectionIndex, String key, Object value) {
+	public void sendToRoomIgnorePlayer(Player player, int connectionIndex, String key, Object value) {
 		var room = player.getCurrentRoom();
 		var message = __getMessageObject();
 		message.put(key, value);
@@ -248,7 +248,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param keyData         the key of message's data
 	 * @param data            the message's data, see: {@link CommonObjectArray}
 	 */
-	public void sendToRoomIgnorePlayer(ZeroPlayer player, int connectionIndex, String key, Object value, String keyData,
+	public void sendToRoomIgnorePlayer(Player player, int connectionIndex, String key, Object value, String keyData,
 			CommonObjectArray data) {
 		var room = player.getCurrentRoom();
 		var message = __getMessageObject();
@@ -272,7 +272,7 @@ public final class MessageApi extends ZeroLogger {
 	 * @param connectionIndex the index of connection in current player
 	 * @param message         the message instance
 	 */
-	public void sendToInternalServer(ZeroPlayer player, int connectionIndex, CommonObject message) {
+	public void sendToInternalServer(Player player, int connectionIndex, CommonObject message) {
 		player.setCurrentReaderTime();
 		__eventManager.getExtension().emit(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
 	}

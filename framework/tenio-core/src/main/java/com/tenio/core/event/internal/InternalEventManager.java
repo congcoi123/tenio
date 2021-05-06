@@ -28,9 +28,9 @@ import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 
 /**
@@ -40,7 +40,7 @@ import com.tenio.core.exception.ExtensionValueCastException;
  * 
  */
 @NotThreadSafe
-public final class InternalEventManager extends ZeroLogger {
+public final class InternalEventManager extends AbstractLogger {
 
 	/**
 	 * A list of subscribers
@@ -73,9 +73,9 @@ public final class InternalEventManager extends ZeroLogger {
 	 * Add a subscriber's handler.
 	 * 
 	 * @param event      see {@link InternalEvent}
-	 * @param subscriber see {@link ISubscriber}
+	 * @param subscriber see {@link Subscriber}
 	 */
-	public void on(InternalEvent event, ISubscriber subscriber) {
+	public void on(InternalEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
 			_info("INTERNAL EVENT WARNING", "Duplicated", event);
 		}

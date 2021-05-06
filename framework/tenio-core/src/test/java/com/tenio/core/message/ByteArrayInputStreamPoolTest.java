@@ -35,8 +35,8 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstants;
 import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
 
 /**
@@ -44,7 +44,7 @@ import com.tenio.core.pool.ByteArrayInputStreamPool;
  */
 public final class ByteArrayInputStreamPoolTest {
 
-	private IElementsPool<ByteArrayInputStream> __byteArrayPool;
+	private ElementsPool<ByteArrayInputStream> __byteArrayPool;
 
 	@BeforeEach
 	public void initialize() {

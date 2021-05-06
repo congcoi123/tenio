@@ -31,7 +31,7 @@ import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.bootstrap.EventHandler;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
@@ -80,9 +80,9 @@ interface IServer {
 	void setExtension(IExtension extension);
 
 	/**
-	 * @return see {@link IEventManager}
+	 * @return see {@link EventManager}
 	 */
-	IEventManager getEventManager();
+	EventManager getEventManager();
 
 	/**
 	 * @return see {@link PlayerApi}

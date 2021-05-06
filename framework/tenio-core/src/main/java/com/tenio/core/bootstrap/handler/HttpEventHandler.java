@@ -32,11 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventHttpRequestHandle;
-import com.tenio.core.extension.event.IEventHttpRequestValidate;
+import com.tenio.core.extension.event.EventHttpRequestHandle;
+import com.tenio.core.extension.event.EventHttpRequestValidate;
 import com.tenio.core.network.define.RestMethod;
 
 /**
@@ -46,21 +46,21 @@ import com.tenio.core.network.define.RestMethod;
 public final class HttpEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull
-	private IEventHttpRequestHandle __eventHttpRequestHandle;
+	private EventHttpRequestHandle __eventHttpRequestHandle;
 
 	@AutowiredAcceptNull
-	private IEventHttpRequestValidate __eventHttpRequestValidate;
+	private EventHttpRequestValidate __eventHttpRequestValidate;
 
 	public void initialize() {
-		Optional<IEventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
-		Optional<IEventHttpRequestValidate> eventHttpRequestValidateOp = Optional
+		Optional<EventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
+		Optional<EventHttpRequestValidate> eventHttpRequestValidateOp = Optional
 				.ofNullable(__eventHttpRequestValidate);
 
-		eventHttpRequestValidateOp.ifPresent(new Consumer<IEventHttpRequestValidate>() {
+		eventHttpRequestValidateOp.ifPresent(new Consumer<EventHttpRequestValidate>() {
 
 			@Override
-			public void accept(IEventHttpRequestValidate event) {
-				_on(ZeroEvent.HTTP_REQUEST_VALIDATE, new ISubscriber() {
+			public void accept(EventHttpRequestValidate event) {
+				_on(ZeroEvent.HTTP_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -74,11 +74,11 @@ public final class HttpEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventHttpRequestHandleOp.ifPresent(new Consumer<IEventHttpRequestHandle>() {
+		eventHttpRequestHandleOp.ifPresent(new Consumer<EventHttpRequestHandle>() {
 
 			@Override
-			public void accept(IEventHttpRequestHandle event) {
-				_on(ZeroEvent.HTTP_REQUEST_HANDLE, new ISubscriber() {
+			public void accept(EventHttpRequestHandle event) {
+				_on(ZeroEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

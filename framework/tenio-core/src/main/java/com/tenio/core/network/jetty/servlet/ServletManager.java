@@ -36,7 +36,7 @@ import org.json.simple.JSONObject;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.configuration.data.PathConfig;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.jetty.servlet.base.BaseProcessServlet;
 import com.tenio.core.network.jetty.servlet.base.BaseServlet;
@@ -51,14 +51,14 @@ public final class ServletManager extends BaseServlet {
 	 */
 	private static final long serialVersionUID = -1971993446960398293L;
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 
 	private ProcessPost __processPost;
 	private ProcessPut __processPut;
 	private ProcessGet __processGet;
 	private ProcessDelete __processDelete;
 
-	public ServletManager(IEventManager eventManager, List<PathConfig> pathConfigs) {
+	public ServletManager(EventManager eventManager, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		for (var pathConfig : pathConfigs) {
 			switch (pathConfig.getMethod()) {

@@ -26,10 +26,10 @@ package com.tenio.core.network.netty;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.connection.Connection;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
@@ -49,15 +49,15 @@ import io.netty.util.AttributeKey;
  */
 public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 
-	private final IElementsPool<CommonObject> __commmonObjectPool;
-	private final IElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-	private final IEventManager __eventManager;
+	private final ElementsPool<CommonObject> __commmonObjectPool;
+	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
+	private final EventManager __eventManager;
 	private Connection __connection;
 	private final TransportType __transportType;
 	private final int __connectionIndex;
 
-	public BaseNettyHandler(IEventManager eventManager, IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex, TransportType transportType) {
+	public BaseNettyHandler(EventManager eventManager, ElementsPool<CommonObject> commonObjectPool,
+			ElementsPool<ByteArrayInputStream> byteArrayInputPool, int connectionIndex, TransportType transportType) {
 		__eventManager = eventManager;
 		__commmonObjectPool = commonObjectPool;
 		__byteArrayInputPool = byteArrayInputPool;
@@ -132,14 +132,14 @@ public abstract class BaseNettyHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * @return the message object manager pool instance
 	 */
-	protected IElementsPool<CommonObject> getCommonObjectPool() {
+	protected ElementsPool<CommonObject> getCommonObjectPool() {
 		return __commmonObjectPool;
 	}
 
 	/**
 	 * @return the byte array input steam manager pool instance
 	 */
-	protected IElementsPool<ByteArrayInputStream> getByteArrayInputPool() {
+	protected ElementsPool<ByteArrayInputStream> getByteArrayInputPool() {
 		return __byteArrayInputPool;
 	}
 

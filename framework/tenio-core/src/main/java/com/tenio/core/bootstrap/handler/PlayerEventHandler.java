@@ -31,18 +31,18 @@ import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.event.ISubscriber;
+import com.tenio.core.entity.Player;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.IEventDisconnectPlayer;
-import com.tenio.core.extension.event.IEventPlayerGotTimeout;
-import com.tenio.core.extension.event.IEventPlayerLoginedFailed;
-import com.tenio.core.extension.event.IEventPlayerLoginedSuccess;
-import com.tenio.core.extension.event.IEventPlayerReconnectRequestHandle;
-import com.tenio.core.extension.event.IEventPlayerReconnectSuccess;
-import com.tenio.core.extension.event.IEventReceivedMessageFromPlayer;
-import com.tenio.core.extension.event.IEventSendMessageToPlayer;
+import com.tenio.core.extension.event.EventDisconnectPlayer;
+import com.tenio.core.extension.event.EventPlayerGotTimeout;
+import com.tenio.core.extension.event.EventPlayerLoginedFailed;
+import com.tenio.core.extension.event.EventPlayerLoginedSuccess;
+import com.tenio.core.extension.event.EventPlayerReconnectRequestHandle;
+import com.tenio.core.extension.event.EventPlayerReconnectSuccess;
+import com.tenio.core.extension.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.extension.event.EventSendMessageToPlayer;
 import com.tenio.core.network.entity.connection.Connection;
 
 /**
@@ -52,57 +52,57 @@ import com.tenio.core.network.entity.connection.Connection;
 public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull
-	private IEventPlayerLoginedFailed __eventPlayerLoginedFailed;
+	private EventPlayerLoginedFailed __eventPlayerLoginedFailed;
 
 	@AutowiredAcceptNull
-	private IEventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
+	private EventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
 
 	@AutowiredAcceptNull
-	private IEventPlayerReconnectRequestHandle __eventPlayerReconnectRequestHandle;
+	private EventPlayerReconnectRequestHandle __eventPlayerReconnectRequestHandle;
 
 	@AutowiredAcceptNull
-	private IEventPlayerReconnectSuccess __eventPlayerReconnectSuccess;
+	private EventPlayerReconnectSuccess __eventPlayerReconnectSuccess;
 
 	@AutowiredAcceptNull
-	private IEventPlayerGotTimeout __eventPlayerGotTimeout;
+	private EventPlayerGotTimeout __eventPlayerGotTimeout;
 
 	@AutowiredAcceptNull
-	private IEventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
+	private EventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
 
 	@AutowiredAcceptNull
-	private IEventSendMessageToPlayer __eventSendMessageToPlayer;
+	private EventSendMessageToPlayer __eventSendMessageToPlayer;
 
 	@AutowiredAcceptNull
-	private IEventDisconnectPlayer __eventDisconnectPlayer;
+	private EventDisconnectPlayer __eventDisconnectPlayer;
 
 	public void initialize() {
-		Optional<IEventPlayerLoginedFailed> eventPlayerLoginedFailedOp = Optional
+		Optional<EventPlayerLoginedFailed> eventPlayerLoginedFailedOp = Optional
 				.ofNullable(__eventPlayerLoginedFailed);
-		Optional<IEventPlayerLoginedSuccess> eventPlayerLoginedSuccessOp = Optional
+		Optional<EventPlayerLoginedSuccess> eventPlayerLoginedSuccessOp = Optional
 				.ofNullable(__eventPlayerLoginedSuccess);
 
-		Optional<IEventPlayerReconnectRequestHandle> eventPlayerReconnectRequestHandleOp = Optional
+		Optional<EventPlayerReconnectRequestHandle> eventPlayerReconnectRequestHandleOp = Optional
 				.ofNullable(__eventPlayerReconnectRequestHandle);
-		Optional<IEventPlayerReconnectSuccess> eventPlayerReconnectSuccessOp = Optional
+		Optional<EventPlayerReconnectSuccess> eventPlayerReconnectSuccessOp = Optional
 				.ofNullable(__eventPlayerReconnectSuccess);
-		Optional<IEventPlayerGotTimeout> eventPlayerGotTimeoutOp = Optional.ofNullable(__eventPlayerGotTimeout);
+		Optional<EventPlayerGotTimeout> eventPlayerGotTimeoutOp = Optional.ofNullable(__eventPlayerGotTimeout);
 
-		Optional<IEventReceivedMessageFromPlayer> eventReceivedMessageFromPlayerOp = Optional
+		Optional<EventReceivedMessageFromPlayer> eventReceivedMessageFromPlayerOp = Optional
 				.ofNullable(__eventReceivedMessageFromPlayer);
-		Optional<IEventSendMessageToPlayer> eventSendMessageToPlayerOp = Optional
+		Optional<EventSendMessageToPlayer> eventSendMessageToPlayerOp = Optional
 				.ofNullable(__eventSendMessageToPlayer);
 
-		Optional<IEventDisconnectPlayer> eventDisconnectPlayerOp = Optional.ofNullable(__eventDisconnectPlayer);
+		Optional<EventDisconnectPlayer> eventDisconnectPlayerOp = Optional.ofNullable(__eventDisconnectPlayer);
 
-		eventPlayerLoginedFailedOp.ifPresent(new Consumer<IEventPlayerLoginedFailed>() {
+		eventPlayerLoginedFailedOp.ifPresent(new Consumer<EventPlayerLoginedFailed>() {
 
-			public void accept(IEventPlayerLoginedFailed event) {
+			public void accept(EventPlayerLoginedFailed event) {
 
-				_on(ZeroEvent.PLAYER_LOGINED_FAILED, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_LOGINED_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 						CoreMessageCode code = _getCoreMessageCode(params[1]);
 
 						event.handle(player, code);
@@ -113,15 +113,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventPlayerLoginedSuccessOp.ifPresent(new Consumer<IEventPlayerLoginedSuccess>() {
+		eventPlayerLoginedSuccessOp.ifPresent(new Consumer<EventPlayerLoginedSuccess>() {
 
-			public void accept(IEventPlayerLoginedSuccess event) {
+			public void accept(EventPlayerLoginedSuccess event) {
 
-				_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -131,11 +131,11 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventPlayerReconnectRequestHandleOp.ifPresent(new Consumer<IEventPlayerReconnectRequestHandle>() {
+		eventPlayerReconnectRequestHandleOp.ifPresent(new Consumer<EventPlayerReconnectRequestHandle>() {
 
-			public void accept(IEventPlayerReconnectRequestHandle event) {
+			public void accept(EventPlayerReconnectRequestHandle event) {
 
-				_on(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -150,15 +150,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventPlayerReconnectSuccessOp.ifPresent(new Consumer<IEventPlayerReconnectSuccess>() {
+		eventPlayerReconnectSuccessOp.ifPresent(new Consumer<EventPlayerReconnectSuccess>() {
 
-			public void accept(IEventPlayerReconnectSuccess event) {
+			public void accept(EventPlayerReconnectSuccess event) {
 
-				_on(ZeroEvent.PLAYER_RECONNECT_SUCCESS, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_RECONNECT_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -168,15 +168,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventPlayerGotTimeoutOp.ifPresent(new Consumer<IEventPlayerGotTimeout>() {
+		eventPlayerGotTimeoutOp.ifPresent(new Consumer<EventPlayerGotTimeout>() {
 
-			public void accept(IEventPlayerGotTimeout event) {
+			public void accept(EventPlayerGotTimeout event) {
 
-				_on(ZeroEvent.PLAYER_GOT_TIMEOUT, new ISubscriber() {
+				_on(ZeroEvent.PLAYER_GOT_TIMEOUT, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 
 						event.handle(player);
 
@@ -186,15 +186,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventReceivedMessageFromPlayerOp.ifPresent(new Consumer<IEventReceivedMessageFromPlayer>() {
+		eventReceivedMessageFromPlayerOp.ifPresent(new Consumer<EventReceivedMessageFromPlayer>() {
 
 			@Override
-			public void accept(IEventReceivedMessageFromPlayer event) {
-				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, new ISubscriber() {
+			public void accept(EventReceivedMessageFromPlayer event) {
+				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 						int connectionIndex = _getInteger(params[1]);
 						CommonObject message = _getCommonObject(params[2]);
 
@@ -206,15 +206,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventSendMessageToPlayerOp.ifPresent(new Consumer<IEventSendMessageToPlayer>() {
+		eventSendMessageToPlayerOp.ifPresent(new Consumer<EventSendMessageToPlayer>() {
 
 			@Override
-			public void accept(IEventSendMessageToPlayer event) {
-				_on(ZeroEvent.SEND_MESSAGE_TO_PLAYER, new ISubscriber() {
+			public void accept(EventSendMessageToPlayer event) {
+				_on(ZeroEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 						int connectionIndex = _getInteger(params[1]);
 						CommonObject message = _getCommonObject(params[2]);
 
@@ -226,15 +226,15 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 			}
 		});
 
-		eventDisconnectPlayerOp.ifPresent(new Consumer<IEventDisconnectPlayer>() {
+		eventDisconnectPlayerOp.ifPresent(new Consumer<EventDisconnectPlayer>() {
 
 			@Override
-			public void accept(IEventDisconnectPlayer event) {
-				_on(ZeroEvent.DISCONNECT_PLAYER, new ISubscriber() {
+			public void accept(EventDisconnectPlayer event) {
+				_on(ZeroEvent.DISCONNECT_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						ZeroPlayer player = _getPlayer(params[0]);
+						Player player = _getPlayer(params[0]);
 
 						event.handle(player);
 

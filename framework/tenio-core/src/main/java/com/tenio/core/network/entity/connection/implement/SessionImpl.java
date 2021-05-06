@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +25,7 @@ public final class SessionImpl implements Session {
 	private volatile int __droppedMessages;
 
 	private SocketChannel __socketChannel;
+	private SelectionKey __selectionKey;
 	private DatagramChannel __datagramChannel;
 	private Channel __webSocketChannel;
 	private TransportType __transportType;
@@ -173,6 +175,16 @@ public final class SessionImpl implements Session {
 
 			__connected = true;
 		}
+	}
+
+	@Override
+	public SelectionKey getSelectionKey() {
+		return __selectionKey;
+	}
+
+	@Override
+	public void setSelectionKey(SelectionKey selectionKey) {
+		__selectionKey = selectionKey;
 	}
 
 	@Override

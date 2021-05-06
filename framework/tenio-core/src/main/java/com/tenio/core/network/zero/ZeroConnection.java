@@ -26,10 +26,10 @@ package com.tenio.core.network.zero;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.AbstractConnection;
 import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.connection.implement.AbstractConnection;
 
 /**
  * UNDER CONSTRUCTION
@@ -38,7 +38,7 @@ import com.tenio.core.network.entity.connection.Connection;
  */
 public final class ZeroConnection extends AbstractConnection {
 
-	public ZeroConnection(IEventManager eventManager, TransportType type, int index) {
+	public ZeroConnection(EventManager eventManager, TransportType type, int index) {
 		super(eventManager, type, index);
 	}
 

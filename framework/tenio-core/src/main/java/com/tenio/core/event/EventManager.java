@@ -29,47 +29,29 @@ import com.tenio.core.event.internal.InternalEventManager;
 /**
  * Manage all events in the server
  * 
- * @see IEventManager
- * 
  * @author kong
  *
  */
-public final class EventManager implements IEventManager {
+public interface EventManager {
 
 	/**
-	 * @see ExtEventManager
+	 * @return see {@link ExtEventManager}
 	 */
-	private final ExtEventManager __extEventManager;
+	ExtEventManager getExtension();
+
 	/**
-	 * @see InternalEventManager
+	 * @return see {@link InternalEventManager}
 	 */
-	private final InternalEventManager __internalEventManager;
+	InternalEventManager getInternal();
 
-	public EventManager() {
-		__extEventManager = new ExtEventManager();
-		__internalEventManager = new InternalEventManager();
-	}
+	/**
+	 * Collect all subscribers and these corresponding events.
+	 */
+	void subscribe();
 
-	@Override
-	public ExtEventManager getExtension() {
-		return __extEventManager;
-	}
-
-	@Override
-	public InternalEventManager getInternal() {
-		return __internalEventManager;
-	}
-
-	@Override
-	public void subscribe() {
-		__extEventManager.subscribe();
-		__internalEventManager.subscribe();
-	}
-
-	@Override
-	public void clear() {
-		__extEventManager.clear();
-		__internalEventManager.clear();
-	}
+	/**
+	 * Clear all subscribers and these corresponding events.
+	 */
+	void clear();
 
 }

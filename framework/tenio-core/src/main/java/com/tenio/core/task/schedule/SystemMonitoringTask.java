@@ -27,11 +27,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.ZeroLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.ITask;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.monitoring.system.SystemMonitoring;
 
 /**
@@ -41,17 +41,17 @@ import com.tenio.core.monitoring.system.SystemMonitoring;
  * @author kong
  * 
  */
-public final class SystemMonitoringTask extends ZeroLogger implements ITask {
+public final class SystemMonitoringTask extends AbstractLogger implements ITask {
 
 	private final SystemMonitoring __monitoring;
 
-	private final IEventManager __eventManager;
+	private final EventManager __eventManager;
 	/**
 	 * The period time for retrieving system information
 	 */
 	private final int __monitoringPeriod;
 
-	public SystemMonitoringTask(IEventManager eventManager, int ccuScanPeriod) {
+	public SystemMonitoringTask(EventManager eventManager, int ccuScanPeriod) {
 		__eventManager = eventManager;
 		__monitoringPeriod = ccuScanPeriod;
 

@@ -26,8 +26,8 @@ package com.tenio.core.network.entity.connection;
 import java.net.InetSocketAddress;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.entity.ZeroPlayer;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.entity.Player;
+import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
 
 /**
@@ -66,7 +66,7 @@ public interface Connection {
 
 	/**
 	 * Retrieve the "connection" id, this id is player's name, see
-	 * {@link ZeroPlayer#getName()}
+	 * {@link Player#getName()}
 	 * 
 	 * @return the player's name in {@link String}
 	 */
@@ -74,7 +74,7 @@ public interface Connection {
 
 	/**
 	 * Set id for the "connection", this id is player's name, see
-	 * {@link ZeroPlayer#getName()}
+	 * {@link Player#getName()}
 	 * 
 	 * @param playerName the identify of this connection
 	 */
@@ -100,9 +100,9 @@ public interface Connection {
 	String getAddress();
 
 	/**
-	 * @return the event manager, see {@link IEventManager}
+	 * @return the event manager, see {@link EventManager}
 	 */
-	IEventManager getEventManager();
+	EventManager getEventManager();
 
 	/**
 	 * Send a message to the client

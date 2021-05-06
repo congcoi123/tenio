@@ -28,10 +28,10 @@ import java.net.BindException;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.IElementsPool;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.event.IEventManager;
+import com.tenio.core.event.EventManager;
 
 /**
  * A network is one of the most important parts of this server for the main
@@ -58,8 +58,8 @@ public interface Network {
 	 * @throws IOException          signals that an I/O exception of some sort has
 	 *                              occurred.
 	 */
-	void start(IEventManager eventManager, Configuration configuration, IElementsPool<CommonObject> commonObjectPool,
-			IElementsPool<ByteArrayInputStream> byteArrayInputPool)
+	void start(EventManager eventManager, Configuration configuration, ElementsPool<CommonObject> commonObjectPool,
+			ElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException, BindException;
 
 	/**
