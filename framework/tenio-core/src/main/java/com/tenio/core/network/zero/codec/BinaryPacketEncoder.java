@@ -9,7 +9,7 @@ import com.tenio.core.network.zero.codec.compression.PacketCompressor;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.encryption.PacketEncrypter;
 
-public final class BinaryPacketEncoder implements PacketEncodable {
+public final class BinaryPacketEncoder implements PacketEncoder {
 
 	private static final int COMPRESSION_THRESHOLD_BYTES = 3000;
 	private static final int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;
@@ -23,7 +23,7 @@ public final class BinaryPacketEncoder implements PacketEncodable {
 	}
 
 	@Override
-	public Packet handle(Packet packet) {
+	public Packet encode(Packet packet) {
 		// retrieve the packet data first
 		byte[] binary = packet.getData();
 

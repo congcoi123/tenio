@@ -1,15 +1,17 @@
 package com.tenio.core.network.entity.protocol;
 
 public interface Message {
-     Object getId();
 
-     void setId(Object id);
+	long getId();
 
-     Object getContent();
+	void setId(long id);
 
-     void setContent(Object content);
+	byte[] getContent();
 
-     Object getAttribute(String key);
+	void setContent(byte[] content);
 
-     void setAttribute(String key, Object value);
+	Object getAttribute(String key);
+
+	void setAttribute(String key, Object value);
+
 }

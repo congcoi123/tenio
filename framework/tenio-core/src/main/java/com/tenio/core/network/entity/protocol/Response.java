@@ -2,29 +2,24 @@ package com.tenio.core.network.entity.protocol;
 
 import java.util.Collection;
 
-import com.tenio.core.network.define.TransportType;
+import com.tenio.core.entity.Player;
 import com.tenio.core.network.entity.connection.Session;
+import com.tenio.core.network.entity.connection.SessionType;
 
 public interface Response extends Message {
-     TransportType getTransportType();
 
-     void setTransportType(TransportType type);
+	Collection<Session> getRecipientSocketSessions();
 
-     Object getTargetController();
+	Collection<Session> getRecipientWebSocketSessions();
 
-     void setTargetController(Object controller);
+	void setRecipients(Collection<Player> collection);
 
-     Collection getRecipients();
+	void setRecipient(Player player);
 
-     void setRecipients(Collection collection);
+	void setSessionType(SessionType sessionType);
 
-     void setRecipients(Session session);
+	void write();
 
-     boolean isTCP();
+	void writeInDelay(int delay);
 
-     boolean isUDP();
-
-     void write();
-
-     void write(int delay);
 }

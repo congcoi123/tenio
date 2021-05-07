@@ -2,8 +2,8 @@ package com.tenio.core.network.zero.codec;
 
 import com.tenio.core.network.entity.packet.Packet;
 
-public interface PacketEncodable {
+public interface PacketEncoder {
 
-	Packet handle(Packet packet);
+	Packet encode(Packet packet);
 
 }

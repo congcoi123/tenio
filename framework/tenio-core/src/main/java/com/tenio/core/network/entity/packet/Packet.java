@@ -56,5 +56,7 @@ public interface Packet {
 	void setFragmentBuffer(byte[] binary);
 
 	boolean isFragmented();
+	
+	Packet clone();
 
 }

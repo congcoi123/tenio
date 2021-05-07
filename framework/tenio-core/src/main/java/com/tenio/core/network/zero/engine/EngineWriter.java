@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.common.configuration.Configuration;
+import com.tenio.core.network.codec.ProtocolCodec;
+import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.handler.IOHandler;
 
 /**
@@ -37,16 +39,14 @@ import com.tenio.core.network.handler.IOHandler;
 public interface EngineWriter {
 
 	void continueWriteOp(SocketChannel socketChannel);
-
-	long getDroppedPacketsCount();
-
-	long getWrittenBytes();
-
-	long getWrittenPackets();
+	
+	void enqueuePacket(Packet packet);
+	
+	ProtocolCodec getProtocolCode();
+	
+	void setProtocolCodec(ProtocolCodec protocolCodec);
 
 	void setConfiguration(Configuration configuration);
-
-	void setIoHandler(IOHandler ioHandler);
 
 	void setup() throws IOException;
 

@@ -43,19 +43,19 @@ public interface Session {
 
 	SocketChannel getSocketChannel();
 
-	void setSocketChannel(SocketChannel socketChannel) throws IllegalArgumentException;
-	
+	void setSocketChannel(SocketChannel socketChannel) throws IllegalArgumentException, IllegalCallerException;
+
 	SelectionKey getSelectionKey();
-	
+
 	void setSelectionKey(SelectionKey selectionKey);
 
 	DatagramChannel getDatagramChannel();
 
-	void setDatagramChannel(DatagramChannel datagramChannel) throws IllegalArgumentException;
+	void setDatagramChannel(DatagramChannel datagramChannel) throws IllegalArgumentException, IllegalCallerException;
 
 	Channel getWebSocketChannel();
 
-	void setWebSocketChannel(Channel webSocketChannel) throws IllegalArgumentException;
+	void setWebSocketChannel(Channel webSocketChannel) throws IllegalArgumentException, IllegalCallerException;
 
 	long getCreatedTime();
 

@@ -6,40 +6,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.tenio.core.network.entity.protocol.Message;
 
 public abstract class AbstractMessage implements Message {
-     protected Object id;
-     protected Object content;
-     protected Map attributes;
 
-     public Object getId() {
-          return this.id;
-     }
+	private long __id;
+	private byte[] __content;
+	private Map<String, Object> __attributes;
 
-     public void setId(Object id) {
-          this.id = id;
-     }
+	public long getId() {
+		return __id;
+	}
 
-     public Object getContent() {
-          return this.content;
-     }
+	public void setId(long id) {
+		__id = id;
+	}
 
-     public void setContent(Object content) {
-          this.content = content;
-     }
+	public byte[] getContent() {
+		return __content;
+	}
 
-     public Object getAttribute(String key) {
-          Object attr = null;
-          if (this.attributes != null) {
-               attr = this.attributes.get(key);
-          }
+	public void setContent(byte[] content) {
+		__content = content;
+	}
 
-          return attr;
-     }
+	public Object getAttribute(String key) {
+		if (__attributes != null) {
+			return __attributes.get(key);
+		}
 
-     public void setAttribute(String key, Object attribute) {
-          if (this.attributes == null) {
-               this.attributes = new ConcurrentHashMap();
-          }
+		return null;
+	}
 
-          this.attributes.put(key, attribute);
-     }
+	public void setAttribute(String key, Object value) {
+		if (__attributes == null) {
+			__attributes = new ConcurrentHashMap<String, Object>();
+		}
+
+		__attributes.put(key, value);
+	}
+
 }

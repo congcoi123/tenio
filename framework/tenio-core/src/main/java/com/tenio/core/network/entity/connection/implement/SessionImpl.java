@@ -68,6 +68,7 @@ public final class SessionImpl implements Session {
 
 	public SessionImpl() {
 		__properties = new ConcurrentHashMap<String, Object>();
+		__transportType = TransportType.UNKNOWN;
 		__inactivatedTime = 0L;
 		__active = true;
 		__markedForEviction = false;
@@ -157,6 +158,11 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public void setSocketChannel(SocketChannel socketChannel) {
+		if (__transportType != TransportType.UNKNOWN) {
+			throw new IllegalCallerException(String.format(
+					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+		}
+
 		if (socketChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
@@ -194,6 +200,11 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public void setDatagramChannel(DatagramChannel datagramChannel) {
+		if (__transportType != TransportType.UNKNOWN) {
+			throw new IllegalCallerException(String.format(
+					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+		}
+		
 		if (datagramChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
@@ -210,6 +221,11 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public void setWebSocketChannel(Channel webSocketChannel) {
+		if (__transportType != TransportType.UNKNOWN) {
+			throw new IllegalCallerException(String.format(
+					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+		}
+		
 		if (webSocketChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
