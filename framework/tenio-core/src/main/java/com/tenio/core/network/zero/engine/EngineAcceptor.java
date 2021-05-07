@@ -26,8 +26,8 @@ package com.tenio.core.network.zero.engine;
 import java.io.IOException;
 
 import com.tenio.common.configuration.Configuration;
+import com.tenio.core.network.handler.IOHandler;
 import com.tenio.core.network.security.filter.IConnectionFilter;
-import com.tenio.core.network.zero.handler.IOHandler;
 
 /**
  * UNDER CONSTRUCTION

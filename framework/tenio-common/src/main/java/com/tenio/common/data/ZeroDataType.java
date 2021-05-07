@@ -36,4 +36,5 @@ public enum ZeroDataType {
 	public static ZeroDataType getByValue(int value) {
 		return lookup.get(value);
 	}
+	
 }

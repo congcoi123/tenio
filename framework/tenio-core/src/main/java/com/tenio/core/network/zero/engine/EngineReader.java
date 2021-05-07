@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.nio.channels.Selector;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.network.zero.handler.IOHandler;
+import com.tenio.core.network.handler.IOHandler;
 
 /**
  * UNDER CONSTRUCTION

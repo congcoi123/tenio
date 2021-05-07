@@ -22,6 +22,10 @@ public interface Packet {
 	MessagePriority getPriority();
 
 	void setPriority(MessagePriority priority);
+	
+	boolean isEncrypted();
+	
+	void setEncrypted(boolean encrypted);
 
 	Collection<Session> getRecipients();
 

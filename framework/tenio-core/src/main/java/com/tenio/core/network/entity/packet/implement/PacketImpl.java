@@ -19,6 +19,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	private long __createdTime;
 	private byte[] __data;
 	private MessagePriority __priority;
+	private boolean __encrypted;
 	private Session __sender;
 	private TransportType __transportType;
 	private int __originalSize;
@@ -35,6 +36,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 		__createdTime = TimeUtility.currentTimeMillis();
 		__transportType = TransportType.UNKNOWN;
 		__priority = MessagePriority.NORMAL;
+		__encrypted = false;
 	}
 
 	@Override
@@ -71,6 +73,16 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	@Override
 	public void setPriority(MessagePriority priority) {
 		__priority = priority;
+	}
+
+	@Override
+	public boolean isEncrypted() {
+		return __encrypted;
+	}
+
+	@Override
+	public void setEncrypted(boolean encrypted) {
+		__encrypted = encrypted;
 	}
 
 	@Override
@@ -178,8 +190,8 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
 	@Override
 	public String toString() {
-		return String.format("{ id: %d, createdTime: %d, transportType: %s, priority: %s }", __id, __createdTime,
-				__transportType.toString(), __priority.toString());
+		return String.format("{ id: %d, createdTime: %d, transportType: %s, priority: %s, encrypted: %b }", __id,
+				__createdTime, __transportType.toString(), __priority.toString(), __encrypted);
 	}
 
 	@Override
@@ -189,6 +201,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 		packet.setData(__data);
 		packet.setFragmentBuffer(__fragmentBuffer);
 		packet.setPriority(__priority);
+		packet.setEncrypted(__encrypted);
 		packet.setRecipients(__recipients);
 		packet.setSender(__sender);
 		packet.setTransportType(__transportType);

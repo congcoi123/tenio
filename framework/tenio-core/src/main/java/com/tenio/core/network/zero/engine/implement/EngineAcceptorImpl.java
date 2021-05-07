@@ -49,10 +49,10 @@ import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.message.packet.DefaultPacketQueue;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
+import com.tenio.core.network.handler.IOHandler;
 import com.tenio.core.network.security.filter.IConnectionFilter;
 import com.tenio.core.network.zero.engine.EngineAcceptor;
 import com.tenio.core.network.zero.engine.EngineReader;
-import com.tenio.core.network.zero.handler.IOHandler;
 import com.tenio.core.network.zero.option.ZeroConnectionOption;
 
 /**

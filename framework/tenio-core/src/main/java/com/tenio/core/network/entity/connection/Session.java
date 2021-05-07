@@ -85,9 +85,9 @@ public interface Session {
 
 	void addWrittenBytes(long bytes);
 
-	int getDroppedMessages();
+	int getDroppedPackets();
 
-	void addDroppedMessages(int messages);
+	void addDroppedPackets(int packets);
 
 	int getMaxIdleTimeInSeconds();
 

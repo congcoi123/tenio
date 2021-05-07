@@ -22,7 +22,7 @@ public final class SessionImpl implements Session {
 
 	private volatile long __readBytes;
 	private volatile long __writtenBytes;
-	private volatile int __droppedMessages;
+	private volatile int __droppedPackets;
 
 	private SocketChannel __socketChannel;
 	private SelectionKey __selectionKey;
@@ -306,13 +306,13 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public int getDroppedMessages() {
-		return __droppedMessages;
+	public int getDroppedPackets() {
+		return __droppedPackets;
 	}
 
 	@Override
-	public void addDroppedMessages(int messages) {
-		__droppedMessages += messages;
+	public void addDroppedPackets(int packets) {
+		__droppedPackets += packets;
 	}
 
 	@Override
