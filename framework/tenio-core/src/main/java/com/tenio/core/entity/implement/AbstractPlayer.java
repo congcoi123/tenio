@@ -34,7 +34,7 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * A player is one of the base elements in your server. It is a representation

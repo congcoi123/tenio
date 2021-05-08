@@ -23,35 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engine;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.network.zero.handler.SocketIOHandler;
+import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public interface EngineReader {
+public interface ZeroWriter {
 
-	void setConfiguration(Configuration configuration);
+	void enqueuePacket(Packet packet);
 
-	void setIoHandler(SocketIOHandler ioHandler);
-	
-	void setEngineAcceptor(ZeroEngineAcceptor engineAcceptor);
-	
-	void setEngineWriter(EngineWriter engineWriter);
-
-	Selector getSelector();
-
-	long getReadBytes();
-	
-	void setup() throws IOException;
-
-	void start();
-
-	void stop();
+	NetworkWriterStatistic getNetworkWriterStatistic();
 
 }

@@ -1,12 +1,12 @@
 package com.tenio.core.network;
 
 import com.tenio.core.network.entity.protocol.Response;
-import com.tenio.core.network.zero.engine.EngineWriter;
+import com.tenio.core.network.zero.engine.ZeroWriter;
 
 public class WriterManager {
 	
 	// create zero writer and netty websocket server here
-	private EngineWriter writer;
+	private ZeroWriter writer;
 	private boolean isWebSocketEnabled;
 
 	public void write(Response response) {

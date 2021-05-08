@@ -25,9 +25,9 @@ package com.tenio.core.entity;
 
 import java.util.List;
 
-import com.tenio.core.network.entity.connection.Connection;
-import com.tenio.core.network.entity.connection.Session;
-import com.tenio.core.network.entity.connection.SessionType;
+import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.SessionType;
 
 /**
  * A player is one of the base elements in your server. It is a representation

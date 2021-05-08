@@ -43,7 +43,7 @@ import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * Manage all your players ({@link Player}) on the server. It is a singleton

@@ -1,4 +1,4 @@
-package com.tenio.core.network.entity.connection.implement;
+package com.tenio.core.network.entity.session.implement;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -11,10 +11,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.Session;
-import com.tenio.core.network.entity.connection.SessionManager;
 import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.SessionManager;
 
 import io.netty.channel.Channel;
 
@@ -78,6 +79,11 @@ public final class SessionImpl implements Session {
 		__web = false;
 	}
 
+	@Override
+	public InternalEventManager getEventManager() {
+		return null;
+	}
+	
 	@Override
 	public String getId() {
 		return __id;
@@ -204,7 +210,7 @@ public final class SessionImpl implements Session {
 			throw new IllegalCallerException(String.format(
 					"Could not add other connection type, the current connection is: ", __transportType.toString()));
 		}
-		
+
 		if (datagramChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
@@ -225,7 +231,7 @@ public final class SessionImpl implements Session {
 			throw new IllegalCallerException(String.format(
 					"Could not add other connection type, the current connection is: ", __transportType.toString()));
 		}
-		
+
 		if (webSocketChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
@@ -496,23 +502,25 @@ public final class SessionImpl implements Session {
 					__socketChannel.close();
 				}
 			}
+			__sessionManager.removeSessionBySocket(__socketChannel);
 			break;
 
 		case UDP:
 			__datagramChannel = null;
+			__sessionManager.removeSessionByDatagram(getClientInetSocketAddress().toString());
 			break;
 
 		case WEB_SOCKET:
 			if (__webSocketChannel != null) {
 				__webSocketChannel.close();
 			}
+			__sessionManager.removeSessionByWebSocket(__webSocketChannel);
 			break;
 
 		default:
 			break;
 		}
 		__connected = false;
-		__sessionManager.removeSession(this);
 	}
 
 	@Override

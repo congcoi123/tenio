@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.network.define.MessagePriority;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.Session;
 import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.session.Session;
 
 public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 

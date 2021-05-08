@@ -5,9 +5,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.core.network.entity.connection.Session;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 public final class SocketWriterHandler extends AbstractWriterHandler {

@@ -25,7 +25,7 @@ package com.tenio.core.configuration.define;
 
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.entity.Player;
-import com.tenio.core.network.entity.connection.implement.AbstractConnection;
+import com.tenio.core.network.entity.session.implement.AbstractConnection;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should

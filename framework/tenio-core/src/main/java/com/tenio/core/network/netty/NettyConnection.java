@@ -37,8 +37,8 @@ import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.Connection;
-import com.tenio.core.network.entity.connection.implement.AbstractConnection;
+import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.implement.AbstractConnection;
 import com.tenio.core.network.netty.option.NettyConnectionOption;
 
 import io.netty.buffer.Unpooled;

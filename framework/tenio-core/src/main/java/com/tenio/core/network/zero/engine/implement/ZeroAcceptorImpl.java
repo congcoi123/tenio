@@ -20,20 +20,19 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.security.filter.ConnectionFilter;
-import com.tenio.core.network.zero.engine.EngineReader;
-import com.tenio.core.network.zero.engine.ZeroEngineAcceptor;
-import com.tenio.core.network.zero.engine.ZeroEngineAcceptorListener;
-import com.tenio.core.network.zero.engine.ZeroEngineReaderListener;
+import com.tenio.core.network.zero.engine.ZeroAcceptor;
+import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
+import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 
-public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
-		implements ZeroEngineAcceptor, ZeroEngineAcceptorListener {
+public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAcceptor, ZeroAcceptorListener {
 
 	private final List<SocketChannel> __acceptableChannels;
 	private Selector __acceptableSelector;
 	private ConnectionFilter __connectionFilter;
-	private ZeroEngineReaderListener __engineReaderListener;
+	private ZeroReaderListener __zeroReaderListener;
 
-	public ZeroEngineAcceptorImpl() {
+	public ZeroAcceptorImpl(int numberWorkers) {
+		super(numberWorkers);
 		__acceptableChannels = new ArrayList<SocketChannel>();
 	}
 
@@ -70,8 +69,7 @@ public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
 
 			_info("TCP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_error(e);
 		}
 	}
 
@@ -82,11 +80,11 @@ public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
 			datagramChannel.configureBlocking(false);
 			datagramChannel.socket().bind(new InetSocketAddress(serverAddress, port));
 			datagramChannel.socket().setReuseAddress(true);
-			__engineReaderListener.acceptDatagramChannel(datagramChannel);
+			__zeroReaderListener.acceptDatagramChannel(datagramChannel);
 
 			_info("UDP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			e.printStackTrace();
+			_error(e);
 		}
 	}
 
@@ -126,14 +124,6 @@ public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
 					} catch (IOException e) {
 						_error(e);
 					}
-				} else if (selectionKey.isConnectable()) {
-					// a connection was established with a remote server
-
-				} else if (selectionKey.isReadable()) {
-					// a channel is ready for reading
-
-				} else if (selectionKey.isWritable()) {
-					// a channel is ready for writing
 				}
 
 				keyIterator.remove();
@@ -211,7 +201,7 @@ public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
 
 										socketChannel.configureBlocking(false);
 										socketChannel.socket().setTcpNoDelay(false);
-										__engineReaderListener.acceptSocketChannel(socketChannel);
+										__zeroReaderListener.acceptSocketChannel(socketChannel);
 
 									} catch (RefusedAddressException e1) {
 										_error(e1, "Refused connection with address: ", e1.getMessage());
@@ -279,9 +269,8 @@ public final class ZeroEngineAcceptorImpl extends AbstractZeroEngine
 	}
 
 	@Override
-	public void setEngineReader(EngineReader engineReader) {
-		// TODO Auto-generated method stub
-
+	public void setZeroReaderListener(ZeroReaderListener zeroReaderListener) {
+		__zeroReaderListener = zeroReaderListener;
 	}
 
 }

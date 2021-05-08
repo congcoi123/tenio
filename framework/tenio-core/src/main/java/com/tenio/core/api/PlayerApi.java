@@ -35,7 +35,7 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * This class provides you a necessary interface for managing players.

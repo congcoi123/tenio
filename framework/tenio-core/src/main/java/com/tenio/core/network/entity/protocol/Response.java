@@ -3,8 +3,8 @@ package com.tenio.core.network.entity.protocol;
 import java.util.Collection;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.network.entity.connection.Session;
-import com.tenio.core.network.entity.connection.SessionType;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.SessionType;
 
 public interface Response extends Message {
 

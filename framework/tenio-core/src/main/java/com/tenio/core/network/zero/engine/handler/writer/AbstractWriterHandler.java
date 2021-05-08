@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
 import com.tenio.common.logger.SystemLogger;
-import com.tenio.core.network.entity.connection.Session;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {

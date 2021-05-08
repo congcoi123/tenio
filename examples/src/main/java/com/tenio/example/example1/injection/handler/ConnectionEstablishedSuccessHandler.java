@@ -27,7 +27,7 @@ import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.event.EventConnectionEstablishedSuccess;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 import com.tenio.example.example1.PlayerLogin;
 
 /**

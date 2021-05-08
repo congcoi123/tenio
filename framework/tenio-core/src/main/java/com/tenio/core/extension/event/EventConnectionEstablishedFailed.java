@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.extension.event;
 
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * @author kong

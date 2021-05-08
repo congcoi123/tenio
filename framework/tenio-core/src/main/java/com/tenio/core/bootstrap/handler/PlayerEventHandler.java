@@ -43,7 +43,7 @@ import com.tenio.core.extension.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.extension.event.EventPlayerReconnectSuccess;
 import com.tenio.core.extension.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.extension.event.EventSendMessageToPlayer;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * @author kong

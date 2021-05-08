@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler;
 
-import io.netty.channel.socket.DatagramChannel;
+import java.nio.channels.DatagramChannel;
 
 /**
  * UNDER CONSTRUCTION

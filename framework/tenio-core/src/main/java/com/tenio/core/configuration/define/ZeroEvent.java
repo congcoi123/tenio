@@ -32,8 +32,8 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
-import com.tenio.core.network.entity.connection.Connection;
-import com.tenio.core.network.entity.connection.implement.AbstractConnection;
+import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.implement.AbstractConnection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by

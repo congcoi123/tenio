@@ -35,7 +35,7 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.network.IBroadcast;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * This class provides you a necessary interface for sending messages from the

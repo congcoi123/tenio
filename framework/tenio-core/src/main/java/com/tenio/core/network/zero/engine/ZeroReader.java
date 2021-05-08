@@ -21,40 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.netty.broadcast;
+package com.tenio.core.network.zero.engine;
 
-import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
-
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.DatagramChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
+import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 
 /**
- * This class for initializing a channel.
+ * UNDER CONSTRUCTION
  * 
  * @author kong
- * 
  */
-public final class NettyBroadcastInitializer extends ChannelInitializer<DatagramChannel> {
+public interface ZeroReader {
 
-	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
+	void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);
 
-	public NettyBroadcastInitializer(GlobalTrafficShapingHandlerCustomize trafficCounter) {
-		__trafficCounter = trafficCounter;
-	}
+	void setZeroWriter(ZeroWriterListener zeroWriterListener);
 
-	@Override
-	protected void initChannel(DatagramChannel channel) throws Exception {
-		var pipeline = channel.pipeline();
-
-		// converts each data chunk into a byte array (read-up)
-		pipeline.addLast("bytearray-decoder", new ByteArrayDecoder());
-		// converts bytes' array to data chunk (write-down)
-		pipeline.addLast("bytearray-encoder", new ByteArrayEncoder());
-
-		// traffic counter
-		pipeline.addLast("traffic-counter", __trafficCounter);
-	}
+	NetworkReaderStatistic getNetworkReaderStatistic();
 
 }

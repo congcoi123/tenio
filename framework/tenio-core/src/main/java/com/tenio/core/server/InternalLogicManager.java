@@ -39,7 +39,7 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * Handle the main logic of the server.

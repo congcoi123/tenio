@@ -5,11 +5,11 @@ import com.tenio.core.network.codec.AbstractProtocolCodec;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.protocol.Response;
-import com.tenio.core.network.zero.engine.EngineWriter;
+import com.tenio.core.network.zero.engine.ZeroWriter;
 
 public class ZeroBinaryCodec extends AbstractProtocolCodec {
 	
-	private EngineWriter __writer;
+	private ZeroWriter __writer;
 	private PacketEncoder __encoder;
 
 	public ZeroBinaryCodec(InternalEventManager eventManager) {

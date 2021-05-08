@@ -4,9 +4,9 @@ import java.util.Collection;
 
 import com.tenio.core.entity.Player;
 import com.tenio.core.network.WriterManager;
-import com.tenio.core.network.entity.connection.Session;
-import com.tenio.core.network.entity.connection.SessionType;
 import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.SessionType;
 
 public final class ResponseImpl extends AbstractMessage implements Response {
 

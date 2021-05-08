@@ -24,16 +24,17 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine;
 
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public interface ZeroEngineAcceptor {
+public interface ZeroAcceptor {
 
 	void setConnectionFilter(ConnectionFilter connectionFilter);
 
-	void setEngineReaderListener(ZeroEngineReaderListener engineReaderListener);
+	void setZeroReaderListener(ZeroReaderListener zeroReaderListener);
 
 }

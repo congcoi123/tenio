@@ -6,8 +6,7 @@ import java.util.concurrent.Executors;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.StringUtility;
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.network.entity.connection.SessionManager;
+import com.tenio.core.network.entity.session.SessionManager;
 import com.tenio.core.network.zero.handler.DatagramIOHandler;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
 
@@ -22,13 +21,13 @@ public abstract class AbstractZeroEngine extends SystemLogger implements Runnabl
 	private int __threadPoolSize;
 	private volatile boolean __activated;
 
-	public AbstractZeroEngine() {
-
+	public AbstractZeroEngine(int numberWorkers) {
+		setActivated(false);
+		__threadPoolSize = numberWorkers;
+		__id = 0;
 	}
 
 	private void __initializeWorkers() {
-		__id = 0;
-		__threadPoolSize = __configuration.getInt(CoreConfigurationType.NUMBER_ACCEPTOR_WORKER);
 		__threadPool = Executors.newFixedThreadPool(__threadPoolSize);
 	}
 
@@ -96,16 +95,18 @@ public abstract class AbstractZeroEngine extends SystemLogger implements Runnabl
 	@Override
 	public void run() {
 		__id++;
-
 		_info("ENGINE START", _buildgen("engine-", getEngineName(), "-", __id));
-
-		Thread.currentThread().setName(StringUtility.strgen("engine-", getEngineName(), "-", __id));
+		__setThreadName();
 
 		if (isActivated()) {
 			onRun();
 		}
 
 		_info("ENGINE STOPPING", _buildgen("engine-", getEngineName(), "-", __id));
+	}
+
+	private void __setThreadName() {
+		Thread.currentThread().setName(StringUtility.strgen("engine-", getEngineName(), "-", __id));
 	}
 
 	public abstract void onSetup();

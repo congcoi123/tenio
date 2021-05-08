@@ -4,96 +4,40 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.exception.PacketQueueFullException;
 import com.tenio.core.exception.PacketQueuePolicyViolationException;
-import com.tenio.core.network.entity.connection.Session;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.engine.handler.writer.WriterHandler;
+import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 
-public final class EngineWriterImpl extends SystemLogger implements Runnable {
+public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter, ZeroWriterListener {
 
-	private final ExecutorService threadPool;
-	private final BlockingQueue<Session> sessionTicketsQueue = new LinkedBlockingQueue();
-	private volatile int threadId = 1;
-	private volatile boolean isActive = false;
-	private int threadPoolSize;
+	private final BlockingQueue<Session> sessionTicketsQueue;
 	private WriterHandler socketWriter;
 	private WriterHandler datagramWriter;
 	private NetworkWriterStatistic statistic;
 
-	public EngineWriterImpl(int threadPoolSize) {
-		this.threadPoolSize = threadPoolSize;
-		this.threadPool = Executors.newFixedThreadPool(threadPoolSize);
+	public ZeroWriterImpl(int numberWorkers) {
+		super(numberWorkers);
+		sessionTicketsQueue = new LinkedBlockingQueue();
 	}
 
-	public void init(Object o) {
-		// super.init(o);
-		if (this.isActive) {
-			throw new IllegalArgumentException("Object is already initialized. Destroy it first!");
-		} else if (this.threadPoolSize < 1) {
-			throw new IllegalArgumentException("Illegal value for a thread pool size: " + this.threadPoolSize);
-		} else {
-			this.isActive = true;
-			this.initThreadPool();
-			// this.bootLogger.info("Socket Writer started (pool size:" + this.threadPoolSize + ")");
+	private void __writeLoop() {
+		try {
+			Session session = this.sessionTicketsQueue.take();
+			this.processSessionQueue(session);
+		} catch (InterruptedException var3) {
+			// logger.warn("EngineWriter thread interruped: " + Thread.currentThread());
+		} catch (Throwable var4) {
+//			this.logger.warn("Problems in EngineWriter main loop, Thread: " + Thread.currentThread());
 		}
-	}
-
-	public void destroy(Object o) {
-		// super.destroy(o);
-		this.isActive = false;
-		List leftOvers = this.threadPool.shutdownNow();
-		// this.bootLogger.info("EngineWriter stopped. Unprocessed tasks: " + leftOvers.size());
-	}
-
-	public int getQueueSize() {
-		return this.sessionTicketsQueue.size();
-	}
-
-	public int getThreadPoolSize() {
-		return this.threadPoolSize;
-	}
-
-	// set highest priority for the session when channel can write
-	public void continueWriteOp(Session session) {
-		if (session != null) {
-			this.sessionTicketsQueue.add(session);
-		}
-
-	}
-
-	private void initThreadPool() {
-		for (int j = 0; j < this.threadPoolSize; ++j) {
-			this.threadPool.execute(this);
-		}
-
-	}
-
-	public void run() {
-		Thread.currentThread().setName("EngineWriter-" + this.threadId++);
-		
-		while (this.isActive) {
-			try {
-				Session session = this.sessionTicketsQueue.take();
-				this.processSessionQueue(session);
-			} catch (InterruptedException var3) {
-				// logger.warn("EngineWriter thread interruped: " + Thread.currentThread());
-				this.isActive = false;
-			} catch (Throwable var4) {
-//				this.logger.warn("Problems in EngineWriter main loop, Thread: " + Thread.currentThread());
-			}
-		}
-
-//		this.bootLogger.info("EngineWriter threadpool shutting down.");
 	}
 
 	private void processSessionQueue(Session session) {
@@ -129,7 +73,8 @@ public final class EngineWriterImpl extends SystemLogger implements Runnable {
 				}
 			}
 		} catch (ClosedChannelException var8) {
-			// this.logger.warn("Socket closed during write operation for session: " + session);
+			// this.logger.warn("Socket closed during write operation for session: " +
+			// session);
 		} catch (IOException var9) {
 			// this.logger.warn("Error during write. Session: " + session);
 		} catch (Exception var10) {
@@ -137,6 +82,7 @@ public final class EngineWriterImpl extends SystemLogger implements Runnable {
 		}
 	}
 
+	@Override
 	public void enqueuePacket(Packet packet) {
 		Collection<Session> recipients = packet.getRecipients();
 		if (recipients == null) {
@@ -187,6 +133,40 @@ public final class EngineWriterImpl extends SystemLogger implements Runnable {
 			}
 		}
 
+	}
+
+	@Override
+	public void continueWriteInterestOp(Session session) {
+		if (session != null) {
+			this.sessionTicketsQueue.add(session);
+		}
+	}
+
+	@Override
+	public NetworkWriterStatistic getNetworkWriterStatistic() {
+		return statistic;
+	}
+
+	@Override
+	public void onSetup() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRun() {
+		__writeLoop();
+	}
+
+	@Override
+	public void onStop() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getEngineName() {
+		return "writer";
 	}
 
 }

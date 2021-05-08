@@ -1,4 +1,4 @@
-package com.tenio.core.network.entity.connection;
+package com.tenio.core.network.entity.session;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -6,12 +6,15 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 
 import io.netty.channel.Channel;
 
 public interface Session {
+	
+	InternalEventManager getEventManager();
 
 	String getId();
 

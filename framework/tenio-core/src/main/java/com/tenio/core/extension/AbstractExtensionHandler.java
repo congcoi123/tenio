@@ -39,7 +39,7 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.define.RestMethod;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 import com.tenio.core.server.Server;
 
 /**

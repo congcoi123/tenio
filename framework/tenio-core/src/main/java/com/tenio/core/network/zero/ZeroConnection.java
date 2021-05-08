@@ -28,8 +28,8 @@ import java.net.InetSocketAddress;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.connection.Connection;
-import com.tenio.core.network.entity.connection.implement.AbstractConnection;
+import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.implement.AbstractConnection;
 
 /**
  * UNDER CONSTRUCTION

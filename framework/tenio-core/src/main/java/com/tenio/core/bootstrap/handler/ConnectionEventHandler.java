@@ -42,7 +42,7 @@ import com.tenio.core.extension.event.EventConnectionEstablishedFailed;
 import com.tenio.core.extension.event.EventConnectionEstablishedSuccess;
 import com.tenio.core.extension.event.EventDisconnectConnection;
 import com.tenio.core.extension.event.EventReceivedMessageFromConnection;
-import com.tenio.core.network.entity.connection.Connection;
+import com.tenio.core.network.entity.session.Connection;
 
 /**
  * @author kong
