@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.event.Subscriber;
@@ -77,7 +77,7 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventPlayerAfterLeftRoom event) {
-				_on(ZeroEvent.PLAYER_AFTER_LEFT_ROOM, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_AFTER_LEFT_ROOM, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -97,7 +97,7 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventPlayerBeforeLeaveRoom event) {
-				_on(ZeroEvent.PLAYER_BEFORE_LEAVE_ROOM, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_BEFORE_LEAVE_ROOM, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -116,7 +116,7 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventPlayerJoinRoomHandle event) {
-				_on(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -137,7 +137,7 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventRoomWasCreated event) {
-				_on(ZeroEvent.ROOM_WAS_CREATED, new Subscriber() {
+				_on(ExtensionEvent.ROOM_WAS_CREATED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -156,7 +156,7 @@ public final class RoomEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventRoomWillBeRemoved event) {
-				_on(ZeroEvent.ROOM_WILL_BE_REMOVED, new Subscriber() {
+				_on(ExtensionEvent.ROOM_WILL_BE_REMOVED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

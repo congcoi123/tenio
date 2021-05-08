@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.core.network.define.MessagePriority;
+import com.tenio.core.network.define.ResponsePriority;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
@@ -18,7 +18,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	private long __id;
 	private long __createdTime;
 	private byte[] __data;
-	private MessagePriority __priority;
+	private ResponsePriority __priority;
 	private boolean __encrypted;
 	private Session __sender;
 	private TransportType __transportType;
@@ -35,7 +35,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 		__id = __idCounter.getAndIncrement();
 		__createdTime = TimeUtility.currentTimeMillis();
 		__transportType = TransportType.UNKNOWN;
-		__priority = MessagePriority.NORMAL;
+		__priority = ResponsePriority.NORMAL;
 		__encrypted = false;
 	}
 
@@ -66,12 +66,12 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	}
 
 	@Override
-	public MessagePriority getPriority() {
+	public ResponsePriority getPriority() {
 		return __priority;
 	}
 
 	@Override
-	public void setPriority(MessagePriority priority) {
+	public void setPriority(ResponsePriority priority) {
 		__priority = priority;
 	}
 

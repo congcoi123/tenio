@@ -36,7 +36,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.task.schedule.ITask;
+import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.PathConfig;
 import com.tenio.core.event.EventManager;
@@ -51,7 +51,7 @@ import com.tenio.core.network.jetty.servlet.ServletManager;
  * @author kong
  *
  */
-public final class HttpManagerTask extends AbstractLogger implements ITask {
+public final class HttpManagerTask extends AbstractLogger implements Task {
 
 	private Server __server;
 	private final EventManager __eventManager;

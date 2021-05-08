@@ -3,7 +3,7 @@ package com.tenio.core.network.entity.packet;
 import java.util.Collection;
 import java.util.Map;
 
-import com.tenio.core.network.define.MessagePriority;
+import com.tenio.core.network.define.ResponsePriority;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.session.Session;
 
@@ -19,9 +19,9 @@ public interface Packet {
 
 	void setTransportType(TransportType type);
 
-	MessagePriority getPriority();
+	ResponsePriority getPriority();
 
-	void setPriority(MessagePriority priority);
+	void setPriority(ResponsePriority priority);
 	
 	boolean isEncrypted();
 	

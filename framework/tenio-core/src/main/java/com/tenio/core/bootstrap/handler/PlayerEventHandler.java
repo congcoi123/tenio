@@ -30,7 +30,7 @@ import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
@@ -98,7 +98,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerLoginedFailed event) {
 
-				_on(ZeroEvent.PLAYER_LOGINED_FAILED, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_LOGINED_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -117,7 +117,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerLoginedSuccess event) {
 
-				_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -135,7 +135,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerReconnectRequestHandle event) {
 
-				_on(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -154,7 +154,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerReconnectSuccess event) {
 
-				_on(ZeroEvent.PLAYER_RECONNECT_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_RECONNECT_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -172,7 +172,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerGotTimeout event) {
 
-				_on(ZeroEvent.PLAYER_GOT_TIMEOUT, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_GOT_TIMEOUT, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -190,7 +190,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventReceivedMessageFromPlayer event) {
-				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
+				_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -210,7 +210,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventSendMessageToPlayer event) {
-				_on(ZeroEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
+				_on(ExtensionEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -230,7 +230,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventDisconnectPlayer event) {
-				_on(ZeroEvent.DISCONNECT_PLAYER, new Subscriber() {
+				_on(ExtensionEvent.DISCONNECT_PLAYER, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

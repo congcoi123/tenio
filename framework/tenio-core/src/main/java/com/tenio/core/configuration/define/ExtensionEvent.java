@@ -31,20 +31,20 @@ import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.IExtension;
+import com.tenio.core.extension.Extension;
 import com.tenio.core.network.entity.session.Connection;
 import com.tenio.core.network.entity.session.implement.AbstractConnection;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
- * implementing your own logic in the {@link IExtension#initialize()} method.
+ * implementing your own logic in the {@link Extension#initialize()} method.
  * The logic class must be an inheritance of {@link AbstractExtensionHandler}
  * class.
  * 
  * @author kong
  *
  */
-public enum ZeroEvent {
+public enum ExtensionEvent {
 
 	/**
 	 * When the client sends its first request to your server and is made a valid

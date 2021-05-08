@@ -30,10 +30,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.task.schedule.ITask;
+import com.tenio.common.task.schedule.Task;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.event.EventManager;
 
@@ -46,7 +46,7 @@ import com.tenio.core.event.EventManager;
  * @author kong
  * 
  */
-public final class TimeOutScanTask extends AbstractLogger implements ITask {
+public final class TimeOutScanTask extends AbstractLogger implements Task {
 
 	private final EventManager __eventManager;
 	private final PlayerApi __playerApi;
@@ -102,7 +102,7 @@ public final class TimeOutScanTask extends AbstractLogger implements ITask {
 			}
 
 			__removeablePlayers.forEach((player) -> {
-				__eventManager.getExtension().emit(ZeroEvent.PLAYER_GOT_TIMEOUT, player);
+				__eventManager.getExtension().emit(ExtensionEvent.PLAYER_GOT_TIMEOUT, player);
 				__playerApi.logOut(player);
 			});
 

@@ -25,7 +25,7 @@ package com.tenio.example.example4;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -81,7 +81,7 @@ public final class TestServerMovementBroadcast extends AbstractApp {
 		@Override
 		public void initialize(Configuration configuration) {
 
-			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 
@@ -92,7 +92,7 @@ public final class TestServerMovementBroadcast extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, params -> {
+			_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// the player has login successful
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
@@ -105,7 +105,7 @@ public final class TestServerMovementBroadcast extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.FETCHED_CCU_NUMBER, params -> {
+			_on(ExtensionEvent.FETCHED_CCU_NUMBER, params -> {
 				var ccu = _getInteger(params[0]);
 
 				_info("FETCHED_CCU_NUMBER", ccu);
@@ -113,7 +113,7 @@ public final class TestServerMovementBroadcast extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.FETCHED_BANDWIDTH_INFO, params -> {
+			_on(ExtensionEvent.FETCHED_BANDWIDTH_INFO, params -> {
 				long lastReadThroughput = _getLong(params[0]);
 				long lastWriteThroughput = _getLong(params[1]);
 				long realWriteThroughput = _getLong(params[2]);
@@ -132,7 +132,7 @@ public final class TestServerMovementBroadcast extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.MONITORING_SYSTEM, params -> {
+			_on(ExtensionEvent.MONITORING_SYSTEM, params -> {
 				double cpuUsage = _getDouble(params[0]);
 				long totalMemory = _getLong(params[1]);
 				long usedMemory = _getLong(params[2]);

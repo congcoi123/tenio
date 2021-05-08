@@ -33,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.core.configuration.define.InternalEvent;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.event.implement.EventManagerImpl;
@@ -64,7 +64,7 @@ public final class EventTest {
 		}
 
 		// Handle events
-		__eventManager.getExtension().on(ZeroEvent.FETCHED_CCU_NUMBER, args -> {
+		__eventManager.getExtension().on(ExtensionEvent.FETCHED_CCU_NUMBER, args -> {
 			__testCCU[0] = (int) args[0];
 			__testCCU[1] = (int) args[1];
 			return null;
@@ -79,7 +79,7 @@ public final class EventTest {
 		__eventManager.subscribe();
 
 		// Make events listener
-		__eventManager.getExtension().emit(ZeroEvent.FETCHED_CCU_NUMBER, __playerManager.countPlayers(), __playerManager.count());
+		__eventManager.getExtension().emit(ExtensionEvent.FETCHED_CCU_NUMBER, __playerManager.countPlayers(), __playerManager.count());
 
 	}
 
@@ -91,7 +91,7 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertTrue(__eventManager.getExtension().hasSubscriber(ZeroEvent.FETCHED_CCU_NUMBER));
+		assertTrue(__eventManager.getExtension().hasSubscriber(ExtensionEvent.FETCHED_CCU_NUMBER));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public final class EventTest {
 	public void clearAllTEventShouldReturnZero() {
 		__eventManager.getExtension().clear();
 
-		assertFalse(__eventManager.getExtension().hasSubscriber(ZeroEvent.FETCHED_CCU_NUMBER));
+		assertFalse(__eventManager.getExtension().hasSubscriber(ExtensionEvent.FETCHED_CCU_NUMBER));
 	}
 
 }

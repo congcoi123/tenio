@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.event.Emitter;
 
 /**
@@ -48,19 +48,19 @@ public final class ExtEventHandler<T> {
 	 * An instance creates a mapping between an event with its list of event
 	 * handlers.
 	 */
-	private final Map<ZeroEvent, List<Emitter<T>>> __delegate;
+	private final Map<ExtensionEvent, List<Emitter<T>>> __delegate;
 
 	public ExtEventHandler() {
-		__delegate = new HashMap<ZeroEvent, List<Emitter<T>>>();
+		__delegate = new HashMap<ExtensionEvent, List<Emitter<T>>>();
 	}
 
 	/**
 	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @param event  see {@link ZeroEvent}
+	 * @param event  see {@link ExtensionEvent}
 	 * @param emitter see {@link Emitter}
 	 */
-	public void subscribe(ZeroEvent event, Emitter<T> emitter) {
+	public void subscribe(ExtensionEvent event, Emitter<T> emitter) {
 		if (__delegate.containsKey(event)) {
 			__delegate.get(event).add(emitter);
 		} else {
@@ -75,12 +75,12 @@ public final class ExtEventHandler<T> {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param event see {@link ZeroEvent}
+	 * @param event see {@link ExtensionEvent}
 	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
 	 */
-	public Object emit(ZeroEvent event, @SuppressWarnings("unchecked") T... params) {
+	public Object emit(ExtensionEvent event, @SuppressWarnings("unchecked") T... params) {
 		if (!__delegate.isEmpty()) {
 			Object object = null;
 			if (__delegate.containsKey(event)) {

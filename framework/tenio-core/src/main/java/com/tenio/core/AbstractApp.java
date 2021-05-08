@@ -31,8 +31,8 @@ import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
-import com.tenio.core.extension.IExtension;
-import com.tenio.core.server.Server;
+import com.tenio.core.extension.Extension;
+import com.tenio.core.server.ServerImpl;
 
 /**
  * Your application will start from here.
@@ -72,7 +72,7 @@ public abstract class AbstractApp extends AbstractLogger {
 		var configuration = getConfiguration();
 		var extension = getExtension();
 
-		var server = Server.getInstance();
+		var server = ServerImpl.getInstance();
 		server.setExtension(extension);
 		try {
 			if (bootstrap == null) {
@@ -105,7 +105,7 @@ public abstract class AbstractApp extends AbstractLogger {
 	/**
 	 * @return an extension for handling your own logic class
 	 */
-	public abstract IExtension getExtension();
+	public abstract Extension getExtension();
 
 	/**
 	 * @return your own class that derived from {@link Configuration} class
@@ -115,7 +115,7 @@ public abstract class AbstractApp extends AbstractLogger {
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted(IExtension extension, Configuration configuration);
+	public abstract void onStarted(Extension extension, Configuration configuration);
 
 	/**
 	 * The trigger is called when server was tear down

@@ -21,16 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.jetty.servlet;
+package com.tenio.common.task.schedule;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author kong
  */
-public interface IServletHandler {
+public interface Task {
 
-	void handle(HttpServletRequest request, HttpServletResponse response);
+	ScheduledFuture<?> run();
 
 }

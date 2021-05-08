@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.exception;
 
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 
 /**
  * @author kong
@@ -38,11 +38,11 @@ public final class NotDefinedSubscribersException extends Exception {
 
 	}
 
-	public NotDefinedSubscribersException(ZeroEvent... events) {
+	public NotDefinedSubscribersException(ExtensionEvent... events) {
 		super(__getMessage(events));
 	}
 
-	private static String __getMessage(ZeroEvent... events) {
+	private static String __getMessage(ExtensionEvent... events) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Need to implement subscribers: ");
 		for (var event : events) {

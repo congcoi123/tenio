@@ -30,7 +30,7 @@ import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
@@ -93,7 +93,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventConnectionEstablishedSuccess event) {
-				_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -112,7 +112,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventConnectionEstablishedFailed event) {
-				_on(ZeroEvent.CONNECTION_ESTABLISHED_FAILED, new Subscriber() {
+				_on(ExtensionEvent.CONNECTION_ESTABLISHED_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -131,7 +131,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventReceivedMessageFromConnection event) {
-				_on(ZeroEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new Subscriber() {
+				_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -150,7 +150,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventAttachConnectionRequestValidate event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new Subscriber() {
+				_on(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -167,7 +167,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventAttachConnectionSuccess event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.ATTACH_CONNECTION_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -186,7 +186,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventAttachConnectionFailed event) {
-				_on(ZeroEvent.ATTACH_CONNECTION_FAILED, new Subscriber() {
+				_on(ExtensionEvent.ATTACH_CONNECTION_FAILED, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -206,7 +206,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventDisconnectConnection event) {
-				_on(ZeroEvent.DISCONNECT_CONNECTION, new Subscriber() {
+				_on(ExtensionEvent.DISCONNECT_CONNECTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

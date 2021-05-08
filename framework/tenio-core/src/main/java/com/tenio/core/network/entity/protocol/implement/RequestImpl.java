@@ -1,20 +1,19 @@
 package com.tenio.core.network.entity.protocol.implement;
 
-import bitzero.engine.data.MessagePriority;
-import bitzero.engine.data.TransportType;
-import bitzero.engine.sessions.ISession;
-import bitzero.engine.sessions.SessionType;
-import bitzero.server.BitZeroServer;
+import com.tenio.core.network.define.ResponsePriority;
+import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.session.SessionType;
 
-public final class Request extends AbstractEngineMessage implements IRequest {
+public final class RequestImpl extends AbstractMessage implements Request {
      private ISession sender;
      private TransportType type;
-     private MessagePriority priority;
+     private ResponsePriority priority;
      private long timeStamp;
 
-     public Request() {
+     public RequestImpl() {
           this.type = TransportType.TCP;
-          this.priority = MessagePriority.NORMAL;
+          this.priority = ResponsePriority.NORMAL;
           this.timeStamp = System.nanoTime();
      }
 
@@ -34,11 +33,11 @@ public final class Request extends AbstractEngineMessage implements IRequest {
           this.type = type;
      }
 
-     public MessagePriority getPriority() {
+     public ResponsePriority getPriority() {
           return this.priority;
      }
 
-     public void setPriority(MessagePriority priority) {
+     public void setPriority(ResponsePriority priority) {
           this.priority = priority;
      }
 
@@ -63,6 +62,5 @@ public final class Request extends AbstractEngineMessage implements IRequest {
      }
 
      public String toString() {
-          return !BitZeroServer.isDebug() ? "" : String.format("[Req Type: %s, Prt: %s, Sender: %s]", this.type, this.priority, this.sender);
      }
 }

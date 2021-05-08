@@ -24,336 +24,84 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.data.element.CommonObjectArray;
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.logger.pool.ElementsPool;
-import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.task.ITaskManager;
-import com.tenio.common.task.TaskManager;
-import com.tenio.common.utility.StringUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.bootstrap.EventHandler;
-import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.configuration.data.HttpConfig;
-import com.tenio.core.configuration.data.SocketConfig;
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.ZeroEvent;
-import com.tenio.core.entity.manager.PlayerManager;
-import com.tenio.core.entity.manager.RoomManager;
-import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
-import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.EventManager;
-import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.exception.NotDefinedSocketConnectionException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
-import com.tenio.core.extension.IExtension;
-import com.tenio.core.monitoring.system.SystemInfo;
-import com.tenio.core.network.IBroadcast;
-import com.tenio.core.network.Network;
-import com.tenio.core.network.jetty.HttpManagerTask;
-import com.tenio.core.network.netty.NettyNetwork;
-import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.CommonObjectArrayPool;
-import com.tenio.core.pool.CommonObjectPool;
-import com.tenio.core.task.schedule.CCUScanTask;
-import com.tenio.core.task.schedule.DeadlockScanTask;
-import com.tenio.core.task.schedule.EmptyRoomScanTask;
-import com.tenio.core.task.schedule.SystemMonitoringTask;
-import com.tenio.core.task.schedule.TimeOutScanTask;
+import com.tenio.core.extension.Extension;
 
 /**
  * This class manages the workflow of the current server. The instruction's
  * orders are important, event subscribes must be set last and all configuration
  * values should be confirmed.
  * 
- * @see IServer
- * 
  * @author kong
  * 
  */
-@ThreadSafe
-public final class Server extends AbstractLogger implements IServer {
+interface Server {
 
-	private static Server __instance;
+	/**
+	 * Start the server base on your own configurations
+	 * 
+	 * @param configuration, see {@link Configuration}
+	 * @param eventHandler,  see {@link EventHandler}
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws NotDefinedSocketConnectionException
+	 * @throws NotDefinedSubscribersException
+	 * @throws DuplicatedUriAndMethodException
+	 */
+	void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
+			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
 
-	private Server() {
-		__commonObjectPool = new CommonObjectPool();
-		__commonObjectArrayPool = new CommonObjectArrayPool();
-		__byteArrayInputPool = new ByteArrayInputStreamPool();
+	/**
+	 * Shut down the server and close all services
+	 */
+	void shutdown();
 
-		__eventManager = new EventManagerImpl();
-		__network = new NettyNetwork();
+	/**
+	 * @return Returns your own implemented extension
+	 */
+	Extension getExtension();
 
-		__roomManager = new RoomManagerImpl(__eventManager);
-		__playerManager = new PlayerManagerImpl(__eventManager);
-		__taskManager = new TaskManager();
+	/**
+	 * Set your own extension for handling your own logic in-game
+	 * 
+	 * @param extension your own logic handling @see {@link Extension}
+	 */
+	void setExtension(Extension extension);
 
-		__playerApi = new PlayerApi(__playerManager, __roomManager);
-		__roomApi = new RoomApi(__roomManager);
-		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool, __playerManager,
-				(IBroadcast) __network);
+	/**
+	 * @return see {@link EventManager}
+	 */
+	EventManager getEventManager();
 
-		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
+	/**
+	 * @return see {@link PlayerApi}
+	 */
+	PlayerApi getPlayerApi();
 
-		// print out the framework's preface
-		for (var line : CommonConstants.CREDIT) {
-			_info("", "", line);
-		}
-	} // prevent creation manually
+	/**
+	 * @return see {@link RoomApi}
+	 */
+	RoomApi getRoomApi();
 
-	// preventing Singleton object instantiation from outside
-	// creates multiple instance if two thread access this method simultaneously
-	public static Server getInstance() {
-		if (__instance == null) {
-			__instance = new Server();
-		}
-		return __instance;
-	}
+	/**
+	 * @return see {@link MessageApi}
+	 */
+	MessageApi getMessageApi();
 
-	private Configuration __configuration;
-
-	private final ElementsPool<CommonObject> __commonObjectPool;
-	private final ElementsPool<CommonObjectArray> __commonObjectArrayPool;
-	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-
-	private final EventManager __eventManager;
-
-	private final RoomManager __roomManager;
-	private final PlayerManager __playerManager;
-	private final ITaskManager __taskManager;
-
-	private final PlayerApi __playerApi;
-	private final RoomApi __roomApi;
-	private final TaskApi __taskApi;
-	private final MessageApi __messageApi;
-
-	private final InternalLogicManager __internalLogic;
-	private final Network __network;
-	private IExtension __extension;
-
-	private List<SocketConfig> __socketPorts;
-	private List<SocketConfig> __webSocketPorts;
-	private List<HttpConfig> __httpPorts;
-	private int __socketPortsSize;
-	private int __webSocketPortsSize;
-	private String __serverName;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
-			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
-		__configuration = configuration;
-
-		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
-
-		// show system information
-		var systemInfo = new SystemInfo();
-		systemInfo.logSystemInfo();
-		systemInfo.logNetCardsInfo();
-		systemInfo.logDiskInfo();
-
-		_info("SERVER", __serverName, "Starting ...");
-
-		// Put the current configurations to the logger
-		_info("CONFIGURATION", configuration.toString());
-
-		// create all ports information
-		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
-		__webSocketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__httpPorts = (List<HttpConfig>) (configuration.get(CoreConfigurationType.HTTP_PORTS));
-
-		__socketPortsSize = __socketPorts.size();
-		__webSocketPortsSize = __webSocketPorts.size();
-
-		// managements
-		__playerManager.initialize(configuration);
-		__roomManager.initialize(configuration);
-
-		// main server logic
-		__internalLogic.init(configuration);
-
-		// initialize the subscribers
-		var extension = getExtension();
-		if (extension != null) {
-			extension.initialize(configuration);
-		}
-		if (eventHandler != null) {
-			eventHandler.initialize();
-		}
-
-		// server need at least one connection to start up
-		__checkDefinedMainSocketConnection(configuration);
-
-		// HTTP checking
-		__checkSubscriberHttpHandler(configuration);
-
-		// schedules
-		__createAllSchedules(configuration);
-
-		// HTTP handler
-		__createHttpManagers(configuration);
-
-		// start network
-		__startNetwork(configuration, __commonObjectPool, __byteArrayInputPool);
-
-		// check subscribers must handle subscribers for UDP attachment
-		__checkSubscriberSubConnectionAttach(configuration);
-
-		// must handle subscribers for reconnection
-		__checkSubscriberReconnection(configuration);
-
-		// collect all subscribers, listen all the events
-		__eventManager.subscribe();
-
-		_info("SERVER", __serverName, "Started!");
-	}
-
-	private void __startNetwork(Configuration configuration, ElementsPool<CommonObject> msgObjectPool,
-			ElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
-		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
-	}
-
-	@Override
-	public synchronized void shutdown() {
-		_info("SERVER", __serverName, "Stopping ...");
-		__shutdown();
-		_info("SERVER", __serverName, "Stopped!");
-	}
-
-	private void __shutdown() {
-		if (__network != null) {
-			__network.shutdown();
-		}
-		// clear configuration
-		__configuration.clear();
-		// clear all managers
-		__roomManager.clear();
-		__playerManager.clear();
-		__taskManager.clear();
-		__eventManager.clear();
-		// clear all pools
-		__commonObjectPool.cleanup();
-		__commonObjectArrayPool.cleanup();
-		__byteArrayInputPool.cleanup();
-		// clear all ports
-		__socketPorts.clear();
-		__webSocketPorts.clear();
-		__httpPorts.clear();
-	}
-
-	@Override
-	public IExtension getExtension() {
-		return __extension;
-	}
-
-	@Override
-	public void setExtension(IExtension extension) {
-		__extension = extension;
-	}
-
-	private void __checkSubscriberReconnection(Configuration configuration) throws NotDefinedSubscribersException {
-		if (configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
-					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.PLAYER_RECONNECT_SUCCESS)) {
-				throw new NotDefinedSubscribersException(ZeroEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
-						ZeroEvent.PLAYER_RECONNECT_SUCCESS);
-			}
-		}
-	}
-
-	private void __checkSubscriberSubConnectionAttach(Configuration configuration)
-			throws NotDefinedSubscribersException {
-		if (__socketPortsSize > 1 || __webSocketPortsSize > 1) {
-			if (!__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
-					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.ATTACH_CONNECTION_FAILED)) {
-				throw new NotDefinedSubscribersException(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
-						ZeroEvent.ATTACH_CONNECTION_SUCCESS, ZeroEvent.ATTACH_CONNECTION_FAILED);
-			}
-		}
-	}
-
-	private void __checkDefinedMainSocketConnection(Configuration configuration)
-			throws NotDefinedSocketConnectionException {
-		if (__socketPorts.isEmpty() && __webSocketPorts.isEmpty()) {
-			throw new NotDefinedSocketConnectionException();
-		}
-	}
-
-	private void __checkSubscriberHttpHandler(Configuration configuration) throws NotDefinedSubscribersException {
-		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_VALIDATE)
-				|| !__eventManager.getExtension().hasSubscriber(ZeroEvent.HTTP_REQUEST_HANDLE))) {
-			throw new NotDefinedSubscribersException(ZeroEvent.HTTP_REQUEST_VALIDATE, ZeroEvent.HTTP_REQUEST_HANDLE);
-		}
-	}
-
-	private void __createAllSchedules(Configuration configuration) {
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new TimeOutScanTask(__eventManager, __playerApi,
-						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
-						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
-						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
-
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
-						.run());
-
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
-				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
-
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
-				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
-
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
-				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
-	}
-
-	private String __createHttpManagers(Configuration configuration) throws DuplicatedUriAndMethodException {
-		for (int i = 0; i < __httpPorts.size(); i++) {
-			var port = __httpPorts.get(i);
-			var httpManager = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
-			httpManager.setup();
-			__taskManager.create(StringUtility.strgen(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
-					httpManager.run());
-		}
-		return null;
-	}
-
-	@Override
-	public PlayerApi getPlayerApi() {
-		return __playerApi;
-	}
-
-	@Override
-	public RoomApi getRoomApi() {
-		return __roomApi;
-	}
-
-	@Override
-	public MessageApi getMessageApi() {
-		return __messageApi;
-	}
-
-	@Override
-	public TaskApi getTaskApi() {
-		return __taskApi;
-	}
-
-	@Override
-	public EventManager getEventManager() {
-		return __eventManager;
-	}
+	/**
+	 * @return see {@link TaskApi}
+	 */
+	TaskApi getTaskApi();
 
 }

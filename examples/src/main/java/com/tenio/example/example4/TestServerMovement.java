@@ -25,7 +25,7 @@ package com.tenio.example.example4;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -101,7 +101,7 @@ public final class TestServerMovement extends AbstractApp {
 				_error(e, "world");
 			}
 
-			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 
@@ -112,7 +112,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, params -> {
+			_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// the player has login successful
 				var player = (Inspector) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
@@ -126,7 +126,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
+			_on(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, params -> {
 				var message = _getCommonObject(params[1]);
 				var playerName = message.getString("u");
 
@@ -138,7 +138,7 @@ public final class TestServerMovement extends AbstractApp {
 				return _playerApi.get(playerName);
 			});
 
-			_on(ZeroEvent.ATTACH_CONNECTION_SUCCESS, params -> {
+			_on(ExtensionEvent.ATTACH_CONNECTION_SUCCESS, params -> {
 				var player = (Inspector) _getPlayer(params[1]);
 
 				// _info("ATTACH_CONNECTION_SUCCESS", player.toString(),
@@ -149,7 +149,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.ATTACH_CONNECTION_FAILED, params -> {
+			_on(ExtensionEvent.ATTACH_CONNECTION_FAILED, params -> {
 				var message = _getCoreMessageCode(params[2]);
 
 				_info("ATTACH_CONNECTION_FAILED", message);
@@ -157,7 +157,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.FETCHED_CCU_NUMBER, params -> {
+			_on(ExtensionEvent.FETCHED_CCU_NUMBER, params -> {
 				var ccu = _getInteger(params[0]);
 
 				_info("FETCHED_CCU_NUMBER", ccu);
@@ -165,7 +165,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.FETCHED_BANDWIDTH_INFO, params -> {
+			_on(ExtensionEvent.FETCHED_BANDWIDTH_INFO, params -> {
 				long lastReadThroughput = _getLong(params[0]);
 				long lastWriteThroughput = _getLong(params[1]);
 				long realWriteThroughput = _getLong(params[2]);
@@ -184,7 +184,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.MONITORING_SYSTEM, params -> {
+			_on(ExtensionEvent.MONITORING_SYSTEM, params -> {
 				double cpuUsage = _getDouble(params[0]);
 				long totalMemory = _getLong(params[1]);
 				long usedMemory = _getLong(params[2]);
@@ -201,7 +201,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.EXCEPTION, params -> {
+			_on(ExtensionEvent.EXCEPTION, params -> {
 				var exception = _getThrowable(params[0]);
 
 				_error(exception);
@@ -209,7 +209,7 @@ public final class TestServerMovement extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+			_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
 				var player = _getPlayer(params[0]);
 				var connectionId = _getInteger(params[1]);
 				var request = _getCommonObject(params[2]);

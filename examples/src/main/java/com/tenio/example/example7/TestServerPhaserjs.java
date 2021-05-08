@@ -27,7 +27,7 @@ import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.example.server.TestConfiguration;
@@ -77,7 +77,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 
 		@Override
 		public void initialize(Configuration configuration) {
-			_on(ZeroEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
+			_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
 				var connection = _getConnection(params[0]);
 				var message = _getCommonObject(params[1]);
 
@@ -90,7 +90,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.PLAYER_LOGINED_SUCCESS, params -> {
+			_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, params -> {
 				// The player has login successful
 				var player = (PlayerPhaserjs) _getPlayer(params[0]);
 				player.setIgnoreTimeout(true);
@@ -104,7 +104,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, params -> {
+			_on(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, params -> {
 				var room = (RoomPhaserjs) _getRoom(params[1]);
 
 				var pack = _messageApi.getMessageObjectArray();
@@ -122,7 +122,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+			_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
 				var player = (PlayerPhaserjs) _getPlayer(params[0]);
 				var message = _getCommonObject(params[2]);
 				var move = message.getMessageObjectArray("d");
@@ -138,7 +138,7 @@ public final class TestServerPhaserjs extends AbstractApp {
 				return null;
 			});
 
-			_on(ZeroEvent.FETCHED_CCU_NUMBER, params -> {
+			_on(ExtensionEvent.FETCHED_CCU_NUMBER, params -> {
 				var ccu = _getInteger(params[0]);
 
 				_info("FETCHED_CCU_INFO", ccu);

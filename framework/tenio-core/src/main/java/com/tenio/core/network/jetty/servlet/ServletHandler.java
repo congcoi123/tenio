@@ -21,28 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.extension;
+package com.tenio.core.network.jetty.servlet;
 
-import com.tenio.common.configuration.Configuration;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * An entry point class is the first one you start to handle your own logic
- * in-game. The class must be implemented this interface and be created as a new
- * instance. In this new object, you can create a number of other logic handler
- * instances @see {@link AbstractExtensionHandler} and declare these in here. It
- * should be had only one entry point class for each server. instance. It should
- * be had only one entry point class for each server.
- * 
  * @author kong
- * 
  */
-public interface IExtension {
+public interface ServletHandler {
 
-	/**
-	 * Initialize extension processing
-	 * 
-	 * @param configuration base configuration in server
-	 */
-	void initialize(Configuration configuration);
-	
+	void handle(HttpServletRequest request, HttpServletResponse response);
+
 }

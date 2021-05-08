@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.github.congcoi123</groupId>
 		<artifactId>tenio-all</artifactId>
-		<version>4.0.0</version>
+		<version>5.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -16,7 +16,6 @@
 	<properties>
 		<google.guava.version>30.0-jre</google.guava.version>
 		<logging.log4j.version>2.13.3</logging.log4j.version>
-		<org.msgpack.version>0.6.12</org.msgpack.version>
 	</properties>
 
 	<dependencies>
@@ -29,11 +28,6 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${logging.log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.msgpack</groupId>
-			<artifactId>msgpack</artifactId>
-			<version>${org.msgpack.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -28,12 +28,12 @@ import java.util.concurrent.ScheduledFuture;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.task.ITaskManager;
+import com.tenio.common.task.TaskManager;
 
 /**
  * This class provides you a necessary interface for managing tasks.
  * 
- * @see ITaskManager
+ * @see TaskManager
  * 
  * @author kong
  * 
@@ -41,9 +41,9 @@ import com.tenio.common.task.ITaskManager;
 @ThreadSafe
 public final class TaskApi extends AbstractLogger {
 
-	private final ITaskManager __taskManager;
+	private final TaskManager __taskManager;
 
-	public TaskApi(ITaskManager taskManager) {
+	public TaskApi(TaskManager taskManager) {
 		__taskManager = taskManager;
 	}
 

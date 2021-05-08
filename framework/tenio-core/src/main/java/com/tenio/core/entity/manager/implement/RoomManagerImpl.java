@@ -33,7 +33,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.manager.RoomManager;
@@ -110,12 +110,12 @@ public final class RoomManagerImpl implements RoomManager {
 		synchronized (__rooms) {
 			if (__rooms.containsKey(room.getId())) {
 				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
+				__eventManager.getExtension().emit(ExtensionEvent.ROOM_WAS_CREATED, room, CoreMessageCode.ROOM_WAS_EXISTED);
 				throw new DuplicatedRoomIdException(room.getId());
 			}
 			__rooms.put(room.getId(), room);
 			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.ROOM_WAS_CREATED, room);
+			__eventManager.getExtension().emit(ExtensionEvent.ROOM_WAS_CREATED, room);
 		}
 	}
 
@@ -127,7 +127,7 @@ public final class RoomManagerImpl implements RoomManager {
 			}
 
 			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.ROOM_WILL_BE_REMOVED, room);
+			__eventManager.getExtension().emit(ExtensionEvent.ROOM_WILL_BE_REMOVED, room);
 			// force all players to leave this room
 			__forceAllPlayersLeaveRoom(room);
 			// remove itself from the current list
@@ -158,13 +158,13 @@ public final class RoomManagerImpl implements RoomManager {
 	@Override
 	public CoreMessageCode makePlayerJoinRoom(Room room, Player player) {
 		if (room.containPlayerName(player.getName())) {
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
+			__eventManager.getExtension().emit(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
 			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
 		}
 
 		if (room.isFull()) {
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
+			__eventManager.getExtension().emit(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 					CoreMessageCode.ROOM_IS_FULL);
 			return CoreMessageCode.ROOM_IS_FULL;
 		}
@@ -172,7 +172,7 @@ public final class RoomManagerImpl implements RoomManager {
 		room.addPlayer(player);
 		player.setCurrentRoom(room);
 		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
+		__eventManager.getExtension().emit(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
 
 		return null;
 	}
@@ -185,11 +185,11 @@ public final class RoomManagerImpl implements RoomManager {
 		}
 
 		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
+		__eventManager.getExtension().emit(ExtensionEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
 		room.removePlayer(player);
 		player.setCurrentRoom(null);
 		// fire an event
-		__eventManager.getExtension().emit(ZeroEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
+		__eventManager.getExtension().emit(ExtensionEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
 
 		return null;
 	}

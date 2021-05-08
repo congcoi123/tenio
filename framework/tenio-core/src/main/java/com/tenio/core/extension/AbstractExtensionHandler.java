@@ -33,18 +33,18 @@ import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.entity.session.Connection;
-import com.tenio.core.server.Server;
+import com.tenio.core.server.ServerImpl;
 
 /**
  * This class provides you all the necessary APIs for your own logic game
- * handling. The entry point class must implement the {@link IExtension}
+ * handling. The entry point class must implement the {@link Extension}
  * interface. After that, you can create your desired number of handled logic
  * classes. These logic instances in the entry point object will be handled from
  * up to bottom. It works like a chain, you try to add a new value into an
@@ -57,7 +57,7 @@ import com.tenio.core.server.Server;
  */
 public abstract class AbstractExtensionHandler extends AbstractLogger {
 
-	private final Server __server = Server.getInstance();
+	private final ServerImpl __server = ServerImpl.getInstance();
 
 	/**
 	 * @see MessageApi
@@ -80,10 +80,10 @@ public abstract class AbstractExtensionHandler extends AbstractLogger {
 	 * Handle your own logic with the corresponding event type
 	 * 
 	 * @param event      the type of this current event. All the supported type can
-	 *                   be found in {@link ZeroEvent}
+	 *                   be found in {@link ExtensionEvent}
 	 * @param subscriber your own subscriber-class handler
 	 */
-	protected void _on(ZeroEvent event, Subscriber subscriber) {
+	protected void _on(ExtensionEvent event, Subscriber subscriber) {
 		__server.getEventManager().getExtension().on(event, subscriber);
 	}
 

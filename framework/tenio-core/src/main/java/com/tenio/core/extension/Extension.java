@@ -21,48 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.task;
+package com.tenio.core.extension;
 
-import java.util.concurrent.ScheduledFuture;
+import com.tenio.common.configuration.Configuration;
 
 /**
- * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
- * tasks. The scheduler is used to schedule a thread or task that executes at a
- * certain period of time or periodically at a fixed interval. It's useful when
- * you want to create a time counter before starting a match or send messages
- * periodically for one player.
+ * An entry point class is the first one you start to handle your own logic
+ * in-game. The class must be implemented this interface and be created as a new
+ * instance. In this new object, you can create a number of other logic handler
+ * instances @see {@link AbstractExtensionHandler} and declare these in here. It
+ * should be had only one entry point class for each server. instance. It should
+ * be had only one entry point class for each server.
  * 
  * @author kong
  * 
  */
-public interface ITaskManager {
+public interface Extension {
 
 	/**
-	 * Create a new task.
+	 * Initialize extension processing
 	 * 
-	 * @param id   the unique id for management
-	 * @param task the running task, see {@link ScheduledFuture}
+	 * @param configuration base configuration in server
 	 */
-	void create(String id, ScheduledFuture<?> task);
-
-	/**
-	 * Kill or stop a running task.
-	 * 
-	 * @param id the unique id
-	 */
-	void kill(String id);
-
-	/**
-	 * Kill or stop all running tasks.
-	 */
-	void clear();
-
-	/**
-	 * Retrieve the remain time of one task.
-	 * 
-	 * @param id the unique for retrieving the desired task
-	 * @return the left time
-	 */
-	int getRemainTime(String id);
-
+	void initialize(Configuration configuration);
+	
 }

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtensionHandler;
@@ -60,7 +60,7 @@ public final class HttpEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventHttpRequestValidate event) {
-				_on(ZeroEvent.HTTP_REQUEST_VALIDATE, new Subscriber() {
+				_on(ExtensionEvent.HTTP_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -78,7 +78,7 @@ public final class HttpEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventHttpRequestHandle event) {
-				_on(ZeroEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
+				_on(ExtensionEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

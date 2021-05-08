@@ -28,10 +28,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.task.schedule.ITask;
+import com.tenio.common.task.schedule.Task;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.event.EventManager;
 
 /**
@@ -41,7 +41,7 @@ import com.tenio.core.event.EventManager;
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger implements ITask {
+public final class CCUScanTask extends AbstractLogger implements Task {
 
 	private final EventManager __eventManager;
 	/**
@@ -60,7 +60,7 @@ public final class CCUScanTask extends AbstractLogger implements ITask {
 	public ScheduledFuture<?> run() {
 		_info("CCU SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ZeroEvent.FETCHED_CCU_NUMBER, __playerApi.countPlayers(), __playerApi.count());
+			__eventManager.getExtension().emit(ExtensionEvent.FETCHED_CCU_NUMBER, __playerApi.countPlayers(), __playerApi.count());
 		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
 	}
 

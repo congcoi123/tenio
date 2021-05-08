@@ -29,7 +29,7 @@ import java.util.List;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.tenio.common.logger.SystemLogger;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
 
@@ -59,13 +59,13 @@ public final class ExtEventManager extends SystemLogger {
 	/**
 	 * Emit an event with its parameters.
 	 * 
-	 * @param event  see {@link ZeroEvent}
+	 * @param event  see {@link ExtensionEvent}
 	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see ExtEventProducer#emit(ZeroEvent, Object...)
+	 * @see ExtEventProducer#emit(ExtensionEvent, Object...)
 	 */
-	public Object emit(ZeroEvent event, Object... params) {
+	public Object emit(ExtensionEvent event, Object... params) {
 		if (__isOnlyShownInTracedLog(event)) {
 			_trace(event.name(), params);
 		} else {
@@ -77,10 +77,10 @@ public final class ExtEventManager extends SystemLogger {
 	/**
 	 * Add a subscriber's handler.
 	 * 
-	 * @param event      see {@link ZeroEvent}
+	 * @param event      see {@link ExtensionEvent}
 	 * @param subscriber see {@link Subscriber}
 	 */
-	public void on(ZeroEvent event, Subscriber subscriber) {
+	public void on(ExtensionEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
 			_info("EXTERNAL EVENT WARNING", "Duplicated", event);
 		}
@@ -96,7 +96,7 @@ public final class ExtEventManager extends SystemLogger {
 		__producer.clear();
 
 		// only for log recording
-		var events = new ArrayList<ZeroEvent>();
+		var events = new ArrayList<ExtensionEvent>();
 		// start handling
 		__eventSubscribers.forEach(eventSubscriber -> {
 			events.add(eventSubscriber.getEvent());
@@ -115,10 +115,10 @@ public final class ExtEventManager extends SystemLogger {
 	/**
 	 * Check if an event has any subscribers or not.
 	 * 
-	 * @param event see {@link ZeroEvent}
+	 * @param event see {@link ExtensionEvent}
 	 * @return <b>true</b> if an event has any subscribers
 	 */
-	public boolean hasSubscriber(ZeroEvent event) {
+	public boolean hasSubscriber(ExtensionEvent event) {
 		return __eventSubscribers.stream().anyMatch(eventSubscriber -> eventSubscriber.hasEvent(event));
 	}
 
@@ -136,7 +136,7 @@ public final class ExtEventManager extends SystemLogger {
 	 * @param event the event's type
 	 * @return <b>true</b> if an event can be traced
 	 */
-	private boolean __isOnlyShownInTracedLog(ZeroEvent event) {
+	private boolean __isOnlyShownInTracedLog(ExtensionEvent event) {
 		switch (event) {
 		case SEND_MESSAGE_TO_PLAYER:
 		case RECEIVED_MESSAGE_FROM_CONNECTION:

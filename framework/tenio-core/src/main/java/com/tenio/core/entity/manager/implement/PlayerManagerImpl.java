@@ -35,7 +35,7 @@ import com.tenio.core.configuration.constant.CoreConstants;
 import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ZeroEvent;
+import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -128,7 +128,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void add(Player player, Connection connection) throws DuplicatedPlayerException, NullPlayerNameException {
 		if (player.getName() == null) {
 			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
+			__eventManager.getExtension().emit(ExtensionEvent.PLAYER_LOGINED_FAILED, player,
 					CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			throw new NullPlayerNameException();
 		}
@@ -136,7 +136,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
+				__eventManager.getExtension().emit(ExtensionEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				throw new DuplicatedPlayerException(player.getName());
 			}
@@ -157,7 +157,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 
 			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ExtensionEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}
@@ -167,7 +167,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 		synchronized (__players) {
 			if (__players.containsKey(player.getName())) {
 				// fire an event
-				__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_FAILED, player,
+				__eventManager.getExtension().emit(ExtensionEvent.PLAYER_LOGINED_FAILED, player,
 						CoreMessageCode.PLAYER_WAS_EXISTED);
 				throw new DuplicatedPlayerException(player.getName());
 			}
@@ -176,7 +176,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 			__count = __players.size();
 			__countPlayers = (int) __players.values().stream().filter(p -> !p.isNPC()).count();
 			// fire an event
-			__eventManager.getExtension().emit(ZeroEvent.PLAYER_LOGINED_SUCCESS, player);
+			__eventManager.getExtension().emit(ExtensionEvent.PLAYER_LOGINED_SUCCESS, player);
 		}
 
 	}

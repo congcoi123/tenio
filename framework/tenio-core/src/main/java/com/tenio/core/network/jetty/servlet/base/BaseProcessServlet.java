@@ -28,12 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.network.jetty.servlet.IServletHandler;
+import com.tenio.core.network.jetty.servlet.ServletHandler;
 
 /**
  * @author kong
  */
-public abstract class BaseProcessServlet extends AbstractLogger implements IServletHandler {
+public abstract class BaseProcessServlet extends AbstractLogger implements ServletHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response) {

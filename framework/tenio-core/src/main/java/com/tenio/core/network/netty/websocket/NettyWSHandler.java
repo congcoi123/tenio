@@ -51,6 +51,25 @@ public class NettyWSHandler extends BaseNettyHandler {
 			ElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
 		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.WEB_SOCKET);
 	}
+	
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		try {
+            this.wsChannel = ctx.getChannel();
+            String address = this.wsChannel.getRemoteAddress().toString();
+            this.connFilter.validateAndAddAddress(address.substring(1, address.indexOf(58)));
+            this.sfsSession = this.sessionManager.createWebSocketSession(this);
+            this.sessionManager.addSession(this.sfsSession);
+       } catch (RefusedAddressException var4) {
+            this.logger.warn("Refused connection. " + var4.getMessage());
+            ctx.getChannel().close();
+            this.logger.warn(ExceptionUtils.getStackTrace(var4));
+       } catch (Exception var5) {
+            this.logger.warn("Refused connection. " + var5.getMessage());
+            ctx.getChannel().close();
+            this.logger.warn(ExceptionUtils.getStackTrace(var5));
+       }
+	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -67,25 +86,8 @@ public class NettyWSHandler extends BaseNettyHandler {
 			buffer.getBytes(buffer.readerIndex(), bytes);
 			buffer.release();
 
-			// retrieve an object from pool
-			var msgObject = getCommonObjectPool().get();
-			var byteArray = getByteArrayInputPool().get();
-
-			// create a new message
-			var message = MsgPackConverter.unserialize(msgObject, byteArray, bytes);
-			if (message == null) {
-				// repay
-				getCommonObjectPool().repay(msgObject);
-				getByteArrayInputPool().repay(byteArray);
-				return;
-			}
-
-			// the main process
-			_channelRead(null, ctx, message, null);
-
-			// repay
-			getCommonObjectPool().repay(msgObject);
-			getByteArrayInputPool().repay(byteArray);
+			// create request
+			
 		}
 
 	}

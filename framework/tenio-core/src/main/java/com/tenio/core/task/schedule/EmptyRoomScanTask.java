@@ -31,7 +31,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.task.schedule.ITask;
+import com.tenio.common.task.schedule.Task;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Room;
@@ -43,7 +43,7 @@ import com.tenio.core.entity.Room;
  * @author kong
  * 
  */
-public final class EmptyRoomScanTask extends AbstractLogger implements ITask {
+public final class EmptyRoomScanTask extends AbstractLogger implements Task {
 
 	private final RoomApi __roomApi;
 	/**
