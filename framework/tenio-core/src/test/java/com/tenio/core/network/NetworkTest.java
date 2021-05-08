@@ -38,7 +38,7 @@ import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.core.configuration.Configuration;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.implement.EventManagerImpl;
-import com.tenio.core.network.netty.NettyNetwork;
+import com.tenio.core.network.netty.NettyWebSocketService;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.CommonObjectPool;
 
@@ -55,7 +55,7 @@ public final class NetworkTest {
 
 	@BeforeEach
 	public void initialize() throws IOException, InterruptedException {
-		__network = new NettyNetwork();
+		__network = new NettyWebSocketService();
 		__eventManager = new EventManagerImpl();
 		__msgObjectPool = new CommonObjectPool();
 		__byteArrayPool = new ByteArrayInputStreamPool();

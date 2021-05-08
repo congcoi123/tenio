@@ -7,6 +7,8 @@ import com.tenio.core.network.WriterManager;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.SessionType;
+import com.tenio.core.server.Server;
+import com.tenio.core.server.ServerImpl;
 
 public final class ResponseImpl extends AbstractMessage implements Response {
 
@@ -44,7 +46,8 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 
 	@Override
 	public void write() {
-		__writerManager.write(this);
+		// __writerManager.write(this);
+		// ServerImpl.getInstance().getWriter.write(this);
 	}
 
 	@Override

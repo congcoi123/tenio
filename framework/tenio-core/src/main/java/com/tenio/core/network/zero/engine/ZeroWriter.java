@@ -32,7 +32,7 @@ import com.tenio.core.network.statistic.NetworkWriterStatistic;
  * 
  * @author kong
  */
-public interface ZeroWriter {
+public interface ZeroWriter extends ZeroEngine {
 
 	void enqueuePacket(Packet packet);
 

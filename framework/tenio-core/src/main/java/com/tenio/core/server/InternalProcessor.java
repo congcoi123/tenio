@@ -33,6 +33,7 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.controller.AbstractController;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
@@ -48,13 +49,13 @@ import com.tenio.core.network.entity.session.Connection;
  *
  */
 @ThreadSafe
-final class InternalLogicManager extends AbstractLogger {
+public final class InternalProcessor extends AbstractController implements Service {
 
 	private final EventManager __eventManager;
 	private final PlayerManager __playerManager;
 	private final RoomManager __roomManager;
 
-	public InternalLogicManager(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
+	public InternalProcessor(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;

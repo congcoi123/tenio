@@ -40,6 +40,7 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedRoomIdException;
 import com.tenio.core.exception.NullRoomException;
+import com.tenio.core.server.Service;
 
 /**
  * Manage all your rooms ({@link Room}) on the server. It is a singleton
@@ -52,7 +53,7 @@ import com.tenio.core.exception.NullRoomException;
  * 
  */
 @ThreadSafe
-public final class RoomManagerImpl implements RoomManager {
+public final class RoomManagerImpl implements RoomManager, Service {
 
 	/**
 	 * A map object to manage your rooms with the key must be a room's id

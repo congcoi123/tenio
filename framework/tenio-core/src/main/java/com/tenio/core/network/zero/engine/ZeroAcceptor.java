@@ -31,7 +31,7 @@ import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
  * 
  * @author kong
  */
-public interface ZeroAcceptor {
+public interface ZeroAcceptor extends ZeroEngine {
 
 	void setConnectionFilter(ConnectionFilter connectionFilter);
 

@@ -54,6 +54,7 @@ import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
 import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.netty.socket.NettySocketInitializer;
 import com.tenio.core.network.netty.websocket.NettyWSInitializer;
+import com.tenio.core.server.Service;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -84,7 +85,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  */
 @ThreadSafe
-public final class NettyNetwork extends AbstractLogger implements Network, IBroadcast {
+public final class NettyWebSocketService extends AbstractLogger implements Network, Service {
 
 	private static final String PREFIX_SOCKET = "socket";
 	private static final String PREFIX_DATAGRAM = "datagram";
@@ -122,7 +123,7 @@ public final class NettyNetwork extends AbstractLogger implements Network, IBroa
 
 	private final OSType __osType;
 
-	public NettyNetwork() {
+	public NettyWebSocketService() {
 		__broadcastActive = false;
 		__osType = OsUtility.getOperatingSystemType();
 	}

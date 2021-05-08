@@ -7,10 +7,12 @@ import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.zero.engine.ZeroEngine;
 import com.tenio.core.network.zero.handler.DatagramIOHandler;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
+import com.tenio.core.server.Service;
 
-public abstract class AbstractZeroEngine extends SystemLogger implements Runnable {
+public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Service, Runnable {
 
 	private volatile int __id;
 	private ExecutorService __threadPool;

@@ -61,8 +61,15 @@ import com.tenio.core.extension.Extension;
 import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.Network;
-import com.tenio.core.network.jetty.HttpManagerTask;
-import com.tenio.core.network.netty.NettyNetwork;
+import com.tenio.core.network.jetty.JettyHttpService;
+import com.tenio.core.network.netty.NettyWebSocketService;
+import com.tenio.core.network.security.filter.DefaultConnectionFilter;
+import com.tenio.core.network.zero.engine.ZeroAcceptor;
+import com.tenio.core.network.zero.engine.ZeroReader;
+import com.tenio.core.network.zero.engine.ZeroWriter;
+import com.tenio.core.network.zero.engine.implement.ZeroAcceptorImpl;
+import com.tenio.core.network.zero.engine.implement.ZeroReaderImpl;
+import com.tenio.core.network.zero.engine.implement.ZeroWriterImpl;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.CommonObjectArrayPool;
 import com.tenio.core.pool.CommonObjectPool;
@@ -88,12 +95,9 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private static ServerImpl __instance;
 
 	private ServerImpl() {
-		__commonObjectPool = new CommonObjectPool();
-		__commonObjectArrayPool = new CommonObjectArrayPool();
-		__byteArrayInputPool = new ByteArrayInputStreamPool();
-
+		
 		__eventManager = new EventManagerImpl();
-		__network = new NettyNetwork();
+		__network = new NettyWebSocketService();
 
 		__roomManager = new RoomManagerImpl(__eventManager);
 		__playerManager = new PlayerManagerImpl(__eventManager);
@@ -105,7 +109,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool, __playerManager,
 				(IBroadcast) __network);
 
-		__internalLogic = new InternalLogicManager(__eventManager, __playerManager, __roomManager);
+		__internalLogic = new InternalProcessor(__eventManager, __playerManager, __roomManager);
 
 		// print out the framework's preface
 		for (var line : CommonConstants.CREDIT) {
@@ -139,7 +143,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final InternalLogicManager __internalLogic;
+	private final InternalProcessor __internalLogic;
 	private final Network __network;
 	private Extension __extension;
 
@@ -155,6 +159,9 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	public void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
 			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
 		__configuration = configuration;
+		
+		var assessment = new ConfigurationAssessment();
+		assessment.assess();
 
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
@@ -163,6 +170,14 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		systemInfo.logSystemInfo();
 		systemInfo.logNetCardsInfo();
 		systemInfo.logDiskInfo();
+		
+		ZeroReader zeroReader = new ZeroReaderImpl(5);
+		ZeroWriter zeroWriter = new ZeroWriterImpl(5);
+		ZeroAcceptor zeroAcceptor = new ZeroAcceptorImpl(5);
+		zeroAcceptor.setConfiguration(configuration);
+		zeroAcceptor.setConnectionFilter(new DefaultConnectionFilter());
+		zeroAcceptor.setZeroReaderListener((ZeroReaderImpl) zeroReader);
+		
 
 		_info("SERVER", __serverName, "Starting ...");
 
@@ -323,7 +338,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private String __createHttpManagers(Configuration configuration) throws DuplicatedUriAndMethodException {
 		for (int i = 0; i < __httpPorts.size(); i++) {
 			var port = __httpPorts.get(i);
-			var httpManager = new HttpManagerTask(__eventManager, port.getName(), port.getPort(), port.getPaths());
+			var httpManager = new JettyHttpService(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			httpManager.setup();
 			__taskManager.create(StringUtility.strgen(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
 					httpManager.run());

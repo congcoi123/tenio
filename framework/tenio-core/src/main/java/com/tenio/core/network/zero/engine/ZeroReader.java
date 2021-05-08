@@ -32,7 +32,7 @@ import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
  * 
  * @author kong
  */
-public interface ZeroReader {
+public interface ZeroReader extends ZeroEngine {
 
 	void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);
 

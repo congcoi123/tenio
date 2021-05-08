@@ -44,6 +44,7 @@ import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.jetty.servlet.PingServlet;
 import com.tenio.core.network.jetty.servlet.ServletManager;
+import com.tenio.core.server.Service;
 
 /**
  * The HTTP request and response handlers class
@@ -51,7 +52,7 @@ import com.tenio.core.network.jetty.servlet.ServletManager;
  * @author kong
  *
  */
-public final class HttpManagerTask extends AbstractLogger implements Task {
+public final class JettyHttpService extends AbstractLogger implements Service {
 
 	private Server __server;
 	private final EventManager __eventManager;
@@ -59,7 +60,7 @@ public final class HttpManagerTask extends AbstractLogger implements Task {
 	private final int __port;
 	private final List<PathConfig> __pathConfigs;
 
-	public HttpManagerTask(EventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
+	public JettyHttpService(EventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
 		__name = name;
 		__port = port;

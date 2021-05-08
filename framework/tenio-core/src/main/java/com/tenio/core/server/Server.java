@@ -45,7 +45,7 @@ import com.tenio.core.extension.Extension;
  * @author kong
  * 
  */
-interface Server {
+public interface Server {
 
 	/**
 	 * Start the server base on your own configurations

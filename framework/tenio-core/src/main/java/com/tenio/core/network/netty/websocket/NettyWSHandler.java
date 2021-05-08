@@ -87,7 +87,16 @@ public class NettyWSHandler extends BaseNettyHandler {
 			buffer.release();
 
 			// create request
-			
+			IRequest request = new Request();
+            Object controllerKey = null;
+            requestObject.get();
+            requestObject.getShort();
+            controllerKey = requestObject.get();
+            request.setId(requestObject.getShort());
+            request.setContent(requestObject.compact());
+            request.setSender(packet.getSender());
+            request.setTransportType(packet.getTransportType());
+            this.dispatchRequestToController(request, controllerKey);
 		}
 
 	}

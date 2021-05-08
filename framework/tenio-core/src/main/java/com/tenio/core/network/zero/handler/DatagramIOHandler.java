@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler;
 
-import java.nio.channels.DatagramChannel;
+import com.tenio.core.network.entity.session.Session;
 
 /**
  * UNDER CONSTRUCTION
@@ -32,10 +32,10 @@ import java.nio.channels.DatagramChannel;
  */
 public interface DatagramIOHandler {
 
-	void channelRead(DatagramChannel channel, byte[] binaryData);
+	void channelRead(Session session, byte[] binaryData);
 
-	void channelWrite(DatagramChannel channel, byte[] binaryData);
+	void channelWrite(Session session, byte[] binaryData);
 
-	void channelException(DatagramChannel socketChannel);
+	void channelException(Session session, Exception exception);
 
 }

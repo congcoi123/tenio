@@ -5,10 +5,11 @@ import java.nio.channels.SocketChannel;
 
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.server.Service;
 
 import io.netty.channel.Channel;
 
-public final class SessionManagerImpl implements SessionManager {
+public final class SessionManagerImpl implements SessionManager, Service {
 
 	@Override
 	public Session createSocketSession(SocketChannel socketChannel) {

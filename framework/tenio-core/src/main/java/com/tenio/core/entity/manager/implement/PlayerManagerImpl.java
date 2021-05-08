@@ -44,6 +44,7 @@ import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.server.Service;
 
 /**
  * Manage all your players ({@link Player}) on the server. It is a singleton
@@ -56,7 +57,7 @@ import com.tenio.core.network.entity.session.Connection;
  * 
  */
 @ThreadSafe
-public final class PlayerManagerImpl implements PlayerManager {
+public final class PlayerManagerImpl implements PlayerManager, Service {
 
 	/**
 	 * A map object to manage your players with the key must be a player's name

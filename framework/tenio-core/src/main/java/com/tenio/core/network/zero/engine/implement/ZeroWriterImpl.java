@@ -16,6 +16,7 @@ import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.engine.handler.writer.WriterHandler;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
+import com.tenio.core.server.Service;
 
 public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter, ZeroWriterListener {
 

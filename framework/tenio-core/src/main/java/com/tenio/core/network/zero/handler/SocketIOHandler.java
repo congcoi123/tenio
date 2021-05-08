@@ -23,7 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler;
 
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+
+import com.tenio.core.network.entity.session.Session;
 
 /**
  * UNDER CONSTRUCTION
@@ -32,14 +35,14 @@ import java.nio.channels.SocketChannel;
  */
 public interface SocketIOHandler {
 
-	void channelActive(SocketChannel socketChannel);
+	void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 
-	void channelRead(SocketChannel channel, byte[] binaryData);
-	
-	void channelWrite(SocketChannel channel, byte[] binaryData);
-	
+	void channelRead(Session session, byte[] binaryData);
+
+	void channelWrite(Session session, byte[] binaryData);
+
 	void channelInactive(SocketChannel socketChannel);
-	
-	void channelException(SocketChannel socketChannel, Exception exception);
-	
+
+	void channelException(Session session, Exception exception);
+
 }
