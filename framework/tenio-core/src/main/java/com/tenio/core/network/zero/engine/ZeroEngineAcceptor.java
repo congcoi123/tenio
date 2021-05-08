@@ -23,33 +23,17 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engine;
 
-import java.io.IOException;
-
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.network.handler.IOHandler;
-import com.tenio.core.network.security.filter.IConnectionFilter;
+import com.tenio.core.network.security.filter.ConnectionFilter;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public interface EngineAcceptor {
+public interface ZeroEngineAcceptor {
 
-	void setConfiguration(Configuration configuration);
-	
-	void setConnectionFilter(IConnectionFilter connectionFilter);
-	
-	void setIoHandler(IOHandler ioHandler);
+	void setConnectionFilter(ConnectionFilter connectionFilter);
 
-	void setEngineReader(EngineReader engineReader);
-
-	void handleAcceptableChannels();
-	
-	void setup() throws UnsupportedOperationException, IOException;
-	
-	void start();
-
-	void stop();
+	void setEngineReaderListener(ZeroEngineReaderListener engineReaderListener);
 
 }

@@ -21,32 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.option;
+package com.tenio.core.network.security.filter;
 
-import java.net.SocketOption;
-
-import com.tenio.core.message.packet.IPacketQueue;
+import com.tenio.core.exception.RefusedAddressException;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
-public final class ZeroConnectionOption {
+public interface ConnectionFilter {
 
-    public static final SocketOption<PacketQueue> PACKET_QUEUE =
-            new DefSocketOption<PacketQueue>("PACKET_QUEUE", PacketQueue.class);
-    
-    private static class DefSocketOption<T> implements SocketOption<T> {
-        private final String name;
-        private final Class<T> type;
-        DefSocketOption(String name, Class<T> type) {
-            this.name = name;
-            this.type = type;
-        }
-        @Override public String name() { return name; }
-        @Override public Class<T> type() { return type; }
-        @Override public String toString() { return name; }
-    }
+    void addBannedAddress(String var1);
+
+    void removeBannedAddress(String var1);
+
+    String[] getBannedAddresses();
+
+    void validateAndAddAddress(String var1) throws RefusedAddressException;
+
+    void removeAddress(String var1);
+
+    int getMaxConnectionsPerIp();
+
+    void setMaxConnectionsPerIp(int var1);
 
 }

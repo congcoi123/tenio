@@ -8,11 +8,11 @@ import java.util.concurrent.BlockingQueue;
 import com.tenio.core.network.entity.connection.Session;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.zero.engine.statistic.WriterStatistic;
+import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 public final class SocketWriterHandler extends AbstractWriterHandler {
 
-	public SocketWriterHandler(BlockingQueue<Session> sessionTicketsQueue, WriterStatistic statistic) {
+	public SocketWriterHandler(BlockingQueue<Session> sessionTicketsQueue, NetworkWriterStatistic statistic) {
 		super(sessionTicketsQueue, statistic);
 	}
 

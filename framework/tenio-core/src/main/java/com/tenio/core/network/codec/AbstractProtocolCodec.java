@@ -1,11 +1,11 @@
 package com.tenio.core.network.codec;
 
 import com.tenio.core.event.internal.InternalEventManager;
-import com.tenio.core.network.handler.IOHandler;
+import com.tenio.core.network.zero.handler.SocketIOHandler;
 
 public abstract class AbstractProtocolCodec implements ProtocolCodec {
 	
-	private IOHandler ioHandler;
+	private SocketIOHandler ioHandler;
 
 	public AbstractProtocolCodec(InternalEventManager eventManager) {
 		
@@ -16,13 +16,13 @@ public abstract class AbstractProtocolCodec implements ProtocolCodec {
 	}
 	
 	@Override
-	public IOHandler getIOHandler() {
+	public SocketIOHandler getIOHandler() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public void setIOHandler(IOHandler var1) {
+	public void setIOHandler(SocketIOHandler var1) {
 		// TODO Auto-generated method stub
 		
 	}

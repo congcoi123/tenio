@@ -1,8 +1,8 @@
-package com.tenio.core.network.zero.engine.statistic;
+package com.tenio.core.network.statistic;
 
-public final class WriterStatistic {
+public final class NetworkWriterStatistic {
 
-	public WriterStatistic() {
+	public NetworkWriterStatistic() {
 
 	}
 

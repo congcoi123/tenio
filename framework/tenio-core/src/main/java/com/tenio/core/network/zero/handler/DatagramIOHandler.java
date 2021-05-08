@@ -21,37 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.handler;
+package com.tenio.core.network.zero.handler;
 
-import java.nio.channels.SocketChannel;
+import io.netty.channel.socket.DatagramChannel;
 
 /**
  * UNDER CONSTRUCTION
  * 
  * @author kong
  */
-public interface IOHandler {
+public interface DatagramIOHandler {
 
-	void channelActive(SocketChannel socketChannel);
+	void channelRead(DatagramChannel channel, byte[] binaryData);
 
-	void channelRead(SocketChannel channel, byte[] binaryData);
-	
-	void channelWrite(SocketChannel channel, byte[] binaryData);
-	
-	void channelInactive(SocketChannel socketChannel);
-	
-    void onDataRead(Session var1, byte[] var2);
+	void channelWrite(DatagramChannel channel, byte[] binaryData);
 
-    void onDataRead(DatagramChannel var1, SocketAddress var2, byte[] var3);
-
-    void onDataWrite(Packet var1);
-
-    IProtocolCodec getCodec();
-
-    void setCodec(IProtocolCodec var1);
-
-    long getReadPackets();
-
-    long getIncomingDroppedPackets();
+	void channelException(DatagramChannel socketChannel);
 
 }

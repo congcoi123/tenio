@@ -21,27 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.security.filter;
+package com.tenio.core.network.zero.handler;
 
-import java.util.List;
-
-import com.tenio.core.exception.RefusedAddressException;
+import java.nio.channels.SocketChannel;
 
 /**
+ * UNDER CONSTRUCTION
+ * 
  * @author kong
  */
-public interface IConnectionFilter {
+public interface SocketIOHandler {
 
-	void addBannedAddress(String ipAddress);
+	void channelActive(SocketChannel socketChannel);
 
-	void removeBannedAddress(String ipAddress);
-
-	List<String> getBannedAddresses();
-
-	void validateAndAddAddress(String ipAddress) throws RefusedAddressException;
-
-	int getMaxConnectionsPerIp();
-
-	void setMaxConnectionsPerIp(int maxConnections);
-
+	void channelRead(SocketChannel channel, byte[] binaryData);
+	
+	void channelWrite(SocketChannel channel, byte[] binaryData);
+	
+	void channelInactive(SocketChannel socketChannel);
+	
+	void channelException(SocketChannel socketChannel, Exception exception);
+	
 }

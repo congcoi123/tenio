@@ -16,8 +16,8 @@ import com.tenio.core.exception.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entity.connection.Session;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.handler.writer.WriterHandler;
-import com.tenio.core.network.zero.engine.statistic.WriterStatistic;
 
 public final class EngineWriterImpl extends SystemLogger implements Runnable {
 
@@ -28,7 +28,7 @@ public final class EngineWriterImpl extends SystemLogger implements Runnable {
 	private int threadPoolSize;
 	private WriterHandler socketWriter;
 	private WriterHandler datagramWriter;
-	private WriterStatistic statistic;
+	private NetworkWriterStatistic statistic;
 
 	public EngineWriterImpl(int threadPoolSize) {
 		this.threadPoolSize = threadPoolSize;

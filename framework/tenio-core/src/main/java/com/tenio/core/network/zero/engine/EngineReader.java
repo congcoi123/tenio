@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.nio.channels.Selector;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.network.handler.IOHandler;
+import com.tenio.core.network.zero.handler.SocketIOHandler;
 
 /**
  * UNDER CONSTRUCTION
@@ -38,9 +38,9 @@ public interface EngineReader {
 
 	void setConfiguration(Configuration configuration);
 
-	void setIoHandler(IOHandler ioHandler);
+	void setIoHandler(SocketIOHandler ioHandler);
 	
-	void setEngineAcceptor(EngineAcceptor engineAcceptor);
+	void setEngineAcceptor(ZeroEngineAcceptor engineAcceptor);
 	
 	void setEngineWriter(EngineWriter engineWriter);
 
