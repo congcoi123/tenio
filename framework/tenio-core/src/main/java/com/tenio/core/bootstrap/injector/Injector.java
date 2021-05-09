@@ -45,6 +45,7 @@ import com.tenio.core.exception.NoImplementedClassFoundException;
 /**
  * @author kong
  */
+//TODO: Add description
 public final class Injector {
 
 	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";

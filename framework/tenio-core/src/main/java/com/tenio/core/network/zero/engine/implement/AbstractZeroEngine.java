@@ -14,6 +14,8 @@ import com.tenio.core.network.zero.handler.SocketIOHandler;
 
 public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Runnable {
 
+	private static final int DEFAULT_NUMBER_WORKERS = 5;
+
 	private volatile int __id;
 	private String __name;
 
@@ -28,8 +30,8 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 
 	private volatile boolean __activated;
 
-	public AbstractZeroEngine(int numberWorkers) {
-		__executorSize = numberWorkers;
+	public AbstractZeroEngine() {
+		__executorSize = DEFAULT_NUMBER_WORKERS;
 		__activated = false;
 		__id = 0;
 	}
@@ -59,26 +61,26 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 					break;
 				}
 			} catch (InterruptedException e) {
-				_error(e);
+				error(e);
 			}
 		}
-		_info("ENGINE STOPPED", _buildgen("engine-", getName(), "-", __id));
+		info("ENGINE STOPPED", buildgen("engine-", getName(), "-", __id));
 		destroy();
 		onDestroyed();
-		_info("ENGINE DESTROYED", _buildgen("engine-", getName(), "-", __id));
+		info("ENGINE DESTROYED", buildgen("engine-", getName(), "-", __id));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		_info("ENGINE START", _buildgen("engine-", getName(), "-", __id));
+		info("ENGINE START", buildgen("engine-", getName(), "-", __id));
 		__setThreadName();
 
-		if (__activated) {
+		while (__activated) {
 			onRunning();
 		}
 
-		_info("ENGINE STOPPING", _buildgen("engine-", getName(), "-", __id));
+		info("ENGINE STOPPING", buildgen("engine-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {
@@ -134,16 +136,19 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	@Override
 	public void start() {
 		__activated = true;
+		onStarted();
 	}
 
 	@Override
 	public void resume() {
 		__activated = true;
+		onResumed();
 	}
 
 	@Override
 	public void pause() {
 		__activated = false;
+		onPaused();
 	}
 
 	@Override

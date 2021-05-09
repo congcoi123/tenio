@@ -41,11 +41,14 @@ import org.w3c.dom.NodeList;
  * Parse an XML file and convert its content to nodes.
  * 
  * @author kong
- * 
  */
 public final class XMLUtility {
 
 	private static XPath __oXpath;
+
+	private XMLUtility() {
+
+	}
 
 	/**
 	 * To parse an XML file
@@ -62,6 +65,7 @@ public final class XMLUtility {
 
 		var factory = XPathFactory.newInstance();
 		__oXpath = factory.newXPath();
+
 		return doc;
 	}
 
@@ -80,6 +84,7 @@ public final class XMLUtility {
 
 		var factory = XPathFactory.newInstance();
 		__oXpath = factory.newXPath();
+
 		return doc;
 	}
 
@@ -104,7 +109,6 @@ public final class XMLUtility {
 	 */
 	public static NodeList getNodeList(Node node, String xpath) throws XPathExpressionException {
 		var nodeList = (NodeList) __oXpath.evaluate(xpath, node, XPathConstants.NODESET);
-
 		return nodeList;
 	}
 
@@ -118,7 +122,6 @@ public final class XMLUtility {
 	 */
 	public static Node getNode(Node node, String xpath) throws XPathExpressionException {
 		var nodeRet = (Node) __oXpath.evaluate(xpath, node, XPathConstants.NODE);
-
 		return nodeRet;
 	}
 
@@ -131,7 +134,6 @@ public final class XMLUtility {
 	 */
 	public static String getAttrVal(Node node, String name) {
 		var eNode = (Element) node;
-
 		return eNode.getAttribute(name);
 	}
 

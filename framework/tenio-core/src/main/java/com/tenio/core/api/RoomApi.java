@@ -39,7 +39,6 @@ import com.tenio.core.exception.NullRoomException;
  * @see RoomManager
  * 
  * @author kong
- * 
  */
 @ThreadSafe
 public final class RoomApi extends AbstractLogger {
@@ -66,7 +65,7 @@ public final class RoomApi extends AbstractLogger {
 		try {
 			__roomManager.add(room);
 		} catch (DuplicatedRoomIdException e) {
-			_error(e, e.getMessage());
+			error(e, e.getMessage());
 		}
 	}
 
@@ -99,7 +98,7 @@ public final class RoomApi extends AbstractLogger {
 		try {
 			__roomManager.remove(room);
 		} catch (NullRoomException e) {
-			_error(e, e.getMessage());
+			error(e, e.getMessage());
 		}
 	}
 

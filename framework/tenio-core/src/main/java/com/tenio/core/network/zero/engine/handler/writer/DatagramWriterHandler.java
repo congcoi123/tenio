@@ -43,7 +43,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
 		// buffer size is not enough, need to be allocated more bytes
 		if (getBuffer().capacity() < sendingData.length) {
-			_debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
+			debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
 					sendingData.length, " bytes");
 			allocateBuffer(sendingData.length);
 		}

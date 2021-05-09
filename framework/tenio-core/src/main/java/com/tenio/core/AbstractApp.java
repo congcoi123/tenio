@@ -64,7 +64,7 @@ public abstract class AbstractApp extends AbstractLogger {
 			try {
 				bootstrapRunning = bootstrap.run(entryClazz);
 			} catch (Exception e) {
-				_error(e, "The application started with exceptions occured");
+				error(e, "The application started with exceptions occured");
 				System.exit(1);
 			}
 		}
@@ -81,13 +81,13 @@ public abstract class AbstractApp extends AbstractLogger {
 				server.start(configuration, bootstrap.getEventHandler());
 			}
 			if (bootstrapRunning) {
-				_info("BOOTSTRAP", "Started");
+				info("BOOTSTRAP", "Started");
 			} else {
-				_info("BOOTSTRAP", "Not setup");
+				info("BOOTSTRAP", "Not setup");
 			}
 		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
 				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
-			_error(e, "The application started with exceptions occured");
+			error(e, "The application started with exceptions occured");
 			server.shutdown();
 			onShutdown();
 			// exit with errors

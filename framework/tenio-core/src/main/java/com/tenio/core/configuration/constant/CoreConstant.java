@@ -32,11 +32,12 @@ import io.netty.channel.ChannelOption;
  * not be modified.
  * 
  * @author kong
- * 
  */
-public final class CoreConstants {
+// FIXME: Fix me
+public final class CoreConstant {
 
-	private CoreConstants() {
+	private CoreConstant() {
+		
 	}
 
 	/**

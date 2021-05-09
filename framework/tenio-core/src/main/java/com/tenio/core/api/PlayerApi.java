@@ -35,7 +35,7 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
-import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.Session;
 
 /**
  * This class provides you a necessary interface for managing players.
@@ -43,9 +43,9 @@ import com.tenio.core.network.entity.session.Connection;
  * @see PlayerManager
  * 
  * @author kong
- * 
  */
 @ThreadSafe
+// FIXME: Fix me
 public final class PlayerApi extends AbstractLogger {
 
 	private final PlayerManager __playerManager;
@@ -104,15 +104,15 @@ public final class PlayerApi extends AbstractLogger {
 	 * connection).
 	 * 
 	 * @param player     that is created from your server, see: {@link Player}
-	 * @param connection the corresponding connection, see: {@link Connection}
+	 * @param session the corresponding session, see: {@link Session}
 	 */
-	public void login(Player player, Connection connection) {
+	public void login(Player player, Session session) {
 		try {
-			__playerManager.add(player, connection);
+			__playerManager.add(player, session);
 		} catch (NullPlayerNameException e1) {
-			_error(e1);
+			error(e1);
 		} catch (DuplicatedPlayerException e2) {
-			_error(e2, e2.getMessage());
+			error(e2, e2.getMessage());
 		}
 	}
 
@@ -126,7 +126,7 @@ public final class PlayerApi extends AbstractLogger {
 		try {
 			__playerManager.add(player);
 		} catch (DuplicatedPlayerException e) {
-			_error(e, e.getMessage());
+			error(e, e.getMessage());
 		}
 	}
 

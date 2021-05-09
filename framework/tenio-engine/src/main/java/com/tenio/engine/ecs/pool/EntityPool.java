@@ -31,7 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.logger.pool.ElementsPool;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.Entity;
 import com.tenio.engine.ecs.base.IEntity;
@@ -66,7 +66,7 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				_error(e);
+				error(e);
 			}
 		}
 	}
@@ -99,11 +99,11 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				_error(e);
+				error(e);
 			}
 		}
 
-		_info("COMPONENT POOL", _buildgen("Increase the number of elements by ",
+		info("COMPONENT POOL", buildgen("Increase the number of elements by ",
 				CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
@@ -124,7 +124,7 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			_error(e);
+			error(e);
 			throw e;
 		}
 	}

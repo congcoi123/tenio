@@ -102,7 +102,7 @@ public abstract class CommonConfiguration extends AbstractLogger implements Conf
 			return;
 		}
 		if (__configuration.containsKey(key)) {
-			_info("CONFIGURATION", _buildgen("Configuration key [", key, "] attempted to replace the old value ",
+			info("CONFIGURATION", buildgen("Configuration key [", key, "] attempted to replace the old value ",
 					__configuration.get(key), " by the new one ", value));
 			return;
 		}

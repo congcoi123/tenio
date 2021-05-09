@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
 /**
  * @author kong
  */
+//TODO: Add description
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Component {

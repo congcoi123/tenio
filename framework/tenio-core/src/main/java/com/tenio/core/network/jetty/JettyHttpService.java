@@ -37,7 +37,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.schedule.Task;
-import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedUriAndMethodException;
 import com.tenio.core.network.define.RestMethod;
@@ -102,7 +102,7 @@ public final class JettyHttpService extends AbstractLogger implements Service {
 		context.setContextPath("/");
 
 		// Configuration
-		context.addServlet(new ServletHolder(new PingServlet()), CoreConstants.PING_PATH);
+		context.addServlet(new ServletHolder(new PingServlet()), CoreConstant.PING_PATH);
 		servlets.forEach((uri, list) -> {
 			context.addServlet(new ServletHolder(new ServletManager(__eventManager, list)), uri);
 		});
@@ -114,12 +114,12 @@ public final class JettyHttpService extends AbstractLogger implements Service {
 	public ScheduledFuture<?> run() {
 		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 			try {
-				_info("HTTP SERVICE", _buildgen("Name: ", __name, " > Start at port: ", __port));
+				info("HTTP SERVICE", buildgen("Name: ", __name, " > Start at port: ", __port));
 
 				__server.start();
 				__server.join();
 			} catch (Exception e) {
-				_error(e);
+				error(e);
 			}
 		}, 0, TimeUnit.SECONDS);
 	}

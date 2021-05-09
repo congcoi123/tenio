@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.pool.ElementsPool;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
 import com.tenio.engine.ecs.base.IEntity;
 import com.tenio.engine.ecs.model.GameComponents;

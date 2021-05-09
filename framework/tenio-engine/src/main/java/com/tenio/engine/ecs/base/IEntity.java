@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.base;
 
-import com.tenio.common.logger.pool.ElementsPool;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.engine.ecs.pool.ComponentPool;
 
 /**

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Throwables;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.pool.ElementsPool;
 
 /**
  * The object pool mechanism for {@link StringBuilder}.

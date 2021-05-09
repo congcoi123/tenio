@@ -29,6 +29,10 @@ package com.tenio.common.utility;
  * @author kong
  */
 public final class TimeUtility {
+	
+	private TimeUtility() {
+		
+	}
 
 	/**
 	 * @return the current time in seconds

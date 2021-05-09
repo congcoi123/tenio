@@ -55,7 +55,7 @@ public final class EntityManager extends AbstractLogger {
 			}
 		} catch (DuplicatedEntityException e) {
 			// fire an event
-			_error(e, "entity id: ", entity.getId());
+			error(e, "entity id: ", entity.getId());
 			return;
 		}
 

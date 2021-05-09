@@ -68,9 +68,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 			socketChannel.socket().setReuseAddress(true);
 			socketChannel.register(__acceptableSelector, SelectionKey.OP_ACCEPT);
 
-			_info("TCP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
+			info("TCP SOCKET BOUND", buildgen("Address: ", serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			_error(e);
+			error(e);
 		}
 	}
 
@@ -83,9 +83,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 			datagramChannel.socket().setReuseAddress(true);
 			__zeroReaderListener.acceptDatagramChannel(datagramChannel);
 
-			_info("UDP SOCKET BOUND", _buildgen("Address: ", serverAddress, ", Port: ", port));
+			info("UDP SOCKET BOUND", buildgen("Address: ", serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			_error(e);
+			error(e);
 		}
 	}
 
@@ -115,22 +115,22 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 								__acceptableChannels.add(clientChannel);
 								getSocketIOHandler().channelActive(clientChannel, selectionKey);
 
-								_debug("ACCEPTED CLIENT CHANNEL",
-										_buildgen("Server address: ",
+								debug("ACCEPTED CLIENT CHANNEL",
+										buildgen("Server address: ",
 												serverChannel.socket().getInetAddress().getHostAddress(),
 												", Server port: ", serverChannel.socket().getLocalPort()));
 							}
 						}
 
 					} catch (IOException e) {
-						_error(e);
+						error(e);
 					}
 				}
 
 				keyIterator.remove();
 			}
 		} catch (IOException e1) {
-			_error(e1);
+			error(e1);
 		}
 	}
 
@@ -150,27 +150,27 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 				Socket socket = socketChannel.socket();
 				String remoteHost = socket.getRemoteSocketAddress().toString();
 
-				_debug("CLOSING SOCKET", remoteHost);
+				debug("CLOSING SOCKET", remoteHost);
 
 				try {
 
 					socketChannel.close();
 
 				} catch (IOException e1) {
-					_error(e1, "Exception while closing socket");
+					error(e1, "Exception while closing socket");
 				}
 
 				key.cancel();
 			}
 		}
 
-		_debug("CLOSING SELECTOR", "closing");
+		debug("CLOSING SELECTOR", "closing");
 
 		try {
 			Thread.sleep(500L);
 			__acceptableSelector.close();
 		} catch (IOException | InterruptedException e2) {
-			_error(e2, "Exception while closing selector");
+			error(e2, "Exception while closing selector");
 		} finally {
 			__acceptableSelector = null;
 		}
@@ -189,11 +189,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 						SocketChannel socketChannel = (SocketChannel) itSocketChannel.next();
 						itSocketChannel.remove();
 						if (socketChannel == null) {
-							_debug("ACCEPTABLE CHANNEL", "Engine Acceptor handle a null socketchannel");
+							debug("ACCEPTABLE CHANNEL", "Engine Acceptor handle a null socketchannel");
 						} else {
 							Socket socket = socketChannel.socket();
 							if (socket == null) {
-								_debug("ACCEPTABLE CHANNEL", "Engine Acceptor handle a null socket");
+								debug("ACCEPTABLE CHANNEL", "Engine Acceptor handle a null socket");
 							} else {
 								InetAddress ipAddress = socket.getInetAddress();
 								if (ipAddress != null) {
@@ -210,7 +210,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 										__zeroReaderListener.acceptSocketChannel(socketChannel);
 
 									} catch (RefusedAddressException e1) {
-										_error(e1, "Refused connection with address: ", e1.getMessage());
+										error(e1, "Refused connection with address: ", e1.getMessage());
 										getSocketIOHandler().channelException(session, e1);
 
 										try {
@@ -219,18 +219,18 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 											socketChannel.close();
 										} catch (IOException e2) {
 											getSocketIOHandler().channelException(socketChannel, e2);
-											_error(e2,
+											error(e2,
 													"Additional problem with refused connection. Was not able to shut down the channel: ",
 													e2.getMessage());
 										}
 									} catch (IOException e3) {
 										getSocketIOHandler().channelException(socketChannel, e3);
-										var logger = _buildgen("Failed accepting connection: ");
+										var logger = buildgen("Failed accepting connection: ");
 										if (socketChannel != null && socketChannel.socket() != null) {
 											logger.append(socketChannel.socket().getInetAddress().getHostAddress());
 										}
 
-										_error(e3, logger);
+										error(e3, logger);
 									}
 								}
 							}

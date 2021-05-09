@@ -30,6 +30,7 @@ import com.tenio.core.bootstrap.injector.Injector;
 /**
  * @author kong
  */
+//TODO: Add description
 public final class Bootstrapper extends AbstractLogger {
 
 	private final Injector __injector;
@@ -61,7 +62,7 @@ public final class Bootstrapper extends AbstractLogger {
 				__injector.scanPackages(entryClazz);
 			}
 		} catch (Exception e) {
-			_error(e);
+			error(e);
 		}
 	}
 

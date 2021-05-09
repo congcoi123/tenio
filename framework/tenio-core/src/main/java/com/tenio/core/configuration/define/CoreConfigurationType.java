@@ -37,8 +37,8 @@ import com.tenio.common.configuration.ConfigurationType;
  * <h1>Configuration for game server, declared in properties file</h1> <br>
  * 
  * @author kong
- * 
  */
+// FIXME: Fix me
 public enum CoreConfigurationType implements ConfigurationType {
 
 	/**

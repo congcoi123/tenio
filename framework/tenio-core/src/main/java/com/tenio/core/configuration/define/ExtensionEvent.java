@@ -28,12 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.Extension;
-import com.tenio.core.network.entity.session.Connection;
-import com.tenio.core.network.entity.session.implement.AbstractConnection;
+import com.tenio.core.network.define.RestMethod;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
@@ -42,8 +39,8 @@ import com.tenio.core.network.entity.session.implement.AbstractConnection;
  * class.
  * 
  * @author kong
- *
  */
+// FIXME: Fix me
 public enum ExtensionEvent {
 
 	/**

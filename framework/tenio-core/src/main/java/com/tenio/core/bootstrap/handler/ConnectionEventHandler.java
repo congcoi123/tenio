@@ -48,6 +48,7 @@ import com.tenio.core.network.entity.session.Connection;
  * @author kong
  */
 @Component
+//TODO: Add description
 public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull

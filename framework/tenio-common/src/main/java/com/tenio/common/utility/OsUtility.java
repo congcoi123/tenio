@@ -25,13 +25,22 @@ package com.tenio.common.utility;
 
 import java.util.Locale;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class OsUtility {
+	
 	/**
 	 * Types of Operating Systems
 	 */
 	public enum OSType {
 		Windows, MacOS, Linux, Other
 	};
+	
+	private OsUtility() {
+		
+	}
 
 	/**
 	 * Detect the operating system from the os.name System property and cache the

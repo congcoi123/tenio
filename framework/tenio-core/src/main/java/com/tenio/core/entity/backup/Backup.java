@@ -31,8 +31,8 @@ package com.tenio.core.entity.backup;
  * @param <T> the template class
  * 
  * @author kong
- * 
  */
+//TODO: Add description
 public interface Backup<T> {
 
 	/**

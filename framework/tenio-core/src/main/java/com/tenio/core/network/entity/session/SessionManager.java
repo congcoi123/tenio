@@ -25,4 +25,8 @@ public interface SessionManager {
 
 	Session getSessionByWebSocket(Channel webSocketChannel);
 
+	void removeSessionById(long id);
+
+	void removeSession(Session session);
+
 }

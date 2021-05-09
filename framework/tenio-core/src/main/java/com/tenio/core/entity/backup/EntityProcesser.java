@@ -46,9 +46,13 @@ import com.tenio.core.entity.backup.annotation.Sanitizer;
  * @see Sanitizer
  * 
  * @author kong
- *
  */
+//TODO: Add description
 public final class EntityProcesser {
+
+	private EntityProcesser() {
+
+	}
 
 	/**
 	 * Execute an object method (included private level access)

@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.base;
 
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.logger.pool.ElementsPool;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.engine.exception.ComponentIsNotExistedException;
 import com.tenio.engine.exception.DuplicatedComponentException;
 
@@ -87,7 +87,7 @@ public class Entity extends AbstractLogger implements IEntity {
 	public void setComponent(int index, IComponent component) {
 		if (hasComponent(index)) {
 			var e = new DuplicatedComponentException();
-			_error(e, "index: ", index);
+			error(e, "index: ", index);
 			throw e;
 		}
 
@@ -98,7 +98,7 @@ public class Entity extends AbstractLogger implements IEntity {
 	public void removeComponent(int index) {
 		if (!hasComponent(index)) {
 			var e = new ComponentIsNotExistedException();
-			_error(e, "index: ", index);
+			error(e, "index: ", index);
 			throw e;
 		}
 

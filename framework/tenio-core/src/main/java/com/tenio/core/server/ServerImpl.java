@@ -34,8 +34,8 @@ import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.common.task.TaskManager;
 import com.tenio.common.task.TaskManagerImpl;
 import com.tenio.common.utility.StringUtility;
@@ -43,7 +43,7 @@ import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.bootstrap.EventHandler;
-import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -113,7 +113,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
-			_info("", "", line);
+			info("", "", line);
 		}
 	} // prevent creation manually
 
@@ -179,10 +179,10 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		zeroAcceptor.setZeroReaderListener((ZeroReaderImpl) zeroReader);
 		
 
-		_info("SERVER", __serverName, "Starting ...");
+		info("SERVER", __serverName, "Starting ...");
 
 		// Put the current configurations to the logger
-		_info("CONFIGURATION", configuration.toString());
+		info("CONFIGURATION", configuration.toString());
 
 		// create all ports information
 		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
@@ -232,7 +232,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		_info("SERVER", __serverName, "Started!");
+		info("SERVER", __serverName, "Started!");
 	}
 
 	private void __startNetwork(Configuration configuration, ElementsPool<CommonObject> msgObjectPool,
@@ -242,9 +242,9 @@ public final class ServerImpl extends AbstractLogger implements Server {
 
 	@Override
 	public synchronized void shutdown() {
-		_info("SERVER", __serverName, "Stopping ...");
+		info("SERVER", __serverName, "Stopping ...");
 		__shutdown();
-		_info("SERVER", __serverName, "Stopped!");
+		info("SERVER", __serverName, "Stopped!");
 	}
 
 	private void __shutdown() {
@@ -315,23 +315,23 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	}
 
 	private void __createAllSchedules(Configuration configuration) {
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_TIME_OUT_SCAN,
+		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
 				(new TimeOutScanTask(__eventManager, __playerApi,
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
 
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
+		__taskManager.create(CoreConstant.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
 				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
 
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
+		__taskManager.create(CoreConstant.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
 				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
 
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
+		__taskManager.create(CoreConstant.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
 				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
 
-		__taskManager.create(CoreConstants.KEY_SCHEDULE_DEADLOCK_SCAN,
+		__taskManager.create(CoreConstant.KEY_SCHEDULE_DEADLOCK_SCAN,
 				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
 	}
 
@@ -340,7 +340,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 			var port = __httpPorts.get(i);
 			var httpManager = new JettyHttpService(__eventManager, port.getName(), port.getPort(), port.getPaths());
 			httpManager.setup();
-			__taskManager.create(StringUtility.strgen(CoreConstants.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
+			__taskManager.create(StringUtility.strgen(CoreConstant.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
 					httpManager.run());
 		}
 		return null;

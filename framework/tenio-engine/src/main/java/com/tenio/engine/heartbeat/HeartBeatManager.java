@@ -71,13 +71,13 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 	@Override
 	public void initialize(final int maxHeartbeat) throws Exception {
 		__executorService = Executors.newFixedThreadPool(maxHeartbeat);
-		_info("INITIALIZE HEART BEAT", _buildgen(maxHeartbeat));
+		info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
 	}
 
 	@Override
 	public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
 		try {
-			_info("CREATE HEART BEAT", _buildgen("id: ", id));
+			info("CREATE HEART BEAT", buildgen("id: ", id));
 			// Add the listener
 			var listener = new TreeSet<HMessage>();
 			heartbeat.setMessageListener(listener);
@@ -86,7 +86,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			var future = __executorService.submit(heartbeat);
 			__threadsManager.put(id, future);
 		} catch (Exception e) {
-			_error(e, "id: ", id);
+			error(e, "id: ", id);
 		}
 	}
 
@@ -105,7 +105,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			future.cancel(true);
 			__threadsManager.remove(id);
 
-			_info("DISPOSE HEART BEAT", _buildgen(id));
+			info("DISPOSE HEART BEAT", buildgen(id));
 
 			// Remove the listener
 			__messagesManager.get(id).clear();
@@ -114,7 +114,7 @@ public final class HeartBeatManager extends AbstractLogger implements IHeartBeat
 			future = null;
 
 		} catch (Exception e) {
-			_error(e, "id: ", id);
+			error(e, "id: ", id);
 		}
 	}
 

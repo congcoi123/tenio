@@ -32,8 +32,8 @@ import com.tenio.core.network.entity.session.implement.AbstractConnection;
  * be handled in <b>ServerLogic</b> class.
  * 
  * @author kong
- *
  */
+// FIXME: Fix me
 public enum InternalEvent {
 
 	/**

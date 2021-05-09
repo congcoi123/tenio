@@ -31,7 +31,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.PlayerApi;
-import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtensionEvent;
@@ -151,7 +151,7 @@ public final class PlayerManagerImpl implements PlayerManager, Service {
 				size = __socketPortsSize;
 			}
 			player.initializeConnections(size);
-			player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX);
+			player.setConnection(connection, CoreConstant.MAIN_CONNECTION_INDEX);
 
 			__players.put(player.getName(), player);
 			__count = __players.size();

@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.common.data.utility;
 
 import java.nio.ByteBuffer;
@@ -13,34 +36,44 @@ import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.element.ZeroData;
 import com.tenio.common.data.implement.ZeroArrayImpl;
 import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.common.exception.IllegalCollectionLengthException;
-import com.tenio.common.exception.IllegalValueException;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class ZeroDataSerializerUtility {
 
 	private static int BUFFER_CHUNK_BYTES = 512;
+	
+	private ZeroDataSerializerUtility() {
+		
+	}
 
 	public static ZeroArray binaryToArray(byte[] binary) {
 		if (binary.length < 3) {
 			throw new IllegalStateException(String.format(
-					"Unable to decode a ZeroArray. Binary data is insufficient. Size: %d bytes", binary.length));
+					"Unable to decode a ZeroArray because binary data size is not big enough to work on it. Size: %d bytes",
+					binary.length));
 		}
 
 		ByteBuffer buffer = ByteBuffer.allocate(binary.length);
 		buffer.put(binary);
 		buffer.flip();
+
 		return __decodeZeroArray(buffer);
 	}
 
 	public static ZeroObject binaryToObject(byte[] binary) {
 		if (binary.length < 3) {
 			throw new IllegalStateException(String.format(
-					"Unable to decode a ZeroObject. Binary data is insufficient. Size: %d bytes", binary.length));
+					"Unable to decode a ZeroObject because binary data size is not big enough to work on it. Size: %d bytes",
+					binary.length));
 		}
 
 		ByteBuffer buffer = ByteBuffer.allocate(binary.length);
 		buffer.put(binary);
 		buffer.flip();
+
 		return __decodeZeroObject(buffer);
 	}
 
@@ -48,6 +81,7 @@ public final class ZeroDataSerializerUtility {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
 		buffer.put((byte) ZeroDataType.ZERO_OBJECT.getValue());
 		buffer.putShort((short) object.size());
+
 		return __objectToBinary(object, buffer);
 	}
 
@@ -68,6 +102,7 @@ public final class ZeroDataSerializerUtility {
 		byte[] result = new byte[position];
 		buffer.flip();
 		buffer.get(result, 0, position);
+
 		return result;
 	}
 
@@ -75,6 +110,7 @@ public final class ZeroDataSerializerUtility {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
 		buffer.put((byte) ZeroDataType.ZERO_ARRAY.getValue());
 		buffer.putShort((short) array.size());
+
 		return __arrayToBinary(array, buffer);
 	}
 
@@ -92,15 +128,17 @@ public final class ZeroDataSerializerUtility {
 		byte[] result = new byte[position];
 		buffer.flip();
 		buffer.get(result, 0, position);
+
 		return result;
 	}
 
 	private static ZeroData __decodeObject(ByteBuffer buffer) throws RuntimeException {
 		byte headerByte = buffer.get();
 		ZeroDataType type = ZeroDataType.getByValue(headerByte);
+
 		switch (type) {
 		case NULL:
-			return __decodeNullElement(buffer);
+			return __decodeNull(buffer);
 		case BOOLEAN:
 			return __decodeBoolean(buffer);
 		case BYTE:
@@ -148,7 +186,7 @@ public final class ZeroDataSerializerUtility {
 	private static ByteBuffer __encodeObject(ByteBuffer buffer, ZeroDataType type, Object element) {
 		switch (type) {
 		case NULL:
-			buffer = __encodeNullElement(buffer);
+			buffer = __encodeNull(buffer);
 			break;
 		case BOOLEAN:
 			buffer = __encodeBoolean(buffer, (Boolean) element);
@@ -178,7 +216,7 @@ public final class ZeroDataSerializerUtility {
 			buffer = __encodeBooleanArray(buffer, (Collection<Boolean>) element);
 			break;
 		case BYTE_ARRAY:
-			buffer = __encodeByteArray(buffer, (byte[]) ((byte[]) element));
+			buffer = __encodeByteArray(buffer, (byte[]) element);
 			break;
 		case SHORT_ARRAY:
 			buffer = __encodeShortArray(buffer, (Collection<Short>) element);
@@ -199,30 +237,31 @@ public final class ZeroDataSerializerUtility {
 			buffer = __encodeStringArray(buffer, (Collection<String>) element);
 			break;
 		case ZERO_ARRAY:
-			buffer = __addBinaryToBuffer(buffer, arrayToBinary((ZeroArray) element));
+			buffer = __appendBinaryToBuffer(buffer, arrayToBinary((ZeroArray) element));
 			break;
 		case ZERO_OBJECT:
-			buffer = __addBinaryToBuffer(buffer, objectToBinary((ZeroObject) element));
+			buffer = __appendBinaryToBuffer(buffer, objectToBinary((ZeroObject) element));
 			break;
 		default:
-			throw new IllegalArgumentException(type.toString());
+			throw new IllegalArgumentException(String.format("Unsupported data type: %s", type.toString()));
 		}
 
 		return buffer;
 	}
 
-	private static ZeroData __decodeNullElement(ByteBuffer buffer) {
+	private static ZeroData __decodeNull(ByteBuffer buffer) {
 		return ZeroData.newInstance(ZeroDataType.NULL, (Object) null);
 	}
 
-	private static ZeroData __decodeBoolean(ByteBuffer buffer) throws IllegalValueException {
+	private static ZeroData __decodeBoolean(ByteBuffer buffer) {
 		byte bool = buffer.get();
 		Boolean element = null;
+
 		if (bool == 0) {
 			element = Boolean.FALSE;
 		} else {
 			if (bool != 1) {
-				throw new IllegalValueException(String.valueOf(bool));
+				throw new IllegalStateException(String.format("Expected value of 0 or 1, but found: %d", bool));
 			}
 
 			element = Boolean.TRUE;
@@ -261,20 +300,21 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.DOUBLE, element);
 	}
 
-	private static ZeroData __decodeString(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeString(ByteBuffer buffer) {
 		short strLen = buffer.getShort();
 
 		if (strLen < 0) {
-			throw new IllegalCollectionLengthException(String.valueOf(strLen));
+			throw new IllegalStateException(String.format("The length of string is incorrect: %d", strLen));
 		}
 
 		byte[] strData = new byte[strLen];
 		buffer.get(strData, 0, strLen);
 		String element = new String(strData);
+
 		return ZeroData.newInstance(ZeroDataType.STRING, element);
 	}
 
-	private static ZeroData __decodeBooleanArray(ByteBuffer buffer) throws IllegalValueException {
+	private static ZeroData __decodeBooleanArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Boolean> element = new ArrayList<Boolean>();
 
@@ -284,7 +324,7 @@ public final class ZeroDataSerializerUtility {
 				element.add(false);
 			} else {
 				if (bool != 1) {
-					throw new IllegalValueException(String.valueOf(bool));
+					throw new IllegalStateException(String.format("Expected value of 0 or 1, but found: %d", bool));
 				}
 
 				element.add(true);
@@ -294,18 +334,20 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.BOOLEAN_ARRAY, element);
 	}
 
-	private static ZeroData __decodeByteArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeByteArray(ByteBuffer buffer) {
 		int arraySize = buffer.getInt();
 		if (arraySize < 0) {
-			throw new IllegalCollectionLengthException(String.valueOf(arraySize));
+			throw new NegativeArraySizeException(
+					String.format("Could not create an array with negative size value: %d", arraySize));
 		}
 
 		byte[] byteData = new byte[arraySize];
 		buffer.get(byteData, 0, arraySize);
+
 		return ZeroData.newInstance(ZeroDataType.BYTE_ARRAY, byteData);
 	}
 
-	private static ZeroData __decodeShortArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeShortArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Short> element = new ArrayList<Short>();
 
@@ -317,7 +359,7 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.SHORT_ARRAY, element);
 	}
 
-	private static ZeroData __decodeIntegerArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeIntegerArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Integer> element = new ArrayList<Integer>();
 
@@ -329,7 +371,7 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.INTEGER_ARRAY, element);
 	}
 
-	private static ZeroData __decodeLongArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeLongArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Long> element = new ArrayList<Long>();
 
@@ -341,7 +383,7 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.LONG_ARRAY, element);
 	}
 
-	private static ZeroData __decodeFloatArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeFloatArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Float> element = new ArrayList<Float>();
 
@@ -353,7 +395,7 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.FLOAT_ARRAY, element);
 	}
 
-	private static ZeroData __decodeDoubleArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeDoubleArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<Double> element = new ArrayList<Double>();
 
@@ -365,14 +407,14 @@ public final class ZeroDataSerializerUtility {
 		return ZeroData.newInstance(ZeroDataType.DOUBLE_ARRAY, element);
 	}
 
-	private static ZeroData __decodeStringArray(ByteBuffer buffer) throws IllegalCollectionLengthException {
+	private static ZeroData __decodeStringArray(ByteBuffer buffer) {
 		short collectionSize = __getCollectionSize(buffer);
 		List<String> element = new ArrayList<String>();
 
 		for (int i = 0; i < collectionSize; ++i) {
 			short strLen = buffer.getShort();
 			if (strLen < 0) {
-				throw new IllegalCollectionLengthException(String.valueOf(strLen));
+				throw new IllegalStateException(String.format("The length of string is incorrect: %d", strLen));
 			}
 
 			byte[] strData = new byte[strLen];
@@ -390,21 +432,23 @@ public final class ZeroDataSerializerUtility {
 
 		if (ZeroDataType.getByValue(headerByte) != ZeroDataType.ZERO_ARRAY) {
 			throw new IllegalStateException(
-					String.format("Invalid ZeroDataType. Expected: %s, value: %d, but found: %d",
-							ZeroDataType.ZERO_ARRAY.toString(), ZeroDataType.ZERO_ARRAY.getValue(), headerByte));
+					String.format("Invalid ZeroDataType. Expected: %s, value: %d, but found: %s, value: %d",
+							ZeroDataType.ZERO_ARRAY.toString(), ZeroDataType.ZERO_ARRAY.getValue(),
+							ZeroDataType.getByValue(headerByte).toString(), headerByte));
 		}
 
 		short arraySize = buffer.getShort();
 		if (arraySize < 0) {
-			throw new IllegalStateException(
-					String.format("Unable to decode ZeroArray. Size is negative: %d", arraySize));
+			throw new NegativeArraySizeException(
+					String.format("Could not create an array with negative size value: %d", arraySize));
 		}
 
 		try {
 			for (int i = 0; i < arraySize; ++i) {
 				ZeroData zeroData = __decodeObject(buffer);
 				if (zeroData == null) {
-					throw new IllegalStateException(String.format("Unable to not decode ZeroArray item at index: ", i));
+					throw new IllegalStateException(
+							String.format("Unable to not decode ZeroArray item at index: %d", i));
 				}
 
 				zeroArray.addZeroData(zeroData);
@@ -422,14 +466,15 @@ public final class ZeroDataSerializerUtility {
 
 		if (ZeroDataType.getByValue(headerByte) != ZeroDataType.ZERO_OBJECT) {
 			throw new IllegalStateException(
-					String.format("Invalid ZeroDataType. Expected: %s, value: %d, but found: %d",
-							ZeroDataType.ZERO_OBJECT.toString(), ZeroDataType.ZERO_OBJECT.getValue(), headerByte));
+					String.format("Invalid ZeroDataType. Expected: %s, value: %d, but found: %s, value: %d",
+							ZeroDataType.ZERO_OBJECT.toString(), ZeroDataType.ZERO_OBJECT.getValue(),
+							ZeroDataType.getByValue(headerByte), headerByte));
 		}
 
 		short objectSize = buffer.getShort();
 		if (objectSize < 0) {
-			throw new IllegalStateException(
-					String.format("Unable to decode ZeroObject. Size is negative: %d", objectSize));
+			throw new NegativeArraySizeException(
+					String.format("Could not create an object with negative size value: %d", objectSize));
 		}
 
 		try {
@@ -453,62 +498,68 @@ public final class ZeroDataSerializerUtility {
 		}
 	}
 
-	private static short __getCollectionSize(ByteBuffer buffer) throws IllegalValueException {
+	private static short __getCollectionSize(ByteBuffer buffer) {
 		short collectionSize = buffer.getShort();
 		if (collectionSize < 0) {
-			throw new IllegalValueException(String.valueOf(collectionSize));
+			throw new NegativeArraySizeException(
+					String.format("Could not create a collection with negative size value: %d", collectionSize));
 		}
 
 		return collectionSize;
 	}
 
-	private static ByteBuffer __encodeNullElement(ByteBuffer buffer) {
-		return __addBinaryToBuffer(buffer, new byte[1]);
+	private static ByteBuffer __encodeNull(ByteBuffer buffer) {
+		return __appendBinaryToBuffer(buffer, new byte[1]);
 	}
 
 	private static ByteBuffer __encodeBoolean(ByteBuffer buffer, Boolean element) {
 		byte[] data = new byte[] { (byte) ZeroDataType.BOOLEAN.getValue(), (byte) (element ? 1 : 0) };
-		return __addBinaryToBuffer(buffer, data);
+		return __appendBinaryToBuffer(buffer, data);
 	}
 
 	private static ByteBuffer __encodeByte(ByteBuffer buffer, Byte element) {
 		byte[] data = new byte[] { (byte) ZeroDataType.BYTE.getValue(), element };
-		return __addBinaryToBuffer(buffer, data);
+		return __appendBinaryToBuffer(buffer, data);
 	}
 
 	private static ByteBuffer __encodeShort(ByteBuffer buffer, Short element) {
 		ByteBuffer buf = ByteBuffer.allocate(Byte.BYTES + Short.BYTES);
 		buf.put((byte) ZeroDataType.SHORT.getValue());
 		buf.putShort(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeInteger(ByteBuffer buffer, Integer element) {
 		ByteBuffer buf = ByteBuffer.allocate(Byte.BYTES + Integer.BYTES);
 		buf.put((byte) ZeroDataType.INTEGER.getValue());
 		buf.putInt(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeLong(ByteBuffer buffer, Long element) {
 		ByteBuffer buf = ByteBuffer.allocate(Byte.BYTES + Long.BYTES);
 		buf.put((byte) ZeroDataType.LONG.getValue());
 		buf.putLong(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeFloat(ByteBuffer buffer, Float element) {
 		ByteBuffer buf = ByteBuffer.allocate(Byte.BYTES + Float.BYTES);
 		buf.put((byte) ZeroDataType.FLOAT.getValue());
 		buf.putFloat(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeDouble(ByteBuffer buffer, Double element) {
 		ByteBuffer buf = ByteBuffer.allocate(Byte.BYTES + Double.BYTES);
 		buf.put((byte) ZeroDataType.DOUBLE.getValue());
 		buf.putDouble(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeString(ByteBuffer buffer, String element) {
@@ -517,7 +568,8 @@ public final class ZeroDataSerializerUtility {
 		buf.put((byte) ZeroDataType.STRING.getValue());
 		buf.putShort((short) stringBytes.length);
 		buf.put(stringBytes);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeBooleanArray(ByteBuffer buffer, Collection<Boolean> element) {
@@ -531,7 +583,7 @@ public final class ZeroDataSerializerUtility {
 			buf.put((byte) (boolValue ? 1 : 0));
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeByteArray(ByteBuffer buffer, byte[] element) {
@@ -539,7 +591,8 @@ public final class ZeroDataSerializerUtility {
 		buf.put((byte) ZeroDataType.BYTE_ARRAY.getValue());
 		buf.putInt(element.length);
 		buf.put(element);
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeShortArray(ByteBuffer buffer, Collection<Short> element) {
@@ -553,7 +606,7 @@ public final class ZeroDataSerializerUtility {
 			buf.putShort(shortValue);
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeIntegerArray(ByteBuffer buffer, Collection<Integer> element) {
@@ -567,7 +620,7 @@ public final class ZeroDataSerializerUtility {
 			buf.putInt(integerValue);
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeLongArray(ByteBuffer buffer, Collection<Long> element) {
@@ -581,7 +634,7 @@ public final class ZeroDataSerializerUtility {
 			buf.putLong(longValue);
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeFloatArray(ByteBuffer buffer, Collection<Float> element) {
@@ -595,7 +648,7 @@ public final class ZeroDataSerializerUtility {
 			buf.putFloat(floatValue);
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeDoubleArray(ByteBuffer buffer, Collection<Double> element) {
@@ -609,7 +662,7 @@ public final class ZeroDataSerializerUtility {
 			buf.putDouble(doubleValue);
 		}
 
-		return __addBinaryToBuffer(buffer, buf.array());
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeStringArray(ByteBuffer buffer, Collection<String> collection) {
@@ -630,22 +683,23 @@ public final class ZeroDataSerializerUtility {
 			buf.putShort((short) bytes.length);
 			buf.put(bytes);
 		});
-		
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
 	private static ByteBuffer __encodeZeroObjectKey(ByteBuffer buffer, String key) {
 		ByteBuffer buf = ByteBuffer.allocate(Short.BYTES + key.length());
 		buf.putShort((short) key.length());
 		buf.put(key.getBytes());
-		return __addBinaryToBuffer(buffer, buf.array());
+
+		return __appendBinaryToBuffer(buffer, buf.array());
 	}
 
-	private static ByteBuffer __addBinaryToBuffer(ByteBuffer buffer, byte[] newData) {
-		if (buffer.remaining() < newData.length) {
+	private static ByteBuffer __appendBinaryToBuffer(ByteBuffer buffer, byte[] binary) {
+		if (buffer.remaining() < binary.length) {
 			int newSize = BUFFER_CHUNK_BYTES;
-			if (newSize < newData.length) {
-				newSize = newData.length;
+			if (newSize < binary.length) {
+				newSize = binary.length;
 			}
 
 			ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() + newSize);
@@ -654,7 +708,7 @@ public final class ZeroDataSerializerUtility {
 			buffer = newBuffer;
 		}
 
-		buffer.put(newData);
+		buffer.put(binary);
 		return buffer;
 	}
 

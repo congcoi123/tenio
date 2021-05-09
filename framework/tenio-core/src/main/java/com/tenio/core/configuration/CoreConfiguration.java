@@ -33,7 +33,6 @@ import org.w3c.dom.Node;
 
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
-import com.tenio.core.configuration.data.BroadcastConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.define.TransportType;
@@ -50,19 +49,14 @@ import com.tenio.core.network.define.data.SocketConfig;
  * @see CoreConfigurationType
  * 
  * @author kong
- * 
  */
+// FIXME: Fix me
 public abstract class CoreConfiguration extends CommonConfiguration {
 
 	/**
 	 * All ports in sockets zone
 	 */
 	private final List<SocketConfig> __socketPorts;
-
-	/**
-	 * All ports in broadcasts zone
-	 */
-	private final List<BroadcastConfig> __broadcastPorts;
 
 	/**
 	 * All ports in web sockets zone
@@ -82,14 +76,13 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 */
 	public CoreConfiguration(String file) {
 		__socketPorts = new ArrayList<SocketConfig>();
-		__broadcastPorts = new ArrayList<BroadcastConfig>();
 		__webSocketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
 
 		try {
 			__load(file);
 		} catch (Exception e) {
-			_error(e, "file: ", file);
+			error(e, "file: ", file);
 		}
 	}
 
@@ -124,20 +117,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 			__socketPorts.add(port);
 		}
-		var attrNetworkServerBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/ServerPort");
-		for (int j = 0; j < attrNetworkServerBroadcasts.getLength(); j++) {
-			var pDataNode = attrNetworkServerBroadcasts.item(j);
-			_push(CoreConfigurationType.SERVER_BROADCAST_PORT, pDataNode.getTextContent());
-		}
-		var attrNetworkBroadcasts = XMLUtility.getNodeList(root, "//Server/Network/Broadcasts/Port");
-		for (int j = 0; j < attrNetworkBroadcasts.getLength(); j++) {
-			var pDataNode = attrNetworkBroadcasts.item(j);
-			var port = new BroadcastConfig(pDataNode.getAttributes().getNamedItem("id").getTextContent(),
-					pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					Integer.parseInt(pDataNode.getTextContent()));
-
-			__broadcastPorts.add(port);
-		}
 		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
 		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
 			var pDataNode = attrNetworkWebSockets.item(j);
@@ -167,7 +146,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 		// Ports' Configuration
 		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
-		_push(CoreConfigurationType.BROADCAST_PORTS, __broadcastPorts);
 		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
 		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
 

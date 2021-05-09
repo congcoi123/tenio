@@ -1,125 +1,212 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.controller;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
+import com.tenio.common.logger.SystemLogger;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.exception.RequestQueueFullException;
 import com.tenio.core.network.entity.protocol.Request;
 
-public abstract class AbstractController implements Controller, Runnable {
-	protected Object id;
-	protected String name;
-	protected BlockingQueue<Request> requestQueue;
-	protected ExecutorService threadPool;
-	protected int threadPoolSize = -1;
-	protected volatile int maxQueueSize = -1;
-	protected volatile boolean isActive = false;
-	private volatile int threadId = 1;
+/**
+ * @author kong
+ */
+// FIXME: Fix me
+public abstract class AbstractController extends SystemLogger implements Controller, Runnable {
 
-	public void enqueueRequest(Request request) throws RequestQueueFullException {
-		if (this.requestQueue.size() >= this.maxQueueSize) {
-			throw new RequestQueueFullException();
-		} else {
-			this.requestQueue.add(request);
+	private static final int DEFAULT_MAX_QUEUE_SIZE = 50;
+	private static final int DEFAULT_NUMBER_WORKERS = 5;
+
+	private volatile int __id;
+	private String __name;
+
+	private ExecutorService __executor;
+	private int __executorSize;
+
+	private BlockingQueue<Request> __requestQueue;
+
+	private int __maxQueueSize;
+	private volatile boolean __activated;
+
+	public AbstractController() {
+		__maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
+		__executorSize = DEFAULT_NUMBER_WORKERS;
+		__activated = false;
+	}
+
+	private void __initializeWorkers() {
+		var requestComparator = new RequestComparator();
+		__requestQueue = new PriorityBlockingQueue<Request>(__maxQueueSize, requestComparator);
+
+		__executor = Executors.newFixedThreadPool(__executorSize);
+		for (int i = 0; i < __executorSize; i++) {
+			__executor.execute(this);
 		}
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				if (__executor != null && !__executor.isShutdown()) {
+					__stop();
+				}
+			}
+		});
 	}
 
-	public void init(Object o) {
-		if (this.isActive) {
-			throw new IllegalArgumentException("Object is already initialized. Destroy it first!");
-		} else if (this.threadPoolSize < 1) {
-			throw new IllegalArgumentException("Illegal value for a thread pool size: " + this.threadPoolSize);
-		} else if (this.maxQueueSize < 1) {
-			throw new IllegalArgumentException("Illegal value for max queue size: " + this.maxQueueSize);
-		} else {
-			Comparator<Request> requestComparator = new RequestComparator();
-			this.requestQueue = new PriorityBlockingQueue<Request>(50, requestComparator);
-			this.threadPool = Executors.newFixedThreadPool(this.threadPoolSize);
-			this.isActive = true;
-			this.initThreadPool();
-			// this.bootLogger.info(String.format("Controller started: %s -- Queue: %s/%s",
-			// this.getClass().getName(), this.getQueueSize(), this.getMaxQueueSize()));
-		}
-	}
-
-	public void destroy(Object o) {
-		this.isActive = false;
-		List leftOvers = this.threadPool.shutdownNow();
-//          this.logger.info("Controller stopping: " + this.getClass().getName() + ", Unprocessed tasks: " + leftOvers.size());
-	}
-
-	public void handleMessage(Object obj) {
-	}
-
-	public void run() {
-		Thread.currentThread().setName(this.getClass().getName() + "-" + this.threadId++);
-
-		while (this.isActive) {
+	private void __stop() {
+		pause();
+		onStopped();
+		__executor.shutdown();
+		while (true) {
 			try {
-				Request request = (Request) this.requestQueue.take();
-				this.processRequest(request);
-			} catch (InterruptedException var2) {
-				this.isActive = false;
-//                    this.logger.warn("Controller main loop was interrupted");
-//                    Logging.logStackTrace(this.logger, (Throwable)var2);
-			} catch (Throwable var3) {
-//                    Logging.logStackTrace(this.logger, var3);
+				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
+					break;
+				}
+			} catch (InterruptedException e) {
+				error(e);
+			}
+		}
+		info("CONTROLLER STOPPED", buildgen("controller-", getName(), "-", __id));
+		destroy();
+		onDestroyed();
+		info("CONTROLLER DESTROYED", buildgen("controller-", getName(), "-", __id));
+	}
+
+	@Override
+	public void run() {
+		__id++;
+		info("CONTROLLER START", buildgen("controller-", getName(), "-", __id));
+		__setThreadName();
+
+		while (__activated) {
+			try {
+				var request = __requestQueue.take();
+				processRequest(request);
+			} catch (InterruptedException e1) {
+				pause();
+				error(e1);
+			} catch (Throwable e2) {
+				pause();
+				error(e2);
 			}
 		}
 
-//          this.bootLogger.info("Controller worker threads stopped: " + this.getClass().getName());
+		info("CONTROLLER STOPPING", buildgen("controller-", getName(), "-", __id));
 	}
 
-	public abstract void processRequest(Request var1) throws Exception;
-
-	public Object getId() {
-		return this.id;
+	private void __setThreadName() {
+		Thread.currentThread().setName(StringUtility.strgen("controller-", getName(), "-", __id));
 	}
 
-	public void setId(Object id) {
-		this.id = id;
+	@Override
+	public void initialize() {
+		__initializeWorkers();
+		onInitialized();
 	}
 
+	@Override
+	public void start() {
+		__activated = true;
+		onStarted();
+	}
+
+	@Override
+	public void resume() {
+		__activated = true;
+		onResumed();
+	}
+
+	@Override
+	public void pause() {
+		__activated = false;
+		onPaused();
+	}
+
+	@Override
+	public void stop() {
+		__stop();
+	}
+
+	@Override
+	public void destroy() {
+		__executor = null;
+	}
+
+	@Override
+	public void onRunning() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getName() {
-		return this.name;
+		return __name;
 	}
 
+	@Override
 	public void setName(String name) {
-		this.name = name;
+		__name = name;
 	}
 
+	@Override
+	public void enqueueRequest(Request request) {
+		if (__requestQueue.size() >= __maxQueueSize) {
+			throw new RequestQueueFullException(String.format(
+					"Reached max queue size, the request was dropped. The current size: %d", __requestQueue.size()));
+		} else {
+			__requestQueue.add(request);
+		}
+	}
+
+	@Override
+	public int getMaxRequestQueueSize() {
+		return __maxQueueSize;
+	}
+
+	@Override
+	public void setMaxRequestQueueSize(int maxSize) {
+		__maxQueueSize = maxSize;
+	}
+
+	@Override
 	public int getThreadPoolSize() {
-		return this.threadPoolSize;
+		return __executorSize;
 	}
 
-	public void setThreadPoolSize(int threadPoolSize) {
-		if (this.threadPoolSize < 1) {
-			this.threadPoolSize = threadPoolSize;
-		}
-
+	@Override
+	public void setThreadPoolSize(int maxSize) {
+		__executorSize = maxSize;
 	}
 
-	public int getQueueSize() {
-		return this.requestQueue.size();
+	@Override
+	public float getPercentageUsedRequestQueue() {
+		return __maxQueueSize == 0 ? 0.0f : (float) (__requestQueue.size() * 100) / (float) __maxQueueSize;
 	}
 
-	public int getMaxQueueSize() {
-		return this.maxQueueSize;
-	}
-
-	public void setMaxQueueSize(int maxQueueSize) {
-		this.maxQueueSize = maxQueueSize;
-	}
-
-	protected void initThreadPool() {
-		for (int j = 0; j < this.threadPoolSize; ++j) {
-			this.threadPool.execute(this);
-		}
-
-	}
+	public abstract void processRequest(Request request) throws Exception;
 
 }

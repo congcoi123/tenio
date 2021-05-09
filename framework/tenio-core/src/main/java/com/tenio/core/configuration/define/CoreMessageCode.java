@@ -28,7 +28,6 @@ package com.tenio.core.configuration.define;
  * not be modified.
  * 
  * @author kong
- * 
  */
 public enum CoreMessageCode {
 

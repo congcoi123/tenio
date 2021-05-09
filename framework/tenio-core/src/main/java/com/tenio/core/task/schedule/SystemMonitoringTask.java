@@ -60,7 +60,7 @@ public final class SystemMonitoringTask extends AbstractLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		_info("SYSTEM MONITORING TASK", "Running ...");
+		info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			__eventManager.getExtension().emit(ExtensionEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),

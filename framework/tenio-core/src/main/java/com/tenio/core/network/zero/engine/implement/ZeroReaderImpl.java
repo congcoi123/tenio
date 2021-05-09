@@ -60,6 +60,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	public ZeroReaderImpl(int numberWorkers) {
 		super(numberWorkers);
+		var readBuffer = ByteBuffer.allocate(getConfiguration().getInt(CoreConfigurationType.READ_MAX_BUFFER_SIZE));
 	}
 
 	private void __initializeSelector() throws IOException {
@@ -67,15 +68,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	private void __readLoop() {
-		var readBuffer = ByteBuffer.allocate(getConfiguration().getInt(CoreConfigurationType.READ_MAX_BUFFER_SIZE));
-		while (true) {
-			try {
-				__zeroAcceptorListener.handleAcceptableChannels();
-				__readIncomingSocketData(readBuffer);
-				Thread.sleep(5L);
-			} catch (InterruptedException e) {
-				_error(e);
-			}
+		try {
+			__zeroAcceptorListener.handleAcceptableChannels();
+			__readIncomingSocketData(readBuffer);
+			Thread.sleep(5L);
+		} catch (InterruptedException e) {
+			error(e);
 		}
 	}
 
@@ -106,7 +104,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 							__readTcpData(socketChannel, selectionKey, readBuffer);
 						} catch (IOException e1) {
 							this.__closeTcpConnection(socketChannel);
-							_error(e1, "Socket closed: ", socketChannel.toString());
+							error(e1, "Socket closed: ", socketChannel.toString());
 						}
 
 					} else if (channel instanceof DatagramChannel) {
@@ -119,13 +117,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			}
 
 		} catch (ClosedSelectorException e2) {
-			_error(e2, "Selector is closed!");
+			error(e2, "Selector is closed!");
 		} catch (CancelledKeyException e3) {
-			_error(e3, "Cancelled key");
+			error(e3, "Cancelled key");
 		} catch (IOException e4) {
-			_error(e4, "I/O reading/selection error: ", e4.getMessage());
+			error(e4, "I/O reading/selection error: ", e4.getMessage());
 		} catch (Exception e5) {
-			_error(e5, "Generic reading/selection error: ", e5.getMessage());
+			error(e5, "Generic reading/selection error: ", e5.getMessage());
 		}
 
 	}
@@ -235,7 +233,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			Thread.sleep(500L);
 			__readSelector.close();
 		} catch (IOException | InterruptedException e2) {
-			_error(e2, "Exception while closing selector");
+			error(e2, "Exception while closing selector");
 		} finally {
 			__readSelector = null;
 		}

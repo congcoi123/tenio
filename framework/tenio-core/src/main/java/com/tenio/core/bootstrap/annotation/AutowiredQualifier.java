@@ -35,12 +35,12 @@ import java.lang.annotation.Target;
  * implementations of the same interface
  * 
  * @author kong
- *
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
+//TODO: Add description
 public @interface AutowiredQualifier {
 
 	String value() default "";

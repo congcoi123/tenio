@@ -68,7 +68,7 @@ public final class PingServlet extends HttpServlet {
 				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "PING PONG"));
 				response.getWriter().println(json.toString());
 			} catch (IOException e) {
-				_error(e);
+				error(e);
 			}
 		}
 	}

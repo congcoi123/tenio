@@ -36,6 +36,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
+// TODO: Add description
 public @interface Column {
 
 	public String name() default "";

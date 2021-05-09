@@ -37,12 +37,12 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
+import com.tenio.common.pool.ElementsPool;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.common.utility.OsUtility.OSType;
-import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.data.BroadcastConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.event.EventManager;
@@ -175,16 +175,16 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 		}
 
 		__traficCounterSockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_SOCKET, eventManager, __socketWorkers,
-				CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 		__traficCounterDatagrams = new GlobalTrafficShapingHandlerCustomize(PREFIX_DATAGRAM, eventManager,
-				__datagramWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				__datagramWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 		__traficCounterWebsockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_WEBSOCKET, eventManager,
-				__websocketWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				__websocketWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 		__traficCounterBroadcast = new GlobalTrafficShapingHandlerCustomize(PREFIX_BROADCAST, eventManager,
-				__broadcastWorkers, CoreConstants.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstants.TRAFFIC_COUNTER_READ_LIMIT,
+				__broadcastWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
 				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
 
 		__serverSockets = new ArrayList<Channel>();
@@ -240,9 +240,9 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 
 		var bootstrap = new Bootstrap();
 		bootstrap.group(__broadcastWorkers).channel(NioDatagramChannel.class).option(ChannelOption.SO_REUSEADDR, true)
-				.option(ChannelOption.SO_RCVBUF, CoreConstants.BROADCAST_RECEIVE_BUFFER)
+				.option(ChannelOption.SO_RCVBUF, CoreConstant.BROADCAST_RECEIVE_BUFFER)
 				.option(ChannelOption.SO_BROADCAST, true)
-				.option(ChannelOption.SO_SNDBUF, CoreConstants.BROADCAST_SEND_BUFFER)
+				.option(ChannelOption.SO_SNDBUF, CoreConstant.BROADCAST_SEND_BUFFER)
 				.handler(new NettyBroadcastInitializer(__traficCounterBroadcast));
 
 		var channelFuture = bootstrap.bind(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)).sync()
@@ -253,7 +253,7 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 						if (future.isSuccess()) {
 
 						} else {
-							_error(future.cause());
+							error(future.cause());
 							throw new IOException(
 									String.valueOf(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
 						}
@@ -261,15 +261,15 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 				});
 		__broadcastChannel = channelFuture.channel();
 
-		_info("BROADCAST",
-				_buildgen("Server port: ", configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
+		info("BROADCAST",
+				buildgen("Server port: ", configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
 
 		__broadcastInets = new HashMap<String, InetSocketAddress>();
 		broadcastPorts.forEach(broadcastConfig -> {
 			__broadcastInets.put(broadcastConfig.getId(),
-					new InetSocketAddress(CoreConstants.BROADCAST_ADDRESS, broadcastConfig.getPort()));
+					new InetSocketAddress(CoreConstant.BROADCAST_ADDRESS, broadcastConfig.getPort()));
 
-			_info("BROADCAST", _buildgen("Name: ", broadcastConfig.getName(), " > Id: ", broadcastConfig.getId(),
+			info("BROADCAST", buildgen("Name: ", broadcastConfig.getName(), " > Id: ", broadcastConfig.getId(),
 					" > Started at port: ", broadcastConfig.getPort()));
 		});
 
@@ -300,8 +300,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 		case MacOS:
 			bootstrap.group(__datagramWorkers).channel(KQueueDatagramChannel.class)
 					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
 					.option(KQueueChannelOption.SO_REUSEPORT, true)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
 							byteArrayInputPool, __traficCounterDatagrams, configuration));
@@ -310,8 +310,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 		case Linux:
 			bootstrap.group(__datagramWorkers).channel(EpollDatagramChannel.class)
 					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
 					.option(EpollChannelOption.SO_REUSEPORT, true)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
 							byteArrayInputPool, __traficCounterDatagrams, configuration));
@@ -321,8 +321,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
 					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 					.option(ChannelOption.SO_REUSEADDR, true)
-					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
 							byteArrayInputPool, __traficCounterDatagrams, configuration));
 			break;
@@ -331,8 +331,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
 					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 					.option(ChannelOption.SO_REUSEADDR, true)
-					.option(ChannelOption.SO_RCVBUF, CoreConstants.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstants.DATAGRAM_SEND_BUFFER)
+					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
+					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
 					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
 							byteArrayInputPool, __traficCounterDatagrams, configuration));
 			break;
@@ -348,7 +348,7 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 								if (future.isSuccess()) {
 
 								} else {
-									_error(future.cause());
+									error(future.cause());
 									throw new IOException(String.valueOf(socketConfig.getPort()));
 								}
 							}
@@ -364,7 +364,7 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 							if (future.isSuccess()) {
 
 							} else {
-								_error(future.cause());
+								error(future.cause());
 								throw new IOException(String.valueOf(socketConfig.getPort()));
 							}
 						}
@@ -372,7 +372,7 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 			__serverSockets.add(channelFuture.channel());
 		}
 
-		_info("DATAGRAM", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
+		info("DATAGRAM", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
 				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
@@ -398,8 +398,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 
 		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.TCP_NODELAY, true)
-				.childOption(ChannelOption.SO_SNDBUF, CoreConstants.SOCKET_SEND_BUFFER)
-				.childOption(ChannelOption.SO_RCVBUF, CoreConstants.SOCKET_RECEIVE_BUFFER)
+				.childOption(ChannelOption.SO_SNDBUF, CoreConstant.SOCKET_SEND_BUFFER)
+				.childOption(ChannelOption.SO_RCVBUF, CoreConstant.SOCKET_RECEIVE_BUFFER)
 				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettySocketInitializer(connectionIndex,
 						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterSockets, configuration));
 
@@ -411,14 +411,14 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 						if (future.isSuccess()) {
 
 						} else {
-							_error(future.cause());
+							error(future.cause());
 							throw new IOException(String.valueOf(socketConfig.getPort()));
 						}
 					}
 				});
 		__serverSockets.add(channelFuture.channel());
 
-		_info("SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
+		info("SOCKET", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
 				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
@@ -445,8 +445,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 
 		bootstrap.group(__websocketAcceptors, __websocketWorkers).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5)
-				.childOption(ChannelOption.SO_SNDBUF, CoreConstants.WEBSOCKET_SEND_BUFFER)
-				.childOption(ChannelOption.SO_RCVBUF, CoreConstants.WEBSOCKET_RECEIVE_BUFFER)
+				.childOption(ChannelOption.SO_SNDBUF, CoreConstant.WEBSOCKET_SEND_BUFFER)
+				.childOption(ChannelOption.SO_RCVBUF, CoreConstant.WEBSOCKET_RECEIVE_BUFFER)
 				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettyWSInitializer(connectionIndex,
 						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterWebsockets, configuration));
 
@@ -458,14 +458,14 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 						if (future.isSuccess()) {
 
 						} else {
-							_error(future.cause());
+							error(future.cause());
 							throw new IOException(String.valueOf(socketConfig.getPort()));
 						}
 					}
 				});
 		__serverWebsockets.add(channelFuture.channel());
 
-		_info("WEB SOCKET", _buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
+		info("WEB SOCKET", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
 				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
@@ -536,13 +536,13 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 					if (future.isSuccess()) {
 
 					} else {
-						_error(future.cause());
+						error(future.cause());
 					}
 				}
 			});
 			return true;
 		} catch (InterruptedException e) {
-			_error(e);
+			error(e);
 			return false;
 		}
 	}

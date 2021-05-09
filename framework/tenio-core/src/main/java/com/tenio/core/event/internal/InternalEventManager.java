@@ -77,7 +77,7 @@ public final class InternalEventManager extends AbstractLogger {
 	 */
 	public void on(InternalEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
-			_info("INTERNAL EVENT WARNING", "Duplicated", event);
+			info("INTERNAL EVENT WARNING", "Duplicated", event);
 		}
 
 		__eventSubscribers.add(InternalEventSubscriber.newInstance(event, subscriber));
@@ -99,12 +99,12 @@ public final class InternalEventManager extends AbstractLogger {
 				try {
 					return eventSubscriber.getSubscriber().dispatch(params);
 				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
+					error(e, e.getMessage());
 				}
 				return null;
 			});
 		});
-		_info("INTERNAL EVENT UPDATED", "Subscribers", events.toString());
+		info("INTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}
 
 	/**

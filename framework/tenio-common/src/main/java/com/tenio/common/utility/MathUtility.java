@@ -41,6 +41,10 @@ public final class MathUtility {
 	public static final float HALF_PI = PI / 2;
 	public static final float QUARTER_PI = PI / 4;
 	public static final float EPSILON_FLOAT = Float.MIN_NORMAL;
+	
+	private MathUtility() {
+		
+	}
 
 	/**
 	 * @param <T> the number template

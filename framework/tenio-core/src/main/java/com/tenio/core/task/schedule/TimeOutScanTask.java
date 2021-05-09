@@ -81,7 +81,7 @@ public final class TimeOutScanTask extends AbstractLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		_info("TIME OUT TASK", "Running ...");
+		info("TIME OUT TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			long currentTime = System.currentTimeMillis();
 

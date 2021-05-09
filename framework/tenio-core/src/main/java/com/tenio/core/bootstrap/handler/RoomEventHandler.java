@@ -45,6 +45,7 @@ import com.tenio.core.extension.event.EventRoomWillBeRemoved;
  * @author kong
  */
 @Component
+//TODO: Add description
 public final class RoomEventHandler extends AbstractExtensionHandler {
 
 	@AutowiredAcceptNull

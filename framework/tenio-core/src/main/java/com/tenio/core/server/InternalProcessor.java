@@ -28,7 +28,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.configuration.constant.CoreConstants;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtensionEvent;
@@ -162,13 +162,13 @@ public final class InternalProcessor extends AbstractController implements Servi
 
 	private void __createNewConnection(Configuration configuration, int connectionIndex, Connection connection,
 			CommonObject message) {
-		if (connectionIndex == CoreConstants.MAIN_CONNECTION_INDEX) { // is main connection
+		if (connectionIndex == CoreConstant.MAIN_CONNECTION_INDEX) { // is main connection
 			// check reconnection request first
 			var player = (Player) __eventManager.getExtension().emit(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
 					connection, message);
 			if (player != null) {
 				connection.setPlayerName(player.getName());
-				player.setConnection(connection, CoreConstants.MAIN_CONNECTION_INDEX); // main connection
+				player.setConnection(connection, CoreConstant.MAIN_CONNECTION_INDEX); // main connection
 				__eventManager.getExtension().emit(ExtensionEvent.PLAYER_RECONNECT_SUCCESS, player);
 			} else {
 				// check the number of current players

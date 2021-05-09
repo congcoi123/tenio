@@ -39,50 +39,50 @@ public abstract class SystemLogger extends AbstractLogger {
 	 * Only use for debugging EVENTS in the server system. Be careful when using it
 	 * yourself. You are warned!
 	 * 
-	 * @param type		the event's type
-	 * @param msg 		the extra information for "type"
+	 * @param type the event's type
+	 * @param msg  the extra information for "type"
 	 */
-	protected void _debug(String type, Object... msg) {
+	public void debug(String type, Object... msg) {
 		if (!__logger.isDebugEnabled()) {
 			return;
 		}
-		
+
 		StringBuilder builder = __stringPool.get();
 		builder.append("{").append(type).append("} ");
-		
+
 		for (int i = 0; i < msg.length - 1; i++) {
-	        builder.append(msg[i]).append(", ");
-	    }
-	    if(msg.length > 0){
-	        builder.append(msg[msg.length - 1]);
-	    }
-	    
+			builder.append(msg[i]).append(", ");
+		}
+		if (msg.length > 0) {
+			builder.append(msg[msg.length - 1]);
+		}
+
 		__logger.debug(builder.toString());
 		__stringPool.repay(builder);
 	}
-	
+
 	/**
 	 * Only use for debugging EVENTS in the server system. Be careful when using it
 	 * yourself. You are warned!
 	 * 
-	 * @param type		the event's type
-	 * @param msg 		the extra information for "type"
+	 * @param type the event's type
+	 * @param msg  the extra information for "type"
 	 */
-	protected void _trace(String type, Object... msg) {
+	public void trace(String type, Object... msg) {
 		if (!__logger.isTraceEnabled()) {
 			return;
 		}
-		
+
 		StringBuilder builder = __stringPool.get();
 		builder.append("<").append(type).append("> ");
-		
+
 		for (int i = 0; i < msg.length - 1; i++) {
-	        builder.append(msg[i]).append(", ");
-	    }
-	    if(msg.length > 0){
-	        builder.append(msg[msg.length - 1]);
-	    }
-	    
+			builder.append(msg[i]).append(", ");
+		}
+		if (msg.length > 0) {
+			builder.append(msg[msg.length - 1]);
+		}
+
 		__logger.trace(builder.toString());
 		__stringPool.repay(builder);
 	}
@@ -96,7 +96,7 @@ public abstract class SystemLogger extends AbstractLogger {
 	 * @param tag      the tag type
 	 * @param msg      the message content
 	 */
-	protected void _trace(String where, Object subWhere, String tag, String msg) {
+	public void trace(String where, Object subWhere, String tag, String msg) {
 		if (!__logger.isTraceEnabled()) {
 			return;
 		}

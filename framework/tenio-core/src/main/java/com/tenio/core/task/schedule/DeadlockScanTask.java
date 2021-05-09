@@ -56,7 +56,7 @@ public final class DeadlockScanTask extends AbstractLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		_info("DEADLOCK SCAN TASK", "Running ...");
+		info("DEADLOCK SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			__checkForDeadlockedThreads();
@@ -70,7 +70,7 @@ public final class DeadlockScanTask extends AbstractLogger implements Task {
 		if (threadIds != null && threadIds.length > 0) {
 			Thread[] threads = new Thread[threadIds.length];
 
-			var logger = _buildgen("\n");
+			var logger = buildgen("\n");
 
 			for (int i = 0; i < threads.length; ++i) {
 				ThreadInfo threadInfo = __threadBean.getThreadInfo(threadIds[i]);
@@ -85,11 +85,11 @@ public final class DeadlockScanTask extends AbstractLogger implements Task {
 				try {
 					threads[i] = __findMatchingThread(threadInfo);
 				} catch (IllegalStateException e) {
-					_error(e);
+					error(e);
 				}
 			}
 
-			_info("DEADLOCKED THREAD DETECTOR", logger);
+			info("DEADLOCKED THREAD DETECTOR", logger);
 		}
 
 	}

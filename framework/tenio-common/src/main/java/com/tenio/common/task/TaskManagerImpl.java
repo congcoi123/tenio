@@ -67,19 +67,19 @@ public final class TaskManagerImpl extends AbstractLogger implements TaskManager
 					throw new RunningScheduledTaskException();
 				}
 			} catch (RunningScheduledTaskException e) {
-				_error(e, "task id: ", id);
+				error(e, "task id: ", id);
 				return;
 			}
 		}
 
 		__tasks.put(id, task);
-		_info("RUN TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+		info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
 	}
 
 	@Override
 	public synchronized void kill(String id) {
 		if (__tasks.containsKey(id)) {
-			_info("KILLED TASK", id);
+			info("KILLED TASK", id);
 			__tasks.remove(id);
 			var task = __tasks.get(id);
 			if (task != null && (!task.isDone() || !task.isCancelled())) {
@@ -91,7 +91,7 @@ public final class TaskManagerImpl extends AbstractLogger implements TaskManager
 	@Override
 	public synchronized void clear() {
 		__tasks.forEach((id, task) -> {
-			_info("KILLED TASK", id);
+			info("KILLED TASK", id);
 			if (task != null && (!task.isDone() || !task.isCancelled())) {
 				task.cancel(true);
 			}

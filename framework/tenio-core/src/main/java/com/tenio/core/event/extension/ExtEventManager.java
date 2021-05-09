@@ -67,9 +67,9 @@ public final class ExtEventManager extends SystemLogger {
 	 */
 	public Object emit(ExtensionEvent event, Object... params) {
 		if (__isOnlyShownInTracedLog(event)) {
-			_trace(event.name(), params);
+			trace(event.name(), params);
 		} else {
-			_debug(event.name(), params);
+			debug(event.name(), params);
 		}
 		return __producer.emit(event, params);
 	}
@@ -82,7 +82,7 @@ public final class ExtEventManager extends SystemLogger {
 	 */
 	public void on(ExtensionEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
-			_info("EXTERNAL EVENT WARNING", "Duplicated", event);
+			info("EXTERNAL EVENT WARNING", "Duplicated", event);
 		}
 
 		__eventSubscribers.add(ExtEventSubscriber.newInstance(event, subscriber));
@@ -104,12 +104,12 @@ public final class ExtEventManager extends SystemLogger {
 				try {
 					return eventSubscriber.getSubscriber().dispatch(params);
 				} catch (ExtensionValueCastException e) {
-					_error(e, e.getMessage());
+					error(e, e.getMessage());
 				}
 				return null;
 			});
 		});
-		_info("EXTERNAL EVENT UPDATED", "Subscribers", events.toString());
+		info("EXTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}
 
 	/**

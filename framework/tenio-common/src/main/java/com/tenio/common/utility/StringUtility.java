@@ -34,6 +34,10 @@ public final class StringUtility {
 
 	private static String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
 
+	private StringUtility() {
+		
+	}
+	
 	/**
 	 * To generate {@code String} for logging information by the corresponding
 	 * objects

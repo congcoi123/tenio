@@ -25,6 +25,7 @@ package com.tenio.core.entity.implement;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -34,7 +35,8 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.backup.annotation.Column;
 import com.tenio.core.entity.backup.annotation.Entity;
-import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.SessionType;
 
 /**
  * A player is one of the base elements in your server. It is a representation
@@ -51,16 +53,16 @@ import com.tenio.core.network.entity.session.Connection;
  * re-connect to control it. Look like a soul (player) with a body (entity).
  * 
  * @author kong
- * 
  */
 @Entity
 @ThreadSafe
+// FIXME: Fix me
 public abstract class AbstractPlayer extends AbstractLogger implements Player {
 
 	/**
 	 * The list of socket/web socket connections
 	 */
-	private Connection[] __connections;
+	private Map<SessionType, Session> __sessions;
 	/**
 	 * Tracing the room which they player has been in
 	 */
@@ -147,7 +149,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements Player {
 			return null;
 		}
 		if (connectionIndex < 0 || connectionIndex > __connectionsSize) {
-			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return null;
 		}
 		synchronized (__connections) {
@@ -168,7 +170,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements Player {
 			return;
 		}
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return;
 		}
 		synchronized (__connections) {
@@ -182,7 +184,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements Player {
 			return;
 		}
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return;
 		}
 		synchronized (__connections) {
@@ -209,7 +211,7 @@ public abstract class AbstractPlayer extends AbstractLogger implements Player {
 	 */
 	private void __closeConnection(int connectionIndex) {
 		if (connectionIndex < 0 || connectionIndex >= __connectionsSize) {
-			_error(new ArrayIndexOutOfBoundsException(connectionIndex));
+			error(new ArrayIndexOutOfBoundsException(connectionIndex));
 			return;
 		}
 		if (__connections[connectionIndex] != null) {
