@@ -39,8 +39,6 @@ public interface SocketIOHandler {
 
 	void channelRead(Session session, byte[] binaryData);
 
-	void channelWrite(Session session, byte[] binaryData);
-
 	void channelInactive(SocketChannel socketChannel);
 
 	void channelException(Session session, Exception exception);

@@ -1,25 +1,24 @@
-package com.tenio.core.network.zero.codec;
+package com.tenio.core.network.zero.codec.encoder;
 
 import java.nio.ByteBuffer;
 
 import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketHeader;
-import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.CodecUtility;
 import com.tenio.core.network.zero.codec.compression.PacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.encryption.PacketEncrypter;
+import com.tenio.core.network.zero.codec.packet.PacketHeader;
 
-public final class BinaryPacketEncoder implements PacketEncoder {
+public final class DefaultBinaryPacketEncoder implements PacketEncoder {
 
-	private static final int COMPRESSION_THRESHOLD_BYTES = 3000;
+	private static final int DEFAULT_COMPRESSION_THRESHOLD_BYTES = 3000;
 	private static final int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;
 
-	private final PacketCompressor __compressor;
-	private final PacketEncrypter __encrypter;
+	private PacketCompressor __compressor;
+	private PacketEncrypter __encrypter;
+	private int __compressionThresholdBytes;
 
-	public BinaryPacketEncoder() {
-		__compressor = new BinaryPacketCompressor();
-		__encrypter = new BinaryPacketEncrypter();
+	public DefaultBinaryPacketEncoder() {
+		__compressionThresholdBytes = DEFAULT_COMPRESSION_THRESHOLD_BYTES;
 	}
 
 	@Override
@@ -40,7 +39,7 @@ public final class BinaryPacketEncoder implements PacketEncoder {
 
 		// check if the data needs to be compressed
 		boolean isCompressed = false;
-		if (binary.length > COMPRESSION_THRESHOLD_BYTES) {
+		if (binary.length > __compressionThresholdBytes) {
 			try {
 				binary = __compressor.compress(binary);
 				isCompressed = true;
@@ -80,6 +79,21 @@ public final class BinaryPacketEncoder implements PacketEncoder {
 		packet.setData(packetBuffer.array());
 
 		return packet;
+	}
+
+	@Override
+	public void setCompressor(PacketCompressor compressor) {
+		__compressor = compressor;
+	}
+
+	@Override
+	public void setEncrypter(PacketEncrypter encrypter) {
+		__encrypter = encrypter;
+	}
+
+	@Override
+	public void setCompressionThresholdBytes(int numberBytes) {
+		__compressionThresholdBytes = numberBytes;
 	}
 
 }

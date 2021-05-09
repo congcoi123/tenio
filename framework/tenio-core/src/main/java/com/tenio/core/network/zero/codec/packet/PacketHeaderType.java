@@ -1,4 +1,4 @@
-package com.tenio.core.network.entity.packet;
+package com.tenio.core.network.zero.codec.packet;
 
 import java.util.HashMap;
 import java.util.Map;

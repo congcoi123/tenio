@@ -34,12 +34,12 @@ import org.w3c.dom.Node;
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XMLUtility;
 import com.tenio.core.configuration.data.BroadcastConfig;
-import com.tenio.core.configuration.data.HttpConfig;
-import com.tenio.core.configuration.data.PathConfig;
-import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.define.data.HttpConfig;
+import com.tenio.core.network.define.data.PathConfig;
+import com.tenio.core.network.define.data.SocketConfig;
 
 /**
  * This server needs some basic configuration to start running. The

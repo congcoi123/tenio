@@ -1,6 +1,6 @@
 package com.tenio.core.network.zero.codec.encryption;
 
-public final class BinaryPacketEncrypter implements PacketEncrypter {
+public final class DefaultBinaryPacketEncrypter implements PacketEncrypter {
 
 	@Override
 	public byte[] decrypt(byte[] binary) {

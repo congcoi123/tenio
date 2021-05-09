@@ -32,7 +32,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.CoreMessageCode;
 import com.tenio.core.configuration.define.ExtensionEvent;
@@ -43,6 +42,7 @@ import com.tenio.core.event.EventManager;
 import com.tenio.core.exception.DuplicatedPlayerException;
 import com.tenio.core.exception.NullPlayerNameException;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.session.Connection;
 import com.tenio.core.server.Service;
 

@@ -1,7 +1,7 @@
 package com.tenio.core.network.zero.codec;
 
-import com.tenio.core.network.entity.packet.PacketHeader;
-import com.tenio.core.network.entity.packet.PacketHeaderType;
+import com.tenio.core.network.zero.codec.packet.PacketHeader;
+import com.tenio.core.network.zero.codec.packet.PacketHeaderType;
 
 public final class CodecUtility {
 

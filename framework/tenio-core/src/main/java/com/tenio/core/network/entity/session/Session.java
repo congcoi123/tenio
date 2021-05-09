@@ -9,6 +9,9 @@ import java.nio.channels.SocketChannel;
 import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.zero.codec.packet.PacketReadState;
+import com.tenio.core.network.zero.codec.packet.PendingPacket;
+import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
@@ -51,6 +54,14 @@ public interface Session {
 	SelectionKey getSelectionKey();
 
 	void setSelectionKey(SelectionKey selectionKey);
+	
+	PacketReadState getPacketReadState();
+	
+	void setPacketReadState(PacketReadState packetReadState);
+	
+	ProcessedPacket getProcessedPacket();
+	
+	PendingPacket getPendingPacket();
 
 	DatagramChannel getDatagramChannel();
 

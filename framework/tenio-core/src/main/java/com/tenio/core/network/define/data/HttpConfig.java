@@ -21,54 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.data;
+package com.tenio.core.network.define.data;
 
-import com.tenio.core.network.define.RestMethod;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * @author kong
  */
-public final class PathConfig {
+@ThreadSafe
+public final class HttpConfig {
 
 	private final String __name;
-	private final String __description;
-	private final int __version;
-	private final RestMethod __method;
-	private final String __uri;
+	private final int __port;
+	private final List<PathConfig> __paths;
 
-	public PathConfig(String name, RestMethod method, String uri, String description,
-			int version) {
+	public HttpConfig(String name, int port) {
+		__paths = new ArrayList<PathConfig>();
 		__name = name;
-		__method = method;
-		__uri = uri;
-		__description = description;
-		__version = version;
+		__port = port;
 	}
 
 	public String getName() {
 		return __name;
 	}
 
-	public RestMethod getMethod() {
-		return __method;
+	public List<PathConfig> getPaths() {
+		synchronized (__paths) {
+			return __paths;
+		}
 	}
 
-	public String getUri() {
-		return __uri;
+	public void addPath(PathConfig path) {
+		synchronized (__paths) {
+			__paths.add(path);
+		}
 	}
 
-	public String getDescription() {
-		return __description;
-	}
-
-	public int getVersion() {
-		return __version;
+	public int getPort() {
+		return __port;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
-				__uri, __description, __version);
+		return String.format("{ paths:%s, name:%s, port:%d}", __paths.toString(), __name, __port);
 	}
 
 }

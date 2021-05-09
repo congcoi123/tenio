@@ -34,8 +34,6 @@ public interface DatagramIOHandler {
 
 	void channelRead(Session session, byte[] binaryData);
 
-	void channelWrite(Session session, byte[] binaryData);
-
 	void channelException(Session session, Exception exception);
 
 }

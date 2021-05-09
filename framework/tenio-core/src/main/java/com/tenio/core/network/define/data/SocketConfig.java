@@ -21,29 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.data;
+package com.tenio.core.network.define.data;
+
+import com.tenio.core.network.define.TransportType;
 
 /**
  * @author kong
  */
-public final class BroadcastConfig {
+public final class SocketConfig {
 
-	private final String __id;
 	private final String __name;
+	private final TransportType __type;
 	private final int __port;
 
-	public BroadcastConfig(String id, String name, int port) {
-		__id = id;
+	public SocketConfig(String name, TransportType type, int port) {
 		__name = name;
+		__type = type;
 		__port = port;
-	}
-
-	public String getId() {
-		return __id;
 	}
 
 	public String getName() {
 		return __name;
+	}
+
+	public TransportType getType() {
+		return __type;
 	}
 
 	public int getPort() {
@@ -52,7 +54,7 @@ public final class BroadcastConfig {
 
 	@Override
 	public String toString() {
-		return String.format("{ id:%s, name:%s, port:%d }", __id, __name, __port);
+		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
 	}
 
 }

@@ -21,40 +21,54 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.configuration.data;
+package com.tenio.core.network.define.data;
 
-import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.define.RestMethod;
 
 /**
  * @author kong
  */
-public final class SocketConfig {
+public final class PathConfig {
 
 	private final String __name;
-	private final TransportType __type;
-	private final int __port;
+	private final String __description;
+	private final int __version;
+	private final RestMethod __method;
+	private final String __uri;
 
-	public SocketConfig(String name, TransportType type, int port) {
+	public PathConfig(String name, RestMethod method, String uri, String description,
+			int version) {
 		__name = name;
-		__type = type;
-		__port = port;
+		__method = method;
+		__uri = uri;
+		__description = description;
+		__version = version;
 	}
 
 	public String getName() {
 		return __name;
 	}
 
-	public TransportType getType() {
-		return __type;
+	public RestMethod getMethod() {
+		return __method;
 	}
 
-	public int getPort() {
-		return __port;
+	public String getUri() {
+		return __uri;
+	}
+
+	public String getDescription() {
+		return __description;
+	}
+
+	public int getVersion() {
+		return __version;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+		return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", __name, __method.name(),
+				__uri, __description, __version);
 	}
 
 }

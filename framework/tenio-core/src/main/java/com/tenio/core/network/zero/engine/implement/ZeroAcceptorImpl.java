@@ -15,10 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.tenio.core.configuration.data.SocketConfig;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;

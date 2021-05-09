@@ -5,6 +5,7 @@ import com.tenio.core.network.codec.AbstractProtocolCodec;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.zero.codec.encoder.PacketEncoder;
 import com.tenio.core.network.zero.engine.ZeroWriter;
 
 public class ZeroBinaryCodec extends AbstractProtocolCodec {

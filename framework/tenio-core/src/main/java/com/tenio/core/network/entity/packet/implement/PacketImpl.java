@@ -185,7 +185,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 		var packet1 = this;
 		return Integer.compare(packet1.getPriority().getValue(), packet2.getPriority().getValue()) != 0
 				? Integer.compare(packet1.getPriority().getValue(), packet2.getPriority().getValue())
-				: Long.compare(packet1.getId(), packet2.getId());
+				: Long.compare(packet2.getId(), packet1.getId());
 	}
 
 	@Override

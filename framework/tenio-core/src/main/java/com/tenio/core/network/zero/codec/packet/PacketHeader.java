@@ -1,4 +1,4 @@
-package com.tenio.core.network.entity.packet;
+package com.tenio.core.network.zero.codec.packet;
 
 public final class PacketHeader {
 

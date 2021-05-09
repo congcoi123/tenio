@@ -3,14 +3,19 @@
 
 	<Properties>
 		<!-- The server name -->
-		<Property name="name">TenIO Core</Property>
+		<Property name="server-name">TenIO Core</Property>
 		<!-- The server id (module name) -->
-		<Property name="id">tenio-core</Property>
+		<Property name="server-id">tenio-core</Property>
 		<!-- This current version code of your server in integer type (can be compared) -->
-		<Property name="versionCode">1</Property>
+		<Property name="version-code">1</Property>
 		<!-- This current version name of your server in string type -->
-		<Property name="versionName">1.0</Property>
+		<Property name="version-name">1.0</Property>
 	</Properties>
+	
+	<Classes>
+		<Class name="encryption">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter</Class>
+		<Class name="compression">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
+	</Classes>
 
 	<Network>
 		<Sockets>
@@ -43,50 +48,50 @@
 
 	<Configuration>
 		<Workers>
-			<Worker name="socketThreadsPoolAcceptor">1</Worker>
-			<Worker name="socketThreadsPoolWorker">2</Worker>
-			<Worker name="datagramThreadsPoolWorker">1</Worker>
-			<Worker name="websocketThreadsPoolAcceptor">1</Worker>
-			<Worker name="websocketThreadsPoolWorker">2</Worker>
+			<Worker name="socket-threads-pool-acceptor">1</Worker>
+			<Worker name="socket-threads-pool-worker">2</Worker>
+			<Worker name="datagram-threads-pool-worker">1</Worker>
+			<Worker name="websocket-threads-pool-acceptor">1</Worker>
+			<Worker name="websocket-threads-pool-worker">2</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 
 				room -->
-			<Task name="emptyRoomScanInterval">30</Task>	<!-- Unit: Seconds -->
+			<Task name="empty-room-scan-interval">30</Task>	<!-- Unit: Seconds -->
 			<!-- The period checking player time out in seconds -->
-			<Task name="timeoutScanInterval">45</Task>		<!-- Unit: Seconds -->
+			<Task name="timeout-scan-interval">45</Task>		<!-- Unit: Seconds -->
 			<!-- The period checking CCU in seconds -->
-			<Task name="ccuScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="ccu-scan-interval">60</Task>			<!-- Unit: Seconds -->
 			<!-- Schedule detecting deadlocked threads -->
-			<Task name="deadlockScanInterval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="deadlock-scan-interval">60</Task>			<!-- Unit: Seconds -->
 			<!-- The delay between two computations of performances for channels or 
 				0 if no statics are to be computed -->
-			<Task name="trafficCounterCheckInterval">60</Task>	<!-- Unit: Seconds -->
+			<Task name="traffic-counter-check-interval">60</Task>	<!-- Unit: Seconds -->
 			<!-- The period monitoring system -->
-			<Task name="systemMonitoringInterval">60</Task>		<!-- Unit: Seconds -->
+			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
 		<Properties>
 			<!-- When the server get disconnection of one client, can be hold its 
 				player instance until timeout -->
-			<Property name="keepPlayerOnDisconnect">true</Property>
+			<Property name="keep-player-on-disconnect">true</Property>
 			<!-- The maximum number of players which game can handle -->
-			<Property name="maxNumberPlayers">1000</Property>
+			<Property name="max-number-players">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				getting message from client -->
-			<Property name="idleReaderTime">180</Property>		<!-- Unit: Seconds -->
+			<Property name="idle-reader-time">180</Property>		<!-- Unit: Seconds -->
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				sending message to client -->
-			<Property name="idleWriterTime">60</Property>		<!-- Unit: Seconds -->
+			<Property name="idle-writer-time">60</Property>		<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 
 	<!-- Your customize configurations -->
 	<Extension>
 		<Properties>
-			<Property name="customValue1">String</Property>
-			<Property name="customValue2">1</Property>
-			<Property name="customValue3">1.5</Property>
-			<Property name="customValue4">True</Property>
+			<Property name="custom-value-1">String</Property>
+			<Property name="custom-value-2">1</Property>
+			<Property name="custom-value-3">1.5</Property>
+			<Property name="custom-value-4">True</Property>
 		</Properties>
 	</Extension>
 

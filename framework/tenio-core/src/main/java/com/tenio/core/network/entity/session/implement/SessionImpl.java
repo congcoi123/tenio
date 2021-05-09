@@ -16,6 +16,9 @@ import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.zero.codec.packet.PacketReadState;
+import com.tenio.core.network.zero.codec.packet.PendingPacket;
+import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
@@ -30,6 +33,9 @@ public final class SessionImpl implements Session {
 	private DatagramChannel __datagramChannel;
 	private Channel __webSocketChannel;
 	private TransportType __transportType;
+	private PacketReadState __packetReadState;
+	private ProcessedPacket __processedPacket;
+	private PendingPacket __pendingPacket;
 
 	private volatile long __createdTime;
 	private volatile long __lastReadTime;
@@ -70,6 +76,9 @@ public final class SessionImpl implements Session {
 	public SessionImpl() {
 		__properties = new ConcurrentHashMap<String, Object>();
 		__transportType = TransportType.UNKNOWN;
+		__packetReadState = PacketReadState.WAIT_NEW_PACKET;
+		__processedPacket = new ProcessedPacket();
+		__pendingPacket = new PendingPacket();
 		__inactivatedTime = 0L;
 		__active = true;
 		__markedForEviction = false;
@@ -83,7 +92,7 @@ public final class SessionImpl implements Session {
 	public InternalEventManager getEventManager() {
 		return null;
 	}
-	
+
 	@Override
 	public String getId() {
 		return __id;
@@ -197,6 +206,26 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setSelectionKey(SelectionKey selectionKey) {
 		__selectionKey = selectionKey;
+	}
+
+	@Override
+	public PacketReadState getPacketReadState() {
+		return __packetReadState;
+	}
+
+	@Override
+	public void setPacketReadState(PacketReadState packetReadState) {
+		__packetReadState = packetReadState;
+	}
+
+	@Override
+	public ProcessedPacket getProcessedPacket() {
+		return __processedPacket;
+	}
+	
+	@Override
+	public PendingPacket getPendingPacket() {
+		return __pendingPacket;
 	}
 
 	@Override
