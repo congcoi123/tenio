@@ -4,11 +4,13 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
 
-public final class DefaultSocketIOHandler implements SocketIOHandler {
+public final class DefaultSocketIOHandler implements SocketIOHandler, PacketDecoderResultListener {
 
-	ZeroBinaryCodec codec;
+	private PacketDecoder __packetDecoder;
 
 	@Override
 	public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
@@ -20,9 +22,8 @@ public final class DefaultSocketIOHandler implements SocketIOHandler {
 	}
 
 	@Override
-	public void channelRead(Session session, byte[] binaryData) {
-		// TODO Auto-generated method stub
-
+	public void channelRead(Session session, byte[] binary) {
+		__packetDecoder.decode(session, binary);
 	}
 
 	@Override
@@ -33,6 +34,29 @@ public final class DefaultSocketIOHandler implements SocketIOHandler {
 
 	@Override
 	public void channelException(Session session, Exception exception) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setPacketDecoder(PacketDecoder packetDecoder) {
+		__packetDecoder = packetDecoder;
+		__packetDecoder.setResultListener(this);
+	}
+
+	@Override
+	public void resultFrame(Session session, byte[] data) {
+		
+	}
+
+	@Override
+	public void updateDroppedPackets(long numberPackets) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateReadPacketes(long numberPackets) {
 		// TODO Auto-generated method stub
 
 	}

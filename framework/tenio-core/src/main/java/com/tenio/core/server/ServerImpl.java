@@ -30,7 +30,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.common.logger.AbstractLogger;
@@ -112,7 +112,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		__internalLogic = new InternalProcessor(__eventManager, __playerManager, __roomManager);
 
 		// print out the framework's preface
-		for (var line : CommonConstants.CREDIT) {
+		for (var line : CommonConstant.CREDIT) {
 			_info("", "", line);
 		}
 	} // prevent creation manually

@@ -217,7 +217,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 			}
 
 			// result a framed packet data
-			__resultListener.resultFrame(dataBuffer.array());
+			__resultListener.resultFrame(session, dataBuffer.array());
 
 			// counting read packets
 			__resultListener.updateReadPacketes(1);

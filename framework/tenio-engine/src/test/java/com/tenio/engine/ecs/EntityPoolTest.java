@@ -33,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.common.configuration.constant.CommonConstants;
+import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.pool.ElementsPool;
 import com.tenio.engine.ecs.base.ContextInfo;
@@ -83,12 +83,12 @@ public final class EntityPoolTest {
 			__entityPool.get();
 		}
 		int expectedPoolSize = 0;
-		if (numberElement <= CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL) {
-			expectedPoolSize = CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL;
+		if (numberElement <= CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL) {
+			expectedPoolSize = CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL;
 		} else {
-			double p = Math.ceil((double) (numberElement - CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL)
-					/ (double) CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL);
-			expectedPoolSize = (int) (CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL * p);
+			double p = Math.ceil((double) (numberElement - CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL)
+					/ (double) CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL);
+			expectedPoolSize = (int) (CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL * p);
 		}
 		final int expected = expectedPoolSize;
 

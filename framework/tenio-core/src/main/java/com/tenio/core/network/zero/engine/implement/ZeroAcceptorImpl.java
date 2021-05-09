@@ -19,11 +19,11 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.exception.RefusedAddressException;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
-import com.tenio.core.server.Service;
 
 public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAcceptor, ZeroAcceptorListener {
 
@@ -113,7 +113,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 							synchronized (__acceptableChannels) {
 
 								__acceptableChannels.add(clientChannel);
-								getSocketIOHandler().channelActive(clientChannel);
+								getSocketIOHandler().channelActive(clientChannel, selectionKey);
 
 								_debug("ACCEPTED CLIENT CHANNEL",
 										_buildgen("Server address: ",
@@ -197,16 +197,21 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 							} else {
 								InetAddress ipAddress = socket.getInetAddress();
 								if (ipAddress != null) {
+									socketChannel.configureBlocking(false);
+									socketChannel.socket().setTcpNoDelay(false);
+									Session session;
+									
 									try {
 										__connectionFilter.validateAndAddAddress(ipAddress.getHostAddress());
 
 										socketChannel.configureBlocking(false);
 										socketChannel.socket().setTcpNoDelay(false);
+										
 										__zeroReaderListener.acceptSocketChannel(socketChannel);
 
 									} catch (RefusedAddressException e1) {
 										_error(e1, "Refused connection with address: ", e1.getMessage());
-										getSocketIOHandler().channelException(socketChannel, e1);
+										getSocketIOHandler().channelException(session, e1);
 
 										try {
 											socketChannel.socket().shutdownInput();
@@ -272,6 +277,48 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	@Override
 	public void setZeroReaderListener(ZeroReaderListener zeroReaderListener) {
 		__zeroReaderListener = zeroReaderListener;
+	}
+
+	@Override
+	public void onInitialized() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStarted() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onResumed() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRunning() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPaused() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStopped() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onDestroyed() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

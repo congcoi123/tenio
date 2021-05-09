@@ -50,6 +50,7 @@ import com.tenio.core.server.Service;
  * 
  * @author kong
  */
+// TODO: Add description
 public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroReader, ZeroReaderListener {
 
 	private ZeroAcceptorListener __zeroAcceptorListener;

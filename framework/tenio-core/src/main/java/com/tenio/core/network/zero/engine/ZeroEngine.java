@@ -4,12 +4,9 @@ import com.tenio.common.configuration.Configuration;
 import com.tenio.core.network.entity.session.SessionManager;
 import com.tenio.core.network.zero.handler.DatagramIOHandler;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
+import com.tenio.core.server.Service;
 
-public interface ZeroEngine {
-	
-	boolean isActivated();
-
-	void setActivated(boolean activated);
+public interface ZeroEngine extends Service {
 
 	void setConfiguration(Configuration configuration);
 

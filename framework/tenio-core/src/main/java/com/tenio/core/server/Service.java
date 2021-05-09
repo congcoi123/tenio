@@ -2,14 +2,34 @@ package com.tenio.core.server;
 
 public interface Service {
 
-	void init(Object var1);
+	void initialize();
 
-	void destroy(Object var1);
+	void start();
 
-	void handleMessage(Object var1);
+	void resume();
+
+	void pause();
+
+	void stop();
+
+	void destroy();
+
+	void onInitialized();
+
+	void onStarted();
+
+	void onResumed();
+
+	void onRunning();
+
+	void onPaused();
+
+	void onStopped();
+
+	void onDestroyed();
 
 	String getName();
 
-	void setName(String var1);
+	void setName(String name);
 
 }

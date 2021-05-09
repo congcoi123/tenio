@@ -32,9 +32,9 @@ import com.tenio.common.logger.pool.ElementsPool;
  * @author kong
  * 
  */
-public final class CommonConstants {
+public final class CommonConstant {
 
-	private CommonConstants() {
+	private CommonConstant() {
 	}
 
 	public static final String CREDIT[] = new String[] { 

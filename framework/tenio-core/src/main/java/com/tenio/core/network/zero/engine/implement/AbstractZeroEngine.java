@@ -2,6 +2,7 @@ package com.tenio.core.network.zero.engine.implement;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.SystemLogger;
@@ -10,113 +11,159 @@ import com.tenio.core.network.entity.session.SessionManager;
 import com.tenio.core.network.zero.engine.ZeroEngine;
 import com.tenio.core.network.zero.handler.DatagramIOHandler;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
-import com.tenio.core.server.Service;
 
-public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Service, Runnable {
+public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Runnable {
 
 	private volatile int __id;
-	private ExecutorService __threadPool;
+	private String __name;
+
+	private ExecutorService __executor;
+	private int __executorSize;
+
 	private Configuration __configuration;
+
 	private SocketIOHandler __socketIOHandler;
 	private DatagramIOHandler __datagramIOHandler;
 	private SessionManager __sessionManager;
-	private int __threadPoolSize;
+
 	private volatile boolean __activated;
 
 	public AbstractZeroEngine(int numberWorkers) {
-		setActivated(false);
-		__threadPoolSize = numberWorkers;
+		__executorSize = numberWorkers;
+		__activated = false;
 		__id = 0;
 	}
 
 	private void __initializeWorkers() {
-		__threadPool = Executors.newFixedThreadPool(__threadPoolSize);
-	}
-
-	private void __runWorkers() {
-		for (int i = 0; i < __threadPoolSize; i++) {
-			__threadPool.execute(this);
+		__executor = Executors.newFixedThreadPool(__executorSize);
+		for (int i = 0; i < __executorSize; i++) {
+			__executor.execute(this);
 		}
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				if (__executor != null && !__executor.isShutdown()) {
+					__stop();
+				}
+			}
+		});
 	}
 
-	public void setup() {
-		__initializeWorkers();
-		onSetup();
-	}
-
-	public void start() {
-		__runWorkers();
-	}
-
-	public void stop() {
-		onStop();
-		var leftOvers = __threadPool.shutdownNow();
-		_info("ENGINE STOPPED", _buildgen("engine-", getEngineName(), " -> Unprocessed workers: ", leftOvers.size()));
-	}
-
-	public boolean isActivated() {
-		return __activated;
-	}
-
-	public void setActivated(boolean activated) {
-		__activated = activated;
-	}
-
-	public void setConfiguration(Configuration configuration) {
-		__configuration = configuration;
-	}
-
-	public Configuration getConfiguration() {
-		return __configuration;
-	}
-
-	public void setSocketIOHandler(SocketIOHandler socketIOHandler) {
-		__socketIOHandler = socketIOHandler;
-	}
-
-	public SocketIOHandler getSocketIOHandler() {
-		return __socketIOHandler;
-	}
-
-	public void setDatagramIOHandler(DatagramIOHandler datagramIOHandler) {
-		__datagramIOHandler = datagramIOHandler;
-	}
-
-	public DatagramIOHandler getDatagramIOHandler() {
-		return __datagramIOHandler;
-	}
-
-	public void setSessionManager(SessionManager sessionManager) {
-		__sessionManager = sessionManager;
-	}
-
-	public SessionManager getSessionManager() {
-		return __sessionManager;
+	private void __stop() {
+		pause();
+		onStopped();
+		__executor.shutdown();
+		while (true) {
+			try {
+				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
+					break;
+				}
+			} catch (InterruptedException e) {
+				_error(e);
+			}
+		}
+		_info("ENGINE STOPPED", _buildgen("engine-", getName(), "-", __id));
+		destroy();
+		onDestroyed();
+		_info("ENGINE DESTROYED", _buildgen("engine-", getName(), "-", __id));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		_info("ENGINE START", _buildgen("engine-", getEngineName(), "-", __id));
+		_info("ENGINE START", _buildgen("engine-", getName(), "-", __id));
 		__setThreadName();
 
-		if (isActivated()) {
-			onRun();
+		if (__activated) {
+			onRunning();
 		}
 
-		_info("ENGINE STOPPING", _buildgen("engine-", getEngineName(), "-", __id));
+		_info("ENGINE STOPPING", _buildgen("engine-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {
-		Thread.currentThread().setName(StringUtility.strgen("engine-", getEngineName(), "-", __id));
+		Thread.currentThread().setName(StringUtility.strgen("engine-", getName(), "-", __id));
 	}
 
-	public abstract void onSetup();
+	@Override
+	public void setConfiguration(Configuration configuration) {
+		__configuration = configuration;
+	}
 
-	public abstract void onRun();
+	@Override
+	public Configuration getConfiguration() {
+		return __configuration;
+	}
 
-	public abstract void onStop();
+	@Override
+	public void setSocketIOHandler(SocketIOHandler socketIOHandler) {
+		__socketIOHandler = socketIOHandler;
+	}
 
-	public abstract String getEngineName();
+	@Override
+	public SocketIOHandler getSocketIOHandler() {
+		return __socketIOHandler;
+	}
+
+	@Override
+	public void setDatagramIOHandler(DatagramIOHandler datagramIOHandler) {
+		__datagramIOHandler = datagramIOHandler;
+	}
+
+	@Override
+	public DatagramIOHandler getDatagramIOHandler() {
+		return __datagramIOHandler;
+	}
+
+	@Override
+	public void setSessionManager(SessionManager sessionManager) {
+		__sessionManager = sessionManager;
+	}
+
+	@Override
+	public SessionManager getSessionManager() {
+		return __sessionManager;
+	}
+
+	@Override
+	public void initialize() {
+		__initializeWorkers();
+		onInitialized();
+	}
+
+	@Override
+	public void start() {
+		__activated = true;
+	}
+
+	@Override
+	public void resume() {
+		__activated = true;
+	}
+
+	@Override
+	public void pause() {
+		__activated = false;
+	}
+
+	@Override
+	public void stop() {
+		__stop();
+	}
+
+	@Override
+	public void destroy() {
+		__executor = null;
+	}
+
+	@Override
+	public String getName() {
+		return __name;
+	}
+
+	@Override
+	public void setName(String name) {
+		__name = name;
+	}
 
 }
