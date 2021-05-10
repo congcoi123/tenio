@@ -6,6 +6,8 @@ import java.nio.channels.SocketChannel;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
+import com.tenio.core.network.zero.engine.implement.Event;
+import com.tenio.core.network.zero.engine.implement.ISession;
 import com.tenio.core.network.zero.handler.SocketIOHandler;
 
 public final class DefaultSocketIOHandler implements SocketIOHandler, PacketDecoderResultListener {
@@ -17,8 +19,11 @@ public final class DefaultSocketIOHandler implements SocketIOHandler, PacketDeco
 		ISession session = this.sessionManager.createSession(connection);
 		session.setSystemProperty("SessionSelectionKey", selectionKey);
 		this.sessionManager.addSession(session);
-		// this.logger.info("Session created: " + session + " on Server port: " +
-		// connection.socket().getLocalPort() + " <---> " + session.getClientPort());
+		this.logger.info("Session created: " + session + " on Server port: "
+				+ connection.socket().getLocalPort() + " <---> " + session.getClientPort());
+		Event sessionAddedEvent = new Event("sessionAdded");
+		sessionAddedEvent.setParameter("session", session);
+		this.dispatchEvent(sessionAddedEvent);
 	}
 
 	@Override

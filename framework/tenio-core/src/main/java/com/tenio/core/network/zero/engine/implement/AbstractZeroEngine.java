@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.network.entity.session.SessionManager;
@@ -15,14 +14,14 @@ import com.tenio.core.network.zero.handler.SocketIOHandler;
 public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Runnable {
 
 	private static final int DEFAULT_NUMBER_WORKERS = 5;
+	private static final int DEFAULT_BUFFER_SIZE = 1024;
 
 	private volatile int __id;
 	private String __name;
 
 	private ExecutorService __executor;
 	private int __executorSize;
-
-	private Configuration __configuration;
+	private int __bufferSize;
 
 	private SocketIOHandler __socketIOHandler;
 	private DatagramIOHandler __datagramIOHandler;
@@ -32,6 +31,7 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 
 	public AbstractZeroEngine() {
 		__executorSize = DEFAULT_NUMBER_WORKERS;
+		__bufferSize = DEFAULT_BUFFER_SIZE;
 		__activated = false;
 		__id = 0;
 	}
@@ -45,13 +45,17 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 			@Override
 			public void run() {
 				if (__executor != null && !__executor.isShutdown()) {
-					__stop();
+					try {
+						__stop();
+					} catch (Exception e) {
+						error(e);
+					}
 				}
 			}
 		});
 	}
 
-	private void __stop() {
+	private void __stop() throws Exception {
 		pause();
 		onStopped();
 		__executor.shutdown();
@@ -88,16 +92,6 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	}
 
 	@Override
-	public void setConfiguration(Configuration configuration) {
-		__configuration = configuration;
-	}
-
-	@Override
-	public Configuration getConfiguration() {
-		return __configuration;
-	}
-
-	@Override
 	public void setSocketIOHandler(SocketIOHandler socketIOHandler) {
 		__socketIOHandler = socketIOHandler;
 	}
@@ -128,13 +122,33 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	}
 
 	@Override
-	public void initialize() {
+	public int getThreadPoolSize() {
+		return __executorSize;
+	}
+
+	@Override
+	public void setThreadPoolSize(int maxSize) {
+		__executorSize = maxSize;
+	}
+
+	@Override
+	public int getMaxBufferSize() {
+		return __bufferSize;
+	}
+
+	@Override
+	public void setMaxBufferSize(int maxSize) {
+		__bufferSize = maxSize;
+	}
+
+	@Override
+	public void initialize() throws Exception {
 		__initializeWorkers();
 		onInitialized();
 	}
 
 	@Override
-	public void start() {
+	public void start() throws Exception {
 		__activated = true;
 		onStarted();
 	}
@@ -152,13 +166,18 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws Exception {
 		__stop();
 	}
 
 	@Override
 	public void destroy() {
 		__executor = null;
+	}
+
+	@Override
+	public boolean isActivated() {
+		return __activated;
 	}
 
 	@Override

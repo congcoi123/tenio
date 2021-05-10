@@ -26,7 +26,6 @@ package com.tenio.core.network.zero.handler;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 
 /**
@@ -38,12 +37,12 @@ public interface SocketIOHandler {
 
 	void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 
-	void channelRead(Session session, byte[] binary);
+	void channelRead(SocketChannel socketChannel, byte[] binary);
 
 	void channelInactive(SocketChannel socketChannel);
 
-	void channelException(Session session, Exception exception);
-	
+	void channelException(SocketChannel socketChannel, Exception exception);
+
 	void setPacketDecoder(PacketDecoder packetDecoder);
 
 }

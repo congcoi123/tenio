@@ -23,19 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engine;
 
-
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
+// TODO: Add description
 public interface ZeroWriter extends ZeroEngine {
 
 	void enqueuePacket(Packet packet);
 
 	NetworkWriterStatistic getNetworkWriterStatistic();
+
+	void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
 }

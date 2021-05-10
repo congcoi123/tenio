@@ -2,21 +2,21 @@ package com.tenio.core.server;
 
 public interface Service {
 
-	void initialize();
+	void initialize() throws Exception;
 
-	void start();
+	void start() throws Exception;
 
 	void resume();
 
 	void pause();
 
-	void stop();
+	void stop() throws Exception;
 
 	void destroy();
 
-	void onInitialized();
+	void onInitialized() throws Exception;
 
-	void onStarted();
+	void onStarted() throws Exception;
 
 	void onResumed();
 
@@ -24,9 +24,11 @@ public interface Service {
 
 	void onPaused();
 
-	void onStopped();
+	void onStopped() throws Exception;
 
 	void onDestroyed();
+	
+	boolean isActivated();
 
 	String getName();
 

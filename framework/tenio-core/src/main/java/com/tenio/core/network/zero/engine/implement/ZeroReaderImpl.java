@@ -43,11 +43,8 @@ import com.tenio.core.network.zero.engine.ZeroReader;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
-import com.tenio.core.server.Service;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
 // TODO: Add description
@@ -55,41 +52,46 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	private ZeroAcceptorListener __zeroAcceptorListener;
 	private ZeroWriterListener __zeroWriterListener;
-	private Selector __readSelector;
-	private NetworkReaderStatistic __statistic;
+	private Selector __readableSelector;
+	private NetworkReaderStatistic __networkReaderStatistic;
+	private ByteBuffer __readerBuffer;
 
-	public ZeroReaderImpl(int numberWorkers) {
-		super(numberWorkers);
-		var readBuffer = ByteBuffer.allocate(getConfiguration().getInt(CoreConfigurationType.READ_MAX_BUFFER_SIZE));
+	public ZeroReaderImpl() {
+		super();
+		setName("reader");
 	}
 
 	private void __initializeSelector() throws IOException {
-		__readSelector = Selector.open();
+		__readableSelector = Selector.open();
 	}
 
-	private void __readLoop() {
+	private void __initializeBuffer() {
+		__readerBuffer = ByteBuffer.allocate(getMaxBufferSize());
+	}
+
+	private void __readableLoop() {
 		try {
 			__zeroAcceptorListener.handleAcceptableChannels();
-			__readIncomingSocketData(readBuffer);
+			__readIncomingSocketData();
 			Thread.sleep(5L);
 		} catch (InterruptedException e) {
 			error(e);
 		}
 	}
 
-	private void __readIncomingSocketData(ByteBuffer readBuffer) {
+	private void __readIncomingSocketData() {
 		SocketChannel socketChannel = null;
 		DatagramChannel datagramChannel = null;
 		SelectionKey selectionKey = null;
 
 		try {
-			int readyKeyCount = __readSelector.selectNow();
+			int readyKeyCount = __readableSelector.selectNow();
 
 			if (readyKeyCount == 0) {
 				return;
 			}
 
-			Set<SelectionKey> readyKeys = __readSelector.selectedKeys();
+			Set<SelectionKey> readyKeys = __readableSelector.selectedKeys();
 			Iterator<SelectionKey> keyIterators = readyKeys.iterator();
 
 			while (keyIterators.hasNext()) {
@@ -145,7 +147,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				__closeTcpConnection(socketChannel);
 			} else if (byteCount > 0L) {
 				session.addReadBytes(byteCount);
-				__statistic.updateReadBytes(byteCount);
+				__networkReaderStatistic.updateReadBytes(byteCount);
 				readBuffer.flip();
 				byte[] binaryData = new byte[readBuffer.limit()];
 				readBuffer.get(binaryData);
@@ -175,7 +177,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				long byteCount = 0L;
 				byteCount = (long) datagramChannel.read(readBuffer);
 				session.addReadBytes(byteCount);
-				__statistic.updateReadBytes(byteCount);
+				__networkReaderStatistic.updateReadBytes(byteCount);
 				readBuffer.flip();
 				byte[] binaryData = new byte[readBuffer.limit()];
 				readBuffer.get(binaryData);
@@ -190,12 +192,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public void acceptDatagramChannel(DatagramChannel datagramChannel) throws ClosedChannelException {
-		datagramChannel.register(__readSelector, SelectionKey.OP_READ);
+		datagramChannel.register(__readableSelector, SelectionKey.OP_READ);
 	}
 
 	@Override
-	public void acceptSocketChannel(SocketChannel socketChannel) throws ClosedChannelException {
-		socketChannel.register(__readSelector, SelectionKey.OP_READ);
+	public SelectionKey acceptSocketChannel(SocketChannel socketChannel) throws ClosedChannelException {
+		return socketChannel.register(__readableSelector, SelectionKey.OP_READ);
 	}
 
 	@Override
@@ -210,7 +212,18 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public NetworkReaderStatistic getNetworkReaderStatistic() {
-		return __statistic;
+		return __networkReaderStatistic;
+	}
+
+	@Override
+	public void wakeup() {
+		__readableSelector.wakeup();
+	}
+
+	@Override
+	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -224,24 +237,61 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public void onRun() {
-		__readLoop();
+		__readableLoop();
 	}
 
 	@Override
 	public void onStop() {
 		try {
 			Thread.sleep(500L);
-			__readSelector.close();
+			__readableSelector.close();
 		} catch (IOException | InterruptedException e2) {
 			error(e2, "Exception while closing selector");
 		} finally {
-			__readSelector = null;
+			__readableSelector = null;
 		}
 	}
 
 	@Override
-	public String getEngineName() {
-		return "reader";
+	public void onInitialized() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStarted() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onResumed() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRunning() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPaused() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStopped() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onDestroyed() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

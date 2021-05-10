@@ -96,6 +96,8 @@ public enum InternalEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	MESSAGE_HANDLED_IN_CHANNEL
+	MESSAGE_HANDLED_IN_CHANNEL,
+	
+	NEW_CONNECTION_WAS_CREATED;
 
 }

@@ -23,18 +23,24 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engine;
 
+import java.util.List;
+
+import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
+// TODO: Add description
 public interface ZeroAcceptor extends ZeroEngine {
 
 	void setConnectionFilter(ConnectionFilter connectionFilter);
 
 	void setZeroReaderListener(ZeroReaderListener zeroReaderListener);
+
+	void setServerAddress(String serverAddress);
+
+	void setSocketConfigs(List<SocketConfig> socketConfigs);
 
 }
