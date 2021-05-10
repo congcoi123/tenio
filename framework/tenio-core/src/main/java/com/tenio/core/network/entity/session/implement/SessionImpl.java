@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.entity.session.implement;
 
 import java.io.IOException;
@@ -7,11 +30,9 @@ import java.net.Socket;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
@@ -22,29 +43,38 @@ import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class SessionImpl implements Session {
 
-	private volatile long __readBytes;
-	private volatile long __writtenBytes;
-	private volatile int __droppedPackets;
+	private static AtomicLong __idCounter = new AtomicLong();
 
+	private final long __id;
+
+	private SessionManager __sessionManager;
 	private SocketChannel __socketChannel;
 	private SelectionKey __selectionKey;
 	private DatagramChannel __datagramChannel;
 	private Channel __webSocketChannel;
+
 	private TransportType __transportType;
 	private PacketReadState __packetReadState;
 	private ProcessedPacket __processedPacket;
 	private PendingPacket __pendingPacket;
+	private PacketQueue __packetQueue;
 
 	private volatile long __createdTime;
 	private volatile long __lastReadTime;
 	private volatile long __lastWriteTime;
 	private volatile long __lastActivityTime;
-	private volatile long __lastLoggedInActivityTime;
 
-	private String __id;
-	private String __hashId;
+	private volatile long __readBytes;
+	private volatile long __writtenBytes;
+	private volatile long __droppedPackets;
+
+	private volatile long __inactivatedTime;
 
 	private volatile InetSocketAddress __clientInetSocketAddress;
 	private volatile String __clientAddress;
@@ -52,65 +82,38 @@ public final class SessionImpl implements Session {
 	private int __serverPort;
 	private String __serverAddress;
 
-	private int __maxIdleTime;
-	private int __maxLoggedInIdleTime;
+	private int __maxIdleTimeInSecond;
 
-	private volatile int __reconnectionSeconds;
-
-	private volatile long __inactivatedTime;
 	private volatile boolean __active;
-
-	private boolean __markedForEviction;
-
 	private volatile boolean __connected;
-	private volatile boolean __loggedIn;
 
-	private PacketQueue __packetQueue;
-	private SessionManager __sessionManager;
+	public static Session newInstance() {
+		return new SessionImpl();
+	}
 
-	private Map<String, Object> __properties;
+	private SessionImpl() {
+		__id = __idCounter.getAndIncrement();
 
-	private volatile boolean __mobile;
-	private volatile boolean __web;
-
-	public SessionImpl() {
-		__properties = new ConcurrentHashMap<String, Object>();
 		__transportType = TransportType.UNKNOWN;
-		__packetReadState = PacketReadState.WAIT_NEW_PACKET;
-		__processedPacket = new ProcessedPacket();
-		__pendingPacket = new PendingPacket();
+		__packetQueue = null;
+
+		setCreatedTime(__now());
+		setLastReadTime(__now());
+		setLastWriteTime(__now());
+		setLastActivityTime(__now());
+
+		__readBytes = 0L;
+		__writtenBytes = 0L;
+		__droppedPackets = 0L;
+
 		__inactivatedTime = 0L;
 		__active = true;
-		__markedForEviction = false;
 		__connected = false;
-		__loggedIn = false;
-		__mobile = false;
-		__web = false;
 	}
 
 	@Override
-	public InternalEventManager getEventManager() {
-		return null;
-	}
-
-	@Override
-	public String getId() {
+	public long getId() {
 		return __id;
-	}
-
-	@Override
-	public void setId(String id) {
-		__id = id;
-	}
-
-	@Override
-	public String getHashId() {
-		return __hashId;
-	}
-
-	@Override
-	public void setHashId(String hashId) {
-		__hashId = hashId;
 	}
 
 	@Override
@@ -121,16 +124,6 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setConnected(boolean connected) {
 		__connected = connected;
-	}
-
-	@Override
-	public boolean isLoggedIn() {
-		return __loggedIn;
-	}
-
-	@Override
-	public void setLoggedIn(boolean loggedIn) {
-		__loggedIn = loggedIn;
 	}
 
 	@Override
@@ -175,17 +168,21 @@ public final class SessionImpl implements Session {
 	public void setSocketChannel(SocketChannel socketChannel) {
 		if (__transportType != TransportType.UNKNOWN) {
 			throw new IllegalCallerException(String.format(
-					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+					"Could not add another connection type, the current connection is: ", __transportType.toString()));
 		}
 
 		if (socketChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
 
-		__transportType = TransportType.TCP;
-		__socketChannel = socketChannel;
+		if (socketChannel.socket() != null && !socketChannel.socket().isClosed()) {
+			__transportType = TransportType.TCP;
+			__packetReadState = PacketReadState.WAIT_NEW_PACKET;
+			__processedPacket = ProcessedPacket.newInstance();
+			__pendingPacket = PendingPacket.newInstance();
 
-		if (__socketChannel.socket() != null && !__socketChannel.socket().isClosed()) {
+			__socketChannel = socketChannel;
+
 			__serverAddress = __socketChannel.socket().getLocalAddress().getHostAddress();
 			__serverPort = __socketChannel.socket().getLocalPort();
 
@@ -222,7 +219,7 @@ public final class SessionImpl implements Session {
 	public ProcessedPacket getProcessedPacket() {
 		return __processedPacket;
 	}
-	
+
 	@Override
 	public PendingPacket getPendingPacket() {
 		return __pendingPacket;
@@ -237,7 +234,7 @@ public final class SessionImpl implements Session {
 	public void setDatagramChannel(DatagramChannel datagramChannel) {
 		if (__transportType != TransportType.UNKNOWN) {
 			throw new IllegalCallerException(String.format(
-					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+					"Could not add another connection type, the current connection is: ", __transportType.toString()));
 		}
 
 		if (datagramChannel == null) {
@@ -245,7 +242,17 @@ public final class SessionImpl implements Session {
 		}
 
 		__transportType = TransportType.UDP;
+
 		__datagramChannel = datagramChannel;
+
+		__serverAddress = __datagramChannel.socket().getLocalAddress().getHostAddress();
+		__serverPort = __datagramChannel.socket().getLocalPort();
+
+		__clientInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
+		InetAddress remoteAdress = __clientInetSocketAddress.getAddress();
+		__clientAddress = remoteAdress.getHostAddress();
+		__clientPort = __clientInetSocketAddress.getPort();
+
 		__connected = true;
 	}
 
@@ -258,17 +265,17 @@ public final class SessionImpl implements Session {
 	public void setWebSocketChannel(Channel webSocketChannel) {
 		if (__transportType != TransportType.UNKNOWN) {
 			throw new IllegalCallerException(String.format(
-					"Could not add other connection type, the current connection is: ", __transportType.toString()));
+					"Could not add another connection type, the current connection is: ", __transportType.toString()));
 		}
 
 		if (webSocketChannel == null) {
 			throw new IllegalArgumentException("Null value is unacceptable");
 		}
 
-		__transportType = TransportType.WEB_SOCKET;
-		__webSocketChannel = webSocketChannel;
+		if (webSocketChannel.isActive()) {
+			__transportType = TransportType.WEB_SOCKET;
+			__webSocketChannel = webSocketChannel;
 
-		if (__webSocketChannel.isActive()) {
 			InetSocketAddress serverSocketAddress = (InetSocketAddress) __webSocketChannel.localAddress();
 			InetAddress serverAdress = serverSocketAddress.getAddress();
 			__serverAddress = serverAdress.getHostAddress();
@@ -302,16 +309,6 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setLastActivityTime(long timestamp) {
 		__lastActivityTime = timestamp;
-	}
-
-	@Override
-	public long getLastLoggedInActivityTime() {
-		return __lastLoggedInActivityTime;
-	}
-
-	@Override
-	public void setLastLoggedInActivityTime(long timestamp) {
-		__lastLoggedInActivityTime = timestamp;
 	}
 
 	@Override
@@ -357,7 +354,7 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public int getDroppedPackets() {
+	public long getDroppedPackets() {
 		return __droppedPackets;
 	}
 
@@ -368,56 +365,23 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public int getMaxIdleTimeInSeconds() {
-		return __maxIdleTime;
+		return __maxIdleTimeInSecond;
 	}
 
 	@Override
 	public void setMaxIdleTimeInSeconds(int seconds) {
-		__maxIdleTime = seconds;
-	}
-
-	@Override
-	public int getMaxLoggedInIdleTimeInSeconds() {
-		return __maxLoggedInIdleTime;
-	}
-
-	@Override
-	public void setMaxLoggedInIdleTimeInSeconds(int seconds) {
-		if (seconds < getMaxIdleTimeInSeconds()) {
-			seconds = getMaxIdleTimeInSeconds() + 60;
-		}
-		__maxLoggedInIdleTime = seconds;
-	}
-
-	@Override
-	public boolean isMarkedForEviction() {
-		return __markedForEviction;
-	}
-
-	@Override
-	public void setMarkedForEviction() {
-		__markedForEviction = true;
-		__reconnectionSeconds = 0;
+		__maxIdleTimeInSecond = seconds;
 	}
 
 	@Override
 	public boolean isIdle() {
-		return isLoggedIn() ? __isLoggedInIdle() : __isConnectionIdle();
+		return __isConnectionIdle();
 	}
 
 	private boolean __isConnectionIdle() {
 		if (getMaxIdleTimeInSeconds() > 0) {
 			long elapsedSinceLastActivity = TimeUtility.currentTimeMillis() - getLastActivityTime();
 			return elapsedSinceLastActivity / 1000L > (long) getMaxIdleTimeInSeconds();
-		}
-
-		return false;
-	}
-
-	private boolean __isLoggedInIdle() {
-		if (getMaxLoggedInIdleTimeInSeconds() > 0) {
-			long elapsedSinceLastActivity = TimeUtility.currentTimeMillis() - getLastLoggedInActivityTime();
-			return elapsedSinceLastActivity / 1000L > (long) getMaxLoggedInIdleTimeInSeconds();
 		}
 
 		return false;
@@ -445,34 +409,8 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public boolean isReconnectionTimeExpired() {
-		long expiry = __inactivatedTime + (long) (1000 * __reconnectionSeconds);
-		return TimeUtility.currentTimeMillis() > expiry;
-	}
-
-	@Override
-	public Object getProperty(String key) {
-		return __properties.get(key);
-	}
-
-	@Override
-	public void setProperty(String key, Object value) {
-		__properties.put(key, value);
-	}
-
-	@Override
-	public void removeProperty(String key) {
-		__properties.remove(key);
-	}
-
-	@Override
 	public InetSocketAddress getClientInetSocketAddress() {
 		return __clientInetSocketAddress;
-	}
-
-	@Override
-	public void setClientInetSocketAddress(InetSocketAddress inetSocketAddress) {
-		__clientInetSocketAddress = inetSocketAddress;
 	}
 
 	@Override
@@ -530,58 +468,33 @@ public final class SessionImpl implements Session {
 					socket.close();
 					__socketChannel.close();
 				}
+				getSessionManager().removeSessionBySocket(__socketChannel);
 			}
-			__sessionManager.removeSessionBySocket(__socketChannel);
 			break;
 
 		case UDP:
-			__datagramChannel = null;
-			__sessionManager.removeSessionByDatagram(getClientInetSocketAddress().toString());
+			getSessionManager().removeSessionByDatagram(getClientInetSocketAddress());
 			break;
 
 		case WEB_SOCKET:
 			if (__webSocketChannel != null) {
 				__webSocketChannel.close();
+				getSessionManager().removeSessionByWebSocket(__webSocketChannel);
 			}
-			__sessionManager.removeSessionByWebSocket(__webSocketChannel);
 			break;
 
 		default:
 			break;
 		}
 		__connected = false;
+		__sessionManager.removeSession(this);
 	}
 
-	@Override
-	public int getReconnectionSeconds() {
-		return __reconnectionSeconds;
+	private long __now() {
+		return TimeUtility.currentTimeMillis();
 	}
 
-	@Override
-	public void setReconnectionSeconds(int seconds) {
-		__reconnectionSeconds = seconds;
-	}
-
-	@Override
-	public boolean isMobile() {
-		return __mobile;
-	}
-
-	@Override
-	public void setMobile(boolean mobile) {
-		__mobile = mobile;
-	}
-
-	@Override
-	public boolean isWeb() {
-		return __web;
-	}
-
-	@Override
-	public void setWeb(boolean web) {
-		__web = web;
-	}
-
+	// FIXME: Needs to implement these methods
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);

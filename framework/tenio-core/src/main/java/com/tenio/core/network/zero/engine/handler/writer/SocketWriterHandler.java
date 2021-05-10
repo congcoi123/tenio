@@ -1,26 +1,48 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.zero.engine.handler.writer;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.BlockingQueue;
 
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class SocketWriterHandler extends AbstractWriterHandler {
-
-	public SocketWriterHandler(BlockingQueue<Session> sessionTicketsQueue, NetworkWriterStatistic statistic) {
-		super(sessionTicketsQueue, statistic);
-	}
 
 	@Override
 	public void send(PacketQueue packetQueue, Session session, Packet packet) throws IOException {
 		SocketChannel channel = session.getSocketChannel();
 
-		// this channel can be deactivated by some reasons, no need to throw an exception here
+		// this channel can be deactivated by some reasons, no need to throw an
+		// exception here
 		if (channel == null) {
 			debug("SOCKET CHANNEL SEND", "Skipping this packet, found null socket for session: ", session);
 			return;
@@ -52,7 +74,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 		int realWrittenBytes = channel.write(getBuffer());
 
 		// update statistic data
-		getStatistic().updateWrittenBytes(realWrittenBytes);
+		getNetworkWriterStatistic().updateWrittenBytes(realWrittenBytes);
 
 		// update statistic data for the session too
 		session.addWrittenBytes(realWrittenBytes);
@@ -79,7 +101,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 			}
 		} else {
 			// update the statistic data
-			getStatistic().updateWrittenPackets(1);
+			getNetworkWriterStatistic().updateWrittenPackets(1);
 
 			// now the packet can be safely removed
 			packetQueue.take();

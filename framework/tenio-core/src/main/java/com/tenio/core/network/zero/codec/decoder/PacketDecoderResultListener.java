@@ -8,6 +8,6 @@ public interface PacketDecoderResultListener {
 
 	void updateDroppedPackets(long numberPackets);
 
-	void updateReadPacketes(long numberPackets);
+	void updateReadPackets(long numberPackets);
 
 }

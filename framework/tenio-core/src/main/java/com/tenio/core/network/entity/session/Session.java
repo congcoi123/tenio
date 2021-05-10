@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.entity.session;
 
 import java.io.IOException;
@@ -6,7 +29,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
@@ -15,29 +37,21 @@ import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public interface Session {
-	
-	InternalEventManager getEventManager();
 
-	String getId();
-
-	void setId(String id);
-
-	String getHashId();
-
-	void setHashId(String hashId);
+	long getId();
 
 	boolean isConnected();
 
 	void setConnected(boolean connected);
 
-	boolean isLoggedIn();
-
-	void setLoggedIn(boolean loggedIn);
-
 	PacketQueue getPacketQueue();
 
-	void setPacketQueue(PacketQueue packetQueue);
+	void setPacketQueue(PacketQueue packetQueue) throws IllegalStateException;
 
 	TransportType getTransportType();
 
@@ -54,13 +68,13 @@ public interface Session {
 	SelectionKey getSelectionKey();
 
 	void setSelectionKey(SelectionKey selectionKey);
-	
+
 	PacketReadState getPacketReadState();
-	
+
 	void setPacketReadState(PacketReadState packetReadState);
-	
+
 	ProcessedPacket getProcessedPacket();
-	
+
 	PendingPacket getPendingPacket();
 
 	DatagramChannel getDatagramChannel();
@@ -68,6 +82,8 @@ public interface Session {
 	void setDatagramChannel(DatagramChannel datagramChannel) throws IllegalArgumentException, IllegalCallerException;
 
 	Channel getWebSocketChannel();
+
+	InetSocketAddress getClientInetSocketAddress();
 
 	void setWebSocketChannel(Channel webSocketChannel) throws IllegalArgumentException, IllegalCallerException;
 
@@ -79,10 +95,6 @@ public interface Session {
 
 	void setLastActivityTime(long timestamp);
 
-	long getLastLoggedInActivityTime();
-
-	void setLastLoggedInActivityTime(long timestamp);
-
 	long getLastReadTime();
 
 	void setLastReadTime(long timestamp);
@@ -93,27 +105,19 @@ public interface Session {
 
 	long getReadBytes();
 
-	void addReadBytes(long bytes);
+	void addReadBytes(long numberBytes);
 
 	long getWrittenBytes();
 
-	void addWrittenBytes(long bytes);
+	void addWrittenBytes(long numberBytes);
 
-	int getDroppedPackets();
+	long getDroppedPackets();
 
-	void addDroppedPackets(int packets);
+	void addDroppedPackets(int numberPackets);
 
 	int getMaxIdleTimeInSeconds();
 
 	void setMaxIdleTimeInSeconds(int seconds);
-
-	int getMaxLoggedInIdleTimeInSeconds();
-
-	void setMaxLoggedInIdleTimeInSeconds(int seconds);
-
-	boolean isMarkedForEviction();
-
-	void setMarkedForEviction();
 
 	boolean isIdle();
 
@@ -124,18 +128,6 @@ public interface Session {
 	void deactivate();
 
 	long getInactivatedTime();
-
-	boolean isReconnectionTimeExpired();
-
-	Object getProperty(String key);
-
-	void setProperty(String key, Object value);
-
-	void removeProperty(String key);
-
-	InetSocketAddress getClientInetSocketAddress();
-
-	void setClientInetSocketAddress(InetSocketAddress inetSocketAddress);
 
 	String getFullClientIpAddress();
 
@@ -154,17 +146,5 @@ public interface Session {
 	void setSessionManager(SessionManager sessionManager);
 
 	void close() throws IOException;
-
-	int getReconnectionSeconds();
-
-	void setReconnectionSeconds(int seconds);
-
-	boolean isMobile();
-
-	void setMobile(boolean mobile);
-
-	boolean isWeb();
-
-	void setWeb(boolean web);
 
 }

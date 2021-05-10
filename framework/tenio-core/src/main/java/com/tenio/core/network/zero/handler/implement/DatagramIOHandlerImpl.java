@@ -23,49 +23,24 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.core.event.internal.InternalEventManager;
-import com.tenio.core.network.entity.session.SessionManager;
-import com.tenio.core.network.statistic.NetworkReaderStatistic;
-import com.tenio.core.network.zero.handler.BaseIOHandler;
+import java.nio.channels.DatagramChannel;
+
+import com.tenio.core.network.zero.handler.DatagramIOHandler;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public abstract class BaseZeroHandler implements BaseIOHandler {
-
-	private InternalEventManager __internalEventManager;
-	private SessionManager __sessionManager;
-	private NetworkReaderStatistic __networkReaderStatistic;
+public final class DatagramIOHandlerImpl extends BaseZeroHandler implements DatagramIOHandler {
 
 	@Override
-	public InternalEventManager getInternalEventManager() {
-		return __internalEventManager;
+	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
+
 	}
 
 	@Override
-	public void setInternalEventManager(InternalEventManager internalEventManager) {
-		__internalEventManager = internalEventManager;
-	}
+	public void channelException(DatagramChannel datagramChannel, Exception exception) {
 
-	@Override
-	public SessionManager getSessionManager() {
-		return __sessionManager;
-	}
-
-	@Override
-	public void setSessionManager(SessionManager sessionManager) {
-		__sessionManager = sessionManager;
-	}
-
-	@Override
-	public NetworkReaderStatistic getNetworkReaderStatistic() {
-		return __networkReaderStatistic;
-	}
-
-	@Override
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		__networkReaderStatistic = networkReaderStatistic;
 	}
 
 }

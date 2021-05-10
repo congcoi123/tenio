@@ -29,13 +29,10 @@ import java.util.Map;
 /**
  * @author kong
  */
+// TODO: Add description
 public enum TransportType {
-	
-	UNKNOWN("unknown"),
-	TCP("tcp"),
-	UDP("udp"),
-	WEB_SOCKET("websocket"),
-	HTTP("http");
+
+	UNKNOWN("unknown"), TCP("tcp"), UDP("udp"), WEB_SOCKET("websocket"), HTTP("http");
 
 	// Reverse-lookup map for getting a type from a value
 	private static final Map<String, TransportType> lookup = new HashMap<String, TransportType>();

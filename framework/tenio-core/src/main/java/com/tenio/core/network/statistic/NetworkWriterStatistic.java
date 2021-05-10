@@ -6,19 +6,19 @@ public final class NetworkWriterStatistic {
 
 	}
 
-	public void updateWrittenBytes(int numberBytes) {
+	public void updateWrittenBytes(long numberBytes) {
 
 	}
 
-	public void updateWrittenPackets(int numberPackets) {
+	public void updateWrittenPackets(long numberPackets) {
 
 	}
 
-	public void updateDroppedPacketsByPolicy(int numberPackets) {
+	public void updateDroppedPacketsByPolicy(long numberPackets) {
 
 	}
 
-	public void updateDroppedPacketsByFull(int numberPackets) {
+	public void updateDroppedPacketsByFull(long numberPackets) {
 
 	}
 

@@ -29,10 +29,9 @@ import java.nio.channels.SocketChannel;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
+// TODO: Add description
 public interface SocketIOHandler {
 
 	void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);

@@ -23,17 +23,16 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler;
 
-import com.tenio.core.network.entity.session.Session;
+import java.nio.channels.DatagramChannel;
 
 /**
- * UNDER CONSTRUCTION
- * 
  * @author kong
  */
+// TODO: Add description
 public interface DatagramIOHandler {
 
-	void channelRead(Session session, byte[] binaryData);
+	void channelRead(DatagramChannel datagramChannel, byte[] binary);
 
-	void channelException(Session session, Exception exception);
+	void channelException(DatagramChannel datagramChannel, Exception exception);
 
 }

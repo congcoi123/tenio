@@ -26,25 +26,25 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 				var process = session.getProcessedPacket();
 				if (readState == PacketReadState.WAIT_NEW_PACKET) {
 					process = this.handleNewPacket(session, data);
-					readState = process.getState();
+					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE) {
 					process = this.handleDataSize(session, data);
-					readState = process.getState();
+					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE_FRAGMENT) {
 					process = this.handleDataSizeFragment(session, data);
-					readState = process.getState();
+					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA) {
 					process = this.handlePacketData(session, data);
-					readState = process.getState();
+					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 			}
@@ -77,7 +77,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 		data = ByteUtility.resizeBytesArray(data, 1, data.length - 1);
 
 		var processedPacket = session.getProcessedPacket();
-		processedPacket.setState(PacketReadState.WAIT_DATA_SIZE);
+		processedPacket.setPacketReadState(PacketReadState.WAIT_DATA_SIZE);
 		processedPacket.setData(data);
 
 		return processedPacket;
@@ -124,7 +124,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 		}
 
 		var processedPacket = session.getProcessedPacket();
-		processedPacket.setState(packetReadState);
+		processedPacket.setPacketReadState(packetReadState);
 		processedPacket.setData(data);
 
 		return processedPacket;
@@ -175,7 +175,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 		}
 
 		var processedPacket = session.getProcessedPacket();
-		processedPacket.setState(packetReadState);
+		processedPacket.setPacketReadState(packetReadState);
 		processedPacket.setData(data);
 
 		return processedPacket;
@@ -220,7 +220,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 			__resultListener.resultFrame(session, dataBuffer.array());
 
 			// counting read packets
-			__resultListener.updateReadPacketes(1);
+			__resultListener.updateReadPackets(1);
 
 			// change state for the next process, a new cycle
 			packetReadState = PacketReadState.WAIT_NEW_PACKET;
@@ -241,7 +241,7 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 		}
 
 		var processedPacket = session.getProcessedPacket();
-		processedPacket.setState(packetReadState);
+		processedPacket.setPacketReadState(packetReadState);
 		processedPacket.setData(data);
 
 		return processedPacket;

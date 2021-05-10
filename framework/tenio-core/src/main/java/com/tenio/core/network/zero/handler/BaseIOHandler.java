@@ -21,51 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.handler.implement;
+package com.tenio.core.network.zero.handler;
 
 import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.entity.session.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
-import com.tenio.core.network.zero.handler.BaseIOHandler;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public abstract class BaseZeroHandler implements BaseIOHandler {
+public interface BaseIOHandler {
 
-	private InternalEventManager __internalEventManager;
-	private SessionManager __sessionManager;
-	private NetworkReaderStatistic __networkReaderStatistic;
+	InternalEventManager getInternalEventManager();
 
-	@Override
-	public InternalEventManager getInternalEventManager() {
-		return __internalEventManager;
-	}
+	void setInternalEventManager(InternalEventManager internalEventManager);
 
-	@Override
-	public void setInternalEventManager(InternalEventManager internalEventManager) {
-		__internalEventManager = internalEventManager;
-	}
+	SessionManager getSessionManager();
 
-	@Override
-	public SessionManager getSessionManager() {
-		return __sessionManager;
-	}
+	void setSessionManager(SessionManager sessionManager);
 
-	@Override
-	public void setSessionManager(SessionManager sessionManager) {
-		__sessionManager = sessionManager;
-	}
+	NetworkReaderStatistic getNetworkReaderStatistic();
 
-	@Override
-	public NetworkReaderStatistic getNetworkReaderStatistic() {
-		return __networkReaderStatistic;
-	}
-
-	@Override
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		__networkReaderStatistic = networkReaderStatistic;
-	}
+	void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
 
 }

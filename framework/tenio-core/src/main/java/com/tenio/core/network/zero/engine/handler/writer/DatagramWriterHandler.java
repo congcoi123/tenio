@@ -1,20 +1,41 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.zero.engine.handler.writer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.BlockingQueue;
 
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class DatagramWriterHandler extends AbstractWriterHandler {
-
-	public DatagramWriterHandler(BlockingQueue<Session> sessionTicketsQueue, NetworkWriterStatistic statistic) {
-		super(sessionTicketsQueue, statistic);
-	}
 
 	@Override
 	public void send(PacketQueue packetQueue, Session session, Packet packet) throws IOException {
@@ -29,10 +50,10 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 		// throw an exception
 		if (datagramChannel == null) {
 			throw new IllegalStateException(
-					String.format("UDP Packet cannot be sent to {}, no DatagramChannel set", session));
+					String.format("UDP Packet cannot be sent to {}, no DatagramChannel was set", session));
 		} else if (inetSocketAddress == null) {
 			throw new IllegalStateException(
-					String.format("UDP Packet cannot be sent to {}, no InetSocketAddress set", session));
+					String.format("UDP Packet cannot be sent to {}, no InetSocketAddress was set", session));
 		}
 
 		// clear the buffer first
@@ -58,8 +79,8 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 		int writtenBytes = datagramChannel.send(getBuffer(), inetSocketAddress);
 
 		// update statistic data
-		getStatistic().updateWrittenBytes(writtenBytes);
-		getStatistic().updateWrittenPackets(1);
+		getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
+		getNetworkWriterStatistic().updateWrittenPackets(1);
 
 		// update statistic data for session
 		session.addWrittenBytes(writtenBytes);

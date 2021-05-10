@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.zero.engine.implement;
 
 import java.io.IOException;
@@ -14,122 +37,152 @@ import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.ZeroWriter;
+import com.tenio.core.network.zero.engine.handler.writer.DatagramWriterHandler;
+import com.tenio.core.network.zero.engine.handler.writer.SocketWriterHandler;
 import com.tenio.core.network.zero.engine.handler.writer.WriterHandler;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
-import com.tenio.core.server.Service;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter, ZeroWriterListener {
 
-	private final BlockingQueue<Session> sessionTicketsQueue;
-	private WriterHandler socketWriter;
-	private WriterHandler datagramWriter;
-	private NetworkWriterStatistic statistic;
+	private BlockingQueue<Session> __sessionTicketsQueue;
+	private WriterHandler __socketWriterHandler;
+	private WriterHandler __datagramWriterHandler;
+	private NetworkWriterStatistic __networkWriterStatistic;
 
-	public ZeroWriterImpl(int numberWorkers) {
-		super(numberWorkers);
-		sessionTicketsQueue = new LinkedBlockingQueue();
+	public ZeroWriterImpl() {
+		super();
+		__sessionTicketsQueue = new LinkedBlockingQueue<Session>();
+		setName("writer");
 	}
 
-	private void __writeLoop() {
+	private void __initializeSocketWriterHandler() {
+		__socketWriterHandler = new SocketWriterHandler();
+		__socketWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
+		__socketWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
+		__socketWriterHandler.allocateBuffer(getMaxBufferSize());
+	}
+
+	private void __initializeDatagramWriterHandler() {
+		__datagramWriterHandler = new DatagramWriterHandler();
+		__datagramWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
+		__datagramWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
+		__datagramWriterHandler.allocateBuffer(getMaxBufferSize());
+	}
+
+	private void __writableLoop() {
 		try {
-			Session session = this.sessionTicketsQueue.take();
-			this.processSessionQueue(session);
-		} catch (InterruptedException var3) {
-			// logger.warn("EngineWriter thread interruped: " + Thread.currentThread());
-		} catch (Throwable var4) {
-//			this.logger.warn("Problems in EngineWriter main loop, Thread: " + Thread.currentThread());
+			Session session = __sessionTicketsQueue.take();
+			__processSessionQueue(session);
+			// FIXME: Need to handle these exceptions
+		} catch (InterruptedException e) {
+			error(e);
 		}
 	}
 
-	private void processSessionQueue(Session session) {
+	private void __processSessionQueue(Session session) {
+
+		// ignore the null session
 		if (session == null) {
 			return;
 		}
 
 		try {
-			PacketQueue sessionQ = session.getPacketQueue();
-			synchronized (sessionQ) {
-				if (sessionQ.isEmpty()) {
+			// now we can iterate packets from queue to proceed
+			PacketQueue packetQueue = session.getPacketQueue();
+			synchronized (packetQueue) {
+				// ignore the empty queue
+				if (packetQueue.isEmpty()) {
 					return;
 				}
 
+				// when the session is in-activated, just ignore its packets
 				if (!session.isActivated()) {
-					sessionQ.take();
+					packetQueue.take();
 					return;
 				}
 
-				var packet = sessionQ.peek();
+				Packet packet = packetQueue.peek();
+				// ignore the null packet and remove it from queue
 				if (packet == null) {
-					if (!sessionQ.isEmpty()) {
-						sessionQ.take();
+					if (!packetQueue.isEmpty()) {
+						packetQueue.take();
 					}
 
 					return;
 				}
 
 				if (session.isTcp()) {
-					socketWriter.send(sessionQ, session, null);
+					__socketWriterHandler.send(packetQueue, session, packet);
 				} else if (session.isUdp()) {
-					datagramWriter.send(sessionQ, session, null);
+					__datagramWriterHandler.send(packetQueue, session, packet);
 				}
 			}
-		} catch (ClosedChannelException var8) {
-			// this.logger.warn("Socket closed during write operation for session: " +
-			// session);
-		} catch (IOException var9) {
-			// this.logger.warn("Error during write. Session: " + session);
-		} catch (Exception var10) {
-			// this.logger.warn("Error during write. Session: " + session);
+			// FIXME: Need to handle these exceptions
+		} catch (ClosedChannelException e) {
+			error(e);
+		} catch (IOException e) {
+			error(e);
+		} catch (Exception e) {
+			error(e);
 		}
 	}
 
 	@Override
 	public void enqueuePacket(Packet packet) {
+		// retrieve all recipient sessions from the packet
 		Collection<Session> recipients = packet.getRecipients();
 		if (recipients == null) {
 			return;
 		}
 
+		// when there is only one recipient, no need to create clone packets
 		if (recipients.size() == 1) {
-			this.enqueueLocalPacket(recipients.iterator().next(), packet);
+			__enqueuePacket(recipients.iterator().next(), packet);
 		} else {
-			Iterator<Session> iterator = recipients.iterator();
+			Iterator<Session> sessionIterator = recipients.iterator();
 
-			while (iterator.hasNext()) {
-				Session session = iterator.next();
-				this.enqueueLocalPacket(session, packet.clone());
+			// one session needs one packet in its queue, need to clone the packet
+			while (sessionIterator.hasNext()) {
+				Session session = sessionIterator.next();
+				__enqueuePacket(session, packet.clone());
 			}
 		}
 
 	}
 
-	private void enqueueLocalPacket(Session session, Packet packet) {
+	private void __enqueuePacket(Session session, Packet packet) {
+		// check the session state once more time
 		if (!session.isActivated()) {
 			return;
 		}
 
-		PacketQueue sessionQ = session.getPacketQueue();
-		if (sessionQ != null) {
-			synchronized (sessionQ) {
-				int userId = 0;
-
+		// loops through the packet queue and handles its packets
+		PacketQueue packetQueue = session.getPacketQueue();
+		if (packetQueue != null) {
+			synchronized (packetQueue) {
 				try {
-					boolean wasEmpty = sessionQ.isEmpty();
-					sessionQ.put(packet);
+					// get the current state first
+					boolean isEmpty = packetQueue.isEmpty();
+					// now can put new item into the queue
+					packetQueue.put(packet);
 
-					// only need when packet queue is empty or the session was not in the tickets
-					// queue
-					if (wasEmpty || !this.sessionTicketsQueue.contains(session)) {
-						this.sessionTicketsQueue.add(session);
+					// only need when the packet queue is empty or the session was not in the
+					// tickets queue
+					if (isEmpty || !__sessionTicketsQueue.contains(session)) {
+						__sessionTicketsQueue.add(session);
 					}
 
-					packet.setRecipients((Collection) null);
-				} catch (PacketQueuePolicyViolationException var10) {
+					packet.setRecipients(null);
+				} catch (PacketQueuePolicyViolationException e) {
 					session.addDroppedPackets(1);
-					statistic.updateDroppedPacketsByPolicy(1);
-				} catch (PacketQueueFullException var11) {
+					__networkWriterStatistic.updateDroppedPacketsByPolicy(1);
+				} catch (PacketQueueFullException e) {
 					session.addDroppedPackets(1);
-					statistic.updateDroppedPacketsByFull(1);
+					__networkWriterStatistic.updateDroppedPacketsByFull(1);
 				}
 			}
 		}
@@ -139,35 +192,56 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	@Override
 	public void continueWriteInterestOp(Session session) {
 		if (session != null) {
-			this.sessionTicketsQueue.add(session);
+			__sessionTicketsQueue.add(session);
 		}
 	}
 
 	@Override
 	public NetworkWriterStatistic getNetworkWriterStatistic() {
-		return statistic;
+		return __networkWriterStatistic;
 	}
 
 	@Override
-	public void onSetup() {
-		// TODO Auto-generated method stub
-
+	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
+		__networkWriterStatistic = networkWriterStatistic;
 	}
 
 	@Override
-	public void onRun() {
-		__writeLoop();
+	public void onInitialized() throws Exception {
+		__initializeSocketWriterHandler();
+		__initializeDatagramWriterHandler();
 	}
 
 	@Override
-	public void onStop() {
-		// TODO Auto-generated method stub
-
+	public void onStarted() throws Exception {
+		// do nothing
 	}
 
 	@Override
-	public String getEngineName() {
-		return "writer";
+	public void onResumed() {
+		// do nothing
+	}
+
+	@Override
+	public void onRunning() {
+		__writableLoop();
+	}
+
+	@Override
+	public void onPaused() {
+		// do nothing
+	}
+
+	@Override
+	public void onStopped() throws Exception {
+		__sessionTicketsQueue.clear();
+	}
+
+	@Override
+	public void onDestroyed() {
+		__sessionTicketsQueue = null;
+		__socketWriterHandler = null;
+		__datagramWriterHandler = null;
 	}
 
 }
