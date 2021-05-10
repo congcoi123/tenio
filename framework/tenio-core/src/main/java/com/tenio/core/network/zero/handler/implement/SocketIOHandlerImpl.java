@@ -26,6 +26,7 @@ package com.tenio.core.network.zero.handler.implement;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import com.tenio.core.configuration.define.InternalEvent;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
@@ -35,14 +36,19 @@ import com.tenio.core.network.zero.handler.SocketIOHandler;
  * @author kong
  */
 // TODO: Add description
-public final class SocketIOHandlerImpl extends BaseZeroHandler
-		implements SocketIOHandler, PacketDecoderResultListener {
+public final class SocketIOHandlerImpl extends BaseZeroHandler implements SocketIOHandler, PacketDecoderResultListener {
 
 	private PacketDecoder __packetDecoder;
 
 	@Override
 	public void resultFrame(Session session, byte[] data) {
-
+		if (!session.isConnected()) {
+			session.setConnected(true);
+			session.activate();
+			getInternalEventManager().emit(InternalEvent.SESSION_IS_CONNECTED, session);
+		} else {
+			getInternalEventManager().emit(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, session, data);
+		}
 	}
 
 	@Override
@@ -57,12 +63,17 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler
 
 	@Override
 	public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
-		Session session = getSessionManager().createSocketSession(socketChannel, selectionKey);
+		try {
+			Session session = getSessionManager().createSocketSession(socketChannel, selectionKey);
+			getInternalEventManager().emit(InternalEvent.NEW_SESSION_WAS_CREATED, session);
+		} catch (Exception e) {
+			error(e);
+		}
 	}
 
 	@Override
-	public void channelRead(SocketChannel socketChannel, byte[] binary) {
-
+	public void channelRead(Session session, byte[] binary) {
+		__packetDecoder.decode(session, binary);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.implement;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
@@ -140,6 +141,10 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 		// retrieves session by its socket channel
 		Session session = getSessionManager().getSessionBySocket(socketChannel);
 
+		if (session == null) {
+			return;
+		}
+
 		// when a socket channel is writable, should make it highest priority
 		// manipulation
 		if (selectionKey.isWritable()) {
@@ -167,7 +172,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				byte[] binary = new byte[__readerBuffer.limit()];
 				__readerBuffer.get(binary);
 
-				getSocketIOHandler().channelRead(socketChannel, binary);
+				getSocketIOHandler().channelRead(session, binary);
 			}
 
 		}
@@ -183,7 +188,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			// retrieves session by its datagram channel, hence we are using only one
 			// datagram channel for all sessions, we use incoming request remote address to
 			// distinguish them
-			Session session = getSessionManager().getSessionByDatagram(datagramChannel.socket().getRemoteSocketAddress());
+			Session session = getSessionManager()
+					.getSessionByDatagram((InetSocketAddress) datagramChannel.socket().getRemoteSocketAddress());
+
+			if (session == null) {
+				return;
+			}
 
 			if (selectionKey.isWritable()) {
 				// should continue put this session for sending all left packets first
@@ -206,7 +216,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				byte[] binary = new byte[__readerBuffer.limit()];
 				__readerBuffer.get(binary);
 
-				getDatagramIOHandler().channelRead(datagramChannel, binary);
+				getDatagramIOHandler().channelRead(session, binary);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handler.implement;
 
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.event.internal.InternalEventManager;
 import com.tenio.core.network.entity.session.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -32,7 +33,7 @@ import com.tenio.core.network.zero.handler.BaseIOHandler;
  * @author kong
  */
 // TODO: Add description
-public abstract class BaseZeroHandler implements BaseIOHandler {
+public abstract class BaseZeroHandler extends SystemLogger implements BaseIOHandler {
 
 	private InternalEventManager __internalEventManager;
 	private SessionManager __sessionManager;

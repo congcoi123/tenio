@@ -53,6 +53,8 @@ public final class SessionImpl implements Session {
 
 	private final long __id;
 
+	private String __name;
+
 	private SessionManager __sessionManager;
 	private SocketChannel __socketChannel;
 	private SelectionKey __selectionKey;
@@ -107,13 +109,23 @@ public final class SessionImpl implements Session {
 		__droppedPackets = 0L;
 
 		__inactivatedTime = 0L;
-		__active = true;
+		__active = false;
 		__connected = false;
 	}
 
 	@Override
 	public long getId() {
 		return __id;
+	}
+
+	@Override
+	public String getName() {
+		return __name;
+	}
+
+	@Override
+	public void setName(String name) {
+		__name = name;
 	}
 
 	@Override
@@ -190,8 +202,6 @@ public final class SessionImpl implements Session {
 			InetAddress remoteAdress = socketAddress.getAddress();
 			__clientAddress = remoteAdress.getHostAddress();
 			__clientPort = socketAddress.getPort();
-
-			__connected = true;
 		}
 	}
 
@@ -252,8 +262,6 @@ public final class SessionImpl implements Session {
 		InetAddress remoteAdress = __clientInetSocketAddress.getAddress();
 		__clientAddress = remoteAdress.getHostAddress();
 		__clientPort = __clientInetSocketAddress.getPort();
-
-		__connected = true;
 	}
 
 	@Override
@@ -285,8 +293,6 @@ public final class SessionImpl implements Session {
 			InetAddress remoteAdress = socketAddress.getAddress();
 			__clientAddress = remoteAdress.getHostAddress();
 			__clientPort = socketAddress.getPort();
-
-			__connected = true;
 		}
 
 	}
@@ -486,6 +492,7 @@ public final class SessionImpl implements Session {
 		default:
 			break;
 		}
+
 		__connected = false;
 		__sessionManager.removeSession(this);
 	}

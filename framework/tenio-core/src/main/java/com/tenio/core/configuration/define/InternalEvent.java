@@ -24,8 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.configuration.define;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.entity.Player;
-import com.tenio.core.network.entity.session.implement.AbstractConnection;
+import com.tenio.core.network.entity.session.Session;
 
 /**
  * This Enum defines all logic events in the main thread. All the process should
@@ -36,28 +35,32 @@ import com.tenio.core.network.entity.session.implement.AbstractConnection;
 // FIXME: Fix me
 public enum InternalEvent {
 
+	NEW_SESSION_WAS_CREATED,
+
+	SESSION_IS_CONNECTED,
+
 	/**
 	 * When a client is disconnected from your server for any reason, you can handle
 	 * it in this event. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the connection, see {@link Connection}</li>
+	 * <li><b>parameter[0]</b> the session, see {@link Session}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_WAS_CLOSED,
+	SESSION_WAS_CLOSED,
 
 	/**
 	 * The exceptions occur when the server handles messages from a client. <br>
 	 * <ul>
-	 * <li><b>parameter[0]</b> the connection's id in string</li>
-	 * <li><b>parameter[1]</b> the connection, see {@link Connection}</li>
+	 * <li><b>parameter[0]</b> the session id in string</li>
+	 * <li><b>parameter[1]</b> the session, see {@link Session}</li>
 	 * <li><b>parameter[2]</b> the exception will occur, see {@link Throwable}</li>
 	 * </ul>
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_MESSAGE_HANDLED_EXCEPTION,
+	SESSION_MESSAGE_HANDLED_EXCEPTION,
 
 	/**
 	 * This event is called when you let the player leave by his desire. <br>
@@ -67,7 +70,7 @@ public enum InternalEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_WAS_CLOSED_MANUALLY,
+	SESSION_WAS_CLOSED_MANUALLY,
 
 	/**
 	 * When a player is forced to leave his current room. It means this player was
@@ -96,8 +99,6 @@ public enum InternalEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	MESSAGE_HANDLED_IN_CHANNEL,
-	
-	NEW_CONNECTION_WAS_CREATED;
+	MESSAGE_HANDLED_IN_CHANNEL;
 
 }

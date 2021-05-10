@@ -52,6 +52,10 @@ public final class SessionManagerImpl implements SessionManager {
 	@GuardedBy("this")
 	private final Map<Channel, Session> __sessionByWebSockets;
 
+	public static SessionManager newInstance() {
+		return new SessionManagerImpl();
+	}
+
 	private SessionManagerImpl() {
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
@@ -160,6 +164,7 @@ public final class SessionManagerImpl implements SessionManager {
 		Session session = SessionImpl.newInstance();
 		session.setSocketChannel(socketChannel);
 		session.setSelectionKey(selectionKey);
+		session.setSessionManager(this);
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionBySockets.put(session.getSocketChannel(), session);
@@ -182,6 +187,7 @@ public final class SessionManagerImpl implements SessionManager {
 	public Session createDatagramSession(DatagramChannel datagramChannel) {
 		Session session = SessionImpl.newInstance();
 		session.setDatagramChannel(datagramChannel);
+		session.setSessionManager(this);
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionByDatagrams.put(session.getClientInetSocketAddress(), session);
@@ -204,6 +210,7 @@ public final class SessionManagerImpl implements SessionManager {
 	public Session createWebSocketSession(Channel webSocketChannel) {
 		Session session = SessionImpl.newInstance();
 		session.setWebSocketChannel(webSocketChannel);
+		session.setSessionManager(this);
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionByWebSockets.put(webSocketChannel, session);

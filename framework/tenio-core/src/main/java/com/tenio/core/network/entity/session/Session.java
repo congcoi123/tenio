@@ -45,6 +45,10 @@ public interface Session {
 
 	long getId();
 
+	String getName();
+
+	void setName(String name);
+
 	boolean isConnected();
 
 	void setConnected(boolean connected);
