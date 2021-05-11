@@ -78,7 +78,7 @@ public final class SessionImpl implements Session {
 
 	private volatile long __inactivatedTime;
 
-	private volatile InetSocketAddress __clientInetSocketAddress;
+	private volatile InetSocketAddress __datagramInetSocketAddress;
 	private volatile String __clientAddress;
 	private volatile int __clientPort;
 	private int __serverPort;
@@ -88,6 +88,7 @@ public final class SessionImpl implements Session {
 
 	private volatile boolean __active;
 	private volatile boolean __connected;
+	private volatile boolean __hasUdp;
 
 	public static Session newInstance() {
 		return new SessionImpl();
@@ -111,6 +112,7 @@ public final class SessionImpl implements Session {
 		__inactivatedTime = 0L;
 		__active = false;
 		__connected = false;
+		__hasUdp = false;
 	}
 
 	@Override
@@ -162,8 +164,8 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public boolean isUdp() {
-		return __transportType == TransportType.UDP;
+	public boolean containsUdp() {
+		return __hasUdp;
 	}
 
 	@Override
@@ -242,26 +244,14 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public void setDatagramChannel(DatagramChannel datagramChannel) {
-		if (__transportType != TransportType.UNKNOWN) {
-			throw new IllegalCallerException(String.format(
-					"Could not add another connection type, the current connection is: ", __transportType.toString()));
-		}
-
-		if (datagramChannel == null) {
-			throw new IllegalArgumentException("Null value is unacceptable");
-		}
-
-		__transportType = TransportType.UDP;
-
 		__datagramChannel = datagramChannel;
+		__datagramInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
+		__hasUdp = true;
+	}
 
-		__serverAddress = __datagramChannel.socket().getLocalAddress().getHostAddress();
-		__serverPort = __datagramChannel.socket().getLocalPort();
-
-		__clientInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
-		InetAddress remoteAdress = __clientInetSocketAddress.getAddress();
-		__clientAddress = remoteAdress.getHostAddress();
-		__clientPort = __clientInetSocketAddress.getPort();
+	@Override
+	public InetSocketAddress getDatagramInetSocketAddress() {
+		return __datagramInetSocketAddress;
 	}
 
 	@Override
@@ -415,11 +405,6 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public InetSocketAddress getClientInetSocketAddress() {
-		return __clientInetSocketAddress;
-	}
-
-	@Override
 	public String getFullClientIpAddress() {
 		return String.format("%s:%d", __clientAddress, __clientPort);
 	}
@@ -478,10 +463,6 @@ public final class SessionImpl implements Session {
 			}
 			break;
 
-		case UDP:
-			getSessionManager().removeSessionByDatagram(getClientInetSocketAddress());
-			break;
-
 		case WEB_SOCKET:
 			if (__webSocketChannel != null) {
 				__webSocketChannel.close();
@@ -493,7 +474,10 @@ public final class SessionImpl implements Session {
 			break;
 		}
 
+		__active = false;
 		__connected = false;
+		__hasUdp = false;
+
 		__sessionManager.removeSession(this);
 	}
 

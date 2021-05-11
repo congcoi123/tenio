@@ -11,27 +11,18 @@
 		<!-- This current version name of your server in string type -->
 		<Property name="version-name">1.0</Property>
 	</Properties>
-	
-	<Classes>
-		<Class name="encryption">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter</Class>
-		<Class name="compression">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
-	</Classes>
+
+	<Implements>
+		<Class name="encryption">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter
+		</Class>
+		<Class name="compression">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor
+		</Class>
+	</Implements>
 
 	<Network>
-		<Sockets>
-			<Port name="main" type="tcp">8032</Port> <!-- The first element is always treated the main connection -->
-			<Port name="move" type="udp">8033</Port>
-			<Port name="chat" type="tcp">8034</Port>
-		</Sockets>
-		<Broadcasts>
-			<ServerPort>9999</ServerPort> <!-- only one -->
-			<Port id="move" name="move">8040</Port>
-		</Broadcasts>
-		<WebSockets>
-			<Port name="main">8035</Port> <!-- The first element is always treated the main connection -->
-			<Port name="move">8036</Port>
-			<Port name="chat">8037</Port>
-		</WebSockets>
+		<Socket name="main">8035</Socket>
+		<WebSocket name="main">8036</WebSocket>
+		<Datagram name="support">8037</Datagram>
 		<Http>
 			<Port name="main" value="9999">
 				<Path name="get" desc="retrieve a value" version="1"
@@ -82,6 +73,10 @@
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				sending message to client -->
 			<Property name="idle-writer-time">60</Property>		<!-- Unit: Seconds -->
+
+			<Property name="max-number-sessions-per-player">10</Property>
+			<Property name="allow-change-session">false</Property>
+
 		</Properties>
 	</Configuration>
 

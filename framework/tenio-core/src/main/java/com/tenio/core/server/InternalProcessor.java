@@ -40,15 +40,16 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.EventManager;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.exception.ExtensionValueCastException;
+import com.tenio.core.network.entity.protocol.Request;
 import com.tenio.core.network.entity.session.Connection;
 
 /**
  * Handle the main logic of the server.
  * 
  * @author kong
- *
  */
 @ThreadSafe
+// TODO: Add description
 public final class InternalProcessor extends AbstractController implements Service {
 
 	private final EventManager __eventManager;
@@ -68,11 +69,11 @@ public final class InternalProcessor extends AbstractController implements Servi
 
 		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
 
-		__on(InternalEvent.CONNECTION_WAS_CLOSED, params -> {
-			var connection = __getConnection(params[0]);
+		__on(InternalEvent.SESSION_WAS_CLOSED, params -> {
+			var session;
 
-			if (connection != null) { // the connection has existed
-				var playerName = connection.getPlayerName();
+			if (session != null) { // the connection has existed
+				var playerName = session.getPlayerName();
 				if (playerName != null) { // the player maybe exist
 					var player = __playerManager.get(playerName);
 					if (player != null) { // the player has existed
@@ -288,6 +289,54 @@ public final class InternalProcessor extends AbstractController implements Servi
 
 	private void __exception(String identify, Throwable cause) {
 		_error(cause, "identify: ", identify);
+	}
+
+	@Override
+	public void onInitialized() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStarted() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onResumed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPaused() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStopped() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDestroyed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isActivated() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void processRequest(Request request) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

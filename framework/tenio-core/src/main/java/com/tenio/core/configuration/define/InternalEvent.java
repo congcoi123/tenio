@@ -35,8 +35,6 @@ import com.tenio.core.network.entity.session.Session;
 // FIXME: Fix me
 public enum InternalEvent {
 
-	NEW_SESSION_WAS_CREATED,
-
 	SESSION_IS_CONNECTED,
 
 	/**

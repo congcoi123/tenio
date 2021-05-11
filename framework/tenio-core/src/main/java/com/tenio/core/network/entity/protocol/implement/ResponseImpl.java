@@ -1,59 +1,140 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.entity.protocol.implement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.network.WriterManager;
+import com.tenio.core.exception.UdpConnectionNotFoundException;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.entity.session.SessionType;
-import com.tenio.core.server.Server;
-import com.tenio.core.server.ServerImpl;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class ResponseImpl extends AbstractMessage implements Response {
 
-	private WriterManager __writerManager;
+	private static final AtomicLong __idCounter = new AtomicLong();
+
+	private Collection<Player> __players;
+	private Collection<Session> __socketSessions;
+	private Collection<Session> __webSocketSessions;
+	private boolean __useUdp;
+	private boolean __foundUdp;
+
+	public static Response newInstance() {
+		return new ResponseImpl();
+	}
+
+	private ResponseImpl() {
+		__setId(__idCounter.getAndIncrement());
+		__players = null;
+		__socketSessions = null;
+		__webSocketSessions = null;
+		__useUdp = false;
+		__foundUdp = false;
+	}
 
 	@Override
 	public Collection<Session> getRecipientSocketSessions() {
-		// TODO Auto-generated method stub
-		return null;
+		return __socketSessions;
 	}
-	
+
 	@Override
 	public Collection<Session> getRecipientWebSocketSessions() {
-		// TODO Auto-generated method stub
-		return null;
+		return __webSocketSessions;
 	}
 
 	@Override
-	public void setRecipients(Collection<Player> collection) {
-		// TODO Auto-generated method stub
+	public Response setRecipients(Collection<Player> players) {
+		if (__players == null) {
+			__players = players;
+		} else {
+			__players.addAll(players);
+		}
 
+		return this;
 	}
 
 	@Override
-	public void setRecipient(Player player) {
-		// TODO Auto-generated method stub
+	public Response setRecipient(Player player) {
+		if (__players == null) {
+			__players = new ArrayList<Player>();
+		}
+		__players.add(player);
 
+		return this;
 	}
 
 	@Override
-	public void setSessionType(SessionType sessionType) {
-		// TODO Auto-generated method stub
-
+	public Response useUdp() {
+		__useUdp = true;
+		return this;
 	}
 
 	@Override
 	public void write() {
-		// __writerManager.write(this);
-		// ServerImpl.getInstance().getWriter.write(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void writeInDelay(int delay) {
 		// TODO Auto-generated method stub
 
+	}
+
+	private Response __construct() throws RuntimeException {
+		__players.stream().forEach(player -> {
+			player.getSessions().forEach(session -> {
+				if (session.isTcp()) {
+					if (__socketSessions == null) {
+						__socketSessions = new ArrayList<Session>();
+						// when the session contains an UDP connection and the response requires it, add
+						// its session to the list
+						if (__useUdp && session.containsUdp()) {
+							__socketSessions.add(session);
+							__foundUdp = true;
+						} else {
+							__socketSessions.add(session);
+						}
+					}
+				} else if (session.isWebSocket()) {
+
+				}
+
+			});
+		});
+
+		if (__useUdp && !__foundUdp) {
+			throw new UdpConnectionNotFoundException();
+		}
+
+		return this;
 	}
 
 }

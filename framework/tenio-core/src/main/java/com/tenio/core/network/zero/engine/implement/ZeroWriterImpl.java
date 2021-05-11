@@ -115,9 +115,9 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 					return;
 				}
 
-				if (session.isTcp()) {
+				if (packet.isTcp()) {
 					__socketWriterHandler.send(packetQueue, session, packet);
-				} else if (session.isUdp()) {
+				} else if (packet.isUdp()) {
 					__datagramWriterHandler.send(packetQueue, session, packet);
 				}
 			}

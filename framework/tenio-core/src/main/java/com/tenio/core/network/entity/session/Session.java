@@ -61,9 +61,9 @@ public interface Session {
 
 	boolean isTcp();
 
-	boolean isUdp();
-
 	boolean isWebSocket();
+
+	boolean containsUdp();
 
 	SocketChannel getSocketChannel();
 
@@ -83,11 +83,11 @@ public interface Session {
 
 	DatagramChannel getDatagramChannel();
 
-	void setDatagramChannel(DatagramChannel datagramChannel) throws IllegalArgumentException, IllegalCallerException;
+	void setDatagramChannel(DatagramChannel datagramChannel);
+
+	InetSocketAddress getDatagramInetSocketAddress();
 
 	Channel getWebSocketChannel();
-
-	InetSocketAddress getClientInetSocketAddress();
 
 	void setWebSocketChannel(Channel webSocketChannel) throws IllegalArgumentException, IllegalCallerException;
 

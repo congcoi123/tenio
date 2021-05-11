@@ -1,8 +1,29 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.entity.packet.implement;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.common.utility.TimeUtility;
@@ -11,6 +32,10 @@ import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
 	private static AtomicLong __idCounter = new AtomicLong();
@@ -20,10 +45,8 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	private byte[] __data;
 	private ResponsePriority __priority;
 	private boolean __encrypted;
-	private Session __sender;
 	private TransportType __transportType;
 	private int __originalSize;
-	private Map<String, Object> __attributes;
 	private Collection<Session> __recipients;
 	private byte[] __fragmentBuffer;
 
@@ -93,37 +116,6 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	@Override
 	public void setRecipients(Collection<Session> recipients) {
 		__recipients = recipients;
-	}
-
-	@Override
-	public Session getSender() {
-		return __sender;
-	}
-
-	@Override
-	public void setSender(Session session) {
-		__sender = session;
-	}
-
-	@Override
-	public Object getAttribute(String key) {
-		if (__attributes != null) {
-			return __attributes.get(key);
-		}
-		return null;
-	}
-
-	@Override
-	public void setAttribute(String key, Object value) {
-		if (__attributes == null) {
-			__attributes = new HashMap<String, Object>();
-		}
-		__attributes.put(key, value);
-	}
-
-	@Override
-	public void setAttributes(Map<String, Object> attributes) {
-		__attributes = attributes;
 	}
 
 	@Override
@@ -197,13 +189,11 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	@Override
 	public Packet clone() {
 		var packet = PacketImpl.newInstance();
-		packet.setAttributes(__attributes);
 		packet.setData(__data);
 		packet.setFragmentBuffer(__fragmentBuffer);
 		packet.setPriority(__priority);
 		packet.setEncrypted(__encrypted);
 		packet.setRecipients(__recipients);
-		packet.setSender(__sender);
 		packet.setTransportType(__transportType);
 		return packet;
 	}

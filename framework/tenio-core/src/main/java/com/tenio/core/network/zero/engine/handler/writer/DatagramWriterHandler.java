@@ -44,7 +44,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
 		// the InetSocketAddress should be saved when the datagram channel receive first
 		// messages from the client
-		InetSocketAddress inetSocketAddress = session.getClientInetSocketAddress();
+		InetSocketAddress inetSocketAddress = session.getDatagramInetSocketAddress();
 
 		// the datagram need to be declared first, something went wrong here, need to
 		// throw an exception

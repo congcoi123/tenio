@@ -78,7 +78,9 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 
 	@Override
 	public void channelInactive(SocketChannel socketChannel) {
-
+		var connection = __getConnection(ctx.channel(), null);
+		__eventManager.getInternal().emit(InternalEvent.SESSION_WAS_CLOSED, connection);
+		connection = null;
 	}
 
 	@Override

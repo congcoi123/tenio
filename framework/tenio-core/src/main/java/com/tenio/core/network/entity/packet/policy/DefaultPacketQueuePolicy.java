@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entity.packet.policy;
 
 import com.tenio.core.exception.PacketQueuePolicyViolationException;
+import com.tenio.core.network.define.ResponsePriority;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 
@@ -31,8 +32,38 @@ import com.tenio.core.network.entity.packet.PacketQueue;
  * @author kong
  */
 // TODO: Add description
-public interface PacketQueuePolicy {
+public final class DefaultPacketQueuePolicy implements PacketQueuePolicy {
 
-	void applyPolicy(PacketQueue packetQueue, Packet packet) throws PacketQueuePolicyViolationException;
+	private static final float THREE_QUARTERS_FULL = 75.0f;
+	private static final float NINETY_PERCENT_FULL = 90.0f;
+
+	public static DefaultPacketQueuePolicy newInstance() {
+		return new DefaultPacketQueuePolicy();
+	}
+
+	private DefaultPacketQueuePolicy() {
+
+	}
+
+	@Override
+	public void applyPolicy(PacketQueue packetQueue, Packet packet) {
+		float percentageUsed = packetQueue.getPercentageUsed();
+
+		if (percentageUsed >= THREE_QUARTERS_FULL && percentageUsed < NINETY_PERCENT_FULL) {
+			if (packet.getPriority().getValue() < ResponsePriority.NORMAL.getValue()) {
+				__warning(packet, percentageUsed);
+			}
+		} else if (percentageUsed >= NINETY_PERCENT_FULL) {
+			if (packet.getPriority().getValue() < ResponsePriority.GUARANTEED.getValue()) {
+				__warning(packet, percentageUsed);
+			}
+		}
+
+	}
+
+	private void __warning(Packet packet, float percentageUsed) {
+		throw new PacketQueuePolicyViolationException(String
+				.format("Need to drop packet %s, current packet queue usage: %f%%", packet.toString(), percentageUsed));
+	}
 
 }

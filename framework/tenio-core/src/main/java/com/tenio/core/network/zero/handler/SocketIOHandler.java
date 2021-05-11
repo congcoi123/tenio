@@ -37,11 +37,15 @@ public interface SocketIOHandler {
 
 	void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 
+	void channelRead(SocketChannel socketChannel, byte[] binary);
+
 	void channelRead(Session session, byte[] binary);
 
 	void channelInactive(SocketChannel socketChannel);
 
 	void channelException(SocketChannel socketChannel, Exception exception);
+
+	void channelException(Session session, Exception exception);
 
 	void setPacketDecoder(PacketDecoder packetDecoder);
 

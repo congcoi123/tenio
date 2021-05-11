@@ -21,24 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.handler;
-
-import java.nio.channels.DatagramChannel;
-
-import com.tenio.core.network.entity.session.Session;
+package com.tenio.core.exception;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface DatagramIOHandler {
+public final class UdpConnectionNotFoundException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -865881667534674348L;
 
-	void channelRead(DatagramChannel datagramChannel, byte[] binary);
+	public UdpConnectionNotFoundException() {
+		super();
+	}
 
-	void channelRead(Session session, byte[] binary);
-
-	void channelException(DatagramChannel datagramChannel, Exception exception);
-
-	void channelException(Session session, Exception exception);
+	public UdpConnectionNotFoundException(String message) {
+		super(message);
+	}
 
 }

@@ -1,66 +1,106 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network.entity.protocol.implement;
 
-import com.tenio.core.network.define.ResponsePriority;
+import java.util.concurrent.atomic.AtomicLong;
+
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.network.define.RequestPriority;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.protocol.Request;
-import com.tenio.core.network.entity.session.SessionType;
+import com.tenio.core.network.entity.session.Session;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class RequestImpl extends AbstractMessage implements Request {
-     private ISession sender;
-     private TransportType type;
-     private ResponsePriority priority;
-     private long timeStamp;
 
-     public RequestImpl() {
-          this.type = TransportType.TCP;
-          this.priority = ResponsePriority.NORMAL;
-          this.timeStamp = System.nanoTime();
-     }
+	private static final AtomicLong __idCounter = new AtomicLong();
 
-     public ISession getSender() {
-          return this.sender;
-     }
+	private Session __sender;
+	private TransportType __transportType;
+	private RequestPriority __priority;
+	private long __timestamp;
 
-     public TransportType getTransportType() {
-          return this.type;
-     }
+	public static Request newInstance() {
+		return new RequestImpl();
+	}
 
-     public void setSender(ISession session) {
-          this.sender = session;
-     }
+	private RequestImpl() {
+		__setId(__idCounter.getAndIncrement());
+		__timestamp = TimeUtility.currentTimeMillis();
+	}
 
-     public void setTransportType(TransportType type) {
-          this.type = type;
-     }
+	@Override
+	public Session getSender() {
+		return __sender;
+	}
 
-     public ResponsePriority getPriority() {
-          return this.priority;
-     }
+	@Override
+	public void setSender(Session session) {
+		__sender = session;
+	}
 
-     public void setPriority(ResponsePriority priority) {
-          this.priority = priority;
-     }
+	@Override
+	public RequestPriority getPriority() {
+		return __priority;
+	}
 
-     public long getTimeStamp() {
-          return this.timeStamp;
-     }
+	@Override
+	public void setPriority(RequestPriority priority) {
+		__priority = priority;
+	}
 
-     public void setTimeStamp(long timeStamp) {
-          this.timeStamp = timeStamp;
-     }
+	@Override
+	public long getTimestamp() {
+		return __timestamp;
+	}
 
-     public boolean isTcp() {
-          return this.type == TransportType.TCP;
-     }
+	@Override
+	public TransportType getTransportType() {
+		return __transportType;
+	}
 
-     public boolean isUdp() {
-          return this.type == TransportType.UDP;
-     }
+	@Override
+	public void setTransportType(TransportType transportType) {
+		__transportType = transportType;
+	}
 
-     public boolean isWebsocket() {
-          return this.sender.getType() == SessionType.WEBSOCKET;
-     }
+	@Override
+	public boolean isTcp() {
+		return __transportType == TransportType.TCP;
+	}
 
-     public String toString() {
-     }
+	@Override
+	public boolean isUdp() {
+		return __transportType == TransportType.UDP;
+	}
+
+	@Override
+	public boolean isWebsocket() {
+		return __transportType == TransportType.WEB_SOCKET;
+	}
+
 }

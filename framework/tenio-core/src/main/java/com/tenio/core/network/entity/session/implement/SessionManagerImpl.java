@@ -184,21 +184,13 @@ public final class SessionManagerImpl implements SessionManager {
 	}
 
 	@Override
-	public Session createDatagramSession(DatagramChannel datagramChannel) {
-		Session session = SessionImpl.newInstance();
+	public Session addDatagramForSession(InetSocketAddress remoteAddress, Session session) {
 		session.setDatagramChannel(datagramChannel);
-		session.setSessionManager(this);
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionByDatagrams.put(session.getClientInetSocketAddress(), session);
 		}
 		return session;
-	}
-
-	@Override
-	public void removeSessionByDatagram(InetSocketAddress remoteAddress) {
-		Session session = getSessionByDatagram(remoteAddress);
-		removeSession(session);
 	}
 
 	@Override
