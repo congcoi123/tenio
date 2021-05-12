@@ -27,7 +27,6 @@ import java.util.Collection;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.Zone;
 import com.tenio.core.exceptions.DuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
 import com.tenio.core.network.entities.session.Session;
@@ -73,10 +72,6 @@ public interface PlayerManager {
 	boolean containsPlayerName(String playerName);
 
 	boolean containsPlayerSession(Session session);
-
-	Zone getOwnerZone();
-
-	void setOwnerZone(Zone zone);
 
 	Room getOwnerRoom();
 

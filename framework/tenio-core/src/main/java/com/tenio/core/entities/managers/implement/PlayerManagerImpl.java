@@ -31,7 +31,6 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.Zone;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.exceptions.DuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
@@ -51,7 +50,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 	private final Map<Session, Player> __playerBySessions;
 
 	private Room __ownerRoom;
-	private Zone __ownerZone;
 
 	private PlayerManagerImpl() {
 		__playerByIds = new HashMap<Long, Player>();
@@ -59,7 +57,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 		__playerBySessions = new HashMap<Session, Player>();
 
 		__ownerRoom = null;
-		__ownerZone = null;
 	}
 
 	@Override
@@ -100,9 +97,8 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public void addPlayer(Player player) {
 		if (containsPlayer(player)) {
-			throw new DuplicatedPlayerException(
-					String.format("Unable to add player: %s, it already exists in room: %s, zone: %s", player.getName(),
-							__ownerRoom.toString(), __ownerZone.toString()));
+			throw new DuplicatedPlayerException(String.format("Unable to add player: %s, it already exists in room: %s",
+					player.getName(), __ownerRoom.toString()));
 		}
 
 		synchronized (this) {
@@ -116,8 +112,8 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayer(Player player) {
 		if (!containsPlayer(player)) {
 			throw new RemovedPlayerNotExistedException(
-					String.format("Unable to remove player: %s, the player did not exist in room: %s, zone: %s",
-							player.getName(), __ownerRoom.toString(), __ownerZone.toString()));
+					String.format("Unable to remove player: %s, the player did not exist in room: %s", player.getName(),
+							__ownerRoom.toString()));
 		}
 
 		__removePlayer(player);
@@ -194,18 +190,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public boolean containsPlayerSession(Session session) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Zone getOwnerZone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setOwnerZone(Zone zone) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

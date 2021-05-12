@@ -47,7 +47,6 @@ public final class PlayerImpl implements Player {
 	private Session __session;
 
 	private volatile Room __currentRoom;
-	private volatile ZoneImpl __currentZone;
 
 	private final Map<String, Object> __properties;
 	private volatile PlayerState __state;
@@ -80,7 +79,6 @@ public final class PlayerImpl implements Player {
 		__session = session;
 
 		__currentRoom = null;
-		__currentZone = null;
 
 		__properties = new ConcurrentHashMap<String, Object>();
 
@@ -211,16 +209,6 @@ public final class PlayerImpl implements Player {
 	@Override
 	public void setPlayerSlotInCurrentRoom(int slot) {
 		__playerSlotInCurrentRoom = slot;
-	}
-
-	@Override
-	public ZoneImpl getCurrentZone() {
-		return __currentZone;
-	}
-
-	@Override
-	public void setCurrentZone(ZoneImpl zone) {
-		__currentZone = zone;
 	}
 
 	@Override

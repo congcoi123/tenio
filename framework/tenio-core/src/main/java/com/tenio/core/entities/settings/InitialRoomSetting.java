@@ -1,6 +1,6 @@
 package com.tenio.core.entities.settings;
 
-import com.tenio.core.entities.settings.strategies.RoomPasswordValidatedStrategy;
+import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 
 public final class InitialRoomSetting {
@@ -11,7 +11,7 @@ public final class InitialRoomSetting {
 	private int __maxSpectators;
 	private boolean __activated;
 	private RoomRemoveMode __removeMode;
-	private RoomPasswordValidatedStrategy __passwordValidatedStrategy;
+	private RoomCredentialValidatedStrategy __credentialValidatedStrategy;
 	private RoomPlayerSlotGeneratedStrategy __playerIdGeneratedStrategy;
 
 	public static InitialRoomSetting newInstance() {
@@ -75,12 +75,12 @@ public final class InitialRoomSetting {
 		__removeMode = roomRemoveMode;
 	}
 
-	public RoomPasswordValidatedStrategy getRoomPasswordValidatedStrategy() {
-		return __passwordValidatedStrategy;
+	public RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy() {
+		return __credentialValidatedStrategy;
 	}
 
-	public void setRoomPasswordValidatedStrategy(RoomPasswordValidatedStrategy roomPasswordValidatedStrategy) {
-		__passwordValidatedStrategy = roomPasswordValidatedStrategy;
+	public void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
+		__credentialValidatedStrategy = roomCredentialValidatedStrategy;
 	}
 
 	public RoomPlayerSlotGeneratedStrategy getRoomPlayerIdGeneratedStrategy() {

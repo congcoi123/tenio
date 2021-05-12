@@ -14,7 +14,7 @@ import com.tenio.core.entities.Room;
 import com.tenio.core.entities.RoomState;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.RoomRemoveMode;
-import com.tenio.core.entities.settings.strategies.RoomPasswordValidatedStrategy;
+import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.network.entities.session.Session;
 
@@ -31,11 +31,10 @@ public final class RoomImpl implements Room {
 
 	private Player __owner;
 	private PlayerManager __playerManager;
-	private ZoneImpl __zone;
 
 	private RoomRemoveMode __roomRemoveMode;
-	private RoomPasswordValidatedStrategy __roomPasswordValidatedStrategy;
-	private RoomPlayerSlotGeneratedStrategy __roomPlayerIdGeneratedStrategy;
+	private RoomCredentialValidatedStrategy __roomCredentialValidatedStrategy;
+	private RoomPlayerSlotGeneratedStrategy __roomPlayerSlotGeneratedStrategy;
 
 	private final Lock __switchPlayerLock;
 
@@ -48,8 +47,8 @@ public final class RoomImpl implements Room {
 		this(name, null, null);
 	}
 
-	private RoomImpl(String name, RoomPasswordValidatedStrategy roomPasswordValidatedStrategy,
-			RoomPlayerSlotGeneratedStrategy roomPlayerIdGeneratedStrategy) {
+	private RoomImpl(String name, RoomCredentialValidatedStrategy roomPasswordValidatedStrategy,
+			RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
 		__id = __idCounter.getAndIncrement();
 		__name = name;
 		__password = null;
@@ -59,11 +58,10 @@ public final class RoomImpl implements Room {
 
 		__owner = null;
 		__playerManager = null;
-		__zone = null;
 
 		__roomRemoveMode = RoomRemoveMode.DEFAULT;
-		__roomPasswordValidatedStrategy = roomPasswordValidatedStrategy;
-		__roomPlayerIdGeneratedStrategy = roomPlayerIdGeneratedStrategy;
+		__roomCredentialValidatedStrategy = roomPasswordValidatedStrategy;
+		__roomPlayerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
 
 		__switchPlayerLock = new ReentrantLock();
 
@@ -82,7 +80,8 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public void setName(String name) {
+	public void setName(String name) throws RuntimeException {
+		__roomCredentialValidatedStrategy.validateName(name);
 		__name = name;
 	}
 
@@ -93,9 +92,8 @@ public final class RoomImpl implements Room {
 
 	@Override
 	public void setPassword(String password) throws RuntimeException {
-		if (__roomPasswordValidatedStrategy.validate(password)) {
-			__password = password;
-		}
+		__roomCredentialValidatedStrategy.validatePassword(password);
+		__password = password;
 	}
 
 	@Override
@@ -151,16 +149,6 @@ public final class RoomImpl implements Room {
 	@Override
 	public void setPlayerManager(PlayerManager playerManager) {
 		__playerManager = playerManager;
-	}
-
-	@Override
-	public ZoneImpl getZone() {
-		return __zone;
-	}
-
-	@Override
-	public void setZone(ZoneImpl zone) {
-		__zone = zone;
 	}
 
 	@Override
@@ -331,6 +319,26 @@ public final class RoomImpl implements Room {
 	@Override
 	public String toString() {
 		return super.toString();
+	}
+
+	@Override
+	public RoomPlayerSlotGeneratedStrategy getPlayerSlotGeneratedStrategy() {
+		return __roomPlayerSlotGeneratedStrategy;
+	}
+
+	@Override
+	public void setPlayerSlotGeneratedStrategy(RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
+		__roomPlayerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
+	}
+
+	@Override
+	public RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy() {
+		return __roomCredentialValidatedStrategy;
+	}
+
+	@Override
+	public void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
+		__roomCredentialValidatedStrategy = roomCredentialValidatedStrategy;
 	}
 
 }

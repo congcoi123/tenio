@@ -2,18 +2,19 @@ package com.tenio.core.entities;
 
 import java.util.List;
 
-import com.tenio.core.entities.implement.ZoneImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.RoomRemoveMode;
+import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
+import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.network.entities.session.Session;
 
 public interface Room {
 
 	long getId();
-		
+
 	String getName();
 
-	void setName(String name);
+	void setName(String name) throws RuntimeException;
 
 	String getPassword();
 
@@ -40,10 +41,6 @@ public interface Room {
 	PlayerManager getPlayerManager();
 
 	void setPlayerManager(PlayerManager playerManager);
-
-	ZoneImpl getZone();
-
-	void setZone(ZoneImpl zone);
 
 	boolean isActivated();
 
@@ -83,8 +80,7 @@ public interface Room {
 
 	List<Session> getAllSessionList();
 
-	void addPlayer(Player player, boolean asSpectator, int targetSlot, boolean allowHolding)
-			throws RuntimeException;
+	void addPlayer(Player player, boolean asSpectator, int targetSlot, boolean allowHolding) throws RuntimeException;
 
 	void addPlayer(Player player, boolean asSpectator, int targetSlot) throws RuntimeException;
 
@@ -103,5 +99,13 @@ public interface Room {
 	boolean isEmpty();
 
 	boolean isFull();
+	
+	RoomPlayerSlotGeneratedStrategy getPlayerSlotGeneratedStrategy();
+	
+	void setPlayerSlotGeneratedStrategy(RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy);
+	
+	RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy();
+	
+	void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy); 
 
 }

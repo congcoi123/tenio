@@ -10,7 +10,7 @@ public interface RoomPlayerSlotGeneratedStrategy {
 
 	void freeLeftPlayerSlot(int slot);
 
-	boolean takeSlot(int slot) throws RuntimeException;
+	void takeSlot(int slot) throws RuntimeException;
 
 	Room getRoom();
 

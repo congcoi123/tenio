@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.Zone;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 
 public interface RoomManager {
@@ -34,10 +33,6 @@ public interface RoomManager {
 	void removeRoomByName(String roomName);
 
 	void removeRoom(Room room);
-
-	Zone getOwnerZone();
-
-	void setOwnerZone(Zone zone);
 
 	void removePlayer(Player player);
 

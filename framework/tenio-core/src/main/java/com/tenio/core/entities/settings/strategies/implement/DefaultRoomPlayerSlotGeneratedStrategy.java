@@ -21,8 +21,8 @@ public final class DefaultRoomPlayerSlotGeneratedStrategy implements RoomPlayerS
 	}
 
 	@Override
-	public boolean takeSlot(int slot) throws RuntimeException {
-		return false;
+	public void takeSlot(int slot) throws RuntimeException {
+		
 	}
 
 	@Override

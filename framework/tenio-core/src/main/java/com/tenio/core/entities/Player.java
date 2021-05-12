@@ -71,10 +71,6 @@ public interface Player {
 
 	void setPlayerSlotInCurrentRoom(int slot);
 
-	Zone getCurrentZone();
-
-	void setCurrentZone(Zone zone);
-
 	Object getProperty(String key);
 
 	void setProperty(String key, Object value);
