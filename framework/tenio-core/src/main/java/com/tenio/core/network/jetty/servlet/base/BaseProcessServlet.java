@@ -26,7 +26,7 @@ package com.tenio.core.network.jetty.servlet.base;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.network.jetty.servlet.ServletHandler;
 

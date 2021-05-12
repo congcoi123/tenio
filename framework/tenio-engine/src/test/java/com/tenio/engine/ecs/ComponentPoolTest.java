@@ -34,9 +34,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.exceptions.NullElementPoolException;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.base.IComponent;
+import com.tenio.engine.ecs.bases.IComponent;
 import com.tenio.engine.ecs.model.component.View;
 import com.tenio.engine.ecs.pool.ComponentPool;
 

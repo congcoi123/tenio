@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.core.bootstrap.annotations.Bootstrap;
 import com.tenio.core.bootstrap.injector.Injector;
 
 /**

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.model;
 
-import com.tenio.core.entity.implement.AbstractPlayer;
+import com.tenio.core.entities.implement.AbstractPlayer;
 
 /**
  * @author kong

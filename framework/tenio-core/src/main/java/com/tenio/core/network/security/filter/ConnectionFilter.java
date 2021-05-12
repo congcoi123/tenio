@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.security.filter;
 
-import com.tenio.core.exception.RefusedAddressException;
+import com.tenio.core.exceptions.RefusedAddressException;
 
 /**
  * @author kong

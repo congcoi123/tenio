@@ -32,9 +32,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.configuration.defines.CoreConfigurationType;
+import com.tenio.core.network.defines.TransportType;
+import com.tenio.core.network.defines.data.SocketConfig;
 
 /**
  * @author kong

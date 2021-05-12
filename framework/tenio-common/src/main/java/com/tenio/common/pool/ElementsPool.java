@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.common.pool;
 
-import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.exceptions.NullElementPoolException;
 
 /**
  * In an application, you can have resources that are limited or time-consuming

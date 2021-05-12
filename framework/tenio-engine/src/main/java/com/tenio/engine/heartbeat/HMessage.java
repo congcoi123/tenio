@@ -25,7 +25,7 @@ package com.tenio.engine.heartbeat;
 
 import java.util.UUID;
 
-import com.tenio.common.utility.TimeUtility;
+import com.tenio.common.utilities.TimeUtility;
 import com.tenio.engine.message.IMessage;
 
 /**

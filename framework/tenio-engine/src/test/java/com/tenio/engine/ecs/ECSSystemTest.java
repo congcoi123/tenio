@@ -31,11 +31,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.bases.ContextInfo;
 import com.tenio.engine.ecs.model.GameComponents;
 import com.tenio.engine.ecs.model.GameContext;
 import com.tenio.engine.ecs.model.system.TestSystem;
-import com.tenio.engine.ecs.system.Systems;
+import com.tenio.engine.ecs.systems.Systems;
 
 /**
  * @author kong

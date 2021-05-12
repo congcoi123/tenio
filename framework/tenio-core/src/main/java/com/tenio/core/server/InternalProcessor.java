@@ -26,22 +26,22 @@ package com.tenio.core.server;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.elements.CommonObject;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.configuration.define.InternalEvent;
+import com.tenio.core.configuration.defines.CoreConfigurationType;
+import com.tenio.core.configuration.defines.CoreMessageCode;
+import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.controller.AbstractController;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.manager.PlayerManager;
-import com.tenio.core.entity.manager.RoomManager;
-import com.tenio.core.event.EventManager;
-import com.tenio.core.event.Subscriber;
-import com.tenio.core.exception.ExtensionValueCastException;
-import com.tenio.core.network.entity.protocol.Request;
-import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.managers.PlayerManager;
+import com.tenio.core.entities.managers.RoomManager;
+import com.tenio.core.events.EventManager;
+import com.tenio.core.events.Subscriber;
+import com.tenio.core.exceptions.ExtensionValueCastException;
+import com.tenio.core.network.entities.protocols.Request;
+import com.tenio.core.network.entities.session.Connection;
 
 /**
  * Handle the main logic of the server.
@@ -92,26 +92,26 @@ public final class InternalProcessor extends AbstractController implements Servi
 			return null;
 		});
 
-		__on(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, params -> {
-			String channelId = __getString(params[0]);
-			var connection = __getConnection(params[1]);
-			var cause = __getThrowable(params[2]);
-
-			if (connection != null) { // the old connection
-				var playerName = connection.getPlayerName();
-				if (playerName != null) { // the player maybe exist
-					var player = __playerManager.get(playerName);
-					if (player != null) { // the player has existed
-						__exception(player, cause);
-						return null;
-					}
-				}
-			}
-			// also catch the exception for "channel"
-			__exception(channelId, cause);
-
-			return null;
-		});
+//		__on(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, params -> {
+//			String channelId = __getString(params[0]);
+//			var connection = __getConnection(params[1]);
+//			var cause = __getThrowable(params[2]);
+//
+//			if (connection != null) { // the old connection
+//				var playerName = connection.getPlayerName();
+//				if (playerName != null) { // the player maybe exist
+//					var player = __playerManager.get(playerName);
+//					if (player != null) { // the player has existed
+//						__exception(player, cause);
+//						return null;
+//					}
+//				}
+//			}
+//			// also catch the exception for "channel"
+//			__exception(channelId, cause);
+//
+//			return null;
+//		});
 
 		__on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, params -> {
 			var player = __getPlayer(params[0]);
@@ -121,7 +121,7 @@ public final class InternalProcessor extends AbstractController implements Servi
 			return null;
 		});
 
-		__on(InternalEvent.CONNECTION_WAS_CLOSED_MANUALLY, params -> {
+		__on(InternalEvent.SESSION_WAS_CLOSED_MANUALLY, params -> {
 			String name = __getString(params[0]);
 
 			var player = __playerManager.get(name);

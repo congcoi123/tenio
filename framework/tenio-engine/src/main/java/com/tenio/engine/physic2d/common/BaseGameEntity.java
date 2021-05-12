@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.physic2d.common;
 
-import com.tenio.common.utility.MathUtility;
+import com.tenio.common.utilities.MathUtility;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.physic2d.math.Vector2;
 

@@ -24,10 +24,10 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.websocket;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.core.event.EventManager;
+import com.tenio.core.events.EventManager;
 import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
 
 import io.netty.channel.ChannelInitializer;

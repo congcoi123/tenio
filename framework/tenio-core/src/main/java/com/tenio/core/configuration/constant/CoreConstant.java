@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
-import com.tenio.core.exception.ExceededMessageQueueOutboundException;
+import com.tenio.core.exceptions.ExceededMessageQueueOutboundException;
 
 import io.netty.channel.ChannelOption;
 

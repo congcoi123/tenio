@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.core.bootstrap.annotation.Autowired;
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.bootstrap.handler.ConnectionEventHandler;
-import com.tenio.core.bootstrap.handler.HttpEventHandler;
-import com.tenio.core.bootstrap.handler.MixinsEventHandler;
-import com.tenio.core.bootstrap.handler.PlayerEventHandler;
-import com.tenio.core.bootstrap.handler.RoomEventHandler;
+import com.tenio.core.bootstrap.annotations.Autowired;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.bootstrap.handlers.ConnectionEventHandler;
+import com.tenio.core.bootstrap.handlers.HttpEventHandler;
+import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
+import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
+import com.tenio.core.bootstrap.handlers.RoomEventHandler;
 import com.tenio.core.extension.AbstractExtensionHandler;
 
 /**

@@ -33,11 +33,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.event.EventManager;
-import com.tenio.core.network.define.RestMethod;
-import com.tenio.core.network.define.data.PathConfig;
+import com.tenio.common.data.elements.CommonObject;
+import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.events.EventManager;
+import com.tenio.core.network.defines.RestMethod;
+import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.jetty.servlet.base.BaseProcessServlet;
 import com.tenio.core.network.jetty.servlet.base.BaseServlet;
 

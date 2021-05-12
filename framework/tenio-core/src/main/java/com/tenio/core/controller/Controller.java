@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.controller;
 
-import com.tenio.core.exception.RequestQueueFullException;
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.exceptions.RequestQueueFullException;
+import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.server.Service;
 
 /**

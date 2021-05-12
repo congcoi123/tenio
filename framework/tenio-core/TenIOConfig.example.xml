@@ -74,7 +74,6 @@
 				sending message to client -->
 			<Property name="idle-writer-time">60</Property>		<!-- Unit: Seconds -->
 
-			<Property name="max-number-sessions-per-player">10</Property>
 			<Property name="allow-change-session">false</Property>
 
 		</Properties>

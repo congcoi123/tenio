@@ -34,10 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.exception.NullElementPoolException;
+import com.tenio.common.exceptions.NullElementPoolException;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.base.ContextInfo;
-import com.tenio.engine.ecs.base.IEntity;
+import com.tenio.engine.ecs.bases.ContextInfo;
+import com.tenio.engine.ecs.bases.IEntity;
 import com.tenio.engine.ecs.model.GameComponents;
 import com.tenio.engine.ecs.model.GameEntity;
 import com.tenio.engine.ecs.pool.EntityPool;

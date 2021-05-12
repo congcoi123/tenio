@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 
 /**
  * @author kong

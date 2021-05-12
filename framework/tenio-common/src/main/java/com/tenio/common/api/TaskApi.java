@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.task.TaskManager;
 
 /**

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.fsm.entity;
 
-import com.tenio.common.utility.TimeUtility;
+import com.tenio.common.utilities.TimeUtility;
 import com.tenio.engine.message.IMessage;
 
 /**

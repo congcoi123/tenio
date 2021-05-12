@@ -32,12 +32,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.ElementsPool;
 import com.tenio.core.configuration.Configuration;
-import com.tenio.core.event.EventManager;
-import com.tenio.core.event.implement.EventManagerImpl;
+import com.tenio.core.events.EventManager;
+import com.tenio.core.events.implement.EventManagerImpl;
 import com.tenio.core.network.netty.NettyWebSocketService;
 import com.tenio.core.pool.ByteArrayInputStreamPool;
 import com.tenio.core.pool.CommonObjectPool;

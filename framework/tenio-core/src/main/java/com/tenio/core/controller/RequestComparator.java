@@ -25,7 +25,7 @@ package com.tenio.core.controller;
 
 import java.util.Comparator;
 
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entities.protocols.Request;
 
 /**
  * @author kong

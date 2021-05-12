@@ -33,8 +33,8 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.engine.exception.HeartbeatNotFoundException;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.engine.exceptions.HeartbeatNotFoundException;
 import com.tenio.engine.message.IMessage;
 
 /**

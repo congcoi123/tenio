@@ -29,8 +29,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.monitoring.define.SytemInfoType;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.core.monitoring.defines.SytemInfoType;
 
 /**
  * For logging the system information

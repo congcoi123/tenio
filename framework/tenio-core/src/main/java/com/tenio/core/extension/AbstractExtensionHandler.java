@@ -27,19 +27,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.api.TaskApi;
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.data.elements.CommonObject;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
-import com.tenio.core.configuration.define.CoreMessageCode;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
-import com.tenio.core.event.Subscriber;
-import com.tenio.core.exception.ExtensionValueCastException;
-import com.tenio.core.network.define.RestMethod;
-import com.tenio.core.network.entity.session.Connection;
+import com.tenio.core.configuration.defines.CoreMessageCode;
+import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.Room;
+import com.tenio.core.events.Subscriber;
+import com.tenio.core.exceptions.ExtensionValueCastException;
+import com.tenio.core.network.defines.RestMethod;
+import com.tenio.core.network.entities.session.Connection;
 import com.tenio.core.server.ServerImpl;
 
 /**

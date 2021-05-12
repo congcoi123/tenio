@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.core.exception.RefusedAddressException;
+import com.tenio.core.exceptions.RefusedAddressException;
 
 @ThreadSafe
 public final class DefaultConnectionFilter implements ConnectionFilter {

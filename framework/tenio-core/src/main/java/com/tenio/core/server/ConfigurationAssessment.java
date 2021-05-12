@@ -1,10 +1,10 @@
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.exception.NotDefinedSocketConnectionException;
-import com.tenio.core.exception.NotDefinedSubscribersException;
+import com.tenio.core.configuration.defines.CoreConfigurationType;
+import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.exceptions.NotDefinedSocketConnectionException;
+import com.tenio.core.exceptions.NotDefinedSubscribersException;
 
 public final class ConfigurationAssessment {
 	

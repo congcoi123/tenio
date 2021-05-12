@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.model.system;
 
-import com.tenio.engine.ecs.base.IContext;
+import com.tenio.engine.ecs.bases.IContext;
 import com.tenio.engine.ecs.model.GameEntity;
-import com.tenio.engine.ecs.system.AbstractSystem;
-import com.tenio.engine.ecs.system.IExecuteSystem;
-import com.tenio.engine.ecs.system.IInitializeSystem;
-import com.tenio.engine.ecs.system.IRenderSystem;
-import com.tenio.engine.ecs.system.ITearDownSystem;
+import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.IExecuteSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.engine.ecs.systems.IRenderSystem;
+import com.tenio.engine.ecs.systems.ITearDownSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**

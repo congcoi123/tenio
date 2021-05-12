@@ -25,7 +25,7 @@ package com.tenio.common.worker;
 
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 
 /**
  * @author kong

@@ -29,12 +29,12 @@ import java.util.UUID;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.exceptions.NullElementPoolException;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.base.ContextInfo;
-import com.tenio.engine.ecs.base.Entity;
-import com.tenio.engine.ecs.base.IEntity;
+import com.tenio.engine.ecs.bases.ContextInfo;
+import com.tenio.engine.ecs.bases.Entity;
+import com.tenio.engine.ecs.bases.IEntity;
 
 /**
  * The object pool mechanism for {@link IEntity}.

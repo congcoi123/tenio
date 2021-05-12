@@ -29,10 +29,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.logger.SystemLogger;
-import com.tenio.common.utility.StringUtility;
-import com.tenio.core.exception.RequestQueueFullException;
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.common.utilities.StringUtility;
+import com.tenio.core.exceptions.RequestQueueFullException;
+import com.tenio.core.network.entities.protocols.Request;
 
 /**
  * @author kong

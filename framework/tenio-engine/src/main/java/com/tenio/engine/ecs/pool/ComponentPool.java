@@ -28,10 +28,10 @@ import java.lang.reflect.InvocationTargetException;
 import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.exceptions.NullElementPoolException;
+import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.base.IComponent;
+import com.tenio.engine.ecs.bases.IComponent;
 
 /**
  * The object pool mechanism for {@link IComponent}.
