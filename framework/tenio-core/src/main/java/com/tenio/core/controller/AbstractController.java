@@ -72,13 +72,17 @@ public abstract class AbstractController extends SystemLogger implements Control
 			@Override
 			public void run() {
 				if (__executor != null && !__executor.isShutdown()) {
-					__stop();
+					try {
+						__stop();
+					} catch (Exception e) {
+						error(e);
+					}
 				}
 			}
 		});
 	}
 
-	private void __stop() {
+	private void __stop() throws Exception {
 		pause();
 		onStopped();
 		__executor.shutdown();
@@ -124,13 +128,13 @@ public abstract class AbstractController extends SystemLogger implements Control
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize() throws Exception {
 		__initializeWorkers();
 		onInitialized();
 	}
 
 	@Override
-	public void start() {
+	public void start() throws Exception {
 		__activated = true;
 		onStarted();
 	}
@@ -148,7 +152,7 @@ public abstract class AbstractController extends SystemLogger implements Control
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws Exception {
 		__stop();
 	}
 

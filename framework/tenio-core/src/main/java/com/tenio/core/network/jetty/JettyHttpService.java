@@ -44,7 +44,7 @@ import com.tenio.core.network.defines.RestMethod;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.jetty.servlet.PingServlet;
 import com.tenio.core.network.jetty.servlet.ServletManager;
-import com.tenio.core.server.Service;
+import com.tenio.core.service.Service;
 
 /**
  * The HTTP request and response handlers class

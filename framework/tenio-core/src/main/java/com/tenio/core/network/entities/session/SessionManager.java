@@ -26,7 +26,7 @@ package com.tenio.core.network.entities.session;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.server.Service;
+import com.tenio.core.service.Service;
 
 import io.netty.channel.Channel;
 

@@ -25,7 +25,7 @@ package com.tenio.core.controller;
 
 import com.tenio.core.exceptions.RequestQueueFullException;
 import com.tenio.core.network.entities.protocols.Request;
-import com.tenio.core.server.Service;
+import com.tenio.core.service.Service;
 
 /**
  * @author kong

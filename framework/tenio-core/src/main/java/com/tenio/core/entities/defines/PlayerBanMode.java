@@ -1,4 +1,4 @@
-package com.tenio.core.entities.settings;
+package com.tenio.core.entities.defines;
 
 public enum PlayerBanMode {
 

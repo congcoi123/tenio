@@ -54,7 +54,7 @@ import com.tenio.core.network.netty.datagram.NettyDatagramInitializer;
 import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
 import com.tenio.core.network.netty.socket.NettySocketInitializer;
 import com.tenio.core.network.netty.websocket.NettyWSInitializer;
-import com.tenio.core.server.Service;
+import com.tenio.core.service.Service;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;

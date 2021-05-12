@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.server;
+package com.tenio.core.controller;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -33,7 +33,6 @@ import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.controller.AbstractController;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
@@ -42,6 +41,7 @@ import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.network.entities.session.Connection;
+import com.tenio.core.service.Service;
 
 /**
  * Handle the main logic of the server.
@@ -50,13 +50,13 @@ import com.tenio.core.network.entities.session.Connection;
  */
 @ThreadSafe
 // TODO: Add description
-public final class InternalProcessor extends AbstractController implements Service {
+public final class InternalProcessorService extends AbstractController implements Service {
 
 	private final EventManager __eventManager;
 	private final PlayerManager __playerManager;
 	private final RoomManager __roomManager;
 
-	public InternalProcessor(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
+	public InternalProcessorService(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
 		__eventManager = eventManager;
 		__playerManager = playerManager;
 		__roomManager = roomManager;

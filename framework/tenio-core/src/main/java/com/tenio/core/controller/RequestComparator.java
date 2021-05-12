@@ -40,9 +40,9 @@ public final class RequestComparator implements Comparator<Request> {
 		if (request1.getPriority().getValue() < request2.getPriority().getValue()) {
 			result = -1;
 		} else if (request1.getPriority() == request2.getPriority()) {
-			if (request1.getTimeStamp() < request2.getTimeStamp()) {
+			if (request1.getTimestamp() < request2.getTimestamp()) {
 				result = -1;
-			} else if (request1.getTimeStamp() > request2.getTimeStamp()) {
+			} else if (request1.getTimestamp() > request2.getTimestamp()) {
 				result = 1;
 			} else {
 				result = 0;

@@ -43,9 +43,11 @@ import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
 import com.tenio.core.bootstrap.EventHandler;
+import com.tenio.core.configuration.ConfigurationAssessment;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.controller.InternalProcessorService;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
@@ -109,7 +111,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool, __playerManager,
 				(IBroadcast) __network);
 
-		__internalLogic = new InternalProcessor(__eventManager, __playerManager, __roomManager);
+		__internalLogic = new InternalProcessorService(__eventManager, __playerManager, __roomManager);
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
@@ -143,7 +145,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private final TaskApi __taskApi;
 	private final MessageApi __messageApi;
 
-	private final InternalProcessor __internalLogic;
+	private final InternalProcessorService __internalLogic;
 	private final Network __network;
 	private Extension __extension;
 

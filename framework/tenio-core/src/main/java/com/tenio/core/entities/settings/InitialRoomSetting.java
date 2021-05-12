@@ -1,5 +1,6 @@
 package com.tenio.core.entities.settings;
 
+import com.tenio.core.entities.defines.RoomRemoveMode;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 

@@ -1,4 +1,4 @@
-package com.tenio.core.server;
+package com.tenio.core.configuration;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.defines.CoreConfigurationType;

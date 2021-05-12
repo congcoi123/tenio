@@ -1,4 +1,4 @@
-package com.tenio.core.server;
+package com.tenio.core.service;
 
 public interface Service {
 
