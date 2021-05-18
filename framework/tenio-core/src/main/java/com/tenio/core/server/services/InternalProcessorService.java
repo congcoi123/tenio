@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.controller;
+package com.tenio.core.server.services;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -33,6 +33,7 @@ import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.controller.AbstractController;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;

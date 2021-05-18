@@ -76,7 +76,6 @@ public final class PlayerImpl implements Player {
 	private PlayerImpl(String name, Session session) {
 		__id = __idCounter.getAndIncrement();
 		__name = name;
-		__session = session;
 
 		__currentRoom = null;
 
@@ -84,12 +83,13 @@ public final class PlayerImpl implements Player {
 
 		__lastLoginedTime = 0L;
 		__lastJoinedRoomTime = 0L;
-		__playerSlotInCurrentRoom = -1;
+		__playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
 
 		__loggedIn = false;
 		__activated = false;
-		__npc = false;
 		__spectator = true;
+
+		setSession(session);
 	}
 
 	@Override
@@ -105,6 +105,11 @@ public final class PlayerImpl implements Player {
 	@Override
 	public boolean isNpc() {
 		return __npc;
+	}
+
+	@Override
+	public boolean isState(PlayerState state) {
+		return __state == state;
 	}
 
 	@Override
@@ -159,12 +164,14 @@ public final class PlayerImpl implements Player {
 		__session = session;
 		if (__session == null) {
 			__npc = true;
+		} else {
+			__npc = false;
 		}
 	}
 
 	@Override
 	public boolean isInRoom() {
-		return __playerSlotInCurrentRoom >= 0L;
+		return __playerSlotInCurrentRoom >= RoomImpl.NIL_SLOT;
 	}
 
 	@Override
@@ -186,7 +193,7 @@ public final class PlayerImpl implements Player {
 	public void setCurrentRoom(Room room) {
 		__currentRoom = room;
 		if (__currentRoom == null) {
-			__playerSlotInCurrentRoom = -1;
+			__playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
 		} else {
 			__setLastJoinedRoomTime();
 		}
@@ -202,7 +209,7 @@ public final class PlayerImpl implements Player {
 	}
 
 	@Override
-	public long getPlayerSlotInCurrentRoom() {
+	public int getPlayerSlotInCurrentRoom() {
 		return __playerSlotInCurrentRoom;
 	}
 
@@ -241,13 +248,9 @@ public final class PlayerImpl implements Player {
 	}
 
 	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
-	@Override
 	public String toString() {
-		return String.format("{ id: %d, name: %s }", __id, __name);
+		return String.format("{ id: %d, name: %s, npc: %b, loggedin: %b, spectator: %b, activated: %b }", __id, __name,
+				__npc, __loggedIn, __spectator, __activated);
 	}
 
 }

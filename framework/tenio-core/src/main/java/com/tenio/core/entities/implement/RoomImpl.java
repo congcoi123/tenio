@@ -19,6 +19,8 @@ import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrate
 import com.tenio.core.network.entities.session.Session;
 
 public final class RoomImpl implements Room {
+	
+	public static final int NIL_SLOT = -1;
 
 	private static AtomicLong __idCounter = new AtomicLong();
 

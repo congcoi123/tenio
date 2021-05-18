@@ -14,11 +14,11 @@ public interface Room {
 
 	String getName();
 
-	void setName(String name) throws RuntimeException;
+	void setName(String name) throws IllegalArgumentException;
 
 	String getPassword();
 
-	void setPassword(String password) throws RuntimeException;
+	void setPassword(String password) throws IllegalArgumentException;
 
 	RoomState getState();
 
@@ -28,11 +28,11 @@ public interface Room {
 
 	int getMaxPlayers();
 
-	void setMaxPlayers(int maxPlayers);
+	void setMaxPlayers(int maxPlayers) throws IllegalArgumentException;
 
 	int getMaxSpectators();
 
-	void setMaxSpectators(int maxSpectators);
+	void setMaxSpectators(int maxSpectators) throws IllegalArgumentException;
 
 	Player getOwner();
 
@@ -60,7 +60,7 @@ public interface Room {
 
 	int getCapacity();
 
-	void setCapacity(int maxPlayers, int maxSpectators);
+	void setCapacity(int maxPlayers, int maxSpectators) throws IllegalArgumentException;
 
 	List<Player> getPlayersList();
 
@@ -99,13 +99,13 @@ public interface Room {
 	boolean isEmpty();
 
 	boolean isFull();
-	
+
 	RoomPlayerSlotGeneratedStrategy getPlayerSlotGeneratedStrategy();
-	
+
 	void setPlayerSlotGeneratedStrategy(RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy);
-	
+
 	RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy();
-	
-	void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy); 
+
+	void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy);
 
 }

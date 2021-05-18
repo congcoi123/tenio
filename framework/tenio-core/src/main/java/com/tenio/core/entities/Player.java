@@ -36,6 +36,8 @@ public interface Player {
 	String getName();
 
 	boolean isNpc();
+	
+	boolean isState(PlayerState state);
 
 	PlayerState getState();
 
@@ -67,7 +69,7 @@ public interface Player {
 
 	long getLastJoinedRoomTime();
 
-	long getPlayerSlotInCurrentRoom();
+	int getPlayerSlotInCurrentRoom();
 
 	void setPlayerSlotInCurrentRoom(int slot);
 

@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.schedules;
+package com.tenio.core.schedule.tasks;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -29,43 +29,39 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.task.schedule.Task;
+import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.events.EventManager;
-import com.tenio.core.monitoring.system.SystemMonitoring;
 
 /**
- * To retrieve the current system information in period time. You can configure
- * this time in your own configurations, see {@link CoreConfiguration}
+ * To retrieve the CCU in period time. You can configure this time in your own
+ * configurations, see {@link CoreConfiguration}
  * 
  * @author kong
  * 
  */
-public final class SystemMonitoringTask extends AbstractLogger implements Task {
-
-	private final SystemMonitoring __monitoring;
+public final class CCUScanTask extends AbstractLogger implements Task {
 
 	private final EventManager __eventManager;
 	/**
-	 * The period time for retrieving system information
+	 * The period time for retrieving CCU
 	 */
-	private final int __monitoringPeriod;
+	private final int __ccuScanPeriod;
+	private final PlayerApi __playerApi;
 
-	public SystemMonitoringTask(EventManager eventManager, int ccuScanPeriod) {
+	public CCUScanTask(EventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
 		__eventManager = eventManager;
-		__monitoringPeriod = ccuScanPeriod;
-
-		__monitoring = new SystemMonitoring();
+		__playerApi = playerApi;
+		__ccuScanPeriod = ccuScanPeriod;
 	}
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("SYSTEM MONITORING TASK", "Running ...");
+		info("CCU SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ExtensionEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
-					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
-					__monitoring.countRunningThreads());
-		}, 0, __monitoringPeriod, TimeUnit.SECONDS);
+			__eventManager.getExtension().emit(ExtensionEvent.FETCHED_CCU_NUMBER, __playerApi.countPlayers(), __playerApi.count());
+		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
 	}
 
 }

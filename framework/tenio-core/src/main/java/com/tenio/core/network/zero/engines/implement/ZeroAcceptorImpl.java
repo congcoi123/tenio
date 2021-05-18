@@ -41,7 +41,7 @@ import java.util.Set;
 import com.tenio.core.exceptions.RefusedAddressException;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.SocketConfig;
-import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.security.ConnectionFilter;
 import com.tenio.core.network.zero.engines.ZeroAcceptor;
 import com.tenio.core.network.zero.engines.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engines.listener.ZeroReaderListener;
