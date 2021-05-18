@@ -51,12 +51,16 @@ public final class PlayerManagerImpl implements PlayerManager {
 
 	private Room __ownerRoom;
 
+	private volatile int __playerCount;
+
 	private PlayerManagerImpl() {
 		__playerByIds = new HashMap<Long, Player>();
 		__playerByNames = new HashMap<String, Player>();
 		__playerBySessions = new HashMap<Session, Player>();
 
 		__ownerRoom = null;
+
+		__playerCount = 0;
 	}
 
 	@Override
@@ -105,15 +109,15 @@ public final class PlayerManagerImpl implements PlayerManager {
 			__playerByIds.put(player.getId(), player);
 			__playerByNames.put(player.getName(), player);
 			__playerBySessions.put(player.getSession(), player);
+			__playerCount = __playerByIds.size();
 		}
 	}
 
 	@Override
 	public void removePlayer(Player player) {
-		if (!containsPlayer(player)) {
-			throw new RemovedPlayerNotExistedException(
-					String.format("Unable to remove player: %s, the player did not exist in room: %s", player.getName(),
-							__ownerRoom.toString()));
+		if (player == null) {
+			throw new RemovedPlayerNotExistedException(String
+					.format("Unable to remove player, the player did not exist in room: %s", __ownerRoom.toString()));
 		}
 
 		__removePlayer(player);
@@ -124,30 +128,51 @@ public final class PlayerManagerImpl implements PlayerManager {
 			__playerByIds.remove(player.getId());
 			__playerByNames.remove(player.getName());
 			__playerBySessions.remove(player.getSession());
+			__playerCount = __playerByIds.size();
 		}
 	}
 
 	@Override
 	public void removePlayerByName(String playerName) {
+		var player = getPlayerByName(playerName);
+		if (player == null) {
+			throw new RemovedPlayerNotExistedException(
+					String.format("Unable to remove player: %s, the player did not exist in room: %s", playerName,
+							__ownerRoom.toString()));
+		}
 
+		__removePlayer(player);
 	}
 
 	@Override
 	public void removePlayerById(long playerId) {
-		// TODO Auto-generated method stub
+		var player = getPlayerById(playerId);
+		if (player == null) {
+			throw new RemovedPlayerNotExistedException(
+					String.format("Unable to remove player with id: %d, the player did not exist in room: %s", playerId,
+							__ownerRoom.toString()));
+		}
 
+		__removePlayer(player);
 	}
 
 	@Override
 	public void removePlayerBySession(Session session) {
-		// TODO Auto-generated method stub
+		var player = getPlayerBySession(session);
+		if (player == null) {
+			throw new RemovedPlayerNotExistedException(
+					String.format("Unable to remove player with session: %s, the player did not exist in room: %s",
+							session.toString(), __ownerRoom.toString()));
+		}
 
+		__removePlayer(player);
 	}
 
 	@Override
 	public void disconnectPlayer(Player player) {
-		// TODO Auto-generated method stub
-
+		if (player != null && player.getSession() != null) {
+			player.getSession().close();
+		}
 	}
 
 	@Override
@@ -170,44 +195,53 @@ public final class PlayerManagerImpl implements PlayerManager {
 
 	@Override
 	public boolean containsPlayer(Player player) {
-		// TODO Auto-generated method stub
-		return false;
+		if (player == null) {
+			return false;
+		}
+		synchronized (__playerByIds) {
+			return __playerByIds.containsKey(player.getId());
+		}
 	}
 
 	@Override
 	public boolean containsPlayerId(long playerId) {
-		// TODO Auto-generated method stub
-		return false;
+		synchronized (__playerByIds) {
+			return __playerByIds.containsKey(playerId);
+		}
 	}
 
 	@Override
 	public boolean containsPlayerName(String playerName) {
-		// TODO Auto-generated method stub
-		return false;
+		synchronized (__playerByNames) {
+			return __playerByNames.containsKey(playerName);
+		}
 	}
 
 	@Override
 	public boolean containsPlayerSession(Session session) {
-		// TODO Auto-generated method stub
-		return false;
+		synchronized (__playerBySessions) {
+			return __playerBySessions.containsKey(session);
+		}
 	}
 
 	@Override
 	public Room getOwnerRoom() {
-		// TODO Auto-generated method stub
-		return null;
+		return __ownerRoom;
 	}
 
 	@Override
 	public void setOwnerRoom(Room room) {
-		// TODO Auto-generated method stub
-
+		__ownerRoom = room;
 	}
 
 	@Override
 	public int getPlayerCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return __playerCount;
+	}
+
+	@Override
+	public boolean isActivated() {
+		throw new UnsupportedOperationException();
 	}
 
 }

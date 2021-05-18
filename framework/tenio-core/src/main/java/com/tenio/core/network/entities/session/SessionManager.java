@@ -26,15 +26,13 @@ package com.tenio.core.network.entities.session;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.service.Service;
-
 import io.netty.channel.Channel;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface SessionManager extends Service {
+public interface SessionManager {
 
 	Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey) throws Exception;
 

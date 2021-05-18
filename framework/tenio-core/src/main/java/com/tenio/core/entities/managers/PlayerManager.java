@@ -29,13 +29,14 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.exceptions.DuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
+import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface PlayerManager {
+public interface PlayerManager extends Manager {
 
 	Player getPlayerByName(String playerName);
 
@@ -51,11 +52,11 @@ public interface PlayerManager {
 
 	void removePlayer(Player player) throws RemovedPlayerNotExistedException;
 
-	void removePlayerByName(String playerName);
+	void removePlayerByName(String playerName) throws RemovedPlayerNotExistedException;
 
-	void removePlayerById(long playerId);
+	void removePlayerById(long playerId) throws RemovedPlayerNotExistedException;
 
-	void removePlayerBySession(Session session);
+	void removePlayerBySession(Session session) throws RemovedPlayerNotExistedException;
 
 	void disconnectPlayer(Player player);
 

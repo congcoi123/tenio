@@ -24,7 +24,6 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.session.implement;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 
@@ -41,14 +41,12 @@ import io.netty.channel.Channel;
  * @author kong
  */
 // TODO: Add description
-public final class SessionManagerImpl implements SessionManager {
+public final class SessionManagerImpl extends AbstractManager implements SessionManager {
 
 	@GuardedBy("this")
 	private final Map<Long, Session> __sessionByIds;
 	@GuardedBy("this")
 	private final Map<SocketChannel, Session> __sessionBySockets;
-	@GuardedBy("this")
-	private final Map<InetSocketAddress, Session> __sessionByDatagrams;
 	@GuardedBy("this")
 	private final Map<Channel, Session> __sessionByWebSockets;
 
@@ -59,7 +57,6 @@ public final class SessionManagerImpl implements SessionManager {
 	private SessionManagerImpl() {
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
-		__sessionByDatagrams = new HashMap<InetSocketAddress, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
 	}
 
