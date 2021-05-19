@@ -57,8 +57,8 @@ public final class PlayerImpl implements Player {
 
 	private volatile boolean __loggedIn;
 	private volatile boolean __activated;
-	private volatile boolean __npc;
 	private volatile boolean __spectator;
+	private boolean __hasSession;
 
 	public static Player newInstance(String name) {
 		return new PlayerImpl(name);
@@ -70,26 +70,22 @@ public final class PlayerImpl implements Player {
 
 	private PlayerImpl(String name) {
 		this(name, null);
-		__npc = true;
 	}
 
 	private PlayerImpl(String name, Session session) {
 		__id = __idCounter.getAndIncrement();
 		__name = name;
 
-		__currentRoom = null;
-
 		__properties = new ConcurrentHashMap<String, Object>();
 
 		__lastLoginedTime = 0L;
 		__lastJoinedRoomTime = 0L;
-		__playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
 
-		__loggedIn = false;
-		__activated = false;
-		__spectator = true;
-
+		setCurrentRoom(null);
 		setSession(session);
+		setLoggedIn(false);
+		setActivated(false);
+		setSpectator(true);
 	}
 
 	@Override
@@ -103,8 +99,8 @@ public final class PlayerImpl implements Player {
 	}
 
 	@Override
-	public boolean isNpc() {
-		return __npc;
+	public boolean containsSession() {
+		return __hasSession;
 	}
 
 	@Override
@@ -163,9 +159,9 @@ public final class PlayerImpl implements Player {
 	public void setSession(Session session) {
 		__session = session;
 		if (__session == null) {
-			__npc = true;
+			__hasSession = false;
 		} else {
-			__npc = false;
+			__hasSession = true;
 		}
 	}
 
@@ -195,8 +191,9 @@ public final class PlayerImpl implements Player {
 		if (__currentRoom == null) {
 			__playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
 		} else {
-			__setLastJoinedRoomTime();
+			__playerSlotInCurrentRoom = RoomImpl.DEFAULT_SLOT;
 		}
+		__setLastJoinedRoomTime();
 	}
 
 	@Override
@@ -249,8 +246,8 @@ public final class PlayerImpl implements Player {
 
 	@Override
 	public String toString() {
-		return String.format("{ id: %d, name: %s, npc: %b, loggedin: %b, spectator: %b, activated: %b }", __id, __name,
-				__npc, __loggedIn, __spectator, __activated);
+		return String.format("{ id: %d, name: %s, session: %b, loggedin: %b, spectator: %b, activated: %b }", __id,
+				__name, __hasSession, __loggedIn, __spectator, __activated);
 	}
 
 }

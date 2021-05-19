@@ -35,7 +35,7 @@ public interface Player {
 
 	String getName();
 
-	boolean isNpc();
+	boolean containsSession();
 	
 	boolean isState(PlayerState state);
 

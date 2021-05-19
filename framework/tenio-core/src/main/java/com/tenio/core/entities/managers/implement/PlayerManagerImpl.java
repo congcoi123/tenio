@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.managers.implement;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,28 +170,58 @@ public final class PlayerManagerImpl implements PlayerManager {
 	}
 
 	@Override
-	public void disconnectPlayer(Player player) {
-		if (player != null && player.getSession() != null) {
-			player.getSession().close();
+	public void disconnectPlayer(Player player) throws IOException {
+		if (player == null || !player.containsSession()) {
+			throw new IllegalArgumentException(
+					"Unable to disconnect player, the player does not exist or does not contain session");
 		}
+
+		player.getSession().close();
 	}
 
 	@Override
-	public void disconnectPlayerByName(String playerName) {
-		// TODO Auto-generated method stub
+	public void disconnectPlayerByName(String playerName) throws IOException {
+		var player = getPlayerByName(playerName);
+		if (player == null) {
+			throw new IllegalArgumentException(
+					String.format("Unable to disconnect player: %s, the player does not exist", playerName));
+		}
+		if (!player.containsSession()) {
+			throw new IllegalArgumentException(
+					String.format("Unable to disconnect player: %s, the player does not contain session", playerName));
+		}
 
+		player.getSession().close();
 	}
 
 	@Override
-	public void disconnectPlayerById(long playerId) {
-		// TODO Auto-generated method stub
+	public void disconnectPlayerById(long playerId) throws IOException {
+		var player = getPlayerById(playerId);
+		if (player == null) {
+			throw new IllegalArgumentException(
+					String.format("Unable to disconnect player with id: %d, the player does not exist", playerId));
+		}
+		if (!player.containsSession()) {
+			throw new IllegalArgumentException(String
+					.format("Unable to disconnect player with id: %d, the player does not contain session", playerId));
+		}
 
+		player.getSession().close();
 	}
 
 	@Override
-	public void disconnectPlayerBySession(Session session) {
-		// TODO Auto-generated method stub
+	public void disconnectPlayerBySession(Session session) throws IOException {
+		if (session == null) {
+			throw new IllegalArgumentException(
+					String.format("Unable to disconnect player, the player's session does not exist"));
+		}
+		var player = getPlayerBySession(session);
+		if (player == null) {
+			throw new IllegalArgumentException(String.format(
+					"Unable to disconnect player with session: %s, the player does not exist", session.toString()));
+		}
 
+		player.getSession().close();
 	}
 
 	@Override
@@ -237,11 +268,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public int getPlayerCount() {
 		return __playerCount;
-	}
-
-	@Override
-	public boolean isActivated() {
-		throw new UnsupportedOperationException();
 	}
 
 }

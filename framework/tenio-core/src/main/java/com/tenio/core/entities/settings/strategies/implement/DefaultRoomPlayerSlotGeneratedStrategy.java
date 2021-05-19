@@ -38,7 +38,7 @@ public final class DefaultRoomPlayerSlotGeneratedStrategy implements RoomPlayerS
 	}
 
 	@Override
-	public long getFreePlayerSlotInRoom() {
+	public int getFreePlayerSlotInRoom() {
 		return 0;
 	}
 

@@ -23,20 +23,20 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.managers;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.exceptions.DuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
-import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface PlayerManager extends Manager {
+public interface PlayerManager {
 
 	Player getPlayerByName(String playerName);
 
@@ -58,13 +58,13 @@ public interface PlayerManager extends Manager {
 
 	void removePlayerBySession(Session session) throws RemovedPlayerNotExistedException;
 
-	void disconnectPlayer(Player player);
+	void disconnectPlayer(Player player) throws IllegalArgumentException, IOException;
 
-	void disconnectPlayerByName(String playerName);
+	void disconnectPlayerByName(String playerName) throws IllegalArgumentException, IOException;
 
-	void disconnectPlayerById(long playerId);
+	void disconnectPlayerById(long playerId) throws IllegalArgumentException, IOException;
 
-	void disconnectPlayerBySession(Session session);
+	void disconnectPlayerBySession(Session session) throws IllegalArgumentException, IOException;
 
 	boolean containsPlayer(Player player);
 

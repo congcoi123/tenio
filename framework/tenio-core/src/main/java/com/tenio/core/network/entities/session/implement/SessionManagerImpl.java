@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.session.implement;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -31,7 +32,6 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 
@@ -41,7 +41,7 @@ import io.netty.channel.Channel;
  * @author kong
  */
 // TODO: Add description
-public final class SessionManagerImpl extends AbstractManager implements SessionManager {
+public final class SessionManagerImpl implements SessionManager {
 
 	@GuardedBy("this")
 	private final Map<Long, Session> __sessionByIds;
@@ -49,6 +49,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 	private final Map<SocketChannel, Session> __sessionBySockets;
 	@GuardedBy("this")
 	private final Map<Channel, Session> __sessionByWebSockets;
+	@GuardedBy("this")
+	private final Map<InetSocketAddress, Session> __sessionByDatagrams;
 
 	public static SessionManager newInstance() {
 		return new SessionManagerImpl();
@@ -58,102 +60,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
-	}
-
-	@Override
-	public void initialize() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void start() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void stop() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onInitialized() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStarted() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onResumed() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onRunning() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPaused() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStopped() throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onDestroyed() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean isActivated() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		__sessionByDatagrams = new HashMap<InetSocketAddress, Session>();
 	}
 
 	@Override
@@ -177,22 +84,35 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 
 	@Override
 	public Session getSessionBySocket(SocketChannel socketChannel) {
-		return __sessionBySockets.get(socketChannel);
+		synchronized (__sessionBySockets) {
+			return __sessionBySockets.get(socketChannel);
+		}
 	}
 
 	@Override
-	public Session addDatagramForSession(InetSocketAddress remoteAddress, Session session) {
-		session.setDatagramChannel(datagramChannel);
-		synchronized (this) {
-			__sessionByIds.put(session.getId(), session);
-			__sessionByDatagrams.put(session.getClientInetSocketAddress(), session);
+	public void addDatagramForSession(DatagramChannel datagramChannel, Session session) {
+		synchronized (__sessionByDatagrams) {
+			session.setDatagramChannel(datagramChannel);
+			__sessionByDatagrams.put(session.getDatagramInetSocketAddress(), session);
 		}
-		return session;
 	}
 
 	@Override
 	public Session getSessionByDatagram(InetSocketAddress remoteAddress) {
-		return __sessionByDatagrams.get(remoteAddress);
+		synchronized (__sessionByDatagrams) {
+			return __sessionByDatagrams.get(remoteAddress);
+		}
+	}
+
+	@Override
+	public void removeSessionByDatagram(Session session) {
+		if (!session.containsUdp()) {
+			throw new IllegalArgumentException("Session does not contain UDP channel");
+		}
+		synchronized (__sessionByDatagrams) {
+			__sessionByDatagrams.remove(session.getDatagramInetSocketAddress());
+			session.setDatagramChannel(null);
+		}
 	}
 
 	@Override
@@ -215,25 +135,33 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 
 	@Override
 	public Session getSessionByWebSocket(Channel webSocketChannel) {
-		return __sessionByWebSockets.get(webSocketChannel);
+		synchronized (__sessionByWebSockets) {
+			return __sessionByWebSockets.get(webSocketChannel);
+		}
 	}
 
 	@Override
 	public void removeSessionById(long id) {
-		Session session = __sessionByIds.get(id);
+		Session session = null;
+		synchronized (__sessionByIds) {
+			session = __sessionByIds.get(id);
+		}
 		removeSession(session);
 	}
 
 	@Override
 	public void removeSession(Session session) {
+		if (session == null) {
+			throw new NullPointerException("Session does not exist");
+		}
 		synchronized (this) {
 			switch (session.getTransportType()) {
 			case TCP:
+				if (session.containsUdp()) {
+					__sessionByDatagrams.remove(session.getDatagramInetSocketAddress());
+					session.setDatagramChannel(null);
+				}
 				__sessionBySockets.remove(session.getSocketChannel());
-				break;
-
-			case UDP:
-				__sessionByDatagrams.remove(session.getClientInetSocketAddress());
 				break;
 
 			case WEB_SOCKET:

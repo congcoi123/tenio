@@ -31,6 +31,4 @@ import com.tenio.core.service.Service;
 // TODO: Add description
 public interface Manager extends Service {
 
-	boolean isActivated();
-
 }

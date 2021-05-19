@@ -100,11 +100,6 @@ public final class SessionImpl implements Session {
 		__transportType = TransportType.UNKNOWN;
 		__packetQueue = null;
 
-		setCreatedTime(__now());
-		setLastReadTime(__now());
-		setLastWriteTime(__now());
-		setLastActivityTime(__now());
-
 		__readBytes = 0L;
 		__writtenBytes = 0L;
 		__droppedPackets = 0L;
@@ -113,6 +108,11 @@ public final class SessionImpl implements Session {
 		__active = false;
 		__connected = false;
 		__hasUdp = false;
+
+		setCreatedTime(__now());
+		setLastReadTime(__now());
+		setLastWriteTime(__now());
+		setLastActivityTime(__now());
 	}
 
 	@Override
@@ -245,8 +245,13 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setDatagramChannel(DatagramChannel datagramChannel) {
 		__datagramChannel = datagramChannel;
-		__datagramInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
-		__hasUdp = true;
+		if (__datagramChannel == null) {
+			__datagramInetSocketAddress = null;
+			__hasUdp = false;
+		} else {
+			__datagramInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
+			__hasUdp = true;
+		}
 	}
 
 	@Override
@@ -459,14 +464,12 @@ public final class SessionImpl implements Session {
 					socket.close();
 					__socketChannel.close();
 				}
-				getSessionManager().removeSessionBySocket(__socketChannel);
 			}
 			break;
 
 		case WEB_SOCKET:
 			if (__webSocketChannel != null) {
 				__webSocketChannel.close();
-				getSessionManager().removeSessionByWebSocket(__webSocketChannel);
 			}
 			break;
 
@@ -474,9 +477,8 @@ public final class SessionImpl implements Session {
 			break;
 		}
 
-		__active = false;
-		__connected = false;
-		__hasUdp = false;
+		deactivate();
+		setConnected(false);
 
 		__sessionManager.removeSession(this);
 	}

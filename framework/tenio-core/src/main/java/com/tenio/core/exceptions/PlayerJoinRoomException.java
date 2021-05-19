@@ -21,26 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entities.settings.strategies;
+package com.tenio.core.exceptions;
 
-import com.tenio.core.entities.Room;
+import com.tenio.core.configuration.defines.CoreMessageCode;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface RoomPlayerSlotGeneratedStrategy {
+public final class PlayerJoinRoomException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4832076768041868120L;
 
-	void initialize();
+	private final CoreMessageCode __coreMessageCode;
 
-	int getFreePlayerSlotInRoom();
+	public PlayerJoinRoomException(String message, CoreMessageCode coreMessageCode) {
+		super(message);
+		__coreMessageCode = coreMessageCode;
+	}
 
-	void freeSlotWhenPlayerLeft(int slot);
-
-	void tryTakeSlot(int slot) throws IllegalArgumentException;
-
-	Room getRoom();
-
-	void setRoom(Room room);
+	public CoreMessageCode getMessageCode() {
+		return __coreMessageCode;
+	}
 
 }

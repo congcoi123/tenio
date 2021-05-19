@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.session;
 
+import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
@@ -46,8 +48,14 @@ public interface SessionManager {
 
 	Session getSessionByWebSocket(Channel webSocketChannel);
 
+	void addDatagramForSession(DatagramChannel datagramChannel, Session session);
+
+	Session getSessionByDatagram(InetSocketAddress remoteAddress);
+
+	void removeSessionByDatagram(Session session) throws IllegalArgumentException;
+
 	void removeSessionById(long id);
 
-	void removeSession(Session session);
+	void removeSession(Session session) throws NullPointerException;
 
 }

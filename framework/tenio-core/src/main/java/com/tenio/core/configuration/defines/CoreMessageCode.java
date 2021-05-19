@@ -45,6 +45,9 @@ public enum CoreMessageCode {
 	 * When you try to add a player that duplicates in one room.
 	 */
 	PLAYER_WAS_IN_ROOM("player_was_in_room"),
+	
+	SLOT_UNAVAILABLE_IN_ROOM("slot_unavailable_in_room"),
+	
 	/**
 	 * When you try to remove a player from his room, but he has already left.
 	 */
