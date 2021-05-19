@@ -49,7 +49,7 @@ import com.tenio.core.exceptions.NoImplementedClassFoundException;
 public final class Injector {
 
 	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.event";
+	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
 
 	private final Map<Class<?>, Class<?>> __implementedClazzsMap;
 	private final Map<Class<?>, Object> __clazzInstancesMap;

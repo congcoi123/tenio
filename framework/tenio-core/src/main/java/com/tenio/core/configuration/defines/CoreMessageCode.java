@@ -45,9 +45,15 @@ public enum CoreMessageCode {
 	 * When you try to add a player that duplicates in one room.
 	 */
 	PLAYER_WAS_IN_ROOM("player_was_in_room"),
-	
+
+	PLAYER_WAS_NOT_IN_ROOM("player_was_not_in_room"),
+
 	SLOT_UNAVAILABLE_IN_ROOM("slot_unavailable_in_room"),
-	
+
+	SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE("switch_no_spectator_slots_available"),
+
+	SWITCH_NO_PLAYER_SLOTS_AVAILABLE("switch_no_player_slots_available"),
+
 	/**
 	 * When you try to remove a player from his room, but he has already left.
 	 */
@@ -76,20 +82,20 @@ public enum CoreMessageCode {
 	 * TCP connection.
 	 */
 	MAIN_CONNECTION_NOT_FOUND("main_connection_not_found");
-	
+
 	private final String value;
-	
+
 	private CoreMessageCode(String value) {
 		this.value = value;
 	}
-	
+
 	public final String getValue() {
 		return this.value;
 	}
-	
+
 	@Override
 	public final String toString() {
 		return this.name();
 	}
-	
+
 }

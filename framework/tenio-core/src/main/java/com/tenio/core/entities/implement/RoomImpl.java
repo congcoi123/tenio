@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.entities.implement;
 
 import java.util.ArrayList;
@@ -20,6 +43,10 @@ import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrate
 import com.tenio.core.exceptions.PlayerJoinRoomException;
 import com.tenio.core.network.entities.session.Session;
 
+/**
+ * @author kong
+ */
+// TODO: Add description
 public final class RoomImpl implements Room {
 
 	public static final int NIL_SLOT = -1;
@@ -277,45 +304,42 @@ public final class RoomImpl implements Room {
 			throw new PlayerJoinRoomException(
 					String.format("Unable to add player to room, the player: %s already joined room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
+		}
+
+		boolean validated = false;
+		if (asSpectator) {
+			validated = getSpectatorCount() < getMaxSpectators();
 		} else {
-			boolean validated = false;
-			if (asSpectator) {
-				validated = getSpectatorCount() < getMaxSpectators();
+			validated = getPlayerCount() < getMaxPlayers();
+		}
+
+		if (!validated) {
+			throw new PlayerJoinRoomException(String.format(
+					"Unable to add player: %s to room, room is full with maximum player: %d, spectator: %d",
+					player.getName(), getMaxPlayers(), getMaxSpectators()), CoreMessageCode.ROOM_IS_FULL);
+		}
+
+		__playerManager.addPlayer(player);
+
+		if (asSpectator) {
+			player.setSpectator(true);
+		}
+
+		__updateElementsCounter();
+
+		if (asSpectator) {
+			player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
+		} else {
+			if (targetSlot == RoomImpl.DEFAULT_SLOT) {
+				player.setPlayerSlotInCurrentRoom(__roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
 			} else {
-				validated = getPlayerCount() < getMaxPlayers();
-			}
-
-			if (!validated) {
-				throw new PlayerJoinRoomException(String.format(
-						"Unable to add player: %s to room, room is full with maximum player: %d, spectator: %d",
-						player.getName(), getMaxPlayers(), getMaxSpectators()), CoreMessageCode.ROOM_IS_FULL);
-			} else {
-				__playerManager.addPlayer(player);
-				if (asSpectator) {
-					player.setSpectator(true);
-				}
-
-				__playerCount = getPlayersList().size();
-				__spectatorCount = getSpectatorsList().size();
-
-				if (asSpectator) {
+				try {
+					__roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
+					player.setPlayerSlotInCurrentRoom(targetSlot);
+				} catch (IllegalArgumentException e) {
 					player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
-				} else {
-					if (targetSlot == 0) {
-						player.setPlayerSlotInCurrentRoom(__roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
-					} else {
-						try {
-							__roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
-							player.setPlayerSlotInCurrentRoom(targetSlot);
-						} catch (IllegalArgumentException e) {
-							player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
-							throw new PlayerJoinRoomException(
-									String.format("Unable to set the target slot: %d for player: %s", targetSlot,
-											player.getName()),
-									CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
-						}
-
-					}
+					throw new PlayerJoinRoomException(String.format("Unable to set the target slot: %d for player: %s",
+							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
 				}
 
 			}
@@ -323,36 +347,89 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public void addPlayer(Player player, boolean asSpectator) throws RuntimeException {
+	public void addPlayer(Player player, boolean asSpectator) {
 		addPlayer(player, asSpectator, RoomImpl.DEFAULT_SLOT);
 	}
 
 	@Override
-	public void addPlayer(Player player) throws RuntimeException {
+	public void addPlayer(Player player) {
 		addPlayer(player, false);
 	}
 
 	@Override
 	public void removePlayer(Player player) {
-		__playerCount = getPlayersList().size();
-		__spectatorCount = getSpectatorsList().size();
+		__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
+		__playerManager.removePlayer(player);
+		player.setCurrentRoom(null);
+		__updateElementsCounter();
 	}
 
 	@Override
-	public void switchPlayerToSpectator(Player player) throws RuntimeException {
-		__playerCount = getPlayersList().size();
-		__spectatorCount = getSpectatorsList().size();
+	public void switchPlayerToSpectator(Player player) {
+		if (!__playerManager.containsPlayer(player)) {
+			throw new PlayerJoinRoomException(String.format("Player %s was not in room", player.getName()),
+					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
+		}
+
+		__switchPlayerLock.lock();
+		try {
+			if (getSpectatorCount() >= getMaxSpectators()) {
+				throw new PlayerJoinRoomException("All spectator slots were already taken",
+						CoreMessageCode.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
+			}
+
+			__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
+			player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
+			player.setSpectator(true);
+
+			__updateElementsCounter();
+		} finally {
+			__switchPlayerLock.unlock();
+		}
+
 	}
 
 	@Override
-	public void switchSpectatorToPlayer(Player player, int targetSlot) throws RuntimeException {
-		__playerCount = getPlayersList().size();
-		__spectatorCount = getSpectatorsList().size();
+	public void switchSpectatorToPlayer(Player player, int targetSlot) {
+		if (!__playerManager.containsPlayer(player)) {
+			throw new PlayerJoinRoomException(String.format("Player %s was not in room", player.getName()),
+					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
+		}
+
+		__switchPlayerLock.lock();
+		try {
+			if (getPlayerCount() >= getMaxPlayers()) {
+				throw new PlayerJoinRoomException("All player slots were already taken",
+						CoreMessageCode.SWITCH_NO_PLAYER_SLOTS_AVAILABLE);
+			}
+
+			if (targetSlot == RoomImpl.DEFAULT_SLOT) {
+				player.setPlayerSlotInCurrentRoom(__roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
+				player.setSpectator(false);
+			} else {
+				try {
+					__roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
+					player.setPlayerSlotInCurrentRoom(targetSlot);
+					player.setSpectator(false);
+				} catch (IllegalArgumentException e) {
+					throw new PlayerJoinRoomException(String.format("Unable to set the target slot: %d for player: %s",
+							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
+				}
+			}
+		} finally {
+			__switchPlayerLock.unlock();
+		}
+
 	}
 
 	@Override
-	public void switchSpectatorToPlayer(Player player) throws RuntimeException {
+	public void switchSpectatorToPlayer(Player player) {
 		switchSpectatorToPlayer(player, RoomImpl.DEFAULT_SLOT);
+	}
+
+	private void __updateElementsCounter() {
+		__playerCount = getPlayersList().size();
+		__spectatorCount = getSpectatorsList().size();
 	}
 
 	@Override

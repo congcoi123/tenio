@@ -7,6 +7,7 @@ import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.exceptions.PlayerJoinRoomException;
+import com.tenio.core.exceptions.SwitchPlayerInRoomException;
 import com.tenio.core.network.entities.session.Session;
 
 public interface Room {
@@ -66,9 +67,9 @@ public interface Room {
 	List<Player> getPlayersList();
 
 	List<Player> getSpectatorsList();
-	
+
 	int getPlayerCount();
-	
+
 	int getSpectatorCount();
 
 	boolean containsPlayerName(String playerName);
@@ -93,11 +94,11 @@ public interface Room {
 
 	void removePlayer(Player player);
 
-	void switchPlayerToSpectator(Player player) throws RuntimeException;
+	void switchPlayerToSpectator(Player player) throws SwitchPlayerInRoomException;
 
-	void switchSpectatorToPlayer(Player player, int targetSlot) throws RuntimeException;
+	void switchSpectatorToPlayer(Player player, int targetSlot) throws SwitchPlayerInRoomException;
 
-	void switchSpectatorToPlayer(Player player) throws RuntimeException;
+	void switchSpectatorToPlayer(Player player) throws SwitchPlayerInRoomException;
 
 	boolean isEmpty();
 

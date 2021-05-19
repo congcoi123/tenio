@@ -30,18 +30,18 @@ import com.tenio.core.exceptions.RefusedAddressException;
  */
 public interface ConnectionFilter {
 
-    void addBannedAddress(String var1);
+	void addBannedAddress(String addressIp);
 
-    void removeBannedAddress(String var1);
+	void removeBannedAddress(String addressIp);
 
-    String[] getBannedAddresses();
+	String[] getBannedAddresses();
 
-    void validateAndAddAddress(String var1) throws RefusedAddressException;
+	void validateAndAddAddress(String addressIp) throws RefusedAddressException;
 
-    void removeAddress(String var1);
+	void removeAddress(String addressIp);
 
-    int getMaxConnectionsPerIp();
+	int getMaxConnectionsPerIp();
 
-    void setMaxConnectionsPerIp(int var1);
+	void setMaxConnectionsPerIp(int maxConnections);
 
 }

@@ -21,38 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines;
+package com.tenio.core.exceptions;
 
-import com.tenio.core.network.entities.session.SessionManager;
-import com.tenio.core.network.zero.handlers.DatagramIOHandler;
-import com.tenio.core.network.zero.handlers.SocketIOHandler;
-import com.tenio.core.service.Service;
-import com.tenio.core.service.ServiceListener;
+import com.tenio.core.configuration.defines.CoreMessageCode;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface ZeroEngine extends Service, ServiceListener {
+public final class SwitchPlayerInRoomException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3510870298364316819L;
+	
+	private final CoreMessageCode __coreMessageCode;
 
-	void setSocketIOHandler(SocketIOHandler socketIOHandler);
+	public SwitchPlayerInRoomException(String message, CoreMessageCode coreMessageCode) {
+		super(message);
+		__coreMessageCode = coreMessageCode;
+	}
 
-	SocketIOHandler getSocketIOHandler();
-
-	void setDatagramIOHandler(DatagramIOHandler datagramIOHandler);
-
-	DatagramIOHandler getDatagramIOHandler();
-
-	void setSessionManager(SessionManager sessionManager);
-
-	SessionManager getSessionManager();
-
-	int getThreadPoolSize();
-
-	void setThreadPoolSize(int maxSize);
-
-	int getMaxBufferSize();
-
-	void setMaxBufferSize(int maxSize);
+	public CoreMessageCode getMessageCode() {
+		return __coreMessageCode;
+	}
 
 }

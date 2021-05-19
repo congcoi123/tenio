@@ -90,8 +90,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		if (__processPost != null) {
 			__processPost.handle(request, response);
 		} else {
@@ -109,8 +108,7 @@ public final class ServletManager extends BaseServlet {
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		if (__processDelete != null) {
 			__processDelete.handle(request, response);
 		} else {
@@ -122,10 +120,11 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request,
-					response);
+			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST,
+					request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
+				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request,
+						response);
 			}
 		}
 
@@ -135,10 +134,11 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request,
-					response);
+			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT,
+					request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
+				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request,
+						response);
 			}
 		}
 
@@ -148,10 +148,11 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request,
-					response);
+			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET,
+					request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
+				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request,
+						response);
 			}
 		}
 
@@ -161,21 +162,24 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request,
-					response);
+			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE,
+					request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
+				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request,
+						response);
 			}
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void __sendUnsupportedMethod(HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		try {
 			var json = new JSONObject();
-			json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "405 Method Not Allowed"));
+			CommonObject.newInstance().add("status", "failed").add("message", "405 Method Not Allowed")
+					.forEach((key, value) -> {
+						json.put(key, value);
+					});
 			response.getWriter().println(json.toString());
 		} catch (IOException e) {
 			e.printStackTrace();

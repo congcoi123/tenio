@@ -23,16 +23,21 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.websocket;
 
+import java.io.ByteArrayInputStream;
+
+import javax.net.ssl.SSLEngine;
+
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.pool.ElementsPool;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
+import com.tenio.core.network.netty.websocket.ssl.WebSocketSslContext;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.ssl.SslHandler;
 
 /**
  * This class for initializing a channel.
@@ -48,6 +53,8 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
 	private final Configuration __configuration;
 	private final int __connectionIndex;
+	private boolean isSSL = true;
+	private WebSocketSslContext sslContext;
 
 	public NettyWSInitializer(int connectionIndex, EventManager eventManager,
 			ElementsPool<CommonObject> commonObjectPool,
@@ -65,9 +72,12 @@ public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> 
 	protected void initChannel(SocketChannel channel) throws Exception {
 		var pipeline = channel.pipeline();
 
-		// traffic counter
-		pipeline.addLast("traffic-counter", __trafficCounter);
-
+        if (isSSL) {
+            SSLEngine engine = sslContext.getServerContext().createSSLEngine();
+            engine.setUseClientMode(false);
+            pipeline.addLast("ssl", new SslHandler(engine));
+       }
+        
 		// add http-codec for TCP hand shaker
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());
 

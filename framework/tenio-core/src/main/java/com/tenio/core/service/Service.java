@@ -1,16 +1,18 @@
 package com.tenio.core.service;
 
+import com.tenio.core.exceptions.ServiceRuntimeException;
+
 public interface Service {
 
-	void initialize() throws Exception;
+	void initialize() throws ServiceRuntimeException;
 
-	void start() throws Exception;
+	void start() throws ServiceRuntimeException;
 
 	void resume();
 
 	void pause();
 
-	void stop() throws Exception;
+	void halt() throws ServiceRuntimeException;
 
 	void destroy();
 

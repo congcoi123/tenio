@@ -27,16 +27,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.common.loggers.AbstractLogger;
-import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
@@ -52,11 +50,12 @@ import com.tenio.core.service.Service;
  * @author kong
  *
  */
-public final class JettyHttpService extends AbstractLogger implements Service {
+public final class JettyHttpService extends AbstractLogger implements Service, Runnable {
 
 	private Server __server;
 	private final EventManager __eventManager;
-	private final String __name;
+	private ExecutorService __executor;
+	private String __name;
 	private final int __port;
 	private final List<PathConfig> __pathConfigs;
 
@@ -111,22 +110,78 @@ public final class JettyHttpService extends AbstractLogger implements Service {
 	}
 
 	@Override
-	public ScheduledFuture<?> run() {
-		return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-			try {
-				info("HTTP SERVICE", buildgen("Name: ", __name, " > Start at port: ", __port));
+	public void run() {
+		try {
+			info("HTTP SERVICE", buildgen("Name: ", __name, " > Start at port: ", __port));
 
-				__server.start();
-				__server.join();
-			} catch (Exception e) {
-				error(e);
-			}
-		}, 0, TimeUnit.SECONDS);
+			__server.start();
+			__server.join();
+		} catch (Exception e) {
+			error(e);
+		}
 	}
 
 	private boolean __isUriHasDuplicatedMethod(RestMethod method, List<PathConfig> pathConfigs) {
 		return pathConfigs.stream().filter(pathConfig -> pathConfig.getMethod().equals(method)).count() > 1 ? true
 				: false;
+	}
+
+	@Override
+	public void initialize() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void start() {
+		__executor = Executors.newSingleThreadExecutor();
+		__executor.execute(this);
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				if (__executor != null && !__executor.isShutdown()) {
+					try {
+						halt();
+					} catch (Exception e) {
+						error(e);
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void resume() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void pause() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void halt() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void destroy() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isActivated() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getName() {
+		return __name;
+	}
+
+	@Override
+	public void setName(String name) {
+		__name = name;
 	}
 
 }

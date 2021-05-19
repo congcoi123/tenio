@@ -36,13 +36,13 @@ import io.netty.channel.Channel;
 // TODO: Add description
 public interface SessionManager {
 
-	Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey) throws Exception;
+	Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey);
 
 	void removeSessionBySocket(SocketChannel socketChannel);
 
 	Session getSessionBySocket(SocketChannel socketChannel);
 
-	Session createWebSocketSession(Channel webSocketChannel) throws Exception;
+	Session createWebSocketSession(Channel webSocketChannel);
 
 	void removeSessionByWebSocket(Channel webSocketChannel);
 

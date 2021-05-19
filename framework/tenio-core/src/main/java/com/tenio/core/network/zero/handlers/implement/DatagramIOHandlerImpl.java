@@ -25,6 +25,7 @@ package com.tenio.core.network.zero.handlers.implement;
 
 import java.nio.channels.DatagramChannel;
 
+import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 
 /**
@@ -33,13 +34,35 @@ import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 // TODO: Add description
 public final class DatagramIOHandlerImpl extends BaseZeroHandler implements DatagramIOHandler {
 
+	public static DatagramIOHandler newInstance() {
+		return new DatagramIOHandlerImpl();
+	}
+
+	private DatagramIOHandlerImpl() {
+
+	}
+
 	@Override
 	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void channelRead(Session session, byte[] binary) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void channelException(DatagramChannel datagramChannel, Exception exception) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void channelException(Session session, Exception exception) {
+		// TODO Auto-generated method stub
 
 	}
 

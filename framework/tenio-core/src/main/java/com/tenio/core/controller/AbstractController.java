@@ -84,7 +84,7 @@ public abstract class AbstractController extends SystemLogger implements Control
 
 	private void __stop() throws Exception {
 		pause();
-		onStopped();
+		onHalted();
 		__executor.shutdown();
 		while (true) {
 			try {
@@ -152,7 +152,7 @@ public abstract class AbstractController extends SystemLogger implements Control
 	}
 
 	@Override
-	public void stop() throws Exception {
+	public void halt() throws Exception {
 		__stop();
 	}
 

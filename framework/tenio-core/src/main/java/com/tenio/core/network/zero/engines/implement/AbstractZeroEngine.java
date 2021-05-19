@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.utilities.StringUtility;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.zero.engines.ZeroEngine;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
@@ -82,9 +83,9 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 		});
 	}
 
-	private void __stop() throws Exception {
+	private void __stop() throws ServiceRuntimeException {
 		pause();
-		onStopped();
+		onHalted();
 		__executor.shutdown();
 		while (true) {
 			try {
@@ -169,13 +170,13 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	}
 
 	@Override
-	public void initialize() throws Exception {
+	public void initialize() {
 		__initializeWorkers();
 		onInitialized();
 	}
 
 	@Override
-	public void start() throws Exception {
+	public void start() {
 		__activated = true;
 		onStarted();
 	}
@@ -193,7 +194,7 @@ public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEng
 	}
 
 	@Override
-	public void stop() throws Exception {
+	public void halt() {
 		__stop();
 	}
 

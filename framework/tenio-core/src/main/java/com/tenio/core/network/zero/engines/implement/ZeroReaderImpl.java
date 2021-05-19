@@ -56,7 +56,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	private NetworkReaderStatistic __networkReaderStatistic;
 	private ByteBuffer __readerBuffer;
 
-	public ZeroReaderImpl() {
+	public static ZeroReader newInstance() {
+		return new ZeroReaderImpl();
+	}
+	
+	private ZeroReaderImpl() {
 		super();
 		setName("reader");
 	}
@@ -240,7 +244,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	@Override
-	public void setZeroWriter(ZeroWriterListener zeroWriterListener) {
+	public void setZeroWriterListener(ZeroWriterListener zeroWriterListener) {
 		__zeroWriterListener = zeroWriterListener;
 	}
 
@@ -260,13 +264,17 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	@Override
-	public void onInitialized() throws Exception {
-		__initializeSelector();
-		__initializeBuffer();
+	public void onInitialized() {
+		try {
+			__initializeSelector();
+			__initializeBuffer();
+		} catch (IOException e) {
+			error(e);
+		}
 	}
 
 	@Override
-	public void onStarted() throws Exception {
+	public void onStarted() {
 		// do nothing
 	}
 
@@ -286,7 +294,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	@Override
-	public void onStopped() throws Exception {
+	public void onHalted() {
 		try {
 			Thread.sleep(500L);
 			__readableSelector.close();

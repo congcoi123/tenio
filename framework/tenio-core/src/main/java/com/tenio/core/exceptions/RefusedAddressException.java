@@ -26,7 +26,7 @@ package com.tenio.core.exceptions;
 /**
  * @author kong
  */
-public final class RefusedAddressException extends Exception {
+public final class RefusedAddressException extends RuntimeException {
 	/**
 	 * 
 	 */

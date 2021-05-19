@@ -38,6 +38,14 @@ import com.tenio.core.network.zero.handlers.SocketIOHandler;
 // TODO: Add description
 public final class SocketIOHandlerImpl extends BaseZeroHandler implements SocketIOHandler, PacketDecoderResultListener {
 
+	public static SocketIOHandler newInstance() {
+		return new SocketIOHandlerImpl();
+	}
+
+	private SocketIOHandlerImpl() {
+
+	}
+
 	private PacketDecoder __packetDecoder;
 
 	@Override
@@ -65,7 +73,8 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 	public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
 		try {
 			Session session = getSessionManager().createSocketSession(socketChannel, selectionKey);
-			getInternalEventManager().emit(InternalEvent.NEW_SESSION_WAS_CREATED, session);
+			// getInternalEventManager().emit(InternalEvent.NEW_SESSION_WAS_CREATED,
+			// session);
 		} catch (Exception e) {
 			error(e);
 		}
@@ -78,9 +87,9 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 
 	@Override
 	public void channelInactive(SocketChannel socketChannel) {
-		var connection = __getConnection(ctx.channel(), null);
-		__eventManager.getInternal().emit(InternalEvent.SESSION_WAS_CLOSED, connection);
-		connection = null;
+//		var connection = __getConnection(ctx.channel(), null);
+//		__eventManager.getInternal().emit(InternalEvent.SESSION_WAS_CLOSED, connection);
+//		connection = null;
 	}
 
 	@Override
@@ -92,6 +101,18 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 	public void setPacketDecoder(PacketDecoder packetDecoder) {
 		__packetDecoder = packetDecoder;
 		__packetDecoder.setResultListener(this);
+	}
+
+	@Override
+	public void channelRead(SocketChannel socketChannel, byte[] binary) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void channelException(Session session, Exception exception) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -60,7 +60,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	private String __serverAddress;
 	private List<SocketConfig> __socketConfigs;
 
-	public ZeroAcceptorImpl() {
+	public static ZeroAcceptor newInstance() {
+		return new ZeroAcceptorImpl();
+	}
+
+	private ZeroAcceptorImpl() {
 		super();
 		__acceptableSockets = new ArrayList<SocketChannel>();
 		__boundSockets = new ArrayList<SelectableChannel>();
@@ -311,8 +315,12 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	}
 
 	@Override
-	public void onInitialized() throws IOException {
-		__initializeSockets();
+	public void onInitialized() {
+		try {
+			__initializeSockets();
+		} catch (IOException e) {
+			error(e);
+		}
 	}
 
 	@Override
@@ -331,7 +339,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 			__acceptableLoop();
 		} catch (IOException e) {
 			try {
-				stop();
+				halt();
 			} catch (Exception e1) {
 				error(e1);
 			}
@@ -345,7 +353,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	}
 
 	@Override
-	public void onStopped() {
+	public void onHalted() {
 		__shutdownBoundSockets();
 		__shutdownAcceptedSockets();
 		__shutdownSelector();

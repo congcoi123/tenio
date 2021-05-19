@@ -37,6 +37,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.msgpack.ByteArrayInputStream;
 import com.tenio.common.msgpack.MsgPackConverter;
 import com.tenio.common.pool.ElementsPool;
@@ -46,6 +47,7 @@ import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.data.BroadcastConfig;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.events.EventManager;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.Network;
 import com.tenio.core.network.defines.data.SocketConfig;
@@ -85,130 +87,34 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  */
 @ThreadSafe
-public final class NettyWebSocketService extends AbstractLogger implements Network, Service {
+public final class NettyWebSocketService extends SystemLogger implements Service {
 
-	private static final String PREFIX_SOCKET = "socket";
-	private static final String PREFIX_DATAGRAM = "datagram";
 	private static final String PREFIX_WEBSOCKET = "websocket";
-	private static final String PREFIX_BROADCAST = "broadcast";
 
-	@GuardedBy("this")
-	private EventLoopGroup __socketAcceptors;
-	@GuardedBy("this")
-	private EventLoopGroup __socketWorkers;
-	@GuardedBy("this")
-	private EventLoopGroup __datagramWorkers;
-	@GuardedBy("this")
-	private EventLoopGroup __broadcastWorkers;
 	@GuardedBy("this")
 	private EventLoopGroup __websocketAcceptors;
 	@GuardedBy("this")
 	private EventLoopGroup __websocketWorkers;
 
-	private GlobalTrafficShapingHandlerCustomize __traficCounterSockets;
-	private GlobalTrafficShapingHandlerCustomize __traficCounterDatagrams;
-	private GlobalTrafficShapingHandlerCustomize __traficCounterWebsockets;
-	private GlobalTrafficShapingHandlerCustomize __traficCounterBroadcast;
-
-	@GuardedBy("this")
-	private List<Channel> __serverSockets;
 	@GuardedBy("this")
 	private List<Channel> __serverWebsockets;
-	@GuardedBy("this")
-	private Channel __broadcastChannel;
-	@GuardedBy("this")
-	private Map<String, InetSocketAddress> __broadcastInets;
-
-	private boolean __broadcastActive;
-
-	private final OSType __osType;
-
+	
 	public NettyWebSocketService() {
-		__broadcastActive = false;
-		__osType = OsUtility.getOperatingSystemType();
+		
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
 	public void start(EventManager eventManager, Configuration configuration,
 			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool)
 			throws IOException, InterruptedException, BindException {
 
-		var defaultSocketThreadFactory = new DefaultThreadFactory(PREFIX_SOCKET, true, Thread.NORM_PRIORITY);
-		var defaultDatagramThreadFactory = new DefaultThreadFactory(PREFIX_DATAGRAM, true, Thread.NORM_PRIORITY);
-		var defaultBroadcastThreadFactory = new DefaultThreadFactory(PREFIX_BROADCAST, true, Thread.NORM_PRIORITY);
 		var defaultWebsocketThreadFactory = new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
-
-		__socketAcceptors = new NioEventLoopGroup(
-				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR), defaultSocketThreadFactory);
-		__socketWorkers = new NioEventLoopGroup(configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER),
-				defaultSocketThreadFactory);
-
-		__broadcastWorkers = new NioEventLoopGroup(1, defaultBroadcastThreadFactory);
 
 		__websocketAcceptors = new NioEventLoopGroup(
 				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR),
 				defaultWebsocketThreadFactory);
 		__websocketWorkers = new NioEventLoopGroup(
 				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER), defaultWebsocketThreadFactory);
-
-		switch (__osType) {
-		case MacOS:
-			__datagramWorkers = new KQueueEventLoopGroup(
-					configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER),
-					defaultDatagramThreadFactory);
-			break;
-
-		case Linux:
-			__datagramWorkers = new EpollEventLoopGroup(
-					configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER),
-					defaultDatagramThreadFactory);
-			break;
-
-		case Windows:
-			__datagramWorkers = new NioEventLoopGroup(1, defaultDatagramThreadFactory);
-			break;
-
-		default:
-			__datagramWorkers = new NioEventLoopGroup(1, defaultDatagramThreadFactory);
-			break;
-		}
-
-		__traficCounterSockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_SOCKET, eventManager, __socketWorkers,
-				CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
-				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterDatagrams = new GlobalTrafficShapingHandlerCustomize(PREFIX_DATAGRAM, eventManager,
-				__datagramWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
-				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterWebsockets = new GlobalTrafficShapingHandlerCustomize(PREFIX_WEBSOCKET, eventManager,
-				__websocketWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
-				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-		__traficCounterBroadcast = new GlobalTrafficShapingHandlerCustomize(PREFIX_BROADCAST, eventManager,
-				__broadcastWorkers, CoreConstant.TRAFFIC_COUNTER_WRITE_LIMIT, CoreConstant.TRAFFIC_COUNTER_READ_LIMIT,
-				configuration.getInt(CoreConfigurationType.TRAFFIC_COUNTER_CHECK_INTERVAL) * 1000);
-
-		__serverSockets = new ArrayList<Channel>();
 		__serverWebsockets = new ArrayList<Channel>();
-
-		var socketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.SOCKET_PORTS);
-		for (int connectionIndex = 0; connectionIndex < socketPorts.size(); connectionIndex++) {
-			var socketConfig = socketPorts.get(connectionIndex);
-			switch (socketConfig.getType()) {
-			case TCP:
-				__bindTCP(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool,
-						socketConfig);
-				break;
-			case UDP:
-				__bindUDP(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool,
-						socketConfig);
-				break;
-			default:
-				break;
-			}
-		}
-
-		var broadcastPorts = (List<BroadcastConfig>) configuration.get(CoreConfigurationType.BROADCAST_PORTS);
-		__bindBroadcast(configuration, broadcastPorts);
 
 		var webSocketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
 		for (int connectionIndex = 0; connectionIndex < webSocketPorts.size(); connectionIndex++) {
@@ -223,205 +129,7 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 		}
 
 	}
-
-	/**
-	 * Constructs a Datagram socket for broadcasting and binds it to the specified
-	 * port on the local host machine.
-	 * 
-	 * @param configuration  your own configuration, see {@link Configuration}
-	 * @param broadcastPorts the list of broadcast ports
-	 * @throws InterruptedException
-	 */
-	private void __bindBroadcast(Configuration configuration, List<BroadcastConfig> broadcastPorts)
-			throws InterruptedException {
-		if (broadcastPorts == null || broadcastPorts.isEmpty()) {
-			return;
-		}
-
-		var bootstrap = new Bootstrap();
-		bootstrap.group(__broadcastWorkers).channel(NioDatagramChannel.class).option(ChannelOption.SO_REUSEADDR, true)
-				.option(ChannelOption.SO_RCVBUF, CoreConstant.BROADCAST_RECEIVE_BUFFER)
-				.option(ChannelOption.SO_BROADCAST, true)
-				.option(ChannelOption.SO_SNDBUF, CoreConstant.BROADCAST_SEND_BUFFER)
-				.handler(new NettyBroadcastInitializer(__traficCounterBroadcast));
-
-		var channelFuture = bootstrap.bind(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)).sync()
-				.addListener(new GenericFutureListener<Future<? super Void>>() {
-
-					@Override
-					public void operationComplete(Future<? super Void> future) throws Exception {
-						if (future.isSuccess()) {
-
-						} else {
-							error(future.cause());
-							throw new IOException(
-									String.valueOf(configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
-						}
-					}
-				});
-		__broadcastChannel = channelFuture.channel();
-
-		info("BROADCAST",
-				buildgen("Server port: ", configuration.getInt(CoreConfigurationType.SERVER_BROADCAST_PORT)));
-
-		__broadcastInets = new HashMap<String, InetSocketAddress>();
-		broadcastPorts.forEach(broadcastConfig -> {
-			__broadcastInets.put(broadcastConfig.getId(),
-					new InetSocketAddress(CoreConstant.BROADCAST_ADDRESS, broadcastConfig.getPort()));
-
-			info("BROADCAST", buildgen("Name: ", broadcastConfig.getName(), " > Id: ", broadcastConfig.getId(),
-					" > Started at port: ", broadcastConfig.getPort()));
-		});
-
-		__broadcastActive = true;
-	}
-
-	/**
-	 * Constructs a Datagram socket and binds it to the specified port on the local
-	 * host machine.
-	 * 
-	 * @param connectionIndex    the order of socket
-	 * @param eventManager       the system event management
-	 * @param configuration      your own configuration, see {@link Configuration}
-	 * @param commonObjectPool   the pool of message objects
-	 * @param byteArrayInputPool the pool of byte array input stream objects
-	 * @param socketConfig       the socket information
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	private void __bindUDP(int connectionIndex, EventManager eventManager, Configuration configuration,
-			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			SocketConfig socketConfig) throws IOException, InterruptedException {
-
-		var bootstrap = new Bootstrap();
-		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.DATAGRAM_THREADS_POOL_WORKER);
-
-		switch (__osType) {
-		case MacOS:
-			bootstrap.group(__datagramWorkers).channel(KQueueDatagramChannel.class)
-					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
-					.option(KQueueChannelOption.SO_REUSEPORT, true)
-					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounterDatagrams, configuration));
-			break;
-
-		case Linux:
-			bootstrap.group(__datagramWorkers).channel(EpollDatagramChannel.class)
-					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
-					.option(EpollChannelOption.SO_REUSEPORT, true)
-					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounterDatagrams, configuration));
-			break;
-
-		case Windows:
-			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
-					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_REUSEADDR, true)
-					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
-					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounterDatagrams, configuration));
-			break;
-
-		default:
-			bootstrap.group(__datagramWorkers).channel(NioDatagramChannel.class)
-					.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-					.option(ChannelOption.SO_REUSEADDR, true)
-					.option(ChannelOption.SO_RCVBUF, CoreConstant.DATAGRAM_RECEIVE_BUFFER)
-					.option(ChannelOption.SO_SNDBUF, CoreConstant.DATAGRAM_SEND_BUFFER)
-					.handler(new NettyDatagramInitializer(connectionIndex, eventManager, commonObjectPool,
-							byteArrayInputPool, __traficCounterDatagrams, configuration));
-			break;
-		}
-
-		if (__osType == OSType.MacOS || __osType == OSType.Linux) {
-			for (int i = 0; i < threadsPoolWorker; i++) {
-				var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
-						.addListener(new GenericFutureListener<Future<? super Void>>() {
-
-							@Override
-							public void operationComplete(Future<? super Void> future) throws Exception {
-								if (future.isSuccess()) {
-
-								} else {
-									error(future.cause());
-									throw new IOException(String.valueOf(socketConfig.getPort()));
-								}
-							}
-						});
-				__serverSockets.add(channelFuture.channel());
-			}
-		} else {
-			var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
-					.addListener(new GenericFutureListener<Future<? super Void>>() {
-
-						@Override
-						public void operationComplete(Future<? super Void> future) throws Exception {
-							if (future.isSuccess()) {
-
-							} else {
-								error(future.cause());
-								throw new IOException(String.valueOf(socketConfig.getPort()));
-							}
-						}
-					});
-			__serverSockets.add(channelFuture.channel());
-		}
-
-		info("DATAGRAM", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
-	}
-
-	/**
-	 * Constructs a socket and binds it to the specified port on the local host
-	 * machine.
-	 * 
-	 * @param connectionIndex    the order of socket
-	 * @param eventManager       the system event management
-	 * @param configuration      your own configuration, see {@link Configuration}
-	 * @param commonObjectPool   the pool of message objects
-	 * @param byteArrayInputPool the pool of byte array input stream objects
-	 * @param socketConfig       the socket information
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	private void __bindTCP(int connectionIndex, EventManager eventManager, Configuration configuration,
-			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			SocketConfig socketConfig) throws IOException, InterruptedException {
-
-		var bootstrap = new ServerBootstrap();
-		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER);
-
-		bootstrap.group(__socketAcceptors, __socketWorkers).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.TCP_NODELAY, true)
-				.childOption(ChannelOption.SO_SNDBUF, CoreConstant.SOCKET_SEND_BUFFER)
-				.childOption(ChannelOption.SO_RCVBUF, CoreConstant.SOCKET_RECEIVE_BUFFER)
-				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettySocketInitializer(connectionIndex,
-						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterSockets, configuration));
-
-		var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
-				.addListener(new GenericFutureListener<Future<? super Void>>() {
-
-					@Override
-					public void operationComplete(Future<? super Void> future) throws Exception {
-						if (future.isSuccess()) {
-
-						} else {
-							error(future.cause());
-							throw new IOException(String.valueOf(socketConfig.getPort()));
-						}
-					}
-				});
-		__serverSockets.add(channelFuture.channel());
-
-		info("SOCKET", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
-	}
-
+	
 	/**
 	 * Constructs a web socket and binds it to the specified port on the local host
 	 * machine.
@@ -469,27 +177,9 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
 	}
 
-	@Override
 	public synchronized void shutdown() {
-		for (var socket : __serverSockets) {
-			__close(socket);
-		}
 		for (var socket : __serverWebsockets) {
 			__close(socket);
-		}
-		__close(__broadcastChannel);
-
-		if (__socketAcceptors != null) {
-			__socketAcceptors.shutdownGracefully();
-		}
-		if (__socketWorkers != null) {
-			__socketWorkers.shutdownGracefully();
-		}
-		if (__datagramWorkers != null) {
-			__datagramWorkers.shutdownGracefully();
-		}
-		if (__broadcastWorkers != null) {
-			__broadcastWorkers.shutdownGracefully();
 		}
 		if (__websocketAcceptors != null) {
 			__websocketAcceptors.shutdownGracefully();
@@ -502,19 +192,8 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 	}
 
 	private void __cleanup() {
-		__serverSockets.clear();
-		__serverSockets = null;
 		__serverWebsockets.clear();
 		__serverWebsockets = null;
-		if (__broadcastInets != null) {
-			__broadcastInets.clear();
-			__broadcastInets = null;
-		}
-
-		__traficCounterBroadcast = null;
-		__traficCounterDatagrams = null;
-		__traficCounterSockets = null;
-		__traficCounterWebsockets = null;
 	}
 
 	/**
@@ -548,14 +227,51 @@ public final class NettyWebSocketService extends AbstractLogger implements Netwo
 	}
 
 	@Override
-	public boolean isActivated() {
-		return __broadcastActive;
+	public void initialize() throws ServiceRuntimeException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void sendBroadcast(String broadcastId, CommonObject message) {
-		__broadcastChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(MsgPackConverter.serialize(message)),
-				__broadcastInets.get(broadcastId)));
+	public void start() throws ServiceRuntimeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void halt() throws ServiceRuntimeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

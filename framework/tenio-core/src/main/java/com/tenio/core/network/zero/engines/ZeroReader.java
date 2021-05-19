@@ -35,7 +35,7 @@ public interface ZeroReader extends ZeroEngine {
 
 	void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);
 
-	void setZeroWriter(ZeroWriterListener zeroWriterListener);
+	void setZeroWriterListener(ZeroWriterListener zeroWriterListener);
 
 	NetworkReaderStatistic getNetworkReaderStatistic();
 

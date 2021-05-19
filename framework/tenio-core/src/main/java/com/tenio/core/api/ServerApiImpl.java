@@ -2,12 +2,13 @@ package com.tenio.core.api;
 
 import com.tenio.common.data.ZeroObject;
 import com.tenio.core.entities.Player;
+import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.PlayerBanMode;
 import com.tenio.core.entities.defines.PlayerDisconnectedReason;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
-public class ServerApiImpl implements ServerApi {
+public final class ServerApiImpl implements ServerApi {
 
 	@Override
 	public void login(Player player, Session session) {
@@ -53,14 +54,13 @@ public class ServerApiImpl implements ServerApi {
 	}
 
 	@Override
-	public com.tenio.core.entities.Room createRoom(InitialRoomSetting setting, Player owner) throws RuntimeException {
+	public Room createRoom(InitialRoomSetting setting, Player owner) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public com.tenio.core.entities.Room createRoom(InitialRoomSetting setting, Player ownder,
-			com.tenio.core.entities.Room roomToLeave) throws RuntimeException {
+	public Room createRoom(InitialRoomSetting setting, Player ownder, Room roomToLeave) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -84,52 +84,44 @@ public class ServerApiImpl implements ServerApi {
 	}
 
 	@Override
-	public void joinRoom(Player player, com.tenio.core.entities.Room room, int slotInRoom) throws RuntimeException {
+	public void joinRoom(Player player, Room room, int slotInRoom) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void joinRoom(Player player, com.tenio.core.entities.Room room) throws RuntimeException {
+	public void joinRoom(Player player, Room room) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void joinRoom(Player player, com.tenio.core.entities.Room room, String roomPassword, boolean asSpectator,
-			com.tenio.core.entities.Room roomToLeave) throws RuntimeException {
+	public void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void joinRoom(Player player, com.tenio.core.entities.Room room, String roomPassword, boolean asSpectator,
-			com.tenio.core.entities.Room roomToLeave, int slotInRoom, boolean allowHolding) throws RuntimeException {
+	public void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave,
+			int slotInRoom) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void joinRoom(Player player, com.tenio.core.entities.Room room, String roomPassword, boolean asSpectator,
-			com.tenio.core.entities.Room roomToLeave, int slotInRoom) throws RuntimeException {
+	public void leaveRoom(Player player, Room room) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void leaveRoom(Player player, com.tenio.core.entities.Room room) {
+	public void removeRoom(Room room) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void removeRoom(com.tenio.core.entities.Room room) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sendPublicMessage(com.tenio.core.entities.Room room, Player sender, ZeroObject message) {
+	public void sendPublicMessage(Room room, Player sender, ZeroObject message) {
 		// TODO Auto-generated method stub
 
 	}

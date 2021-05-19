@@ -52,20 +52,20 @@ public final class PingServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		__process.handle(request, response);
 	}
 
 	private final class Process extends BaseProcessServlet {
 
-		@SuppressWarnings({ "unchecked" })
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			try {
 				var json = new JSONObject();
-				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "PING PONG"));
+				CommonObject.newInstance().add("status", "ok").add("message", "PING PONG").forEach((key, value) -> {
+					json.put(key, value);
+				});
 				response.getWriter().println(json.toString());
 			} catch (IOException e) {
 				error(e);

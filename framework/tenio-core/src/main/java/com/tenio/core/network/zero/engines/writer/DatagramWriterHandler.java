@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines.handler.writer;
+package com.tenio.core.network.zero.engines.writer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -36,84 +36,91 @@ import com.tenio.core.exceptions.RefusedAddressException;
 @ThreadSafe
 public final class DefaultConnectionFilter implements ConnectionFilter {
 
+	private static final int DEFAULT_MAX_CONNECTIONS_PER_IP = 10;
+
 	private final Set<String> __bannedAddresses;
-	private final Map addressMap = new HashMap<>();
-	private volatile int maxConnectionsPerIp = 10;
+	private final Map<String, AtomicInteger> __addressMap;
+	private volatile int __maxConnectionsPerIp;
 
 	public DefaultConnectionFilter() {
-		__bannedAddresses = new HashSet();
+		__bannedAddresses = new HashSet<String>();
+		__addressMap = new HashMap<String, AtomicInteger>();
+		__maxConnectionsPerIp = DEFAULT_MAX_CONNECTIONS_PER_IP;
 	}
 
-	public void addBannedAddress(String ipAddress) {
-		synchronized (this.__bannedAddresses) {
-			this.__bannedAddresses.add(ipAddress);
+	@Override
+	public void addBannedAddress(String addressIp) {
+		synchronized (__bannedAddresses) {
+			__bannedAddresses.add(addressIp);
 		}
 	}
 
+	@Override
+	public void removeBannedAddress(String addressIp) {
+		synchronized (__bannedAddresses) {
+			__bannedAddresses.remove(addressIp);
+		}
+	}
+
+	@Override
 	public String[] getBannedAddresses() {
-		String[] set = (String[]) null;
-		synchronized (this.__bannedAddresses) {
-			set = new String[this.__bannedAddresses.size()];
-			set = (String[]) ((String[]) this.__bannedAddresses.toArray(set));
+		String[] set = null;
+		synchronized (__bannedAddresses) {
+			set = new String[__bannedAddresses.size()];
+			set = __bannedAddresses.toArray(set);
 			return set;
 		}
 	}
 
-	public int getMaxConnectionsPerIp() {
-		return this.maxConnectionsPerIp;
+	@Override
+	public void validateAndAddAddress(String addressIp) {
+		if (__isAddressBanned(addressIp)) {
+			throw new RefusedAddressException(String.format("Ip Address: %s has banned", addressIp));
+		}
+
+		synchronized (__addressMap) {
+			AtomicInteger counter = __addressMap.get(addressIp);
+			if (counter != null && counter.intValue() >= __maxConnectionsPerIp) {
+				throw new RefusedAddressException(
+						String.format("Ip Address: %s has reached maximum allowed connections.", addressIp));
+			}
+
+			if (counter == null) {
+				counter = new AtomicInteger(1);
+				__addressMap.put(addressIp, counter);
+			} else {
+				counter.incrementAndGet();
+			}
+		}
 	}
 
-	public void removeAddress(String ipAddress) {
-		synchronized (this.addressMap) {
-			AtomicInteger count = (AtomicInteger) this.addressMap.get(ipAddress);
-			if (count != null) {
-				int value = count.decrementAndGet();
+	@Override
+	public void removeAddress(String addressIp) {
+		synchronized (__addressMap) {
+			AtomicInteger counter = __addressMap.get(addressIp);
+			if (counter != null) {
+				int value = counter.decrementAndGet();
 				if (value == 0) {
-					this.addressMap.remove(ipAddress);
+					__addressMap.remove(addressIp);
 				}
 			}
 
 		}
 	}
 
-	public void removeBannedAddress(String ipAddress) {
-		synchronized (this.__bannedAddresses) {
-			this.__bannedAddresses.remove(ipAddress);
-		}
+	@Override
+	public int getMaxConnectionsPerIp() {
+		return __maxConnectionsPerIp;
 	}
 
-	public void setMaxConnectionsPerIp(int max) {
-		this.maxConnectionsPerIp = max;
+	@Override
+	public void setMaxConnectionsPerIp(int maxConnections) {
+		__maxConnectionsPerIp = maxConnections;
 	}
 
-	public void validateAndAddAddress(String ipAddress) throws RefusedAddressException {
-
-		if (this.isAddressBanned(ipAddress)) {
-			throw new RefusedAddressException("Ip Address: " + ipAddress + " has banned.");
-		} else {
-			synchronized (this.addressMap) {
-				AtomicInteger count = (AtomicInteger) this.addressMap.get(ipAddress);
-				if (count != null && count.intValue() >= this.maxConnectionsPerIp) {
-					throw new RefusedAddressException(
-							"Ip Address: " + ipAddress + " has reached maximum allowed connections.");
-				} else {
-					if (count == null) {
-						count = new AtomicInteger(1);
-						this.addressMap.put(ipAddress, count);
-					} else {
-						count.incrementAndGet();
-					}
-
-				}
-			}
-		}
-	}
-
-	private boolean isAddressBanned(String ip) {
-		boolean isBanned = false;
-		synchronized (this.__bannedAddresses) {
-			isBanned = this.__bannedAddresses.contains(ip);
-			return isBanned;
+	private boolean __isAddressBanned(String addressIp) {
+		synchronized (__bannedAddresses) {
+			return __bannedAddresses.contains(addressIp);
 		}
 	}
 

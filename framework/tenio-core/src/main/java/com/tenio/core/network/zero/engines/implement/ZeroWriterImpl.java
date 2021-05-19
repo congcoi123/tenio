@@ -37,10 +37,10 @@ import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engines.ZeroWriter;
-import com.tenio.core.network.zero.engines.handler.writer.DatagramWriterHandler;
-import com.tenio.core.network.zero.engines.handler.writer.SocketWriterHandler;
-import com.tenio.core.network.zero.engines.handler.writer.WriterHandler;
 import com.tenio.core.network.zero.engines.listener.ZeroWriterListener;
+import com.tenio.core.network.zero.engines.writer.DatagramWriterHandler;
+import com.tenio.core.network.zero.engines.writer.SocketWriterHandler;
+import com.tenio.core.network.zero.engines.writer.WriterHandler;
 
 /**
  * @author kong
@@ -53,7 +53,11 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	private WriterHandler __datagramWriterHandler;
 	private NetworkWriterStatistic __networkWriterStatistic;
 
-	public ZeroWriterImpl() {
+	public static ZeroWriter newInstance() {
+		return new ZeroWriterImpl();
+	}
+
+	private ZeroWriterImpl() {
 		super();
 		__sessionTicketsQueue = new LinkedBlockingQueue<Session>();
 		setName("writer");
@@ -207,13 +211,13 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	}
 
 	@Override
-	public void onInitialized() throws Exception {
+	public void onInitialized() {
 		__initializeSocketWriterHandler();
 		__initializeDatagramWriterHandler();
 	}
 
 	@Override
-	public void onStarted() throws Exception {
+	public void onStarted() {
 		// do nothing
 	}
 
@@ -233,7 +237,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	}
 
 	@Override
-	public void onStopped() throws Exception {
+	public void onHalted() {
 		__sessionTicketsQueue.clear();
 	}
 

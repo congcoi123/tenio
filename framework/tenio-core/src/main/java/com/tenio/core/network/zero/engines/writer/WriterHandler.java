@@ -21,12 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines.handler.writer;
+package com.tenio.core.network.zero.engines.writer;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.loggers.SystemLogger;
+import com.tenio.core.network.entities.packet.Packet;
+import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
@@ -34,40 +35,20 @@ import com.tenio.core.network.statistics.NetworkWriterStatistic;
  * @author kong
  */
 // TODO: Add description
-public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {
+public interface WriterHandler {
 
-	private BlockingQueue<Session> __sessionTicketsQueue;
-	private NetworkWriterStatistic __networkWriterStatistic;
-	private ByteBuffer __buffer;
+	void send(PacketQueue packetQueue, Session session, Packet packet) throws Exception;
 
-	@Override
-	public BlockingQueue<Session> getSessionTicketsQueue() {
-		return __sessionTicketsQueue;
-	}
+	BlockingQueue<Session> getSessionTicketsQueue();
 
-	@Override
-	public void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue) {
-		__sessionTicketsQueue = sessionTicketsQueue;
-	}
+	void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue);
 
-	@Override
-	public NetworkWriterStatistic getNetworkWriterStatistic() {
-		return __networkWriterStatistic;
-	}
+	NetworkWriterStatistic getNetworkWriterStatistic();
 
-	@Override
-	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-		__networkWriterStatistic = networkWriterStatistic;
-	}
+	void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
-	@Override
-	public ByteBuffer getBuffer() {
-		return __buffer;
-	}
+	ByteBuffer getBuffer();
 
-	@Override
-	public void allocateBuffer(int capacity) {
-		__buffer = ByteBuffer.allocate(capacity);
-	}
+	void allocateBuffer(int capacity);
 
 }

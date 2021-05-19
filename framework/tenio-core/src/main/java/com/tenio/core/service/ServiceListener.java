@@ -1,10 +1,12 @@
 package com.tenio.core.service;
 
+import com.tenio.core.exceptions.ServiceRuntimeException;
+
 public interface ServiceListener {
 
-	void onInitialized() throws Exception;
+	void onInitialized() throws ServiceRuntimeException;
 
-	void onStarted() throws Exception;
+	void onStarted() throws ServiceRuntimeException;
 
 	void onResumed();
 
@@ -12,7 +14,7 @@ public interface ServiceListener {
 
 	void onPaused();
 
-	void onStopped() throws Exception;
+	void onHalted() throws ServiceRuntimeException;
 
 	void onDestroyed();
 
