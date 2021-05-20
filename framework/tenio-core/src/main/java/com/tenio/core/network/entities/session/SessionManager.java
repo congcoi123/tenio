@@ -28,34 +28,40 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import com.tenio.core.manager.Manager;
+
 import io.netty.channel.Channel;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface SessionManager {
+public interface SessionManager extends Manager {
 
 	Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey);
 
-	void removeSessionBySocket(SocketChannel socketChannel);
+	void removeSessionBySocket(SocketChannel socketChannel) throws NullPointerException;
 
 	Session getSessionBySocket(SocketChannel socketChannel);
 
 	Session createWebSocketSession(Channel webSocketChannel);
 
-	void removeSessionByWebSocket(Channel webSocketChannel);
+	void removeSessionByWebSocket(Channel webSocketChannel) throws NullPointerException;
 
 	Session getSessionByWebSocket(Channel webSocketChannel);
 
-	void addDatagramForSession(DatagramChannel datagramChannel, Session session);
+	void addDatagramForSession(DatagramChannel datagramChannel, Session session) throws IllegalArgumentException;
 
 	Session getSessionByDatagram(InetSocketAddress remoteAddress);
 
-	void removeSessionByDatagram(Session session) throws IllegalArgumentException;
+	/**
+	 * Remove session from its manager, this method should not be called. Call
+	 * instead the method {@link Session#close()} to completely eliminate the
+	 * session.
+	 * 
+	 * @param session the removing session
+	 */
+	void removeSession(Session session);
 
-	void removeSessionById(long id);
-
-	void removeSession(Session session) throws NullPointerException;
+	int getSessionCount();
 
 }

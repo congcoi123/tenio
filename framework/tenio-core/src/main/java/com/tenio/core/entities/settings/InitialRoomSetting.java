@@ -82,7 +82,7 @@ public final class InitialRoomSetting {
 		return __credentialValidatedStrategy;
 	}
 
-	public RoomPlayerSlotGeneratedStrategy getRoomPlayerIdGeneratedStrategy() {
+	public RoomPlayerSlotGeneratedStrategy getRoomPlayerSlotGeneratedStrategy() {
 		return __playerSlotGeneratedStrategy;
 	}
 

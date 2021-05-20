@@ -21,11 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.manager;
+package com.tenio.core.exceptions;
+
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.Room;
 
 /**
  * @author kong
  */
-public interface Manager {
+public final class AddedDuplicatedPlayerException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1303721781114060707L;
+
+	public AddedDuplicatedPlayerException(Player player, Room room) {
+		super(room == null ? String.format("Unable to add player: %s, it already exists", player.getName())
+				: String.format("Unable to add player: %s, it already exists in room: %s", player.getName(),
+						room.getName()));
+	}
 
 }

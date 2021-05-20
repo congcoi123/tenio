@@ -24,12 +24,12 @@ THE SOFTWARE.
 package com.tenio.core.entities.managers;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.exceptions.AddDuplicatedPlayerException;
-import com.tenio.core.exceptions.RemoveNonExistentPlayerException;
+import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
+import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -44,19 +44,19 @@ public interface PlayerManager {
 
 	Player getPlayerBySession(Session session);
 
-	Collection<Player> getAllPlayers();
+	List<Player> getAllPlayers();
 
-	Collection<Session> getAllSessions();
+	List<Session> getAllSessions();
 
-	void addPlayer(Player player) throws AddDuplicatedPlayerException;
+	void addPlayer(Player player) throws AddedDuplicatedPlayerException;
 
-	void removePlayer(Player player) throws RemoveNonExistentPlayerException;
+	void removePlayer(Player player) throws RemovedNonExistentPlayerException;
 
-	void removePlayerByName(String playerName) throws RemoveNonExistentPlayerException;
+	void removePlayerByName(String playerName) throws RemovedNonExistentPlayerException;
 
-	void removePlayerById(long playerId) throws RemoveNonExistentPlayerException;
+	void removePlayerById(long playerId) throws RemovedNonExistentPlayerException;
 
-	void removePlayerBySession(Session session) throws RemoveNonExistentPlayerException;
+	void removePlayerBySession(Session session) throws RemovedNonExistentPlayerException;
 
 	void disconnectPlayer(Player player) throws IllegalArgumentException, IOException;
 

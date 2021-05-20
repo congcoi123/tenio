@@ -38,7 +38,7 @@ import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.events.implement.EventManagerImpl;
-import com.tenio.core.exceptions.AddDuplicatedPlayerException;
+import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.model.PlayerModel;
 
 /**
@@ -60,7 +60,7 @@ public final class EventTest {
 		var player = new PlayerModel("kong");
 		try {
 			__playerManager.add(player);
-		} catch (AddDuplicatedPlayerException e) {
+		} catch (AddedDuplicatedPlayerException e) {
 			e.printStackTrace();
 		}
 

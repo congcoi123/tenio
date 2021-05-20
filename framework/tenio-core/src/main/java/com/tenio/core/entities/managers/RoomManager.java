@@ -5,11 +5,12 @@ import java.util.List;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.settings.InitialRoomSetting;
+import com.tenio.core.exceptions.AddedDuplicatedRoomException;
 import com.tenio.core.exceptions.CoreMessageCodeException;
 
 public interface RoomManager {
 
-	void addRoom(Room room);
+	void addRoom(Room room) throws AddedDuplicatedRoomException;
 
 	Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CoreMessageCodeException;
 
@@ -45,7 +46,7 @@ public interface RoomManager {
 	void changeRoomPassword(Room room, String roomPassword) throws IllegalArgumentException;
 
 	void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) throws IllegalArgumentException;
-	
+
 	int getRoomCount();
 
 }

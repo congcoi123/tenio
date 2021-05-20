@@ -33,8 +33,8 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.managers.PlayerManager;
-import com.tenio.core.exceptions.AddDuplicatedPlayerException;
-import com.tenio.core.exceptions.RemoveNonExistentPlayerException;
+import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
+import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -106,7 +106,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public void addPlayer(Player player) {
 		if (containsPlayer(player)) {
-			throw new AddDuplicatedPlayerException(player, __ownerRoom);
+			throw new AddedDuplicatedPlayerException(player, __ownerRoom);
 		}
 
 		synchronized (this) {
@@ -120,7 +120,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public void removePlayer(Player player) {
 		if (player == null) {
-			throw new RemoveNonExistentPlayerException(__ownerRoom);
+			throw new RemovedNonExistentPlayerException(__ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -139,7 +139,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerByName(String playerName) {
 		var player = getPlayerByName(playerName);
 		if (player == null) {
-			throw new RemoveNonExistentPlayerException(playerName, __ownerRoom);
+			throw new RemovedNonExistentPlayerException(playerName, __ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -149,7 +149,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerById(long playerId) {
 		var player = getPlayerById(playerId);
 		if (player == null) {
-			throw new RemoveNonExistentPlayerException(playerId, __ownerRoom);
+			throw new RemovedNonExistentPlayerException(playerId, __ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -159,7 +159,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerBySession(Session session) {
 		var player = getPlayerBySession(session);
 		if (player == null) {
-			throw new RemoveNonExistentPlayerException(session.toString(), __ownerRoom);
+			throw new RemovedNonExistentPlayerException(session.toString(), __ownerRoom);
 		}
 
 		__removePlayer(player);

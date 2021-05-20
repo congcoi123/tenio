@@ -28,22 +28,14 @@ import com.tenio.core.entities.Room;
 /**
  * @author kong
  */
-public final class RemoveNonExistentPlayerException extends RuntimeException {
+public final class AddedDuplicatedRoomException extends RuntimeException {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7604852583321561090L;
+	private static final long serialVersionUID = -5330961754908231570L;
 
-	public RemoveNonExistentPlayerException(Object playerIdentity, Room room) {
-		super(room == null
-				? String.format("Unable to remove player: %s, the player did not exist", playerIdentity.toString())
-				: String.format("Unable to remove player: %s, the player did not exist in room: %s",
-						String.valueOf(playerIdentity), room.getName()));
-	}
-
-	public RemoveNonExistentPlayerException(Room room) {
-		super(room == null ? "Unable to remove player, the player did not exist"
-				: String.format("Unable to remove player, the player did not exist in room: %s", room.getName()));
+	public AddedDuplicatedRoomException(Room room) {
+		super(String.format("Unable to add room: %s, it already exists", room.toString()));
 	}
 
 }

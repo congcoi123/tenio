@@ -32,6 +32,8 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
+import com.tenio.core.events.EventManager;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 
@@ -41,7 +43,7 @@ import io.netty.channel.Channel;
  * @author kong
  */
 // TODO: Add description
-public final class SessionManagerImpl implements SessionManager {
+public final class SessionManagerImpl extends AbstractManager implements SessionManager {
 
 	@GuardedBy("this")
 	private final Map<Long, Session> __sessionByIds;
@@ -52,11 +54,14 @@ public final class SessionManagerImpl implements SessionManager {
 	@GuardedBy("this")
 	private final Map<InetSocketAddress, Session> __sessionByDatagrams;
 
-	public static SessionManager newInstance() {
-		return new SessionManagerImpl();
+	private volatile int __sessionCount;
+
+	public static SessionManager newInstance(EventManager eventManager) {
+		return new SessionManagerImpl(eventManager);
 	}
 
-	private SessionManagerImpl() {
+	private SessionManagerImpl(EventManager eventManager) {
+		super(eventManager);
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
@@ -72,6 +77,7 @@ public final class SessionManagerImpl implements SessionManager {
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionBySockets.put(session.getSocketChannel(), session);
+			__sessionCount = __sessionByIds.size();
 		}
 		return session;
 	}
@@ -91,6 +97,10 @@ public final class SessionManagerImpl implements SessionManager {
 
 	@Override
 	public void addDatagramForSession(DatagramChannel datagramChannel, Session session) {
+		if (!session.isTcp()) {
+			throw new IllegalArgumentException(
+					String.format("Unable to add datagram channel for the non-TCP session: %s", session.toString()));
+		}
 		synchronized (__sessionByDatagrams) {
 			session.setDatagramChannel(datagramChannel);
 			__sessionByDatagrams.put(session.getDatagramInetSocketAddress(), session);
@@ -105,17 +115,6 @@ public final class SessionManagerImpl implements SessionManager {
 	}
 
 	@Override
-	public void removeSessionByDatagram(Session session) {
-		if (!session.containsUdp()) {
-			throw new IllegalArgumentException("Session does not contain UDP channel");
-		}
-		synchronized (__sessionByDatagrams) {
-			__sessionByDatagrams.remove(session.getDatagramInetSocketAddress());
-			session.setDatagramChannel(null);
-		}
-	}
-
-	@Override
 	public Session createWebSocketSession(Channel webSocketChannel) {
 		Session session = SessionImpl.newInstance();
 		session.setWebSocketChannel(webSocketChannel);
@@ -123,6 +122,7 @@ public final class SessionManagerImpl implements SessionManager {
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionByWebSockets.put(webSocketChannel, session);
+			__sessionCount = __sessionByIds.size();
 		}
 		return session;
 	}
@@ -141,19 +141,7 @@ public final class SessionManagerImpl implements SessionManager {
 	}
 
 	@Override
-	public void removeSessionById(long id) {
-		Session session = null;
-		synchronized (__sessionByIds) {
-			session = __sessionByIds.get(id);
-		}
-		removeSession(session);
-	}
-
-	@Override
 	public void removeSession(Session session) {
-		if (session == null) {
-			throw new NullPointerException("Session does not exist");
-		}
 		synchronized (this) {
 			switch (session.getTransportType()) {
 			case TCP:
@@ -172,7 +160,13 @@ public final class SessionManagerImpl implements SessionManager {
 				break;
 			}
 			__sessionByIds.remove(session.getId());
+			__sessionCount = __sessionByIds.size();
 		}
+	}
+
+	@Override
+	public int getSessionCount() {
+		return __sessionCount;
 	}
 
 }
