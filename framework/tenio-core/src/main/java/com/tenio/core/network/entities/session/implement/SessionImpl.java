@@ -181,8 +181,9 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setSocketChannel(SocketChannel socketChannel) {
 		if (__transportType != TransportType.UNKNOWN) {
-			throw new IllegalCallerException(String.format(
-					"Could not add another connection type, the current connection is: ", __transportType.toString()));
+			throw new IllegalCallerException(
+					String.format("Unable to add another connection type, the current connection is: %s",
+							__transportType.toString()));
 		}
 
 		if (socketChannel == null) {
@@ -267,8 +268,9 @@ public final class SessionImpl implements Session {
 	@Override
 	public void setWebSocketChannel(Channel webSocketChannel) {
 		if (__transportType != TransportType.UNKNOWN) {
-			throw new IllegalCallerException(String.format(
-					"Could not add another connection type, the current connection is: ", __transportType.toString()));
+			throw new IllegalCallerException(
+					String.format("Unable to add another connection type, the current connection is: %s",
+							__transportType.toString()));
 		}
 
 		if (webSocketChannel == null) {

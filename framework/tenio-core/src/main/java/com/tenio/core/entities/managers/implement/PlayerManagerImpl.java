@@ -32,19 +32,20 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.implement.PlayerImpl;
 import com.tenio.core.entities.managers.PlayerManager;
+import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public final class PlayerManagerImpl implements PlayerManager {
+public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
-	@GuardedBy("this")
-	private final Map<Long, Player> __playerByIds;
 	@GuardedBy("this")
 	private final Map<String, Player> __playerByNames;
 	@GuardedBy("this")
@@ -54,12 +55,13 @@ public final class PlayerManagerImpl implements PlayerManager {
 
 	private volatile int __playerCount;
 
-	public static PlayerManager newInstance() {
-		return new PlayerManagerImpl();
+	public static PlayerManager newInstance(EventManager eventManager) {
+		return new PlayerManagerImpl(eventManager);
 	}
 
-	private PlayerManagerImpl() {
-		__playerByIds = new HashMap<Long, Player>();
+	private PlayerManagerImpl(EventManager eventManager) {
+		super(eventManager);
+
 		__playerByNames = new HashMap<String, Player>();
 		__playerBySessions = new HashMap<Session, Player>();
 
@@ -69,16 +71,49 @@ public final class PlayerManagerImpl implements PlayerManager {
 	}
 
 	@Override
-	public Player getPlayerByName(String playerName) {
-		synchronized (__playerByNames) {
-			return __playerByNames.get(playerName);
+	public void addPlayer(Player player) {
+		if (containsPlayerName(player.getName())) {
+			throw new AddedDuplicatedPlayerException(player, __ownerRoom);
+		}
+
+		synchronized (this) {
+			__playerByNames.put(player.getName(), player);
+			if (player.containsSession()) {
+				__playerBySessions.put(player.getSession(), player);
+			}
+			__playerCount = __playerByNames.size();
 		}
 	}
 
 	@Override
-	public Player getPlayerById(long playerId) {
-		synchronized (__playerByIds) {
-			return __playerByIds.get(playerId);
+	public Player createPlayer(String name) {
+		Player newPlayer = PlayerImpl.newInstance(name);
+		newPlayer.setActivated(true);
+		newPlayer.setLoggedIn(true);
+
+		addPlayer(newPlayer);
+
+		return newPlayer;
+	}
+
+	@Override
+	public Player createPlayerWithSession(String name, Session session) {
+		if (session == null) {
+			throw new NullPointerException("Unable to assign a null session for the player");
+		}
+		Player newPlayer = PlayerImpl.newInstance(name, session);
+		newPlayer.setActivated(true);
+		newPlayer.setLoggedIn(true);
+
+		addPlayer(newPlayer);
+
+		return newPlayer;
+	}
+
+	@Override
+	public Player getPlayerByName(String playerName) {
+		synchronized (__playerByNames) {
+			return __playerByNames.get(playerName);
 		}
 	}
 
@@ -91,8 +126,8 @@ public final class PlayerManagerImpl implements PlayerManager {
 
 	@Override
 	public Collection<Player> getAllPlayers() {
-		synchronized (__playerByIds) {
-			return __playerByIds.values();
+		synchronized (__playerByNames) {
+			return __playerByNames.values();
 		}
 	}
 
@@ -104,52 +139,10 @@ public final class PlayerManagerImpl implements PlayerManager {
 	}
 
 	@Override
-	public void addPlayer(Player player) {
-		if (containsPlayer(player)) {
-			throw new AddedDuplicatedPlayerException(player, __ownerRoom);
-		}
-
-		synchronized (this) {
-			__playerByIds.put(player.getId(), player);
-			__playerByNames.put(player.getName(), player);
-			__playerBySessions.put(player.getSession(), player);
-			__playerCount = __playerByIds.size();
-		}
-	}
-
-	@Override
-	public void removePlayer(Player player) {
-		if (player == null) {
-			throw new RemovedNonExistentPlayerException(__ownerRoom);
-		}
-
-		__removePlayer(player);
-	}
-
-	private void __removePlayer(Player player) {
-		synchronized (this) {
-			__playerByIds.remove(player.getId());
-			__playerByNames.remove(player.getName());
-			__playerBySessions.remove(player.getSession());
-			__playerCount = __playerByIds.size();
-		}
-	}
-
-	@Override
 	public void removePlayerByName(String playerName) {
 		var player = getPlayerByName(playerName);
 		if (player == null) {
 			throw new RemovedNonExistentPlayerException(playerName, __ownerRoom);
-		}
-
-		__removePlayer(player);
-	}
-
-	@Override
-	public void removePlayerById(long playerId) {
-		var player = getPlayerById(playerId);
-		if (player == null) {
-			throw new RemovedNonExistentPlayerException(playerId, __ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -165,14 +158,14 @@ public final class PlayerManagerImpl implements PlayerManager {
 		__removePlayer(player);
 	}
 
-	@Override
-	public void disconnectPlayer(Player player) throws IOException {
-		if (player == null || !player.containsSession()) {
-			throw new IllegalArgumentException(
-					"Unable to disconnect player, the player does not exist or does not contain session");
+	private void __removePlayer(Player player) {
+		synchronized (this) {
+			__playerByNames.remove(player.getName());
+			if (player.containsSession()) {
+				__playerBySessions.remove(player.getSession());
+			}
+			__playerCount = __playerByNames.size();
 		}
-
-		player.getSession().close();
 	}
 
 	@Override
@@ -191,21 +184,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 	}
 
 	@Override
-	public void disconnectPlayerById(long playerId) throws IOException {
-		var player = getPlayerById(playerId);
-		if (player == null) {
-			throw new IllegalArgumentException(
-					String.format("Unable to disconnect player with id: %d, the player does not exist", playerId));
-		}
-		if (!player.containsSession()) {
-			throw new IllegalArgumentException(String
-					.format("Unable to disconnect player with id: %d, the player does not contain session", playerId));
-		}
-
-		player.getSession().close();
-	}
-
-	@Override
 	public void disconnectPlayerBySession(Session session) throws IOException {
 		if (session == null) {
 			throw new IllegalArgumentException(
@@ -218,23 +196,6 @@ public final class PlayerManagerImpl implements PlayerManager {
 		}
 
 		player.getSession().close();
-	}
-
-	@Override
-	public boolean containsPlayer(Player player) {
-		if (player == null) {
-			return false;
-		}
-		synchronized (__playerByIds) {
-			return __playerByIds.containsKey(player.getId());
-		}
-	}
-
-	@Override
-	public boolean containsPlayerId(long playerId) {
-		synchronized (__playerByIds) {
-			return __playerByIds.containsKey(playerId);
-		}
 	}
 
 	@Override

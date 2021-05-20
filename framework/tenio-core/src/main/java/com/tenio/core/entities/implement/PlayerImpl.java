@@ -25,7 +25,6 @@ package com.tenio.core.entities.implement;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.common.utilities.TimeUtility;
 import com.tenio.core.entities.Player;
@@ -36,12 +35,8 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class PlayerImpl implements Player {
 
-	private static AtomicLong __idCounter = new AtomicLong();
-
-	private final long __id;
 	private final String __name;
 
 	private Session __session;
@@ -73,7 +68,6 @@ public final class PlayerImpl implements Player {
 	}
 
 	private PlayerImpl(String name, Session session) {
-		__id = __idCounter.getAndIncrement();
 		__name = name;
 
 		__properties = new ConcurrentHashMap<String, Object>();
@@ -86,11 +80,6 @@ public final class PlayerImpl implements Player {
 		setLoggedIn(false);
 		setActivated(false);
 		setSpectator(true);
-	}
-
-	@Override
-	public long getId() {
-		return __id;
 	}
 
 	@Override
@@ -236,18 +225,19 @@ public final class PlayerImpl implements Player {
 	}
 
 	@Override
-	public boolean equals(Object player) {
-		if (!(player instanceof Player)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof Player)) {
 			return false;
 		} else {
-			return getId() == ((Player) player).getId();
+			Player player = (Player) object;
+			return getName() == player.getName();
 		}
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{ id: %d, name: %s, session: %b, loggedin: %b, spectator: %b, activated: %b }", __id,
-				__name, __hasSession, __loggedIn, __spectator, __activated);
+		return String.format("{ name: %s, session: %b, loggedin: %b, spectator: %b, activated: %b }", __name,
+				__hasSession, __loggedIn, __spectator, __activated);
 	}
 
 }

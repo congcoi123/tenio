@@ -62,6 +62,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 
 	private SessionManagerImpl(EventManager eventManager) {
 		super(eventManager);
+		
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();

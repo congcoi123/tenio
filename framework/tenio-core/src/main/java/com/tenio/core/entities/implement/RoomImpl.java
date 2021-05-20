@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.entities.implement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,6 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class RoomImpl implements Room {
 
 	public static final int NIL_SLOT = -1;
@@ -263,16 +263,6 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public boolean containsPlayer(Player player) {
-		return __playerManager.containsPlayer(player);
-	}
-
-	@Override
-	public Player getPlayerById(long playerId) {
-		return __playerManager.getPlayerById(playerId);
-	}
-
-	@Override
 	public Player getPlayerByName(String playerName) {
 		return __playerManager.getPlayerByName(playerName);
 	}
@@ -283,24 +273,19 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public List<Player> getAllPlayersList() {
-		return new ArrayList<Player>(__playerManager.getAllPlayers());
+	public Collection<Player> getAllPlayersList() {
+		return __playerManager.getAllPlayers();
 	}
 
 	@Override
-	public List<Session> getAllSessionList() {
-		return new ArrayList<Session>(__playerManager.getAllSessions());
+	public Collection<Session> getAllSessionList() {
+		return __playerManager.getAllSessions();
 	}
 
 	@Override
 	public void addPlayer(Player player, boolean asSpectator, int targetSlot) {
-		if (__playerManager.containsPlayer(player)) {
-			throw new CoreMessageCodeException(
-					String.format("Unable to add player to room, the player: %s already joined room", player.getName()),
-					CoreMessageCode.PLAYER_WAS_IN_ROOM);
-		}
-
 		boolean validated = false;
+
 		if (asSpectator) {
 			validated = getSpectatorCount() < getMaxSpectators();
 		} else {
@@ -322,16 +307,16 @@ public final class RoomImpl implements Room {
 		__updateElementsCounter();
 
 		if (asSpectator) {
-			player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
+			player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
 		} else {
-			if (targetSlot == RoomImpl.DEFAULT_SLOT) {
+			if (targetSlot == DEFAULT_SLOT) {
 				player.setPlayerSlotInCurrentRoom(__roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
 			} else {
 				try {
 					__roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
 					player.setPlayerSlotInCurrentRoom(targetSlot);
 				} catch (IllegalArgumentException e) {
-					player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
+					player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
 					throw new CoreMessageCodeException(String.format("Unable to set the target slot: %d for player: %s",
 							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
 				}
@@ -342,7 +327,7 @@ public final class RoomImpl implements Room {
 
 	@Override
 	public void addPlayer(Player player, boolean asSpectator) {
-		addPlayer(player, asSpectator, RoomImpl.DEFAULT_SLOT);
+		addPlayer(player, asSpectator, DEFAULT_SLOT);
 	}
 
 	@Override
@@ -353,14 +338,14 @@ public final class RoomImpl implements Room {
 	@Override
 	public void removePlayer(Player player) {
 		__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
-		__playerManager.removePlayer(player);
+		__playerManager.removePlayerByName(player.getName());
 		player.setCurrentRoom(null);
 		__updateElementsCounter();
 	}
 
 	@Override
 	public void switchPlayerToSpectator(Player player) {
-		if (!__playerManager.containsPlayer(player)) {
+		if (!containsPlayerName(player.getName())) {
 			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
 		}
@@ -373,7 +358,7 @@ public final class RoomImpl implements Room {
 			}
 
 			__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
-			player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
+			player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
 			player.setSpectator(true);
 
 			__updateElementsCounter();
@@ -385,7 +370,7 @@ public final class RoomImpl implements Room {
 
 	@Override
 	public void switchSpectatorToPlayer(Player player, int targetSlot) {
-		if (!__playerManager.containsPlayer(player)) {
+		if (!containsPlayerName(player.getName())) {
 			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
 		}
@@ -397,7 +382,7 @@ public final class RoomImpl implements Room {
 						CoreMessageCode.SWITCH_NO_PLAYER_SLOTS_AVAILABLE);
 			}
 
-			if (targetSlot == RoomImpl.DEFAULT_SLOT) {
+			if (targetSlot == DEFAULT_SLOT) {
 				player.setPlayerSlotInCurrentRoom(__roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
 				player.setSpectator(false);
 			} else {
@@ -418,7 +403,7 @@ public final class RoomImpl implements Room {
 
 	@Override
 	public void switchSpectatorToPlayer(Player player) {
-		switchSpectatorToPlayer(player, RoomImpl.DEFAULT_SLOT);
+		switchSpectatorToPlayer(player, DEFAULT_SLOT);
 	}
 
 	private void __updateElementsCounter() {
@@ -437,18 +422,19 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public boolean equals(Object room) {
-		if (!(room instanceof Room)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof Room)) {
 			return false;
 		} else {
-			return getId() == ((Room) room).getId();
+			var room = (Room) object;
+			return getId() == room.getId();
 		}
 	}
 
-	// FIXME: Implement me
 	@Override
 	public String toString() {
-		return super.toString();
+		return String.format("{ id: %d, name: %s, password: %s, max player: %d, max spectator: %d }", __id, __name,
+				__password, __maxPlayers, __maxSpectators);
 	}
 
 	@Override

@@ -24,51 +24,43 @@ THE SOFTWARE.
 package com.tenio.core.entities.managers;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
+import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface PlayerManager {
-
-	Player getPlayerByName(String playerName);
-
-	Player getPlayerById(long playerId);
-
-	Player getPlayerBySession(Session session);
-
-	List<Player> getAllPlayers();
-
-	List<Session> getAllSessions();
+public interface PlayerManager extends Manager {
 
 	void addPlayer(Player player) throws AddedDuplicatedPlayerException;
 
-	void removePlayer(Player player) throws RemovedNonExistentPlayerException;
+	Player createPlayer(String name) throws AddedDuplicatedPlayerException;
+
+	Player createPlayerWithSession(String name, Session session)
+			throws AddedDuplicatedPlayerException, NullPointerException;
+
+	Player getPlayerByName(String playerName);
+
+	Player getPlayerBySession(Session session);
+
+	Collection<Player> getAllPlayers();
+
+	Collection<Session> getAllSessions();
 
 	void removePlayerByName(String playerName) throws RemovedNonExistentPlayerException;
 
-	void removePlayerById(long playerId) throws RemovedNonExistentPlayerException;
-
 	void removePlayerBySession(Session session) throws RemovedNonExistentPlayerException;
-
-	void disconnectPlayer(Player player) throws IllegalArgumentException, IOException;
 
 	void disconnectPlayerByName(String playerName) throws IllegalArgumentException, IOException;
 
-	void disconnectPlayerById(long playerId) throws IllegalArgumentException, IOException;
-
 	void disconnectPlayerBySession(Session session) throws IllegalArgumentException, IOException;
-
-	boolean containsPlayer(Player player);
-
-	boolean containsPlayerId(long playerId);
 
 	boolean containsPlayerName(String playerName);
 

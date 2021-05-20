@@ -28,15 +28,17 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public interface Player {
 
-	long getId();
-
+	/**
+	 * Retrieve the player's name. This value must be unique.
+	 * 
+	 * @return the player's name in (@link String}
+	 */
 	String getName();
 
 	boolean containsSession();
-	
+
 	boolean isState(PlayerState state);
 
 	PlayerState getState();
