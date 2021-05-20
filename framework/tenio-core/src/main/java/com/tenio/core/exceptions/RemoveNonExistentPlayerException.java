@@ -21,14 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines.listener;
+package com.tenio.core.exceptions;
+
+import com.tenio.core.entities.Room;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface ZeroAcceptorListener {
+public final class RemoveNonExistentPlayerException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7604852583321561090L;
 
-	void handleAcceptableChannels();
+	public RemoveNonExistentPlayerException(Object playerIdentity, Room room) {
+		super(room == null
+				? String.format("Unable to remove player: %s, the player did not exist", playerIdentity.toString())
+				: String.format("Unable to remove player: %s, the player did not exist in room: %s",
+						String.valueOf(playerIdentity), room.getName()));
+	}
+
+	public RemoveNonExistentPlayerException(Room room) {
+		super(room == null ? "Unable to remove player, the player did not exist"
+				: String.format("Unable to remove player, the player did not exist in room: %s", room.getName()));
+	}
 
 }

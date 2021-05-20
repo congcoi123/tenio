@@ -40,7 +40,7 @@ import com.tenio.core.entities.defines.RoomRemoveMode;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.exceptions.PlayerJoinRoomException;
+import com.tenio.core.exceptions.CoreMessageCodeException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -77,16 +77,12 @@ public final class RoomImpl implements Room {
 
 	private volatile boolean __activated;
 
-	private RoomImpl(String name) {
-		this(name, null, null);
+	public static Room newInstance() {
+		return new RoomImpl();
 	}
 
-	private RoomImpl(String name, RoomCredentialValidatedStrategy roomPasswordValidatedStrategy,
-			RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
+	private RoomImpl() {
 		__id = __idCounter.getAndIncrement();
-		__name = name;
-
-		__password = null;
 
 		__maxPlayers = 0;
 		__maxSpectators = 0;
@@ -96,14 +92,12 @@ public final class RoomImpl implements Room {
 		__owner = null;
 		__playerManager = null;
 
-		__roomRemoveMode = RoomRemoveMode.DEFAULT;
-		__roomCredentialValidatedStrategy = roomPasswordValidatedStrategy;
-		__roomPlayerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
-
 		__switchPlayerLock = new ReentrantLock();
 
 		__properties = new ConcurrentHashMap<String, Object>();
 		__activated = false;
+
+		setRoomRemoveMode(RoomRemoveMode.DEFAULT);
 	}
 
 	@Override
@@ -117,7 +111,7 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public void setName(String name) throws RuntimeException {
+	public void setName(String name) {
 		__roomCredentialValidatedStrategy.validateName(name);
 		__name = name;
 	}
@@ -128,7 +122,7 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public void setPassword(String password) throws RuntimeException {
+	public void setPassword(String password) {
 		__roomCredentialValidatedStrategy.validatePassword(password);
 		__password = password;
 	}
@@ -301,7 +295,7 @@ public final class RoomImpl implements Room {
 	@Override
 	public void addPlayer(Player player, boolean asSpectator, int targetSlot) {
 		if (__playerManager.containsPlayer(player)) {
-			throw new PlayerJoinRoomException(
+			throw new CoreMessageCodeException(
 					String.format("Unable to add player to room, the player: %s already joined room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_IN_ROOM);
 		}
@@ -314,7 +308,7 @@ public final class RoomImpl implements Room {
 		}
 
 		if (!validated) {
-			throw new PlayerJoinRoomException(String.format(
+			throw new CoreMessageCodeException(String.format(
 					"Unable to add player: %s to room, room is full with maximum player: %d, spectator: %d",
 					player.getName(), getMaxPlayers(), getMaxSpectators()), CoreMessageCode.ROOM_IS_FULL);
 		}
@@ -338,7 +332,7 @@ public final class RoomImpl implements Room {
 					player.setPlayerSlotInCurrentRoom(targetSlot);
 				} catch (IllegalArgumentException e) {
 					player.setPlayerSlotInCurrentRoom(RoomImpl.DEFAULT_SLOT);
-					throw new PlayerJoinRoomException(String.format("Unable to set the target slot: %d for player: %s",
+					throw new CoreMessageCodeException(String.format("Unable to set the target slot: %d for player: %s",
 							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
 				}
 
@@ -367,14 +361,14 @@ public final class RoomImpl implements Room {
 	@Override
 	public void switchPlayerToSpectator(Player player) {
 		if (!__playerManager.containsPlayer(player)) {
-			throw new PlayerJoinRoomException(String.format("Player %s was not in room", player.getName()),
+			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
 		}
 
 		__switchPlayerLock.lock();
 		try {
 			if (getSpectatorCount() >= getMaxSpectators()) {
-				throw new PlayerJoinRoomException("All spectator slots were already taken",
+				throw new CoreMessageCodeException("All spectator slots were already taken",
 						CoreMessageCode.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
 			}
 
@@ -392,14 +386,14 @@ public final class RoomImpl implements Room {
 	@Override
 	public void switchSpectatorToPlayer(Player player, int targetSlot) {
 		if (!__playerManager.containsPlayer(player)) {
-			throw new PlayerJoinRoomException(String.format("Player %s was not in room", player.getName()),
+			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
 					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
 		}
 
 		__switchPlayerLock.lock();
 		try {
 			if (getPlayerCount() >= getMaxPlayers()) {
-				throw new PlayerJoinRoomException("All player slots were already taken",
+				throw new CoreMessageCodeException("All player slots were already taken",
 						CoreMessageCode.SWITCH_NO_PLAYER_SLOTS_AVAILABLE);
 			}
 
@@ -412,7 +406,7 @@ public final class RoomImpl implements Room {
 					player.setPlayerSlotInCurrentRoom(targetSlot);
 					player.setSpectator(false);
 				} catch (IllegalArgumentException e) {
-					throw new PlayerJoinRoomException(String.format("Unable to set the target slot: %d for player: %s",
+					throw new CoreMessageCodeException(String.format("Unable to set the target slot: %d for player: %s",
 							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
 				}
 			}

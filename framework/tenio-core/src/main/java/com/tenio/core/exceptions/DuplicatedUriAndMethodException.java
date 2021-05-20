@@ -23,24 +23,23 @@ THE SOFTWARE.
 */
 package com.tenio.core.exceptions;
 
+import java.util.List;
+
+import com.tenio.core.network.defines.RestMethod;
+import com.tenio.core.network.defines.data.PathConfig;
+
 /**
  * @author kong
  */
-public final class DuplicatedUriAndMethodException extends Exception {
+public final class DuplicatedUriAndMethodException extends RuntimeException {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5226506274080400540L;
 
-	public DuplicatedUriAndMethodException(String errorCode) {
-		super(__getMessage(errorCode));
-	}
-
-	private static String __getMessage(String errorCode) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Error code: ");
-		builder.append(errorCode);
-		return builder.toString();
+	public DuplicatedUriAndMethodException(RestMethod method, List<PathConfig> configs) {
+		super(String.format("Duplicated REST method: %s, with the list of configurations: %s", method.toString(),
+				configs.toString()));
 	}
 
 }

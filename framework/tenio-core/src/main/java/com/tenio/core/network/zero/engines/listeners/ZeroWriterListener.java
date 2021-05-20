@@ -21,15 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.core.network.zero.engines.listeners;
+
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
-public final class DuplicatedComponentException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1735259692237213378L;
+// TODO: Add description
+public interface ZeroWriterListener {
+
+	void continueWriteInterestOp(Session session);
 
 }

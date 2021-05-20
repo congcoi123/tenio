@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.security;
 
-import com.tenio.core.exceptions.RefusedAddressException;
+import com.tenio.core.exceptions.RefusedConnectionAddressException;
 
 /**
  * @author kong
@@ -36,7 +36,7 @@ public interface ConnectionFilter {
 
 	String[] getBannedAddresses();
 
-	void validateAndAddAddress(String addressIp) throws RefusedAddressException;
+	void validateAndAddAddress(String addressIp) throws RefusedConnectionAddressException;
 
 	void removeAddress(String addressIp);
 

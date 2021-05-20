@@ -38,13 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.tenio.core.exceptions.RefusedAddressException;
+import com.tenio.core.exceptions.RefusedConnectionAddressException;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.security.ConnectionFilter;
 import com.tenio.core.network.zero.engines.ZeroAcceptor;
-import com.tenio.core.network.zero.engines.listener.ZeroAcceptorListener;
-import com.tenio.core.network.zero.engines.listener.ZeroReaderListener;
+import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
+import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 
 /**
  * @author kong
@@ -260,7 +260,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 								SelectionKey selectionKey = __zeroReaderListener.acceptSocketChannel(socketChannel);
 
 								getSocketIOHandler().channelActive(socketChannel, selectionKey);
-							} catch (RefusedAddressException e1) {
+							} catch (RefusedConnectionAddressException e1) {
 								getSocketIOHandler().channelException(socketChannel, e1);
 								error(e1, "Refused connection with address: ", e1.getMessage());
 

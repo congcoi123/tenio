@@ -47,19 +47,14 @@ public final class DefaultPacketQueuePolicy implements PacketQueuePolicy {
 
 		if (percentageUsed >= THREE_QUARTERS_FULL && percentageUsed < NINETY_PERCENT_FULL) {
 			if (packet.getPriority().getValue() < ResponsePriority.NORMAL.getValue()) {
-				__warning(packet, percentageUsed);
+				throw new PacketQueuePolicyViolationException(packet, percentageUsed);
 			}
 		} else if (percentageUsed >= NINETY_PERCENT_FULL) {
 			if (packet.getPriority().getValue() < ResponsePriority.GUARANTEED.getValue()) {
-				__warning(packet, percentageUsed);
+				throw new PacketQueuePolicyViolationException(packet, percentageUsed);
 			}
 		}
 
-	}
-
-	private void __warning(Packet packet, float percentageUsed) {
-		throw new PacketQueuePolicyViolationException(String
-				.format("Need to drop packet %s, current packet queue usage: %f%%", packet.toString(), percentageUsed));
 	}
 
 }

@@ -33,8 +33,8 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.managers.PlayerManager;
-import com.tenio.core.exceptions.DuplicatedPlayerException;
-import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
+import com.tenio.core.exceptions.AddDuplicatedPlayerException;
+import com.tenio.core.exceptions.RemoveNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -53,6 +53,10 @@ public final class PlayerManagerImpl implements PlayerManager {
 	private Room __ownerRoom;
 
 	private volatile int __playerCount;
+
+	public static PlayerManager newInstance() {
+		return new PlayerManagerImpl();
+	}
 
 	private PlayerManagerImpl() {
 		__playerByIds = new HashMap<Long, Player>();
@@ -102,8 +106,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public void addPlayer(Player player) {
 		if (containsPlayer(player)) {
-			throw new DuplicatedPlayerException(String.format("Unable to add player: %s, it already exists in room: %s",
-					player.getName(), __ownerRoom.toString()));
+			throw new AddDuplicatedPlayerException(player, __ownerRoom);
 		}
 
 		synchronized (this) {
@@ -117,8 +120,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	@Override
 	public void removePlayer(Player player) {
 		if (player == null) {
-			throw new RemovedPlayerNotExistedException(String
-					.format("Unable to remove player, the player did not exist in room: %s", __ownerRoom.toString()));
+			throw new RemoveNonExistentPlayerException(__ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -137,9 +139,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerByName(String playerName) {
 		var player = getPlayerByName(playerName);
 		if (player == null) {
-			throw new RemovedPlayerNotExistedException(
-					String.format("Unable to remove player: %s, the player did not exist in room: %s", playerName,
-							__ownerRoom.toString()));
+			throw new RemoveNonExistentPlayerException(playerName, __ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -149,9 +149,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerById(long playerId) {
 		var player = getPlayerById(playerId);
 		if (player == null) {
-			throw new RemovedPlayerNotExistedException(
-					String.format("Unable to remove player with id: %d, the player did not exist in room: %s", playerId,
-							__ownerRoom.toString()));
+			throw new RemoveNonExistentPlayerException(playerId, __ownerRoom);
 		}
 
 		__removePlayer(player);
@@ -161,9 +159,7 @@ public final class PlayerManagerImpl implements PlayerManager {
 	public void removePlayerBySession(Session session) {
 		var player = getPlayerBySession(session);
 		if (player == null) {
-			throw new RemovedPlayerNotExistedException(
-					String.format("Unable to remove player with session: %s, the player did not exist in room: %s",
-							session.toString(), __ownerRoom.toString()));
+			throw new RemoveNonExistentPlayerException(session.toString(), __ownerRoom);
 		}
 
 		__removePlayer(player);

@@ -21,16 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines.listener;
+package com.tenio.core.exceptions;
 
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.configuration.defines.CoreMessageCode;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public interface ZeroWriterListener {
+public final class CoreMessageCodeException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3510870298364316819L;
+	
+	private final CoreMessageCode __coreMessageCode;
 
-	void continueWriteInterestOp(Session session);
+	public CoreMessageCodeException(String message, CoreMessageCode coreMessageCode) {
+		super(message);
+		__coreMessageCode = coreMessageCode;
+	}
+
+	public CoreMessageCode getMessageCode() {
+		return __coreMessageCode;
+	}
 
 }

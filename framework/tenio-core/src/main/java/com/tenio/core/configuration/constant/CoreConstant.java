@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.constant;
 
-import com.tenio.core.exceptions.ExceededMessageQueueOutboundException;
-
 import io.netty.channel.ChannelOption;
 
 /**
@@ -168,11 +166,7 @@ public final class CoreConstant {
 	 * {@link ChannelOption#SO_SNDBUF}
 	 */
 	public static final int BROADCAST_SEND_BUFFER = 1024;
-
-	/**
-	 * Throws {@link ExceededMessageQueueOutboundException} when the message queue
-	 * exceeded the warning size
-	 */
+	
 	public static final int WRITE_MESSAGE_QUEUE_SIZE_WARNING = 100;
 
 }

@@ -32,8 +32,8 @@ public final class ExtensionValueCastException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = -6137016366847120400L;
 
-	public ExtensionValueCastException(String message) {
-		super(message);
+	public ExtensionValueCastException(Object object, Class<?> castingClazz) {
+		super(String.format("Unable to cast object: [%s] to %s class", object.toString(), castingClazz.getName()));
 	}
 
 }

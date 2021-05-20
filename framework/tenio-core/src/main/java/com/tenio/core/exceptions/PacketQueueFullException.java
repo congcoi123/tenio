@@ -26,10 +26,14 @@ package com.tenio.core.exceptions;
 /**
  * @author kong
  */
-public final class PacketQueueFullException extends Exception {
+public final class PacketQueueFullException extends RuntimeException {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2526342485508899328L;
+
+	public PacketQueueFullException(int currentSize) {
+		super(String.format("Reached max queue size, the packet was dropped. The current size: %d", currentSize));
+	}
 
 }

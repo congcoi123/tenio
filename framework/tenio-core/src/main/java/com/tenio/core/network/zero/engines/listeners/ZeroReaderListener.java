@@ -21,19 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.core.network.zero.engines.listeners;
+
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 /**
  * @author kong
  */
-public final class DuplicatedPlayerException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1303721781114060707L;
+// TODO: Add description
+public interface ZeroReaderListener {
 
-	public DuplicatedPlayerException(String message) {
-		super(message);
-	}
+	void acceptDatagramChannel(DatagramChannel datagramChannel) throws ClosedChannelException;
+
+	SelectionKey acceptSocketChannel(SocketChannel socketChannel) throws ClosedChannelException;
+
+	void wakeup();
 
 }

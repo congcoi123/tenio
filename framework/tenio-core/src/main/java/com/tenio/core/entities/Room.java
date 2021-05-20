@@ -6,8 +6,9 @@ import com.tenio.core.entities.defines.RoomRemoveMode;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.exceptions.PlayerJoinRoomException;
-import com.tenio.core.exceptions.SwitchPlayerInRoomException;
+import com.tenio.core.exceptions.AddDuplicatedPlayerException;
+import com.tenio.core.exceptions.CoreMessageCodeException;
+import com.tenio.core.exceptions.RemoveNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 
 public interface Room {
@@ -86,19 +87,20 @@ public interface Room {
 
 	List<Session> getAllSessionList();
 
-	void addPlayer(Player player, boolean asSpectator, int targetSlot) throws PlayerJoinRoomException;
+	void addPlayer(Player player, boolean asSpectator, int targetSlot)
+			throws CoreMessageCodeException, AddDuplicatedPlayerException;
 
-	void addPlayer(Player player, boolean asSpectator) throws PlayerJoinRoomException;
+	void addPlayer(Player player, boolean asSpectator) throws CoreMessageCodeException, AddDuplicatedPlayerException;
 
-	void addPlayer(Player player) throws PlayerJoinRoomException;
+	void addPlayer(Player player) throws CoreMessageCodeException, AddDuplicatedPlayerException;
 
-	void removePlayer(Player player);
+	void removePlayer(Player player) throws RemoveNonExistentPlayerException;
 
-	void switchPlayerToSpectator(Player player) throws SwitchPlayerInRoomException;
+	void switchPlayerToSpectator(Player player) throws CoreMessageCodeException;
 
-	void switchSpectatorToPlayer(Player player, int targetSlot) throws SwitchPlayerInRoomException;
+	void switchSpectatorToPlayer(Player player, int targetSlot) throws CoreMessageCodeException;
 
-	void switchSpectatorToPlayer(Player player) throws SwitchPlayerInRoomException;
+	void switchSpectatorToPlayer(Player player) throws CoreMessageCodeException;
 
 	boolean isEmpty();
 

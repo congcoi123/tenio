@@ -131,7 +131,7 @@ public final class Injector {
 				.filter(entry -> entry.getValue() == clazzInterface).collect(Collectors.toSet());
 
 		if (implementedClazzs == null || implementedClazzs.isEmpty()) {
-			throw new NoImplementedClassFoundException(clazzInterface.getName());
+			throw new NoImplementedClassFoundException(clazzInterface);
 		} else if (implementedClazzs.size() == 1) {
 			// just only one implemented class for the interface
 			Optional<Entry<Class<?>, Class<?>>> optional = implementedClazzs.stream().findFirst();
@@ -148,7 +148,7 @@ public final class Injector {
 				return optional.get().getKey();
 			} else {
 				// could not find a appropriately single instance, so throw an exception
-				throw new MultipleImplementedClassForInterfaceException(clazzInterface.getName());
+				throw new MultipleImplementedClassForInterfaceException(clazzInterface);
 			}
 		}
 

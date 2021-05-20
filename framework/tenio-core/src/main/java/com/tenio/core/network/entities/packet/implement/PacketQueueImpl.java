@@ -26,7 +26,6 @@ package com.tenio.core.network.entities.packet.implement;
 import java.util.TreeSet;
 
 import com.tenio.core.exceptions.PacketQueueFullException;
-import com.tenio.core.exceptions.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
@@ -111,15 +110,14 @@ public final class PacketQueueImpl implements PacketQueue {
 	}
 
 	@Override
-	public void put(Packet packet) throws PacketQueueFullException, PacketQueuePolicyViolationException {
+	public void put(Packet packet) {
 		if (isFull()) {
-			throw new PacketQueueFullException();
-		} else {
-			__packetQueuePolicy.applyPolicy(this, packet);
-			synchronized (__queue) {
-				__queue.add(packet);
-				__size = __queue.size();
-			}
+			throw new PacketQueueFullException(__queue.size());
+		}
+		__packetQueuePolicy.applyPolicy(this, packet);
+		synchronized (__queue) {
+			__queue.add(packet);
+			__size = __queue.size();
 		}
 	}
 

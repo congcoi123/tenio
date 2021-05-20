@@ -60,7 +60,7 @@ public class NettyWSHandler extends BaseNettyHandler {
             this.connFilter.validateAndAddAddress(address.substring(1, address.indexOf(58)));
             this.sfsSession = this.sessionManager.createWebSocketSession(this);
             this.sessionManager.addSession(this.sfsSession);
-       } catch (RefusedAddressException var4) {
+       } catch (RefusedConnectionAddressException var4) {
             this.logger.warn("Refused connection. " + var4.getMessage());
             ctx.getChannel().close();
             this.logger.warn(ExceptionUtils.getStackTrace(var4));

@@ -24,8 +24,8 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engines;
 
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.zero.engines.listener.ZeroAcceptorListener;
-import com.tenio.core.network.zero.engines.listener.ZeroWriterListener;
+import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
+import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
 
 /**
  * @author kong

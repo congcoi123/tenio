@@ -179,11 +179,9 @@ public abstract class AbstractController extends SystemLogger implements Control
 	@Override
 	public void enqueueRequest(Request request) {
 		if (__requestQueue.size() >= __maxQueueSize) {
-			throw new RequestQueueFullException(String.format(
-					"Reached max queue size, the request was dropped. The current size: %d", __requestQueue.size()));
-		} else {
-			__requestQueue.add(request);
+			throw new RequestQueueFullException(__requestQueue.size());
 		}
+		__requestQueue.add(request);
 	}
 
 	@Override

@@ -21,23 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.core.network.zero.engines.listeners;
 
 /**
  * @author kong
  */
-public final class NullPlayerNameException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1303721781114060707L;
+// TODO: Add description
+public interface ZeroAcceptorListener {
 
-	public NullPlayerNameException() {
-
-	}
-
-	public NullPlayerNameException(String name) {
-		super(name);
-	}
+	void handleAcceptableChannels();
 
 }

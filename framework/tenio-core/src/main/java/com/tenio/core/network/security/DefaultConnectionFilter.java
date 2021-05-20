@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.core.exceptions.RefusedAddressException;
+import com.tenio.core.exceptions.RefusedConnectionAddressException;
 
 @ThreadSafe
 public final class DefaultConnectionFilter implements ConnectionFilter {
@@ -75,14 +75,14 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
 	@Override
 	public void validateAndAddAddress(String addressIp) {
 		if (__isAddressBanned(addressIp)) {
-			throw new RefusedAddressException(String.format("Ip Address: %s has banned", addressIp));
+			throw new RefusedConnectionAddressException("The IP address has banned", addressIp);
 		}
 
 		synchronized (__addressMap) {
 			AtomicInteger counter = __addressMap.get(addressIp);
 			if (counter != null && counter.intValue() >= __maxConnectionsPerIp) {
-				throw new RefusedAddressException(
-						String.format("Ip Address: %s has reached maximum allowed connections.", addressIp));
+				throw new RefusedConnectionAddressException("The IP address has reached maximum allowed connections",
+						addressIp);
 			}
 
 			if (counter == null) {

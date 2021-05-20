@@ -23,33 +23,22 @@ THE SOFTWARE.
 */
 package com.tenio.core.exceptions;
 
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.Room;
 
 /**
  * @author kong
  */
-public final class NotDefinedSubscribersException extends Exception {
+public final class AddDuplicatedPlayerException extends RuntimeException {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4569867192216119437L;
+	private static final long serialVersionUID = 1303721781114060707L;
 
-	public NotDefinedSubscribersException() {
-
-	}
-
-	public NotDefinedSubscribersException(ExtensionEvent... events) {
-		super(__getMessage(events));
-	}
-
-	private static String __getMessage(ExtensionEvent... events) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Need to implement subscribers: ");
-		for (var event : events) {
-			builder.append(event.name());
-			builder.append(", ");
-		}
-		return builder.toString();
+	public AddDuplicatedPlayerException(Player player, Room room) {
+		super(room == null ? String.format("Unable to add player: %s, it already exists", player.getName())
+				: String.format("Unable to add player: %s, it already exists in room: %s", player.getName(),
+						room.getName()));
 	}
 
 }

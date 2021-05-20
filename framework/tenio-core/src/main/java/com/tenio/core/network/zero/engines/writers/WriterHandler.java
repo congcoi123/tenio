@@ -21,23 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.engines.listener;
+package com.tenio.core.network.zero.engines.writers;
 
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
+import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
+
+import com.tenio.core.network.entities.packet.Packet;
+import com.tenio.core.network.entities.packet.PacketQueue;
+import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface ZeroReaderListener {
+public interface WriterHandler {
 
-	void acceptDatagramChannel(DatagramChannel datagramChannel) throws ClosedChannelException;
+	void send(PacketQueue packetQueue, Session session, Packet packet) throws Exception;
 
-	SelectionKey acceptSocketChannel(SocketChannel socketChannel) throws ClosedChannelException;
+	BlockingQueue<Session> getSessionTicketsQueue();
 
-	void wakeup();
+	void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue);
+
+	NetworkWriterStatistic getNetworkWriterStatistic();
+
+	void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
+
+	ByteBuffer getBuffer();
+
+	void allocateBuffer(int capacity);
 
 }

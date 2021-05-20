@@ -27,7 +27,7 @@ import java.util.List;
 
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.security.ConnectionFilter;
-import com.tenio.core.network.zero.engines.listener.ZeroReaderListener;
+import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 
 /**
  * @author kong

@@ -26,14 +26,14 @@ package com.tenio.core.exceptions;
 /**
  * @author kong
  */
-public final class RefusedAddressException extends RuntimeException {
+public final class RefusedConnectionAddressException extends RuntimeException {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1063120976899708365L;
 
-	public RefusedAddressException(String address) {
-		super(address);
+	public RefusedConnectionAddressException(String reason, String address) {
+		super(String.format("%s : %s", reason, address));
 	}
 
 }

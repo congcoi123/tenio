@@ -81,16 +81,16 @@ public final class JettyHttpService extends AbstractLogger implements Service, R
 
 		for (var entry : servlets.entrySet()) {
 			if (__isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
-				throw new DuplicatedUriAndMethodException("post");
+				throw new DuplicatedUriAndMethodException(RestMethod.POST, entry.getValue());
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.PUT, entry.getValue())) {
-				throw new DuplicatedUriAndMethodException("put");
+				throw new DuplicatedUriAndMethodException(RestMethod.PUT, entry.getValue());
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.GET, entry.getValue())) {
-				throw new DuplicatedUriAndMethodException("get");
+				throw new DuplicatedUriAndMethodException(RestMethod.GET, entry.getValue());
 			}
 			if (__isUriHasDuplicatedMethod(RestMethod.DELETE, entry.getValue())) {
-				throw new DuplicatedUriAndMethodException("delete");
+				throw new DuplicatedUriAndMethodException(RestMethod.DELETE, entry.getValue());
 			}
 		}
 

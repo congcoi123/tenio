@@ -28,8 +28,8 @@ import java.util.Collection;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.exceptions.DuplicatedPlayerException;
-import com.tenio.core.exceptions.RemovedPlayerNotExistedException;
+import com.tenio.core.exceptions.AddDuplicatedPlayerException;
+import com.tenio.core.exceptions.RemoveNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -48,15 +48,15 @@ public interface PlayerManager {
 
 	Collection<Session> getAllSessions();
 
-	void addPlayer(Player player) throws DuplicatedPlayerException;
+	void addPlayer(Player player) throws AddDuplicatedPlayerException;
 
-	void removePlayer(Player player) throws RemovedPlayerNotExistedException;
+	void removePlayer(Player player) throws RemoveNonExistentPlayerException;
 
-	void removePlayerByName(String playerName) throws RemovedPlayerNotExistedException;
+	void removePlayerByName(String playerName) throws RemoveNonExistentPlayerException;
 
-	void removePlayerById(long playerId) throws RemovedPlayerNotExistedException;
+	void removePlayerById(long playerId) throws RemoveNonExistentPlayerException;
 
-	void removePlayerBySession(Session session) throws RemovedPlayerNotExistedException;
+	void removePlayerBySession(Session session) throws RemoveNonExistentPlayerException;
 
 	void disconnectPlayer(Player player) throws IllegalArgumentException, IOException;
 

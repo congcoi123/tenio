@@ -1,6 +1,10 @@
 package com.tenio.core.entities.managers.implement;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
@@ -9,20 +13,39 @@ import com.tenio.core.entities.settings.InitialRoomSetting;
 
 public final class RoomManagerImpl implements RoomManager {
 
+	@GuardedBy("this")
+	private final Map<Long, Room> __roomByIds;
+	@GuardedBy("this")
+	private final Map<String, Room> __roomByNames;
+
+	private volatile int __roomCount;
+
+	public static RoomManager newInstance() {
+		return new RoomManagerImpl();
+	}
+
+	private RoomManagerImpl() {
+		__roomByIds = new HashMap<Long, Room>();
+		__roomByNames = new HashMap<String, Room>();
+
+		__roomCount = 0;
+	}
+
 	@Override
 	public void addRoom(Room room) {
-		// TODO Auto-generated method stub
-
+		synchronized (this) {
+			__roomByIds.put(room.getId(), room);
+			__roomByNames.put(room.getName(), room);
+		}
 	}
 
 	@Override
-	public Room createRoom(InitialRoomSetting roomSetting) throws RuntimeException {
-		// TODO Auto-generated method stub
-		return null;
+	public Room createRoom(InitialRoomSetting roomSetting) {
+		return createRoomWithOwner(roomSetting, null);
 	}
 
 	@Override
-	public Room createRoom(InitialRoomSetting roomSetting, Player player) throws RuntimeException {
+	public Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -100,13 +123,13 @@ public final class RoomManagerImpl implements RoomManager {
 	}
 
 	@Override
-	public void changeRoomName(Room room, String roomName) throws RuntimeException {
+	public void changeRoomName(Room room, String roomName) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void changeRoomPassword(Room room, String roomPassword) throws RuntimeException {
+	public void changeRoomPassword(Room room, String roomPassword) {
 		// TODO Auto-generated method stub
 
 	}
@@ -115,6 +138,11 @@ public final class RoomManagerImpl implements RoomManager {
 	public void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public int getRoomCount() {
+		return __roomCount;
 	}
 
 }

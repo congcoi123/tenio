@@ -37,10 +37,10 @@ import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engines.ZeroWriter;
-import com.tenio.core.network.zero.engines.listener.ZeroWriterListener;
-import com.tenio.core.network.zero.engines.writer.DatagramWriterHandler;
-import com.tenio.core.network.zero.engines.writer.SocketWriterHandler;
-import com.tenio.core.network.zero.engines.writer.WriterHandler;
+import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
+import com.tenio.core.network.zero.engines.writers.DatagramWriterHandler;
+import com.tenio.core.network.zero.engines.writers.SocketWriterHandler;
+import com.tenio.core.network.zero.engines.writers.WriterHandler;
 
 /**
  * @author kong

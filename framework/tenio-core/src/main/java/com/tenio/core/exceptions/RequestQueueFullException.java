@@ -6,8 +6,8 @@ public final class RequestQueueFullException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 6981972099759381035L;
 
-	public RequestQueueFullException(String message) {
-		super(message);
+	public RequestQueueFullException(int currentSize) {
+		super(String.format("Reached max queue size, the request was dropped. The current size: %d", currentSize));
 	}
 
 }

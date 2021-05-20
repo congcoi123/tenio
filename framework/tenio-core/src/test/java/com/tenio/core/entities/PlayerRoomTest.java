@@ -45,7 +45,7 @@ import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
 import com.tenio.core.entities.managers.implement.RoomManagerImpl;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.events.implement.EventManagerImpl;
-import com.tenio.core.exceptions.DuplicatedPlayerException;
+import com.tenio.core.exceptions.AddDuplicatedPlayerException;
 import com.tenio.core.exceptions.DuplicatedRoomIdException;
 import com.tenio.core.exceptions.NullPlayerNameException;
 import com.tenio.core.model.PlayerModel;
@@ -99,7 +99,7 @@ public final class PlayerRoomTest {
 
 	@Test
 	public void addDupplicatedPlayerShouldCauseException() {
-		assertThrows(DuplicatedPlayerException.class, () -> {
+		assertThrows(AddDuplicatedPlayerException.class, () -> {
 			var player = new PlayerModel(__testPlayerName);
 			__playerManager.add(player);
 			__playerManager.add(player);

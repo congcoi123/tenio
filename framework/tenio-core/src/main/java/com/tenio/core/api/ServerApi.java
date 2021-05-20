@@ -69,6 +69,12 @@ public interface ServerApi {
 
 	void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave, int slotInRoom);
 
+	void switchPlayerToSpectator(Player player, Room room);
+
+	void switchSpectatorToPlayer(Player player, Room room, int targetSlot);
+
+	void switchSpectatorToPlayer(Player player, Room room);
+
 	void leaveRoom(Player player, Room room);
 
 	void removeRoom(Room room);
