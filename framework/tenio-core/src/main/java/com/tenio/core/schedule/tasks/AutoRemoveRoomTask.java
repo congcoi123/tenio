@@ -43,7 +43,7 @@ import com.tenio.core.entities.Room;
  * @author kong
  * 
  */
-public final class EmptyRoomScanTask extends AbstractLogger implements Task {
+public final class AutoRemoveRoomTask extends AbstractLogger implements Task {
 
 	private final RoomApi __roomApi;
 	/**
@@ -59,7 +59,7 @@ public final class EmptyRoomScanTask extends AbstractLogger implements Task {
 	 */
 	private final int __emptyRoomScanPeriod;
 
-	public EmptyRoomScanTask(RoomApi roomApi, int emptyRoomScanPeriod) {
+	public AutoRemoveRoomTask(RoomApi roomApi, int emptyRoomScanPeriod) {
 		__roomApi = roomApi;
 		__emptyRoomScanPeriod = emptyRoomScanPeriod;
 		__rooms = __roomApi.gets();

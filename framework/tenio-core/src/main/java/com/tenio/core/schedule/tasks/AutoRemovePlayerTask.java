@@ -46,7 +46,7 @@ import com.tenio.core.events.EventManager;
  * @author kong
  * 
  */
-public final class TimeOutScanTask extends AbstractLogger implements Task {
+public final class AutoRemovePlayerTask extends AbstractLogger implements Task {
 
 	private final EventManager __eventManager;
 	private final PlayerApi __playerApi;
@@ -69,7 +69,7 @@ public final class TimeOutScanTask extends AbstractLogger implements Task {
 	 */
 	private final int __timeoutScanPeriod;
 
-	public TimeOutScanTask(EventManager eventManager, PlayerApi playerApi, int idleReader, int idleWriter,
+	public AutoRemovePlayerTask(EventManager eventManager, PlayerApi playerApi, int idleReader, int idleWriter,
 			int timeoutScanPeriod) {
 		__eventManager = eventManager;
 		__playerApi = playerApi;

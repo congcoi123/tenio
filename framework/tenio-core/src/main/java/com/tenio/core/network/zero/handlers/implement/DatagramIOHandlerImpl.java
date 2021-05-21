@@ -25,21 +25,26 @@ package com.tenio.core.network.zero.handlers.implement;
 
 import java.nio.channels.DatagramChannel;
 
+import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.network.entities.session.SessionManager;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
+import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DatagramIOHandlerImpl extends BaseZeroHandler implements DatagramIOHandler {
 
-	public static DatagramIOHandler newInstance() {
-		return new DatagramIOHandlerImpl();
+	public static DatagramIOHandler newInstance(EventManager eventManager, SessionManager sessionManager,
+			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
+		return new DatagramIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
 	}
 
-	private DatagramIOHandlerImpl() {
-
+	private DatagramIOHandlerImpl(EventManager eventManager, SessionManager sessionManager,
+			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
+		super(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
 	}
 
 	@Override

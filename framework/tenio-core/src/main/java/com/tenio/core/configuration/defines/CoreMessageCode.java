@@ -73,6 +73,9 @@ public enum CoreMessageCode {
 	 * allowed connections.
 	 */
 	REACHED_MAX_CONNECTION("reached_max_connection"),
+	
+	REACHED_MAX_ROOMS("reached_max_rooms"),
+	
 	/**
 	 * When you try to retrieve a non-existing player.
 	 */

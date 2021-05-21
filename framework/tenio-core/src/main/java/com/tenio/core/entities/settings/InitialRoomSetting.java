@@ -23,14 +23,18 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.settings;
 
+import java.lang.reflect.InvocationTargetException;
+
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.entities.defines.RoomRemoveMode;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
+import com.tenio.core.entities.settings.strategies.implement.DefaultRoomCredentialValidatedStrategy;
+import com.tenio.core.entities.settings.strategies.implement.DefaultRoomPlayerSlotGeneratedStrategy;
 
 /**
  * @author kong
  */
-// TODO: Add description
 public final class InitialRoomSetting {
 
 	private String __name;
@@ -86,7 +90,7 @@ public final class InitialRoomSetting {
 		return __playerSlotGeneratedStrategy;
 	}
 
-	public static class Builder {
+	public static class Builder extends SystemLogger {
 
 		private String __name;
 		private String __password;
@@ -138,20 +142,37 @@ public final class InitialRoomSetting {
 			return this;
 		}
 
-		public Builder setRoomCredentialValidatedStrategy(
-				RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
-			__credentialValidatedStrategy = roomCredentialValidatedStrategy;
+		public Builder setRoomCredentialValidatedStrategy(Class<? extends RoomCredentialValidatedStrategy> clazz) {
+			__credentialValidatedStrategy = (RoomCredentialValidatedStrategy) __createNewInstance(clazz);
 			return this;
 		}
 
-		public Builder setRoomPlayerSlotGeneratedStrategy(
-				RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
-			__playerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
+		public Builder setRoomPlayerSlotGeneratedStrategy(Class<? extends RoomPlayerSlotGeneratedStrategy> clazz) {
+			__playerSlotGeneratedStrategy = (RoomPlayerSlotGeneratedStrategy) __createNewInstance(clazz);
 			return this;
 		}
 
 		public InitialRoomSetting build() {
+			if (__credentialValidatedStrategy == null) {
+				__credentialValidatedStrategy = (RoomCredentialValidatedStrategy) __createNewInstance(
+						DefaultRoomCredentialValidatedStrategy.class);
+			}
+			if (__playerSlotGeneratedStrategy == null) {
+				__playerSlotGeneratedStrategy = (RoomPlayerSlotGeneratedStrategy) __createNewInstance(
+						DefaultRoomPlayerSlotGeneratedStrategy.class);
+			}
 			return new InitialRoomSetting(this);
+		}
+
+		private Object __createNewInstance(Class<?> clazz) {
+			Object object = null;
+			try {
+				object = clazz.getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
+					| SecurityException e) {
+				error(e);
+			}
+			return object;
 		}
 
 	}

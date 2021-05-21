@@ -1,9 +1,12 @@
 package com.tenio.core.entities.managers.implement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.implement.RoomImpl;
@@ -57,8 +60,11 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 
 	@Override
 	public Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player) {
-		if (getRoomCount() >= getMaxRooms()) {
-			throw new CoreMessageCodeException(null, null);
+		int roomCount = getRoomCount();
+		if (roomCount >= getMaxRooms()) {
+			throw new CoreMessageCodeException(
+					String.format("Unable to create new room, reached limited the maximum room number: %d", roomCount),
+					CoreMessageCode.REACHED_MAX_ROOMS);
 		}
 
 		Room newRoom = RoomImpl.newInstance();
@@ -67,7 +73,7 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 		newRoom.setActivated(roomSetting.isActivated());
 		newRoom.setCapacity(roomSetting.getMaxPlayers(), roomSetting.getMaxSpectators());
 		newRoom.setOwner(player);
-		newRoom.setPlayerManager(null);
+		newRoom.setPlayerManager(PlayerManagerImpl.newInstance(__eventManager));
 		newRoom.setPlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
 		newRoom.setRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
 		newRoom.setRoomRemoveMode(roomSetting.getRoomRemoveMode());
@@ -79,73 +85,65 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 
 	@Override
 	public boolean containsRoomId(long roomId) {
-		// TODO Auto-generated method stub
-		return false;
+		return __roomByIds.containsKey(roomId);
 	}
 
 	@Override
 	public boolean containsRoomName(String roomName) {
-		// TODO Auto-generated method stub
-		return false;
+		return __roomByIds.values().stream().filter(room -> room.getName().equals(roomName)).findFirst().isPresent();
 	}
 
 	@Override
 	public Room getRoomById(long roomId) {
-		// TODO Auto-generated method stub
-		return null;
+		return __roomByIds.get(roomId);
 	}
 
 	@Override
 	public List<Room> getRoomListByName(String roomName) {
-		// TODO Auto-generated method stub
-		return null;
+		var rooms = __roomByIds.values().stream().filter(room -> room.getName().equals(roomName))
+				.collect(Collectors.toList());
+		return new ArrayList<Room>(rooms);
 	}
 
 	@Override
 	public List<Room> getRoomList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void checkAndRemove(Room room) {
-		// TODO Auto-generated method stub
-
+		return new ArrayList<Room>(__roomByIds.values());
 	}
 
 	@Override
 	public void removeRoomById(long roomId) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removePlayer(Player player) {
-		// TODO Auto-generated method stub
-
+		__roomByIds.remove(roomId);
 	}
 
 	@Override
 	public void changeRoomName(Room room, String roomName) {
-		// TODO Auto-generated method stub
-
+		room.setName(roomName);
 	}
 
 	@Override
 	public void changeRoomPassword(Room room, String roomPassword) {
-		// TODO Auto-generated method stub
-
+		room.setPassword(roomPassword);
 	}
 
 	@Override
 	public void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) {
-		// TODO Auto-generated method stub
+		if (maxPlayers <= room.getPlayerCount()) {
+			throw new IllegalArgumentException(String.format(
+					"Unable to assign the new max player number: %d, because it's less than the current number of players: %d",
+					maxPlayers, room.getPlayerCount()));
+		}
+		if (maxSpectators <= room.getSpectatorCount()) {
+			throw new IllegalArgumentException(String.format(
+					"Unable to assign the new max spectator number: %d, because it's less than the current number of spectator: %d",
+					maxSpectators, room.getSpectatorCount()));
+		}
 
+		room.setCapacity(maxPlayers, maxSpectators);
 	}
 
 	@Override
 	public int getRoomCount() {
-		return __roomCount;
+		return __roomByIds.size();
 	}
 
 }

@@ -75,9 +75,9 @@ import com.tenio.core.pool.CommonObjectArrayPool;
 import com.tenio.core.pool.CommonObjectPool;
 import com.tenio.core.schedule.tasks.CCUScanTask;
 import com.tenio.core.schedule.tasks.DeadlockScanTask;
-import com.tenio.core.schedule.tasks.EmptyRoomScanTask;
+import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
 import com.tenio.core.schedule.tasks.SystemMonitoringTask;
-import com.tenio.core.schedule.tasks.TimeOutScanTask;
+import com.tenio.core.schedule.tasks.AutoRemovePlayerTask;
 import com.tenio.core.server.services.InternalProcessorService;
 import com.tenio.core.server.settings.ConfigurationAssessment;
 
@@ -318,13 +318,13 @@ public final class ServerImpl extends AbstractLogger implements Server {
 
 	private void __createAllSchedules(Configuration configuration) {
 		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new TimeOutScanTask(__eventManager, __playerApi,
+				(new AutoRemovePlayerTask(__eventManager, __playerApi,
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
 
 		__taskManager.create(CoreConstant.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new EmptyRoomScanTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
+				(new AutoRemoveRoomTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
 						.run());
 
 		__taskManager.create(CoreConstant.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,

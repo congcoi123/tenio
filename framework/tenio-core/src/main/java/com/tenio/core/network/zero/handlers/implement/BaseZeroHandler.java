@@ -23,50 +23,27 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handlers.implement;
 
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.events.internal.InternalEventManager;
+import com.tenio.core.events.EventManager;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.zero.handlers.BaseIOHandler;
+import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
 /**
  * @author kong
  */
-// TODO: Add description
-public abstract class BaseZeroHandler extends SystemLogger implements BaseIOHandler {
+public abstract class BaseZeroHandler extends AbstractManager {
 
-	private InternalEventManager __internalEventManager;
-	private SessionManager __sessionManager;
-	private NetworkReaderStatistic __networkReaderStatistic;
+	protected SessionManager __sessionManager;
+	protected NetworkReaderStatistic __networkReaderStatistic;
+	protected NetworkWriterStatistic __networkWriterStatistic;
 
-	@Override
-	public InternalEventManager getInternalEventManager() {
-		return __internalEventManager;
-	}
-
-	@Override
-	public void setInternalEventManager(InternalEventManager internalEventManager) {
-		__internalEventManager = internalEventManager;
-	}
-
-	@Override
-	public SessionManager getSessionManager() {
-		return __sessionManager;
-	}
-
-	@Override
-	public void setSessionManager(SessionManager sessionManager) {
+	protected BaseZeroHandler(EventManager eventManager, SessionManager sessionManager,
+			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
+		super(eventManager);
 		__sessionManager = sessionManager;
-	}
-
-	@Override
-	public NetworkReaderStatistic getNetworkReaderStatistic() {
-		return __networkReaderStatistic;
-	}
-
-	@Override
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
 		__networkReaderStatistic = networkReaderStatistic;
+		__networkWriterStatistic = networkWriterStatistic;
 	}
 
 }

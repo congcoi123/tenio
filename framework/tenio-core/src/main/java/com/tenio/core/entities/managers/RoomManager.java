@@ -36,9 +36,9 @@ import com.tenio.core.exceptions.CoreMessageCodeException;
  * @author kong
  */
 public interface RoomManager {
-	
+
 	void setMaxRooms(int maxRooms);
-	
+
 	int getMaxRooms();
 
 	void addRoom(Room room) throws AddedDuplicatedRoomException;
@@ -58,11 +58,7 @@ public interface RoomManager {
 
 	Collection<Room> getRoomList();
 
-	void checkAndRemove(Room room);
-
 	void removeRoomById(long roomId);
-
-	void removePlayer(Player player);
 
 	void changeRoomName(Room room, String roomName) throws IllegalArgumentException;
 

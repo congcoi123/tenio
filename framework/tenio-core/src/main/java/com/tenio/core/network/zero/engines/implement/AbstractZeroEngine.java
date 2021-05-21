@@ -27,9 +27,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.utilities.StringUtility;
 import com.tenio.core.exceptions.ServiceRuntimeException;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.zero.engines.ZeroEngine;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
@@ -38,8 +38,7 @@ import com.tenio.core.network.zero.handlers.SocketIOHandler;
 /**
  * @author kong
  */
-// TODO: Add description
-public abstract class AbstractZeroEngine extends SystemLogger implements ZeroEngine, Runnable {
+public abstract class AbstractZeroEngine extends AbstractManager implements ZeroEngine, Runnable {
 
 	private static final int DEFAULT_NUMBER_WORKERS = 5;
 	private static final int DEFAULT_BUFFER_SIZE = 1024;

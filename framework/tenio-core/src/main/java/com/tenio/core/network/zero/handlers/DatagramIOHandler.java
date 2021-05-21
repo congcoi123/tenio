@@ -30,7 +30,6 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public interface DatagramIOHandler {
 
 	void channelRead(DatagramChannel datagramChannel, byte[] binary);
