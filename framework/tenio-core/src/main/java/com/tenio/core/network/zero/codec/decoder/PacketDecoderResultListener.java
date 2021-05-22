@@ -31,7 +31,7 @@ import com.tenio.core.network.entities.session.Session;
 // TODO: Add description
 public interface PacketDecoderResultListener {
 
-	void resultFrame(Session session, byte[] data);
+	void resultFrame(Session session, byte[] binary);
 
 	void updateDroppedPackets(long numberPackets);
 

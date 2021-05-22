@@ -34,10 +34,10 @@ public interface DatagramIOHandler {
 
 	void channelRead(DatagramChannel datagramChannel, byte[] binary);
 
-	void channelRead(Session session, byte[] binary);
+	void sessionRead(Session session, byte[] binary);
 
 	void channelException(DatagramChannel datagramChannel, Exception exception);
 
-	void channelException(Session session, Exception exception);
+	void sessionException(Session session, Exception exception);
 
 }

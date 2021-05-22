@@ -34,11 +34,18 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DatagramWriterHandler extends AbstractWriterHandler {
 
+	public static DatagramWriterHandler newInstance() {
+		return new DatagramWriterHandler();
+	}
+
+	private DatagramWriterHandler() {
+
+	}
+
 	@Override
-	public void send(PacketQueue packetQueue, Session session, Packet packet) throws IOException {
+	public void send(PacketQueue packetQueue, Session session, Packet packet) {
 		// retrieve the datagram channel instance from session
 		DatagramChannel datagramChannel = session.getDatagramChannel();
 
@@ -47,13 +54,13 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 		InetSocketAddress inetSocketAddress = session.getDatagramInetSocketAddress();
 
 		// the datagram need to be declared first, something went wrong here, need to
-		// throw an exception
+		// log the exception content
 		if (datagramChannel == null) {
-			throw new IllegalStateException(
-					String.format("UDP Packet cannot be sent to {}, no DatagramChannel was set", session));
+			debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
+					", no DatagramChannel was set");
 		} else if (inetSocketAddress == null) {
-			throw new IllegalStateException(
-					String.format("UDP Packet cannot be sent to {}, no InetSocketAddress was set", session));
+			debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
+					", no InetSocketAddress was set");
 		}
 
 		// clear the buffer first
@@ -76,14 +83,17 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 		getBuffer().flip();
 
 		// send data to the client
-		int writtenBytes = datagramChannel.send(getBuffer(), inetSocketAddress);
+		try {
+			int writtenBytes = datagramChannel.send(getBuffer(), inetSocketAddress);
+			// update statistic data
+			getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
+			getNetworkWriterStatistic().updateWrittenPackets(1);
 
-		// update statistic data
-		getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
-		getNetworkWriterStatistic().updateWrittenPackets(1);
-
-		// update statistic data for session
-		session.addWrittenBytes(writtenBytes);
+			// update statistic data for session
+			session.addWrittenBytes(writtenBytes);
+		} catch (IOException e) {
+			error(e, "Error occured in writing on session: ", session.toString());
+		}
 
 		// it is always safe to remove the packet from queue hence it should be sent
 		packetQueue.take();

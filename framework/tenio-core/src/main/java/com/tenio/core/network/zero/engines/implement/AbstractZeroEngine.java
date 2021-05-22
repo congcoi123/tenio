@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.utilities.StringUtility;
+import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;
@@ -56,7 +57,9 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
 	private volatile boolean __activated;
 
-	public AbstractZeroEngine() {
+	protected AbstractZeroEngine(EventManager eventManager) {
+		super(eventManager);
+
 		__executorSize = DEFAULT_NUMBER_WORKERS;
 		__bufferSize = DEFAULT_BUFFER_SIZE;
 		__activated = false;
@@ -68,12 +71,13 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 		for (int i = 0; i < __executorSize; i++) {
 			__executor.execute(this);
 		}
+		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
 				if (__executor != null && !__executor.isShutdown()) {
 					try {
-						__stop();
+						__halting();
 					} catch (Exception e) {
 						error(e);
 					}
@@ -82,7 +86,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 		});
 	}
 
-	private void __stop() throws ServiceRuntimeException {
+	private void __halting() throws ServiceRuntimeException {
 		pause();
 		onHalted();
 		__executor.shutdown();
@@ -176,25 +180,25 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
 	@Override
 	public void start() {
-		__activated = true;
 		onStarted();
+		__activated = true;
 	}
 
 	@Override
 	public void resume() {
-		__activated = true;
 		onResumed();
+		__activated = true;
 	}
 
 	@Override
 	public void pause() {
-		__activated = false;
 		onPaused();
+		__activated = false;
 	}
 
 	@Override
 	public void halt() {
-		__stop();
+		__halting();
 	}
 
 	@Override

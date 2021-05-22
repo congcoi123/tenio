@@ -37,6 +37,8 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.tenio.core.events.EventManager;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.zero.engines.ZeroReader;
@@ -56,17 +58,22 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	private NetworkReaderStatistic __networkReaderStatistic;
 	private ByteBuffer __readerBuffer;
 
-	public static ZeroReader newInstance() {
-		return new ZeroReaderImpl();
+	public static ZeroReader newInstance(EventManager eventManager) {
+		return new ZeroReaderImpl(eventManager);
 	}
-	
-	private ZeroReaderImpl() {
-		super();
+
+	private ZeroReaderImpl(EventManager eventManager) {
+		super(eventManager);
+
 		setName("reader");
 	}
 
-	private void __initializeSelector() throws IOException {
-		__readableSelector = Selector.open();
+	private void __initializeSelector() throws ServiceRuntimeException {
+		try {
+			__readableSelector = Selector.open();
+		} catch (IOException e) {
+			throw new ServiceRuntimeException(e.getMessage());
+		}
 	}
 
 	private void __initializeBuffer() {
@@ -110,14 +117,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 					// separate the processes
 					if (channel instanceof SocketChannel) {
 						socketChannel = (SocketChannel) channel;
-
-						try {
-							__readTcpData(socketChannel, selectionKey);
-						} catch (IOException e1) {
-							__closeTcpConnection(socketChannel);
-							error(e1, "Socket closed: ", socketChannel.toString());
-						}
-
+						__readTcpData(socketChannel, selectionKey);
 					} else if (channel instanceof DatagramChannel) {
 						datagramChannel = (DatagramChannel) channel;
 						__readUpdData(datagramChannel, selectionKey);
@@ -141,11 +141,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	}
 
-	private void __readTcpData(SocketChannel socketChannel, SelectionKey selectionKey) throws IOException {
+	private void __readTcpData(SocketChannel socketChannel, SelectionKey selectionKey) {
 		// retrieves session by its socket channel
 		Session session = getSessionManager().getSessionBySocket(socketChannel);
 
 		if (session == null) {
+			debug("READ CHANNEL", "Reader handle a null session with the socket channel: ", socketChannel.toString());
 			return;
 		}
 
@@ -162,7 +163,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			// prepares the buffer first
 			__readerBuffer.clear();
 			// reads data from socket and write them to buffer
-			int byteCount = socketChannel.read(__readerBuffer);
+			int byteCount = -1;
+			try {
+				byteCount = socketChannel.read(__readerBuffer);
+			} catch (IOException e) {
+				error(e, "An exception was occured on channel: ", socketChannel.toString());
+				getSocketIOHandler().sessionException(session, e);
+			}
 			// no left data is available, should close the connection
 			if (byteCount == -1) {
 				__closeTcpConnection(socketChannel);
@@ -176,54 +183,70 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				byte[] binary = new byte[__readerBuffer.limit()];
 				__readerBuffer.get(binary);
 
-				getSocketIOHandler().channelRead(session, binary);
+				getSocketIOHandler().sessionRead(session, binary);
 			}
 
 		}
 	}
 
-	private void __closeTcpConnection(SelectableChannel channel) throws IOException {
-		getSocketIOHandler().channelInactive((SocketChannel) channel);
-		channel.close();
+	private void __closeTcpConnection(SelectableChannel channel) {
+		SocketChannel socketChannel = (SocketChannel) channel;
+		getSocketIOHandler().channelInactive(socketChannel);
+		if (!socketChannel.socket().isClosed()) {
+			try {
+				socketChannel.socket().shutdownInput();
+				socketChannel.socket().shutdownOutput();
+				socketChannel.close();
+			} catch (IOException e) {
+				error(e, "Error on closing socket channel: ", socketChannel.toString());
+			}
+		}
+
 	}
 
 	private void __readUpdData(DatagramChannel datagramChannel, SelectionKey selectionKey) {
-		try {
-			// retrieves session by its datagram channel, hence we are using only one
-			// datagram channel for all sessions, we use incoming request remote address to
-			// distinguish them
-			Session session = getSessionManager()
-					.getSessionByDatagram((InetSocketAddress) datagramChannel.socket().getRemoteSocketAddress());
+		// retrieves session by its datagram channel, hence we are using only one
+		// datagram channel for all sessions, we use incoming request remote address to
+		// distinguish them
+		Session session = getSessionManager()
+				.getSessionByDatagram((InetSocketAddress) datagramChannel.socket().getRemoteSocketAddress());
+
+		if (selectionKey.isWritable()) {
+			// should continue put this session for sending all left packets first
+			__zeroWriterListener.continueWriteInterestOp(session);
+			// now we should set it back to interest in OP_READ
+			selectionKey.interestOps(SelectionKey.OP_READ);
+		}
+
+		if (selectionKey.isReadable()) {
+			// prepares the buffer first
+			__readerBuffer.clear();
+			// reads data from socket and write them to buffer
+			int byteCount = -1;
+			try {
+				byteCount = datagramChannel.read(__readerBuffer);
+			} catch (IOException e) {
+				if (session == null) {
+					error(e, "An exception was occured on channel: ", datagramChannel.toString());
+					getDatagramIOHandler().channelException(datagramChannel, e);
+				} else {
+					getDatagramIOHandler().sessionException(session, e);
+				}
+			}
+			// update statistic data
+			__networkReaderStatistic.updateReadBytes(byteCount);
+			// ready to read data from buffer
+			__readerBuffer.flip();
+			// reads data from buffer and transfers them to the next process
+			byte[] binary = new byte[__readerBuffer.limit()];
+			__readerBuffer.get(binary);
 
 			if (session == null) {
-				return;
-			}
-
-			if (selectionKey.isWritable()) {
-				// should continue put this session for sending all left packets first
-				__zeroWriterListener.continueWriteInterestOp(session);
-				// now we should set it back to interest in OP_READ
-				selectionKey.interestOps(SelectionKey.OP_READ);
-			}
-
-			if (selectionKey.isReadable()) {
-				// prepares the buffer first
-				__readerBuffer.clear();
-				// reads data from socket and write them to buffer
-				int byteCount = datagramChannel.read(__readerBuffer);
-				// update statistic data
+				getDatagramIOHandler().channelRead(datagramChannel, binary);
+			} else {
 				session.addReadBytes(byteCount);
-				__networkReaderStatistic.updateReadBytes(byteCount);
-				// ready to read data from buffer
-				__readerBuffer.flip();
-				// reads data from buffer and transfers them to the next process
-				byte[] binary = new byte[__readerBuffer.limit()];
-				__readerBuffer.get(binary);
-
-				getDatagramIOHandler().channelRead(session, binary);
+				getDatagramIOHandler().sessionRead(session, binary);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 	}
@@ -265,12 +288,8 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public void onInitialized() {
-		try {
-			__initializeSelector();
-			__initializeBuffer();
-		} catch (IOException e) {
-			error(e);
-		}
+		__initializeSelector();
+		__initializeBuffer();
 	}
 
 	@Override
@@ -298,8 +317,8 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 		try {
 			Thread.sleep(500L);
 			__readableSelector.close();
-		} catch (IOException | InterruptedException e2) {
-			error(e2, "Exception while closing selector");
+		} catch (IOException | InterruptedException e) {
+			error(e, "Exception while closing selector");
 		}
 	}
 

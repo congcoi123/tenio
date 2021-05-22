@@ -28,7 +28,6 @@ import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrate
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DefaultRoomCredentialValidatedStrategy implements RoomCredentialValidatedStrategy {
 
 	@Override

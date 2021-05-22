@@ -33,7 +33,6 @@ import com.tenio.core.network.statistics.NetworkWriterStatistic;
 /**
  * @author kong
  */
-// TODO: Add description
 public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {
 
 	private BlockingQueue<Session> __sessionTicketsQueue;

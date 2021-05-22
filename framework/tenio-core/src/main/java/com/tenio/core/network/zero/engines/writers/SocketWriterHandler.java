@@ -34,11 +34,18 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class SocketWriterHandler extends AbstractWriterHandler {
 
+	public static SocketWriterHandler newInstance() {
+		return new SocketWriterHandler();
+	}
+
+	private SocketWriterHandler() {
+
+	}
+
 	@Override
-	public void send(PacketQueue packetQueue, Session session, Packet packet) throws IOException {
+	public void send(PacketQueue packetQueue, Session session, Packet packet) {
 		SocketChannel channel = session.getSocketChannel();
 
 		// this channel can be deactivated by some reasons, no need to throw an
@@ -71,46 +78,50 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 		int expectedWrittingBytes = getBuffer().remaining();
 
 		// but it's up to the channel, so it's possible to get left unsent bytes
-		int realWrittenBytes = channel.write(getBuffer());
+		try {
+			int realWrittenBytes = channel.write(getBuffer());
 
-		// update statistic data
-		getNetworkWriterStatistic().updateWrittenBytes(realWrittenBytes);
+			// update statistic data
+			getNetworkWriterStatistic().updateWrittenBytes(realWrittenBytes);
 
-		// update statistic data for the session too
-		session.addWrittenBytes(realWrittenBytes);
+			// update statistic data for the session too
+			session.addWrittenBytes(realWrittenBytes);
 
-		// the left unwritten bytes should be remain to the queue for next process
-		if (realWrittenBytes < expectedWrittingBytes) {
-			// create new bytes array to hold the left unsent bytes
-			byte[] leftUnwrittenBytes = new byte[getBuffer().remaining()];
+			// the left unwritten bytes should be remain to the queue for next process
+			if (realWrittenBytes < expectedWrittingBytes) {
+				// create new bytes array to hold the left unsent bytes
+				byte[] leftUnwrittenBytes = new byte[getBuffer().remaining()];
 
-			// get bytes array value from buffer
-			getBuffer().get(leftUnwrittenBytes);
+				// get bytes array value from buffer
+				getBuffer().get(leftUnwrittenBytes);
 
-			// save those bytes to the packet for next manipulation
-			packet.setFragmentBuffer(leftUnwrittenBytes);
+				// save those bytes to the packet for next manipulation
+				packet.setFragmentBuffer(leftUnwrittenBytes);
 
-			// want to know when the socket can write, which should be noticed on
-			// isWritable() method
-			// when that event occurred, re-add the session to the tickets queue
-			SelectionKey selectionKey = session.getSelectionKey();
-			if (selectionKey != null && selectionKey.isValid()) {
-				selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+				// want to know when the socket can write, which should be noticed on
+				// isWritable() method
+				// when that event occurred, re-add the session to the tickets queue
+				SelectionKey selectionKey = session.getSelectionKey();
+				if (selectionKey != null && selectionKey.isValid()) {
+					selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+				} else {
+					debug("SOCKET CHANNEL SEND", "Something went wrong with OP_WRITE key for session: ", session);
+				}
 			} else {
-				debug("SOCKET CHANNEL SEND", "Something went wrong with OP_WRITE key for session: ", session);
-			}
-		} else {
-			// update the statistic data
-			getNetworkWriterStatistic().updateWrittenPackets(1);
+				// update the statistic data
+				getNetworkWriterStatistic().updateWrittenPackets(1);
 
-			// now the packet can be safely removed
-			packetQueue.take();
+				// now the packet can be safely removed
+				packetQueue.take();
 
-			// if the packet queue still contains more packets then put the session back to
-			// the tickets queue
-			if (!packetQueue.isEmpty()) {
-				getSessionTicketsQueue().add(session);
+				// if the packet queue still contains more packets then put the session back to
+				// the tickets queue
+				if (!packetQueue.isEmpty()) {
+					getSessionTicketsQueue().add(session);
+				}
 			}
+		} catch (IOException e) {
+			error(e, "Error occured in writing on session: ", session.toString());
 		}
 	}
 

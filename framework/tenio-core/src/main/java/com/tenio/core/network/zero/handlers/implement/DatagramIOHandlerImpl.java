@@ -25,11 +25,11 @@ package com.tenio.core.network.zero.handlers.implement;
 
 import java.nio.channels.DatagramChannel;
 
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 
 /**
@@ -38,37 +38,33 @@ import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 public final class DatagramIOHandlerImpl extends BaseZeroHandler implements DatagramIOHandler {
 
 	public static DatagramIOHandler newInstance(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
-		return new DatagramIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
+			NetworkReaderStatistic networkReaderStatistic) {
+		return new DatagramIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic);
 	}
 
 	private DatagramIOHandlerImpl(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
-		super(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
+			NetworkReaderStatistic networkReaderStatistic) {
+		super(eventManager, sessionManager, networkReaderStatistic);
 	}
 
 	@Override
 	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
-		// TODO Auto-generated method stub
-
+		__getInternalEvent().emit(InternalEvent.DATAGRAM_CHANNEL_READ_BINARY, binary);
 	}
 
 	@Override
-	public void channelRead(Session session, byte[] binary) {
-		// TODO Auto-generated method stub
-
+	public void sessionRead(Session session, byte[] binary) {
+		__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
 	}
 
 	@Override
 	public void channelException(DatagramChannel datagramChannel, Exception exception) {
-		// TODO Auto-generated method stub
-
+		// do nothing, the exception was already logged
 	}
 
 	@Override
-	public void channelException(Session session, Exception exception) {
-		// TODO Auto-generated method stub
-
+	public void sessionException(Session session, Exception exception) {
+		__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, exception);
 	}
 
 }

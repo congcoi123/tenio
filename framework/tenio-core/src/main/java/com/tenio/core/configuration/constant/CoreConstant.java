@@ -35,7 +35,7 @@ import io.netty.channel.ChannelOption;
 public final class CoreConstant {
 
 	private CoreConstant() {
-		
+
 	}
 
 	/**
@@ -166,7 +166,9 @@ public final class CoreConstant {
 	 * {@link ChannelOption#SO_SNDBUF}
 	 */
 	public static final int BROADCAST_SEND_BUFFER = 1024;
-	
+
 	public static final int WRITE_MESSAGE_QUEUE_SIZE_WARNING = 100;
+
+	public static final String LOCAL_HOST = "localhost";
 
 }

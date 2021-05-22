@@ -38,7 +38,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.security.ConnectionFilter;
@@ -60,23 +63,28 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	private String __serverAddress;
 	private List<SocketConfig> __socketConfigs;
 
-	public static ZeroAcceptor newInstance() {
-		return new ZeroAcceptorImpl();
+	public static ZeroAcceptor newInstance(EventManager eventManager) {
+		return new ZeroAcceptorImpl(eventManager);
 	}
 
-	private ZeroAcceptorImpl() {
-		super();
+	private ZeroAcceptorImpl(EventManager eventManager) {
+		super(eventManager);
+
 		__acceptableSockets = new ArrayList<SocketChannel>();
 		__boundSockets = new ArrayList<SelectableChannel>();
-		__serverAddress = "localhost";
+		__serverAddress = CoreConstant.LOCAL_HOST;
 		setName("acceptor");
 	}
 
-	private void __initializeSockets() throws IOException {
+	private void __initializeSockets() throws ServiceRuntimeException {
 		// opens a selector to handle server socket, udp datagram and accept all
 		// incoming
 		// client socket
-		__acceptableSelector = Selector.open();
+		try {
+			__acceptableSelector = Selector.open();
+		} catch (IOException e) {
+			throw new ServiceRuntimeException(e.getMessage());
+		}
 
 		// each socket configuration constructs a server socket or an udp datagram
 		for (var socketConfig : __socketConfigs) {
@@ -84,7 +92,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		}
 	}
 
-	private void __bindSocket(SocketConfig socketConfig) {
+	private void __bindSocket(SocketConfig socketConfig) throws ServiceRuntimeException {
 		if (socketConfig.getType() == TransportType.TCP) {
 			__bindTcpSocket(socketConfig.getPort());
 		} else if (socketConfig.getType() == TransportType.UDP) {
@@ -93,7 +101,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	}
 
-	private void __bindTcpSocket(int port) {
+	private void __bindTcpSocket(int port) throws ServiceRuntimeException {
 		try {
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.configureBlocking(false);
@@ -107,11 +115,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 			info("TCP SOCKET BOUND", buildgen("Address: ", __serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			error(e);
+			throw new ServiceRuntimeException(e.getMessage());
 		}
 	}
 
-	private void __bindUdpSocket(int port) {
+	private void __bindUdpSocket(int port) throws ServiceRuntimeException {
 		try {
 			DatagramChannel datagramChannel = DatagramChannel.open();
 			datagramChannel.configureBlocking(false);
@@ -127,13 +135,19 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 			info("UDP SOCKET BOUND", buildgen("Address: ", __serverAddress, ", Port: ", port));
 		} catch (IOException e) {
-			error(e);
+			throw new ServiceRuntimeException(e.getMessage());
 		}
 	}
 
-	private void __acceptableLoop() throws IOException {
+	private void __acceptableLoop() {
 		// blocks until at least one channel is ready for the events you registered for
-		int readyKeysCount = __acceptableSelector.select();
+		int readyKeysCount = 0;
+		try {
+			readyKeysCount = __acceptableSelector.select();
+		} catch (IOException e) {
+			error(e);
+		}
+
 		if (readyKeysCount == 0) {
 			return;
 		}
@@ -177,7 +191,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	}
 
-	private void __shutdownAcceptedSockets() {
+	private synchronized void __shutdownAcceptedSockets() {
 		// iterates the list of client socket channels
 		Iterator<SocketChannel> socketIterator = __acceptableSockets.iterator();
 
@@ -185,7 +199,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 			SocketChannel socketChannel = socketIterator.next();
 			try {
 				getSocketIOHandler().channelInactive(socketChannel);
-				socketChannel.close();
+				if (!socketChannel.socket().isClosed()) {
+					socketChannel.socket().shutdownInput();
+					socketChannel.socket().shutdownOutput();
+					socketChannel.close();
+				}
 			} catch (IOException e) {
 				getSocketIOHandler().channelException(socketChannel, e);
 				error(e);
@@ -195,7 +213,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		__acceptableSockets.clear();
 	}
 
-	private void __shutdownBoundSockets() {
+	private synchronized void __shutdownBoundSockets() {
 		// iterates the list of server socket channels, datagram channels
 		Iterator<SelectableChannel> boundSocketIterator = __boundSockets.iterator();
 
@@ -316,11 +334,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	@Override
 	public void onInitialized() {
-		try {
-			__initializeSockets();
-		} catch (IOException e) {
-			error(e);
-		}
+		__initializeSockets();
 	}
 
 	@Override
@@ -335,16 +349,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	@Override
 	public void onRunning() {
-		try {
-			__acceptableLoop();
-		} catch (IOException e) {
-			try {
-				halt();
-			} catch (Exception e1) {
-				error(e1);
-			}
-			error(e);
-		}
+		__acceptableLoop();
 	}
 
 	@Override

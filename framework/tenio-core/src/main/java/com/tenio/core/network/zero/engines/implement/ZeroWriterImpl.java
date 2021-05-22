@@ -23,13 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engines.implement;
 
-import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.PacketQueueFullException;
 import com.tenio.core.exceptions.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entities.packet.Packet;
@@ -53,25 +52,26 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	private WriterHandler __datagramWriterHandler;
 	private NetworkWriterStatistic __networkWriterStatistic;
 
-	public static ZeroWriter newInstance() {
-		return new ZeroWriterImpl();
+	public static ZeroWriter newInstance(EventManager eventManager) {
+		return new ZeroWriterImpl(eventManager);
 	}
 
-	private ZeroWriterImpl() {
-		super();
+	private ZeroWriterImpl(EventManager eventManager) {
+		super(eventManager);
+
 		__sessionTicketsQueue = new LinkedBlockingQueue<Session>();
 		setName("writer");
 	}
 
 	private void __initializeSocketWriterHandler() {
-		__socketWriterHandler = new SocketWriterHandler();
+		__socketWriterHandler = SocketWriterHandler.newInstance();
 		__socketWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
 		__socketWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
 		__socketWriterHandler.allocateBuffer(getMaxBufferSize());
 	}
 
 	private void __initializeDatagramWriterHandler() {
-		__datagramWriterHandler = new DatagramWriterHandler();
+		__datagramWriterHandler = DatagramWriterHandler.newInstance();
 		__datagramWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
 		__datagramWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
 		__datagramWriterHandler.allocateBuffer(getMaxBufferSize());
@@ -94,44 +94,35 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 			return;
 		}
 
-		try {
-			// now we can iterate packets from queue to proceed
-			PacketQueue packetQueue = session.getPacketQueue();
-			synchronized (packetQueue) {
-				// ignore the empty queue
-				if (packetQueue.isEmpty()) {
-					return;
-				}
-
-				// when the session is in-activated, just ignore its packets
-				if (!session.isActivated()) {
-					packetQueue.take();
-					return;
-				}
-
-				Packet packet = packetQueue.peek();
-				// ignore the null packet and remove it from queue
-				if (packet == null) {
-					if (!packetQueue.isEmpty()) {
-						packetQueue.take();
-					}
-
-					return;
-				}
-
-				if (packet.isTcp()) {
-					__socketWriterHandler.send(packetQueue, session, packet);
-				} else if (packet.isUdp()) {
-					__datagramWriterHandler.send(packetQueue, session, packet);
-				}
+		// now we can iterate packets from queue to proceed
+		PacketQueue packetQueue = session.getPacketQueue();
+		synchronized (packetQueue) {
+			// ignore the empty queue
+			if (packetQueue.isEmpty()) {
+				return;
 			}
-			// FIXME: Need to handle these exceptions
-		} catch (ClosedChannelException e) {
-			error(e);
-		} catch (IOException e) {
-			error(e);
-		} catch (Exception e) {
-			error(e);
+
+			// when the session is in-activated, just ignore its packets
+			if (!session.isActivated()) {
+				packetQueue.take();
+				return;
+			}
+
+			Packet packet = packetQueue.peek();
+			// ignore the null packet and remove it from queue
+			if (packet == null) {
+				if (!packetQueue.isEmpty()) {
+					packetQueue.take();
+				}
+
+				return;
+			}
+
+			if (packet.isTcp()) {
+				__socketWriterHandler.send(packetQueue, session, packet);
+			} else if (packet.isUdp()) {
+				__datagramWriterHandler.send(packetQueue, session, packet);
+			}
 		}
 	}
 

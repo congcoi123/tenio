@@ -26,12 +26,7 @@ package com.tenio.core.network.zero.codec.encryption;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DefaultBinaryPacketEncrypter implements PacketEncrypter {
-	
-	public DefaultBinaryPacketEncrypter() {
-		
-	}
 
 	@Override
 	public byte[] decrypt(byte[] binary) {

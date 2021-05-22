@@ -27,7 +27,6 @@ import com.tenio.core.events.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
 /**
  * @author kong
@@ -36,14 +35,12 @@ public abstract class BaseZeroHandler extends AbstractManager {
 
 	protected SessionManager __sessionManager;
 	protected NetworkReaderStatistic __networkReaderStatistic;
-	protected NetworkWriterStatistic __networkWriterStatistic;
 
 	protected BaseZeroHandler(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
+			NetworkReaderStatistic networkReaderStatistic) {
 		super(eventManager);
 		__sessionManager = sessionManager;
 		__networkReaderStatistic = networkReaderStatistic;
-		__networkWriterStatistic = networkWriterStatistic;
 	}
 
 }

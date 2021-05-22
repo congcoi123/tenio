@@ -29,8 +29,8 @@ package com.tenio.core.network.zero.codec.packet;
 // TODO: Add description
 public final class ProcessedPacket {
 
-	private byte[] __data;
 	private PacketReadState __packetReadState;
+	private byte[] __data;
 
 	public static ProcessedPacket newInstance() {
 		return new ProcessedPacket();

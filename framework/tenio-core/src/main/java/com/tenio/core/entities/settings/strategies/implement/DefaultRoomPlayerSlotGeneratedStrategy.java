@@ -29,8 +29,9 @@ import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrate
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DefaultRoomPlayerSlotGeneratedStrategy implements RoomPlayerSlotGeneratedStrategy {
+
+	private Room __room;
 
 	@Override
 	public void initialize() {
@@ -54,12 +55,12 @@ public final class DefaultRoomPlayerSlotGeneratedStrategy implements RoomPlayerS
 
 	@Override
 	public Room getRoom() {
-		return null;
+		return __room;
 	}
 
 	@Override
 	public void setRoom(Room room) {
-
+		__room = room;
 	}
 
 }

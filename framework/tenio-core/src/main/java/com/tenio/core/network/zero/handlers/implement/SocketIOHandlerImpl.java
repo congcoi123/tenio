@@ -32,7 +32,6 @@ import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handlers.SocketIOHandler;
@@ -45,23 +44,22 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 	private PacketDecoder __packetDecoder;
 
 	public static SocketIOHandler newInstance(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
-		return new SocketIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
+			NetworkReaderStatistic networkReaderStatistic) {
+		return new SocketIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic);
 	}
 
 	private SocketIOHandlerImpl(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic, NetworkWriterStatistic networkWriterStatistic) {
-		super(eventManager, sessionManager, networkReaderStatistic, networkWriterStatistic);
+			NetworkReaderStatistic networkReaderStatistic) {
+		super(eventManager, sessionManager, networkReaderStatistic);
 	}
 
 	@Override
-	public void resultFrame(Session session, byte[] data) {
+	public void resultFrame(Session session, byte[] binary) {
 		if (!session.isConnected()) {
 			session.setConnected(true);
-			session.activate();
 			__getInternalEvent().emit(InternalEvent.SESSION_WAS_CONNECTED, session);
 		} else {
-			__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, data);
+			__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
 		}
 	}
 
@@ -82,19 +80,17 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 	}
 
 	@Override
-	public void channelRead(SocketChannel socketChannel, byte[] binary) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void channelRead(Session session, byte[] binary) {
+	public void sessionRead(Session session, byte[] binary) {
 		__packetDecoder.decode(session, binary);
 	}
 
 	@Override
 	public void channelInactive(SocketChannel socketChannel) {
 		Session session = __sessionManager.getSessionBySocket(socketChannel);
+		if (session == null) {
+			return;
+		}
+
 		try {
 			session.close();
 		} catch (IOException e) {
@@ -106,14 +102,12 @@ public final class SocketIOHandlerImpl extends BaseZeroHandler implements Socket
 
 	@Override
 	public void channelException(SocketChannel socketChannel, Exception exception) {
-		// TODO Auto-generated method stub
-
+		// do nothing, the exception was already logged
 	}
 
 	@Override
-	public void channelException(Session session, Exception exception) {
-		// TODO Auto-generated method stub
-
+	public void sessionException(Session session, Exception exception) {
+		__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, exception);
 	}
 
 	@Override

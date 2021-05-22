@@ -36,16 +36,11 @@ import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 
 	private PacketCompressor __compressor;
 	private PacketEncrypter __encrypter;
 	private PacketDecoderResultListener __resultListener;
-	
-	public DefaultBinaryPacketDecoder() {
-		
-	}
 
 	@Override
 	public void decode(Session session, byte[] data) {

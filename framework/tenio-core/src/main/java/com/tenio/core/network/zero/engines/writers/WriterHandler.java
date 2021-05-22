@@ -37,7 +37,7 @@ import com.tenio.core.network.statistics.NetworkWriterStatistic;
 // TODO: Add description
 public interface WriterHandler {
 
-	void send(PacketQueue packetQueue, Session session, Packet packet) throws Exception;
+	void send(PacketQueue packetQueue, Session session, Packet packet);
 
 	BlockingQueue<Session> getSessionTicketsQueue();
 
