@@ -30,8 +30,6 @@ import java.nio.channels.SocketChannel;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
-import com.tenio.core.network.entities.session.SessionManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handlers.SocketIOHandler;
@@ -39,25 +37,23 @@ import com.tenio.core.network.zero.handlers.SocketIOHandler;
 /**
  * @author kong
  */
-public final class SocketIOHandlerImpl extends BaseZeroHandler implements SocketIOHandler, PacketDecoderResultListener {
+public final class SocketIOHandlerImpl extends AbstractIOHandler
+		implements SocketIOHandler, PacketDecoderResultListener {
 
 	private PacketDecoder __packetDecoder;
 
-	public static SocketIOHandler newInstance(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic) {
-		return new SocketIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic);
+	public static SocketIOHandler newInstance(EventManager eventManager) {
+		return new SocketIOHandlerImpl(eventManager);
 	}
 
-	private SocketIOHandlerImpl(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic) {
-		super(eventManager, sessionManager, networkReaderStatistic);
+	private SocketIOHandlerImpl(EventManager eventManager) {
+		super(eventManager);
 	}
 
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
 		if (!session.isConnected()) {
-			session.setConnected(true);
-			__getInternalEvent().emit(InternalEvent.SESSION_WAS_CONNECTED, session);
+			__getInternalEvent().emit(InternalEvent.SESSION_REQUEST_CONNECTION, session, binary);
 		} else {
 			__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
 		}

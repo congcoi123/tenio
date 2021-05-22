@@ -23,16 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.websocket;
 
-import java.io.ByteArrayInputStream;
-
 import javax.net.ssl.SSLEngine;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.pool.ElementsPool;
 import com.tenio.core.events.EventManager;
-import com.tenio.core.network.netty.monitoring.GlobalTrafficShapingHandlerCustomize;
-import com.tenio.core.network.netty.websocket.ssl.WebSocketSslContext;
+import com.tenio.core.network.entities.session.SessionManager;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.security.ssl.WebSocketSslContext;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -48,42 +45,47 @@ import io.netty.handler.ssl.SslHandler;
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final EventManager __eventManager;
-	private final ElementsPool<CommonObject> __commonObjectPool;
-	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-	private final GlobalTrafficShapingHandlerCustomize __trafficCounter;
-	private final Configuration __configuration;
-	private final int __connectionIndex;
-	private boolean isSSL = true;
-	private WebSocketSslContext sslContext;
+	private final SessionManager __sessionManager;
+	private final ConnectionFilter __connectionFilter;
+	private final NetworkReaderStatistic __networkReaderStatistic;
+	private final WebSocketSslContext __sslContext;
+	private final boolean __usingSSL;
 
-	public NettyWSInitializer(int connectionIndex, EventManager eventManager,
-			ElementsPool<CommonObject> commonObjectPool,
-			ElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			GlobalTrafficShapingHandlerCustomize trafficCounter, Configuration configuration) {
-		__connectionIndex = connectionIndex;
+	public static NettyWSInitializer newInstance(EventManager eventManager, SessionManager sessionManager,
+			ConnectionFilter connectionFilter, NetworkReaderStatistic networkReaderStatistic,
+			WebSocketSslContext sslContext, boolean usingSSL) {
+		return new NettyWSInitializer(eventManager, sessionManager, connectionFilter, networkReaderStatistic,
+				sslContext, usingSSL);
+	}
+
+	private NettyWSInitializer(EventManager eventManager, SessionManager sessionManager,
+			ConnectionFilter connectionFilter, NetworkReaderStatistic networkReaderStatistic,
+			WebSocketSslContext sslContext, boolean usingSSL) {
 		__eventManager = eventManager;
-		__commonObjectPool = commonObjectPool;
-		__byteArrayInputPool = byteArrayInputPool;
-		__trafficCounter = trafficCounter;
-		__configuration = configuration;
+		__sessionManager = sessionManager;
+		__connectionFilter = connectionFilter;
+		__networkReaderStatistic = networkReaderStatistic;
+		__sslContext = sslContext;
+		__usingSSL = usingSSL;
 	}
 
 	@Override
 	protected void initChannel(SocketChannel channel) throws Exception {
 		var pipeline = channel.pipeline();
 
-        if (isSSL) {
-            SSLEngine engine = sslContext.getServerContext().createSSLEngine();
-            engine.setUseClientMode(false);
-            pipeline.addLast("ssl", new SslHandler(engine));
-       }
-        
+		// add ssl handler
+		if (__usingSSL) {
+			SSLEngine engine = __sslContext.getServerContext().createSSLEngine();
+			engine.setUseClientMode(false);
+			pipeline.addLast("ssl", new SslHandler(engine));
+		}
+
 		// add http-codec for TCP hand shaker
 		pipeline.addLast("httpServerCodec", new HttpServerCodec());
 
 		// the logic handler
-		pipeline.addLast("http-handshake", new NettyWSHandShake(__connectionIndex, __eventManager, __commonObjectPool,
-				__byteArrayInputPool, __configuration));
+		pipeline.addLast("http-handshake", NettyWSHandShake.newInstance(__eventManager, __sessionManager,
+				__connectionFilter, __networkReaderStatistic));
 	}
 
 }

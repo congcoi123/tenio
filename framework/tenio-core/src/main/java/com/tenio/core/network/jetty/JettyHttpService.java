@@ -135,6 +135,7 @@ public final class JettyHttpService extends AbstractLogger implements Service, R
 	public void start() {
 		__executor = Executors.newSingleThreadExecutor();
 		__executor.execute(this);
+		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

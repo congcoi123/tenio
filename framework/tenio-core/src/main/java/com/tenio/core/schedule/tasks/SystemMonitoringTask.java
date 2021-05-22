@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.defines.ExtensionEvent;
@@ -41,7 +41,7 @@ import com.tenio.core.monitoring.system.SystemMonitoring;
  * @author kong
  * 
  */
-public final class SystemMonitoringTask extends AbstractLogger implements Task {
+public final class SystemMonitoringTask extends SystemLogger implements Task {
 
 	private final SystemMonitoring __monitoring;
 

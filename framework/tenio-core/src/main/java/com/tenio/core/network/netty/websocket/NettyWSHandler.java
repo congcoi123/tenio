@@ -23,16 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty.websocket;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.common.pool.ElementsPool;
+import java.io.IOException;
+
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
-import com.tenio.core.network.defines.TransportType;
-import com.tenio.core.network.netty.BaseNettyHandler;
+import com.tenio.core.exceptions.RefusedConnectionAddressException;
+import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.network.entities.session.SessionManager;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 
 /**
@@ -40,40 +43,59 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  * system's object for convenience and easy to use. It also handles the logic
  * for the processing of players and connections.
  * 
- * @see BaseNettyHandler
- * 
  * @author kong
- * 
  */
-public class NettyWSHandler extends BaseNettyHandler {
+public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 
-	public NettyWSHandler(int connectionIndex, EventManager eventManager, ElementsPool<CommonObject> commonObjectPool,
-			ElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
-		super(eventManager, commonObjectPool, byteArrayInputPool, connectionIndex, TransportType.WEB_SOCKET);
+	private final EventManager __eventManager;
+	private final SessionManager __sessionManager;
+	private final ConnectionFilter __connectionFilter;
+	private final NetworkReaderStatistic __networkReaderStatistic;
+	private final PrivateLogger __logger;
+
+	public static NettyWSHandler newInstance(EventManager eventManager, SessionManager sessionManager,
+			ConnectionFilter connectionFilter, NetworkReaderStatistic networkReaderStatistic) {
+		return new NettyWSHandler(eventManager, sessionManager, connectionFilter, networkReaderStatistic);
 	}
-	
+
+	private NettyWSHandler(EventManager eventManager, SessionManager sessionManager, ConnectionFilter connectionFilter,
+			NetworkReaderStatistic networkReaderStatistic) {
+		__eventManager = eventManager;
+		__sessionManager = sessionManager;
+		__connectionFilter = connectionFilter;
+		__networkReaderStatistic = networkReaderStatistic;
+		__logger = new PrivateLogger();
+	}
+
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		try {
-            this.wsChannel = ctx.getChannel();
-            String address = this.wsChannel.getRemoteAddress().toString();
-            this.connFilter.validateAndAddAddress(address.substring(1, address.indexOf(58)));
-            this.sfsSession = this.sessionManager.createWebSocketSession(this);
-            this.sessionManager.addSession(this.sfsSession);
-       } catch (RefusedConnectionAddressException var4) {
-            this.logger.warn("Refused connection. " + var4.getMessage());
-            ctx.getChannel().close();
-            this.logger.warn(ExceptionUtils.getStackTrace(var4));
-       } catch (Exception var5) {
-            this.logger.warn("Refused connection. " + var5.getMessage());
-            ctx.getChannel().close();
-            this.logger.warn(ExceptionUtils.getStackTrace(var5));
-       }
+			String address = ctx.channel().remoteAddress().toString();
+			__connectionFilter.validateAndAddAddress(address);
+
+			Session session = __sessionManager.createWebSocketSession(ctx.channel());
+			__eventManager.getInternal().emit(InternalEvent.SESSION_WAS_CREATED, session);
+		} catch (RefusedConnectionAddressException e) {
+			__logger.error(e, "Refused connection with address: ", e.getMessage());
+
+			ctx.channel().close();
+		}
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		_channelInactive(ctx);
+		Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
+		if (session == null) {
+			return;
+		}
+
+		try {
+			session.close();
+		} catch (IOException e) {
+			__logger.error(e, "Session: ", session.toString());
+		} finally {
+			session = null;
+		}
 	}
 
 	@Override
@@ -82,28 +104,44 @@ public class NettyWSHandler extends BaseNettyHandler {
 		if (msgRaw instanceof BinaryWebSocketFrame) {
 			// convert the BinaryWebSocketFrame to bytes' array
 			var buffer = ((BinaryWebSocketFrame) msgRaw).content();
-			var bytes = new byte[buffer.readableBytes()];
-			buffer.getBytes(buffer.readerIndex(), bytes);
+			var binary = new byte[buffer.readableBytes()];
+			buffer.getBytes(buffer.readerIndex(), binary);
 			buffer.release();
 
-			// create request
-			IRequest request = new Request();
-            Object controllerKey = null;
-            requestObject.get();
-            requestObject.getShort();
-            controllerKey = requestObject.get();
-            request.setId(requestObject.getShort());
-            request.setContent(requestObject.compact());
-            request.setSender(packet.getSender());
-            request.setTransportType(packet.getTransportType());
-            this.dispatchRequestToController(request, controllerKey);
+			Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
+
+			if (session == null) {
+				__logger.debug("WEBSOCKET READ CHANNEL", "Reader handle a null session with the web socket channel: ",
+						ctx.channel().toString());
+				return;
+			}
+
+			session.addReadBytes(binary.length);
+			__networkReaderStatistic.updateReadBytes(binary.length);
+			__networkReaderStatistic.updateReadPackets(1);
+
+			if (!session.isConnected()) {
+				__eventManager.getInternal().emit(InternalEvent.SESSION_REQUEST_CONNECTION, session, binary);
+			} else {
+				__eventManager.getInternal().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
+			}
+
 		}
 
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		_exceptionCaught(ctx, cause);
+		Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
+		if (session != null) {
+			__eventManager.getInternal().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, cause);
+		} else {
+			__logger.error(cause, "Exception was occured on channel: %s", ctx.channel().toString());
+		}
+	}
+
+	private final class PrivateLogger extends SystemLogger {
+
 	}
 
 }

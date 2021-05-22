@@ -21,26 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.handlers.implement;
+package com.tenio.core.schedule.tasks;
 
-import com.tenio.core.events.EventManager;
-import com.tenio.core.manager.AbstractManager;
-import com.tenio.core.network.entities.session.SessionManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
+import java.util.concurrent.ScheduledFuture;
+
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.common.task.schedule.Task;
 
 /**
+ * For a player which is in IDLE mode, that means for a long time without
+ * receiving or sending any data from the server or from a client. This task
+ * will scan those IDLE players in period time and force them to log out. Those
+ * players got a "timeout" error.
+ * 
  * @author kong
+ * 
  */
-public abstract class BaseZeroHandler extends AbstractManager {
+public final class AutoDisconnectPlayerTask extends SystemLogger implements Task {
 
-	protected SessionManager __sessionManager;
-	protected NetworkReaderStatistic __networkReaderStatistic;
-
-	protected BaseZeroHandler(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic) {
-		super(eventManager);
-		__sessionManager = sessionManager;
-		__networkReaderStatistic = networkReaderStatistic;
+	@Override
+	public ScheduledFuture<?> run() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

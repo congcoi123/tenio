@@ -21,23 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.handlers;
+package com.tenio.core.network.zero.handlers.implement;
 
-import java.nio.channels.DatagramChannel;
-
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.events.EventManager;
+import com.tenio.core.manager.AbstractManager;
+import com.tenio.core.network.entities.session.SessionManager;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
 
 /**
  * @author kong
  */
-public interface DatagramIOHandler extends BaseIOHandler {
+public abstract class AbstractIOHandler extends AbstractManager {
 
-	void channelRead(DatagramChannel datagramChannel, byte[] binary);
+	protected SessionManager __sessionManager;
+	protected NetworkReaderStatistic __networkReaderStatistic;
 
-	void sessionRead(Session session, byte[] binary);
+	protected AbstractIOHandler(EventManager eventManager) {
+		super(eventManager);
+	}
 
-	void channelException(DatagramChannel datagramChannel, Exception exception);
+	public void setSessionManager(SessionManager sessionManager) {
+		__sessionManager = sessionManager;
+	}
 
-	void sessionException(Session session, Exception exception);
+	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+		__networkReaderStatistic = networkReaderStatistic;
+	}
 
 }

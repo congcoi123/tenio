@@ -25,11 +25,10 @@ package com.tenio.core.network.netty.websocket;
 
 import java.net.URISyntaxException;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.ElementsPool;
 import com.tenio.core.events.EventManager;
+import com.tenio.core.network.entities.session.SessionManager;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -50,7 +49,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
  * @author kong
  * 
  */
-public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
+public final class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 	/**
 	 * The handshake starts with an HTTP request/response, allowing servers to
@@ -61,19 +60,21 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 	private WebSocketServerHandshaker __handshaker;
 
 	private final EventManager __eventManager;
-	private final ElementsPool<CommonObject> __commonObjectPool;
-	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-	private final Configuration __configuration;
-	private final int __connectionIndex;
+	private final SessionManager __sessionManager;
+	private final ConnectionFilter __connectionFilter;
+	private final NetworkReaderStatistic __networkReaderStatistic;
 
-	public NettyWSHandShake(int connectionIndex, EventManager eventManager,
-			ElementsPool<CommonObject> commonObjectPool,
-			ElementsPool<ByteArrayInputStream> byteArrayInputPool, Configuration configuration) {
-		__connectionIndex = connectionIndex;
+	public static NettyWSHandShake newInstance(EventManager eventManager, SessionManager sessionManager,
+			ConnectionFilter connectionFilter, NetworkReaderStatistic networkReaderStatistic) {
+		return new NettyWSHandShake(eventManager, sessionManager, connectionFilter, networkReaderStatistic);
+	}
+
+	private NettyWSHandShake(EventManager eventManager, SessionManager sessionManager,
+			ConnectionFilter connectionFilter, NetworkReaderStatistic networkReaderStatistic) {
 		__eventManager = eventManager;
-		__commonObjectPool = commonObjectPool;
-		__byteArrayInputPool = byteArrayInputPool;
-		__configuration = configuration;
+		__sessionManager = sessionManager;
+		__connectionFilter = connectionFilter;
+		__networkReaderStatistic = networkReaderStatistic;
 	}
 
 	@Override
@@ -90,8 +91,8 @@ public class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 
 				// add new handler to the existing pipeline to handle HandShake-WebSocket
 				// Messages
-				ctx.pipeline().replace(this, "handler", new NettyWSHandler(__connectionIndex, __eventManager, __commonObjectPool,
-						__byteArrayInputPool, __configuration));
+				ctx.pipeline().replace(this, "handler", NettyWSHandler.newInstance(__eventManager, __sessionManager,
+						__connectionFilter, __networkReaderStatistic));
 
 				// do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				__handleHandshake(ctx, httpRequest);

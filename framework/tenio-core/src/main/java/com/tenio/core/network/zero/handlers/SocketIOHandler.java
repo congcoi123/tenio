@@ -32,7 +32,7 @@ import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
 /**
  * @author kong
  */
-public interface SocketIOHandler {
+public interface SocketIOHandler extends BaseIOHandler {
 
 	void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 

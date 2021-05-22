@@ -1,4 +1,4 @@
-package com.tenio.core.network.netty.websocket.ssl;
+package com.tenio.core.network.security.ssl;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;

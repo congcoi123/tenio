@@ -23,16 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.core.schedule.tasks;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.task.schedule.Task;
-import com.tenio.core.api.PlayerApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.events.EventManager;
 
 /**
  * To retrieve the CCU in period time. You can configure this time in your own
@@ -41,27 +36,12 @@ import com.tenio.core.events.EventManager;
  * @author kong
  * 
  */
-public final class CCUScanTask extends AbstractLogger implements Task {
-
-	private final EventManager __eventManager;
-	/**
-	 * The period time for retrieving CCU
-	 */
-	private final int __ccuScanPeriod;
-	private final PlayerApi __playerApi;
-
-	public CCUScanTask(EventManager eventManager, PlayerApi playerApi, int ccuScanPeriod) {
-		__eventManager = eventManager;
-		__playerApi = playerApi;
-		__ccuScanPeriod = ccuScanPeriod;
-	}
+public final class CCUScanTask extends SystemLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("CCU SCAN TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ExtensionEvent.FETCHED_CCU_NUMBER, __playerApi.countPlayers(), __playerApi.count());
-		}, 0, __ccuScanPeriod, TimeUnit.SECONDS);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

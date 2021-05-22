@@ -28,23 +28,19 @@ import java.nio.channels.DatagramChannel;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
-import com.tenio.core.network.entities.session.SessionManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 
 /**
  * @author kong
  */
-public final class DatagramIOHandlerImpl extends BaseZeroHandler implements DatagramIOHandler {
+public final class DatagramIOHandlerImpl extends AbstractIOHandler implements DatagramIOHandler {
 
-	public static DatagramIOHandler newInstance(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic) {
-		return new DatagramIOHandlerImpl(eventManager, sessionManager, networkReaderStatistic);
+	public static DatagramIOHandler newInstance(EventManager eventManager) {
+		return new DatagramIOHandlerImpl(eventManager);
 	}
 
-	private DatagramIOHandlerImpl(EventManager eventManager, SessionManager sessionManager,
-			NetworkReaderStatistic networkReaderStatistic) {
-		super(eventManager, sessionManager, networkReaderStatistic);
+	private DatagramIOHandlerImpl(EventManager eventManager) {
+		super(eventManager);
 	}
 
 	@Override

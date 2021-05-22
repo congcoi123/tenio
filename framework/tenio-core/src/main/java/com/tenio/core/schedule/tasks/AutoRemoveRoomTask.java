@@ -23,18 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.core.schedule.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.task.schedule.Task;
-import com.tenio.core.api.RoomApi;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.entities.Room;
 
 /**
  * To remove the empty room (a room without any players) in period time. You can
@@ -43,49 +36,12 @@ import com.tenio.core.entities.Room;
  * @author kong
  * 
  */
-public final class AutoRemoveRoomTask extends AbstractLogger implements Task {
-
-	private final RoomApi __roomApi;
-	/**
-	 * The current list of rooms
-	 */
-	private final Map<String, Room> __rooms;
-	/**
-	 * Removable list of rooms
-	 */
-	private final List<Room> __removableRooms;
-	/**
-	 * The period time for scanning empty rooms and delete those
-	 */
-	private final int __emptyRoomScanPeriod;
-
-	public AutoRemoveRoomTask(RoomApi roomApi, int emptyRoomScanPeriod) {
-		__roomApi = roomApi;
-		__emptyRoomScanPeriod = emptyRoomScanPeriod;
-		__rooms = __roomApi.gets();
-		__removableRooms = new ArrayList<Room>();
-	}
+public final class AutoRemoveRoomTask extends SystemLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("EMPTY ROOM TASK", "Running ...");
-		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-
-			__rooms.forEach((key, value) -> {
-				if (value.isEmpty()) {
-					synchronized (__rooms) {
-						__removableRooms.add(value);
-					}
-				}
-			});
-
-			__removableRooms.forEach((room) -> {
-				__roomApi.remove(room);
-			});
-
-			__removableRooms.clear();
-
-		}, 0, __emptyRoomScanPeriod, TimeUnit.SECONDS);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

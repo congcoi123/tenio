@@ -33,7 +33,7 @@ import com.tenio.core.events.internal.InternalEventManager;
  */
 public abstract class AbstractManager extends SystemLogger {
 
-	protected EventManager __eventManager;
+	protected final EventManager __eventManager;
 
 	protected AbstractManager(EventManager eventManager) {
 		__eventManager = eventManager;

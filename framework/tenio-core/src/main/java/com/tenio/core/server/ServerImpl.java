@@ -62,8 +62,8 @@ import com.tenio.core.network.Network;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.jetty.JettyHttpService;
-import com.tenio.core.network.netty.NettyWebSocketService;
-import com.tenio.core.network.security.DefaultConnectionFilter;
+import com.tenio.core.network.netty.NettyWebSocketServiceImpl;
+import com.tenio.core.network.security.filter.DefaultConnectionFilter;
 import com.tenio.core.network.zero.engines.ZeroAcceptor;
 import com.tenio.core.network.zero.engines.ZeroReader;
 import com.tenio.core.network.zero.engines.ZeroWriter;
@@ -77,7 +77,7 @@ import com.tenio.core.schedule.tasks.CCUScanTask;
 import com.tenio.core.schedule.tasks.DeadlockScanTask;
 import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
 import com.tenio.core.schedule.tasks.SystemMonitoringTask;
-import com.tenio.core.schedule.tasks.AutoRemovePlayerTask;
+import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
 import com.tenio.core.server.services.InternalProcessorService;
 import com.tenio.core.server.settings.ConfigurationAssessment;
 
@@ -99,7 +99,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private ServerImpl() {
 		
 		__eventManager = new EventManagerImpl();
-		__network = new NettyWebSocketService();
+		__network = new NettyWebSocketServiceImpl();
 
 		__roomManager = new RoomManagerImpl(__eventManager);
 		__playerManager = new PlayerManagerImpl(__eventManager);
@@ -318,7 +318,7 @@ public final class ServerImpl extends AbstractLogger implements Server {
 
 	private void __createAllSchedules(Configuration configuration) {
 		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new AutoRemovePlayerTask(__eventManager, __playerApi,
+				(new AutoDisconnectPlayerTask(__eventManager, __playerApi,
 						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
 						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
 						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
