@@ -21,28 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.controller;
+package com.tenio.common;
 
-import com.tenio.core.exceptions.RequestQueueFullException;
-import com.tenio.core.network.entities.protocols.Request;
-import com.tenio.core.service.Service;
-import com.tenio.core.service.ServiceListener;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.SuiteDisplayName;
+import org.junit.runner.RunWith;
 
 /**
  * @author kong
  */
-public interface Controller extends Service, ServiceListener {
-
-	void enqueueRequest(Request request) throws RequestQueueFullException;
-
-	int getMaxRequestQueueSize();
-
-	void setMaxRequestQueueSize(int maxSize);
-
-	float getPercentageUsedRequestQueue();
-
-	int getThreadPoolSize();
-
-	void setThreadPoolSize(int maxSize);
+@RunWith(JUnitPlatform.class)
+@SuiteDisplayName("Test all unit test cases for tenio-common module")
+@SelectPackages("com.tenio")
+public final class TenIOCommonTest {
 
 }

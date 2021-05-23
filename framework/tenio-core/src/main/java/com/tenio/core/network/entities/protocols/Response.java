@@ -44,8 +44,8 @@ public interface Response extends Message {
 
 	Response useUdp();
 
-	void write() throws RuntimeException;
+	void write();
 
-	void writeInDelay(int delay) throws RuntimeException;
+	void writeInDelay(int delayInSeconds);
 
 }

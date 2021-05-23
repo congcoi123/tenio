@@ -23,321 +23,135 @@ THE SOFTWARE.
 */
 package com.tenio.core.server.services;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.loggers.AbstractLogger;
-import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.configuration.defines.CoreConfigurationType;
-import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.controller.AbstractController;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.managers.PlayerManager;
-import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.events.EventManager;
-import com.tenio.core.events.Subscriber;
-import com.tenio.core.exceptions.ExtensionValueCastException;
+import com.tenio.core.network.defines.RequestPriority;
+import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.protocols.Request;
-import com.tenio.core.network.entities.session.Connection;
-import com.tenio.core.service.Service;
+import com.tenio.core.network.entities.protocols.implement.RequestImpl;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * Handle the main logic of the server.
  * 
  * @author kong
  */
-@ThreadSafe
-// TODO: Add description
-public final class InternalProcessorService extends AbstractController implements Service {
+public final class InternalProcessorService extends AbstractController {
 
-	private final EventManager __eventManager;
-	private final PlayerManager __playerManager;
-	private final RoomManager __roomManager;
-
-	public InternalProcessorService(EventManager eventManager, PlayerManager playerManager, RoomManager roomManager) {
-		__eventManager = eventManager;
-		__playerManager = playerManager;
-		__roomManager = roomManager;
-	}
-
-	/**
-	 * Start handling
-	 */
-	public void init(Configuration configuration) {
-
-		boolean keepPlayerOnDisconnect = configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT);
-
-		__on(InternalEvent.SESSION_WAS_CLOSED, params -> {
-			var session;
-
-			if (session != null) { // the connection has existed
-				var playerName = session.getPlayerName();
-				if (playerName != null) { // the player maybe exist
-					var player = __playerManager.get(playerName);
-					if (player != null) { // the player has existed
-						__eventManager.getExtension().emit(ExtensionEvent.DISCONNECT_PLAYER, player);
-						__playerManager.removeAllConnections(player);
-						if (!keepPlayerOnDisconnect) {
-							__playerManager.clean(player);
-						}
-					}
-				} else { // the free connection (without a corresponding player)
-					__eventManager.getExtension().emit(ExtensionEvent.DISCONNECT_CONNECTION, connection);
-				}
-				connection.clean();
-			}
-
-			return null;
-		});
-
-//		__on(InternalEvent.CONNECTION_MESSAGE_HANDLED_EXCEPTION, params -> {
-//			String channelId = __getString(params[0]);
-//			var connection = __getConnection(params[1]);
-//			var cause = __getThrowable(params[2]);
-//
-//			if (connection != null) { // the old connection
-//				var playerName = connection.getPlayerName();
-//				if (playerName != null) { // the player maybe exist
-//					var player = __playerManager.get(playerName);
-//					if (player != null) { // the player has existed
-//						__exception(player, cause);
-//						return null;
-//					}
-//				}
-//			}
-//			// also catch the exception for "channel"
-//			__exception(channelId, cause);
-//
-//			return null;
-//		});
-
-		__on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, params -> {
-			var player = __getPlayer(params[0]);
-
-			__roomManager.makePlayerLeaveRoom(player, true);
-
-			return null;
-		});
-
-		__on(InternalEvent.SESSION_WAS_CLOSED_MANUALLY, params -> {
-			String name = __getString(params[0]);
-
-			var player = __playerManager.get(name);
-			if (player != null) {
-				__eventManager.getExtension().emit(ExtensionEvent.DISCONNECT_PLAYER, player);
-			}
-
-			return null;
-		});
-
-		__on(InternalEvent.MESSAGE_HANDLED_IN_CHANNEL, params -> {
-			var connectionIndex = __getInteger(params[0]);
-			var connection = params[1] == null ? null : __getConnection(params[1]);
-			var message = __getCommonObject(params[2]);
-			var tempConnection = __getConnection(params[3]);
-
-			if (connection == null) {
-				__createNewConnection(configuration, connectionIndex, tempConnection, message);
-			} else {
-				var playerName = connection.getPlayerName();
-				if (playerName != null) {
-					var player = __playerManager.get(playerName);
-					if (player != null) { // the player has existed
-						__handle(player, connectionIndex, message);
-					} else {
-						// Can handle free connection here
-						connection.close();
-					}
-				} else {
-					// Can handle free connection here
-					connection.close();
-				}
-			}
-
-			return null;
-		});
-
-	}
-
-	private void __createNewConnection(Configuration configuration, int connectionIndex, Connection connection,
-			CommonObject message) {
-		if (connectionIndex == CoreConstant.MAIN_CONNECTION_INDEX) { // is main connection
-			// check reconnection request first
-			var player = (Player) __eventManager.getExtension().emit(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
-					connection, message);
-			if (player != null) {
-				connection.setPlayerName(player.getName());
-				player.setConnection(connection, CoreConstant.MAIN_CONNECTION_INDEX); // main connection
-				__eventManager.getExtension().emit(ExtensionEvent.PLAYER_RECONNECT_SUCCESS, player);
-			} else {
-				// check the number of current players
-				if (__playerManager.count() > configuration.getInt(CoreConfigurationType.MAX_NUMBER_PLAYERS)) {
-					__eventManager.getExtension().emit(ExtensionEvent.CONNECTION_ESTABLISHED_FAILED, connection,
-							CoreMessageCode.REACHED_MAX_CONNECTION);
-					connection.close();
-				} else {
-					__eventManager.getExtension().emit(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, connection, message);
-				}
-			}
-
-		} else {
-			// the condition for creating sub-connection
-			var player = (Player) __eventManager.getExtension().emit(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
-					connectionIndex, message);
-
-			if (player == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
-						CoreMessageCode.PLAYER_NOT_FOUND);
-			} else if (player.getConnection(0) == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.ATTACH_CONNECTION_FAILED, connectionIndex, message,
-						CoreMessageCode.MAIN_CONNECTION_NOT_FOUND);
-			} else {
-				connection.setPlayerName(player.getName());
-				player.setConnection(connection, connectionIndex);
-				__eventManager.getExtension().emit(ExtensionEvent.ATTACH_CONNECTION_SUCCESS, connectionIndex, player);
-			}
-		}
-	}
-
-	private void __on(InternalEvent event, Subscriber sub) {
-		__eventManager.getInternal().on(event, sub);
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link CommonObject} type
-	 * @throws ExtensionValueCastException
-	 */
-	private CommonObject __getCommonObject(Object object) throws ExtensionValueCastException {
-		if (object instanceof CommonObject) {
-			return (CommonObject) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Connection} type
-	 * @throws ExtensionValueCastException
-	 */
-	private Connection __getConnection(Object object) throws ExtensionValueCastException {
-		if (object instanceof Connection) {
-			return (Connection) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	/**
-	 * @param <T>    the corresponding return type
-	 * @param object the corresponding object
-	 * @return a value in {@link Player} type
-	 * @throws ExtensionValueCastException
-	 */
-	private Player __getPlayer(Object object) throws ExtensionValueCastException {
-		if (object instanceof Player) {
-			return (Player) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Throwable} type
-	 * @throws ExtensionValueCastException
-	 */
-	private Throwable __getThrowable(Object object) throws ExtensionValueCastException {
-		if (object instanceof Throwable) {
-			return (Throwable) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return value in {@link String} type
-	 * @throws ExtensionValueCastException
-	 */
-	private String __getString(Object object) throws ExtensionValueCastException {
-		if (object instanceof String) {
-			return (String) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	/**
-	 * @param object the corresponding object
-	 * @return a value in {@link Integer} type
-	 * @throws ExtensionValueCastException
-	 */
-	private int __getInteger(Object object) throws ExtensionValueCastException {
-		if (object instanceof Integer) {
-			return (int) object;
-		}
-		throw new ExtensionValueCastException(object.toString());
-	}
-
-	private void __handle(Player player, int connectionIndex, CommonObject message) {
-		player.setCurrentReaderTime();
-		__eventManager.getExtension().emit(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, connectionIndex, message);
-	}
-
-	private void __exception(Player player, Throwable cause) {
-		_error(cause, "player's name: ", player.getName());
-	}
-
-	private void __exception(String identify, Throwable cause) {
-		_error(cause, "identify: ", identify);
+	private InternalProcessorService(EventManager eventManager) {
+		super(eventManager);
 	}
 
 	@Override
-	public void onInitialized() throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void onInitialized() {
+		__getInternalEvent().on(InternalEvent.SERVER_STARTED, args -> {
+			start();
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.SESSION_WAS_CREATED, args -> {
+			Request request = RequestImpl.newInstance();
+			request.setEvent(InternalEvent.SESSION_WAS_CREATED);
+			request.setPriority(RequestPriority.NORMAL);
+			request.setTransportType((TransportType) args[0]);
+			request.setSender((Session) args[1]);
+
+			enqueueRequest(request);
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.SESSION_REQUEST_CONNECTION, args -> {
+			Request request = RequestImpl.newInstance();
+			request.setEvent(InternalEvent.SESSION_REQUEST_CONNECTION);
+			request.setPriority(RequestPriority.NORMAL);
+			request.setTransportType((TransportType) args[0]);
+			request.setSender((Session) args[1]);
+			request.setAttribute("message", args[2]);
+
+			enqueueRequest(request);
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.SESSION_OCCURED_EXCEPTION, args -> {
+			Request request = RequestImpl.newInstance();
+			request.setEvent(InternalEvent.SESSION_REQUEST_CONNECTION);
+			request.setPriority(RequestPriority.NORMAL);
+			request.setTransportType((TransportType) args[0]);
+			request.setSender((Session) args[1]);
+			request.setAttribute("message", args[2]);
+
+			enqueueRequest(request);
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.SESSION_WAS_CLOSED, args -> {
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.SESSION_READ_BINARY, args -> {
+			Request request = RequestImpl.newInstance();
+			request.setEvent(InternalEvent.SESSION_READ_BINARY);
+			request.setPriority(RequestPriority.NORMAL);
+			request.setTransportType((TransportType) args[0]);
+			request.setSender((Session) args[1]);
+			request.setContent((byte[]) args[2]);
+
+			enqueueRequest(request);
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.DATAGRAM_CHANNEL_READ_BINARY, args -> {
+			Request request = RequestImpl.newInstance();
+			request.setEvent(InternalEvent.DATAGRAM_CHANNEL_READ_BINARY);
+			request.setPriority(RequestPriority.NORMAL);
+			request.setTransportType((TransportType) args[0]);
+			request.setContent((byte[]) args[2]);
+			request.setAttribute("datgram", args[1]);
+
+			enqueueRequest(request);
+
+			return null;
+		});
+		__getInternalEvent().on(InternalEvent.FORCE_PLAYER_TO_LEAVE_ROOM, args -> {
+
+			return null;
+		});
 	}
 
 	@Override
-	public void onStarted() throws Exception {
+	public void onStarted() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onResumed() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onPaused() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void onStopped() throws Exception {
+	public void onHalted() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onDestroyed() {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public boolean isActivated() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
 	public void processRequest(Request request) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

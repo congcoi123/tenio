@@ -25,33 +25,37 @@ package com.tenio.core.network.entities.protocols.implement;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.core.network.entities.protocols.Message;
 
 /**
  * @author kong
  */
-// TODO: Add description
 public abstract class AbstractMessage implements Message {
-	
+
+	private static final AtomicLong __idCounter = new AtomicLong();
+
 	private long __id;
 	private byte[] __content;
 	private Map<String, Object> __attributes;
 
-	public long getId() {
-		return __id;
+	protected AbstractMessage() {
+		__id = __idCounter.getAndIncrement();
 	}
 
-	protected void __setId(long id) {
-		__id = id;
+	public long getId() {
+		return __id;
 	}
 
 	public byte[] getContent() {
 		return __content;
 	}
 
-	public void setContent(byte[] content) {
+	public Message setContent(byte[] content) {
 		__content = content;
+
+		return this;
 	}
 
 	public Object getAttribute(String key) {
@@ -62,12 +66,14 @@ public abstract class AbstractMessage implements Message {
 		return null;
 	}
 
-	public void setAttribute(String key, Object value) {
+	public Message setAttribute(String key, Object value) {
 		if (__attributes == null) {
 			__attributes = new ConcurrentHashMap<String, Object>();
 		}
 
 		__attributes.put(key, value);
+
+		return this;
 	}
 
 }

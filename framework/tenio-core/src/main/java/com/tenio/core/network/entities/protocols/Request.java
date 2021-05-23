@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.protocols;
 
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.session.Session;
@@ -30,22 +31,25 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public interface Request extends Message {
+
+	InternalEvent getEvent();
+
+	Request setEvent(InternalEvent event);
 
 	Session getSender();
 
-	void setSender(Session session);
+	Request setSender(Session session);
 
 	RequestPriority getPriority();
 
-	void setPriority(RequestPriority priority);
+	Request setPriority(RequestPriority priority);
 
 	long getTimestamp();
 
 	TransportType getTransportType();
 
-	void setTransportType(TransportType transportType);
+	Request setTransportType(TransportType transportType);
 
 	boolean isTcp();
 

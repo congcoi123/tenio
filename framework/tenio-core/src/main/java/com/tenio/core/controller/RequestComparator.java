@@ -30,8 +30,15 @@ import com.tenio.core.network.entities.protocols.Request;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class RequestComparator implements Comparator<Request> {
+
+	public static RequestComparator newInstance() {
+		return new RequestComparator();
+	}
+
+	private RequestComparator() {
+
+	}
 
 	@Override
 	public int compare(Request request1, Request request2) {

@@ -23,9 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.protocols.implement;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.tenio.common.utilities.TimeUtility;
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.protocols.Request;
@@ -34,11 +33,9 @@ import com.tenio.core.network.entities.session.Session;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class RequestImpl extends AbstractMessage implements Request {
 
-	private static final AtomicLong __idCounter = new AtomicLong();
-
+	private InternalEvent __event;
 	private Session __sender;
 	private TransportType __transportType;
 	private RequestPriority __priority;
@@ -49,7 +46,8 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	private RequestImpl() {
-		__setId(__idCounter.getAndIncrement());
+		super();
+
 		__timestamp = TimeUtility.currentTimeMillis();
 	}
 
@@ -59,8 +57,10 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	@Override
-	public void setSender(Session session) {
+	public Request setSender(Session session) {
 		__sender = session;
+
+		return this;
 	}
 
 	@Override
@@ -69,8 +69,10 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	@Override
-	public void setPriority(RequestPriority priority) {
+	public Request setPriority(RequestPriority priority) {
 		__priority = priority;
+
+		return this;
 	}
 
 	@Override
@@ -84,8 +86,10 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	@Override
-	public void setTransportType(TransportType transportType) {
+	public Request setTransportType(TransportType transportType) {
 		__transportType = transportType;
+
+		return this;
 	}
 
 	@Override
@@ -101,6 +105,18 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	@Override
 	public boolean isWebsocket() {
 		return __transportType == TransportType.WEB_SOCKET;
+	}
+
+	@Override
+	public InternalEvent getEvent() {
+		return __event;
+	}
+
+	@Override
+	public Request setEvent(InternalEvent event) {
+		__event = event;
+
+		return this;
 	}
 
 }

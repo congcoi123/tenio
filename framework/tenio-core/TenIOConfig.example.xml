@@ -41,8 +41,8 @@
 		<Workers>
 			<Worker name="socket-threads-pool-acceptor">1</Worker>
 			<Worker name="socket-threads-pool-worker">2</Worker>
-			<Worker name="websocket-threads-pool-acceptor">1</Worker>
-			<Worker name="websocket-threads-pool-worker">2</Worker>
+			<Worker name="websocket-threads-pool-producer">1</Worker>
+			<Worker name="websocket-threads-pool-consumer">2</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 

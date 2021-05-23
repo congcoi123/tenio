@@ -29,16 +29,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.utilities.StringUtility;
+import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.RequestQueueFullException;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.protocols.Request;
 
 /**
  * @author kong
  */
 // FIXME: Fix me
-public abstract class AbstractController extends SystemLogger implements Controller, Runnable {
+public abstract class AbstractController extends AbstractManager implements Controller, Runnable {
 
 	private static final int DEFAULT_MAX_QUEUE_SIZE = 50;
 	private static final int DEFAULT_NUMBER_WORKERS = 5;
@@ -54,20 +55,23 @@ public abstract class AbstractController extends SystemLogger implements Control
 	private int __maxQueueSize;
 	private volatile boolean __activated;
 
-	public AbstractController() {
+	protected AbstractController(EventManager eventManager) {
+		super(eventManager);
+
 		__maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
 		__executorSize = DEFAULT_NUMBER_WORKERS;
 		__activated = false;
 	}
 
 	private void __initializeWorkers() {
-		var requestComparator = new RequestComparator();
+		var requestComparator = RequestComparator.newInstance();
 		__requestQueue = new PriorityBlockingQueue<Request>(__maxQueueSize, requestComparator);
 
 		__executor = Executors.newFixedThreadPool(__executorSize);
 		for (int i = 0; i < __executorSize; i++) {
 			__executor.execute(this);
 		}
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -82,10 +86,11 @@ public abstract class AbstractController extends SystemLogger implements Control
 		});
 	}
 
-	private void __stop() throws Exception {
+	private void __stop() {
 		pause();
 		onHalted();
 		__executor.shutdown();
+
 		while (true) {
 			try {
 				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -95,6 +100,7 @@ public abstract class AbstractController extends SystemLogger implements Control
 				error(e);
 			}
 		}
+
 		info("CONTROLLER STOPPED", buildgen("controller-", getName(), "-", __id));
 		destroy();
 		onDestroyed();
@@ -128,31 +134,31 @@ public abstract class AbstractController extends SystemLogger implements Control
 	}
 
 	@Override
-	public void initialize() throws Exception {
+	public void initialize() {
 		__initializeWorkers();
 		onInitialized();
 	}
 
 	@Override
-	public void start() throws Exception {
-		__activated = true;
+	public void start() {
 		onStarted();
+		__activated = true;
 	}
 
 	@Override
 	public void resume() {
-		__activated = true;
 		onResumed();
+		__activated = true;
 	}
 
 	@Override
 	public void pause() {
-		__activated = false;
 		onPaused();
+		__activated = false;
 	}
 
 	@Override
-	public void halt() throws Exception {
+	public void halt() {
 		__stop();
 	}
 
@@ -174,6 +180,11 @@ public abstract class AbstractController extends SystemLogger implements Control
 	@Override
 	public void setName(String name) {
 		__name = name;
+	}
+
+	@Override
+	public boolean isActivated() {
+		return __activated;
 	}
 
 	@Override

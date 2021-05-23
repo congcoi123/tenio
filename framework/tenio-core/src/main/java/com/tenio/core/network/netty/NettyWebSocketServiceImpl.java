@@ -23,122 +23,107 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.netty;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.BindException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.pool.ElementsPool;
-import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.ServiceRuntimeException;
-import com.tenio.core.network.Network;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.netty.websocket.NettyWSInitializer;
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.security.ssl.WebSocketSslContext;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 /**
- * Use <a href="https://netty.io/">Netty</a> to handle a network instance @see
- * {@link Network}
+ * Use <a href="https://netty.io/">Netty</a> to handle a network instance
  * 
  * @author kong
- * 
  */
 @ThreadSafe
-public final class NettyWebSocketServiceImpl extends SystemLogger implements NettyWebSocketService {
+public final class NettyWebSocketServiceImpl extends AbstractManager implements NettyWebSocketService {
 
 	private static final String PREFIX_WEBSOCKET = "websocket";
+
+	private static final int DEFAULT_SENDER_BUFFER_SIZE = 1024;
+	private static final int DEFAULT_RECEIVER_BUFFER_SIZE = 1024;
+	private static final int DEFAULT_PRODUCER_WORKER_SIZE = 2;
+	private static final int DEFAULT_CONSUMER_WORKER_SIZE = Runtime.getRuntime().availableProcessors() * 2;
 
 	@GuardedBy("this")
 	private EventLoopGroup __websocketAcceptors;
 	@GuardedBy("this")
 	private EventLoopGroup __websocketWorkers;
-
 	@GuardedBy("this")
 	private List<Channel> __serverWebsockets;
 
-	public NettyWebSocketServiceImpl() {
+	private int __senderBufferSize;
+	private int __receiverBufferSize;
+	private int __producerWorkerSize;
+	private int __consumerWorkerSize;
 
+	private ConnectionFilter __connectionFilter;
+	private SessionManager __sessionManager;
+	private NetworkReaderStatistic __networkReaderStatistic;
+	private NetworkWriterStatistic __networkWriterStatistic;
+	private SocketConfig __socketConfig;
+	private boolean __usingSSL;
+
+	public static NettyWebSocketService newInstance(EventManager eventManager) {
+		return new NettyWebSocketServiceImpl(eventManager);
 	}
 
-	public void start(EventManager eventManager, Configuration configuration,
-			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool)
-			throws IOException, InterruptedException, BindException {
+	private NettyWebSocketServiceImpl(EventManager eventManager) {
+		super(eventManager);
+
+		__senderBufferSize = DEFAULT_SENDER_BUFFER_SIZE;
+		__receiverBufferSize = DEFAULT_RECEIVER_BUFFER_SIZE;
+		__producerWorkerSize = DEFAULT_PRODUCER_WORKER_SIZE;
+		__consumerWorkerSize = DEFAULT_CONSUMER_WORKER_SIZE;
+	}
+
+	private void __start() throws InterruptedException {
 
 		var defaultWebsocketThreadFactory = new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
-		__websocketAcceptors = new NioEventLoopGroup(
-				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_ACCEPTOR),
-				defaultWebsocketThreadFactory);
-		__websocketWorkers = new NioEventLoopGroup(
-				configuration.getInt(CoreConfigurationType.SOCKET_THREADS_POOL_WORKER), defaultWebsocketThreadFactory);
+		__websocketAcceptors = new NioEventLoopGroup(__producerWorkerSize, defaultWebsocketThreadFactory);
+		__websocketWorkers = new NioEventLoopGroup(__consumerWorkerSize, defaultWebsocketThreadFactory);
 		__serverWebsockets = new ArrayList<Channel>();
 
-		var webSocketPorts = (List<SocketConfig>) configuration.get(CoreConfigurationType.WEBSOCKET_PORTS);
-		for (int connectionIndex = 0; connectionIndex < webSocketPorts.size(); connectionIndex++) {
-			var socket = webSocketPorts.get(connectionIndex);
-			switch (socket.getType()) {
-			case WEB_SOCKET:
-				__bindWS(connectionIndex, eventManager, configuration, commonObjectPool, byteArrayInputPool, socket);
-				break;
-			default:
-				break;
-			}
+		WebSocketSslContext sslContext = null;
+		if (__usingSSL) {
+			sslContext = new WebSocketSslContext();
 		}
 
-	}
-
-	/**
-	 * Constructs a web socket and binds it to the specified port on the local host
-	 * machine.
-	 * 
-	 * @param connectionIndex    the order of socket
-	 * @param eventManager       the system event management
-	 * @param configuration      configuration your own configuration, see
-	 *                           {@link Configuration}
-	 * @param commonObjectPool   the pool of message objects
-	 * @param byteArrayInputPool the pool of byte array input stream objects
-	 * @param socketConfig       the socket information
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	private void __bindWS(int connectionIndex, EventManager eventManager, Configuration configuration,
-			ElementsPool<CommonObject> commonObjectPool, ElementsPool<ByteArrayInputStream> byteArrayInputPool,
-			SocketConfig socketConfig) throws IOException, InterruptedException {
-
+		// FIXME: configure here
 		var bootstrap = new ServerBootstrap();
-		var threadsPoolWorker = configuration.getInt(CoreConfigurationType.WEBSOCKET_THREADS_POOL_WORKER);
-
 		bootstrap.group(__websocketAcceptors, __websocketWorkers).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_BACKLOG, 5)
-				.childOption(ChannelOption.SO_SNDBUF, CoreConstant.WEBSOCKET_SEND_BUFFER)
-				.childOption(ChannelOption.SO_RCVBUF, CoreConstant.WEBSOCKET_RECEIVE_BUFFER)
-				.childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new NettyWSInitializer(connectionIndex,
-						eventManager, commonObjectPool, byteArrayInputPool, __traficCounterWebsockets, configuration));
+				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, __senderBufferSize)
+				.childOption(ChannelOption.SO_RCVBUF, __receiverBufferSize)
+				.childOption(ChannelOption.SO_KEEPALIVE, true)
+				.childHandler(NettyWSInitializer.newInstance(__eventManager, __sessionManager, __connectionFilter,
+						__networkReaderStatistic, sslContext, __usingSSL));
 
-		var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
+		var channelFuture = bootstrap.bind(__socketConfig.getPort()).sync()
 				.addListener(new GenericFutureListener<Future<? super Void>>() {
 
 					@Override
@@ -147,17 +132,19 @@ public final class NettyWebSocketServiceImpl extends SystemLogger implements Net
 
 						} else {
 							error(future.cause());
-							throw new IOException(String.valueOf(socketConfig.getPort()));
+							throw new IOException(String.valueOf(__socketConfig.getPort()));
 						}
 					}
 				});
 		__serverWebsockets.add(channelFuture.channel());
 
-		info("WEB SOCKET", buildgen("Name: ", socketConfig.getName(), " > Index: ", connectionIndex,
-				" > Number of workers: ", threadsPoolWorker, " > Started at port: ", socketConfig.getPort()));
+		info("WEB SOCKET",
+				buildgen("Number of producer workers: ", __producerWorkerSize, " > Number of producer workers: ",
+						__consumerWorkerSize, " > Started at port: ", __socketConfig.getPort()));
+
 	}
 
-	public synchronized void shutdown() {
+	private synchronized void __shutdown() {
 		for (var socket : __serverWebsockets) {
 			__close(socket);
 		}
@@ -207,111 +194,116 @@ public final class NettyWebSocketServiceImpl extends SystemLogger implements Net
 	}
 
 	@Override
-	public void initialize() throws ServiceRuntimeException {
-		// TODO Auto-generated method stub
-
+	public void initialize() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void start() throws ServiceRuntimeException {
-		// TODO Auto-generated method stub
-
+	public void start() {
+		try {
+			__start();
+		} catch (InterruptedException e) {
+			throw new ServiceRuntimeException(e.getMessage());
+		}
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void halt() throws ServiceRuntimeException {
-		// TODO Auto-generated method stub
-
+	public void halt() {
+		__shutdown();
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
+		__cleanup();
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "netty-websocket-service";
 	}
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isActivated() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setSenderBufferSize(int bufferSize) {
+		__senderBufferSize = bufferSize;
+	}
+
+	@Override
+	public void setReceiverBufferSize(int bufferSize) {
+		__receiverBufferSize = bufferSize;
 	}
 
 	@Override
 	public void setProducerWorkerSize(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__producerWorkerSize = workerSize;
 	}
 
 	@Override
 	public void setConsumerWorkerSize(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__consumerWorkerSize = workerSize;
 	}
 
 	@Override
 	public void setConnectionFilter(ConnectionFilter connectionFilter) {
-		// TODO Auto-generated method stub
-
+		__connectionFilter = connectionFilter;
 	}
 
 	@Override
 	public void setSessionManager(SessionManager sessionManager) {
-		// TODO Auto-generated method stub
-
+		__sessionManager = sessionManager;
 	}
 
 	@Override
 	public void setNetworkReaderStatistic(NetworkReaderStatistic readerStatistic) {
-		// TODO Auto-generated method stub
-
+		__networkReaderStatistic = readerStatistic;
 	}
 
 	@Override
 	public void setNetworkWriterStatistic(NetworkWriterStatistic writerStatistic) {
-		// TODO Auto-generated method stub
-
+		__networkWriterStatistic = writerStatistic;
 	}
 
 	@Override
-	public void setSocketConfigs(List<SocketConfig> socketConfigs) {
-		// TODO Auto-generated method stub
-
+	public void setWebSocketConfig(SocketConfig socketConfig) {
+		__socketConfig = socketConfig;
 	}
 
 	@Override
 	public void setUsingSSL(boolean usingSSL) {
-		// TODO Auto-generated method stub
-
+		__usingSSL = usingSSL;
 	}
 
 	@Override
 	public void write(Packet packet) {
-		// TODO Auto-generated method stub
+		var iterator = packet.getRecipients().iterator();
+		while (iterator.hasNext()) {
+			var session = iterator.next();
+			session.getWebSocketChannel()
+					.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(packet.getData())));
 
+			session.addWrittenBytes(packet.getOriginalSize());
+			__networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());
+			__networkWriterStatistic.updateWrittenPackets(1);
+		}
 	}
 
 }

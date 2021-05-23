@@ -33,10 +33,10 @@ public interface Message {
 
 	byte[] getContent();
 
-	void setContent(byte[] content);
+	Message setContent(byte[] content);
 
 	Object getAttribute(String key);
 
-	void setAttribute(String key, Object value);
+	Message setAttribute(String key, Object value);
 
 }

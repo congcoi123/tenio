@@ -25,7 +25,6 @@ package com.tenio.core.network.entities.protocols.implement;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.exceptions.UdpConnectionNotFoundException;
@@ -38,8 +37,6 @@ import com.tenio.core.network.entities.session.Session;
 // TODO: Add description
 public final class ResponseImpl extends AbstractMessage implements Response {
 
-	private static final AtomicLong __idCounter = new AtomicLong();
-
 	private Collection<Player> __players;
 	private Collection<Session> __socketSessions;
 	private Collection<Session> __webSocketSessions;
@@ -51,7 +48,8 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	}
 
 	private ResponseImpl() {
-		__setId(__idCounter.getAndIncrement());
+		super();
+
 		__players = null;
 		__socketSessions = null;
 		__webSocketSessions = null;
