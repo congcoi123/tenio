@@ -46,7 +46,11 @@ public final class EventManagerImpl implements EventManager {
 	 */
 	private final InternalEventManager __internalEventManager;
 
-	public EventManagerImpl() {
+	public static EventManager newInstance() {
+		return new EventManagerImpl();
+	}
+	
+	private EventManagerImpl() {
 		__extEventManager = new ExtEventManager();
 		__internalEventManager = new InternalEventManager();
 	}

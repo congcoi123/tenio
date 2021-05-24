@@ -139,7 +139,6 @@ public final class ExtEventManager extends SystemLogger {
 	private boolean __isOnlyShownInTracedLog(ExtensionEvent event) {
 		switch (event) {
 		case SEND_MESSAGE_TO_PLAYER:
-		case RECEIVED_MESSAGE_FROM_CONNECTION:
 		case RECEIVED_MESSAGE_FROM_PLAYER:
 		case HTTP_REQUEST_VALIDATE:
 		case HTTP_REQUEST_HANDLE:

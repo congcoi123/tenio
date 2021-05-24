@@ -34,10 +34,7 @@ import com.tenio.common.loggers.AbstractLogger;
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
  * 
- * <h1>Configuration for game server, declared in properties file</h1> <br>
- * 
  * @author kong
- * 
  */
 public abstract class CommonConfiguration extends AbstractLogger implements Configuration {
 
@@ -97,7 +94,7 @@ public abstract class CommonConfiguration extends AbstractLogger implements Conf
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(ConfigurationType key, Object value) {
+	protected void __push(ConfigurationType key, Object value) {
 		if (key == null) {
 			return;
 		}
@@ -115,6 +112,6 @@ public abstract class CommonConfiguration extends AbstractLogger implements Conf
 	 * 
 	 * @param extProperties the extension data in key-value format (see {@link Map})
 	 */
-	protected abstract void _extend(Map<String, String> extProperties);
+	protected abstract void __extend(Map<String, String> extProperties);
 
 }

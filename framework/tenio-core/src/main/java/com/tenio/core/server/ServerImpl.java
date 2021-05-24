@@ -23,62 +23,31 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.common.api.TaskApi;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.data.elements.CommonObjectArray;
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.pool.ElementsPool;
-import com.tenio.common.task.TaskManager;
-import com.tenio.common.task.TaskManagerImpl;
-import com.tenio.common.utilities.StringUtility;
-import com.tenio.core.api.MessageApi;
-import com.tenio.core.api.PlayerApi;
-import com.tenio.core.api.RoomApi;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
-import com.tenio.core.bootstrap.EventHandler;
-import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
-import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
 import com.tenio.core.entities.managers.implement.RoomManagerImpl;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.events.implement.EventManagerImpl;
-import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
-import com.tenio.core.exceptions.NotDefinedSocketConnectionException;
-import com.tenio.core.exceptions.NotDefinedSubscribersException;
-import com.tenio.core.extension.Extension;
 import com.tenio.core.monitoring.system.SystemInfo;
-import com.tenio.core.network.IBroadcast;
-import com.tenio.core.network.Network;
 import com.tenio.core.network.NetworkService;
+import com.tenio.core.network.NetworkServiceImpl;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
-import com.tenio.core.network.jetty.JettyHttpService;
-import com.tenio.core.network.netty.NettyWebSocketServiceImpl;
-import com.tenio.core.network.security.filter.DefaultConnectionFilter;
-import com.tenio.core.network.zero.engines.ZeroAcceptor;
-import com.tenio.core.network.zero.engines.ZeroReader;
-import com.tenio.core.network.zero.engines.ZeroWriter;
-import com.tenio.core.network.zero.engines.implement.ZeroAcceptorImpl;
-import com.tenio.core.network.zero.engines.implement.ZeroReaderImpl;
-import com.tenio.core.network.zero.engines.implement.ZeroWriterImpl;
+import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.schedule.ScheduleService;
-import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
-import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
-import com.tenio.core.schedule.tasks.CCUScanTask;
-import com.tenio.core.schedule.tasks.DeadlockScanTask;
-import com.tenio.core.schedule.tasks.SystemMonitoringTask;
+import com.tenio.core.schedule.ScheduleServiceImpl;
 import com.tenio.core.server.services.InternalProcessorService;
 import com.tenio.core.server.settings.ConfigurationAssessment;
 
@@ -93,20 +62,19 @@ import com.tenio.core.server.settings.ConfigurationAssessment;
  * 
  */
 @ThreadSafe
-public final class ServerImpl extends SystemLogger {
+public final class ServerImpl extends SystemLogger implements Server {
 
-	private static ServerImpl __instance;
+	private static Server __instance;
 
 	private ServerImpl() {
 
-		__eventManager = new EventManagerImpl();
-		__networkService = new NetworkService(__eventManager);
-
+		__eventManager = EventManagerImpl.newInstance();
 		__roomManager = RoomManagerImpl.newInstance(__eventManager);
 		__playerManager = PlayerManagerImpl.newInstance(__eventManager);
-		__serverApi = new ServerApiImpl();
-
-		__internalLogic = InternalProcessorService.newInstance(__eventManager);
+		__networkService = NetworkServiceImpl.newInstance(__eventManager);
+		__internalProcessorService = InternalProcessorService.newInstance(__eventManager);
+		__scheduleService = ScheduleServiceImpl.newInstance(__eventManager);
+		__serverApi = ServerApiImpl.newInstance(this);
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
@@ -116,7 +84,7 @@ public final class ServerImpl extends SystemLogger {
 
 	// preventing Singleton object instantiation from outside
 	// creates multiple instance if two thread access this method simultaneously
-	public static ServerImpl getInstance() {
+	public static Server getInstance() {
 		if (__instance == null) {
 			__instance = new ServerImpl();
 		}
@@ -124,23 +92,14 @@ public final class ServerImpl extends SystemLogger {
 	}
 
 	private Configuration __configuration;
-
 	private final EventManager __eventManager;
-
 	private final RoomManager __roomManager;
 	private final PlayerManager __playerManager;
-
-	private final ServerApi __serverApi;
-
-	private final InternalProcessorService __internalLogic;
+	private final InternalProcessorService __internalProcessorService;
 	private final ScheduleService __scheduleService;
 	private final NetworkService __networkService;
+	private final ServerApi __serverApi;
 
-	private List<SocketConfig> __socketPorts;
-	private List<SocketConfig> __webSocketPorts;
-	private List<HttpConfig> __httpPorts;
-	private int __socketPortsSize;
-	private int __webSocketPortsSize;
 	private String __serverName;
 
 	public void start(Configuration configuration) {
@@ -163,9 +122,9 @@ public final class ServerImpl extends SystemLogger {
 		info("CONFIGURATION", configuration.toString());
 
 		// create all ports information
-		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		__webSocketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__httpPorts = (List<HttpConfig>) (configuration.get(CoreConfigurationType.HTTP_PORTS));
+		__httpPorts = (List<HttpConfig>) (configuration.get(CoreConfigurationType.HTTP_CONFIGS));
 
 		__socketPortsSize = __socketPorts.size();
 		__webSocketPortsSize = __webSocketPorts.size();
@@ -175,7 +134,7 @@ public final class ServerImpl extends SystemLogger {
 		__roomManager.initialize(configuration);
 
 		// main server logic
-		__internalLogic.init(configuration);
+		__internalProcessorService.init(configuration);
 
 		// initialize the subscribers
 		var extension = getExtension();
@@ -213,6 +172,60 @@ public final class ServerImpl extends SystemLogger {
 		info("SERVER", __serverName, "Started!");
 	}
 
+	private void __setupScheduleService() {
+		__scheduleService.setCcuScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
+		__scheduleService.setDeadlockScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_DEADLOCK_SCAN));
+		__scheduleService.setDisconnectedPlayerScanInterval(
+				__configuration.getInt(CoreConfigurationType.INTERVAL_DISCONNECTED_PLAYER_SCAN));
+		__scheduleService
+				.setRemovedRoomScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_REMOVED_ROOM_SCAN));
+		__scheduleService
+				.setSystemMonitoringInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_SYSTEM_MONITORING));
+		__scheduleService
+				.setTrafficCounterInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_TRAFFIC_COUNTER));
+
+		__scheduleService.setPlayerManager(__playerManager);
+		__scheduleService.setRoomManager(__roomManager);
+	}
+
+	private void __setupNetworkService() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		var connectionFilterClazz = Class
+				.forName(__configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER));
+		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz);
+		var httpConfig = (List<HttpConfig>) __configuration.get(CoreConfigurationType.HTTP_CONFIGS);
+		__networkService.setHttpPort(httpConfig.get(0).getPort());
+		__networkService.setHttpPathConfigs(httpConfig.get(0).getPaths());
+		__networkService.setSocketAcceptorBufferSize(
+				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));
+		__networkService
+				.setSocketAcceptorWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_ACCEPTOR));
+		__networkService
+				.setSocketConfigs((List<SocketConfig>) __configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
+		__networkService.setSocketReaderBufferSize(
+				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
+		__networkService.setSocketReaderWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_READER));
+		__networkService.setSocketWriterBufferSize(
+				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE));
+		__networkService.setSocketWriterWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_WRITER));
+		// FIXME:
+		__networkService.setWebsocketConfig(null);
+		__networkService
+				.setWebsocketConsumerWorkers(__configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_CONSUMER));
+		__networkService
+				.setWebsocketProducerWorkers(__configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_PRODUCER));
+		__networkService.setWebsocketReceiverBufferSize(
+				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE));
+		__networkService.setWebsocketSenderBufferSize(
+				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE));
+		__networkService.setWebsocketUsingSSL(
+				__configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
+	}
+
+	private void __setupInternalProcessorService() {
+
+	}
+
 	@Override
 	public synchronized void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
@@ -242,13 +255,13 @@ public final class ServerImpl extends SystemLogger {
 	}
 
 	@Override
-	public Extension getExtension() {
-		return __extension;
+	public void start() {
+
 	}
 
 	@Override
-	public void setExtension(Extension extension) {
-		__extension = extension;
+	public ServerApi getApi() {
+		return __serverApi;
 	}
 
 }

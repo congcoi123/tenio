@@ -59,11 +59,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	private final List<SocketConfig> __socketPorts;
 
 	/**
-	 * All ports in web sockets zone
-	 */
-	private final List<SocketConfig> __webSocketPorts;
-
-	/**
 	 * All ports in http zone
 	 */
 	private final List<HttpConfig> __httpPorts;
@@ -76,7 +71,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 */
 	public CoreConfiguration(String file) {
 		__socketPorts = new ArrayList<SocketConfig>();
-		__webSocketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
 
 		try {
@@ -99,31 +93,33 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();
 
-		// Server's Properties
-		var attrRootProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
-		for (int j = 0; j < attrRootProperties.getLength(); j++) {
-			var pDataNode = attrRootProperties.item(j);
-			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+		// Server Properties
+		var attrServerProperties = XMLUtility.getNodeList(root, "//Server/Properties/Property");
+		for (int j = 0; j < attrServerProperties.getLength(); j++) {
+			var dataNode = attrServerProperties.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
 		}
 
-		// Network
+		// Network Properties
+		var attrNetworkProperties = XMLUtility.getNodeList(root, "//Server/Network/Properties/Property");
+		for (int j = 0; j < attrNetworkProperties.getLength(); j++) {
+			var dataNode = attrNetworkProperties.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
+		}
+		// Network Sockets
 		var attrNetworkSockets = XMLUtility.getNodeList(root, "//Server/Network/Sockets/Port");
 		for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
-			var pDataNode = attrNetworkSockets.item(j);
-			var port = new SocketConfig(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					TransportType.getByValue(pDataNode.getAttributes().getNamedItem("type").getTextContent()),
-					Integer.parseInt(pDataNode.getTextContent()));
+			var dataNode = attrNetworkSockets.item(j);
+			var port = new SocketConfig(dataNode.getAttributes().getNamedItem("name").getTextContent(),
+					TransportType.getByValue(dataNode.getAttributes().getNamedItem("type").getTextContent()),
+					Integer.parseInt(dataNode.getTextContent()));
 
 			__socketPorts.add(port);
 		}
-		var attrNetworkWebSockets = XMLUtility.getNodeList(root, "//Server/Network/WebSockets/Port");
-		for (int j = 0; j < attrNetworkWebSockets.getLength(); j++) {
-			var pDataNode = attrNetworkWebSockets.item(j);
-			var port = new SocketConfig(pDataNode.getAttributes().getNamedItem("name").getTextContent(),
-					TransportType.WEB_SOCKET, Integer.parseInt(pDataNode.getTextContent()));
-			__webSocketPorts.add(port);
-		}
+		__push(CoreConfigurationType.SOCKET_CONFIGS, __socketPorts);
+		// Network HTTPs
 		var attrNetworkHttps = XMLUtility.getNodeList(root, "//Server/Network/Http/Port");
 		for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
 			var pPortNode = attrNetworkHttps.item(i);
@@ -143,43 +139,49 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
 			__httpPorts.add(port);
 		}
+		__push(CoreConfigurationType.HTTP_CONFIGS, __httpPorts);
 
-		// Ports' Configuration
-		_push(CoreConfigurationType.SOCKET_PORTS, __socketPorts);
-		_push(CoreConfigurationType.WEBSOCKET_PORTS, __webSocketPorts);
-		_push(CoreConfigurationType.HTTP_PORTS, __httpPorts);
+		// Implemented Classes
+		var attrImplementedClasses = XMLUtility.getNodeList(root, "//Server/Implements/Class");
+		for (int j = 0; j < attrImplementedClasses.getLength(); j++) {
+			var dataNode = attrImplementedClasses.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
+		}
 
-		// Parsing configuration data
+		// Configured Workers
 		var attrConfigurationWorkers = XMLUtility.getNodeList(root, "//Server/Configuration/Workers/Worker");
 		for (int j = 0; j < attrConfigurationWorkers.getLength(); j++) {
-			var pDataNode = attrConfigurationWorkers.item(j);
-			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+			var dataNode = attrConfigurationWorkers.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
 		}
+		// Configured Schedules
 		var attrConfigurationSchedules = XMLUtility.getNodeList(root, "//Server/Configuration/Schedules/Task");
 		for (int j = 0; j < attrConfigurationSchedules.getLength(); j++) {
-			var pDataNode = attrConfigurationSchedules.item(j);
-			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+			var dataNode = attrConfigurationSchedules.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
 		}
+		// Configured Properties
 		var attrConfigurationProperties = XMLUtility.getNodeList(root, "//Server/Configuration/Properties/Property");
 		for (int j = 0; j < attrConfigurationProperties.getLength(); j++) {
-			var pDataNode = attrConfigurationProperties.item(j);
-			var paramName = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-			_push(CoreConfigurationType.getByValue(paramName), pDataNode.getTextContent());
+			var dataNode = attrConfigurationProperties.item(j);
+			var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			__push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
 		}
 
-		// Extension
+		// Extension Properties
 		var attrExtensionProperties = XMLUtility.getNodeList(root, "//Server/Extension/Properties/Property");
 		var extProperties = new HashMap<String, String>();
 		for (int j = 0; j < attrExtensionProperties.getLength(); j++) {
-			var pDataNode = attrExtensionProperties.item(j);
-			var key = pDataNode.getAttributes().getNamedItem("name").getTextContent();
-			var value = pDataNode.getTextContent();
+			var dataNode = attrExtensionProperties.item(j);
+			var key = dataNode.getAttributes().getNamedItem("name").getTextContent();
+			var value = dataNode.getTextContent();
 			extProperties.put(key, value);
 		}
 
-		_extend(extProperties);
+		__extend(extProperties);
 	}
 
 }

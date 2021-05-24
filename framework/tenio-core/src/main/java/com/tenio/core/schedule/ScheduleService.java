@@ -1,35 +1,25 @@
 package com.tenio.core.schedule;
 
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.configuration.defines.CoreConfigurationType;
-import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
-import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
-import com.tenio.core.schedule.tasks.CCUScanTask;
-import com.tenio.core.schedule.tasks.DeadlockScanTask;
-import com.tenio.core.schedule.tasks.SystemMonitoringTask;
+import com.tenio.core.entities.managers.PlayerManager;
+import com.tenio.core.entities.managers.RoomManager;
+import com.tenio.core.service.Service;
 
-public final class ScheduleService {
+public interface ScheduleService extends Service {
 
-	
-	private void __createAllSchedules(Configuration configuration) {
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new AutoDisconnectPlayerTask(__eventManager, __playerApi,
-						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
-						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
-						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
+	void setRemovedRoomScanInterval(int interval);
 
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_EMPTY_ROOM_SCAN, (new AutoRemoveRoomTask(__roomApi,
-				configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL))).run());
+	void setDisconnectedPlayerScanInterval(int interval);
 
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
-				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
+	void setCcuScanInterval(int interval);
 
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
-				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
+	void setDeadlockScanInterval(int interval);
 
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_DEADLOCK_SCAN,
-				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
-	}
-	
+	void setTrafficCounterInterval(int interval);
+
+	void setSystemMonitoringInterval(int interval);
+
+	void setPlayerManager(PlayerManager playerManager);
+
+	void setRoomManager(RoomManager roomManager);
+
 }

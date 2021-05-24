@@ -60,7 +60,7 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsShouldReturnTrueValue() {
-		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		assertAll("getSocketPortsConfiguration", () -> assertEquals(8032, listSockets.get(0).getPort()),
 				() -> assertEquals(8033, listSockets.get(1).getPort()),
 				() -> assertEquals(8034, listSockets.get(2).getPort()));
@@ -69,7 +69,7 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
-		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		assertAll("getSocketPortsTypeConfiguration",
 				() -> assertEquals(TransportType.TCP, listSockets.get(0).getType()),
 				() -> assertEquals(TransportType.UDP, listSockets.get(1).getType()),

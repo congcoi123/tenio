@@ -34,8 +34,6 @@ import com.tenio.common.configuration.ConfigurationType;
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
  * 
- * <h1>Configuration for game server, declared in properties file</h1> <br>
- * 
  * @author kong
  */
 // FIXME: Fix me
@@ -44,115 +42,63 @@ public enum CoreConfigurationType implements ConfigurationType {
 	/**
 	 * The server name
 	 */
-	SERVER_NAME("name"),
+	SERVER_NAME("server-name"),
 	/**
 	 * The server id (module name)
 	 */
-	SERVER_ID("id"),
+	SERVER_ID("server-id"),
 	/**
 	 * This current version code of your server in integer type (can be compared)
 	 */
-	SERVER_VERSION_CODE("versionCode"),
+	SERVER_VERSION_CODE("version-code"),
 	/**
 	 * This current version name of your server in string type
 	 */
-	SERVER_VERSION_NAME("versionName"),
+	SERVER_VERSION_NAME("version-name"),
 
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	SOCKET_THREADS_POOL_ACCEPTOR("socketThreadsPoolAcceptor"),
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	SOCKET_THREADS_POOL_WORKER("socketThreadsPoolWorker"),
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	DATAGRAM_THREADS_POOL_WORKER("datagramThreadsPoolWorker"),
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	WEBSOCKET_THREADS_POOL_ACCEPTOR("websocketThreadsPoolAcceptor"),
-	/**
-	 * @see NioEventLoopGroup
-	 */
-	WEBSOCKET_THREADS_POOL_WORKER("websocketThreadsPoolWorker"),
-	/**
-	 * When the server get disconnection of one client, can be hold its player
-	 * instance until timeout
-	 */
-	KEEP_PLAYER_ON_DISCONNECT("keepPlayerOnDisconnect"),
-	/**
-	 * The maximum number of players which game can handle
-	 */
-	MAX_NUMBER_PLAYERS("maxNumberPlayers"),
-	/**
-	 * The max IDLE time in seconds which server can wait from the last getting
-	 * message from client
-	 */
-	IDLE_READER_TIME("idleReaderTime"),
-	/**
-	 * The max IDLE time in seconds which server can wait from the last sending
-	 * message to client
-	 */
-	IDLE_WRITER_TIME("idleWriterTime"),
-	/**
-	 * Get the period checking in seconds which server can keep the empty room
-	 */
-	EMPTY_ROOM_SCAN_INTERVAL("emptyRoomScanInterval"),
-	/**
-	 * The period checking player time out in seconds
-	 */
-	TIMEOUT_SCAN_INTERVAL("timeoutScanInterval"),
-	/**
-	 * The period checking CCU in seconds
-	 */
-	CCU_SCAN_INTERVAL("ccuScanInterval"),
-	/**
-	 * Schedule detecting deadlocked threads
-	 */
-	DEADLOCK_SCAN_INTERVAL("deadlockScanInterval"),
-	/**
-	 * The period monitoring system
-	 */
-	SYSTEM_MONITORING_INTERVAL("systemMonitoringInterval"),
-	/**
-	 * The delay between two computations of performances for channels or 0 if no
-	 * statics are to be computed
-	 */
-	TRAFFIC_COUNTER_CHECK_INTERVAL("trafficCounterCheckInterval"),
-	/**
-	 * Server opens only one port for broadcasting to other ports 
-	 */
-	SERVER_BROADCAST_PORT("serverBroadcastPort"),
+	CLASS_PACKET_ENCRYPTER("packet-encrypter"),
+	CLASS_PACKET_COMPRESSOR("packet-compressor"),
+	CLASS_PACKET_ENCODER("packet-encoder"),
+	CLASS_PACKET_DECODER("packet-decoder"),
+	CLASS_CONNECTION_FILTER("connection-filter"),
+	CLASS_PACKET_QUEUE_POLICY("packet-queue-policy"),
+	
+	THREADS_SOCKET_ACCEPTOR("socket-acceptor"),
+	THREADS_SOCKET_READER("socket-reader"),
+	THREADS_SOCKET_WRITER("socket-writer"),
+	THREADS_WEBSOCKET_PRODUCER("websocket-producer"),
+	THREADS_WEBSOCKET_CONSUMER("websocket-consumer"),
+	THREADS_INTERNAL_PROCESSOR("internal-processor"),
 
-	// ====== UNDER CONTRUCTION ======//
-	NUMBER_ACCEPTOR_WORKER("numberAcceptorWorker"),
-	NUMBER_READER_WORKER("numberReaderWorker"),
-	NUMBER_WRITER_WORKER("numberWriterWorker"),
-	READ_MAX_BUFFER_SIZE("readMaxBufferSize"),
-	WRITE_MAX_BUFFER_SIZE("writeMaxBufferSize"),
-	CHANNEL_PACKET_QUEUE_SIZE("channelPacketQueueSize"),
-	SERVER_ADDRESS("serverAddress"),
-	// ====== UNDER CONTRUCTION ======//
+	INTERVAL_REMOVED_ROOM_SCAN("removed-room-scan-interval"),
+	INTERVAL_DISCONNECTED_PLAYER_SCAN("disconnected-player-scan-interval"),
+	INTERVAL_CCU_SCAN("ccu-scan-interval"),
+	INTERVAL_DEADLOCK_SCAN("deadlock-scan-interval"),
+	INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
+	INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
+	
+	PROP_KEEP_PLAYER_ON_DISCONNECTION("keep-player-on-disconnection"),
+	PROP_MAX_NUMBER_PLAYERS("max-number-players"),
+	PROP_MAX_NUMBER_ROOMS("max-number-rooms"),
+	PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
+	PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
 
+	NETWORK_PROP_WEBSOCKET_USING_SSL("websocket-using-ssl"),
+	
+	NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE("websocket-sender-buffer-size"),
+	NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE("websocket-receiver-buffer-size"),
+	NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE("socket-acceptor-buffer-size"),
+	NETWORK_PROP_SOCKET_READER_BUFFER_SIZE("socket-reader-buffer-size"),
+	NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE("socket-writer-buffer-size"),
+	
 	/**
-	 * The list of socket ports in configuration
+	 * The list of socket configuration in configuration
 	 */
-	SOCKET_PORTS("socketPorts"),
+	SOCKET_CONFIGS("socket-configs"),
 	/**
-	 * The list of broadcast ports in configuration
+	 * The list of HTTP configuration in configuration
 	 */
-	BROADCAST_PORTS("broadcastPorts"),
-	/**
-	 * The list of web socket ports in configuration
-	 */
-	WEBSOCKET_PORTS("webSocketPorts"),
-	/**
-	 * The list of HTTP ports in configuration
-	 */
-	HTTP_PORTS("httpPorts");
+	HTTP_CONFIGS("http-configs");
 
 	// Reverse-lookup map for getting a type from a value
 	private static final Map<String, CoreConfigurationType> lookup = new HashMap<String, CoreConfigurationType>();

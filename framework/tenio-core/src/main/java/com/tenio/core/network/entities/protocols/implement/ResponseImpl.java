@@ -96,7 +96,7 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 
 	@Override
 	public void write() {
-		// TODO Auto-generated method stub
+		// TODO if use udp is in use in case of websocket, use websocket instead
 
 	}
 

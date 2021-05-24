@@ -24,8 +24,6 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.core.api.ServerApi;
-import com.tenio.core.events.EventManager;
-import com.tenio.core.extension.Extension;
 
 /**
  * This class manages the workflow of the current server. The instruction's
@@ -46,23 +44,6 @@ public interface Server {
 	 * Shut down the server and close all services
 	 */
 	void shutdown();
-
-	/**
-	 * @return Returns your own implemented extension
-	 */
-	Extension getExtension();
-
-	/**
-	 * Set your own extension for handling your own logic in-game
-	 * 
-	 * @param extension your own logic handling @see {@link Extension}
-	 */
-	void setExtension(Extension extension);
-
-	/**
-	 * @return see {@link EventManager}
-	 */
-	EventManager getEventManager();
 
 	ServerApi getApi();
 

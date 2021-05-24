@@ -73,18 +73,13 @@ public enum CoreMessageCode {
 	 * allowed connections.
 	 */
 	REACHED_MAX_CONNECTION("reached_max_connection"),
-	
+
 	REACHED_MAX_ROOMS("reached_max_rooms"),
-	
+
 	/**
 	 * When you try to retrieve a non-existing player.
 	 */
-	PLAYER_NOT_FOUND("player_not_found"),
-	/**
-	 * When you try to attach a UDP connection to one player with a non-existing of
-	 * TCP connection.
-	 */
-	MAIN_CONNECTION_NOT_FOUND("main_connection_not_found");
+	PLAYER_NOT_FOUND("player_not_found");
 
 	private final String value;
 

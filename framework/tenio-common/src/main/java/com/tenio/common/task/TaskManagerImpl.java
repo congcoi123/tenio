@@ -23,16 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.common.task;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.exceptions.RunningScheduledTaskException;
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 
 /**
  * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
@@ -47,20 +46,23 @@ import com.tenio.common.loggers.AbstractLogger;
  * 
  */
 @ThreadSafe
-public final class TaskManagerImpl extends AbstractLogger implements TaskManager {
+public final class TaskManagerImpl extends SystemLogger implements TaskManager {
 
 	/**
 	 * A list of tasks in the server
 	 */
-	@GuardedBy("this")
 	private final Map<String, ScheduledFuture<?>> __tasks;
 
-	public TaskManagerImpl() {
-		__tasks = new HashMap<String, ScheduledFuture<?>>();
+	public static TaskManager newInstance() {
+		return new TaskManagerImpl();
+	}
+
+	private TaskManagerImpl() {
+		__tasks = new ConcurrentHashMap<String, ScheduledFuture<?>>();
 	}
 
 	@Override
-	public synchronized void create(String id, ScheduledFuture<?> task) {
+	public void create(String id, ScheduledFuture<?> task) {
 		if (__tasks.containsKey(id)) {
 			try {
 				if (!__tasks.get(id).isDone() || !__tasks.get(id).isCancelled()) {
@@ -77,7 +79,7 @@ public final class TaskManagerImpl extends AbstractLogger implements TaskManager
 	}
 
 	@Override
-	public synchronized void kill(String id) {
+	public void kill(String id) {
 		if (__tasks.containsKey(id)) {
 			info("KILLED TASK", id);
 			__tasks.remove(id);
@@ -89,7 +91,7 @@ public final class TaskManagerImpl extends AbstractLogger implements TaskManager
 	}
 
 	@Override
-	public synchronized void clear() {
+	public void clear() {
 		__tasks.forEach((id, task) -> {
 			info("KILLED TASK", id);
 			if (task != null && (!task.isDone() || !task.isCancelled())) {
@@ -100,7 +102,7 @@ public final class TaskManagerImpl extends AbstractLogger implements TaskManager
 	}
 
 	@Override
-	public synchronized int getRemainTime(String id) {
+	public int getRemainTime(String id) {
 		var task = __tasks.get(id);
 		if (task != null) {
 			return (int) task.getDelay(TimeUnit.SECONDS);

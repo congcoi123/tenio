@@ -1,8 +1,12 @@
 package com.tenio.core.network.statistics;
 
-public class NetworkReaderStatistic {
+public final class NetworkReaderStatistic {
 
-	public NetworkReaderStatistic() {
+	public static NetworkReaderStatistic newInstannce() {
+		return new NetworkReaderStatistic();
+	}
+
+	private NetworkReaderStatistic() {
 
 	}
 
