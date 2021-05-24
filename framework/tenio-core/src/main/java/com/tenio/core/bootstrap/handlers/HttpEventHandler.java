@@ -34,7 +34,7 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.extension.events.EventHttpRequestValidate;
 import com.tenio.core.network.defines.RestMethod;
@@ -44,7 +44,7 @@ import com.tenio.core.network.defines.RestMethod;
  */
 @Component
 //TODO: Add description
-public final class HttpEventHandler extends AbstractExtensionHandler {
+public final class HttpEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
 	private EventHttpRequestHandle __eventHttpRequestHandle;

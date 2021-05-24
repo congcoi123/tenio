@@ -34,7 +34,7 @@ import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventAttachConnectionFailed;
 import com.tenio.core.extension.events.EventAttachConnectionRequestValidate;
 import com.tenio.core.extension.events.EventAttachConnectionSuccess;
@@ -49,7 +49,7 @@ import com.tenio.core.network.entities.session.Connection;
  */
 @Component
 //TODO: Add description
-public final class ConnectionEventHandler extends AbstractExtensionHandler {
+public final class ConnectionEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
 	private EventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
@@ -94,7 +94,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventConnectionEstablishedSuccess event) {
-				_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESSFULLY, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -168,7 +168,7 @@ public final class ConnectionEventHandler extends AbstractExtensionHandler {
 
 			@Override
 			public void accept(EventAttachConnectionSuccess event) {
-				_on(ExtensionEvent.ATTACH_CONNECTION_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.ATTACH_CONNECTION_SUCCESSFULLY, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

@@ -26,7 +26,6 @@ package com.tenio.core.network.entities.protocols.implement;
 import com.tenio.common.utilities.TimeUtility;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.network.defines.RequestPriority;
-import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.network.entities.session.Session;
 
@@ -37,7 +36,6 @@ public final class RequestImpl extends AbstractMessage implements Request {
 
 	private InternalEvent __event;
 	private Session __sender;
-	private TransportType __transportType;
 	private RequestPriority __priority;
 	private long __timestamp;
 
@@ -48,6 +46,7 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	private RequestImpl() {
 		super();
 
+		__priority = RequestPriority.NORMAL;
 		__timestamp = TimeUtility.currentTimeMillis();
 	}
 
@@ -78,33 +77,6 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	@Override
 	public long getTimestamp() {
 		return __timestamp;
-	}
-
-	@Override
-	public TransportType getTransportType() {
-		return __transportType;
-	}
-
-	@Override
-	public Request setTransportType(TransportType transportType) {
-		__transportType = transportType;
-
-		return this;
-	}
-
-	@Override
-	public boolean isTcp() {
-		return __transportType == TransportType.TCP;
-	}
-
-	@Override
-	public boolean isUdp() {
-		return __transportType == TransportType.UDP;
-	}
-
-	@Override
-	public boolean isWebsocket() {
-		return __transportType == TransportType.WEB_SOCKET;
 	}
 
 	@Override

@@ -30,14 +30,14 @@ import com.tenio.core.bootstrap.handlers.HttpEventHandler;
 import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
 import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
 import com.tenio.core.bootstrap.handlers.RoomEventHandler;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 
 /**
  * @author kong
  */
 @Component
 //TODO: Add description
-public final class EventHandler extends AbstractExtensionHandler {
+public final class EventHandler extends AbstractExtension {
 
 	@Autowired
 	private ConnectionEventHandler __connectionEventHandler;

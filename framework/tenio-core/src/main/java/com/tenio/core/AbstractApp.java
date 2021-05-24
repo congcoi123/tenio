@@ -70,10 +70,8 @@ public abstract class AbstractApp extends AbstractLogger {
 		}
 
 		var configuration = getConfiguration();
-		var extension = getExtension();
 
 		var server = ServerImpl.getInstance();
-		server.setExtension(extension);
 		try {
 			if (bootstrap == null) {
 				server.start(configuration, null);
@@ -99,13 +97,8 @@ public abstract class AbstractApp extends AbstractLogger {
 			onShutdown();
 		}));
 		// The server was ready
-		onStarted(extension, configuration);
+		onStarted(configuration);
 	}
-
-	/**
-	 * @return an extension for handling your own logic class
-	 */
-	public abstract Extension getExtension();
 
 	/**
 	 * @return your own class that derived from {@link Configuration} class
@@ -115,7 +108,7 @@ public abstract class AbstractApp extends AbstractLogger {
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted(Extension extension, Configuration configuration);
+	public abstract void onStarted(Configuration configuration);
 
 	/**
 	 * The trigger is called when server was tear down

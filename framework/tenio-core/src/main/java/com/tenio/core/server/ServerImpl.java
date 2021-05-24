@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,8 +34,7 @@ import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.data.elements.CommonObjectArray;
-import com.tenio.common.loggers.AbstractLogger;
-import com.tenio.common.msgpack.ByteArrayInputStream;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.pool.ElementsPool;
 import com.tenio.common.task.TaskManager;
 import com.tenio.common.task.TaskManagerImpl;
@@ -42,6 +42,8 @@ import com.tenio.common.utilities.StringUtility;
 import com.tenio.core.api.MessageApi;
 import com.tenio.core.api.PlayerApi;
 import com.tenio.core.api.RoomApi;
+import com.tenio.core.api.ServerApi;
+import com.tenio.core.api.ServerApiImpl;
 import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
@@ -59,6 +61,7 @@ import com.tenio.core.extension.Extension;
 import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.network.IBroadcast;
 import com.tenio.core.network.Network;
+import com.tenio.core.network.NetworkService;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.jetty.JettyHttpService;
@@ -70,14 +73,12 @@ import com.tenio.core.network.zero.engines.ZeroWriter;
 import com.tenio.core.network.zero.engines.implement.ZeroAcceptorImpl;
 import com.tenio.core.network.zero.engines.implement.ZeroReaderImpl;
 import com.tenio.core.network.zero.engines.implement.ZeroWriterImpl;
-import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.CommonObjectArrayPool;
-import com.tenio.core.pool.CommonObjectPool;
+import com.tenio.core.schedule.ScheduleService;
+import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
+import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
 import com.tenio.core.schedule.tasks.CCUScanTask;
 import com.tenio.core.schedule.tasks.DeadlockScanTask;
-import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
 import com.tenio.core.schedule.tasks.SystemMonitoringTask;
-import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
 import com.tenio.core.server.services.InternalProcessorService;
 import com.tenio.core.server.settings.ConfigurationAssessment;
 
@@ -92,26 +93,20 @@ import com.tenio.core.server.settings.ConfigurationAssessment;
  * 
  */
 @ThreadSafe
-public final class ServerImpl extends AbstractLogger implements Server {
+public final class ServerImpl extends SystemLogger {
 
 	private static ServerImpl __instance;
 
 	private ServerImpl() {
-		
+
 		__eventManager = new EventManagerImpl();
-		__network = new NettyWebSocketServiceImpl();
+		__networkService = new NetworkService(__eventManager);
 
-		__roomManager = new RoomManagerImpl(__eventManager);
-		__playerManager = new PlayerManagerImpl(__eventManager);
-		__taskManager = new TaskManagerImpl();
+		__roomManager = RoomManagerImpl.newInstance(__eventManager);
+		__playerManager = PlayerManagerImpl.newInstance(__eventManager);
+		__serverApi = new ServerApiImpl();
 
-		__playerApi = new PlayerApi(__playerManager, __roomManager);
-		__roomApi = new RoomApi(__roomManager);
-		__taskApi = new TaskApi(__taskManager);
-		__messageApi = new MessageApi(__eventManager, __commonObjectPool, __commonObjectArrayPool, __playerManager,
-				(IBroadcast) __network);
-
-		__internalLogic = new InternalProcessorService(__eventManager, __playerManager, __roomManager);
+		__internalLogic = InternalProcessorService.newInstance(__eventManager);
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
@@ -130,24 +125,16 @@ public final class ServerImpl extends AbstractLogger implements Server {
 
 	private Configuration __configuration;
 
-	private final ElementsPool<CommonObject> __commonObjectPool;
-	private final ElementsPool<CommonObjectArray> __commonObjectArrayPool;
-	private final ElementsPool<ByteArrayInputStream> __byteArrayInputPool;
-
 	private final EventManager __eventManager;
 
 	private final RoomManager __roomManager;
 	private final PlayerManager __playerManager;
-	private final TaskManager __taskManager;
 
-	private final PlayerApi __playerApi;
-	private final RoomApi __roomApi;
-	private final TaskApi __taskApi;
-	private final MessageApi __messageApi;
+	private final ServerApi __serverApi;
 
 	private final InternalProcessorService __internalLogic;
-	private final Network __network;
-	private Extension __extension;
+	private final ScheduleService __scheduleService;
+	private final NetworkService __networkService;
 
 	private List<SocketConfig> __socketPorts;
 	private List<SocketConfig> __webSocketPorts;
@@ -156,14 +143,11 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	private int __webSocketPortsSize;
 	private String __serverName;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
-			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException {
+	public void start(Configuration configuration) {
 		__configuration = configuration;
-		
-		var assessment = new ConfigurationAssessment();
-		assessment.assess();
+
+		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
+		ConfigsAssessment.assess();
 
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
@@ -172,14 +156,6 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		systemInfo.logSystemInfo();
 		systemInfo.logNetCardsInfo();
 		systemInfo.logDiskInfo();
-		
-		ZeroReader zeroReader = new ZeroReaderImpl(5);
-		ZeroWriter zeroWriter = new ZeroWriterImpl(5);
-		ZeroAcceptor zeroAcceptor = new ZeroAcceptorImpl(5);
-		zeroAcceptor.setConfiguration(configuration);
-		zeroAcceptor.setConnectionFilter(new DefaultConnectionFilter());
-		zeroAcceptor.setZeroReaderListener((ZeroReaderImpl) zeroReader);
-		
 
 		info("SERVER", __serverName, "Starting ...");
 
@@ -237,11 +213,6 @@ public final class ServerImpl extends AbstractLogger implements Server {
 		info("SERVER", __serverName, "Started!");
 	}
 
-	private void __startNetwork(Configuration configuration, ElementsPool<CommonObject> msgObjectPool,
-			ElementsPool<ByteArrayInputStream> byteArrayPool) throws IOException, InterruptedException {
-		__network.start(__eventManager, configuration, msgObjectPool, byteArrayPool);
-	}
-
 	@Override
 	public synchronized void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
@@ -278,99 +249,6 @@ public final class ServerImpl extends AbstractLogger implements Server {
 	@Override
 	public void setExtension(Extension extension) {
 		__extension = extension;
-	}
-
-	private void __checkSubscriberReconnection(Configuration configuration) throws NotDefinedSubscribersException {
-		if (configuration.getBoolean(CoreConfigurationType.KEEP_PLAYER_ON_DISCONNECT)) {
-			if (!__eventManager.getExtension().hasSubscriber(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
-					|| !__eventManager.getExtension().hasSubscriber(ExtensionEvent.PLAYER_RECONNECT_SUCCESS)) {
-				throw new NotDefinedSubscribersException(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
-						ExtensionEvent.PLAYER_RECONNECT_SUCCESS);
-			}
-		}
-	}
-
-	private void __checkSubscriberSubConnectionAttach(Configuration configuration)
-			throws NotDefinedSubscribersException {
-		if (__socketPortsSize > 1 || __webSocketPortsSize > 1) {
-			if (!__eventManager.getExtension().hasSubscriber(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE)
-					|| !__eventManager.getExtension().hasSubscriber(ExtensionEvent.ATTACH_CONNECTION_SUCCESS)
-					|| !__eventManager.getExtension().hasSubscriber(ExtensionEvent.ATTACH_CONNECTION_FAILED)) {
-				throw new NotDefinedSubscribersException(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE,
-						ExtensionEvent.ATTACH_CONNECTION_SUCCESS, ExtensionEvent.ATTACH_CONNECTION_FAILED);
-			}
-		}
-	}
-
-	private void __checkDefinedMainSocketConnection(Configuration configuration)
-			throws NotDefinedSocketConnectionException {
-		if (__socketPorts.isEmpty() && __webSocketPorts.isEmpty()) {
-			throw new NotDefinedSocketConnectionException();
-		}
-	}
-
-	private void __checkSubscriberHttpHandler(Configuration configuration) throws NotDefinedSubscribersException {
-		if (!__httpPorts.isEmpty() && (!__eventManager.getExtension().hasSubscriber(ExtensionEvent.HTTP_REQUEST_VALIDATE)
-				|| !__eventManager.getExtension().hasSubscriber(ExtensionEvent.HTTP_REQUEST_HANDLE))) {
-			throw new NotDefinedSubscribersException(ExtensionEvent.HTTP_REQUEST_VALIDATE, ExtensionEvent.HTTP_REQUEST_HANDLE);
-		}
-	}
-
-	private void __createAllSchedules(Configuration configuration) {
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
-				(new AutoDisconnectPlayerTask(__eventManager, __playerApi,
-						configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
-						configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
-						configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
-
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_EMPTY_ROOM_SCAN,
-				(new AutoRemoveRoomTask(__roomApi, configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL)))
-						.run());
-
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
-				configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
-
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
-				configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
-
-		__taskManager.create(CoreConstant.KEY_SCHEDULE_DEADLOCK_SCAN,
-				(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
-	}
-
-	private String __createHttpManagers(Configuration configuration) throws DuplicatedUriAndMethodException {
-		for (int i = 0; i < __httpPorts.size(); i++) {
-			var port = __httpPorts.get(i);
-			var httpManager = new JettyHttpService(__eventManager, port.getName(), port.getPort(), port.getPaths());
-			httpManager.setup();
-			__taskManager.create(StringUtility.strgen(CoreConstant.KEY_SCHEDULE_HTTP_MANAGER, ".", i),
-					httpManager.run());
-		}
-		return null;
-	}
-
-	@Override
-	public PlayerApi getPlayerApi() {
-		return __playerApi;
-	}
-
-	@Override
-	public RoomApi getRoomApi() {
-		return __roomApi;
-	}
-
-	@Override
-	public MessageApi getMessageApi() {
-		return __messageApi;
-	}
-
-	@Override
-	public TaskApi getTaskApi() {
-		return __taskApi;
-	}
-
-	@Override
-	public EventManager getEventManager() {
-		return __eventManager;
 	}
 
 }

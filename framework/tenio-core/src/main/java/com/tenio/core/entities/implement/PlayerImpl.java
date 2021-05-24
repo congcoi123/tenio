@@ -39,7 +39,7 @@ public final class PlayerImpl implements Player {
 
 	private final String __name;
 
-	private Session __session;
+	private volatile Session __session;
 
 	private volatile Room __currentRoom;
 
@@ -53,7 +53,7 @@ public final class PlayerImpl implements Player {
 	private volatile boolean __loggedIn;
 	private volatile boolean __activated;
 	private volatile boolean __spectator;
-	private boolean __hasSession;
+	private volatile boolean __hasSession;
 
 	public static Player newInstance(String name) {
 		return new PlayerImpl(name);

@@ -93,6 +93,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			session.close();
 		} catch (IOException e) {
 			__logger.error(e, "Session: ", session.toString());
+			__eventManager.getInternal().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, e);
 		} finally {
 			session = null;
 		}
@@ -121,7 +122,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			__networkReaderStatistic.updateReadPackets(1);
 
 			if (!session.isConnected()) {
-				__eventManager.getInternal().emit(InternalEvent.SESSION_REQUEST_CONNECTION, session, binary);
+				__eventManager.getInternal().emit(InternalEvent.SESSION_REQUESTS_CONNECTION, session, binary);
 			} else {
 				__eventManager.getInternal().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
 			}

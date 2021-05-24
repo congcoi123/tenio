@@ -28,6 +28,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.manager.Manager;
 
 import io.netty.channel.Channel;
@@ -52,6 +53,8 @@ public interface SessionManager extends Manager {
 	void addDatagramForSession(DatagramChannel datagramChannel, Session session) throws IllegalArgumentException;
 
 	Session getSessionByDatagram(InetSocketAddress remoteAddress);
+
+	void emitEvent(InternalEvent event, Object... params);
 
 	/**
 	 * Remove session from its manager, this method should not be called. Call

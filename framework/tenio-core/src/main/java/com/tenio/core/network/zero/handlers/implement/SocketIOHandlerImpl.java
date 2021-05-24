@@ -53,7 +53,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
 		if (!session.isConnected()) {
-			__getInternalEvent().emit(InternalEvent.SESSION_REQUEST_CONNECTION, session, binary);
+			__getInternalEvent().emit(InternalEvent.SESSION_REQUESTS_CONNECTION, session, binary);
 		} else {
 			__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
 		}
@@ -91,6 +91,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 			session.close();
 		} catch (IOException e) {
 			error(e, "Session: ", session.toString());
+			__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, e);
 		} finally {
 			session = null;
 		}

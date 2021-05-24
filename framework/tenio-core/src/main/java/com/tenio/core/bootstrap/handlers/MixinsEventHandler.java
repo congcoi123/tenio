@@ -31,7 +31,7 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventException;
 import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
 import com.tenio.core.extension.events.EventFetchedCcuNumber;
@@ -42,7 +42,7 @@ import com.tenio.core.extension.events.EventMonitoringSystem;
  */
 @Component
 //TODO: Add description
-public final class MixinsEventHandler extends AbstractExtensionHandler {
+public final class MixinsEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
 	private EventException __eventException;

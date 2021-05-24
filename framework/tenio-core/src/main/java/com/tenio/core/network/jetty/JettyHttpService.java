@@ -34,10 +34,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
+import com.tenio.core.exceptions.ServiceRuntimeException;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.defines.RestMethod;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.jetty.servlet.PingServlet;
@@ -50,23 +51,22 @@ import com.tenio.core.service.Service;
  * @author kong
  *
  */
-public final class JettyHttpService extends AbstractLogger implements Service, Runnable {
+public final class JettyHttpService extends AbstractManager implements Service, Runnable {
 
 	private Server __server;
-	private final EventManager __eventManager;
 	private ExecutorService __executor;
-	private String __name;
-	private final int __port;
-	private final List<PathConfig> __pathConfigs;
+	private int __port;
+	private List<PathConfig> __pathConfigs;
 
-	public JettyHttpService(EventManager eventManager, String name, int port, List<PathConfig> pathConfigs) {
-		__eventManager = eventManager;
-		__name = name;
-		__port = port;
-		__pathConfigs = pathConfigs;
+	public static JettyHttpService newInstance(EventManager eventManager) {
+		return new JettyHttpService(eventManager);
 	}
 
-	public void setup() throws DuplicatedUriAndMethodException {
+	private JettyHttpService(EventManager eventManager) {
+		super(eventManager);
+	}
+
+	private void __setup() throws DuplicatedUriAndMethodException {
 		// Collect the same URI path for one servlet
 		Map<String, List<PathConfig>> servlets = new HashMap<String, List<PathConfig>>();
 		for (var path : __pathConfigs) {
@@ -112,7 +112,7 @@ public final class JettyHttpService extends AbstractLogger implements Service, R
 	@Override
 	public void run() {
 		try {
-			info("HTTP SERVICE", buildgen("Name: ", __name, " > Start at port: ", __port));
+			info("HTTP SERVICE", buildgen("Name: ", getName(), " > Start at port: ", __port));
 
 			__server.start();
 			__server.join();
@@ -128,14 +128,18 @@ public final class JettyHttpService extends AbstractLogger implements Service, R
 
 	@Override
 	public void initialize() {
-		throw new UnsupportedOperationException();
+		try {
+			__setup();
+		} catch (DuplicatedUriAndMethodException e) {
+			throw new ServiceRuntimeException(e.getMessage());
+		}
 	}
 
 	@Override
 	public void start() {
 		__executor = Executors.newSingleThreadExecutor();
 		__executor.execute(this);
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -177,12 +181,20 @@ public final class JettyHttpService extends AbstractLogger implements Service, R
 
 	@Override
 	public String getName() {
-		return __name;
+		return "jetty-http-service";
 	}
 
 	@Override
 	public void setName(String name) {
-		__name = name;
+		throw new UnsupportedOperationException();
+	}
+
+	public void setPort(int port) {
+		__port = port;
+	}
+
+	public void setPathConfigs(List<PathConfig> pathConfigs) {
+		__pathConfigs = pathConfigs;
 	}
 
 }

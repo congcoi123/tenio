@@ -25,7 +25,6 @@ package com.tenio.core.network.entities.protocols;
 
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.network.defines.RequestPriority;
-import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -46,15 +45,5 @@ public interface Request extends Message {
 	Request setPriority(RequestPriority priority);
 
 	long getTimestamp();
-
-	TransportType getTransportType();
-
-	Request setTransportType(TransportType transportType);
-
-	boolean isTcp();
-
-	boolean isUdp();
-
-	boolean isWebsocket();
 
 }

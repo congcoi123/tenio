@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
@@ -62,7 +63,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 
 	private SessionManagerImpl(EventManager eventManager) {
 		super(eventManager);
-		
+
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
@@ -163,6 +164,11 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 			__sessionByIds.remove(session.getId());
 			__sessionCount = __sessionByIds.size();
 		}
+	}
+
+	@Override
+	public void emitEvent(InternalEvent event, Object... params) {
+		__getInternalEvent().emit(event, params);
 	}
 
 	@Override

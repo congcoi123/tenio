@@ -28,14 +28,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.Extension;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.network.defines.RestMethod;
 
 /**
  * This Enum defines all events in your server. You can handle these events by
  * implementing your own logic in the {@link Extension#initialize()} method.
- * The logic class must be an inheritance of {@link AbstractExtensionHandler}
+ * The logic class must be an inheritance of {@link AbstractExtension}
  * class.
  * 
  * @author kong
@@ -56,20 +55,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_ESTABLISHED_SUCCESS,
-
-	/**
-	 * When a connection was established, the next requests are handled in this
-	 * event. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> the current connection, see {@link Connection}</li>
-	 * <li><b>parameter[1]</b> a message that sent from the client, see
-	 * {@link CommonObject}</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	RECEIVED_MESSAGE_FROM_CONNECTION,
+	CONNECTION_ESTABLISHED_SUCCESSFULLY,
 
 	/**
 	 * When the client sends its first request to your server and because of some
@@ -128,7 +114,7 @@ public enum ExtensionEvent {
 	 * Return if you allow the client can be re-connected, return the corresponding
 	 * player: {@link IPlayer}, return <b>null</b> otherwise
 	 */
-	PLAYER_RECONNECT_REQUEST_HANDLE,
+	PLAYER_RECONNECTING_REQUEST_HANDLE,
 
 	/**
 	 * When a client makes reconnection successful and you can inform him here by a
@@ -139,22 +125,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_RECONNECT_SUCCESS,
-
-	/**
-	 * When a player is in IDLE status in a long time (exceeded the time out, that
-	 * can be defined in configuration: {@link CoreConfiguration}). For more
-	 * details: in a long time without sending or receiving message that will be
-	 * treated as time out. After this event, the player will be log out of your
-	 * server. <br>
-	 * <ul>
-	 * <li><b>parameter[0]</b> a will-be-log-out player, you can inform him by a
-	 * message, see {@link IPlayer}</li>
-	 * </ul>
-	 * 
-	 * Return <b>null</b>
-	 */
-	PLAYER_GOT_TIMEOUT,
+	PLAYER_RECONNECTED_SUCCESSFULLY,
 
 	/**
 	 * When you send a message from your server to one client it can be seen here.
@@ -314,7 +285,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_CONNECTION_SUCCESS,
+	ATTACH_CONNECTION_SUCCESSFULLY,
 
 	/**
 	 * The client failed to attach his desired sub connection. The reason can be

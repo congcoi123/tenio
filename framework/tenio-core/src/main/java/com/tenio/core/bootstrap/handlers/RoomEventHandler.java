@@ -34,7 +34,7 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
 import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.extension.events.EventPlayerJoinRoomHandle;
@@ -46,7 +46,7 @@ import com.tenio.core.extension.events.EventRoomWillBeRemoved;
  */
 @Component
 //TODO: Add description
-public final class RoomEventHandler extends AbstractExtensionHandler {
+public final class RoomEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
 	private EventPlayerAfterLeftRoom __eventPlayerAfterLeftRoom;

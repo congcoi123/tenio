@@ -23,18 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
-import java.io.IOException;
-
-import com.tenio.common.api.TaskApi;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.api.MessageApi;
-import com.tenio.core.api.PlayerApi;
-import com.tenio.core.api.RoomApi;
-import com.tenio.core.bootstrap.EventHandler;
+import com.tenio.core.api.ServerApi;
 import com.tenio.core.events.EventManager;
-import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
-import com.tenio.core.exceptions.NotDefinedSocketConnectionException;
-import com.tenio.core.exceptions.NotDefinedSubscribersException;
 import com.tenio.core.extension.Extension;
 
 /**
@@ -49,18 +39,8 @@ public interface Server {
 
 	/**
 	 * Start the server base on your own configurations
-	 * 
-	 * @param configuration, see {@link Configuration}
-	 * @param eventHandler,  see {@link EventHandler}
-	 * 
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws NotDefinedSocketConnectionException
-	 * @throws NotDefinedSubscribersException
-	 * @throws DuplicatedUriAndMethodException
 	 */
-	void start(Configuration configuration, EventHandler eventHandler) throws IOException, InterruptedException,
-			NotDefinedSocketConnectionException, NotDefinedSubscribersException, DuplicatedUriAndMethodException;
+	void start();
 
 	/**
 	 * Shut down the server and close all services
@@ -84,24 +64,6 @@ public interface Server {
 	 */
 	EventManager getEventManager();
 
-	/**
-	 * @return see {@link PlayerApi}
-	 */
-	PlayerApi getPlayerApi();
-
-	/**
-	 * @return see {@link RoomApi}
-	 */
-	RoomApi getRoomApi();
-
-	/**
-	 * @return see {@link MessageApi}
-	 */
-	MessageApi getMessageApi();
-
-	/**
-	 * @return see {@link TaskApi}
-	 */
-	TaskApi getTaskApi();
+	ServerApi getApi();
 
 }

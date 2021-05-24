@@ -23,26 +23,30 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension;
 
-import com.tenio.common.configuration.Configuration;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.core.api.ServerApi;
+import com.tenio.core.server.Server;
+import com.tenio.core.server.ServerImpl;
 
 /**
- * An entry point class is the first one you start to handle your own logic
- * in-game. The class must be implemented this interface and be created as a new
- * instance. In this new object, you can create a number of other logic handler
- * instances @see {@link AbstractExtensionHandler} and declare these in here. It
- * should be had only one entry point class for each server. instance. It should
- * be had only one entry point class for each server.
+ * This class provides you all the necessary APIs for your own logic game
+ * handling. The entry point class must implement the {@link Extension}
+ * interface. After that, you can create your desired number of handled logic
+ * classes. These logic instances in the entry point object will be handled from
+ * up to bottom. It works like a chain, you try to add a new value into an
+ * object in one first handler and in the last handler, that value can be
+ * retrieved for another purpose. Notice that, one event can be handled multiple
+ * times in different classes.
  * 
  * @author kong
  * 
  */
-public interface Extension {
+public abstract class AbstractExtension extends AbstractLogger {
 
-	/**
-	 * Initialize extension processing
-	 * 
-	 * @param configuration base configuration in server
-	 */
-	void initialize(Configuration configuration);
+	private final Server __server = ServerImpl.getInstance();
+
+	public final ServerApi getApi() {
+		return __server.getApi();
+	}
 	
 }

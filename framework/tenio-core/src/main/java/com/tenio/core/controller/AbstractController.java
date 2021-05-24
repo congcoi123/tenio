@@ -88,7 +88,6 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 	private void __stop() {
 		pause();
-		onHalted();
 		__executor.shutdown();
 
 		while (true) {
@@ -103,7 +102,6 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 		info("CONTROLLER STOPPED", buildgen("controller-", getName(), "-", __id));
 		destroy();
-		onDestroyed();
 		info("CONTROLLER DESTROYED", buildgen("controller-", getName(), "-", __id));
 	}
 
@@ -118,10 +116,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 				var request = __requestQueue.take();
 				processRequest(request);
 			} catch (InterruptedException e1) {
-				pause();
 				error(e1);
 			} catch (Throwable e2) {
-				pause();
 				error(e2);
 			}
 		}
@@ -136,24 +132,20 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void initialize() {
 		__initializeWorkers();
-		onInitialized();
 	}
 
 	@Override
 	public void start() {
-		onStarted();
 		__activated = true;
 	}
 
 	@Override
 	public void resume() {
-		onResumed();
 		__activated = true;
 	}
 
 	@Override
 	public void pause() {
-		onPaused();
 		__activated = false;
 	}
 
@@ -165,11 +157,6 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void destroy() {
 		__executor = null;
-	}
-
-	@Override
-	public void onRunning() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -219,7 +206,9 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	public float getPercentageUsedRequestQueue() {
 		return __maxQueueSize == 0 ? 0.0f : (float) (__requestQueue.size() * 100) / (float) __maxQueueSize;
 	}
+	
+	public abstract void subscribe();
 
-	public abstract void processRequest(Request request) throws Exception;
+	public abstract void processRequest(Request request);
 
 }

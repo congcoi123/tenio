@@ -33,6 +33,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.tenio.common.utilities.TimeUtility;
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
@@ -455,6 +456,8 @@ public final class SessionImpl implements Session {
 	public void close() throws IOException {
 		__packetQueue.clear();
 		__packetQueue = null;
+		
+		getSessionManager().emitEvent(InternalEvent.SESSION_IS_CLOSED, this);
 
 		switch (__transportType) {
 		case TCP:

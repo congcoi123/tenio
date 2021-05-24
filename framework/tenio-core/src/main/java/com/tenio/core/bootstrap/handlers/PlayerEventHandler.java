@@ -34,7 +34,7 @@ import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.events.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventDisconnectPlayer;
 import com.tenio.core.extension.events.EventPlayerGotTimeout;
 import com.tenio.core.extension.events.EventPlayerLoginedFailed;
@@ -50,7 +50,7 @@ import com.tenio.core.network.entities.session.Connection;
  */
 @Component
 //TODO: Add description
-public final class PlayerEventHandler extends AbstractExtensionHandler {
+public final class PlayerEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
 	private EventPlayerLoginedFailed __eventPlayerLoginedFailed;
@@ -155,7 +155,7 @@ public final class PlayerEventHandler extends AbstractExtensionHandler {
 
 			public void accept(EventPlayerReconnectSuccess event) {
 
-				_on(ExtensionEvent.PLAYER_RECONNECT_SUCCESS, new Subscriber() {
+				_on(ExtensionEvent.PLAYER_RECONNECTED_SUCCESSFULLY, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
