@@ -21,24 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.codec.decoder;
-
-import com.tenio.core.network.entities.session.Session;
-import com.tenio.core.network.zero.codec.compression.PacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.PacketEncrypter;
+package com.tenio.core.network.zero.codec.compression;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface PacketDecoder {
+public interface BinaryPacketCompressor {
 
-	void decode(Session session, byte[] data);
+	byte[] compress(byte[] binary) throws Exception;
 
-	void setResultListener(PacketDecoderResultListener resultListener);
-	
-	void setCompressor(PacketCompressor compressor);
-
-	void setEncrypter(PacketEncrypter encrypter);
+	byte[] uncompress(byte[] binary) throws Exception;
 
 }

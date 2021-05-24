@@ -27,7 +27,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.core.network.entities.session.Session;
-import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 
 /**
  * @author kong
@@ -44,6 +44,6 @@ public interface SocketIOHandler extends BaseIOHandler {
 
 	void sessionException(Session session, Exception exception);
 
-	void setPacketDecoder(PacketDecoder packetDecoder);
+	void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 
 }

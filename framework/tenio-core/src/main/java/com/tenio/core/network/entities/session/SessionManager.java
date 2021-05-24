@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.session;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -30,6 +31,7 @@ import java.nio.channels.SocketChannel;
 
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.manager.Manager;
+import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 
 import io.netty.channel.Channel;
 
@@ -56,6 +58,12 @@ public interface SessionManager extends Manager {
 
 	void emitEvent(InternalEvent event, Object... params);
 
+	void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException;
+
+	void setPacketQueueSize(int queueSize);
+	
 	/**
 	 * Remove session from its manager, this method should not be called. Call
 	 * instead the method {@link Session#close()} to completely eliminate the

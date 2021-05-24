@@ -8,6 +8,8 @@ import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
 
 public interface ZeroSocketService extends Service {
@@ -33,6 +35,10 @@ public interface ZeroSocketService extends Service {
 	void setNetworkWriterStatistic(NetworkWriterStatistic writerStatistic);
 
 	void setSocketConfigs(List<SocketConfig> socketConfigs);
+	
+	void setPacketEncoder(BinaryPacketEncoder packetEncoder);
+	
+	void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 
 	void write(Packet packet);
 

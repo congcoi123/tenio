@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.session.implement;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -35,6 +36,9 @@ import javax.annotation.concurrent.GuardedBy;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.manager.AbstractManager;
+import com.tenio.core.network.entities.packet.PacketQueue;
+import com.tenio.core.network.entities.packet.implement.PacketQueueImpl;
+import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 
@@ -46,6 +50,8 @@ import io.netty.channel.Channel;
 // TODO: Add description
 public final class SessionManagerImpl extends AbstractManager implements SessionManager {
 
+	private static final int DEFAULT_PACKET_QUEUE_SIZE = 100;
+
 	@GuardedBy("this")
 	private final Map<Long, Session> __sessionByIds;
 	@GuardedBy("this")
@@ -54,6 +60,9 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 	private final Map<Channel, Session> __sessionByWebSockets;
 	@GuardedBy("this")
 	private final Map<InetSocketAddress, Session> __sessionByDatagrams;
+
+	private PacketQueuePolicy __packetQueuePolicy;
+	private int __packetQueueSize;
 
 	private volatile int __sessionCount;
 
@@ -68,6 +77,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
 		__sessionByDatagrams = new HashMap<InetSocketAddress, Session>();
+
+		__sessionCount = 0;
+		__packetQueueSize = DEFAULT_PACKET_QUEUE_SIZE;
+		__packetQueuePolicy = null;
 	}
 
 	@Override
@@ -76,6 +89,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		session.setSocketChannel(socketChannel);
 		session.setSelectionKey(selectionKey);
 		session.setSessionManager(this);
+		session.setPacketQueue(__createNewPacketQueue());
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionBySockets.put(session.getSocketChannel(), session);
@@ -121,6 +135,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		Session session = SessionImpl.newInstance();
 		session.setWebSocketChannel(webSocketChannel);
 		session.setSessionManager(this);
+		session.setPacketQueue(__createNewPacketQueue());
 		synchronized (this) {
 			__sessionByIds.put(session.getId(), session);
 			__sessionByWebSockets.put(webSocketChannel, session);
@@ -140,6 +155,26 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		synchronized (__sessionByWebSockets) {
 			return __sessionByWebSockets.get(webSocketChannel);
 		}
+	}
+
+	private PacketQueue __createNewPacketQueue() {
+		PacketQueue packetQueue = PacketQueueImpl.newInstance();
+		packetQueue.setMaxSize(__packetQueueSize);
+		packetQueue.setPacketQueuePolicy(__packetQueuePolicy);
+
+		return packetQueue;
+	}
+
+	@Override
+	public void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		__packetQueuePolicy = clazz.getDeclaredConstructor().newInstance();
+	}
+
+	@Override
+	public void setPacketQueueSize(int queueSize) {
+		__packetQueueSize = queueSize;
 	}
 
 	@Override

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.tenio.core.entities.Player;
-import com.tenio.core.exceptions.UdpConnectionNotFoundException;
 import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.entities.session.Session;
 
@@ -104,6 +103,33 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	public void writeInDelay(int delayInSeconds) {
 		// TODO Auto-generated method stub
 
+	}
+
+	private Response __construct() throws RuntimeException {
+		__players.stream().forEach(player -> {
+			var session = player.getSession();
+			if (session.isTcp()) {
+				if (__socketSessions == null) {
+					__socketSessions = new ArrayList<Session>();
+					// when the session contains an UDP connection and the response requires it, add
+					// its session to the list
+					if (__useUdp && session.containsUdp()) {
+						__socketSessions.add(session);
+						__foundUdp = true;
+					} else {
+						__socketSessions.add(session);
+					}
+				}
+			} else if (session.isWebSocket()) {
+
+			}
+		});
+
+		if (__useUdp && !__foundUdp) {
+			throw new UdpConnectionNotFoundException();
+		}
+
+		return this;
 	}
 
 }

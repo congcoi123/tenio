@@ -77,6 +77,8 @@ public enum CoreConfigurationType implements ConfigurationType {
 	INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
 	INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
 	
+	PROP_MAX_PACKET_QUEUE_SIZE("max-packet-queue-size"),
+	PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
 	PROP_KEEP_PLAYER_ON_DISCONNECTION("keep-player-on-disconnection"),
 	PROP_MAX_NUMBER_PLAYERS("max-number-players"),
 	PROP_MAX_NUMBER_ROOMS("max-number-rooms"),
@@ -90,6 +92,7 @@ public enum CoreConfigurationType implements ConfigurationType {
 	NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE("socket-acceptor-buffer-size"),
 	NETWORK_PROP_SOCKET_READER_BUFFER_SIZE("socket-reader-buffer-size"),
 	NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE("socket-writer-buffer-size"),
+	NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES("packet-compression-threshold-bytes"),
 	
 	/**
 	 * The list of socket configuration in configuration

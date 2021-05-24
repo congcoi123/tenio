@@ -21,16 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.zero.codec.compression;
+package com.tenio.core.network.zero.codec.encryption;
 
 /**
  * @author kong
  */
 // TODO: Add description
-public interface PacketCompressor {
+public interface BinaryPacketEncrypter {
 
-	byte[] compress(byte[] binary) throws Exception;
+	byte[] encrypt(byte[] binary) throws Exception;
 
-	byte[] uncompress(byte[] binary) throws Exception;
+	byte[] decrypt(byte[] binary) throws Exception;
 
 }

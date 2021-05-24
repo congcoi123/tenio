@@ -4,9 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import com.tenio.core.events.EventManager;
+import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.entities.packet.Packet;
+import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.entities.session.implement.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttpService;
@@ -17,6 +19,8 @@ import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.ZeroSocketService;
 import com.tenio.core.network.zero.ZeroSocketServiceImpl;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
 public final class NetworkServiceImpl implements NetworkService {
 
@@ -143,12 +147,6 @@ public final class NetworkServiceImpl implements NetworkService {
 	}
 
 	@Override
-	public void setWebsocketConfig(SocketConfig socketConfig) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setWebsocketUsingSSL(boolean usingSSL) {
 		__websocketService.setUsingSSL(usingSSL);
 	}
@@ -191,7 +189,31 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void setSocketConfigs(List<SocketConfig> socketConfigs) {
+		__socketService.setSocketConfigs(socketConfigs);
+		__websocketService.setWebSocketConfig(socketConfigs.stream()
+				.filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET).findFirst().get());
+	}
 
+	@Override
+	public void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		__sessionManager.setPacketQueuePolicy(clazz);
+	}
+
+	@Override
+	public void setPacketQueueSize(int queueSize) {
+		__sessionManager.setPacketQueueSize(queueSize);
+	}
+
+	@Override
+	public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
+		__socketService.setPacketEncoder(packetEncoder);
+	}
+
+	@Override
+	public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
+		__socketService.setPacketDecoder(packetDecoder);
 	}
 
 	@Override

@@ -6,7 +6,10 @@ import java.util.List;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.entities.packet.Packet;
+import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
 
 public interface NetworkService extends Service {
@@ -27,8 +30,6 @@ public interface NetworkService extends Service {
 
 	void setWebsocketReceiverBufferSize(int bufferSize);
 
-	void setWebsocketConfig(SocketConfig socketConfig);
-
 	void setWebsocketUsingSSL(boolean usingSSL);
 
 	void setSocketAcceptorWorkers(int workerSize);
@@ -42,8 +43,18 @@ public interface NetworkService extends Service {
 	void setSocketReaderBufferSize(int bufferSize);
 
 	void setSocketWriterBufferSize(int bufferSize);
-	
+
 	void setSocketConfigs(List<SocketConfig> socketConfigs);
+
+	void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException;
+
+	void setPacketQueueSize(int queueSize);
+	
+	void setPacketEncoder(BinaryPacketEncoder packetEncoder);
+	
+	void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 
 	void write(Packet packet);
 

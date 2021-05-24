@@ -10,6 +10,8 @@ import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.engines.ZeroAcceptor;
 import com.tenio.core.network.zero.engines.ZeroReader;
 import com.tenio.core.network.zero.engines.ZeroWriter;
@@ -191,6 +193,16 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 	@Override
 	public void setSocketConfigs(List<SocketConfig> socketConfigs) {
 		__acceptorEngine.setSocketConfigs(socketConfigs);
+	}
+
+	@Override
+	public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
+
+	}
+
+	@Override
+	public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
+		__socketIOHandler.setPacketDecoder(packetDecoder);
 	}
 
 	@Override

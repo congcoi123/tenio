@@ -33,7 +33,9 @@ import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
+import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
+import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
@@ -45,10 +47,16 @@ import com.tenio.core.network.NetworkService;
 import com.tenio.core.network.NetworkServiceImpl;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
+import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.schedule.ScheduleService;
 import com.tenio.core.schedule.ScheduleServiceImpl;
 import com.tenio.core.server.services.InternalProcessorService;
+import com.tenio.core.server.services.InternalProcessorServiceImpl;
 import com.tenio.core.server.settings.ConfigurationAssessment;
 
 /**
@@ -56,10 +64,7 @@ import com.tenio.core.server.settings.ConfigurationAssessment;
  * orders are important, event subscribes must be set last and all configuration
  * values should be confirmed.
  * 
- * @see Server
- * 
  * @author kong
- * 
  */
 @ThreadSafe
 public final class ServerImpl extends SystemLogger implements Server {
@@ -72,7 +77,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__roomManager = RoomManagerImpl.newInstance(__eventManager);
 		__playerManager = PlayerManagerImpl.newInstance(__eventManager);
 		__networkService = NetworkServiceImpl.newInstance(__eventManager);
-		__internalProcessorService = InternalProcessorService.newInstance(__eventManager);
+		__internalProcessorService = InternalProcessorServiceImpl.newInstance(__eventManager);
 		__scheduleService = ScheduleServiceImpl.newInstance(__eventManager);
 		__serverApi = ServerApiImpl.newInstance(this);
 
@@ -91,7 +96,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 		return __instance;
 	}
 
-	private Configuration __configuration;
 	private final EventManager __eventManager;
 	private final RoomManager __roomManager;
 	private final PlayerManager __playerManager;
@@ -102,8 +106,10 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 	private String __serverName;
 
-	public void start(Configuration configuration) {
-		__configuration = configuration;
+	@Override
+	public void start(Configuration configuration, EventHandler eventHandler)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
 
 		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
 		ConfigsAssessment.assess();
@@ -121,50 +127,15 @@ public final class ServerImpl extends SystemLogger implements Server {
 		// Put the current configurations to the logger
 		info("CONFIGURATION", configuration.toString());
 
-		// create all ports information
-		__socketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
-		__webSocketPorts = (List<SocketConfig>) (configuration.get(CoreConfigurationType.WEBSOCKET_PORTS));
-		__httpPorts = (List<HttpConfig>) (configuration.get(CoreConfigurationType.HTTP_CONFIGS));
+		__setupInternalProcessorService(configuration);
+		__setupNetworkService(configuration);
+		__setupScheduleService(configuration);
 
-		__socketPortsSize = __socketPorts.size();
-		__webSocketPortsSize = __webSocketPorts.size();
+		__internalProcessorService.subscribe();
 
-		// managements
-		__playerManager.initialize(configuration);
-		__roomManager.initialize(configuration);
+		eventHandler.initialize();
 
-		// main server logic
-		__internalProcessorService.init(configuration);
-
-		// initialize the subscribers
-		var extension = getExtension();
-		if (extension != null) {
-			extension.initialize(configuration);
-		}
-		if (eventHandler != null) {
-			eventHandler.initialize();
-		}
-
-		// server need at least one connection to start up
-		__checkDefinedMainSocketConnection(configuration);
-
-		// HTTP checking
-		__checkSubscriberHttpHandler(configuration);
-
-		// schedules
-		__createAllSchedules(configuration);
-
-		// HTTP handler
-		__createHttpManagers(configuration);
-
-		// start network
-		__startNetwork(configuration, __commonObjectPool, __byteArrayInputPool);
-
-		// check subscribers must handle subscribers for UDP attachment
-		__checkSubscriberSubConnectionAttach(configuration);
-
-		// must handle subscribers for reconnection
-		__checkSubscriberReconnection(configuration);
+		__startServices();
 
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
@@ -172,91 +143,117 @@ public final class ServerImpl extends SystemLogger implements Server {
 		info("SERVER", __serverName, "Started!");
 	}
 
-	private void __setupScheduleService() {
-		__scheduleService.setCcuScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
-		__scheduleService.setDeadlockScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_DEADLOCK_SCAN));
+	private void __startServices() {
+		__networkService.start();
+		__scheduleService.start();
+		__eventManager.getInternal().emit(InternalEvent.SERVER_STARTED, __serverName);
+	}
+
+	private void __setupScheduleService(Configuration configuration) {
+		__scheduleService.setCcuScanInterval(configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
+		__scheduleService.setDeadlockScanInterval(configuration.getInt(CoreConfigurationType.INTERVAL_DEADLOCK_SCAN));
 		__scheduleService.setDisconnectedPlayerScanInterval(
-				__configuration.getInt(CoreConfigurationType.INTERVAL_DISCONNECTED_PLAYER_SCAN));
+				configuration.getInt(CoreConfigurationType.INTERVAL_DISCONNECTED_PLAYER_SCAN));
 		__scheduleService
-				.setRemovedRoomScanInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_REMOVED_ROOM_SCAN));
+				.setRemovedRoomScanInterval(configuration.getInt(CoreConfigurationType.INTERVAL_REMOVED_ROOM_SCAN));
 		__scheduleService
-				.setSystemMonitoringInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_SYSTEM_MONITORING));
+				.setSystemMonitoringInterval(configuration.getInt(CoreConfigurationType.INTERVAL_SYSTEM_MONITORING));
 		__scheduleService
-				.setTrafficCounterInterval(__configuration.getInt(CoreConfigurationType.INTERVAL_TRAFFIC_COUNTER));
+				.setTrafficCounterInterval(configuration.getInt(CoreConfigurationType.INTERVAL_TRAFFIC_COUNTER));
 
 		__scheduleService.setPlayerManager(__playerManager);
 		__scheduleService.setRoomManager(__roomManager);
 	}
 
-	private void __setupNetworkService() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	@SuppressWarnings("unchecked")
+	private void __setupNetworkService(Configuration configuration)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
+
 		var connectionFilterClazz = Class
-				.forName(__configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER));
 		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz);
-		var httpConfig = (List<HttpConfig>) __configuration.get(CoreConfigurationType.HTTP_CONFIGS);
+
+		var httpConfig = (List<HttpConfig>) configuration.get(CoreConfigurationType.HTTP_CONFIGS);
 		__networkService.setHttpPort(httpConfig.get(0).getPort());
 		__networkService.setHttpPathConfigs(httpConfig.get(0).getPaths());
+
 		__networkService.setSocketAcceptorBufferSize(
-				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));
-		__networkService
-				.setSocketAcceptorWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_ACCEPTOR));
-		__networkService
-				.setSocketConfigs((List<SocketConfig>) __configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));
+		__networkService.setSocketAcceptorWorkers(configuration.getInt(CoreConfigurationType.THREADS_SOCKET_ACCEPTOR));
+
+		__networkService.setSocketConfigs((List<SocketConfig>) configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
+
 		__networkService.setSocketReaderBufferSize(
-				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
-		__networkService.setSocketReaderWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_READER));
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
+		__networkService.setSocketReaderWorkers(configuration.getInt(CoreConfigurationType.THREADS_SOCKET_READER));
+
 		__networkService.setSocketWriterBufferSize(
-				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE));
-		__networkService.setSocketWriterWorkers(__configuration.getInt(CoreConfigurationType.THREADS_SOCKET_WRITER));
-		// FIXME:
-		__networkService.setWebsocketConfig(null);
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE));
+		__networkService.setSocketWriterWorkers(configuration.getInt(CoreConfigurationType.THREADS_SOCKET_WRITER));
+
 		__networkService
-				.setWebsocketConsumerWorkers(__configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_CONSUMER));
+				.setWebsocketConsumerWorkers(configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_CONSUMER));
 		__networkService
-				.setWebsocketProducerWorkers(__configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_PRODUCER));
+				.setWebsocketProducerWorkers(configuration.getInt(CoreConfigurationType.THREADS_WEBSOCKET_PRODUCER));
+
 		__networkService.setWebsocketReceiverBufferSize(
-				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE));
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE));
 		__networkService.setWebsocketSenderBufferSize(
-				__configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE));
-		__networkService.setWebsocketUsingSSL(
-				__configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE));
+		__networkService
+				.setWebsocketUsingSSL(configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
+
+		var packetQueuePolicyClazz = Class
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_QUEUE_POLICY));
+		__networkService.setPacketQueuePolicy((Class<? extends PacketQueuePolicy>) packetQueuePolicyClazz);
+		__networkService.setPacketQueueSize(configuration.getInt(CoreConfigurationType.PROP_MAX_PACKET_QUEUE_SIZE));
+
+		var binaryPacketCompressorClazz = Class
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_COMPRESSOR));
+		var binaryPacketCompressor = (BinaryPacketCompressor) binaryPacketCompressorClazz.getDeclaredConstructor()
+				.newInstance();
+		var binaryPacketEncrypterClazz = Class
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCRYPTER));
+		var binaryPacketEncrypter = (BinaryPacketEncrypter) binaryPacketEncrypterClazz.getDeclaredConstructor()
+				.newInstance();
+		var binaryPacketEncoderClazz = Class
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCODER));
+		var binaryPacketEncoder = (BinaryPacketEncoder) binaryPacketEncoderClazz.getDeclaredConstructor().newInstance();
+		var binaryPacketDecoderClazz = Class
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_DECODER));
+		var binaryPacketDecoder = (BinaryPacketDecoder) binaryPacketDecoderClazz.getDeclaredConstructor().newInstance();
+
+		binaryPacketEncoder.setCompressionThresholdBytes(
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES));
+		binaryPacketEncoder.setCompressor(binaryPacketCompressor);
+		binaryPacketEncoder.setEncrypter(binaryPacketEncrypter);
+
+		binaryPacketDecoder.setCompressor(binaryPacketCompressor);
+		binaryPacketDecoder.setEncrypter(binaryPacketEncrypter);
 	}
 
-	private void __setupInternalProcessorService() {
-
+	private void __setupInternalProcessorService(Configuration configuration) {
+		__internalProcessorService
+				.setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
+		__internalProcessorService.setPlayerManager(__playerManager);
+		__internalProcessorService
+				.setMaxRequestQueueSize(configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
+		__internalProcessorService
+				.setThreadPoolSize(configuration.getInt(CoreConfigurationType.THREADS_INTERNAL_PROCESSOR));
 	}
 
 	@Override
-	public synchronized void shutdown() {
+	public void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
-		__shutdown();
+		__shutdownServices();
 		info("SERVER", __serverName, "Stopped!");
 	}
 
-	private void __shutdown() {
-		if (__network != null) {
-			__network.shutdown();
-		}
-		// clear configuration
-		__configuration.clear();
-		// clear all managers
-		__roomManager.clear();
-		__playerManager.clear();
-		__taskManager.clear();
-		__eventManager.clear();
-		// clear all pools
-		__commonObjectPool.cleanup();
-		__commonObjectArrayPool.cleanup();
-		__byteArrayInputPool.cleanup();
-		// clear all ports
-		__socketPorts.clear();
-		__webSocketPorts.clear();
-		__httpPorts.clear();
-	}
-
-	@Override
-	public void start() {
-
+	private void __shutdownServices() {
+		__internalProcessorService.halt();
+		__networkService.halt();
+		__scheduleService.halt();
 	}
 
 	@Override

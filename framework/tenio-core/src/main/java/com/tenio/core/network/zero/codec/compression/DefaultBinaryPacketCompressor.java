@@ -26,7 +26,7 @@ package com.tenio.core.network.zero.codec.compression;
 /**
  * @author kong
  */
-public final class DefaultBinaryPacketCompressor implements PacketCompressor {
+public final class DefaultBinaryPacketCompressor implements BinaryPacketCompressor {
 
 	@Override
 	public byte[] compress(byte[] binary) {

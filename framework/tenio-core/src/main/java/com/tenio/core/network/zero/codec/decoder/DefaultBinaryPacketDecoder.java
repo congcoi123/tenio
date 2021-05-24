@@ -28,18 +28,18 @@ import java.nio.ByteBuffer;
 import com.tenio.common.utilities.ByteUtility;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.codec.CodecUtility;
-import com.tenio.core.network.zero.codec.compression.PacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.PacketEncrypter;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 /**
  * @author kong
  */
-public final class DefaultBinaryPacketDecoder implements PacketDecoder {
+public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 
-	private PacketCompressor __compressor;
-	private PacketEncrypter __encrypter;
+	private BinaryPacketCompressor __compressor;
+	private BinaryPacketEncrypter __encrypter;
 	private PacketDecoderResultListener __resultListener;
 
 	@Override
@@ -88,12 +88,12 @@ public final class DefaultBinaryPacketDecoder implements PacketDecoder {
 	}
 
 	@Override
-	public void setCompressor(PacketCompressor compressor) {
+	public void setCompressor(BinaryPacketCompressor compressor) {
 		__compressor = compressor;
 	}
 
 	@Override
-	public void setEncrypter(PacketEncrypter encrypter) {
+	public void setEncrypter(BinaryPacketEncrypter encrypter) {
 		__encrypter = encrypter;
 	}
 

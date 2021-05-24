@@ -23,7 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.core.server;
 
+import java.lang.reflect.InvocationTargetException;
+
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.ServerApi;
+import com.tenio.core.bootstrap.EventHandler;
 
 /**
  * This class manages the workflow of the current server. The instruction's
@@ -38,7 +42,9 @@ public interface Server {
 	/**
 	 * Start the server base on your own configurations
 	 */
-	void start();
+	void start(Configuration configuration, EventHandler eventHandler)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException;
 
 	/**
 	 * Shut down the server and close all services

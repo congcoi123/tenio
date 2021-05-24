@@ -27,20 +27,20 @@ import java.nio.ByteBuffer;
 
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.zero.codec.CodecUtility;
-import com.tenio.core.network.zero.codec.compression.PacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.PacketEncrypter;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.packet.PacketHeader;
 
 /**
  * @author kong
  */
-public final class DefaultBinaryPacketEncoder implements PacketEncoder {
+public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
 
 	private static final int DEFAULT_COMPRESSION_THRESHOLD_BYTES = 3000;
 	private static final int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;
 
-	private PacketCompressor __compressor;
-	private PacketEncrypter __encrypter;
+	private BinaryPacketCompressor __compressor;
+	private BinaryPacketEncrypter __encrypter;
 	private int __compressionThresholdBytes;
 
 	public DefaultBinaryPacketEncoder() {
@@ -108,12 +108,12 @@ public final class DefaultBinaryPacketEncoder implements PacketEncoder {
 	}
 
 	@Override
-	public void setCompressor(PacketCompressor compressor) {
+	public void setCompressor(BinaryPacketCompressor compressor) {
 		__compressor = compressor;
 	}
 
 	@Override
-	public void setEncrypter(PacketEncrypter encrypter) {
+	public void setEncrypter(BinaryPacketEncrypter encrypter) {
 		__encrypter = encrypter;
 	}
 

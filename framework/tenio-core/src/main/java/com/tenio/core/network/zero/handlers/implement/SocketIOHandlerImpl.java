@@ -30,7 +30,7 @@ import java.nio.channels.SocketChannel;
 import com.tenio.core.configuration.defines.InternalEvent;
 import com.tenio.core.events.EventManager;
 import com.tenio.core.network.entities.session.Session;
-import com.tenio.core.network.zero.codec.decoder.PacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handlers.SocketIOHandler;
 
@@ -40,7 +40,7 @@ import com.tenio.core.network.zero.handlers.SocketIOHandler;
 public final class SocketIOHandlerImpl extends AbstractIOHandler
 		implements SocketIOHandler, PacketDecoderResultListener {
 
-	private PacketDecoder __packetDecoder;
+	private BinaryPacketDecoder __packetDecoder;
 
 	public static SocketIOHandler newInstance(EventManager eventManager) {
 		return new SocketIOHandlerImpl(eventManager);
@@ -108,7 +108,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	}
 
 	@Override
-	public void setPacketDecoder(PacketDecoder packetDecoder) {
+	public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
 		__packetDecoder = packetDecoder;
 		__packetDecoder.setResultListener(this);
 	}

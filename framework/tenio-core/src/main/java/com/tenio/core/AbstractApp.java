@@ -23,15 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
-import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
-import com.tenio.core.exceptions.NotDefinedSocketConnectionException;
-import com.tenio.core.exceptions.NotDefinedSubscribersException;
-import com.tenio.core.extension.Extension;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.server.ServerImpl;
 
 /**
@@ -43,20 +40,9 @@ import com.tenio.core.server.ServerImpl;
 public abstract class AbstractApp extends AbstractLogger {
 
 	/**
-	 * Start The Game Server
-	 */
-	public void start() {
-		__start(null);
-	}
-	
-	/**
 	 * Start The Game Server With DI
 	 */
 	public void start(Class<?> entryClazz) {
-		__start(entryClazz);
-	}
-	
-	private void __start(Class<?> entryClazz) {
 		Bootstrapper bootstrap = null;
 		boolean bootstrapRunning = false;
 		if (entryClazz != null) {
@@ -73,24 +59,21 @@ public abstract class AbstractApp extends AbstractLogger {
 
 		var server = ServerImpl.getInstance();
 		try {
-			if (bootstrap == null) {
-				server.start(configuration, null);
-			} else {
-				server.start(configuration, bootstrap.getEventHandler());
-			}
+			server.start(configuration, bootstrap.getEventHandler());
 			if (bootstrapRunning) {
 				info("BOOTSTRAP", "Started");
 			} else {
 				info("BOOTSTRAP", "Not setup");
 			}
-		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
-				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException e) {
 			error(e, "The application started with exceptions occured");
 			server.shutdown();
 			onShutdown();
 			// exit with errors
 			System.exit(1);
 		}
+
 		// Suddenly shutdown
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			server.shutdown();
