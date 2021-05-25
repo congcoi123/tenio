@@ -33,11 +33,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
-import com.tenio.core.events.EventManager;
-import com.tenio.core.events.implement.EventManagerImpl;
+import com.tenio.core.event.EventManager;
+import com.tenio.core.event.implement.EventManagerImpl;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.model.PlayerModel;
 
@@ -71,7 +71,7 @@ public final class EventTest {
 			return null;
 		});
 
-		__eventManager.getInternal().on(InternalEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
+		__eventManager.getInternal().on(ServerEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
 
 			return null;
 		});

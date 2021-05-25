@@ -21,56 +21,56 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.events.internal;
+package com.tenio.core.event.implement;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 
 /**
- * Only for creating an event handler object, see {@link InternalEventHandler}
+ * Only for creating an event handler object, see {@link EventHandler}
  * 
  * @author kong
  * 
  */
 @NotThreadSafe
-public final class InternalEventProducer {
+public final class EventProducer {
 
 	/**
-	 * @see InternalEventHandler
+	 * @see EventHandler
 	 */
-	private final InternalEventHandler<Object> __eventHandler;
+	private final EventHandler<Object> __eventHandler;
 
-	public InternalEventProducer() {
-		__eventHandler = new InternalEventHandler<Object>();
+	public EventProducer() {
+		__eventHandler = new EventHandler<Object>();
 	}
 
 	/**
 	 * Retrieves an event handler
 	 * 
-	 * @return see {@link InternalEventHandler}
+	 * @return see {@link EventHandler}
 	 */
-	public InternalEventHandler<Object> getEventHandler() {
+	public EventHandler<Object> getEventHandler() {
 		return __eventHandler;
 	}
 
 	/**
 	 * Emit an event with its parameters
 	 * 
-	 * @param event  see {@link InternalEvent}
+	 * @param event  see {@link ServerEvent}
 	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see InternalEventHandler#emit(InternalEvent, Object...)
+	 * @see EventHandler#emit(ServerEvent, Object...)
 	 */
-	public Object emit(InternalEvent event, Object... params) {
+	public Object emit(ServerEvent event, Object... params) {
 		return __eventHandler.emit(event, params);
 	}
 
 	/**
 	 * Clear all events and these handlers
 	 * 
-	 * @see InternalEventHandler#clear()
+	 * @see EventHandler#clear()
 	 */
 	public void clear() {
 		__eventHandler.clear();

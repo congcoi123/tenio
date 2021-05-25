@@ -30,7 +30,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.utilities.StringUtility;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.RequestQueueFullException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.protocols.Request;

@@ -30,7 +30,7 @@ import java.util.List;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.defines.data.SocketConfig;

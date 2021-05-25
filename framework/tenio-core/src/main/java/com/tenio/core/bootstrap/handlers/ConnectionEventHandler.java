@@ -32,13 +32,13 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventAttachConnectionFailed;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidate;
+import com.tenio.core.extension.events.EventAttachConnectionFailure;
+import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
 import com.tenio.core.extension.events.EventAttachConnectionSuccess;
-import com.tenio.core.extension.events.EventConnectionEstablishedFailed;
+import com.tenio.core.extension.events.EventConnectionEstablishedFailure;
 import com.tenio.core.extension.events.EventConnectionEstablishedSuccess;
 import com.tenio.core.extension.events.EventDisconnectConnection;
 import com.tenio.core.extension.events.EventReceivedMessageFromConnection;
@@ -55,19 +55,19 @@ public final class ConnectionEventHandler extends AbstractExtension {
 	private EventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
 
 	@AutowiredAcceptNull
-	private EventConnectionEstablishedFailed __eventConnectionEstablishedFailed;
+	private EventConnectionEstablishedFailure __eventConnectionEstablishedFailed;
 
 	@AutowiredAcceptNull
 	private EventReceivedMessageFromConnection __eventReceivedMessageFromConnection;
 
 	@AutowiredAcceptNull
-	private EventAttachConnectionRequestValidate __eventAttachConnectionRequestValidate;
+	private EventAttachConnectionRequestValidation __eventAttachConnectionRequestValidate;
 
 	@AutowiredAcceptNull
 	private EventAttachConnectionSuccess __eventAttachConnectionSuccess;
 
 	@AutowiredAcceptNull
-	private EventAttachConnectionFailed __eventAttachConnectionFailed;
+	private EventAttachConnectionFailure __eventAttachConnectionFailed;
 
 	@AutowiredAcceptNull
 	private EventDisconnectConnection __eventDisconnectConnection;
@@ -75,16 +75,16 @@ public final class ConnectionEventHandler extends AbstractExtension {
 	public void initialize() {
 		Optional<EventConnectionEstablishedSuccess> eventConnectionEstablishedSuccessOp = Optional
 				.ofNullable(__eventConnectionEstablishedSuccess);
-		Optional<EventConnectionEstablishedFailed> eventConnectionEstablishedFailedOp = Optional
+		Optional<EventConnectionEstablishedFailure> eventConnectionEstablishedFailedOp = Optional
 				.ofNullable(__eventConnectionEstablishedFailed);
 		Optional<EventReceivedMessageFromConnection> eventReceivedMessageFromConnectionOp = Optional
 				.ofNullable(__eventReceivedMessageFromConnection);
 
-		Optional<EventAttachConnectionRequestValidate> eventAttachConnectionRequestValidateOp = Optional
+		Optional<EventAttachConnectionRequestValidation> eventAttachConnectionRequestValidateOp = Optional
 				.ofNullable(__eventAttachConnectionRequestValidate);
 		Optional<EventAttachConnectionSuccess> eventAttachConnectionSuccessOp = Optional
 				.ofNullable(__eventAttachConnectionSuccess);
-		Optional<EventAttachConnectionFailed> eventAttachConnectionFailedOp = Optional
+		Optional<EventAttachConnectionFailure> eventAttachConnectionFailedOp = Optional
 				.ofNullable(__eventAttachConnectionFailed);
 
 		Optional<EventDisconnectConnection> eventDisconnectConnectionOp = Optional
@@ -109,10 +109,10 @@ public final class ConnectionEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventConnectionEstablishedFailedOp.ifPresent(new Consumer<EventConnectionEstablishedFailed>() {
+		eventConnectionEstablishedFailedOp.ifPresent(new Consumer<EventConnectionEstablishedFailure>() {
 
 			@Override
-			public void accept(EventConnectionEstablishedFailed event) {
+			public void accept(EventConnectionEstablishedFailure event) {
 				_on(ExtensionEvent.CONNECTION_ESTABLISHED_FAILED, new Subscriber() {
 
 					@Override
@@ -147,10 +147,10 @@ public final class ConnectionEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventAttachConnectionRequestValidateOp.ifPresent(new Consumer<EventAttachConnectionRequestValidate>() {
+		eventAttachConnectionRequestValidateOp.ifPresent(new Consumer<EventAttachConnectionRequestValidation>() {
 
 			@Override
-			public void accept(EventAttachConnectionRequestValidate event) {
+			public void accept(EventAttachConnectionRequestValidation event) {
 				_on(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override
@@ -183,10 +183,10 @@ public final class ConnectionEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventAttachConnectionFailedOp.ifPresent(new Consumer<EventAttachConnectionFailed>() {
+		eventAttachConnectionFailedOp.ifPresent(new Consumer<EventAttachConnectionFailure>() {
 
 			@Override
-			public void accept(EventAttachConnectionFailed event) {
+			public void accept(EventAttachConnectionFailure event) {
 				_on(ExtensionEvent.ATTACH_CONNECTION_FAILED, new Subscriber() {
 
 					@Override

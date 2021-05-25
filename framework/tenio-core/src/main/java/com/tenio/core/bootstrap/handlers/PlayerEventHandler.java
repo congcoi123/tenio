@@ -32,12 +32,12 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventDisconnectPlayer;
-import com.tenio.core.extension.events.EventPlayerGotTimeout;
-import com.tenio.core.extension.events.EventPlayerLoginedFailed;
+import com.tenio.core.extension.events.EventPlayerOnDisconnection;
+import com.tenio.core.extension.events.EventPlayerLoginedFailure;
 import com.tenio.core.extension.events.EventPlayerLoginedSuccess;
 import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
 import com.tenio.core.extension.events.EventPlayerReconnectSuccess;
@@ -53,7 +53,7 @@ import com.tenio.core.network.entities.session.Connection;
 public final class PlayerEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
-	private EventPlayerLoginedFailed __eventPlayerLoginedFailed;
+	private EventPlayerLoginedFailure __eventPlayerLoginedFailed;
 
 	@AutowiredAcceptNull
 	private EventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
@@ -65,7 +65,7 @@ public final class PlayerEventHandler extends AbstractExtension {
 	private EventPlayerReconnectSuccess __eventPlayerReconnectSuccess;
 
 	@AutowiredAcceptNull
-	private EventPlayerGotTimeout __eventPlayerGotTimeout;
+	private EventPlayerOnDisconnection __eventPlayerGotTimeout;
 
 	@AutowiredAcceptNull
 	private EventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
@@ -77,7 +77,7 @@ public final class PlayerEventHandler extends AbstractExtension {
 	private EventDisconnectPlayer __eventDisconnectPlayer;
 
 	public void initialize() {
-		Optional<EventPlayerLoginedFailed> eventPlayerLoginedFailedOp = Optional
+		Optional<EventPlayerLoginedFailure> eventPlayerLoginedFailedOp = Optional
 				.ofNullable(__eventPlayerLoginedFailed);
 		Optional<EventPlayerLoginedSuccess> eventPlayerLoginedSuccessOp = Optional
 				.ofNullable(__eventPlayerLoginedSuccess);
@@ -86,7 +86,7 @@ public final class PlayerEventHandler extends AbstractExtension {
 				.ofNullable(__eventPlayerReconnectRequestHandle);
 		Optional<EventPlayerReconnectSuccess> eventPlayerReconnectSuccessOp = Optional
 				.ofNullable(__eventPlayerReconnectSuccess);
-		Optional<EventPlayerGotTimeout> eventPlayerGotTimeoutOp = Optional.ofNullable(__eventPlayerGotTimeout);
+		Optional<EventPlayerOnDisconnection> eventPlayerGotTimeoutOp = Optional.ofNullable(__eventPlayerGotTimeout);
 
 		Optional<EventReceivedMessageFromPlayer> eventReceivedMessageFromPlayerOp = Optional
 				.ofNullable(__eventReceivedMessageFromPlayer);
@@ -95,9 +95,9 @@ public final class PlayerEventHandler extends AbstractExtension {
 
 		Optional<EventDisconnectPlayer> eventDisconnectPlayerOp = Optional.ofNullable(__eventDisconnectPlayer);
 
-		eventPlayerLoginedFailedOp.ifPresent(new Consumer<EventPlayerLoginedFailed>() {
+		eventPlayerLoginedFailedOp.ifPresent(new Consumer<EventPlayerLoginedFailure>() {
 
-			public void accept(EventPlayerLoginedFailed event) {
+			public void accept(EventPlayerLoginedFailure event) {
 
 				_on(ExtensionEvent.PLAYER_LOGINED_FAILED, new Subscriber() {
 
@@ -169,9 +169,9 @@ public final class PlayerEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventPlayerGotTimeoutOp.ifPresent(new Consumer<EventPlayerGotTimeout>() {
+		eventPlayerGotTimeoutOp.ifPresent(new Consumer<EventPlayerOnDisconnection>() {
 
-			public void accept(EventPlayerGotTimeout event) {
+			public void accept(EventPlayerOnDisconnection event) {
 
 				_on(ExtensionEvent.PLAYER_GOT_TIMEOUT, new Subscriber() {
 

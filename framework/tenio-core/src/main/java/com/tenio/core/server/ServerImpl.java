@@ -35,13 +35,12 @@ import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
 import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
 import com.tenio.core.entities.managers.implement.RoomManagerImpl;
-import com.tenio.core.events.EventManager;
-import com.tenio.core.events.implement.EventManagerImpl;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.network.NetworkService;
 import com.tenio.core.network.NetworkServiceImpl;
@@ -73,13 +72,13 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 	private ServerImpl() {
 
-		__eventManager = EventManagerImpl.newInstance();
+		__eventManager = EventManager.newInstance();
 		__roomManager = RoomManagerImpl.newInstance(__eventManager);
 		__playerManager = PlayerManagerImpl.newInstance(__eventManager);
 		__networkService = NetworkServiceImpl.newInstance(__eventManager);
 		__internalProcessorService = InternalProcessorServiceImpl.newInstance(__eventManager);
 		__scheduleService = ScheduleServiceImpl.newInstance(__eventManager);
-		__serverApi = ServerApiImpl.newInstance(this);
+		__serverApi = ServerApiImpl.newInstance(__eventManager);
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
@@ -146,7 +145,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 	private void __startServices() {
 		__networkService.start();
 		__scheduleService.start();
-		__eventManager.getInternal().emit(InternalEvent.SERVER_STARTED, __serverName);
+		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
 	}
 
 	private void __setupScheduleService(Configuration configuration) {

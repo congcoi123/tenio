@@ -25,8 +25,8 @@ package com.tenio.core.network.zero.handlers.implement;
 
 import java.nio.channels.DatagramChannel;
 
-import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 
@@ -45,12 +45,12 @@ public final class DatagramIOHandlerImpl extends AbstractIOHandler implements Da
 
 	@Override
 	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
-		__getInternalEvent().emit(InternalEvent.DATAGRAM_CHANNEL_READ_BINARY, binary);
+		__eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_BINARY, binary);
 	}
 
 	@Override
 	public void sessionRead(Session session, byte[] binary) {
-		__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
+		__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public final class DatagramIOHandlerImpl extends AbstractIOHandler implements Da
 
 	@Override
 	public void sessionException(Session session, Exception exception) {
-		__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, exception);
+		__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, exception);
 	}
 
 }

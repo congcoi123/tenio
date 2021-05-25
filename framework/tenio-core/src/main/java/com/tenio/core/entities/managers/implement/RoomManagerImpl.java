@@ -12,7 +12,7 @@ import com.tenio.core.entities.Room;
 import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedRoomException;
 import com.tenio.core.exceptions.CoreMessageCodeException;
 import com.tenio.core.manager.AbstractManager;

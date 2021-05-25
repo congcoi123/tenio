@@ -30,6 +30,6 @@ import com.tenio.core.entities.Player;
  */
 public interface EventAttachConnectionSuccess {
 
-	void handle(int connectionIndex, Player player);
+	void handle(Player player);
 
 }

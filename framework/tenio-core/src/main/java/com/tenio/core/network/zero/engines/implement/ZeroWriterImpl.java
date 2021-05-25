@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.PacketQueueFullException;
 import com.tenio.core.exceptions.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entities.packet.Packet;
@@ -174,10 +174,10 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 					packet.setRecipients(null);
 				} catch (PacketQueuePolicyViolationException e) {
 					session.addDroppedPackets(1);
-					__networkWriterStatistic.updateDroppedPacketsByPolicy(1);
+					__networkWriterStatistic.updateWrittenDroppedPacketsByPolicy(1);
 				} catch (PacketQueueFullException e) {
 					session.addDroppedPackets(1);
-					__networkWriterStatistic.updateDroppedPacketsByFull(1);
+					__networkWriterStatistic.updateWrittenDroppedPacketsByFull(1);
 				}
 			}
 		}

@@ -25,7 +25,7 @@ package com.tenio.core.network.netty.websocket;
 
 import javax.net.ssl.SSLEngine;
 
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.ssl.WebSocketSslContext;

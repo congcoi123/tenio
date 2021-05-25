@@ -21,52 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.events.internal;
+package com.tenio.core.extension.events;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.configuration.defines.CoreMessageCode;
+import com.tenio.core.entities.Player;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
- * 
  * @author kong
- * 
  */
-@ThreadSafe
-public final class InternalEventSubscriber {
+public interface EventPlayerLoginedFailure {
 
-	/**
-	 * @see InternalEvent
-	 */
-	private final InternalEvent __event;
-	/**
-	 * @see Subscriber
-	 */
-	private final Subscriber __subscriber;
-
-	public static InternalEventSubscriber newInstance(InternalEvent event, Subscriber subscriber) {
-		return new InternalEventSubscriber(event, subscriber);
-	}
-
-	private InternalEventSubscriber(InternalEvent event, Subscriber subscriber) {
-		__event = event;
-		__subscriber = subscriber;
-	}
-
-	/**
-	 * @return see {@link InternalEvent}
-	 */
-	public InternalEvent getEvent() {
-		return __event;
-	}
-
-	/**
-	 * @return see {@link Subscriber}
-	 */
-	public Subscriber getSubscriber() {
-		return __subscriber;
-	}
+	void handle(Player player, CoreMessageCode code);
 
 }

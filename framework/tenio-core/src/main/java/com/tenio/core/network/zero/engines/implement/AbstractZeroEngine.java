@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.utilities.StringUtility;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;

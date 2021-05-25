@@ -82,5 +82,9 @@ public interface Player {
 	boolean containsProperty(String key);
 
 	void removeProperty(String key);
+	
+	void clearProperties();
+	
+	void clean();
 
 }

@@ -18,11 +18,11 @@ public final class NetworkWriterStatistic {
 
 	}
 
-	public void updateDroppedPacketsByPolicy(long numberPackets) {
+	public void updateWrittenDroppedPacketsByPolicy(long numberPackets) {
 
 	}
 
-	public void updateDroppedPacketsByFull(long numberPackets) {
+	public void updateWrittenDroppedPacketsByFull(long numberPackets) {
 
 	}
 

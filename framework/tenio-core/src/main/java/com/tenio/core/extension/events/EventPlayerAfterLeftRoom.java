@@ -25,12 +25,13 @@ package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.PlayerLeftRoomReason;
 
 /**
  * @author kong
  */
 public interface EventPlayerAfterLeftRoom {
 
-	void handle(Player player, Room room, boolean force);
+	void handle(Player player, Room room, PlayerLeftRoomReason reason);
 
 }

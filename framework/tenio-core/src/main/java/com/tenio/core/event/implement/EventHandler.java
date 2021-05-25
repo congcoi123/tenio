@@ -21,59 +21,66 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.events.extension;
+package com.tenio.core.event.implement;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.Emitter;
 
 /**
- * Only for creating an event handler object, see {@link ExtEventHandler}
+ * This class for handling events and these subscribers.
+ * 
+ * @param <T> the template
  * 
  * @author kong
  * 
  */
-@NotThreadSafe
-public final class ExtEventProducer {
+public final class EventHandler<T> {
 
 	/**
-	 * @see ExtEventHandler
+	 * An instance creates a mapping between an event with its list of event
+	 * handlers.
 	 */
-	private final ExtEventHandler<Object> __eventHandler;
+	private final Map<ServerEvent, Emitter<T>> __delegate;
 
-	public ExtEventProducer() {
-		__eventHandler = new ExtEventHandler<Object>();
+	public EventHandler() {
+		__delegate = new HashMap<ServerEvent, Emitter<T>>();
 	}
 
 	/**
-	 * Retrieves an event handler
+	 * Create a link between an event and its list of event handlers.
 	 * 
-	 * @return see {@link ExtEventHandler}
+	 * @param event   see {@link ServerEvent}
+	 * @param emitter see {@link Emitter}
 	 */
-	public ExtEventHandler<Object> getEventHandler() {
-		return __eventHandler;
+	public void subscribe(ServerEvent event, Emitter<T> emitter) {
+		__delegate.put(event, emitter);
 	}
 
 	/**
-	 * Emit an event with its parameters.
+	 * Emit an event with its parameters
 	 * 
-	 * @param event see {@link ExtensionEvent}
+	 * @param event  see {@link ServerEvent}
 	 * @param params a list parameters of this event
 	 * @return the event result (the response of its subscribers), see
 	 *         {@link Object} or <b>null</b>
-	 * @see ExtEventHandler#emit(ExtensionEvent, Object...)
 	 */
-	public Object emit(ExtensionEvent event, Object... params) {
-		return __eventHandler.emit(event, params);
+	public Object emit(ServerEvent event, @SuppressWarnings("unchecked") T... params) {
+		if (__delegate.containsKey(event)) {
+			return __delegate.get(event).emit(params);
+		}
+		return null;
 	}
 
 	/**
-	 * Clear all events and these handlers.
-	 * 
-	 * @see ExtEventHandler#clear()
+	 * Clear all events and these handlers
 	 */
 	public void clear() {
-		__eventHandler.clear();
+		if (!__delegate.isEmpty()) {
+			__delegate.clear();
+		}
 	}
 
 }

@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.protocols.implement;
 
 import com.tenio.common.utilities.TimeUtility;
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.network.entities.session.Session;
@@ -34,7 +34,7 @@ import com.tenio.core.network.entities.session.Session;
  */
 public final class RequestImpl extends AbstractMessage implements Request {
 
-	private InternalEvent __event;
+	private ServerEvent __event;
 	private Session __sender;
 	private RequestPriority __priority;
 	private long __timestamp;
@@ -80,12 +80,12 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	@Override
-	public InternalEvent getEvent() {
+	public ServerEvent getEvent() {
 		return __event;
 	}
 
 	@Override
-	public Request setEvent(InternalEvent event) {
+	public Request setEvent(ServerEvent event) {
 		__event = event;
 
 		return this;

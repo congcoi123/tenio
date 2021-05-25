@@ -4,7 +4,7 @@ import com.tenio.common.task.TaskManager;
 import com.tenio.common.task.TaskManagerImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 
 public final class ScheduleServiceImpl extends AbstractManager implements ScheduleService {

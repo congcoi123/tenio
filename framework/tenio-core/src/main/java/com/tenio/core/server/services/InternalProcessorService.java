@@ -8,6 +8,8 @@ public interface InternalProcessorService extends Controller {
 	void subscribe();
 
 	void setMaxNumberPlayers(int maxPlayers);
+	
+	void setKeepPlayerOnDisconnection(boolean keep);
 
 	void setPlayerManager(PlayerManager playerManager);
 

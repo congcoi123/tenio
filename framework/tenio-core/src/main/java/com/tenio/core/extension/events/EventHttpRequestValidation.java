@@ -21,37 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.events;
+package com.tenio.core.extension.events;
 
-import com.tenio.core.events.extension.ExtEventManager;
-import com.tenio.core.events.internal.InternalEventManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.tenio.core.network.defines.RestMethod;
 
 /**
- * Manage all events in the server
- * 
  * @author kong
- *
  */
-public interface EventManager {
+public interface EventHttpRequestValidation {
 
-	/**
-	 * @return see {@link ExtEventManager}
-	 */
-	ExtEventManager getExtension();
-
-	/**
-	 * @return see {@link InternalEventManager}
-	 */
-	InternalEventManager getInternal();
-
-	/**
-	 * Collect all subscribers and these corresponding events.
-	 */
-	void subscribe();
-
-	/**
-	 * Clear all subscribers and these corresponding events.
-	 */
-	void clear();
+	HttpServletResponse handle(RestMethod method, HttpServletRequest request, HttpServletResponse response);
 
 }

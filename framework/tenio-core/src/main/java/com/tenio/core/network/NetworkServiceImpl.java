@@ -3,7 +3,7 @@ package com.tenio.core.network;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;

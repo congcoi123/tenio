@@ -23,11 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.data.ServerMessage;
+
 /**
  * @author kong
  */
-public interface EventException {
+public interface EventAttachConnectionRequestValidation {
 
-	void handle(Throwable throwable);
+	Player handle(ServerMessage message);
 
 }

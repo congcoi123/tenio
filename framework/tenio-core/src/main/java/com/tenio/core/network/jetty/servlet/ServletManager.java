@@ -34,12 +34,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import com.tenio.common.data.elements.CommonObject;
-import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.defines.RestMethod;
 import com.tenio.core.network.defines.data.PathConfig;
-import com.tenio.core.network.jetty.servlet.base.BaseProcessServlet;
-import com.tenio.core.network.jetty.servlet.base.BaseServlet;
+import com.tenio.core.network.jetty.servlet.support.BaseProcessServlet;
+import com.tenio.core.network.jetty.servlet.support.BaseServlet;
 
 /**
  * @author kong
@@ -120,11 +120,9 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST,
-					request, response);
+			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATE, RestMethod.POST, request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request,
-						response);
+				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
 			}
 		}
 
@@ -134,11 +132,9 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT,
-					request, response);
+			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATE, RestMethod.PUT, request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request,
-						response);
+				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
 			}
 		}
 
@@ -148,11 +144,9 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET,
-					request, response);
+			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATE, RestMethod.GET, request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request,
-						response);
+				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
 			}
 		}
 
@@ -162,11 +156,9 @@ public final class ServletManager extends BaseServlet {
 
 		@Override
 		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
-			var check = __eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE,
-					request, response);
+			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATE, RestMethod.DELETE, request, response);
 			if (check == null) {
-				__eventManager.getExtension().emit(ExtensionEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request,
-						response);
+				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
 			}
 		}
 

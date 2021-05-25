@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.network.entities.session.Connection;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 public interface EventDisconnectConnection {
 
-	void handle(Connection connection);
+	void handle(Session session);
 
 }

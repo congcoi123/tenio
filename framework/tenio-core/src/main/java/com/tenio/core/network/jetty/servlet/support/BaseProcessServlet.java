@@ -21,15 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.extension.events;
+package com.tenio.core.network.jetty.servlet.support;
 
-import com.tenio.core.entities.Player;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.network.jetty.servlet.ServletHandler;
 
 /**
  * @author kong
  */
-public interface EventPlayerGotTimeout {
+public abstract class BaseProcessServlet extends AbstractLogger implements ServletHandler {
 
-	void handle(Player player);
+	@Override
+	public void handle(HttpServletRequest request, HttpServletResponse response) {
+		response.setContentType(CoreConstant.CONTENT_TYPE_JSON);
+		response.setContentType(CoreConstant.CONTENT_TYPE_TEXT);
+		response.setCharacterEncoding(CoreConstant.UTF_8);
+		_handleImpl(request, response);
+	}
+
+	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
 
 }

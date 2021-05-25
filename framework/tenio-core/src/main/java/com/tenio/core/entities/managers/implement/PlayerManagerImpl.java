@@ -34,7 +34,7 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.implement.PlayerImpl;
 import com.tenio.core.entities.managers.PlayerManager;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.AbstractManager;

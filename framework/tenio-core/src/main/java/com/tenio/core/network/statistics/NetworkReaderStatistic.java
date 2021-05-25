@@ -18,7 +18,7 @@ public final class NetworkReaderStatistic {
 
 	}
 
-	public void updateDroppedPackets(long numberPackets) {
+	public void updateReadDroppedPackets(long numberPackets) {
 
 	}
 

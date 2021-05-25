@@ -24,12 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.RoomRemoveMode;
 
 /**
  * @author kong
  */
 public interface EventRoomWillBeRemoved {
 
-	void handle(Room room);
+	void handle(Room room, RoomRemoveMode mode);
 
 }

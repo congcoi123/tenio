@@ -29,13 +29,13 @@ import java.util.function.Consumer;
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventException;
+import com.tenio.core.extension.events.EventServerException;
 import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
-import com.tenio.core.extension.events.EventFetchedCcuNumber;
-import com.tenio.core.extension.events.EventMonitoringSystem;
+import com.tenio.core.extension.events.EventFetchedCcuInfo;
+import com.tenio.core.extension.events.EventSystemMonitoring;
 
 /**
  * @author kong
@@ -45,28 +45,28 @@ import com.tenio.core.extension.events.EventMonitoringSystem;
 public final class MixinsEventHandler extends AbstractExtension {
 
 	@AutowiredAcceptNull
-	private EventException __eventException;
+	private EventServerException __eventException;
 
 	@AutowiredAcceptNull
 	private EventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
 
 	@AutowiredAcceptNull
-	private EventFetchedCcuNumber __eventFetchedCcuNumber;
+	private EventFetchedCcuInfo __eventFetchedCcuNumber;
 
 	@AutowiredAcceptNull
-	private EventMonitoringSystem __eventMonitoringSystem;
+	private EventSystemMonitoring __eventMonitoringSystem;
 
 	public void initialize() {
-		Optional<EventException> eventExceptionOp = Optional.ofNullable(__eventException);
+		Optional<EventServerException> eventExceptionOp = Optional.ofNullable(__eventException);
 		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);
-		Optional<EventFetchedCcuNumber> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
-		Optional<EventMonitoringSystem> eventMonitoringSystemOp = Optional.ofNullable(__eventMonitoringSystem);
+		Optional<EventFetchedCcuInfo> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
+		Optional<EventSystemMonitoring> eventMonitoringSystemOp = Optional.ofNullable(__eventMonitoringSystem);
 
-		eventExceptionOp.ifPresent(new Consumer<EventException>() {
+		eventExceptionOp.ifPresent(new Consumer<EventServerException>() {
 
 			@Override
-			public void accept(EventException event) {
+			public void accept(EventServerException event) {
 				_on(ExtensionEvent.EXCEPTION, new Subscriber() {
 
 					@Override
@@ -106,10 +106,10 @@ public final class MixinsEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventFetchedCcuNumberOp.ifPresent(new Consumer<EventFetchedCcuNumber>() {
+		eventFetchedCcuNumberOp.ifPresent(new Consumer<EventFetchedCcuInfo>() {
 
 			@Override
-			public void accept(EventFetchedCcuNumber event) {
+			public void accept(EventFetchedCcuInfo event) {
 				_on(ExtensionEvent.FETCHED_CCU_NUMBER, new Subscriber() {
 
 					@Override
@@ -125,10 +125,10 @@ public final class MixinsEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventMonitoringSystemOp.ifPresent(new Consumer<EventMonitoringSystem>() {
+		eventMonitoringSystemOp.ifPresent(new Consumer<EventSystemMonitoring>() {
 
 			@Override
-			public void accept(EventMonitoringSystem event) {
+			public void accept(EventSystemMonitoring event) {
 				_on(ExtensionEvent.MONITORING_SYSTEM, new Subscriber() {
 
 					@Override

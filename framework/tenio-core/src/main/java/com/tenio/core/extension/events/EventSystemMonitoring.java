@@ -21,60 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.events.implement;
-
-import com.tenio.core.events.EventManager;
-import com.tenio.core.events.extension.ExtEventManager;
-import com.tenio.core.events.internal.InternalEventManager;
+package com.tenio.core.extension.events;
 
 /**
- * Manage all events in the server
- * 
- * @see EventManager
- * 
  * @author kong
- *
  */
-public final class EventManagerImpl implements EventManager {
+public interface EventSystemMonitoring {
 
-	/**
-	 * @see ExtEventManager
-	 */
-	private final ExtEventManager __extEventManager;
-	/**
-	 * @see InternalEventManager
-	 */
-	private final InternalEventManager __internalEventManager;
-
-	public static EventManager newInstance() {
-		return new EventManagerImpl();
-	}
-	
-	private EventManagerImpl() {
-		__extEventManager = new ExtEventManager();
-		__internalEventManager = new InternalEventManager();
-	}
-
-	@Override
-	public ExtEventManager getExtension() {
-		return __extEventManager;
-	}
-
-	@Override
-	public InternalEventManager getInternal() {
-		return __internalEventManager;
-	}
-
-	@Override
-	public void subscribe() {
-		__extEventManager.subscribe();
-		__internalEventManager.subscribe();
-	}
-
-	@Override
-	public void clear() {
-		__extEventManager.clear();
-		__internalEventManager.clear();
-	}
+	void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, int countRunningThreads);
 
 }

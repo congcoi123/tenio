@@ -225,6 +225,19 @@ public final class PlayerImpl implements Player {
 	}
 
 	@Override
+	public void clearProperties() {
+		__properties.clear();
+	}
+
+	@Override
+	public void clean() {
+		setActivated(false);
+		setCurrentRoom(null);
+		setSession(null);
+		clearProperties();
+	}
+
+	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof Player)) {
 			return false;

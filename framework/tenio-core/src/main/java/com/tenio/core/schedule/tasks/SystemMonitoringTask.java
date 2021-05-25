@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.monitoring.system.SystemMonitoring;
 
 /**
@@ -62,7 +62,7 @@ public final class SystemMonitoringTask extends SystemLogger implements Task {
 	public ScheduledFuture<?> run() {
 		info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.getExtension().emit(ExtensionEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
+			__eventManager.emit(ServerEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
 					__monitoring.countRunningThreads());
 		}, 0, __monitoringPeriod, TimeUnit.SECONDS);

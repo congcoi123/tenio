@@ -29,7 +29,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 
@@ -56,7 +56,7 @@ public interface SessionManager extends Manager {
 
 	Session getSessionByDatagram(InetSocketAddress remoteAddress);
 
-	void emitEvent(InternalEvent event, Object... params);
+	void emitEvent(ServerEvent event, Object... params);
 
 	void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,

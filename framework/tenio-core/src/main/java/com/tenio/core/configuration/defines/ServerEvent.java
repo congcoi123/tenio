@@ -28,20 +28,35 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.network.defines.RestMethod;
 
 /**
- * This Enum defines all events in your server. You can handle these events by
- * implementing your own logic in the {@link Extension#initialize()} method.
- * The logic class must be an inheritance of {@link AbstractExtension}
- * class.
+ * This Enum defines all logic events in the main thread. All the process should
+ * be handled in <b>ServerLogic</b> class.
  * 
  * @author kong
  */
 // FIXME: Fix me
-public enum ExtensionEvent {
+public enum ServerEvent {
 
+	SERVER_STARTED,
+
+	SESSION_WAS_CREATED,
+
+	SESSION_REQUESTS_CONNECTION,
+
+	SESSION_OCCURED_EXCEPTION,
+
+	SESSION_IS_CLOSED,
+
+	SESSION_READ_BINARY,
+
+	DATAGRAM_CHANNEL_READ_BINARY,
+	
+	PLAYER_DO_LOGIN,
+	
+	PLAYER_DO_LOGOUT,
+	
 	/**
 	 * When the client sends its first request to your server and is made a valid
 	 * connection. A connection can be some types of TCP, UDP or WebSocket. One it's
@@ -55,7 +70,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_ESTABLISHED_SUCCESSFULLY,
+	CONNECTION_ESTABLISHED_SUCCESS,
 
 	/**
 	 * When the client sends its first request to your server and because of some
@@ -69,7 +84,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	CONNECTION_ESTABLISHED_FAILED,
+	CONNECTION_ESTABLISHED_FAILURE,
 
 	/**
 	 * This event let you know when one connection has login successful and became a
@@ -95,7 +110,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_LOGINED_FAILED,
+	PLAYER_LOGINED_FAILURE,
 
 	/**
 	 * When a player is disconnected from your server without its desired, the
@@ -125,7 +140,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	PLAYER_RECONNECTED_SUCCESSFULLY,
+	PLAYER_RECONNECTED_SUCCESS,
 
 	/**
 	 * When you send a message from your server to one client it can be seen here.
@@ -272,7 +287,7 @@ public enum ExtensionEvent {
 	 * Return if the client is allowed to attach a sub connection, return the
 	 * corresponding player, see {@link IPlayer}. Otherwise, return <b>null</b>
 	 */
-	ATTACH_CONNECTION_REQUEST_VALIDATE,
+	ATTACH_CONNECTION_REQUEST_VALIDATION,
 
 	/**
 	 * When a a sub connection link is established, you can inform its own player
@@ -285,7 +300,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_CONNECTION_SUCCESSFULLY,
+	ATTACH_CONNECTION_SUCCESS,
 
 	/**
 	 * The client failed to attach his desired sub connection. The reason can be
@@ -303,7 +318,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	ATTACH_CONNECTION_FAILED,
+	ATTACH_CONNECTION_FAILURE,
 
 	/**
 	 * You can see the number of concurrent users (CCU) in period time. This scanned
@@ -317,7 +332,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	FETCHED_CCU_NUMBER,
+	FETCHED_CCU_INFO,
 
 	/**
 	 * The amount of data that can be transmitted in a fixed amount of time. <br>
@@ -348,7 +363,7 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	MONITORING_SYSTEM,
+	SYSTEM_MONITORING,
 
 	/**
 	 * You can authenticate the request in here
@@ -363,7 +378,7 @@ public enum ExtensionEvent {
 	 * Return <b>null</b> if the confirmation was passed or
 	 * {@link HttpServletResponse} object otherwise
 	 */
-	HTTP_REQUEST_VALIDATE,
+	HTTP_REQUEST_VALIDATION,
 
 	/**
 	 * The main process for a HTTP request which comes from client, this request
@@ -389,6 +404,6 @@ public enum ExtensionEvent {
 	 * 
 	 * Return <b>null</b>
 	 */
-	EXCEPTION
+	SERVER_EXCEPTION;
 
 }

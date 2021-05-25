@@ -21,13 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.extension.events;
+package com.tenio.core.event;
 
 /**
+ * This function interface provides one method for invoking an event.
+ * 
  * @author kong
+ * 
  */
-public interface EventMonitoringSystem {
+@FunctionalInterface
+public interface Emitter<T> {
 
-	void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, int countRunningThreads);
+	/**
+	 * To invoke an event.
+	 * 
+	 * @param params the parameters those will be sent to subscribers
+	 * @return the subsribe's result
+	 */
+	Object emit(@SuppressWarnings("unchecked") T... params);
 
 }

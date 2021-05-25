@@ -1,7 +1,7 @@
 package com.tenio.core.server.settings;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 
 public final class ConfigurationAssessment {
 

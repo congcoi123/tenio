@@ -23,11 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.PlayerDisconnectedReason;
+
 /**
  * @author kong
  */
-public interface EventFetchedCcuNumber {
+public interface EventPlayerOnDisconnection {
 
-	void handle(int numberPlayers, int numberAlls);
+	void handle(Player player, PlayerDisconnectedReason reason);
 
 }

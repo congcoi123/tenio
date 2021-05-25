@@ -26,7 +26,7 @@ package com.tenio.core;
 import java.lang.reflect.InvocationTargetException;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.server.ServerImpl;
@@ -37,18 +37,17 @@ import com.tenio.core.server.ServerImpl;
  * @author kong
  * 
  */
-public abstract class AbstractApp extends AbstractLogger {
+public abstract class AbstractApp extends SystemLogger {
 
 	/**
 	 * Start The Game Server With DI
 	 */
 	public void start(Class<?> entryClazz) {
 		Bootstrapper bootstrap = null;
-		boolean bootstrapRunning = false;
 		if (entryClazz != null) {
 			bootstrap = Bootstrapper.newInstance();
 			try {
-				bootstrapRunning = bootstrap.run(entryClazz);
+				bootstrap.run(entryClazz);
 			} catch (Exception e) {
 				error(e, "The application started with exceptions occured");
 				System.exit(1);
@@ -60,11 +59,7 @@ public abstract class AbstractApp extends AbstractLogger {
 		var server = ServerImpl.getInstance();
 		try {
 			server.start(configuration, bootstrap.getEventHandler());
-			if (bootstrapRunning) {
-				info("BOOTSTRAP", "Started");
-			} else {
-				info("BOOTSTRAP", "Not setup");
-			}
+			info("BOOTSTRAP", "Started");
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException e) {
 			error(e, "The application started with exceptions occured");

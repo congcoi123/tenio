@@ -21,34 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.jetty.servlet.base;
+package com.tenio.core.event;
 
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
-
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.core.exceptions.ExtensionValueCastException;
 
 /**
+ * This function interface provides one method for dispatching the results from
+ * an event.
+ * 
  * @author kong
+ * 
  */
-public abstract class BaseResponse extends AbstractLogger {
+@FunctionalInterface
+public interface Subscriber {
 
-	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
-			HttpServletResponse response);
-
-	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
-		Enumeration<String> headerNames = request.getHeaderNames();
-		if (headerNames != null) {
-			while (headerNames.hasMoreElements()) {
-				if (headerNames.nextElement().equals(key))
-					return true;
-			}
-		}
-		return false;
-	}
+	/**
+	 * To dispatch results from one event.
+	 * 
+	 * @param params all the results in an array
+	 * @return an object or <b>null</b>
+	 */
+	Object dispatch(Object... params) throws ExtensionValueCastException;
 
 }

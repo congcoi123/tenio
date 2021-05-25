@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
@@ -53,15 +53,15 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
 		if (!session.isConnected()) {
-			__getInternalEvent().emit(InternalEvent.SESSION_REQUESTS_CONNECTION, session, binary);
+			__eventManager.emit(ServerEvent.SESSION_REQUESTS_CONNECTION, session, binary);
 		} else {
-			__getInternalEvent().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
+			__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
 		}
 	}
 
 	@Override
 	public void updateDroppedPackets(long numberPackets) {
-		__networkReaderStatistic.updateDroppedPackets(numberPackets);
+		__networkReaderStatistic.updateReadDroppedPackets(numberPackets);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	@Override
 	public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
 		Session session = __sessionManager.createSocketSession(socketChannel, selectionKey);
-		__getInternalEvent().emit(InternalEvent.SESSION_WAS_CREATED, session);
+		__eventManager.emit(ServerEvent.SESSION_WAS_CREATED, session);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 			session.close();
 		} catch (IOException e) {
 			error(e, "Session: ", session.toString());
-			__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, e);
+			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, e);
 		} finally {
 			session = null;
 		}
@@ -104,7 +104,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 
 	@Override
 	public void sessionException(Session session, Exception exception) {
-		__getInternalEvent().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, exception);
+		__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, exception);
 	}
 
 	@Override

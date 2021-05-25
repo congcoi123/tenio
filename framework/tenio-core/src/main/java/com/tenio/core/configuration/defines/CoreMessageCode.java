@@ -30,6 +30,8 @@ package com.tenio.core.configuration.defines;
  * @author kong
  */
 public enum CoreMessageCode {
+	
+	TCP_CONNECTION_NOT_FOUND("tcp_connection_not_found"),
 
 	/**
 	 * When you try to add a player that has the same name with one appeared on the

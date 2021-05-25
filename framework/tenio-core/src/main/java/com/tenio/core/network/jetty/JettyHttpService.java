@@ -35,7 +35,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.DuplicatedUriAndMethodException;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;

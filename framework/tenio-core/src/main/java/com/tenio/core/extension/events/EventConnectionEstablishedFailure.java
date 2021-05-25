@@ -21,28 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.network.jetty.servlet.base;
+package com.tenio.core.extension.events;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.tenio.common.loggers.AbstractLogger;
-import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.network.jetty.servlet.ServletHandler;
+import com.tenio.core.configuration.defines.CoreMessageCode;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
-public abstract class BaseProcessServlet extends AbstractLogger implements ServletHandler {
+public interface EventConnectionEstablishedFailure {
 
-	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response) {
-		response.setContentType(CoreConstant.CONTENT_TYPE_JSON);
-		response.setContentType(CoreConstant.CONTENT_TYPE_TEXT);
-		response.setCharacterEncoding(CoreConstant.UTF_8);
-		_handleImpl(request, response);
-	}
-
-	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
+	void handle(Session session, CoreMessageCode code);
 
 }

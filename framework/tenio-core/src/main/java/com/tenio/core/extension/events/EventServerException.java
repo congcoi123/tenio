@@ -23,14 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.core.configuration.defines.CoreMessageCode;
-
 /**
  * @author kong
  */
-public interface EventAttachConnectionFailed {
+public interface EventServerException {
 
-	void handle(int connectionIndex, CommonObject message, CoreMessageCode code);
+	void handle(Throwable throwable);
 
 }

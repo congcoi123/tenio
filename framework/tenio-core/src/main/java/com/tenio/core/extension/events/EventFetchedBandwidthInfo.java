@@ -28,7 +28,7 @@ package com.tenio.core.extension.events;
  */
 public interface EventFetchedBandwidthInfo {
 
-	void handle(long lastReadThroughput, long lastWriteThroughput, long realWriteThroughput, long currentReadBytes,
-			long currentWrittenBytes, long realWrittenBytes, String counterName);
+	void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes, long writtenPackets,
+			long writtenDroppedPacketsByPolicy, long writtenDroppedPacketsByFull);
 
 }

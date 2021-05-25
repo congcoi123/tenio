@@ -33,8 +33,8 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.packet.implement.PacketQueueImpl;
@@ -202,8 +202,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 	}
 
 	@Override
-	public void emitEvent(InternalEvent event, Object... params) {
-		__getInternalEvent().emit(event, params);
+	public void emitEvent(ServerEvent event, Object... params) {
+		__eventManager.emit(event, params);
 	}
 
 	@Override

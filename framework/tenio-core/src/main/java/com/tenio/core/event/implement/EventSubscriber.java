@@ -21,16 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.extension.events;
+package com.tenio.core.event.implement;
 
-import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.network.entities.session.Connection;
+import javax.annotation.concurrent.ThreadSafe;
+
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.Subscriber;
 
 /**
+ * An object which creates a mapping between an event type with a subscriber
+ * 
  * @author kong
+ * 
  */
-public interface EventConnectionEstablishedFailed {
+@ThreadSafe
+public final class EventSubscriber {
 
-	void handle(Connection connection, CoreMessageCode code);
+	/**
+	 * @see ServerEvent
+	 */
+	private final ServerEvent __event;
+	/**
+	 * @see Subscriber
+	 */
+	private final Subscriber __subscriber;
+
+	public static EventSubscriber newInstance(ServerEvent event, Subscriber subscriber) {
+		return new EventSubscriber(event, subscriber);
+	}
+
+	private EventSubscriber(ServerEvent event, Subscriber subscriber) {
+		__event = event;
+		__subscriber = subscriber;
+	}
+
+	/**
+	 * @return see {@link ServerEvent}
+	 */
+	public ServerEvent getEvent() {
+		return __event;
+	}
+
+	/**
+	 * @return see {@link Subscriber}
+	 */
+	public Subscriber getSubscriber() {
+		return __subscriber;
+	}
 
 }

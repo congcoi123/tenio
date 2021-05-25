@@ -26,8 +26,8 @@ package com.tenio.core.network.netty.websocket;
 import java.io.IOException;
 
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.configuration.defines.InternalEvent;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
@@ -74,7 +74,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			__connectionFilter.validateAndAddAddress(address);
 
 			Session session = __sessionManager.createWebSocketSession(ctx.channel());
-			__eventManager.getInternal().emit(InternalEvent.SESSION_WAS_CREATED, session);
+			__eventManager.emit(ServerEvent.SESSION_WAS_CREATED, session);
 		} catch (RefusedConnectionAddressException e) {
 			__logger.error(e, "Refused connection with address: ", e.getMessage());
 
@@ -93,7 +93,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			session.close();
 		} catch (IOException e) {
 			__logger.error(e, "Session: ", session.toString());
-			__eventManager.getInternal().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, e);
+			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, e);
 		} finally {
 			session = null;
 		}
@@ -122,9 +122,9 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			__networkReaderStatistic.updateReadPackets(1);
 
 			if (!session.isConnected()) {
-				__eventManager.getInternal().emit(InternalEvent.SESSION_REQUESTS_CONNECTION, session, binary);
+				__eventManager.emit(ServerEvent.SESSION_REQUESTS_CONNECTION, session, binary);
 			} else {
-				__eventManager.getInternal().emit(InternalEvent.SESSION_READ_BINARY, session, binary);
+				__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
 			}
 
 		}
@@ -135,7 +135,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
 		if (session != null) {
-			__eventManager.getInternal().emit(InternalEvent.SESSION_OCCURED_EXCEPTION, session, cause);
+			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, cause);
 		} else {
 			__logger.error(cause, "Exception was occured on channel: %s", ctx.channel().toString());
 		}

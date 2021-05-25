@@ -37,7 +37,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;

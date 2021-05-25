@@ -32,11 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ExtensionEvent;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
-import com.tenio.core.extension.events.EventHttpRequestValidate;
+import com.tenio.core.extension.events.EventHttpRequestValidation;
 import com.tenio.core.network.defines.RestMethod;
 
 /**
@@ -50,17 +50,17 @@ public final class HttpEventHandler extends AbstractExtension {
 	private EventHttpRequestHandle __eventHttpRequestHandle;
 
 	@AutowiredAcceptNull
-	private EventHttpRequestValidate __eventHttpRequestValidate;
+	private EventHttpRequestValidation __eventHttpRequestValidate;
 
 	public void initialize() {
 		Optional<EventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
-		Optional<EventHttpRequestValidate> eventHttpRequestValidateOp = Optional
+		Optional<EventHttpRequestValidation> eventHttpRequestValidateOp = Optional
 				.ofNullable(__eventHttpRequestValidate);
 
-		eventHttpRequestValidateOp.ifPresent(new Consumer<EventHttpRequestValidate>() {
+		eventHttpRequestValidateOp.ifPresent(new Consumer<EventHttpRequestValidation>() {
 
 			@Override
-			public void accept(EventHttpRequestValidate event) {
+			public void accept(EventHttpRequestValidation event) {
 				_on(ExtensionEvent.HTTP_REQUEST_VALIDATE, new Subscriber() {
 
 					@Override

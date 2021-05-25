@@ -24,9 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.manager;
 
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.events.EventManager;
-import com.tenio.core.events.extension.ExtEventManager;
-import com.tenio.core.events.internal.InternalEventManager;
+import com.tenio.core.event.implement.EventManager;
 
 /**
  * @author kong
@@ -37,14 +35,6 @@ public abstract class AbstractManager extends SystemLogger {
 
 	protected AbstractManager(EventManager eventManager) {
 		__eventManager = eventManager;
-	}
-
-	protected InternalEventManager __getInternalEvent() {
-		return __eventManager.getInternal();
-	}
-
-	protected ExtEventManager __getExtensionEvent() {
-		return __eventManager.getExtension();
 	}
 
 }

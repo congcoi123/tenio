@@ -32,7 +32,7 @@ import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.events.Subscriber;
+import com.tenio.core.event.Subscriber;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;

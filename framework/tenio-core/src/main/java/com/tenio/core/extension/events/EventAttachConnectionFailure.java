@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.core.entities.Player;
+import com.tenio.core.configuration.defines.CoreMessageCode;
+import com.tenio.core.entities.data.ServerMessage;
 
 /**
  * @author kong
  */
-public interface EventAttachConnectionRequestValidate {
+public interface EventAttachConnectionFailure {
 
-	Player handle(int connectionIndex, CommonObject message);
+	void handle(ServerMessage message, CoreMessageCode code);
 
 }

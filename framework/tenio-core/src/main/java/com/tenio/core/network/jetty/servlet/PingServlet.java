@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import com.tenio.common.data.elements.CommonObject;
-import com.tenio.core.network.jetty.servlet.base.BaseProcessServlet;
+import com.tenio.core.network.jetty.servlet.support.BaseProcessServlet;
 
 /**
  * @author kong

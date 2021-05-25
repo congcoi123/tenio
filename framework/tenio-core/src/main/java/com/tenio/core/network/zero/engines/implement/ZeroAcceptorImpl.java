@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.events.EventManager;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.defines.TransportType;

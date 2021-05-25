@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.protocols;
 
-import com.tenio.core.configuration.defines.InternalEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.entities.session.Session;
 
@@ -32,9 +32,9 @@ import com.tenio.core.network.entities.session.Session;
  */
 public interface Request extends Message {
 
-	InternalEvent getEvent();
+	ServerEvent getEvent();
 
-	Request setEvent(InternalEvent event);
+	Request setEvent(ServerEvent event);
 
 	Session getSender();
 
