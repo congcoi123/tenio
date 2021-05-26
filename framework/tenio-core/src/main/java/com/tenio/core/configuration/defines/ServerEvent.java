@@ -53,10 +53,6 @@ public enum ServerEvent {
 
 	DATAGRAM_CHANNEL_READ_BINARY,
 	
-	PLAYER_DO_LOGIN,
-	
-	PLAYER_DO_LOGOUT,
-	
 	/**
 	 * When the client sends its first request to your server and is made a valid
 	 * connection. A connection can be some types of TCP, UDP or WebSocket. One it's
@@ -183,6 +179,8 @@ public enum ServerEvent {
 	 * Return <b>null</b>
 	 */
 	ROOM_WAS_CREATED,
+	
+	ROOM_WAS_CREATED_WITH_ERROR,
 
 	/**
 	 * The room will be removed, but in this event, all the players and their state

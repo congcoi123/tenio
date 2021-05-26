@@ -2,6 +2,6 @@ package com.tenio.core.entities.defines;
 
 public enum PlayerLeftRoomReason {
 
-	NORMAL, IDLE, KICK, UNKNOWN;
+	DEFAULT, IDLE, KICK, LOG_OUT, UNKNOWN;
 
 }

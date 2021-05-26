@@ -47,6 +47,7 @@ import com.tenio.core.network.NetworkServiceImpl;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
@@ -78,7 +79,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__networkService = NetworkServiceImpl.newInstance(__eventManager);
 		__internalProcessorService = InternalProcessorServiceImpl.newInstance(__eventManager);
 		__scheduleService = ScheduleServiceImpl.newInstance(__eventManager);
-		__serverApi = ServerApiImpl.newInstance(__eventManager);
+		__serverApi = ServerApiImpl.newInstance(this);
 
 		// print out the framework's preface
 		for (var line : CommonConstant.CREDIT) {
@@ -258,6 +259,26 @@ public final class ServerImpl extends SystemLogger implements Server {
 	@Override
 	public ServerApi getApi() {
 		return __serverApi;
+	}
+
+	@Override
+	public EventManager getEventManager() {
+		return __eventManager;
+	}
+
+	@Override
+	public PlayerManager getPlayerManager() {
+		return __playerManager;
+	}
+
+	@Override
+	public RoomManager getRoomManager() {
+		return __roomManager;
+	}
+
+	@Override
+	public void write(Response response) {
+		__networkService.write(response);
 	}
 
 }

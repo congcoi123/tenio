@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
-import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
@@ -51,11 +51,11 @@ public interface NetworkService extends Service {
 			NoSuchMethodException, SecurityException;
 
 	void setPacketQueueSize(int queueSize);
-	
+
 	void setPacketEncoder(BinaryPacketEncoder packetEncoder);
-	
+
 	void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 
-	void write(Packet packet);
+	void write(Response response);
 
 }

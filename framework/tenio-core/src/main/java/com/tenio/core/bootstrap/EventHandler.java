@@ -30,14 +30,22 @@ import com.tenio.core.bootstrap.handlers.HttpEventHandler;
 import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
 import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
 import com.tenio.core.bootstrap.handlers.RoomEventHandler;
-import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.event.implement.EventManager;
 
 /**
  * @author kong
  */
 @Component
 //TODO: Add description
-public final class EventHandler extends AbstractExtension {
+public final class EventHandler {
+
+	public static EventHandler newInstance() {
+		return new EventHandler();
+	}
+
+	private EventHandler() {
+
+	}
 
 	@Autowired
 	private ConnectionEventHandler __connectionEventHandler;
@@ -54,13 +62,13 @@ public final class EventHandler extends AbstractExtension {
 	@Autowired
 	private MixinsEventHandler __mixinsEventHandler;
 
-	public void initialize() {
+	public void initialize(EventManager eventManager) {
 
-		__connectionEventHandler.initialize();
-		__playerEventHandler.initialize();
-		__roomEventHandler.initialize();
-		__httpEventHandler.initialize();
-		__mixinsEventHandler.initialize();
+		__connectionEventHandler.initialize(eventManager);
+		__playerEventHandler.initialize(eventManager);
+		__roomEventHandler.initialize(eventManager);
+		__httpEventHandler.initialize(eventManager);
+		__mixinsEventHandler.initialize(eventManager);
 
 	}
 

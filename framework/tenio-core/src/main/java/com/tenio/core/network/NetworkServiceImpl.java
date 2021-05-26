@@ -7,8 +7,8 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
-import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.entities.session.implement.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttpService;
@@ -217,12 +217,12 @@ public final class NetworkServiceImpl implements NetworkService {
 	}
 
 	@Override
-	public void write(Packet packet) {
-		if (packet.isWebSocket()) {
-			__websocketService.write(packet);
-		} else {
-			__socketService.write(packet);
-		}
+	public void write(Response response) {
+//		if (packet.isWebSocket()) {
+//			__websocketService.write(packet);
+//		} else {
+//			__socketService.write(packet);
+//		}
 	}
 
 }

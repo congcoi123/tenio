@@ -62,7 +62,7 @@ public final class SystemMonitoringTask extends SystemLogger implements Task {
 	public ScheduledFuture<?> run() {
 		info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			__eventManager.emit(ServerEvent.MONITORING_SYSTEM, __monitoring.getCpuUsage(),
+			__eventManager.emit(ServerEvent.SYSTEM_MONITORING, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
 					__monitoring.countRunningThreads());
 		}, 0, __monitoringPeriod, TimeUnit.SECONDS);

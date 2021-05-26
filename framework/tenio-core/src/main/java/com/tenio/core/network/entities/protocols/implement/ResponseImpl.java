@@ -29,6 +29,7 @@ import java.util.Collection;
 import com.tenio.core.entities.Player;
 import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.server.ServerImpl;
 
 /**
  * @author kong
@@ -96,7 +97,7 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	@Override
 	public void write() {
 		// TODO if use udp is in use in case of websocket, use websocket instead
-
+		ServerImpl.getInstance().write(this);
 	}
 
 	@Override

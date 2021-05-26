@@ -30,11 +30,11 @@ import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.event.Subscriber;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventAttachConnectionFailure;
 import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
 import com.tenio.core.extension.events.EventAttachConnectionSuccess;
@@ -42,14 +42,13 @@ import com.tenio.core.extension.events.EventConnectionEstablishedFailure;
 import com.tenio.core.extension.events.EventConnectionEstablishedSuccess;
 import com.tenio.core.extension.events.EventDisconnectConnection;
 import com.tenio.core.extension.events.EventReceivedMessageFromConnection;
-import com.tenio.core.network.entities.session.Connection;
 
 /**
  * @author kong
  */
 @Component
 //TODO: Add description
-public final class ConnectionEventHandler extends AbstractExtension {
+public final class ConnectionEventHandler {
 
 	@AutowiredAcceptNull
 	private EventConnectionEstablishedSuccess __eventConnectionEstablishedSuccess;
@@ -72,7 +71,7 @@ public final class ConnectionEventHandler extends AbstractExtension {
 	@AutowiredAcceptNull
 	private EventDisconnectConnection __eventDisconnectConnection;
 
-	public void initialize() {
+	public void initialize(EventManager eventManager) {
 		Optional<EventConnectionEstablishedSuccess> eventConnectionEstablishedSuccessOp = Optional
 				.ofNullable(__eventConnectionEstablishedSuccess);
 		Optional<EventConnectionEstablishedFailure> eventConnectionEstablishedFailedOp = Optional
@@ -94,14 +93,12 @@ public final class ConnectionEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventConnectionEstablishedSuccess event) {
-				_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESSFULLY, new Subscriber() {
+				eventManager.on(ServerEvent.CONNECTION_ESTABLISHED_SUCCESS, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Connection connection = _getConnection(params[0]);
-						CommonObject message = _getCommonObject(params[1]);
+					public Object dispatch(Object... params) {
 
-						event.handle(connection, message);
+						event.handle(session, message);
 
 						return null;
 					}
@@ -113,7 +110,7 @@ public final class ConnectionEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventConnectionEstablishedFailure event) {
-				_on(ExtensionEvent.CONNECTION_ESTABLISHED_FAILED, new Subscriber() {
+				eventManager.on(ServerEvent.CONNECTION_ESTABLISHED_FAILURE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -128,30 +125,11 @@ public final class ConnectionEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventReceivedMessageFromConnectionOp.ifPresent(new Consumer<EventReceivedMessageFromConnection>() {
-
-			@Override
-			public void accept(EventReceivedMessageFromConnection event) {
-				_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_CONNECTION, new Subscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Connection connection = _getConnection(params[0]);
-						CommonObject message = _getCommonObject(params[1]);
-
-						event.handle(connection, message);
-
-						return null;
-					}
-				});
-			}
-		});
-
 		eventAttachConnectionRequestValidateOp.ifPresent(new Consumer<EventAttachConnectionRequestValidation>() {
 
 			@Override
 			public void accept(EventAttachConnectionRequestValidation event) {
-				_on(ExtensionEvent.ATTACH_CONNECTION_REQUEST_VALIDATE, new Subscriber() {
+				eventManager.on(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -168,7 +146,7 @@ public final class ConnectionEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventAttachConnectionSuccess event) {
-				_on(ExtensionEvent.ATTACH_CONNECTION_SUCCESSFULLY, new Subscriber() {
+				eventManager.on(ServerEvent.ATTACH_CONNECTION_SUCCESS, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -187,7 +165,7 @@ public final class ConnectionEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventAttachConnectionFailure event) {
-				_on(ExtensionEvent.ATTACH_CONNECTION_FAILED, new Subscriber() {
+				eventManager.on(ServerEvent.ATTACH_CONNECTION_FAILURE, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {
@@ -207,7 +185,7 @@ public final class ConnectionEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventDisconnectConnection event) {
-				_on(ExtensionEvent.DISCONNECT_CONNECTION, new Subscriber() {
+				eventManager.on(ServerEvent.DISCONNECT_CONNECTION, new Subscriber() {
 
 					@Override
 					public Object dispatch(Object... params) throws ExtensionValueCastException {

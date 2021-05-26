@@ -28,6 +28,10 @@ import java.lang.reflect.InvocationTargetException;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.bootstrap.EventHandler;
+import com.tenio.core.entities.managers.PlayerManager;
+import com.tenio.core.entities.managers.RoomManager;
+import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.network.entities.protocols.Response;
 
 /**
  * This class manages the workflow of the current server. The instruction's
@@ -52,5 +56,13 @@ public interface Server {
 	void shutdown();
 
 	ServerApi getApi();
+
+	EventManager getEventManager();
+
+	PlayerManager getPlayerManager();
+
+	RoomManager getRoomManager();
+
+	void write(Response response);
 
 }
