@@ -24,12 +24,14 @@ THE SOFTWARE.
 package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerReconnectedResult;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
-public interface EventPlayerLoginedSuccess {
+public interface EventPlayerReconnectedResult {
 
-	void handle(Player player);
+	void handle(Player player, Session session, PlayerReconnectedResult result);
 
 }

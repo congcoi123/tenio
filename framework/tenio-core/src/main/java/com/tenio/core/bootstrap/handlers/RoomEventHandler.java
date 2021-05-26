@@ -33,20 +33,25 @@ import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.event.Subscriber;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ExtensionValueCastException;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
 import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
-import com.tenio.core.extension.events.EventPlayerJoinRoomHandle;
-import com.tenio.core.extension.events.EventRoomWasCreated;
+import com.tenio.core.extension.events.EventPlayerJoinRoomSuccess;
+import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
+import com.tenio.core.extension.events.EventRoomCreatedResult;
+import com.tenio.core.extension.events.EventRoomWasCreatedSuccess;
 import com.tenio.core.extension.events.EventRoomWillBeRemoved;
+import com.tenio.core.extension.events.EventSwitchPlayerToSpectatorResult;
+import com.tenio.core.extension.events.EventSwitchSpectatorToPlayerResult;
 
 /**
  * @author kong
  */
 @Component
 //TODO: Add description
-public final class RoomEventHandler extends AbstractExtension {
+public final class RoomEventHandler {
 
 	@AutowiredAcceptNull
 	private EventPlayerAfterLeftRoom __eventPlayerAfterLeftRoom;
@@ -55,23 +60,29 @@ public final class RoomEventHandler extends AbstractExtension {
 	private EventPlayerBeforeLeaveRoom __eventPlayerBeforeLeaveRoom;
 
 	@AutowiredAcceptNull
-	private EventPlayerJoinRoomHandle __eventPlayerJoinRoomHandle;
+	private EventPlayerJoinedRoomResult __eventPlayerJoinedRoomResult;
 
 	@AutowiredAcceptNull
-	private EventRoomWasCreated __eventRoomWasCreated;
+	private EventRoomCreatedResult __eventRoomCreatedResult;
 
 	@AutowiredAcceptNull
 	private EventRoomWillBeRemoved __eventRoomWillBeRemoved;
 
-	public void initialize() {
-		Optional<EventPlayerAfterLeftRoom> eventPlayerAfterLeftRoomOp = Optional
-				.ofNullable(__eventPlayerAfterLeftRoom);
+	@AutowiredAcceptNull
+	private EventSwitchPlayerToSpectatorResult __eventSwitchPlayerToSpectatorResult;
+
+	@AutowiredAcceptNull
+	private EventSwitchSpectatorToPlayerResult __eventSwitchSpectatorToPlayerResult;
+
+	public void initialize(EventManager eventManager) {
+		
+		Optional<EventPlayerAfterLeftRoom> eventPlayerAfterLeftRoomOp = Optional.ofNullable(__eventPlayerAfterLeftRoom);
 		Optional<EventPlayerBeforeLeaveRoom> eventPlayerBeforeLeaveRoomOp = Optional
 				.ofNullable(__eventPlayerBeforeLeaveRoom);
-		Optional<EventPlayerJoinRoomHandle> eventPlayerJoinRoomHandleOp = Optional
+		Optional<EventPlayerJoinRoomSuccess> eventPlayerJoinRoomHandleOp = Optional
 				.ofNullable(__eventPlayerJoinRoomHandle);
 
-		Optional<EventRoomWasCreated> eventRoomWasCreatedOp = Optional.ofNullable(__eventRoomWasCreated);
+		Optional<EventRoomWasCreatedSuccess> eventRoomWasCreatedOp = Optional.ofNullable(__eventRoomWasCreated);
 		Optional<EventRoomWillBeRemoved> eventRoomWillBeRemovedOp = Optional.ofNullable(__eventRoomWillBeRemoved);
 
 		eventPlayerAfterLeftRoomOp.ifPresent(new Consumer<EventPlayerAfterLeftRoom>() {
@@ -113,10 +124,10 @@ public final class RoomEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventPlayerJoinRoomHandleOp.ifPresent(new Consumer<EventPlayerJoinRoomHandle>() {
+		eventPlayerJoinRoomHandleOp.ifPresent(new Consumer<EventPlayerJoinRoomSuccess>() {
 
 			@Override
-			public void accept(EventPlayerJoinRoomHandle event) {
+			public void accept(EventPlayerJoinRoomSuccess event) {
 				_on(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, new Subscriber() {
 
 					@Override
@@ -134,10 +145,10 @@ public final class RoomEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventRoomWasCreatedOp.ifPresent(new Consumer<EventRoomWasCreated>() {
+		eventRoomWasCreatedOp.ifPresent(new Consumer<EventRoomWasCreatedSuccess>() {
 
 			@Override
-			public void accept(EventRoomWasCreated event) {
+			public void accept(EventRoomWasCreatedSuccess event) {
 				_on(ExtensionEvent.ROOM_WAS_CREATED, new Subscriber() {
 
 					@Override

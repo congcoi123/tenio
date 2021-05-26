@@ -23,15 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.Room;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 
 /**
  * @author kong
  */
-public interface EventPlayerJoinRoomHandle {
+public interface EventAttachedConnectionResult {
 
-	void handle(Player player, Room room, boolean success, CoreMessageCode code);
+	void handle(ServerMessage message, AttachedConnectionResult result);
 
 }

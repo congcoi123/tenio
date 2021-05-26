@@ -28,13 +28,12 @@ import java.util.function.Consumer;
 
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
-import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventServerException;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
 import com.tenio.core.extension.events.EventFetchedCcuInfo;
+import com.tenio.core.extension.events.EventServerException;
 import com.tenio.core.extension.events.EventSystemMonitoring;
 
 /**
@@ -42,36 +41,37 @@ import com.tenio.core.extension.events.EventSystemMonitoring;
  */
 @Component
 //TODO: Add description
-public final class MixinsEventHandler extends AbstractExtension {
+public final class MixinsEventHandler {
 
 	@AutowiredAcceptNull
-	private EventServerException __eventException;
+	private EventServerException __eventServerException;
 
 	@AutowiredAcceptNull
 	private EventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
 
 	@AutowiredAcceptNull
-	private EventFetchedCcuInfo __eventFetchedCcuNumber;
+	private EventFetchedCcuInfo __eventFetchedCcuInfo;
 
 	@AutowiredAcceptNull
-	private EventSystemMonitoring __eventMonitoringSystem;
+	private EventSystemMonitoring __eventSystemMonitoring;
 
-	public void initialize() {
-		Optional<EventServerException> eventExceptionOp = Optional.ofNullable(__eventException);
+	public void initialize(EventManager eventManager) {
+		
+		Optional<EventServerException> eventServerExceptionOp = Optional.ofNullable(__eventServerException);
 		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);
-		Optional<EventFetchedCcuInfo> eventFetchedCcuNumberOp = Optional.ofNullable(__eventFetchedCcuNumber);
-		Optional<EventSystemMonitoring> eventMonitoringSystemOp = Optional.ofNullable(__eventMonitoringSystem);
+		Optional<EventFetchedCcuInfo> eventFetchedCcuInfoOp = Optional.ofNullable(__eventFetchedCcuInfo);
+		Optional<EventSystemMonitoring> eventSystemMonitoringOp = Optional.ofNullable(__eventSystemMonitoring);
 
-		eventExceptionOp.ifPresent(new Consumer<EventServerException>() {
+		eventServerExceptionOp.ifPresent(new Consumer<EventServerException>() {
 
 			@Override
 			public void accept(EventServerException event) {
-				_on(ExtensionEvent.EXCEPTION, new Subscriber() {
+				eventManager.on(ServerEvent.SERVER_EXCEPTION, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Throwable throwable = _getThrowable(params[0]);
+					public Object dispatch(Object... params) {
+						Throwable throwable = (Throwable) params[0];
 
 						event.handle(throwable);
 
@@ -85,20 +85,20 @@ public final class MixinsEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventFetchedBandwidthInfo event) {
-				_on(ExtensionEvent.FETCHED_BANDWIDTH_INFO, new Subscriber() {
+				eventManager.on(ServerEvent.FETCHED_BANDWIDTH_INFO, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						long lastReadThroughput = _getLong(params[0]);
-						long lastWriteThroughput = _getLong(params[1]);
-						long realWriteThroughput = _getLong(params[2]);
-						long currentReadBytes = _getLong(params[3]);
-						long currentWrittenBytes = _getLong(params[4]);
-						long realWrittenBytes = _getLong(params[5]);
-						String counterName = _getString(params[6]);
+					public Object dispatch(Object... params) {
+						long readBytes = (long) params[0];
+						long readPackets = (long) params[1];
+						long readDroppedPackets = (long) params[2];
+						long writtenBytes = (long) params[3];
+						long writtenPackets = (long) params[4];
+						long writtenDroppedPacketsByPolicy = (long) params[5];
+						long writtenDroppedPacketsByFull = (long) params[6];
 
-						event.handle(lastReadThroughput, lastWriteThroughput, realWriteThroughput, currentReadBytes,
-								currentWrittenBytes, realWrittenBytes, counterName);
+						event.handle(readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
+								writtenDroppedPacketsByPolicy, writtenDroppedPacketsByFull);
 
 						return null;
 					}
@@ -106,18 +106,17 @@ public final class MixinsEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventFetchedCcuNumberOp.ifPresent(new Consumer<EventFetchedCcuInfo>() {
+		eventFetchedCcuInfoOp.ifPresent(new Consumer<EventFetchedCcuInfo>() {
 
 			@Override
 			public void accept(EventFetchedCcuInfo event) {
-				_on(ExtensionEvent.FETCHED_CCU_NUMBER, new Subscriber() {
+				eventManager.on(ServerEvent.FETCHED_CCU_INFO, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						int numberPlayers = _getInteger(params[0]);
-						int numberAlls = _getInteger(params[1]);
+					public Object dispatch(Object... params) {
+						int numberPlayers = (int) params[0];
 
-						event.handle(numberPlayers, numberAlls);
+						event.handle(numberPlayers);
 
 						return null;
 					}
@@ -125,19 +124,19 @@ public final class MixinsEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventMonitoringSystemOp.ifPresent(new Consumer<EventSystemMonitoring>() {
+		eventSystemMonitoringOp.ifPresent(new Consumer<EventSystemMonitoring>() {
 
 			@Override
 			public void accept(EventSystemMonitoring event) {
-				_on(ExtensionEvent.MONITORING_SYSTEM, new Subscriber() {
+				eventManager.on(ServerEvent.SYSTEM_MONITORING, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						double cpuUsage = _getDouble(params[0]);
-						long totalMemory = _getLong(params[1]);
-						long usedMemory = _getLong(params[2]);
-						long freeMemory = _getLong(params[3]);
-						int countRunningThreads = _getInteger(params[4]);
+					public Object dispatch(Object... params) {
+						double cpuUsage = (double) params[0];
+						long totalMemory = (long) params[1];
+						long usedMemory = (long) params[2];
+						long freeMemory = (long) params[3];
+						int countRunningThreads = (int) params[4];
 
 						event.handle(cpuUsage, totalMemory, usedMemory, freeMemory, countRunningThreads);
 

@@ -1,4 +1,4 @@
-package com.tenio.core.entities.defines;
+package com.tenio.core.entities.defines.modes;
 
 public enum RoomRemoveMode {
 

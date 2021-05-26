@@ -37,7 +37,7 @@ import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.RoomState;
-import com.tenio.core.entities.defines.RoomRemoveMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;

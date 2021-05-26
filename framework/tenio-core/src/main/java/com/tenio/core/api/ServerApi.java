@@ -26,9 +26,9 @@ package com.tenio.core.api;
 import com.tenio.common.data.ZeroObject;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.defines.PlayerBanMode;
-import com.tenio.core.entities.defines.PlayerDisconnectedReason;
-import com.tenio.core.entities.defines.PlayerLeftRoomReason;
+import com.tenio.core.entities.defines.modes.PlayerBanMode;
+import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
+import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
@@ -48,7 +48,7 @@ public interface ServerApi {
 
 	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
 
-	void disconnectPlayer(Player player, PlayerDisconnectedReason disconnectedReason);
+	void disconnectPlayer(Player player, PlayerDisconnectedResult disconnectedReason);
 
 	void disconnectSession(Session session);
 
@@ -74,7 +74,7 @@ public interface ServerApi {
 
 	void switchSpectatorToPlayer(Player player, Room room);
 
-	void leaveRoom(Player player, PlayerLeftRoomReason leftRoomReason);
+	void leaveRoom(Player player, PlayerLeftRoomResult leftRoomReason);
 
 	void removeRoom(Room room);
 

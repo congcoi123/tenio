@@ -26,7 +26,7 @@ package com.tenio.core.entities.settings;
 import java.lang.reflect.InvocationTargetException;
 
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.entities.defines.RoomRemoveMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.entities.settings.strategies.implement.DefaultRoomCredentialValidatedStrategy;

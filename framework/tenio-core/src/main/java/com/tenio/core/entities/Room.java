@@ -26,7 +26,7 @@ package com.tenio.core.entities;
 import java.util.Collection;
 import java.util.List;
 
-import com.tenio.core.entities.defines.RoomRemoveMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;

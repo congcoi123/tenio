@@ -31,10 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
-import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.extension.events.EventHttpRequestValidation;
 import com.tenio.core.network.defines.RestMethod;
@@ -44,30 +43,31 @@ import com.tenio.core.network.defines.RestMethod;
  */
 @Component
 //TODO: Add description
-public final class HttpEventHandler extends AbstractExtension {
+public final class HttpEventHandler {
 
 	@AutowiredAcceptNull
 	private EventHttpRequestHandle __eventHttpRequestHandle;
 
 	@AutowiredAcceptNull
-	private EventHttpRequestValidation __eventHttpRequestValidate;
+	private EventHttpRequestValidation __eventHttpRequestValidation;
 
-	public void initialize() {
+	public void initialize(EventManager eventManager) {
+		
 		Optional<EventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
 		Optional<EventHttpRequestValidation> eventHttpRequestValidateOp = Optional
-				.ofNullable(__eventHttpRequestValidate);
+				.ofNullable(__eventHttpRequestValidation);
 
 		eventHttpRequestValidateOp.ifPresent(new Consumer<EventHttpRequestValidation>() {
 
 			@Override
 			public void accept(EventHttpRequestValidation event) {
-				_on(ExtensionEvent.HTTP_REQUEST_VALIDATE, new Subscriber() {
+				eventManager.on(ServerEvent.HTTP_REQUEST_VALIDATION, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						RestMethod method = _getRestMethod(params[0]);
-						HttpServletRequest request = _getHttpServletRequest(params[1]);
-						HttpServletResponse response = _getHttpServletResponse(params[2]);
+					public Object dispatch(Object... params) {
+						RestMethod method = (RestMethod) params[0];
+						HttpServletRequest request = (HttpServletRequest) params[1];
+						HttpServletResponse response = (HttpServletResponse) params[2];
 
 						return event.handle(method, request, response);
 					}
@@ -79,13 +79,13 @@ public final class HttpEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventHttpRequestHandle event) {
-				_on(ExtensionEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
+				eventManager.on(ServerEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						RestMethod method = _getRestMethod(params[0]);
-						HttpServletRequest request = _getHttpServletRequest(params[1]);
-						HttpServletResponse response = _getHttpServletResponse(params[2]);
+					public Object dispatch(Object... params) {
+						RestMethod method = (RestMethod) params[0];
+						HttpServletRequest request = (HttpServletRequest) params[1];
+						HttpServletResponse response = (HttpServletResponse) params[2];
 
 						event.handle(method, request, response);
 

@@ -8,9 +8,9 @@ import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.defines.PlayerBanMode;
-import com.tenio.core.entities.defines.PlayerDisconnectedReason;
-import com.tenio.core.entities.defines.PlayerLeftRoomReason;
+import com.tenio.core.entities.defines.modes.PlayerBanMode;
+import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
+import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
@@ -43,7 +43,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	public void login(Player player, Session session) {
 		if (player.getName() == null) {
 			// fire an event
-			__getEventManager().emit(ServerEvent.PLAYER_LOGINED_FAILURE, player,
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player,
 					CoreMessageCode.PLAYER_INFO_IS_INVALID);
 			return;
 		}
@@ -57,7 +57,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 			// fire an event
 			__getEventManager().emit(ServerEvent.PLAYER_LOGINED_SUCCESS, player);
 		} catch (AddedDuplicatedPlayerException e) {
-			__getEventManager().emit(ServerEvent.PLAYER_LOGINED_FAILURE, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player, CoreMessageCode.PLAYER_WAS_EXISTED);
 		}
 	}
 
@@ -69,10 +69,10 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
 		try {
 			if (player.isInRoom()) {
-				leaveRoom(player, PlayerLeftRoomReason.LOG_OUT);
+				leaveRoom(player, PlayerLeftRoomResult.LOG_OUT);
 			}
 			if (player.containsSession()) {
-				disconnectPlayer(player, PlayerDisconnectedReason.DEFAULT);
+				disconnectPlayer(player, PlayerDisconnectedResult.DEFAULT);
 			}
 			__getPlayerManager().removePlayerByName(player.getName());
 		} catch (RemovedNonExistentPlayerException e) {
@@ -92,7 +92,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void disconnectPlayer(Player player, PlayerDisconnectedReason disconnectedReason) {
+	public void disconnectPlayer(Player player, PlayerDisconnectedResult disconnectedReason) {
 
 	}
 
@@ -185,7 +185,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void leaveRoom(Player player, PlayerLeftRoomReason leftRoomReason) {
+	public void leaveRoom(Player player, PlayerLeftRoomResult leftRoomReason) {
 //		var room = player.getCurrentRoom();
 //		if (room == null) {
 //			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;

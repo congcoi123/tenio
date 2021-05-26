@@ -26,46 +26,39 @@ package com.tenio.core.bootstrap.handlers;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
+import com.tenio.core.entities.defines.results.PlayerReconnectedResult;
 import com.tenio.core.event.Subscriber;
-import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventDisconnectPlayer;
-import com.tenio.core.extension.events.EventPlayerOnDisconnection;
-import com.tenio.core.extension.events.EventPlayerLoginedFailure;
-import com.tenio.core.extension.events.EventPlayerLoginedSuccess;
+import com.tenio.core.extension.events.EventPlayerLoggedinResult;
 import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
-import com.tenio.core.extension.events.EventPlayerReconnectSuccess;
+import com.tenio.core.extension.events.EventPlayerReconnectedResult;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
 import com.tenio.core.extension.events.EventSendMessageToPlayer;
-import com.tenio.core.network.entities.session.Connection;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 @Component
 //TODO: Add description
-public final class PlayerEventHandler extends AbstractExtension {
+public final class PlayerEventHandler {
 
 	@AutowiredAcceptNull
-	private EventPlayerLoginedFailure __eventPlayerLoginedFailed;
-
-	@AutowiredAcceptNull
-	private EventPlayerLoginedSuccess __eventPlayerLoginedSuccess;
+	private EventPlayerLoggedinResult __eventPlayerLoggedinResult;
 
 	@AutowiredAcceptNull
 	private EventPlayerReconnectRequestHandle __eventPlayerReconnectRequestHandle;
 
 	@AutowiredAcceptNull
-	private EventPlayerReconnectSuccess __eventPlayerReconnectSuccess;
-
-	@AutowiredAcceptNull
-	private EventPlayerOnDisconnection __eventPlayerGotTimeout;
+	private EventPlayerReconnectedResult __eventPlayerReconnectedResult;
 
 	@AutowiredAcceptNull
 	private EventReceivedMessageFromPlayer __eventReceivedMessageFromPlayer;
@@ -76,55 +69,34 @@ public final class PlayerEventHandler extends AbstractExtension {
 	@AutowiredAcceptNull
 	private EventDisconnectPlayer __eventDisconnectPlayer;
 
-	public void initialize() {
-		Optional<EventPlayerLoginedFailure> eventPlayerLoginedFailedOp = Optional
-				.ofNullable(__eventPlayerLoginedFailed);
-		Optional<EventPlayerLoginedSuccess> eventPlayerLoginedSuccessOp = Optional
-				.ofNullable(__eventPlayerLoginedSuccess);
+	public void initialize(EventManager eventManager) {
+		
+		Optional<EventPlayerLoggedinResult> eventPlayerLoggedinResultdOp = Optional
+				.ofNullable(__eventPlayerLoggedinResult);
 
 		Optional<EventPlayerReconnectRequestHandle> eventPlayerReconnectRequestHandleOp = Optional
 				.ofNullable(__eventPlayerReconnectRequestHandle);
-		Optional<EventPlayerReconnectSuccess> eventPlayerReconnectSuccessOp = Optional
-				.ofNullable(__eventPlayerReconnectSuccess);
-		Optional<EventPlayerOnDisconnection> eventPlayerGotTimeoutOp = Optional.ofNullable(__eventPlayerGotTimeout);
+		Optional<EventPlayerReconnectedResult> eventPlayerReconnectedResultOp = Optional
+				.ofNullable(__eventPlayerReconnectedResult);
 
 		Optional<EventReceivedMessageFromPlayer> eventReceivedMessageFromPlayerOp = Optional
 				.ofNullable(__eventReceivedMessageFromPlayer);
-		Optional<EventSendMessageToPlayer> eventSendMessageToPlayerOp = Optional
-				.ofNullable(__eventSendMessageToPlayer);
+		Optional<EventSendMessageToPlayer> eventSendMessageToPlayerOp = Optional.ofNullable(__eventSendMessageToPlayer);
 
 		Optional<EventDisconnectPlayer> eventDisconnectPlayerOp = Optional.ofNullable(__eventDisconnectPlayer);
 
-		eventPlayerLoginedFailedOp.ifPresent(new Consumer<EventPlayerLoginedFailure>() {
+		eventPlayerLoggedinResultdOp.ifPresent(new Consumer<EventPlayerLoggedinResult>() {
 
-			public void accept(EventPlayerLoginedFailure event) {
+			public void accept(EventPlayerLoggedinResult event) {
 
-				_on(ExtensionEvent.PLAYER_LOGINED_FAILED, new Subscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						CoreMessageCode code = _getCoreMessageCode(params[1]);
-
-						event.handle(player, code);
-
-						return null;
-					}
-				});
-			}
-		});
-
-		eventPlayerLoginedSuccessOp.ifPresent(new Consumer<EventPlayerLoginedSuccess>() {
-
-			public void accept(EventPlayerLoginedSuccess event) {
-
-				_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, new Subscriber() {
+				eventManager.on(ServerEvent.PLAYER_LOGGEDIN_RESULT, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						PlayerLoggedinResult result = (PlayerLoggedinResult) params[1];
 
-						event.handle(player);
+						event.handle(player, result);
 
 						return null;
 					}
@@ -136,14 +108,14 @@ public final class PlayerEventHandler extends AbstractExtension {
 
 			public void accept(EventPlayerReconnectRequestHandle event) {
 
-				_on(ExtensionEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
+				eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Connection connection = _getConnection(params[0]);
-						CommonObject message = _getCommonObject(params[1]);
+					public Object dispatch(Object... params) {
+						Session session = (Session) params[0];
+						ServerMessage message = (ServerMessage) params[1];
 
-						event.handle(connection, message);
+						event.handle(session, message);
 
 						return null;
 					}
@@ -151,35 +123,19 @@ public final class PlayerEventHandler extends AbstractExtension {
 			}
 		});
 
-		eventPlayerReconnectSuccessOp.ifPresent(new Consumer<EventPlayerReconnectSuccess>() {
+		eventPlayerReconnectedResultOp.ifPresent(new Consumer<EventPlayerReconnectedResult>() {
 
-			public void accept(EventPlayerReconnectSuccess event) {
+			public void accept(EventPlayerReconnectedResult event) {
 
-				_on(ExtensionEvent.PLAYER_RECONNECTED_SUCCESSFULLY, new Subscriber() {
-
-					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-
-						event.handle(player);
-
-						return null;
-					}
-				});
-			}
-		});
-
-		eventPlayerGotTimeoutOp.ifPresent(new Consumer<EventPlayerOnDisconnection>() {
-
-			public void accept(EventPlayerOnDisconnection event) {
-
-				_on(ExtensionEvent.PLAYER_GOT_TIMEOUT, new Subscriber() {
+				eventManager.on(ServerEvent.PLAYER_RECONNECTED_RESULT, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Session session = (Session) params[1];
+						PlayerReconnectedResult result = (PlayerReconnectedResult) params[2];
 
-						event.handle(player);
+						event.handle(player, session, result);
 
 						return null;
 					}
@@ -191,15 +147,14 @@ public final class PlayerEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventReceivedMessageFromPlayer event) {
-				_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
+				eventManager.on(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						int connectionIndex = _getInteger(params[1]);
-						CommonObject message = _getCommonObject(params[2]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						ServerMessage message = (ServerMessage) params[1];
 
-						event.handle(player, connectionIndex, message);
+						event.handle(player, message);
 
 						return null;
 					}
@@ -211,15 +166,14 @@ public final class PlayerEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventSendMessageToPlayer event) {
-				_on(ExtensionEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
+				eventManager.on(ServerEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						int connectionIndex = _getInteger(params[1]);
-						CommonObject message = _getCommonObject(params[2]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						ServerMessage message = (ServerMessage) params[1];
 
-						event.handle(player, connectionIndex, message);
+						event.handle(player, message);
 
 						return null;
 					}
@@ -231,13 +185,14 @@ public final class PlayerEventHandler extends AbstractExtension {
 
 			@Override
 			public void accept(EventDisconnectPlayer event) {
-				_on(ExtensionEvent.DISCONNECT_PLAYER, new Subscriber() {
+				eventManager.on(ServerEvent.DISCONNECT_PLAYER, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						PlayerDisconnectedResult result = (PlayerDisconnectedResult) params[1];
 
-						event.handle(player);
+						event.handle(player, result);
 
 						return null;
 					}

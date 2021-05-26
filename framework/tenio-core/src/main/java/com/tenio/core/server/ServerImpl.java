@@ -133,20 +133,21 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		__internalProcessorService.subscribe();
 
-		eventHandler.initialize();
+		eventHandler.initialize(__eventManager);
 
 		__startServices();
 
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
+		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
+		
 		info("SERVER", __serverName, "Started!");
 	}
 
 	private void __startServices() {
 		__networkService.start();
 		__scheduleService.start();
-		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
 	}
 
 	private void __setupScheduleService(Configuration configuration) {

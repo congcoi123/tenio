@@ -166,12 +166,12 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			} else {
 				session.setName(player.getName());
 				player.setSession(session);
-				__eventManager.emit(ServerEvent.PLAYER_RECONNECTED_SUCCESS, player);
+				__eventManager.emit(ServerEvent.PLAYER_RECONNECTED_RESULT, player);
 			}
 		} else {
 			// check the number of current players
 			if (__playerManager.getPlayerCount() >= __maxNumberPlayers) {
-				__eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_FAILURE, session,
+				__eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_RESULT, session,
 						CoreMessageCode.REACHED_MAX_CONNECTION);
 				try {
 					session.close();
@@ -225,13 +225,13 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		var player = (Player) __eventManager.emit(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION, message);
 
 		if (player == null) {
-			__eventManager.emit(ServerEvent.ATTACH_CONNECTION_FAILURE, message, CoreMessageCode.PLAYER_NOT_FOUND);
+			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, message, CoreMessageCode.PLAYER_NOT_FOUND);
 		} else if (!player.containsSession()) {
-			__eventManager.emit(ServerEvent.ATTACH_CONNECTION_FAILURE, message,
+			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, message,
 					CoreMessageCode.TCP_CONNECTION_NOT_FOUND);
 		} else {
 			player.getSession().setDatagramChannel((DatagramChannel) datagramChannel);
-			__eventManager.emit(ServerEvent.ATTACH_CONNECTION_SUCCESS, player);
+			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_SUCCESS, player);
 		}
 	}
 

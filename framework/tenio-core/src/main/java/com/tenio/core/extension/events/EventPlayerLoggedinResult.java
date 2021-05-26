@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 
 /**
  * @author kong
  */
-public interface EventConnectionEstablishedSuccess {
+public interface EventPlayerLoggedinResult {
 
-	void handle(Session session, ServerMessage message);
+	void handle(Player player, PlayerLoggedinResult result);
 
 }

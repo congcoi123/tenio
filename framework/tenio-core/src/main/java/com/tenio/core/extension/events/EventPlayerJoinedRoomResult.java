@@ -21,19 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.core.extension.events;
+
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
 
 /**
  * @author kong
  */
-public final class ExtensionValueCastException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6137016366847120400L;
+public interface EventPlayerJoinedRoomResult {
 
-	public ExtensionValueCastException(Object object, Class<?> castingClazz) {
-		super(String.format("Unable to cast object: [%s] to %s class", object.toString(), castingClazz.getName()));
-	}
+	void handle(Player player, Room room, PlayerJoinedRoomResult result);
 
 }

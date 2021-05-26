@@ -24,12 +24,13 @@ THE SOFTWARE.
 package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
 
 /**
  * @author kong
  */
 public interface EventDisconnectPlayer {
 
-	void handle(Player player);
+	void handle(Player player, PlayerDisconnectedResult result);
 
 }

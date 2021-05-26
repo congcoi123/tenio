@@ -23,14 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.results.RoomCreatedResult;
 
 /**
  * @author kong
  */
-public interface EventReceivedMessageFromConnection {
+public interface EventRoomCreatedResult {
 
-	void handle(Session session, ServerMessage message);
+	void handle(Room room, RoomCreatedResult result);
 
 }
