@@ -33,15 +33,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.RoomState;
 import com.tenio.core.entities.defines.modes.RoomRemoveMode;
+import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
+import com.tenio.core.entities.defines.results.SwitchedPlayerSpectatorResult;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.exceptions.CoreMessageCodeException;
+import com.tenio.core.exceptions.PlayerJoinedRoomException;
+import com.tenio.core.exceptions.SwitchedPlayerSpectatorException;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -293,9 +295,11 @@ public final class RoomImpl implements Room {
 		}
 
 		if (!validated) {
-			throw new CoreMessageCodeException(String.format(
-					"Unable to add player: %s to room, room is full with maximum player: %d, spectator: %d",
-					player.getName(), getMaxPlayers(), getMaxSpectators()), CoreMessageCode.ROOM_IS_FULL);
+			throw new PlayerJoinedRoomException(
+					String.format(
+							"Unable to add player: %s to room, room is full with maximum player: %d, spectator: %d",
+							player.getName(), getMaxPlayers(), getMaxSpectators()),
+					PlayerJoinedRoomResult.ROOM_IS_FULL);
 		}
 
 		__playerManager.addPlayer(player);
@@ -317,8 +321,9 @@ public final class RoomImpl implements Room {
 					player.setPlayerSlotInCurrentRoom(targetSlot);
 				} catch (IllegalArgumentException e) {
 					player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
-					throw new CoreMessageCodeException(String.format("Unable to set the target slot: %d for player: %s",
-							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
+					throw new PlayerJoinedRoomException(String
+							.format("Unable to set the target slot: %d for player: %s", targetSlot, player.getName()),
+							PlayerJoinedRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
 				}
 
 			}
@@ -346,15 +351,15 @@ public final class RoomImpl implements Room {
 	@Override
 	public void switchPlayerToSpectator(Player player) {
 		if (!containsPlayerName(player.getName())) {
-			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
-					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
+			throw new SwitchedPlayerSpectatorException(String.format("Player %s was not in room", player.getName()),
+					SwitchedPlayerSpectatorResult.PLAYER_WAS_NOT_IN_ROOM);
 		}
 
 		__switchPlayerLock.lock();
 		try {
 			if (getSpectatorCount() >= getMaxSpectators()) {
-				throw new CoreMessageCodeException("All spectator slots were already taken",
-						CoreMessageCode.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
+				throw new SwitchedPlayerSpectatorException("All spectator slots were already taken",
+						SwitchedPlayerSpectatorResult.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
 			}
 
 			__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
@@ -371,15 +376,15 @@ public final class RoomImpl implements Room {
 	@Override
 	public void switchSpectatorToPlayer(Player player, int targetSlot) {
 		if (!containsPlayerName(player.getName())) {
-			throw new CoreMessageCodeException(String.format("Player %s was not in room", player.getName()),
-					CoreMessageCode.PLAYER_WAS_NOT_IN_ROOM);
+			throw new SwitchedPlayerSpectatorException(String.format("Player %s was not in room", player.getName()),
+					SwitchedPlayerSpectatorResult.PLAYER_WAS_NOT_IN_ROOM);
 		}
 
 		__switchPlayerLock.lock();
 		try {
 			if (getPlayerCount() >= getMaxPlayers()) {
-				throw new CoreMessageCodeException("All player slots were already taken",
-						CoreMessageCode.SWITCH_NO_PLAYER_SLOTS_AVAILABLE);
+				throw new SwitchedPlayerSpectatorException("All player slots were already taken",
+						SwitchedPlayerSpectatorResult.SWITCH_NO_PLAYER_SLOTS_AVAILABLE);
 			}
 
 			if (targetSlot == DEFAULT_SLOT) {
@@ -391,8 +396,9 @@ public final class RoomImpl implements Room {
 					player.setPlayerSlotInCurrentRoom(targetSlot);
 					player.setSpectator(false);
 				} catch (IllegalArgumentException e) {
-					throw new CoreMessageCodeException(String.format("Unable to set the target slot: %d for player: %s",
-							targetSlot, player.getName()), CoreMessageCode.SLOT_UNAVAILABLE_IN_ROOM);
+					throw new SwitchedPlayerSpectatorException(String
+							.format("Unable to set the target slot: %d for player: %s", targetSlot, player.getName()),
+							SwitchedPlayerSpectatorResult.SLOT_UNAVAILABLE_IN_ROOM);
 				}
 			}
 		} finally {

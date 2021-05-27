@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.tenio.core.entities.Player;
+import com.tenio.core.network.defines.ResponsePriority;
 import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.server.ServerImpl;
@@ -39,9 +40,11 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 
 	private Collection<Player> __players;
 	private Collection<Session> __socketSessions;
+	private Collection<Session> __datagramSessions;
 	private Collection<Session> __webSocketSessions;
-	private boolean __useUdp;
-	private boolean __foundUdp;
+	private ResponsePriority __priority;
+	private boolean __prioritizedUdp;
+	private boolean __encrypted;
 
 	public static Response newInstance() {
 		return new ResponseImpl();
@@ -52,14 +55,21 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 
 		__players = null;
 		__socketSessions = null;
+		__datagramSessions = null;
 		__webSocketSessions = null;
-		__useUdp = false;
-		__foundUdp = false;
+		__priority = ResponsePriority.NORMAL;
+		__prioritizedUdp = false;
+		__encrypted = false;
 	}
 
 	@Override
 	public Collection<Session> getRecipientSocketSessions() {
 		return __socketSessions;
+	}
+
+	@Override
+	public Collection<Session> getRecipientDatagramSessions() {
+		return __datagramSessions;
 	}
 
 	@Override
@@ -89,48 +99,68 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	}
 
 	@Override
-	public Response useUdp() {
-		__useUdp = true;
+	public Response prioritizedUdp() {
+		__prioritizedUdp = true;
 		return this;
 	}
 
 	@Override
+	public Response encrypted() {
+		__encrypted = true;
+		return this;
+	}
+
+	@Override
+	public Response priority(ResponsePriority priority) {
+		__priority = priority;
+		return this;
+	}
+
+	@Override
+	public boolean isEncrypted() {
+		return __encrypted;
+	}
+
+	@Override
+	public ResponsePriority getPriority() {
+		return __priority;
+	}
+
+	@Override
 	public void write() {
-		// TODO if use udp is in use in case of websocket, use websocket instead
+		__construct();
 		ServerImpl.getInstance().write(this);
 	}
 
 	@Override
 	public void writeInDelay(int delayInSeconds) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
-	private Response __construct() throws RuntimeException {
+	private void __construct() {
+		// TODO if use udp is in use in case of websocket, use websocket instead
 		__players.stream().forEach(player -> {
 			var session = player.getSession();
 			if (session.isTcp()) {
-				if (__socketSessions == null) {
-					__socketSessions = new ArrayList<Session>();
-					// when the session contains an UDP connection and the response requires it, add
-					// its session to the list
-					if (__useUdp && session.containsUdp()) {
-						__socketSessions.add(session);
-						__foundUdp = true;
-					} else {
-						__socketSessions.add(session);
+				// when the session contains an UDP connection and the response requires it, add
+				// its session to the list
+				if (__prioritizedUdp && session.containsUdp()) {
+					if (__datagramSessions == null) {
+						__datagramSessions = new ArrayList<Session>();
 					}
+					__datagramSessions.add(session);
+				} else {
+					if (__socketSessions == null) {
+						__socketSessions = new ArrayList<Session>();
+					}
+					__socketSessions.add(session);
 				}
 			} else if (session.isWebSocket()) {
-
+				if (__webSocketSessions == null) {
+					__webSocketSessions = new ArrayList<Session>();
+				}
 			}
 		});
-
-		if (__useUdp && !__foundUdp) {
-			throw new UdpConnectionNotFoundException();
-		}
-
-		return this;
 	}
 
 }

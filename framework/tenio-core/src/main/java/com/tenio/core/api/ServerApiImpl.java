@@ -1,5 +1,7 @@
 package com.tenio.core.api;
 
+import java.io.IOException;
+
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
@@ -10,12 +12,14 @@ import com.tenio.core.entities.defines.modes.PlayerBanMode;
 import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
+import com.tenio.core.entities.defines.results.RoomCreatedResult;
 import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
+import com.tenio.core.exceptions.CreatedRoomException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.server.Server;
@@ -75,12 +79,12 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 				leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
 			}
 
-			if (player.containsSession()) {
-				disconnectPlayer(player, PlayerDisconnectMode.DEFAULT);
-			}
+			__disconnectPlayer(player, PlayerDisconnectMode.DEFAULT);
 
 			player = null;
 		} catch (RemovedNonExistentPlayerException e) {
+			error(e, "Removed player: ", player.getName(), " with issue");
+		} catch (IOException e) {
 			error(e, "Removed player: ", player.getName(), " with issue");
 		}
 	}
@@ -96,14 +100,13 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode) {
+	// FIXME: Needs to be considered
+	private void __disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode) throws IOException {
+		if (player.containsSession()) {
+			player.getSession().close(ConnectionDisconnectMode.DEFAULT);
+		} else {
 
-	}
-
-	@Override
-	public void disconnectSession(Session session, ConnectionDisconnectMode disconnectMode) {
-
+		}
 	}
 
 	@Override
@@ -111,13 +114,13 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		Room room = null;
 		try {
 			room = __getRoomManager().createRoomWithOwner(setting, owner);
-			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room);
+			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room, setting, RoomCreatedResult.SUCCESS);
 		} catch (IllegalArgumentException e) {
-			// FIXME:
-			__getEventManager().emit(ServerEvent.ROOM_WAS_CREATED_WITH_ERROR, setting, null);
-		} catch (CoreMessageCodeException e) {
-			__getEventManager().emit(ServerEvent.ROOM_WAS_CREATED_WITH_ERROR, setting, e.getMessageCode());
+			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting, null);
+		} catch (CreatedRoomException e) {
+			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting, e.getResult());
 		}
+		
 		return room;
 	}
 

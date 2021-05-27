@@ -1,14 +1,18 @@
 package com.tenio.core.network;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
+import com.tenio.core.network.entities.packet.Packet;
+import com.tenio.core.network.entities.packet.implement.PacketImpl;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entities.protocols.Response;
+import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.entities.session.implement.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttpService;
@@ -218,11 +222,35 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void write(Response response) {
-//		if (packet.isWebSocket()) {
-//			__websocketService.write(packet);
-//		} else {
-//			__socketService.write(packet);
-//		}
+		var socketSessions = response.getRecipientSocketSessions();
+		var datagramSessions = response.getRecipientDatagramSessions();
+		var websocketSessions = response.getRecipientWebSocketSessions();
+
+		if (socketSessions != null) {
+			Packet packet = __createPacket(response, socketSessions, TransportType.TCP);
+			__socketService.write(packet);
+		}
+
+		if (datagramSessions != null) {
+			Packet packet = __createPacket(response, datagramSessions, TransportType.UDP);
+			__socketService.write(packet);
+		}
+
+		if (websocketSessions != null) {
+			Packet packet = __createPacket(response, websocketSessions, TransportType.WEB_SOCKET);
+			__websocketService.write(packet);
+		}
+	}
+
+	private Packet __createPacket(Response response, Collection<Session> recipients, TransportType transportType) {
+		Packet packet = PacketImpl.newInstance();
+		packet.setData(response.getContent());
+		packet.setEncrypted(response.isEncrypted());
+		packet.setPriority(response.getPriority());
+		packet.setRecipients(recipients);
+		packet.setTransportType(transportType);
+
+		return packet;
 	}
 
 }

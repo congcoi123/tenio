@@ -26,6 +26,7 @@ package com.tenio.core.network.entities.protocols;
 import java.util.Collection;
 
 import com.tenio.core.entities.Player;
+import com.tenio.core.network.defines.ResponsePriority;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -36,13 +37,23 @@ public interface Response extends Message {
 
 	Collection<Session> getRecipientSocketSessions();
 
+	Collection<Session> getRecipientDatagramSessions();
+
 	Collection<Session> getRecipientWebSocketSessions();
 
 	Response setRecipients(Collection<Player> players);
 
 	Response setRecipient(Player player);
 
-	Response useUdp();
+	Response prioritizedUdp();
+
+	Response encrypted();
+
+	Response priority(ResponsePriority priority);
+
+	boolean isEncrypted();
+
+	ResponsePriority getPriority();
 
 	void write();
 

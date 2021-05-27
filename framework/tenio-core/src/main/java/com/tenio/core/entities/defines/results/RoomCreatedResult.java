@@ -2,6 +2,10 @@ package com.tenio.core.entities.defines.results;
 
 public enum RoomCreatedResult {
 
-	SUCCESS;
+	SUCCESS,
+	
+	REACHED_MAX_ROOMS,
+	
+	INVALID_NAME_OR_PASSWORD;
 	
 }

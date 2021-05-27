@@ -35,6 +35,7 @@ import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.engines.ZeroWriter;
 import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
 import com.tenio.core.network.zero.engines.writers.DatagramWriterHandler;
@@ -51,6 +52,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	private WriterHandler __socketWriterHandler;
 	private WriterHandler __datagramWriterHandler;
 	private NetworkWriterStatistic __networkWriterStatistic;
+	private BinaryPacketEncoder __packetEncoder;
 
 	public static ZeroWriter newInstance(EventManager eventManager) {
 		return new ZeroWriterImpl(eventManager);
@@ -134,6 +136,10 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 			return;
 		}
 
+		if (packet.isTcp()) {
+			packet = __packetEncoder.encode(packet);
+		}
+
 		// when there is only one recipient, no need to create clone packets
 		if (recipients.size() == 1) {
 			__enqueuePacket(recipients.iterator().next(), packet);
@@ -199,6 +205,11 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	@Override
 	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
 		__networkWriterStatistic = networkWriterStatistic;
+	}
+
+	@Override
+	public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
+		__packetEncoder = packetEncoder;
 	}
 
 	@Override

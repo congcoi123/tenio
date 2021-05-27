@@ -197,7 +197,7 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 
 	@Override
 	public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
-
+		__writerEngine.setPacketEncoder(packetEncoder);
 	}
 
 	@Override

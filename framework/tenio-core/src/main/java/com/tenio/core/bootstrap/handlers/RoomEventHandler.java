@@ -36,6 +36,7 @@ import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
 import com.tenio.core.entities.defines.results.SwitchedPlayerSpectatorResult;
+import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
@@ -159,9 +160,10 @@ public final class RoomEventHandler {
 					@Override
 					public Object dispatch(Object... params) {
 						Room room = (Room) params[0];
-						RoomCreatedResult result = (RoomCreatedResult) params[1];
+						InitialRoomSetting setting = (InitialRoomSetting) params[1];
+						RoomCreatedResult result = (RoomCreatedResult) params[2];
 
-						event.handle(room, result);
+						event.handle(room, setting, result);
 
 						return null;
 					}

@@ -30,7 +30,7 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.exceptions.AddedDuplicatedRoomException;
-import com.tenio.core.exceptions.CoreMessageCodeException;
+import com.tenio.core.exceptions.CreatedRoomException;
 import com.tenio.core.manager.Manager;
 
 /**
@@ -44,10 +44,10 @@ public interface RoomManager extends Manager {
 
 	void addRoom(Room room) throws AddedDuplicatedRoomException;
 
-	Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CoreMessageCodeException;
+	Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CreatedRoomException;
 
 	Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player)
-			throws IllegalArgumentException, CoreMessageCodeException;
+			throws IllegalArgumentException, CreatedRoomException;
 
 	boolean containsRoomId(long roomId);
 

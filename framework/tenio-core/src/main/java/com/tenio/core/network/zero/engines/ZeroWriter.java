@@ -25,6 +25,7 @@ package com.tenio.core.network.zero.engines;
 
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
 /**
  * @author kong
@@ -37,5 +38,7 @@ public interface ZeroWriter extends ZeroEngine {
 	NetworkWriterStatistic getNetworkWriterStatistic();
 
 	void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
+
+	void setPacketEncoder(BinaryPacketEncoder packetEncoder);
 
 }

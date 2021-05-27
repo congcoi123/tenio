@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.results.RoomCreatedResult;
 import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedRoomException;
-import com.tenio.core.exceptions.CoreMessageCodeException;
+import com.tenio.core.exceptions.CreatedRoomException;
 import com.tenio.core.manager.AbstractManager;
 
 public final class RoomManagerImpl extends AbstractManager implements RoomManager {
@@ -62,9 +62,9 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 	public Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player) {
 		int roomCount = getRoomCount();
 		if (roomCount >= getMaxRooms()) {
-			throw new CoreMessageCodeException(
+			throw new CreatedRoomException(
 					String.format("Unable to create new room, reached limited the maximum room number: %d", roomCount),
-					CoreMessageCode.REACHED_MAX_ROOMS);
+					RoomCreatedResult.REACHED_MAX_ROOMS);
 		}
 
 		Room newRoom = RoomImpl.newInstance();

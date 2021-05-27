@@ -25,12 +25,13 @@ package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
+import com.tenio.core.entities.settings.InitialRoomSetting;
 
 /**
  * @author kong
  */
 public interface EventRoomCreatedResult {
 
-	void handle(Room room, RoomCreatedResult result);
+	void handle(Room room, InitialRoomSetting setting, RoomCreatedResult result);
 
 }

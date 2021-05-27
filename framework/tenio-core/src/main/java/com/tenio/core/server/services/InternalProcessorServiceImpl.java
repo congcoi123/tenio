@@ -189,6 +189,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 	}
 
+	// FIXME: Needs to be considered 
 	private void __processSessionWillBeClosed(Request request) {
 		var session = request.getSender();
 		var connectionClosedMode = (ConnectionDisconnectMode) request

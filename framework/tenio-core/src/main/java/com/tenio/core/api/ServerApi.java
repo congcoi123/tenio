@@ -26,9 +26,7 @@ package com.tenio.core.api;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
-import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
@@ -48,10 +46,6 @@ public interface ServerApi {
 	void kickPlayer(Player player, String message, int delayInSeconds);
 
 	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
-
-	void disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode);
-
-	void disconnectSession(Session session, ConnectionDisconnectMode disconnectMode);
 
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
