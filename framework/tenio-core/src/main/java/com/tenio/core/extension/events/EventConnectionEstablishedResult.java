@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
+import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.network.entities.session.Session;
 
@@ -31,6 +32,6 @@ import com.tenio.core.network.entities.session.Session;
  */
 public interface EventConnectionEstablishedResult {
 
-	void handle(Session session, ConnectionEstablishedResult result);
+	void handle(Session session, ServerMessage message, ConnectionEstablishedResult result);
 
 }

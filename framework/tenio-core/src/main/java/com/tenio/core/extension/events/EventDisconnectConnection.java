@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.entities.defines.results.ConnectionDisconnectedResult;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.network.entities.session.Session;
 
 /**
@@ -31,6 +31,6 @@ import com.tenio.core.network.entities.session.Session;
  */
 public interface EventDisconnectConnection {
 
-	void handle(Session session, ConnectionDisconnectedResult result);
+	void handle(Session session, ConnectionDisconnectMode mode);
 
 }

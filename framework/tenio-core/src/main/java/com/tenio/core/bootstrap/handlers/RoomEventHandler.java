@@ -28,20 +28,20 @@ import java.util.function.Consumer;
 
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.configuration.defines.CoreMessageCode;
-import com.tenio.core.configuration.defines.ExtensionEvent;
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
+import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
+import com.tenio.core.entities.defines.results.RoomCreatedResult;
+import com.tenio.core.entities.defines.results.SwitchedPlayerSpectatorResult;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.exceptions.ExtensionValueCastException;
-import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
 import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
-import com.tenio.core.extension.events.EventPlayerJoinRoomSuccess;
 import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
 import com.tenio.core.extension.events.EventRoomCreatedResult;
-import com.tenio.core.extension.events.EventRoomWasCreatedSuccess;
 import com.tenio.core.extension.events.EventRoomWillBeRemoved;
 import com.tenio.core.extension.events.EventSwitchPlayerToSpectatorResult;
 import com.tenio.core.extension.events.EventSwitchSpectatorToPlayerResult;
@@ -75,29 +75,34 @@ public final class RoomEventHandler {
 	private EventSwitchSpectatorToPlayerResult __eventSwitchSpectatorToPlayerResult;
 
 	public void initialize(EventManager eventManager) {
-		
+
 		Optional<EventPlayerAfterLeftRoom> eventPlayerAfterLeftRoomOp = Optional.ofNullable(__eventPlayerAfterLeftRoom);
 		Optional<EventPlayerBeforeLeaveRoom> eventPlayerBeforeLeaveRoomOp = Optional
 				.ofNullable(__eventPlayerBeforeLeaveRoom);
-		Optional<EventPlayerJoinRoomSuccess> eventPlayerJoinRoomHandleOp = Optional
-				.ofNullable(__eventPlayerJoinRoomHandle);
+		Optional<EventPlayerJoinedRoomResult> eventPlayerJoinedRoomResultOp = Optional
+				.ofNullable(__eventPlayerJoinedRoomResult);
 
-		Optional<EventRoomWasCreatedSuccess> eventRoomWasCreatedOp = Optional.ofNullable(__eventRoomWasCreated);
+		Optional<EventRoomCreatedResult> eventRoomCreatedResultOp = Optional.ofNullable(__eventRoomCreatedResult);
 		Optional<EventRoomWillBeRemoved> eventRoomWillBeRemovedOp = Optional.ofNullable(__eventRoomWillBeRemoved);
+
+		Optional<EventSwitchPlayerToSpectatorResult> eventSwitchPlayerToSpectatorResultOp = Optional
+				.ofNullable(__eventSwitchPlayerToSpectatorResult);
+		Optional<EventSwitchSpectatorToPlayerResult> eventSwitchSpectatorToPlayerResultOp = Optional
+				.ofNullable(__eventSwitchSpectatorToPlayerResult);
 
 		eventPlayerAfterLeftRoomOp.ifPresent(new Consumer<EventPlayerAfterLeftRoom>() {
 
 			@Override
 			public void accept(EventPlayerAfterLeftRoom event) {
-				_on(ExtensionEvent.PLAYER_AFTER_LEFT_ROOM, new Subscriber() {
+				eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						Room room = _getRoom(params[1]);
-						boolean force = _getBoolean(params[2]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Room room = (Room) params[1];
+						PlayerLeaveRoomMode mode = (PlayerLeaveRoomMode) (params[1]);
 
-						event.handle(player, room, force);
+						event.handle(player, room, mode);
 
 						return null;
 					}
@@ -109,14 +114,15 @@ public final class RoomEventHandler {
 
 			@Override
 			public void accept(EventPlayerBeforeLeaveRoom event) {
-				_on(ExtensionEvent.PLAYER_BEFORE_LEAVE_ROOM, new Subscriber() {
+				eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						Room room = _getRoom(params[1]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Room room = (Room) params[1];
+						PlayerLeaveRoomMode mode = (PlayerLeaveRoomMode) (params[1]);
 
-						event.handle(player, room);
+						event.handle(player, room, mode);
 
 						return null;
 					}
@@ -124,20 +130,19 @@ public final class RoomEventHandler {
 			}
 		});
 
-		eventPlayerJoinRoomHandleOp.ifPresent(new Consumer<EventPlayerJoinRoomSuccess>() {
+		eventPlayerJoinedRoomResultOp.ifPresent(new Consumer<EventPlayerJoinedRoomResult>() {
 
 			@Override
-			public void accept(EventPlayerJoinRoomSuccess event) {
-				_on(ExtensionEvent.PLAYER_JOIN_ROOM_HANDLE, new Subscriber() {
+			public void accept(EventPlayerJoinedRoomResult event) {
+				eventManager.on(ServerEvent.PLAYER_JOINED_ROOM_RESULT, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Player player = _getPlayer(params[0]);
-						Room room = _getRoom(params[1]);
-						boolean success = _getBoolean(params[2]);
-						CoreMessageCode code = _getCoreMessageCode(params[3]);
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Room room = (Room) params[1];
+						PlayerJoinedRoomResult result = (PlayerJoinedRoomResult) params[2];
 
-						event.handle(player, room, success, code);
+						event.handle(player, room, result);
 
 						return null;
 					}
@@ -145,18 +150,18 @@ public final class RoomEventHandler {
 			}
 		});
 
-		eventRoomWasCreatedOp.ifPresent(new Consumer<EventRoomWasCreatedSuccess>() {
+		eventRoomCreatedResultOp.ifPresent(new Consumer<EventRoomCreatedResult>() {
 
 			@Override
-			public void accept(EventRoomWasCreatedSuccess event) {
-				_on(ExtensionEvent.ROOM_WAS_CREATED, new Subscriber() {
+			public void accept(EventRoomCreatedResult event) {
+				eventManager.on(ServerEvent.ROOM_CREATED_RESULT, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Room room = _getRoom(params[0]);
-						CoreMessageCode code = _getCoreMessageCode(params[1]);
+					public Object dispatch(Object... params) {
+						Room room = (Room) params[0];
+						RoomCreatedResult result = (RoomCreatedResult) params[1];
 
-						event.handle(room, code);
+						event.handle(room, result);
 
 						return null;
 					}
@@ -168,13 +173,54 @@ public final class RoomEventHandler {
 
 			@Override
 			public void accept(EventRoomWillBeRemoved event) {
-				_on(ExtensionEvent.ROOM_WILL_BE_REMOVED, new Subscriber() {
+				eventManager.on(ServerEvent.ROOM_WILL_BE_REMOVED, new Subscriber() {
 
 					@Override
-					public Object dispatch(Object... params) throws ExtensionValueCastException {
-						Room room = _getRoom(params[0]);
+					public Object dispatch(Object... params) {
+						Room room = (Room) params[0];
+						RoomRemoveMode mode = (RoomRemoveMode) params[1];
 
-						event.handle(room);
+						event.handle(room, mode);
+
+						return null;
+					}
+				});
+			}
+		});
+
+		eventSwitchPlayerToSpectatorResultOp.ifPresent(new Consumer<EventSwitchPlayerToSpectatorResult>() {
+
+			@Override
+			public void accept(EventSwitchPlayerToSpectatorResult event) {
+				eventManager.on(ServerEvent.SWITCH_PLAYER_TO_SPECTATOR, new Subscriber() {
+
+					@Override
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Room room = (Room) params[1];
+						SwitchedPlayerSpectatorResult result = (SwitchedPlayerSpectatorResult) params[2];
+
+						event.handle(player, room, result);
+
+						return null;
+					}
+				});
+			}
+		});
+
+		eventSwitchSpectatorToPlayerResultOp.ifPresent(new Consumer<EventSwitchSpectatorToPlayerResult>() {
+
+			@Override
+			public void accept(EventSwitchSpectatorToPlayerResult event) {
+				eventManager.on(ServerEvent.SWITCH_SPECTATOR_TO_PLAYER, new Subscriber() {
+
+					@Override
+					public Object dispatch(Object... params) {
+						Player player = (Player) params[0];
+						Room room = (Room) params[1];
+						SwitchedPlayerSpectatorResult result = (SwitchedPlayerSpectatorResult) params[2];
+
+						event.handle(player, room, result);
 
 						return null;
 					}

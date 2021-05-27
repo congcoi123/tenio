@@ -2,6 +2,16 @@ package com.tenio.core.entities.defines.modes;
 
 public enum PlayerDisconnectMode {
 
-	DEFAULT, IDLE, KICK, BAN, UNKNOWN;
+	DEFAULT,
+
+	CONNECTION_LOST,
+
+	IDLE,
+
+	KICK,
+
+	BAN,
+
+	UNKNOWN;
 
 }

@@ -1,23 +1,21 @@
 package com.tenio.core.api;
 
-import java.util.ArrayList;
-
-import com.tenio.common.data.ZeroObject;
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.configuration.defines.CoreMessageCode;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
-import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
-import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
-import com.tenio.core.exceptions.CoreMessageCodeException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.server.Server;
@@ -35,46 +33,53 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void login(Player player) {
-		login(player, null);
+	public void login(String playerName) {
+		try {
+			var player = __getPlayerManager().createPlayer(playerName);
+
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player, PlayerLoggedinResult.SUCCESS);
+		} catch (AddedDuplicatedPlayerException e) {
+			error(e, "Loggedin with same player name: ", playerName);
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, null, PlayerLoggedinResult.DUPPLICATED_PLAYER);
+		}
 	}
 
 	@Override
-	public void login(Player player, Session session) {
-		if (player.getName() == null) {
-			// fire an event
-			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player,
-					CoreMessageCode.PLAYER_INFO_IS_INVALID);
-			return;
-		}
-
+	public void loginWithSession(String playerName, Session session) {
 		try {
-			__getPlayerManager().addPlayer(player);
-			if (session != null) {
-				session.setName(player.getName());
-				player.setSession(session);
-			}
-			// fire an event
-			__getEventManager().emit(ServerEvent.PLAYER_LOGINED_SUCCESS, player);
+			var player = __getPlayerManager().createPlayerWithSession(playerName, session);
+			session.setName(playerName);
+			session.setConnected(true);
+
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player, PlayerLoggedinResult.SUCCESS);
+		} catch (NullPointerException e) {
+			error(e, "Unable to find session when loggedin with the player name: ", playerName);
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, null, PlayerLoggedinResult.SESSION_NOT_FOUND);
 		} catch (AddedDuplicatedPlayerException e) {
-			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, player, CoreMessageCode.PLAYER_WAS_EXISTED);
+			error(e, "Loggedin with same player name: ", playerName);
+			__getEventManager().emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, null, PlayerLoggedinResult.DUPPLICATED_PLAYER);
 		}
 	}
 
 	@Override
 	public void logout(Player player) {
 		if (player == null) {
+			// maybe we needn't do anything
 			return;
 		}
 
 		try {
-			if (player.isInRoom()) {
-				leaveRoom(player, PlayerLeftRoomResult.LOG_OUT);
-			}
-			if (player.containsSession()) {
-				disconnectPlayer(player, PlayerDisconnectedResult.DEFAULT);
-			}
 			__getPlayerManager().removePlayerByName(player.getName());
+
+			if (player.isInRoom()) {
+				leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
+			}
+
+			if (player.containsSession()) {
+				disconnectPlayer(player, PlayerDisconnectMode.DEFAULT);
+			}
+
+			player = null;
 		} catch (RemovedNonExistentPlayerException e) {
 			error(e, "Removed player: ", player.getName(), " with issue");
 		}
@@ -92,13 +97,12 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void disconnectPlayer(Player player, PlayerDisconnectedResult disconnectedReason) {
+	public void disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode) {
 
 	}
 
 	@Override
-	public void disconnectSession(Session session) {
-		// TODO Auto-generated method stub
+	public void disconnectSession(Session session, ConnectionDisconnectMode disconnectMode) {
 
 	}
 
@@ -107,7 +111,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		Room room = null;
 		try {
 			room = __getRoomManager().createRoomWithOwner(setting, owner);
-			__getEventManager().emit(ServerEvent.ROOM_WAS_CREATED, room);
+			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room);
 		} catch (IllegalArgumentException e) {
 			// FIXME:
 			__getEventManager().emit(ServerEvent.ROOM_WAS_CREATED_WITH_ERROR, setting, null);
@@ -185,7 +189,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void leaveRoom(Player player, PlayerLeftRoomResult leftRoomReason) {
+	public void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode) {
 //		var room = player.getCurrentRoom();
 //		if (room == null) {
 //			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
@@ -230,12 +234,12 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 //	}
 
 	@Override
-	public void sendPublicMessage(Room room, Player sender, ZeroObject message) {
+	public void sendPublicMessage(Room room, Player sender, ServerMessage message) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void sendPrivateMessage(Player sender, Player recipient, ZeroObject message) {
+	public void sendPrivateMessage(Player sender, Player recipient, ServerMessage message) {
 		throw new UnsupportedOperationException();
 	}
 

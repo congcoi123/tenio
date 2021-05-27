@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.event;
 
-import com.tenio.core.exceptions.ExtensionValueCastException;
-
 /**
  * This function interface provides one method for dispatching the results from
  * an event.
@@ -41,6 +39,6 @@ public interface Subscriber {
 	 * @param params all the results in an array
 	 * @return an object or <b>null</b>
 	 */
-	Object dispatch(Object... params) throws ExtensionValueCastException;
+	Object dispatch(Object... params);
 
 }

@@ -31,7 +31,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
-import com.tenio.core.exceptions.ExtensionValueCastException;
 
 /**
  * This class for managing events and these subscribers.
@@ -99,14 +98,8 @@ public final class EventManager extends SystemLogger {
 		// start handling
 		__eventSubscribers.forEach(eventSubscriber -> {
 			events.add(eventSubscriber.getEvent());
-			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(), params -> {
-				try {
-					return eventSubscriber.getSubscriber().dispatch(params);
-				} catch (ExtensionValueCastException e) {
-					error(e, e.getMessage());
-				}
-				return null;
-			});
+			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(),
+					eventSubscriber.getSubscriber()::dispatch);
 		});
 		info("INTERNAL EVENT UPDATED", "Subscribers", events.toString());
 	}

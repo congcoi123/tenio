@@ -31,7 +31,7 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.entities.defines.results.PlayerReconnectedResult;
 import com.tenio.core.event.Subscriber;
@@ -70,7 +70,7 @@ public final class PlayerEventHandler {
 	private EventDisconnectPlayer __eventDisconnectPlayer;
 
 	public void initialize(EventManager eventManager) {
-		
+
 		Optional<EventPlayerLoggedinResult> eventPlayerLoggedinResultdOp = Optional
 				.ofNullable(__eventPlayerLoggedinResult);
 
@@ -190,9 +190,9 @@ public final class PlayerEventHandler {
 					@Override
 					public Object dispatch(Object... params) {
 						Player player = (Player) params[0];
-						PlayerDisconnectedResult result = (PlayerDisconnectedResult) params[1];
+						PlayerDisconnectMode mode = (PlayerDisconnectMode) params[1];
 
-						event.handle(player, result);
+						event.handle(player, mode);
 
 						return null;
 					}

@@ -2,6 +2,8 @@ package com.tenio.core.entities.defines.results;
 
 public enum ConnectionEstablishedResult {
 
-	SUCCESS;
-	
+	SUCCESS,
+
+	REACHED_MAX_CONNECTION;
+
 }

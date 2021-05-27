@@ -30,8 +30,8 @@ import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
-import com.tenio.core.entities.defines.results.ConnectionDisconnectedResult;
 import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
@@ -61,7 +61,7 @@ public final class ConnectionEventHandler {
 	private EventDisconnectConnection __eventDisconnectConnection;
 
 	public void initialize(EventManager eventManager) {
-		
+
 		Optional<EventConnectionEstablishedResult> eventConnectionEstablishedResultOp = Optional
 				.ofNullable(__eventConnectionEstablishedResult);
 
@@ -82,9 +82,10 @@ public final class ConnectionEventHandler {
 					@Override
 					public Object dispatch(Object... params) {
 						Session session = (Session) params[0];
-						ConnectionEstablishedResult result = (ConnectionEstablishedResult) params[1];
+						ServerMessage message = (ServerMessage) params[1];
+						ConnectionEstablishedResult result = (ConnectionEstablishedResult) params[2];
 
-						event.handle(session, result);
+						event.handle(session, message, result);
 
 						return null;
 					}
@@ -136,9 +137,9 @@ public final class ConnectionEventHandler {
 					@Override
 					public Object dispatch(Object... params) {
 						Session session = (Session) params[0];
-						ConnectionDisconnectedResult result = (ConnectionDisconnectedResult) params[1];
+						ConnectionDisconnectMode mode = (ConnectionDisconnectMode) params[1];
 
-						event.handle(session, result);
+						event.handle(session, mode);
 
 						return null;
 					}

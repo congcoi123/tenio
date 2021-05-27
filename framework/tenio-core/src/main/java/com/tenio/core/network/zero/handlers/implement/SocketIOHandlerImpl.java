@@ -28,6 +28,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
@@ -53,7 +54,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
 		if (!session.isConnected()) {
-			__eventManager.emit(ServerEvent.SESSION_REQUESTS_CONNECTION, session, binary);
+			__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, binary);
 		} else {
 			__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
 		}
@@ -72,7 +73,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	@Override
 	public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
 		Session session = __sessionManager.createSocketSession(socketChannel, selectionKey);
-		__eventManager.emit(ServerEvent.SESSION_WAS_CREATED, session);
+		__eventManager.emit(ServerEvent.SESSION_CREATED, session);
 	}
 
 	@Override
@@ -88,9 +89,9 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 		}
 
 		try {
-			session.close();
+			session.close(ConnectionDisconnectMode.LOST);
 		} catch (IOException e) {
-			error(e, "Session: ", session.toString());
+			error(e, "Session closed with error: ", session.toString());
 			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, e);
 		} finally {
 			session = null;

@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
@@ -58,9 +59,11 @@ public interface PlayerManager extends Manager {
 
 	void removePlayerBySession(Session session) throws RemovedNonExistentPlayerException;
 
-	void disconnectPlayerByName(String playerName) throws IllegalArgumentException, IOException;
+	void disconnectPlayerByName(String playerName, ConnectionDisconnectMode mode)
+			throws IllegalArgumentException, IOException;
 
-	void disconnectPlayerBySession(Session session) throws IllegalArgumentException, IOException;
+	void disconnectPlayerBySession(Session session, ConnectionDisconnectMode mode)
+			throws IllegalArgumentException, IOException;
 
 	boolean containsPlayerName(String playerName);
 

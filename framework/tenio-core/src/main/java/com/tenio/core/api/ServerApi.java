@@ -23,12 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
-import com.tenio.common.data.ZeroObject;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
-import com.tenio.core.entities.defines.results.PlayerDisconnectedResult;
-import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
@@ -38,9 +39,9 @@ import com.tenio.core.network.entities.session.Session;
 // TODO: Add description
 public interface ServerApi {
 
-	void login(Player player);
+	void login(String playerName);
 
-	void login(Player player, Session session);
+	void loginWithSession(String playerName, Session session);
 
 	void logout(Player player);
 
@@ -48,9 +49,9 @@ public interface ServerApi {
 
 	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
 
-	void disconnectPlayer(Player player, PlayerDisconnectedResult disconnectedReason);
+	void disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode);
 
-	void disconnectSession(Session session);
+	void disconnectSession(Session session, ConnectionDisconnectMode disconnectMode);
 
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
@@ -74,12 +75,12 @@ public interface ServerApi {
 
 	void switchSpectatorToPlayer(Player player, Room room);
 
-	void leaveRoom(Player player, PlayerLeftRoomResult leftRoomReason);
+	void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode);
 
 	void removeRoom(Room room);
 
-	void sendPublicMessage(Room room, Player sender, ZeroObject message);
+	void sendPublicMessage(Room room, Player sender, ServerMessage message);
 
-	void sendPrivateMessage(Player sender, Player recipient, ZeroObject message);
+	void sendPrivateMessage(Player sender, Player recipient, ServerMessage message);
 
 }
