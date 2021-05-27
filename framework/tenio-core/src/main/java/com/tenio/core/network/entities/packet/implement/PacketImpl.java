@@ -50,7 +50,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 	private Collection<Session> __recipients;
 	private byte[] __fragmentBuffer;
 
-	public static PacketImpl newInstance() {
+	public static Packet newInstance() {
 		return new PacketImpl();
 	}
 

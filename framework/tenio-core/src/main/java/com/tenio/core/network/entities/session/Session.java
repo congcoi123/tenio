@@ -73,6 +73,8 @@ public interface Session {
 	SelectionKey getSelectionKey();
 
 	void setSelectionKey(SelectionKey selectionKey);
+	
+	void createPacketSocketHandle();
 
 	PacketReadState getPacketReadState();
 

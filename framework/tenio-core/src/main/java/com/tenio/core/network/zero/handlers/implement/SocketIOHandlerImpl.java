@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
@@ -53,6 +54,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
+		trace("SOCKET RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
 		if (!session.isConnected()) {
 			__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, binary);
 		} else {

@@ -194,9 +194,7 @@ public final class SessionImpl implements Session {
 
 		if (socketChannel.socket() != null && !socketChannel.socket().isClosed()) {
 			__transportType = TransportType.TCP;
-			__packetReadState = PacketReadState.WAIT_NEW_PACKET;
-			__processedPacket = ProcessedPacket.newInstance();
-			__pendingPacket = PendingPacket.newInstance();
+			createPacketSocketHandle();
 
 			__socketChannel = socketChannel;
 
@@ -208,6 +206,13 @@ public final class SessionImpl implements Session {
 			__clientAddress = remoteAdress.getHostAddress();
 			__clientPort = socketAddress.getPort();
 		}
+	}
+
+	@Override
+	public void createPacketSocketHandle() {
+		__packetReadState = PacketReadState.WAIT_NEW_PACKET;
+		__processedPacket = ProcessedPacket.newInstance();
+		__pendingPacket = PendingPacket.newInstance();
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 	@Override
 	public void subscribe() {
 		__eventManager.on(ServerEvent.SERVER_STARTED, params -> {
-			start();
+			// do nothing
 			return null;
 		});
 
@@ -189,7 +189,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 	}
 
-	// FIXME: Needs to be considered 
+	// FIXME: Needs to be considered
 	private void __processSessionWillBeClosed(Request request) {
 		var session = request.getSender();
 		var connectionClosedMode = (ConnectionDisconnectMode) request
@@ -251,6 +251,11 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			player.getSession().setDatagramChannel((DatagramChannel) datagramChannel);
 			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player, AttachedConnectionResult.SUCCESS);
 		}
+	}
+	
+	@Override
+	public String getName() {
+		return "internal";
 	}
 
 	@Override

@@ -21,24 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1.injection.handler;
+package com.tenio.example.example1.handlers;
 
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.extension.events.EventPlayerLoggedinResult;
 
 /**
  * @author kong
  */
 @Component
-public final class ConnectionEstablishedHandler extends AbstractExtension
-		implements EventConnectionEstablishedResult {
+public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
 
 	@Override
-	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+	public void handle(Player player, PlayerLoggedinResult result) {
+		// TODO Auto-generated method stub
 
 	}
 

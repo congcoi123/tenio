@@ -71,7 +71,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 		for (int i = 0; i < __executorSize; i++) {
 			__executor.execute(this);
 		}
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -111,11 +111,13 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 		info("ENGINE START", buildgen("engine-", getName(), "-", __id));
 		__setThreadName();
 
-		while (__activated) {
-			onRunning();
+		while (true) {
+			if (__activated) {
+				onRunning();
+			}
 		}
 
-		info("ENGINE STOPPING", buildgen("engine-", getName(), "-", __id));
+		// info("ENGINE STOPPING", buildgen("engine-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {

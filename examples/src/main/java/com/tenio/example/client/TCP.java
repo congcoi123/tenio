@@ -27,14 +27,20 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.core.configuration.constant.CoreConstants;
-import com.tenio.core.network.utility.MessagePackerUtitlity;
+import com.tenio.common.data.elements.CommonObject;
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.network.entities.packet.implement.PacketImpl;
+import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.network.entities.session.implement.SessionImpl;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder;
 
 /**
  * Create an object for handling a socket connection. It is used to send
@@ -43,23 +49,18 @@ import com.tenio.core.network.utility.MessagePackerUtitlity;
  * @author kong
  * 
  */
-public final class TCP {
+public final class TCP implements PacketDecoderResultListener {
+
+	private static final String LOCAL_HOST = "localhost";
 
 	private ISocketListener __listener;
 	private Future<?> __future;
 	private Socket __socket;
 	private DataOutputStream __out;
 	private DataInputStream __in;
-
-	/**
-	 * The size of the received packet
-	 */
-	private short __dataSize = 0;
-	/**
-	 * This flag is used to determine how many numbers of received bytes can be used
-	 * for one packet's header (that contains the packet's length)
-	 */
-	private boolean __flagRecvHeader = true;
+	private Session __session;
+	private BinaryPacketEncoder __encoder;
+	private BinaryPacketDecoder __decoder;
 
 	/**
 	 * Listen in a port on the local machine
@@ -68,9 +69,15 @@ public final class TCP {
 	 */
 	public TCP(int port) {
 		try {
-			__socket = new Socket("localhost", port);
+			__socket = new Socket(LOCAL_HOST, port);
 			__out = new DataOutputStream(__socket.getOutputStream());
 			__in = new DataInputStream(__socket.getInputStream());
+
+			__session = SessionImpl.newInstance();
+			__session.createPacketSocketHandle();
+
+			__encoder = new DefaultBinaryPacketEncoder();
+			__decoder = new DefaultBinaryPacketDecoder();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,11 +88,13 @@ public final class TCP {
 	 * 
 	 * @param message the desired message, see {@link CommonObject}
 	 */
-	public void send(CommonObject message) {
+	public void send(ServerMessage message) {
 		// convert message object to bytes data
-		var pack = MsgPackConverter.serialize(message);
+		var packet = PacketImpl.newInstance();
+		packet.setData(message.getData().toBinary());
+		packet = __encoder.encode(packet);
 		// attach the packet's length to packet's header
-		var bytes = MessagePackerUtitlity.pack(pack);
+		var bytes = packet.getData();
 		try {
 			__out.write(bytes);
 			__out.flush();
@@ -106,49 +115,13 @@ public final class TCP {
 			var buffer = new byte[10240];
 			try {
 				while (__in.read(buffer) > 0) {
-					__onRecvData(buffer);
+					__decoder.decode(__session, buffer);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
 			}
 		});
-	}
-
-	private void __onRecvData(byte[] bytes) {
-		if (bytes.length <= 0) {
-			return;
-		}
-
-		if (__flagRecvHeader) {
-			__updateRecvHeaderData(bytes);
-		} else {
-			__updateRecvData(bytes);
-		}
-	}
-
-	private void __updateRecvHeaderData(byte[] bytes) {
-		if (bytes.length >= CoreConstants.HEADER_BYTES) { // header length
-			var header = Arrays.copyOfRange(bytes, 0, CoreConstants.HEADER_BYTES);
-			__dataSize = MessagePackerUtitlity.byteToShort(header); // network to host short
-			__flagRecvHeader = false;
-			// package = |2 bytes header| <content bytes> |
-			var data = Arrays.copyOfRange(bytes, CoreConstants.HEADER_BYTES, __dataSize + CoreConstants.HEADER_BYTES);
-			__onRecvData(data); // recursion
-		}
-	}
-
-	private void __updateRecvData(byte[] bytes) {
-		if (bytes.length >= __dataSize) {
-			__onRecvMessage(bytes);
-			__flagRecvHeader = true; // reset header count
-		}
-	}
-
-	private void __onRecvMessage(byte[] bytes) {
-		// convert a received array of bytes to a message
-		var message = MsgPackConverter.unserialize(bytes);
-		__listener.onReceivedTCP(message);
 	}
 
 	/**
@@ -161,6 +134,22 @@ public final class TCP {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void resultFrame(Session session, byte[] binary) {
+		var data = ZeroObjectImpl.newInstance(binary);
+		__listener.onReceivedTCP(ServerMessage.newInstance().setData(data));
+	}
+
+	@Override
+	public void updateDroppedPackets(long numberPackets) {
+		// do nothing
+	}
+
+	@Override
+	public void updateReadPackets(long numberPackets) {
+		// do nothing
 	}
 
 }

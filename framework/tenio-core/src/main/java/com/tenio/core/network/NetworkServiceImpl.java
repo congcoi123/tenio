@@ -28,12 +28,12 @@ import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
 public final class NetworkServiceImpl implements NetworkService {
 
-	private final JettyHttpService __httpService;
-	private final NettyWebSocketService __websocketService;
-	private final ZeroSocketService __socketService;
-	private final SessionManager __sessionManager;
-	private final NetworkReaderStatistic __networkReaderStatistic;
-	private final NetworkWriterStatistic __networkWriterStatistic;
+	private JettyHttpService __httpService;
+	private NettyWebSocketService __websocketService;
+	private ZeroSocketService __socketService;
+	private SessionManager __sessionManager;
+	private NetworkReaderStatistic __networkReaderStatistic;
+	private NetworkWriterStatistic __networkWriterStatistic;
 
 	public static NetworkService newInstance(EventManager eventManager) {
 		return new NetworkServiceImpl(eventManager);
@@ -47,6 +47,12 @@ public final class NetworkServiceImpl implements NetworkService {
 		__sessionManager = SessionManagerImpl.newInstance(eventManager);
 		__networkReaderStatistic = NetworkReaderStatistic.newInstannce();
 		__networkWriterStatistic = NetworkWriterStatistic.newInstance();
+		
+		__websocketService.setSessionManager(__sessionManager);
+		
+		__socketService.setSessionManager(__sessionManager);
+		__socketService.setNetworkReaderStatistic(__networkReaderStatistic);
+		__socketService.setNetworkWriterStatistic(__networkWriterStatistic);
 	}
 
 	@Override
@@ -65,56 +71,62 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-
+		__httpService.resume();
+		__websocketService.resume();
+		__socketService.resume();
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-
+		__httpService.pause();
+		__websocketService.pause();
+		__socketService.pause();
 	}
 
 	@Override
 	public void halt() {
-		// TODO Auto-generated method stub
-
+		__httpService.halt();
+		__websocketService.halt();
+		__socketService.halt();
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		__httpService.destroy();
+		__websocketService.destroy();
+		__socketService.destroy();
 
+		__httpService = null;
+		__websocketService = null;
+		__socketService = null;
+
+		__networkReaderStatistic = null;
+		__networkWriterStatistic = null;
 	}
 
 	@Override
 	public boolean isActivated() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "network-service";
 	}
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void setHttpPort(int port) {
-		// TODO Auto-generated method stub
-
+		__httpService.setPort(port);
 	}
 
 	@Override
 	public void setHttpPathConfigs(List<PathConfig> pathConfigs) {
-		// TODO Auto-generated method stub
-
+		__httpService.setPathConfigs(pathConfigs);
 	}
 
 	@Override
@@ -129,26 +141,22 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void setWebsocketConsumerWorkers(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__websocketService.setConsumerWorkerSize(workerSize);
 	}
 
 	@Override
 	public void setWebsocketProducerWorkers(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__websocketService.setProducerWorkerSize(workerSize);
 	}
 
 	@Override
 	public void setWebsocketSenderBufferSize(int bufferSize) {
-		// TODO Auto-generated method stub
-
+		__websocketService.setSenderBufferSize(bufferSize);
 	}
 
 	@Override
 	public void setWebsocketReceiverBufferSize(int bufferSize) {
-		// TODO Auto-generated method stub
-
+		__websocketService.setReceiverBufferSize(bufferSize);
 	}
 
 	@Override
@@ -158,38 +166,32 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void setSocketAcceptorWorkers(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setAcceptorWorkerSize(workerSize);
 	}
 
 	@Override
 	public void setSocketReaderWorkers(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setReaderWorkerSize(workerSize);
 	}
 
 	@Override
 	public void setSocketWriterWorkers(int workerSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setWriterWorkerSize(workerSize);
 	}
 
 	@Override
 	public void setSocketAcceptorBufferSize(int bufferSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setAcceptorBufferSize(bufferSize);
 	}
 
 	@Override
 	public void setSocketReaderBufferSize(int bufferSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setReaderBufferSize(bufferSize);
 	}
 
 	@Override
 	public void setSocketWriterBufferSize(int bufferSize) {
-		// TODO Auto-generated method stub
-
+		__socketService.setWriterBufferSize(bufferSize);
 	}
 
 	@Override
@@ -219,6 +221,16 @@ public final class NetworkServiceImpl implements NetworkService {
 	@Override
 	public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
 		__socketService.setPacketDecoder(packetDecoder);
+	}
+
+	@Override
+	public NetworkReaderStatistic getNetworkReaderStatistic() {
+		return __networkReaderStatistic;
+	}
+
+	@Override
+	public NetworkWriterStatistic getNetworkWriterStatistic() {
+		return __networkWriterStatistic;
 	}
 
 	@Override

@@ -33,10 +33,11 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.msgpack.MsgPackConverter;
-import com.tenio.common.utility.OsUtility;
-import com.tenio.common.utility.OsUtility.OSType;
+import com.tenio.common.data.elements.CommonObject;
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.utilities.OsUtility;
+import com.tenio.common.utilities.OsUtility.OSType;
+import com.tenio.core.entities.data.ServerMessage;
 
 /**
  * Create an object for handling a Datagram socket connection. It is used to
@@ -99,8 +100,8 @@ public final class UDP {
 	 * 
 	 * @param message the desired message, see {@link CommonObject}
 	 */
-	public void send(CommonObject message) {
-		var pack = MsgPackConverter.serialize(message);
+	public void send(ServerMessage message) {
+		var pack = message.getData().toBinary();
 		var request = new DatagramPacket(pack, pack.length, __address, __port);
 		try {
 			__socket.send(request);
@@ -122,8 +123,8 @@ public final class UDP {
 					byte[] buffer = new byte[10240];
 					var response = new DatagramPacket(buffer, buffer.length);
 					__socket.receive(response);
-					var message = MsgPackConverter.unserialize(buffer);
-					listener.onReceivedUDP(message);
+					var data = ZeroObjectImpl.newInstance(buffer);
+					listener.onReceivedUDP(ServerMessage.newInstance().setData(data));
 				} catch (IOException e) {
 					e.printStackTrace();
 					return;

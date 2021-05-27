@@ -156,6 +156,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 	private void __startServices() {
 		__networkService.start();
 		__scheduleService.start();
+		__internalProcessorService.start();
 	}
 
 	private void __setupScheduleService(Configuration configuration) {
@@ -240,6 +241,9 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		binaryPacketDecoder.setCompressor(binaryPacketCompressor);
 		binaryPacketDecoder.setEncrypter(binaryPacketEncrypter);
+		
+		__networkService.setPacketDecoder(binaryPacketDecoder);
+		__networkService.setPacketEncoder(binaryPacketEncoder);
 	}
 
 	private void __setupInternalProcessorService(Configuration configuration) {

@@ -31,6 +31,7 @@ import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.entities.protocols.Response;
 
 /**
@@ -48,7 +49,7 @@ public interface Server {
 	 */
 	void start(Configuration configuration, EventHandler eventHandler)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException;
+			InvocationTargetException, NoSuchMethodException, SecurityException, ServiceRuntimeException;
 
 	/**
 	 * Shut down the server and close all services

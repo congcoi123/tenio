@@ -23,25 +23,18 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.common.data.element.CommonObjectArray;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.entity.backup.EntityProcesser;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.IExtension;
+import com.tenio.core.bootstrap.annotations.Bootstrap;
 import com.tenio.example.server.TestConfiguration;
 
 /**
- * This class shows how a server handle messages that came from a client
+ * This class shows how a server handle messages that came from a client with DI
  * 
  * @author kong
  *
  */
+@Bootstrap
 public final class TestServerLogin extends AbstractApp {
 
 	/**
@@ -49,12 +42,7 @@ public final class TestServerLogin extends AbstractApp {
 	 */
 	public static void main(String[] params) {
 		var game = new TestServerLogin();
-		game.start();
-	}
-
-	@Override
-	public IExtension getExtension() {
-		return new Extenstion();
+		game.start(TestServerLogin.class);
 	}
 
 	@Override
@@ -63,81 +51,12 @@ public final class TestServerLogin extends AbstractApp {
 	}
 
 	@Override
-	public void onStarted(IExtension extension, Configuration configuration) {
+	public void onStarted(Configuration configuration) {
 
 	}
 
 	@Override
 	public void onShutdown() {
-
-	}
-
-	/**
-	 * Your own logic handler class
-	 */
-	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
-
-		@Override
-		public void initialize(Configuration configuration) {
-			_on(ExtensionEvent.CONNECTION_ESTABLISHED_SUCCESS, params -> {
-				var connection = _getConnection(params[0]);
-				var message = _getCommonObject(params[1]);
-
-				// Allow the connection login into server (become a player)
-				var playerName = message.getString("u");
-				// Should confirm that credentials by data from database or other services, here
-				// is only for testing
-				_playerApi.login(new PlayerLogin(playerName), connection);
-
-				return null;
-			});
-
-			_on(ExtensionEvent.PLAYER_LOGINED_SUCCESS, params -> {
-				// The player has login successful
-				var player = (PlayerLogin) _getPlayer(params[0]);
-
-				try {
-					_info("PLAYER BACKUP", EntityProcesser.exportToJSON(player));
-				} catch (Exception e) {
-					_error(e, player.getName());
-				}
-
-				// Now you can send messages to the client
-				_taskApi.run(player.getName(), Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-
-					// Only sent 10 messages
-					if (player.counter >= 10) {
-						_taskApi.kill(player.getName());
-						_playerApi.logOut(player);
-					}
-
-					player.counter++;
-
-					// Sending, the data need to be packed
-					var data = _messageApi.getMessageObjectArray();
-					_messageApi.sendToPlayer(player, PlayerLogin.MAIN_CHANNEL, "c", "message", "d",
-							data.put("H").put("3").put("L").put("O").put(true)
-									.put(CommonObjectArray.newInstance().put("Sub").put("Value").put(100)));
-
-					// Attempt to send internal message
-					_messageApi.sendToInternalServer(player, 1,
-							CommonObject.newInstance().add("internal", "this is a message in external server"));
-
-				}, 0, 1, TimeUnit.SECONDS));
-
-				return null;
-			});
-
-			_on(ExtensionEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
-				var index = _getInteger(params[1]);
-				var message = _getCommonObject(params[2]);
-
-				_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", index, " Content: ", message));
-
-				return null;
-			});
-
-		}
 
 	}
 

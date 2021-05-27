@@ -25,7 +25,8 @@ package com.tenio.example.example1;
 
 import java.security.SecureRandom;
 
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.example.client.ISocketListener;
 import com.tenio.example.client.TCP;
 
@@ -66,16 +67,16 @@ public final class TestClientLogin implements ISocketListener {
 		__tcp.receive(this);
 
 		// send a login request
-		var message = CommonObject.newInstance();
-		message.put("u", __generateRandomString(5));
-		__tcp.send(message);
-		System.err.println("Login Request -> " + message);
+		var data = ZeroObjectImpl.newInstance();
+		data.putString("u", __generateRandomString(5));
+		__tcp.send(ServerMessage.newInstance().setData(data));
+		System.err.println("Login Request -> " + data.toString());
 
 	}
 
 	@Override
-	public void onReceivedTCP(CommonObject message) {
-		System.out.println("[RECV FROM SERVER TCP] -> " + message);
+	public void onReceivedTCP(ServerMessage message) {
+		System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
 	}
 
 	private String __generateRandomString(int length) {

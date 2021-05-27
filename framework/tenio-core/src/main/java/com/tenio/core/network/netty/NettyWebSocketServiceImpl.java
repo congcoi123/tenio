@@ -195,7 +195,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 
 	@Override
 	public void initialize() {
-		throw new UnsupportedOperationException();
+		// do nothing
 	}
 
 	@Override
@@ -209,12 +209,12 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 
 	@Override
 	public void resume() {
-		throw new UnsupportedOperationException();
+		// do nothing
 	}
 
 	@Override
 	public void pause() {
-		throw new UnsupportedOperationException();
+		// do nothing
 	}
 
 	@Override

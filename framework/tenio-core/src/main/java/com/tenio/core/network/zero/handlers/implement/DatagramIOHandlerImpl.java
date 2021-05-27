@@ -25,6 +25,7 @@ package com.tenio.core.network.zero.handlers.implement;
 
 import java.nio.channels.DatagramChannel;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
@@ -45,11 +46,13 @@ public final class DatagramIOHandlerImpl extends AbstractIOHandler implements Da
 
 	@Override
 	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
+		trace("DATAGRAM RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
 		__eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_BINARY, binary);
 	}
 
 	@Override
 	public void sessionRead(Session session, byte[] binary) {
+		trace("DATAGRAM RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
 		__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
 	}
 

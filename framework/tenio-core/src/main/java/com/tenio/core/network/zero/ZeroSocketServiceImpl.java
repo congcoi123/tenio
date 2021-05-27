@@ -73,6 +73,10 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 		__setupAcceptor();
 		__setupReader();
 		__setupWriter();
+		
+		__readerEngine.initialize();
+		__writerEngine.initialize();
+		__acceptorEngine.initialize();
 	}
 
 	@Override

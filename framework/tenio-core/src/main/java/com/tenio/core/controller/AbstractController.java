@@ -111,18 +111,20 @@ public abstract class AbstractController extends AbstractManager implements Cont
 		info("CONTROLLER START", buildgen("controller-", getName(), "-", __id));
 		__setThreadName();
 
-		while (__activated) {
-			try {
-				var request = __requestQueue.take();
-				processRequest(request);
-			} catch (InterruptedException e1) {
-				error(e1);
-			} catch (Throwable e2) {
-				error(e2);
+		while (true) {
+			if (__activated) {
+				try {
+					var request = __requestQueue.take();
+					processRequest(request);
+				} catch (InterruptedException e1) {
+					error(e1);
+				} catch (Throwable e2) {
+					error(e2);
+				}
 			}
 		}
 
-		info("CONTROLLER STOPPING", buildgen("controller-", getName(), "-", __id));
+		// info("CONTROLLER STOPPING", buildgen("controller-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {
@@ -206,7 +208,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	public float getPercentageUsedRequestQueue() {
 		return __maxQueueSize == 0 ? 0.0f : (float) (__requestQueue.size() * 100) / (float) __maxQueueSize;
 	}
-	
+
 	public abstract void subscribe();
 
 	public abstract void processRequest(Request request);

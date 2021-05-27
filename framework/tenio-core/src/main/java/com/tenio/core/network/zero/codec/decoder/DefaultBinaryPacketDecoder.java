@@ -51,25 +51,25 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 			while (data.length > 0) {
 				var process = session.getProcessedPacket();
 				if (readState == PacketReadState.WAIT_NEW_PACKET) {
-					process = this.handleNewPacket(session, data);
+					process = __handleNewPacket(session, data);
 					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE) {
-					process = this.handleDataSize(session, data);
+					process = __handleDataSize(session, data);
 					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE_FRAGMENT) {
-					process = this.handleDataSizeFragment(session, data);
+					process = __handleDataSizeFragment(session, data);
 					readState = process.getPacketReadState();
 					data = process.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA) {
-					process = this.handlePacketData(session, data);
+					process = __handlePacketData(session, data);
 					readState = process.getPacketReadState();
 					data = process.getData();
 				}
@@ -97,7 +97,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 		__encrypter = encrypter;
 	}
 
-	private ProcessedPacket handleNewPacket(Session session, byte[] data) {
+	private ProcessedPacket __handleNewPacket(Session session, byte[] data) {
 		var packetHeader = CodecUtility.decodeFirstHeaderByte(data[0]);
 		session.getPendingPacket().setPacketHeader(packetHeader);
 		data = ByteUtility.resizeBytesArray(data, 1, data.length - 1);
@@ -109,7 +109,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 		return processedPacket;
 	}
 
-	private ProcessedPacket handleDataSize(Session session, byte[] data) {
+	private ProcessedPacket __handleDataSize(Session session, byte[] data) {
 		var packetReadState = PacketReadState.WAIT_DATA;
 
 		var pendingPacket = session.getPendingPacket();
@@ -156,7 +156,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 		return processedPacket;
 	}
 
-	private ProcessedPacket handleDataSizeFragment(Session session, byte[] data) {
+	private ProcessedPacket __handleDataSizeFragment(Session session, byte[] data) {
 		var packetReadState = PacketReadState.WAIT_DATA_SIZE_FRAGMENT;
 		var pendingPacket = session.getPendingPacket();
 		var headerBytesBuffer = pendingPacket.getBuffer();
@@ -207,7 +207,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 		return processedPacket;
 	}
 
-	private ProcessedPacket handlePacketData(Session session, byte[] data) throws Exception {
+	private ProcessedPacket __handlePacketData(Session session, byte[] data) throws Exception {
 		var packetReadState = PacketReadState.WAIT_DATA;
 		var pendingPacket = session.getPendingPacket();
 		var dataBuffer = pendingPacket.getBuffer();

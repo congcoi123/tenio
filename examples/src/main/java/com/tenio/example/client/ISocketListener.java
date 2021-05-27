@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.example.client;
 
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.core.entities.data.ServerMessage;
 
 /**
  * This interface helps you listen to all messages these came from the server's
@@ -37,8 +37,8 @@ public interface ISocketListener {
 	/**
 	 * Listen for a new message
 	 * 
-	 * @param message the received message, see {@link CommonObject}
+	 * @param message the received message
 	 */
-	void onReceivedTCP(CommonObject message);
+	void onReceivedTCP(ServerMessage message);
 
 }

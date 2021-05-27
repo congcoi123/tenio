@@ -21,45 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1;
+package com.tenio.example.example1.handlers;
 
-import com.tenio.core.entity.backup.Backup;
-import com.tenio.core.entity.backup.annotation.Column;
-import com.tenio.core.entity.backup.annotation.Entity;
-import com.tenio.core.entity.implement.AbstractPlayer;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventFetchedCcuInfo;
 
 /**
- * The player in server
- * 
  * @author kong
- *
  */
-@Entity
-public final class PlayerLogin extends AbstractPlayer implements Backup<PlayerLogin> {
-
-	public static final int MAIN_CHANNEL = 0;
-
-	/**
-	 * For counting the number of messages that sent to this player
-	 */
-
-	@Column(name = "counter")
-	public volatile int counter;
-
-	public PlayerLogin(String name) {
-		super(name);
-
-		counter = 0;
-	}
+@Component
+public final class FetchedCcuInfoHandler extends AbstractExtension implements EventFetchedCcuInfo {
 
 	@Override
-	public boolean backup() {
-		return false;
-	}
+	public void handle(int numberPlayers) {
 
-	@Override
-	public PlayerLogin restore() {
-		return null;
 	}
 
 }
