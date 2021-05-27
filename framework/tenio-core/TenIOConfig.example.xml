@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- The MIT License Copyright (c) 2016-2021 kong <congcoi123@gmail.com> 
-	Permission is hereby granted, free of charge, to any person obtaining a copy 
-	of this software and associated documentation files (the "Software"), to 
-	deal in the Software without restriction, including without limitation the 
-	rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-	sell copies of the Software, and to permit persons to whom the Software is 
-	furnished to do so, subject to the following conditions: The above copyright 
-	notice and this permission notice shall be included in all copies or substantial 
-	portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY 
-	OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
-	OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-	DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-	DEALINGS IN THE SOFTWARE. -->
-
 <Server>
 
 	<Properties>
@@ -23,25 +6,19 @@
 		<Property name="server-name">TenIO Core</Property>
 		<!-- The server id (module name) -->
 		<Property name="server-id">tenio-core</Property>
-		<!-- This current version code of your server in integer type (can be compared) -->
+		<!-- The current version code of your server in integer type (comparable) -->
 		<Property name="version-code">1</Property>
-		<!-- This current version name of your server in string type -->
+		<!-- The current version name of your server in string type -->
 		<Property name="version-name">1.0</Property>
 	</Properties>
 
 	<Implements>
-		<Class name="packet-encrypter">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter
-		</Class>
-		<Class name="packet-compressor">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor
-		</Class>
-		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder
-		</Class>
-		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder
-		</Class>
-		<Class name="connection-filter">com.tenio.core.network.security.filter.DefaultConnectionFilter
-		</Class>
-		<Class name="packet-queue-policy">com.tenio.core.network.entities.packet.policy.DefaultPacketQueuePolicy
-		</Class>
+		<Class name="packet-encrypter">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter</Class>
+		<Class name="packet-compressor">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
+		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder</Class>
+		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder</Class>
+		<Class name="connection-filter">com.tenio.core.network.security.filter.DefaultConnectionFilter</Class>
+		<Class name="packet-queue-policy">com.tenio.core.network.entities.packet.policy.DefaultPacketQueuePolicy</Class>
 	</Implements>
 
 	<Network>
@@ -116,7 +93,7 @@
 		</Properties>
 	</Configuration>
 
-	<!-- Your customize configurations -->
+	<!-- Your customizable configurations -->
 	<Extension>
 		<Properties>
 			<Property name="custom-value-1">String</Property>

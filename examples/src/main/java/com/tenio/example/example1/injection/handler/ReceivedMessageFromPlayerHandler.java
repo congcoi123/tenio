@@ -23,22 +23,22 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.entity.Player;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
 
 /**
  * @author kong
  */
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractExtensionHandler
+public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 		implements EventReceivedMessageFromPlayer {
 
 	@Override
-	public void handle(Player player, int connectionIndex, CommonObject message) {
-		_info("RECEIVED INTERNAL MESSAGE", _buildgen("Index: ", connectionIndex, " Content: ", message));
+	public void handle(Player player, ServerMessage message) {
+
 	}
 
 }

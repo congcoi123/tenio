@@ -42,10 +42,10 @@ public final class TestConfiguration extends CoreConfiguration {
 	}
 
 	@Override
-	protected void _extend(Map<String, String> extProperties) {
+	protected void __extend(Map<String, String> extProperties) {
 		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
 			var paramName = entry.getKey();
-			_push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+			__push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
 		}
 	}
 

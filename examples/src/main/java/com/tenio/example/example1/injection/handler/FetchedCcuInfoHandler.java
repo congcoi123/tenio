@@ -21,46 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap;
+package com.tenio.example.example1.injection.handler;
 
-import com.tenio.core.bootstrap.annotations.Autowired;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.bootstrap.handlers.ConnectionEventHandler;
-import com.tenio.core.bootstrap.handlers.HttpEventHandler;
-import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
-import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
-import com.tenio.core.bootstrap.handlers.RoomEventHandler;
-import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventFetchedCcuInfo;
 
 /**
  * @author kong
  */
 @Component
-//TODO: Add description
-public final class EventHandler {
+public final class FetchedCcuInfoHandler extends AbstractExtension implements EventFetchedCcuInfo {
 
-	@Autowired
-	private ConnectionEventHandler __connectionEventHandler;
-
-	@Autowired
-	private PlayerEventHandler __playerEventHandler;
-
-	@Autowired
-	private RoomEventHandler __roomEventHandler;
-
-	@Autowired
-	private HttpEventHandler __httpEventHandler;
-
-	@Autowired
-	private MixinsEventHandler __mixinsEventHandler;
-
-	public void initialize(EventManager eventManager) {
-
-		__connectionEventHandler.initialize(eventManager);
-		__playerEventHandler.initialize(eventManager);
-		__roomEventHandler.initialize(eventManager);
-		__httpEventHandler.initialize(eventManager);
-		__mixinsEventHandler.initialize(eventManager);
+	@Override
+	public void handle(int numberPlayers) {
 
 	}
 

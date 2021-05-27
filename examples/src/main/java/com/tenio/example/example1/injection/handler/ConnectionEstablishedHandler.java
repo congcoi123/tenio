@@ -23,19 +23,23 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.EventFetchedCcuNumber;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventConnectionEstablishedResult;
+import com.tenio.core.network.entities.session.Session;
 
 /**
  * @author kong
  */
 @Component
-public final class FetchedCcuNumberHandler extends AbstractExtensionHandler implements EventFetchedCcuNumber {
+public final class ConnectionEstablishedHandler extends AbstractExtension
+		implements EventConnectionEstablishedResult {
 
 	@Override
-	public void handle(int numberPlayers, int numberAlls) {
-		_info("FETCHED_CCU_NUMBER", numberPlayers);
+	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+
 	}
 
 }

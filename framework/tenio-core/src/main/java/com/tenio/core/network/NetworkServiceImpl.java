@@ -51,8 +51,9 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
-
+		__httpService.initialize();
+		__websocketService.initialize();
+		__socketService.initialize();
 	}
 
 	@Override

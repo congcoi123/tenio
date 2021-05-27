@@ -23,27 +23,22 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.injection.handler;
 
-import com.tenio.common.data.element.CommonObject;
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.event.EventConnectionEstablishedSuccess;
-import com.tenio.core.network.entity.session.Connection;
-import com.tenio.example.example1.PlayerLogin;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventPlayerLoggedinResult;
 
 /**
  * @author kong
  */
 @Component
-public final class ConnectionEstablishedSuccessHandler extends AbstractExtensionHandler
-		implements EventConnectionEstablishedSuccess {
+public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
 
 	@Override
-	public void handle(Connection connection, CommonObject message) {
-		// Allow the connection login into server (become a player)
-		var playerName = message.getString("u");
-		// Should confirm that credentials by data from database or other services, here
-		// is only for testing
-		_playerApi.login(new PlayerLogin(playerName), connection);
+	public void handle(Player player, PlayerLoggedinResult result) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

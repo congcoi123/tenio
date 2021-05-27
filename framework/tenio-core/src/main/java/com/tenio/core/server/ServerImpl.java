@@ -131,6 +131,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__setupNetworkService(configuration);
 		__setupScheduleService(configuration);
 
+		__initializeServices();
+
 		__internalProcessorService.subscribe();
 
 		eventHandler.initialize(__eventManager);
@@ -141,8 +143,14 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__eventManager.subscribe();
 
 		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
-		
+
 		info("SERVER", __serverName, "Started!");
+	}
+
+	private void __initializeServices() {
+		__networkService.initialize();
+		__scheduleService.initialize();
+		__internalProcessorService.initialize();
 	}
 
 	private void __startServices() {
@@ -172,7 +180,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 
 		var connectionFilterClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER).strip());
 		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz);
 
 		var httpConfig = (List<HttpConfig>) configuration.get(CoreConfigurationType.HTTP_CONFIGS);
@@ -206,23 +214,23 @@ public final class ServerImpl extends SystemLogger implements Server {
 				.setWebsocketUsingSSL(configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
 
 		var packetQueuePolicyClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_QUEUE_POLICY));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_QUEUE_POLICY).strip());
 		__networkService.setPacketQueuePolicy((Class<? extends PacketQueuePolicy>) packetQueuePolicyClazz);
 		__networkService.setPacketQueueSize(configuration.getInt(CoreConfigurationType.PROP_MAX_PACKET_QUEUE_SIZE));
 
 		var binaryPacketCompressorClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_COMPRESSOR));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_COMPRESSOR).strip());
 		var binaryPacketCompressor = (BinaryPacketCompressor) binaryPacketCompressorClazz.getDeclaredConstructor()
 				.newInstance();
 		var binaryPacketEncrypterClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCRYPTER));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCRYPTER).strip());
 		var binaryPacketEncrypter = (BinaryPacketEncrypter) binaryPacketEncrypterClazz.getDeclaredConstructor()
 				.newInstance();
 		var binaryPacketEncoderClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCODER));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCODER).strip());
 		var binaryPacketEncoder = (BinaryPacketEncoder) binaryPacketEncoderClazz.getDeclaredConstructor().newInstance();
 		var binaryPacketDecoderClazz = Class
-				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_DECODER));
+				.forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_DECODER).strip());
 		var binaryPacketDecoder = (BinaryPacketDecoder) binaryPacketDecoderClazz.getDeclaredConstructor().newInstance();
 
 		binaryPacketEncoder.setCompressionThresholdBytes(

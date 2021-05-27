@@ -25,8 +25,7 @@ package com.tenio.example.example1.injection;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.bootstrap.annotation.Bootstrap;
-import com.tenio.core.extension.IExtension;
+import com.tenio.core.bootstrap.annotations.Bootstrap;
 import com.tenio.example.server.TestConfiguration;
 
 /**
@@ -47,17 +46,12 @@ public final class TestServerLoginDI extends AbstractApp {
 	}
 
 	@Override
-	public IExtension getExtension() {
-		return null;
-	}
-
-	@Override
 	public TestConfiguration getConfiguration() {
 		return new TestConfiguration("TenIOConfig.xml");
 	}
 
 	@Override
-	public void onStarted(IExtension extension, Configuration configuration) {
+	public void onStarted(Configuration configuration) {
 
 	}
 
