@@ -28,9 +28,6 @@ import java.util.List;
 import com.tenio.core.network.defines.RestMethod;
 import com.tenio.core.network.defines.data.PathConfig;
 
-/**
- * @author kong
- */
 public final class DuplicatedUriAndMethodException extends RuntimeException {
 	/**
 	 * 

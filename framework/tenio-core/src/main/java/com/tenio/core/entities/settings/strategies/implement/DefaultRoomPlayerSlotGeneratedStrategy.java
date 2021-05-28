@@ -26,9 +26,6 @@ package com.tenio.core.entities.settings.strategies.implement;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
 
-/**
- * @author kong
- */
 public final class DefaultRoomPlayerSlotGeneratedStrategy implements RoomPlayerSlotGeneratedStrategy {
 
 	private Room __room;

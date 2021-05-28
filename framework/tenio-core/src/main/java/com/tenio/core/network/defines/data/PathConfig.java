@@ -25,9 +25,6 @@ package com.tenio.core.network.defines.data;
 
 import com.tenio.core.network.defines.RestMethod;
 
-/**
- * @author kong
- */
 public final class PathConfig {
 
 	private final String __name;

@@ -26,9 +26,6 @@ package com.tenio.core.exceptions;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 
-/**
- * @author kong
- */
 public final class AddedDuplicatedPlayerException extends RuntimeException {
 	/**
 	 * 

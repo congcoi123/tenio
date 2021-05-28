@@ -25,6 +25,7 @@ package com.tenio.core.network.netty.websocket;
 
 import java.io.IOException;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
@@ -43,8 +44,6 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
  * Receive all messages sent from clients. It converts serialize data to a
  * system's object for convenience and easy to use. It also handles the logic
  * for the processing of players and connections.
- * 
- * @author kong
  */
 public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 
@@ -110,6 +109,8 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			buffer.getBytes(buffer.readerIndex(), binary);
 			buffer.release();
 
+			__logger.trace("WEBSOCKET RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
+
 			Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
 
 			if (session == null) {
@@ -136,6 +137,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
 		if (session != null) {
+			__logger.error(cause, "Session: ", session.toString());
 			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, cause);
 		} else {
 			__logger.error(cause, "Exception was occured on channel: %s", ctx.channel().toString());

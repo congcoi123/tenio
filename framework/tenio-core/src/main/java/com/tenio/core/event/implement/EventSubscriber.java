@@ -29,10 +29,7 @@ import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
 
 /**
- * An object which creates a mapping between an event type with a subscriber
- * 
- * @author kong
- * 
+ * An object which creates a mapping between an event type with a subscriber.
  */
 @ThreadSafe
 public final class EventSubscriber {

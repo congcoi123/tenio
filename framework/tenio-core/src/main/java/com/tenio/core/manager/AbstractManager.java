@@ -26,9 +26,6 @@ package com.tenio.core.manager;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.event.implement.EventManager;
 
-/**
- * @author kong
- */
 public abstract class AbstractManager extends SystemLogger {
 
 	protected final EventManager __eventManager;

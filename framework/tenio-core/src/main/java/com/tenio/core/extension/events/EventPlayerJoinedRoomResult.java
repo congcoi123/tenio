@@ -27,9 +27,6 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
 
-/**
- * @author kong
- */
 public interface EventPlayerJoinedRoomResult {
 
 	void handle(Player player, Room room, PlayerJoinedRoomResult result);

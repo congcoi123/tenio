@@ -27,10 +27,6 @@ import com.tenio.core.exceptions.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface PacketQueuePolicy {
 
 	void applyPolicy(PacketQueue packetQueue, Packet packet) throws PacketQueuePolicyViolationException;

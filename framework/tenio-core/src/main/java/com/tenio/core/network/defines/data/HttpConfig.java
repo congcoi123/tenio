@@ -28,9 +28,6 @@ import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-/**
- * @author kong
- */
 @ThreadSafe
 public final class HttpConfig {
 

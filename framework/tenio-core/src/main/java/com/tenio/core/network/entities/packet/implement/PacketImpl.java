@@ -32,10 +32,6 @@ import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
 	private static AtomicLong __idCounter = new AtomicLong();
@@ -158,18 +154,29 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 		return __fragmentBuffer != null;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof Packet)) {
+			return false;
+		} else {
+			var packet = (Packet) object;
+			return getId() == packet.getId();
+		}
+	}
+
 	/**
 	 * It is generally necessary to override the <b>hashCode</b> method whenever
 	 * equals method is overridden, so as to maintain the general contract for the
 	 * hashCode method, which states that equal objects must have equal hash codes.
+	 * 
+	 * @see <a href="https://imgur.com/x6rEAZE">Formula</a>
 	 */
 	@Override
 	public int hashCode() {
-		int c = (int) __id + (int) (__createdTime ^ (__createdTime >>> 32)) + __priority.hashCode();
-
-		int hash = 3;
-		hash = 89 * hash + c;
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (__id ^ (__id >>> 32));
+		return result;
 	}
 
 	@Override

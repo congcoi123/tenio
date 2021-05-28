@@ -28,18 +28,10 @@ import com.tenio.core.network.defines.ResponsePriority;
 import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class DefaultPacketQueuePolicy implements PacketQueuePolicy {
 
 	private static final float THREE_QUARTERS_FULL = 75.0f;
 	private static final float NINETY_PERCENT_FULL = 90.0f;
-
-	public DefaultPacketQueuePolicy() {
-
-	}
 
 	@Override
 	public void applyPolicy(PacketQueue packetQueue, Packet packet) {

@@ -26,13 +26,17 @@ package com.tenio.core.network.defines;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public enum TransportType {
 
-	UNKNOWN("unknown"), TCP("tcp"), UDP("udp"), WEB_SOCKET("websocket"), HTTP("http");
+	UNKNOWN("unknown"),
+
+	TCP("tcp"),
+
+	UDP("udp"),
+
+	WEB_SOCKET("websocket"),
+
+	HTTP("http");
 
 	// Reverse-lookup map for getting a type from a value
 	private static final Map<String, TransportType> lookup = new HashMap<String, TransportType>();
@@ -43,19 +47,19 @@ public enum TransportType {
 		}
 	}
 
-	private final String value;
+	private final String __value;
 
 	private TransportType(final String value) {
-		this.value = value;
+		__value = value;
 	}
 
 	public final String getValue() {
-		return this.value;
+		return __value;
 	}
 
 	@Override
 	public final String toString() {
-		return this.name();
+		return name();
 	}
 
 	public static TransportType getByValue(String value) {

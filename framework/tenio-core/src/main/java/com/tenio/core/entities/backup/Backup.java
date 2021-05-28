@@ -29,10 +29,7 @@ package com.tenio.core.entities.backup;
  * object can be established to the corresponding one.
  *
  * @param <T> the template class
- * 
- * @author kong
  */
-//TODO: Add description
 public interface Backup<T> {
 
 	/**

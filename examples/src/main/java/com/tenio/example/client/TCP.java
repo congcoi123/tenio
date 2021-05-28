@@ -36,11 +36,13 @@ import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.network.entities.packet.implement.PacketImpl;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.entities.session.implement.SessionImpl;
+import com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder;
+import com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter;
 
 /**
  * Create an object for handling a socket connection. It is used to send
@@ -76,8 +78,17 @@ public final class TCP implements PacketDecoderResultListener {
 			__session = SessionImpl.newInstance();
 			__session.createPacketSocketHandle();
 
+			var binaryCompressor = new DefaultBinaryPacketCompressor();
+			var binaryEncrypter = new DefaultBinaryPacketEncrypter();
+
 			__encoder = new DefaultBinaryPacketEncoder();
+			__encoder.setCompressor(binaryCompressor);
+			__encoder.setEncrypter(binaryEncrypter);
+
 			__decoder = new DefaultBinaryPacketDecoder();
+			__decoder.setCompressor(binaryCompressor);
+			__decoder.setEncrypter(binaryEncrypter);
+			__decoder.setResultListener(this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

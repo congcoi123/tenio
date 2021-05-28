@@ -34,10 +34,6 @@ import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface PlayerManager extends Manager {
 
 	void addPlayer(Player player) throws AddedDuplicatedPlayerException;

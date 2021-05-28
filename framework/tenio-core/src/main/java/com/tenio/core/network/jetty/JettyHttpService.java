@@ -45,12 +45,6 @@ import com.tenio.core.network.jetty.servlet.PingServlet;
 import com.tenio.core.network.jetty.servlet.ServletManager;
 import com.tenio.core.service.Service;
 
-/**
- * The HTTP request and response handlers class
- * 
- * @author kong
- *
- */
 public final class JettyHttpService extends AbstractManager implements Service, Runnable {
 
 	private Server __server;
@@ -112,7 +106,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 	@Override
 	public void run() {
 		try {
-			info("HTTP SERVICE", buildgen("Name: ", getName(), " > Start at port: ", __port));
+			info("START SERVICE", getName());
 
 			__server.start();
 			__server.join();
@@ -156,22 +150,28 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
 	@Override
 	public void resume() {
-		throw new UnsupportedOperationException();
+		// do nothing
 	}
 
 	@Override
 	public void pause() {
-		throw new UnsupportedOperationException();
+		// do nothing
 	}
 
 	@Override
 	public void halt() {
-		throw new UnsupportedOperationException();
+		try {
+			__server.stop();
+			__executor.shutdownNow();
+		} catch (Exception e) {
+			error(e);
+		}
 	}
 
 	@Override
 	public void destroy() {
-		throw new UnsupportedOperationException();
+		__server = null;
+		__executor = null;
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
 	@Override
 	public String getName() {
-		return "jetty-http-service";
+		return "jetty-http";
 	}
 
 	@Override

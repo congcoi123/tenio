@@ -32,11 +32,7 @@ import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
 import com.tenio.core.bootstrap.handlers.RoomEventHandler;
 import com.tenio.core.event.implement.EventManager;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class EventHandler {
 
 	@Autowired

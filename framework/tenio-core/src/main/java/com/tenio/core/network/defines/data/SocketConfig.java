@@ -25,9 +25,6 @@ package com.tenio.core.network.defines.data;
 
 import com.tenio.core.network.defines.TransportType;
 
-/**
- * @author kong
- */
 public final class SocketConfig {
 
 	private final String __name;

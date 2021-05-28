@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 
-/**
- * @author kong
- */
 public interface EventAttachConnectionRequestValidation {
 
 	Player handle(ServerMessage message);

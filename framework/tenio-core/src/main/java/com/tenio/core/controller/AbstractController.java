@@ -35,10 +35,6 @@ import com.tenio.core.exceptions.RequestQueueFullException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.protocols.Request;
 
-/**
- * @author kong
- */
-// FIXME: Fix me
 public abstract class AbstractController extends AbstractManager implements Controller, Runnable {
 
 	private static final int DEFAULT_MAX_QUEUE_SIZE = 50;
@@ -100,15 +96,15 @@ public abstract class AbstractController extends AbstractManager implements Cont
 			}
 		}
 
-		info("CONTROLLER STOPPED", buildgen("controller-", getName(), "-", __id));
+		info("STOPPED SERVICE", buildgen("controller-", getName(), "-", __id));
 		destroy();
-		info("CONTROLLER DESTROYED", buildgen("controller-", getName(), "-", __id));
+		info("DESTROYED SERVICE", buildgen("controller-", getName(), "-", __id));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		info("CONTROLLER START", buildgen("controller-", getName(), "-", __id));
+		info("START SERVICE", buildgen("controller-", getName(), "-", __id));
 		__setThreadName();
 
 		while (true) {
@@ -123,8 +119,6 @@ public abstract class AbstractController extends AbstractManager implements Cont
 				}
 			}
 		}
-
-		// info("CONTROLLER STOPPING", buildgen("controller-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {

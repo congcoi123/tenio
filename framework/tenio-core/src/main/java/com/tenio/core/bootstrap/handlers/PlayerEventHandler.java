@@ -44,11 +44,7 @@ import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
 import com.tenio.core.extension.events.EventSendMessageToPlayer;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class PlayerEventHandler {
 
 	@AutowiredAcceptNull

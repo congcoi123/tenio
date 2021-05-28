@@ -29,11 +29,13 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.network.defines.ResponsePriority;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
-public interface Response extends Message {
+public interface Response {
+
+	byte[] getContent();
+
+	Response setContent(byte[] content);
+
+	Collection<Player> getPlayers();
 
 	Collection<Session> getRecipientSocketSessions();
 

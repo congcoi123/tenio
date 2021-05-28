@@ -77,6 +77,14 @@ public final class TestClientLogin implements ISocketListener {
 	@Override
 	public void onReceivedTCP(ServerMessage message) {
 		System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		var data = ZeroObjectImpl.newInstance();
+		data.putString("echo", "Hello from client");
+		__tcp.send(ServerMessage.newInstance().setData(data));
 	}
 
 	private String __generateRandomString(int length) {

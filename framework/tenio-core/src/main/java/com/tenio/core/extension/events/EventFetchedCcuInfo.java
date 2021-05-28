@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-/**
- * @author kong
- */
 public interface EventFetchedCcuInfo {
 
 	void handle(int numberPlayers);

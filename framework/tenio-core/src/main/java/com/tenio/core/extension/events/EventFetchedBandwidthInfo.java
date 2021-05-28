@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-/**
- * @author kong
- */
 public interface EventFetchedBandwidthInfo {
 
 	void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes, long writtenPackets,

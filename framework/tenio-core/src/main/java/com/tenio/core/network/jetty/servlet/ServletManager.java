@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import com.tenio.common.data.elements.CommonObject;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.defines.RestMethod;
@@ -41,9 +42,6 @@ import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.jetty.servlet.support.BaseProcessServlet;
 import com.tenio.core.network.jetty.servlet.support.BaseServlet;
 
-/**
- * @author kong
- */
 @ThreadSafe
 public final class ServletManager extends BaseServlet {
 	/**
@@ -52,6 +50,7 @@ public final class ServletManager extends BaseServlet {
 	private static final long serialVersionUID = -1971993446960398293L;
 
 	private final EventManager __eventManager;
+	private final PrivateLogger __logger;
 
 	private ProcessPost __processPost;
 	private ProcessPut __processPut;
@@ -60,6 +59,7 @@ public final class ServletManager extends BaseServlet {
 
 	public ServletManager(EventManager eventManager, List<PathConfig> pathConfigs) {
 		__eventManager = eventManager;
+		__logger = new PrivateLogger();
 		for (var pathConfig : pathConfigs) {
 			switch (pathConfig.getMethod()) {
 			case POST:
@@ -119,7 +119,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessPost extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void __handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATION, RestMethod.POST, request, response);
 			if (check == null) {
 				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.POST, request, response);
@@ -131,7 +131,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessPut extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void __handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATION, RestMethod.PUT, request, response);
 			if (check == null) {
 				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.PUT, request, response);
@@ -143,7 +143,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessGet extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void __handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATION, RestMethod.GET, request, response);
 			if (check == null) {
 				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.GET, request, response);
@@ -155,7 +155,7 @@ public final class ServletManager extends BaseServlet {
 	private final class ProcessDelete extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void __handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			var check = __eventManager.emit(ServerEvent.HTTP_REQUEST_VALIDATION, RestMethod.DELETE, request, response);
 			if (check == null) {
 				__eventManager.emit(ServerEvent.HTTP_REQUEST_HANDLE, RestMethod.DELETE, request, response);
@@ -174,8 +174,12 @@ public final class ServletManager extends BaseServlet {
 					});
 			response.getWriter().println(json.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			__logger.error(e);
 		}
+	}
+
+	private final class PrivateLogger extends SystemLogger {
+
 	}
 
 }

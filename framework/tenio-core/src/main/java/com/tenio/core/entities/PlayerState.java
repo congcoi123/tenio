@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities;
 
-/**
- * @author kong
- */
 public interface PlayerState {
 
 }

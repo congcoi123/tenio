@@ -28,9 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tenio.core.network.defines.RestMethod;
 
-/**
- * @author kong
- */
 public interface EventHttpRequestHandle {
 
 	void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response);

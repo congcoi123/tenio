@@ -33,9 +33,6 @@ import com.tenio.core.event.Emitter;
  * This class for handling events and these subscribers.
  * 
  * @param <T> the template
- * 
- * @author kong
- * 
  */
 public final class EventHandler<T> {
 

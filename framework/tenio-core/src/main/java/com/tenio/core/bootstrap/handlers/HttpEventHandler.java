@@ -38,11 +38,7 @@ import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.extension.events.EventHttpRequestValidation;
 import com.tenio.core.network.defines.RestMethod;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class HttpEventHandler {
 
 	@AutowiredAcceptNull
@@ -52,7 +48,7 @@ public final class HttpEventHandler {
 	private EventHttpRequestValidation __eventHttpRequestValidation;
 
 	public void initialize(EventManager eventManager) {
-		
+
 		Optional<EventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
 		Optional<EventHttpRequestValidation> eventHttpRequestValidateOp = Optional
 				.ofNullable(__eventHttpRequestValidation);

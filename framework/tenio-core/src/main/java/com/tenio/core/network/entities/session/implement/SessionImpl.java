@@ -45,10 +45,6 @@ import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class SessionImpl implements Session {
 
 	private static AtomicLong __idCounter = new AtomicLong();
@@ -498,20 +494,35 @@ public final class SessionImpl implements Session {
 		return TimeUtility.currentTimeMillis();
 	}
 
-	// FIXME: Needs to implement these methods
 	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
+	public boolean equals(Object object) {
+		if (!(object instanceof Session)) {
+			return false;
+		} else {
+			var session = (Session) object;
+			return getId() == session.getId();
+		}
 	}
 
+	/**
+	 * It is generally necessary to override the <b>hashCode</b> method whenever
+	 * equals method is overridden, so as to maintain the general contract for the
+	 * hashCode method, which states that equal objects must have equal hash codes.
+	 * 
+	 * @see <a href="https://imgur.com/x6rEAZE">Formula</a>
+	 */
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (__id ^ (__id >>> 32));
+		return result;
 	}
 
 	@Override
 	public String toString() {
-		return super.toString();
+		return String.format("{ id: %d, transportType: %s, active: %b, connected: %b, hasUdp: %b }", __id,
+				__transportType.toString(), __active, __connected, __hasUdp);
 	}
 
 }

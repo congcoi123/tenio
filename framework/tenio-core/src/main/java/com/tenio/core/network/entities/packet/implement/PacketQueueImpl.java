@@ -30,10 +30,6 @@ import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class PacketQueueImpl implements PacketQueue {
 
 	private final TreeSet<Packet> __queue;

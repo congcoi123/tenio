@@ -32,9 +32,6 @@ import com.tenio.core.entities.PlayerState;
 import com.tenio.core.entities.Room;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public final class PlayerImpl implements Player {
 
 	private final String __name;
@@ -243,8 +240,16 @@ public final class PlayerImpl implements Player {
 			return false;
 		} else {
 			Player player = (Player) object;
-			return getName() == player.getName();
+			return getName().equals(player.getName());
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((__name == null) ? 0 : __name.hashCode());
+		return result;
 	}
 
 	@Override

@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 
-/**
- * @author kong
- */
 public interface EventAttachedConnectionResult {
 
 	void handle(ServerMessage message, AttachedConnectionResult result);

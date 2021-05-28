@@ -32,15 +32,12 @@ import org.json.JSONObject;
 
 import com.tenio.common.loggers.AbstractLogger;
 
-/**
- * @author kong
- */
 public abstract class BaseResponse extends AbstractLogger {
 
 	public abstract void process(String requestedAgent, HttpServletRequest request, JSONObject body,
 			HttpServletResponse response);
 
-	protected boolean _hasHeaderKey(HttpServletRequest request, String key) {
+	protected boolean __hasHeaderKey(HttpServletRequest request, String key) {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		if (headerNames != null) {
 			while (headerNames.hasMoreElements()) {

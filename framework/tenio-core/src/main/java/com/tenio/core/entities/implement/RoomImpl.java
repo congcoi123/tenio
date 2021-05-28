@@ -46,9 +46,6 @@ import com.tenio.core.exceptions.PlayerJoinedRoomException;
 import com.tenio.core.exceptions.SwitchedPlayerSpectatorException;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public final class RoomImpl implements Room {
 
 	public static final int NIL_SLOT = -1;
@@ -435,6 +432,14 @@ public final class RoomImpl implements Room {
 			var room = (Room) object;
 			return getId() == room.getId();
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (__id ^ (__id >>> 32));
+		return result;
 	}
 
 	@Override

@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 
-/**
- * @author kong
- */
 public interface EventPlayerLoggedinResult {
 
 	void handle(Player player, PlayerLoggedinResult result);

@@ -26,9 +26,6 @@ package com.tenio.core.event;
 /**
  * This function interface provides one method for dispatching the results from
  * an event.
- * 
- * @author kong
- * 
  */
 @FunctionalInterface
 public interface Subscriber {

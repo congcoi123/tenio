@@ -27,10 +27,6 @@ import com.tenio.core.exceptions.PacketQueueFullException;
 import com.tenio.core.exceptions.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface PacketQueue {
 
 	Packet peek();

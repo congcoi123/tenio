@@ -29,9 +29,6 @@ import com.tenio.core.configuration.defines.ServerEvent;
 
 /**
  * Only for creating an event handler object, see {@link EventHandler}
- * 
- * @author kong
- * 
  */
 @NotThreadSafe
 public final class EventProducer {

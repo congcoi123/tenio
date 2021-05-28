@@ -25,10 +25,6 @@ package com.tenio.core.entities.settings.strategies;
 
 import com.tenio.core.entities.Room;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface RoomPlayerSlotGeneratedStrategy {
 
 	void initialize();

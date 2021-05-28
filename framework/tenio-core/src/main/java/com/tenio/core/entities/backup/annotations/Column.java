@@ -30,13 +30,9 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is treated as a "Column".
- * 
- * @author kong
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-// TODO: Add description
 public @interface Column {
 
 	public String name() default "";

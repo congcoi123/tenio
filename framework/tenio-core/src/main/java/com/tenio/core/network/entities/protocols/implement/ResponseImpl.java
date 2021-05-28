@@ -32,12 +32,9 @@ import com.tenio.core.network.entities.protocols.Response;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.server.ServerImpl;
 
-/**
- * @author kong
- */
-// TODO: Add description
-public final class ResponseImpl extends AbstractMessage implements Response {
+public final class ResponseImpl implements Response {
 
+	private byte[] __content;
 	private Collection<Player> __players;
 	private Collection<Session> __socketSessions;
 	private Collection<Session> __datagramSessions;
@@ -51,8 +48,6 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	}
 
 	private ResponseImpl() {
-		super();
-
 		__players = null;
 		__socketSessions = null;
 		__datagramSessions = null;
@@ -60,6 +55,23 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 		__priority = ResponsePriority.NORMAL;
 		__prioritizedUdp = false;
 		__encrypted = false;
+	}
+
+	@Override
+	public byte[] getContent() {
+		return __content;
+	}
+
+	@Override
+	public Response setContent(byte[] content) {
+		__content = content;
+
+		return this;
+	}
+
+	@Override
+	public Collection<Player> getPlayers() {
+		return __players;
 	}
 
 	@Override
@@ -140,27 +152,40 @@ public final class ResponseImpl extends AbstractMessage implements Response {
 	private void __construct() {
 		// TODO if use udp is in use in case of websocket, use websocket instead
 		__players.stream().forEach(player -> {
-			var session = player.getSession();
-			if (session.isTcp()) {
-				// when the session contains an UDP connection and the response requires it, add
-				// its session to the list
-				if (__prioritizedUdp && session.containsUdp()) {
-					if (__datagramSessions == null) {
-						__datagramSessions = new ArrayList<Session>();
+			if (player.containsSession()) {
+				var session = player.getSession();
+				if (session.isTcp()) {
+					// when the session contains an UDP connection and the response requires it, add
+					// its session to the list
+					if (__prioritizedUdp && session.containsUdp()) {
+						if (__datagramSessions == null) {
+							__datagramSessions = new ArrayList<Session>();
+						}
+						__datagramSessions.add(session);
+					} else {
+						if (__socketSessions == null) {
+							__socketSessions = new ArrayList<Session>();
+						}
+						__socketSessions.add(session);
 					}
-					__datagramSessions.add(session);
-				} else {
-					if (__socketSessions == null) {
-						__socketSessions = new ArrayList<Session>();
+				} else if (session.isWebSocket()) {
+					if (__webSocketSessions == null) {
+						__webSocketSessions = new ArrayList<Session>();
 					}
-					__socketSessions.add(session);
 				}
-			} else if (session.isWebSocket()) {
-				if (__webSocketSessions == null) {
-					__webSocketSessions = new ArrayList<Session>();
-				}
+			} else {
+				// TODO: non-session player
+
 			}
 		});
+	}
+
+	@Override
+	public String toString() {
+		return String.format(
+				"{ content: bytes[%d], players: %s, socket: %s, datagram: %s, websocket: %s, priority: %s, udp: %b, encrypted: %b}",
+				__content.length, __players.toString(), __socketSessions.toString(), __datagramSessions.toString(),
+				__webSocketSessions.toString(), __priority.toString(), __prioritizedUdp, __encrypted);
 	}
 
 }

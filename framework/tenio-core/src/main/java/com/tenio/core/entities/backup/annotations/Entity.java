@@ -30,13 +30,9 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is treated as a "Table".
- * 
- * @author kong
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-//TODO: Add description
 public @interface Entity {
 
 }

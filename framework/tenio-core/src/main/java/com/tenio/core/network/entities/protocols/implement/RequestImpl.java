@@ -23,17 +23,22 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.entities.protocols.implement;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.tenio.common.utilities.TimeUtility;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-public final class RequestImpl extends AbstractMessage implements Request {
+public final class RequestImpl implements Request {
 
+	private static AtomicLong __idCounter = new AtomicLong();
+
+	private long __id;
+	private Map<String, Object> __attributes;
 	private ServerEvent __event;
 	private Session __sender;
 	private RequestPriority __priority;
@@ -44,10 +49,26 @@ public final class RequestImpl extends AbstractMessage implements Request {
 	}
 
 	private RequestImpl() {
-		super();
-
+		__id = __idCounter.getAndIncrement();
 		__priority = RequestPriority.NORMAL;
 		__timestamp = TimeUtility.currentTimeMillis();
+		__attributes = new ConcurrentHashMap<String, Object>();
+	}
+
+	@Override
+	public long getId() {
+		return __id;
+	}
+
+	@Override
+	public Object getAttribute(String key) {
+		return __attributes.get(key);
+	}
+
+	@Override
+	public Request setAttribute(String key, Object value) {
+		__attributes.put(key, value);
+		return this;
 	}
 
 	@Override
@@ -89,6 +110,37 @@ public final class RequestImpl extends AbstractMessage implements Request {
 		__event = event;
 
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof Request)) {
+			return false;
+		} else {
+			var request = (Request) object;
+			return getId() == request.getId();
+		}
+	}
+
+	/**
+	 * It is generally necessary to override the <b>hashCode</b> method whenever
+	 * equals method is overridden, so as to maintain the general contract for the
+	 * hashCode method, which states that equal objects must have equal hash codes.
+	 * 
+	 * @see <a href="https://imgur.com/x6rEAZE">Formula</a>
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (__id ^ (__id >>> 32));
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ event: %s, sender: %s, priority: %s, timestamp: %d, attributes: %s }",
+				__event.toString(), __sender.toString(), __priority.toString(), __timestamp, __attributes.toString());
 	}
 
 }

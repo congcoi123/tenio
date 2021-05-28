@@ -47,11 +47,7 @@ import com.tenio.core.extension.events.EventRoomWillBeRemoved;
 import com.tenio.core.extension.events.EventSwitchPlayerToSpectatorResult;
 import com.tenio.core.extension.events.EventSwitchSpectatorToPlayerResult;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class RoomEventHandler {
 
 	@AutowiredAcceptNull

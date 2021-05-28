@@ -27,9 +27,6 @@ import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface EventConnectionEstablishedResult {
 
 	void handle(Session session, ServerMessage message, ConnectionEstablishedResult result);

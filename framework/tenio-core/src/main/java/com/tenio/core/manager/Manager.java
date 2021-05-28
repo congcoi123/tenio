@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.manager;
 
-/**
- * @author kong
- */
 public interface Manager {
 
 }

@@ -23,10 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.settings.strategies;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface RoomCredentialValidatedStrategy {
 
 	void validateName(String name) throws IllegalArgumentException;

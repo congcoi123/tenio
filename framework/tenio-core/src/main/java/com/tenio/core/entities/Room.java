@@ -36,9 +36,6 @@ import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.exceptions.SwitchedPlayerSpectatorException;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface Room {
 
 	long getId();

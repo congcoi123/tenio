@@ -30,9 +30,6 @@ import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.network.jetty.servlet.ServletHandler;
 
-/**
- * @author kong
- */
 public abstract class BaseProcessServlet extends AbstractLogger implements ServletHandler {
 
 	@Override
@@ -40,9 +37,9 @@ public abstract class BaseProcessServlet extends AbstractLogger implements Servl
 		response.setContentType(CoreConstant.CONTENT_TYPE_JSON);
 		response.setContentType(CoreConstant.CONTENT_TYPE_TEXT);
 		response.setCharacterEncoding(CoreConstant.UTF_8);
-		_handleImpl(request, response);
+		__handleImpl(request, response);
 	}
 
-	protected abstract void _handleImpl(HttpServletRequest request, HttpServletResponse response);
+	protected abstract void __handleImpl(HttpServletRequest request, HttpServletResponse response);
 
 }

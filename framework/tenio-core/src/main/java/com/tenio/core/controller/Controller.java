@@ -27,9 +27,6 @@ import com.tenio.core.exceptions.RequestQueueFullException;
 import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.service.Service;
 
-/**
- * @author kong
- */
 public interface Controller extends Service {
 
 	void enqueueRequest(Request request) throws RequestQueueFullException;

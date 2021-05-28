@@ -45,8 +45,6 @@ import com.sun.management.OperatingSystemMXBean;
  * </ul>
  * 
  * @see <a href="https://i.stack.imgur.com/GjuwM.png">Explained Image</a>
- * @author kong
- *
  */
 @ThreadSafe
 public final class SystemMonitoring {

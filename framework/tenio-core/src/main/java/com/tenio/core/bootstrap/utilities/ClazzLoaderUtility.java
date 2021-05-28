@@ -32,10 +32,6 @@ import java.util.List;
 
 import com.tenio.common.utilities.StringUtility;
 
-/**
- * @author kong
- */
-//TODO: Add description
 public final class ClazzLoaderUtility {
 
 	private ClazzLoaderUtility() {

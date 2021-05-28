@@ -23,13 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.configuration.defines;
 
-/**
- * This Enum defines all logic events in the main thread. All the process should
- * be handled in <b>ServerLogic</b> class.
- * 
- * @author kong
- */
-// FIXME: Fix me
 public enum ServerEvent {
 
 	SERVER_STARTED,
@@ -91,5 +84,10 @@ public enum ServerEvent {
 	HTTP_REQUEST_HANDLE,
 
 	SERVER_EXCEPTION;
+
+	@Override
+	public String toString() {
+		return this.name();
+	}
 
 }

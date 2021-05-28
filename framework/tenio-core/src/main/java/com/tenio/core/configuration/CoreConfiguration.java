@@ -45,12 +45,7 @@ import com.tenio.core.network.defines.data.SocketConfig;
  * configuration file can be defined as an XML file. See an example in
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
- * 
- * @see CoreConfigurationType
- * 
- * @author kong
  */
-// FIXME: Fix me
 public abstract class CoreConfiguration extends CommonConfiguration {
 
 	/**

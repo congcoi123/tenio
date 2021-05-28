@@ -23,11 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.handlers;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
+import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 
 /**
  * @author kong
@@ -38,7 +40,9 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
 	@Override
 	public void handle(Player player, ServerMessage message) {
-
+		var data = ZeroObjectImpl.newInstance().putString("echo",
+				String.format("Echo: ", message.getData().getString("echo")));
+		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
 	}
 
 }

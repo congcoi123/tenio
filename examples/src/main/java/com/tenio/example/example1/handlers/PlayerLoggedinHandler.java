@@ -23,11 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.example.example1.handlers;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerLoggedinResult;
+import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 
 /**
  * @author kong
@@ -37,8 +39,10 @@ public final class PlayerLoggedinHandler extends AbstractExtension implements Ev
 
 	@Override
 	public void handle(Player player, PlayerLoggedinResult result) {
-		// TODO Auto-generated method stub
-
+		if (result == PlayerLoggedinResult.SUCCESS) {
+			var data = ZeroObjectImpl.newInstance().putString("r", "Hello from server");
+			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+		}
 	}
 
 }

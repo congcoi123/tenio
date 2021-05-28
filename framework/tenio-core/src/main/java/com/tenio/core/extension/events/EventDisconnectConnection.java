@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface EventDisconnectConnection {
 
 	void handle(Session session, ConnectionDisconnectMode mode);

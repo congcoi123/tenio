@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface EventPlayerReconnectRequestHandle {
 
 	void handle(Session session, ServerMessage message);

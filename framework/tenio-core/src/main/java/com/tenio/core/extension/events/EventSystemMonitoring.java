@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-/**
- * @author kong
- */
 public interface EventSystemMonitoring {
 
 	void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, int countRunningThreads);

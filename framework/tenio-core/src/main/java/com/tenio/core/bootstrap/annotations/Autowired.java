@@ -32,13 +32,9 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * @author kong
- */
 @Target({ METHOD, CONSTRUCTOR, FIELD })
 @Retention(RUNTIME)
 @Documented
-// TODO: Add description
 public @interface Autowired {
 
 }

@@ -30,13 +30,9 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is to standardized data.
- * 
- * @author kong
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-//TODO: Add description
 public @interface Sanitizer {
 
 }

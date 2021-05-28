@@ -27,9 +27,6 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 
-/**
- * @author kong
- */
 public interface EventPlayerAfterLeftRoom {
 
 	void handle(Player player, Room room, PlayerLeaveRoomMode mode);

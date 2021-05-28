@@ -25,9 +25,6 @@ package com.tenio.core.event;
 
 /**
  * This function interface provides one method for invoking an event.
- * 
- * @author kong
- * 
  */
 @FunctionalInterface
 public interface Emitter<T> {

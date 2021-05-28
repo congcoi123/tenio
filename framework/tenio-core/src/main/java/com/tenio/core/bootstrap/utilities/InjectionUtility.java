@@ -34,10 +34,6 @@ import com.tenio.core.bootstrap.annotations.AutowiredQualifier;
 import com.tenio.core.bootstrap.injector.Injector;
 import com.tenio.core.exceptions.NoImplementedClassFoundException;
 
-/**
- * @author kong
- */
-//TODO: Add description
 public final class InjectionUtility {
 
 	private InjectionUtility() {
@@ -78,8 +74,8 @@ public final class InjectionUtility {
 	}
 
 	/**
-	 * Get all the fields having {@link Autowired} or
-	 * {@link AutowiredAcceptNull} annotation used while declaration
+	 * Get all the fields having {@link Autowired} or {@link AutowiredAcceptNull}
+	 * annotation used while declaration
 	 * 
 	 * @param clazz
 	 * @return a set of fields
@@ -100,4 +96,5 @@ public final class InjectionUtility {
 		return fields;
 
 	}
+	
 }

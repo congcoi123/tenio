@@ -41,11 +41,7 @@ import com.tenio.core.extension.events.EventConnectionEstablishedResult;
 import com.tenio.core.extension.events.EventDisconnectConnection;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class ConnectionEventHandler {
 
 	@AutowiredAcceptNull

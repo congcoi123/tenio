@@ -26,9 +26,6 @@ package com.tenio.core.network.defines;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kong
- */
 public enum RestMethod {
 	/**
 	 * Create
@@ -56,19 +53,19 @@ public enum RestMethod {
 		}
 	}
 
-	private final String value;
+	private final String __value;
 
 	private RestMethod(final String value) {
-		this.value = value;
+		__value = value;
 	}
 
 	public final String getValue() {
-		return this.value;
+		return __value;
 	}
 
 	@Override
 	public final String toString() {
-		return this.name();
+		return name();
 	}
 
 	public static RestMethod getByValue(String value) {

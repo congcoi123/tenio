@@ -41,10 +41,6 @@ import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
 	@GuardedBy("this")

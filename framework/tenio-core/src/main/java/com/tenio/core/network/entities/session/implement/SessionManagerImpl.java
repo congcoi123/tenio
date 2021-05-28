@@ -44,10 +44,6 @@ import com.tenio.core.network.entities.session.SessionManager;
 
 import io.netty.channel.Channel;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class SessionManagerImpl extends AbstractManager implements SessionManager {
 
 	private static final int DEFAULT_PACKET_QUEUE_SIZE = 100;

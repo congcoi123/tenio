@@ -26,9 +26,6 @@ package com.tenio.core.extension.events;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 
-/**
- * @author kong
- */
 public interface EventReceivedMessageFromPlayer {
 
 	void handle(Player player, ServerMessage message);

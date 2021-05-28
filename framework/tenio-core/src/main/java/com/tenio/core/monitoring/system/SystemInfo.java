@@ -29,7 +29,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.monitoring.defines.SytemInfoType;
 
 /**
@@ -47,11 +47,8 @@ import com.tenio.core.monitoring.defines.SytemInfoType;
  * <li>Usable Space</li>
  * <li>Free Space</li>
  * </ul>
- * 
- * @author kong
- *
  */
-public final class SystemInfo extends AbstractLogger {
+public final class SystemInfo extends SystemLogger {
 
 	public void logSystemInfo() {
 		var logger = buildgen("\n");

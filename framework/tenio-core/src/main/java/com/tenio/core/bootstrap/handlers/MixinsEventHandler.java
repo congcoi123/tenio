@@ -36,11 +36,7 @@ import com.tenio.core.extension.events.EventFetchedCcuInfo;
 import com.tenio.core.extension.events.EventServerException;
 import com.tenio.core.extension.events.EventSystemMonitoring;
 
-/**
- * @author kong
- */
 @Component
-//TODO: Add description
 public final class MixinsEventHandler {
 
 	@AutowiredAcceptNull
@@ -56,7 +52,7 @@ public final class MixinsEventHandler {
 	private EventSystemMonitoring __eventSystemMonitoring;
 
 	public void initialize(EventManager eventManager) {
-		
+
 		Optional<EventServerException> eventServerExceptionOp = Optional.ofNullable(__eventServerException);
 		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);

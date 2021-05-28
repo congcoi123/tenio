@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.exceptions;
 
-/**
- * @author kong
- */
 public final class RefusedConnectionAddressException extends RuntimeException {
 	/**
 	 * 

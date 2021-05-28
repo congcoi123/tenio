@@ -29,10 +29,6 @@ import com.tenio.core.network.defines.ResponsePriority;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface Packet {
 
 	long getId();

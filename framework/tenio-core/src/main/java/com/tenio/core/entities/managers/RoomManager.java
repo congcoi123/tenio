@@ -33,9 +33,6 @@ import com.tenio.core.exceptions.AddedDuplicatedRoomException;
 import com.tenio.core.exceptions.CreatedRoomException;
 import com.tenio.core.manager.Manager;
 
-/**
- * @author kong
- */
 public interface RoomManager extends Manager {
 
 	void setMaxRooms(int maxRooms);

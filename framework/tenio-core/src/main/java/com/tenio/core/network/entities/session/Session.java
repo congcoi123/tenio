@@ -38,10 +38,6 @@ import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
 import io.netty.channel.Channel;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface Session {
 
 	long getId();
@@ -73,7 +69,7 @@ public interface Session {
 	SelectionKey getSelectionKey();
 
 	void setSelectionKey(SelectionKey selectionKey);
-	
+
 	void createPacketSocketHandle();
 
 	PacketReadState getPacketReadState();

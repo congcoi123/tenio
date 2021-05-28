@@ -32,9 +32,6 @@ import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrate
 import com.tenio.core.entities.settings.strategies.implement.DefaultRoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.implement.DefaultRoomPlayerSlotGeneratedStrategy;
 
-/**
- * @author kong
- */
 public final class InitialRoomSetting {
 
 	private String __name;

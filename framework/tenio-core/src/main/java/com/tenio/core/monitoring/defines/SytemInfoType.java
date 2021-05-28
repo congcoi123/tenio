@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.monitoring.defines;
 
-/**
- * @author kong
- */
 public enum SytemInfoType {
 
 	OS_NAME("os.name"),

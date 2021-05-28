@@ -42,11 +42,6 @@ import com.tenio.core.network.entities.protocols.Request;
 import com.tenio.core.network.entities.protocols.implement.RequestImpl;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * Handle the main logic of the server.
- * 
- * @author kong
- */
 public final class InternalProcessorServiceImpl extends AbstractController implements InternalProcessorService {
 
 	private static final String EVENT_KEY_DATAGRAM = "datagram";
@@ -205,6 +200,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 				player.clean();
 				player = null;
 			}
+			__eventManager.emit(ServerEvent.DISCONNECT_CONNECTION, session, connectionClosedMode);
 			// the free connection (without a corresponding player)
 		} else {
 			__eventManager.emit(ServerEvent.DISCONNECT_CONNECTION, session, connectionClosedMode);

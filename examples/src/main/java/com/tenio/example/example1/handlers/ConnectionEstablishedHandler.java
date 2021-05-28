@@ -34,12 +34,13 @@ import com.tenio.core.network.entities.session.Session;
  * @author kong
  */
 @Component
-public final class ConnectionEstablishedHandler extends AbstractExtension
-		implements EventConnectionEstablishedResult {
+public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
 
 	@Override
 	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-
+		if (result == ConnectionEstablishedResult.SUCCESS) {
+			getApi().loginWithSession(message.getData().getString("u"), session);
+		}
 	}
 
 }

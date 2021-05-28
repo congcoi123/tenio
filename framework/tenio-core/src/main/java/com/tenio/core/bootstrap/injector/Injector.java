@@ -42,10 +42,6 @@ import com.tenio.core.bootstrap.utilities.InjectionUtility;
 import com.tenio.core.exceptions.MultipleImplementedClassForInterfaceException;
 import com.tenio.core.exceptions.NoImplementedClassFoundException;
 
-/**
- * @author kong
- */
-//TODO: Add description
 public final class Injector {
 
 	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";

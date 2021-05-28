@@ -26,9 +26,6 @@ package com.tenio.core.network.jetty.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * @author kong
- */
 public interface ServletHandler {
 
 	void handle(HttpServletRequest request, HttpServletResponse response);

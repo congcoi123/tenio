@@ -44,10 +44,7 @@ import com.tenio.core.entities.backup.annotations.Sanitizer;
  * @see Column
  * @see Entity
  * @see Sanitizer
- * 
- * @author kong
  */
-//TODO: Add description
 public final class EntityProcesser {
 
 	private EntityProcesser() {

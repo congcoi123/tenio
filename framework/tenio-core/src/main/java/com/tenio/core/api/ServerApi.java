@@ -31,10 +31,6 @@ import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ServerApi {
 
 	void login(String playerName);

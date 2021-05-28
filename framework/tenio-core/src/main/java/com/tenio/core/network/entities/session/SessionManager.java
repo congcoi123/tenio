@@ -35,9 +35,6 @@ import com.tenio.core.network.entities.packet.policy.PacketQueuePolicy;
 
 import io.netty.channel.Channel;
 
-/**
- * @author kong
- */
 public interface SessionManager extends Manager {
 
 	Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey);

@@ -35,9 +35,6 @@ import org.json.JSONObject;
 import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.network.jetty.servlet.support.BaseProcessServlet;
 
-/**
- * @author kong
- */
 public final class PingServlet extends HttpServlet {
 	/**
 	 * 
@@ -59,7 +56,7 @@ public final class PingServlet extends HttpServlet {
 	private final class Process extends BaseProcessServlet {
 
 		@Override
-		protected void _handleImpl(HttpServletRequest request, HttpServletResponse response) {
+		protected void __handleImpl(HttpServletRequest request, HttpServletResponse response) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			try {
 				var json = new JSONObject();

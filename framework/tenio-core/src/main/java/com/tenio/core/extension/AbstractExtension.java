@@ -38,8 +38,6 @@ import com.tenio.core.server.ServerImpl;
  * retrieved for another purpose. Notice that, one event can be handled multiple
  * times in different classes.
  * 
- * @author kong
- * 
  */
 public abstract class AbstractExtension extends AbstractLogger {
 
@@ -48,5 +46,5 @@ public abstract class AbstractExtension extends AbstractLogger {
 	public final ServerApi getApi() {
 		return __server.getApi();
 	}
-	
+
 }

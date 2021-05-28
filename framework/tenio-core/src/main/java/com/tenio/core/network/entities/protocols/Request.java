@@ -27,10 +27,13 @@ import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.network.defines.RequestPriority;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-public interface Request extends Message {
+public interface Request {
+
+	long getId();
+	
+	Object getAttribute(String key);
+
+	Request setAttribute(String key, Object value);
 
 	ServerEvent getEvent();
 

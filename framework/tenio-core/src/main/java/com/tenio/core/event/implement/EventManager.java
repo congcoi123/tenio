@@ -34,9 +34,6 @@ import com.tenio.core.event.Subscriber;
 
 /**
  * This class for managing events and these subscribers.
- * 
- * @author kong
- * 
  */
 @NotThreadSafe
 public final class EventManager extends SystemLogger {
@@ -69,6 +66,7 @@ public final class EventManager extends SystemLogger {
 	 * @see EventProducer#emit(ServerEvent, Object...)
 	 */
 	public Object emit(ServerEvent event, Object... params) {
+		trace(event.toString(), params);
 		return __producer.emit(event, params);
 	}
 
@@ -80,7 +78,7 @@ public final class EventManager extends SystemLogger {
 	 */
 	public void on(ServerEvent event, Subscriber subscriber) {
 		if (hasSubscriber(event)) {
-			info("INTERNAL EVENT WARNING", "Duplicated", event);
+			info("SERVER EVENT WARNING", "Duplicated", event);
 		}
 
 		__eventSubscribers.add(EventSubscriber.newInstance(event, subscriber));
@@ -101,7 +99,7 @@ public final class EventManager extends SystemLogger {
 			__producer.getEventHandler().subscribe(eventSubscriber.getEvent(),
 					eventSubscriber.getSubscriber()::dispatch);
 		});
-		info("INTERNAL EVENT UPDATED", "Subscribers", events.toString());
+		info("SERVER EVENT SUBSCRIBERS", "Subscribers", events.toString());
 	}
 
 	/**

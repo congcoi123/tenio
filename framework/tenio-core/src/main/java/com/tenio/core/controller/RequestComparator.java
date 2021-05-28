@@ -27,9 +27,6 @@ import java.util.Comparator;
 
 import com.tenio.core.network.entities.protocols.Request;
 
-/**
- * @author kong
- */
 public final class RequestComparator implements Comparator<Request> {
 
 	public static RequestComparator newInstance() {

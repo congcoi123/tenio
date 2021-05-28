@@ -25,9 +25,6 @@ package com.tenio.core.entities;
 
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface Player {
 
 	/**

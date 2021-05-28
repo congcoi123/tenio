@@ -33,14 +33,11 @@ import java.lang.annotation.Target;
 /**
  * This annotation can be used to avoid conflict if there are multiple
  * implementations of the same interface
- * 
- * @author kong
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-//TODO: Add description
 public @interface AutowiredQualifier {
 
 	String value() default "";
