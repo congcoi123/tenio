@@ -26,11 +26,9 @@ package com.tenio.core.server.services;
 import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.controller.AbstractController;
 import com.tenio.core.entities.Player;
-import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
@@ -45,7 +43,8 @@ import com.tenio.core.network.entities.session.Session;
 public final class InternalProcessorServiceImpl extends AbstractController implements InternalProcessorService {
 
 	private static final String EVENT_KEY_DATAGRAM = "datagram";
-	private static final String EVENT_KEY_CONNECTION_DISCONNECTED_MODE = "connectionDisconnectedMode";
+	private static final String EVENT_KEY_CONNECTION_DISCONNECTED_MODE = "connection-disconnected-mode";
+	private static final String EVENT_KEY_SERVER_MESSAGE = "server-message";
 
 	private PlayerManager __playerManager;
 	private int __maxNumberPlayers;
@@ -73,7 +72,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 		__eventManager.on(ServerEvent.SESSION_REQUEST_CONNECTION, params -> {
 			Request request = __createRequest(ServerEvent.SESSION_REQUEST_CONNECTION, (Session) params[0]);
-			request.setContent((byte[]) params[1]);
+			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
 			enqueueRequest(request);
 
 			return null;
@@ -92,18 +91,18 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			return null;
 		});
 
-		__eventManager.on(ServerEvent.SESSION_READ_BINARY, params -> {
+		__eventManager.on(ServerEvent.SESSION_READ_MESSAGE, params -> {
 			Request request = __createRequest(ServerEvent.SESSION_REQUEST_CONNECTION, (Session) params[0]);
-			request.setContent((byte[]) params[1]);
+			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
 			enqueueRequest(request);
 
 			return null;
 		});
 
-		__eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_BINARY, params -> {
+		__eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, params -> {
 			Request request = __createRequest(ServerEvent.SESSION_REQUEST_CONNECTION, null);
 			request.setAttribute(EVENT_KEY_DATAGRAM, params[0]);
-			request.setContent((byte[]) params[1]);
+			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
 			enqueueRequest(request);
 
 			return null;
@@ -126,12 +125,12 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			__processSessionWillBeClosed(request);
 			break;
 
-		case SESSION_READ_BINARY:
-			__processSessionReadBinary(request);
+		case SESSION_READ_MESSAGE:
+			__processSessionReadMessage(request);
 			break;
 
-		case DATAGRAM_CHANNEL_READ_BINARY:
-			__processDatagramChannelReadBinary(request);
+		case DATAGRAM_CHANNEL_READ_MESSAGE:
+			__processDatagramChannelReadMessage(request);
 			break;
 
 		default:
@@ -142,8 +141,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 	private void __processSessionRequestsConnection(Request request) {
 		// check if it's reconnection request first
 		var session = request.getSender();
-		var binary = request.getContent();
-		var message = ServerMessage.newInstance().setData(ZeroObjectImpl.newInstance(binary));
+		var message = request.getAttribute(EVENT_KEY_SERVER_MESSAGE);
 
 		Player player = null;
 
@@ -207,9 +205,8 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		}
 	}
 
-	private void __processSessionReadBinary(Request request) {
+	private void __processSessionReadMessage(Request request) {
 		var session = request.getSender();
-		var binary = request.getContent();
 
 		var player = __playerManager.getPlayerBySession(session);
 		if (player == null) {
@@ -221,15 +218,14 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			return;
 		}
 
-		var message = ServerMessage.newInstance().setData(ZeroObjectImpl.newInstance(binary));
+		var message = request.getAttribute(EVENT_KEY_SERVER_MESSAGE);
 
 		__eventManager.emit(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, message);
 	}
 
-	private void __processDatagramChannelReadBinary(Request request) {
+	private void __processDatagramChannelReadMessage(Request request) {
 		var datagramChannel = request.getAttribute(EVENT_KEY_DATAGRAM);
-		var binary = request.getContent();
-		var message = ServerMessage.newInstance().setData(ZeroObjectImpl.newInstance(binary));
+		var message = request.getAttribute(EVENT_KEY_SERVER_MESSAGE);
 
 		// the condition for creating sub-connection
 		var player = (Player) __eventManager.emit(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION, message);
@@ -248,7 +244,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player, AttachedConnectionResult.SUCCESS);
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		return "internal";
@@ -267,6 +263,31 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 	@Override
 	public void setPlayerManager(PlayerManager playerManager) {
 		__playerManager = playerManager;
+	}
+
+	@Override
+	public void onInitialized() {
+		// do nothing
+	}
+
+	@Override
+	public void onStarted() {
+		// do nothing
+	}
+
+	@Override
+	public void onRunning() {
+		// do nothing
+	}
+
+	@Override
+	public void onShutdown() {
+		// do nothing
+	}
+
+	@Override
+	public void onDestroyed() {
+		// do nothing
 	}
 
 }

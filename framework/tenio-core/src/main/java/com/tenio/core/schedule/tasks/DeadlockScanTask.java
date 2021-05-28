@@ -30,24 +30,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.event.implement.EventManager;
 
 /**
  * To detect deadlock in period time. You can configure this time in your own
  * configurations, see {@link CoreConfiguration}
  */
-public final class DeadlockScanTask extends SystemLogger implements Task {
+public final class DeadlockScanTask extends AbstractTask {
 
-	/**
-	 * The period time for detecting deadlock
-	 */
-	private final int __deadlockScanPeriod;
 	private final ThreadMXBean __threadBean;
 
-	public DeadlockScanTask(int deadlockScanPeriod) {
-		__deadlockScanPeriod = deadlockScanPeriod;
+	public static DeadlockScanTask newInstance(EventManager eventManager) {
+		return new DeadlockScanTask(eventManager);
+	}
+
+	private DeadlockScanTask(EventManager eventManager) {
+		super(eventManager);
+		
 		__threadBean = ManagementFactory.getThreadMXBean();
 	}
 
@@ -58,7 +58,7 @@ public final class DeadlockScanTask extends SystemLogger implements Task {
 
 			__checkForDeadlockedThreads();
 
-		}, 0, __deadlockScanPeriod, TimeUnit.SECONDS);
+		}, 0, __interval, TimeUnit.SECONDS);
 	}
 
 	private void __checkForDeadlockedThreads() {

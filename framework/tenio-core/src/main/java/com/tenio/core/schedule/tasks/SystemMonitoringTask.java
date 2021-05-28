@@ -27,8 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
@@ -38,21 +36,18 @@ import com.tenio.core.monitoring.system.SystemMonitoring;
  * To retrieve the current system information in period time. You can configure
  * this time in your own configurations, see {@link CoreConfiguration}
  */
-public final class SystemMonitoringTask extends SystemLogger implements Task {
+public final class SystemMonitoringTask extends AbstractTask {
 
 	private final SystemMonitoring __monitoring;
 
-	private final EventManager __eventManager;
-	/**
-	 * The period time for retrieving system information
-	 */
-	private final int __monitoringPeriod;
+	public static SystemMonitoringTask newInstance(EventManager eventManager) {
+		return new SystemMonitoringTask(eventManager);
+	}
 
-	public SystemMonitoringTask(EventManager eventManager, int ccuScanPeriod) {
-		__eventManager = eventManager;
-		__monitoringPeriod = ccuScanPeriod;
+	private SystemMonitoringTask(EventManager eventManager) {
+		super(eventManager);
 
-		__monitoring = new SystemMonitoring();
+		__monitoring = SystemMonitoring.newInstance();
 	}
 
 	@Override
@@ -62,7 +57,7 @@ public final class SystemMonitoringTask extends SystemLogger implements Task {
 			__eventManager.emit(ServerEvent.SYSTEM_MONITORING, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),
 					__monitoring.countRunningThreads());
-		}, 0, __monitoringPeriod, TimeUnit.SECONDS);
+		}, 0, __interval, TimeUnit.SECONDS);
 	}
 
 }

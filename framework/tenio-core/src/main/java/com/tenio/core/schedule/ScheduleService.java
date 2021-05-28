@@ -42,7 +42,7 @@ public interface ScheduleService extends Service {
 	void setTrafficCounterInterval(int interval);
 
 	void setSystemMonitoringInterval(int interval);
-
+	
 	void setPlayerManager(PlayerManager playerManager);
 
 	void setRoomManager(RoomManager roomManager);

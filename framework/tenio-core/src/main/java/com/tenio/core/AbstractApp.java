@@ -28,14 +28,13 @@ import java.lang.reflect.InvocationTargetException;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.exceptions.ConfigurationException;
+import com.tenio.core.exceptions.NotDefinedSubscribersException;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.server.ServerImpl;
 
 /**
  * Your application will start from here.
- * 
- * @author kong
- * 
  */
 public abstract class AbstractApp extends SystemLogger {
 
@@ -59,10 +58,10 @@ public abstract class AbstractApp extends SystemLogger {
 		var server = ServerImpl.getInstance();
 		try {
 			server.start(configuration, bootstrap.getEventHandler());
-			info("BOOTSTRAP", "Started");
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException e) {
-			error(e, "The application started with exceptions occured");
+				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException
+				| NotDefinedSubscribersException | ConfigurationException e) {
+			error(e, "The application started with exceptions occured: ", e.getMessage());
 			server.shutdown();
 			onShutdown();
 			// exit with errors
@@ -73,6 +72,7 @@ public abstract class AbstractApp extends SystemLogger {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			server.shutdown();
 			onShutdown();
+			System.exit(0);
 		}));
 		// The server was ready
 		onStarted(configuration);

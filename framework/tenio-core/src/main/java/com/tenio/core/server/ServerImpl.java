@@ -112,10 +112,10 @@ public final class ServerImpl extends SystemLogger implements Server {
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 
+		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
+
 		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
 		ConfigsAssessment.assess();
-
-		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
 		// show system information
 		var systemInfo = new SystemInfo();
@@ -145,7 +145,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
 
-		info("SERVER", __serverName, "Started!");
+		info("SERVER", __serverName, "Started");
 	}
 
 	private void __initializeServices() {
@@ -174,6 +174,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		__scheduleService.setPlayerManager(__playerManager);
 		__scheduleService.setRoomManager(__roomManager);
+		__scheduleService.setNetworkReaderStatistic(__networkService.getNetworkReaderStatistic());
+		__scheduleService.setNetworkWriterStatistic(__networkService.getNetworkWriterStatistic());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -261,17 +263,13 @@ public final class ServerImpl extends SystemLogger implements Server {
 	public void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
 		__shutdownServices();
-		info("SERVER", __serverName, "Stopped!");
+		info("SERVER", __serverName, "Stopped");
 	}
 
 	private void __shutdownServices() {
 		__internalProcessorService.shutdown();
 		__networkService.shutdown();
 		__scheduleService.shutdown();
-		
-		__internalProcessorService.destroy();
-		__networkService.destroy();
-		__scheduleService.destroy();
 	}
 
 	@Override

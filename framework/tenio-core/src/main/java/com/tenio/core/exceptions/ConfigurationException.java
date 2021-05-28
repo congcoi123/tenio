@@ -21,35 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.schedule.tasks;
+package com.tenio.core.exceptions;
 
-import java.util.concurrent.ScheduledFuture;
+public final class ConfigurationException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -713303423920650936L;
 
-import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
-
-public final class TrafficCounterTask extends AbstractTask {
-
-	public static TrafficCounterTask newInstance(EventManager eventManager) {
-		return new TrafficCounterTask(eventManager);
-	}
-
-	private TrafficCounterTask(EventManager eventManager) {
-		super(eventManager);
-	}
-
-	@Override
-	public ScheduledFuture<?> run() {
-		return null;
-	}
-	
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		
-	}
-
-	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-		
+	public ConfigurationException(String message) {
+		super(message);
 	}
 
 }

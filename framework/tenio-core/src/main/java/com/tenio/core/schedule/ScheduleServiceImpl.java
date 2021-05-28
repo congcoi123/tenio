@@ -35,15 +35,19 @@ import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
 import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
 import com.tenio.core.schedule.tasks.CcuReportTask;
 import com.tenio.core.schedule.tasks.DeadlockScanTask;
+import com.tenio.core.schedule.tasks.SystemMonitoringTask;
+import com.tenio.core.schedule.tasks.TrafficCounterTask;
 
 public final class ScheduleServiceImpl extends AbstractManager implements ScheduleService {
 
 	private final TaskManager __taskManager;
-	
+
 	private AutoDisconnectPlayerTask __autoDisconnectPlayerTask;
 	private AutoRemoveRoomTask __autoRemoveRoomTask;
 	private CcuReportTask __ccuReportTask;
 	private DeadlockScanTask __deadlockScanTask;
+	private SystemMonitoringTask __systemMonitoringTask;
+	private TrafficCounterTask __trafficCounterTask;
 
 	public static ScheduleService newInstance(EventManager eventManager) {
 		return new ScheduleServiceImpl(eventManager);
@@ -53,35 +57,30 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 		super(eventManager);
 
 		__taskManager = TaskManagerImpl.newInstance();
+
+		__autoDisconnectPlayerTask = AutoDisconnectPlayerTask.newInstance(eventManager);
+		__autoRemoveRoomTask = AutoRemoveRoomTask.newInstance(eventManager);
+		__ccuReportTask = CcuReportTask.newInstance(eventManager);
+		__deadlockScanTask = DeadlockScanTask.newInstance(eventManager);
+		__systemMonitoringTask = SystemMonitoringTask.newInstance(eventManager);
+		__trafficCounterTask = TrafficCounterTask.newInstance(eventManager);
 	}
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
-
+		// do nothing
 	}
 
 	@Override
 	public void start() {
 		info("START SERVICE", getName());
 
-//		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
-//		(new AutoDisconnectPlayerTask(__eventManager, __playerApi,
-//				configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
-//				configuration.getInt(CoreConfigurationType.IDLE_WRITER_TIME),
-//				configuration.getInt(CoreConfigurationType.TIMEOUT_SCAN_INTERVAL))).run());
-//
-//__taskManager.create(CoreConstant.KEY_SCHEDULE_EMPTY_ROOM_SCAN, (new AutoRemoveRoomTask(__roomApi,
-//		configuration.getInt(CoreConfigurationType.EMPTY_ROOM_SCAN_INTERVAL))).run());
-//
-//__taskManager.create(CoreConstant.KEY_SCHEDULE_CCU_SCAN, (new CCUScanTask(__eventManager, __playerApi,
-//		configuration.getInt(CoreConfigurationType.CCU_SCAN_INTERVAL))).run());
-//
-//__taskManager.create(CoreConstant.KEY_SCHEDULE_SYSTEM_MONITORING, (new SystemMonitoringTask(__eventManager,
-//		configuration.getInt(CoreConfigurationType.SYSTEM_MONITORING_INTERVAL))).run());
-//
-//__taskManager.create(CoreConstant.KEY_SCHEDULE_DEADLOCK_SCAN,
-//		(new DeadlockScanTask(configuration.getInt(CoreConfigurationType.DEADLOCK_SCAN_INTERVAL))).run());
+		// __taskManager.create("auto-disconnect-player", __autoDisconnectPlayerTask.run());
+		// __taskManager.create("auto-remove-room", __autoRemoveRoomTask.run());
+		// __taskManager.create("ccu-report", __ccuReportTask.run());
+		// __taskManager.create("dead-lock", __deadlockScanTask.run());
+		// __taskManager.create("system-monitoring", __systemMonitoringTask.run());
+		// __taskManager.create("traffic-counter", __trafficCounterTask.run());
 	}
 
 	@Override
@@ -94,13 +93,17 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	}
 
 	private void __cleanup() {
-
+		__autoDisconnectPlayerTask = null;
+		__autoRemoveRoomTask = null;
+		__ccuReportTask = null;
+		__deadlockScanTask = null;
+		__systemMonitoringTask = null;
+		__trafficCounterTask = null;
 	}
 
 	@Override
 	public boolean isActivated() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -110,66 +113,57 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void setRemovedRoomScanInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__autoRemoveRoomTask.setInterval(interval);
 	}
 
 	@Override
 	public void setDisconnectedPlayerScanInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__autoDisconnectPlayerTask.setInterval(interval);
 	}
 
 	@Override
 	public void setCcuReportInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__ccuReportTask.setInterval(interval);
 	}
 
 	@Override
 	public void setDeadlockScanInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__deadlockScanTask.setInterval(interval);
 	}
 
 	@Override
 	public void setTrafficCounterInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__trafficCounterTask.setInterval(interval);
 	}
 
 	@Override
 	public void setSystemMonitoringInterval(int interval) {
-		// TODO Auto-generated method stub
-
+		__systemMonitoringTask.setInterval(interval);
 	}
 
 	@Override
 	public void setPlayerManager(PlayerManager playerManager) {
-		// TODO Auto-generated method stub
-
+		__autoDisconnectPlayerTask.setPlayerManager(playerManager);
 	}
 
 	@Override
 	public void setRoomManager(RoomManager roomManager) {
-		// TODO Auto-generated method stub
-
+		__autoRemoveRoomTask.setRoomManager(roomManager);
 	}
 
 	@Override
 	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-
+		__trafficCounterTask.setNetworkReaderStatistic(networkReaderStatistic);
 	}
 
 	@Override
 	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-
+		__trafficCounterTask.setNetworkWriterStatistic(networkWriterStatistic);
 	}
 
 }

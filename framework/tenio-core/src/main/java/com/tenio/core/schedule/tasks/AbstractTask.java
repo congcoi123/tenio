@@ -23,33 +23,24 @@ THE SOFTWARE.
 */
 package com.tenio.core.schedule.tasks;
 
-import java.util.concurrent.ScheduledFuture;
-
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.common.task.schedule.Task;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
-public final class TrafficCounterTask extends AbstractTask {
+public abstract class AbstractTask extends SystemLogger implements Task {
 
-	public static TrafficCounterTask newInstance(EventManager eventManager) {
-		return new TrafficCounterTask(eventManager);
+	private static final int DEFAULT_INTERVAL_IN_SECONDS = 60;
+
+	protected EventManager __eventManager;
+	protected int __interval;
+
+	protected AbstractTask(EventManager eventManager) {
+		__eventManager = eventManager;
+		__interval = DEFAULT_INTERVAL_IN_SECONDS;
 	}
 
-	private TrafficCounterTask(EventManager eventManager) {
-		super(eventManager);
-	}
-
-	@Override
-	public ScheduledFuture<?> run() {
-		return null;
-	}
-	
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		
-	}
-
-	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-		
+	public void setInterval(int interval) {
+		__interval = interval;
 	}
 
 }

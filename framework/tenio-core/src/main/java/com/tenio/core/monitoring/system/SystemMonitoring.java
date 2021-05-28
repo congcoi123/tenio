@@ -56,7 +56,11 @@ public final class SystemMonitoring {
 	@GuardedBy("this")
 	private long __lastProcessCpuTime;
 
-	public SystemMonitoring() {
+	public static SystemMonitoring newInstance() {
+		return new SystemMonitoring();
+	}
+	
+	private SystemMonitoring() {
 		__osMxBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 		__lastSystemTime = 0L;
 		__lastProcessCpuTime = 0L;

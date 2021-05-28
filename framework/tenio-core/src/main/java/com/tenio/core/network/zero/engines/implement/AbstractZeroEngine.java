@@ -100,15 +100,15 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 			}
 		}
 
-		info("STOPPED SERVICE", buildgen("engine-", getName(), "-", __id));
+		info("STOPPED SERVICE", buildgen("zero-", getName(), "-", __id));
 		onDestroyed();
-		info("DESTROYED SERVICE", buildgen("engine-", getName(), "-", __id));
+		info("DESTROYED SERVICE", buildgen("zero-", getName(), "-", __id));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		info("START SERVICE", buildgen("engine-", getName(), "-", __id));
+		info("START SERVICE", buildgen("zero-", getName(), "-", __id));
 		__setThreadName();
 
 		while (true) {
@@ -119,7 +119,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	}
 
 	private void __setThreadName() {
-		Thread.currentThread().setName(StringUtility.strgen("engine-", getName(), "-", __id));
+		Thread.currentThread().setName(StringUtility.strgen("zero-", getName(), "-", __id));
 	}
 
 	@Override

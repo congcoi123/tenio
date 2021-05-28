@@ -57,19 +57,23 @@ public final class NetworkServiceImpl implements NetworkService {
 	private SessionManager __sessionManager;
 	private NetworkReaderStatistic __networkReaderStatistic;
 	private NetworkWriterStatistic __networkWriterStatistic;
+	
+	private boolean __httpServiceActivated;
+	private boolean __websocketServiceActivated;
+	private boolean __socketServiceActivated;
 
 	public static NetworkService newInstance(EventManager eventManager) {
 		return new NetworkServiceImpl(eventManager);
 	}
 
 	private NetworkServiceImpl(EventManager eventManager) {
-		__httpService = JettyHttpService.newInstance(eventManager);
-		__websocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
-		__socketService = ZeroSocketServiceImpl.newInstance(eventManager);
-
 		__sessionManager = SessionManagerImpl.newInstance(eventManager);
 		__networkReaderStatistic = NetworkReaderStatistic.newInstannce();
 		__networkWriterStatistic = NetworkWriterStatistic.newInstance();
+		
+		__httpService = JettyHttpService.newInstance(eventManager);
+		__websocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
+		__socketService = ZeroSocketServiceImpl.newInstance(eventManager);
 
 		__websocketService.setSessionManager(__sessionManager);
 		__websocketService.setNetworkReaderStatistic(__networkReaderStatistic);
@@ -99,7 +103,7 @@ public final class NetworkServiceImpl implements NetworkService {
 		__httpService.shutdown();
 		__websocketService.shutdown();
 		__socketService.shutdown();
-
+		
 		__destroy();
 	}
 

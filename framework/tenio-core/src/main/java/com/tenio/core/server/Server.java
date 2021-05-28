@@ -31,6 +31,8 @@ import com.tenio.core.bootstrap.EventHandler;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exceptions.ConfigurationException;
+import com.tenio.core.exceptions.NotDefinedSubscribersException;
 import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.network.entities.protocols.Response;
 
@@ -38,9 +40,6 @@ import com.tenio.core.network.entities.protocols.Response;
  * This class manages the workflow of the current server. The instruction's
  * orders are important, event subscribes must be set last and all configuration
  * values should be confirmed.
- * 
- * @author kong
- * 
  */
 public interface Server {
 
@@ -49,7 +48,8 @@ public interface Server {
 	 */
 	void start(Configuration configuration, EventHandler eventHandler)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ServiceRuntimeException;
+			InvocationTargetException, NoSuchMethodException, SecurityException, ServiceRuntimeException,
+			NotDefinedSubscribersException, ConfigurationException;
 
 	/**
 	 * Shut down the server and close all services

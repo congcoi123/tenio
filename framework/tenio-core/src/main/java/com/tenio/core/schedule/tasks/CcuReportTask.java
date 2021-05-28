@@ -25,15 +25,22 @@ package com.tenio.core.schedule.tasks;
 
 import java.util.concurrent.ScheduledFuture;
 
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.task.schedule.Task;
 import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.event.implement.EventManager;
 
 /**
  * To retrieve the CCU in period time. You can configure this time in your own
  * configurations, see {@link CoreConfiguration}
  */
-public final class CcuReportTask extends SystemLogger implements Task {
+public final class CcuReportTask extends AbstractTask {
+
+	public static CcuReportTask newInstance(EventManager eventManager) {
+		return new CcuReportTask(eventManager);
+	}
+
+	private CcuReportTask(EventManager eventManager) {
+		super(eventManager);
+	}
 
 	@Override
 	public ScheduledFuture<?> run() {

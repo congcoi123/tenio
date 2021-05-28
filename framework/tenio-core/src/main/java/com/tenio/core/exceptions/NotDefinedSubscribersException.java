@@ -21,35 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.schedule.tasks;
+package com.tenio.core.exceptions;
 
-import java.util.concurrent.ScheduledFuture;
+import com.tenio.core.configuration.defines.ServerEvent;
 
-import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.statistics.NetworkReaderStatistic;
-import com.tenio.core.network.statistics.NetworkWriterStatistic;
+/**
+ * @author kong
+ */
+public final class NotDefinedSubscribersException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4569867192216119437L;
 
-public final class TrafficCounterTask extends AbstractTask {
-
-	public static TrafficCounterTask newInstance(EventManager eventManager) {
-		return new TrafficCounterTask(eventManager);
+	public NotDefinedSubscribersException(ServerEvent... events) {
+		super(__getMessage(events));
 	}
 
-	private TrafficCounterTask(EventManager eventManager) {
-		super(eventManager);
-	}
-
-	@Override
-	public ScheduledFuture<?> run() {
-		return null;
-	}
-	
-	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		
-	}
-
-	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-		
+	private static String __getMessage(ServerEvent... events) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Need to implement subscribers: ");
+		for (var event : events) {
+			builder.append(event.toString());
+			builder.append(", ");
+		}
+		return builder.toString();
 	}
 
 }
