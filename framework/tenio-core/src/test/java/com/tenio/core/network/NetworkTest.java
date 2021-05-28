@@ -23,57 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.network;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
-import java.net.BindException;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.tenio.common.data.elements.CommonObject;
-import com.tenio.common.msgpack.ByteArrayInputStream;
-import com.tenio.common.pool.ElementsPool;
-import com.tenio.core.configuration.Configuration;
-import com.tenio.core.event.EventManager;
-import com.tenio.core.event.implement.EventManagerImpl;
-import com.tenio.core.network.netty.NettyWebSocketServiceImpl;
-import com.tenio.core.pool.ByteArrayInputStreamPool;
-import com.tenio.core.pool.CommonObjectPool;
-
-/**
- * @author kong
- */
 public final class NetworkTest {
-
-	private Network __network;
-	private ElementsPool<CommonObject> __msgObjectPool;
-	private ElementsPool<ByteArrayInputStream> __byteArrayPool;
-	private EventManager __eventManager;
-	private Configuration __configuration;
-
-	@BeforeEach
-	public void initialize() throws IOException, InterruptedException {
-		__network = new NettyWebSocketServiceImpl();
-		__eventManager = new EventManagerImpl();
-		__msgObjectPool = new CommonObjectPool();
-		__byteArrayPool = new ByteArrayInputStreamPool();
-		__configuration = new Configuration("TenIOConfig.example.xml");
-		__network.start(__eventManager, __configuration, __msgObjectPool, __byteArrayPool);
-	}
-
-	@Test
-	public void bindPortAlreadyInUseShouldReturnErrorMessage() {
-		assertThrows(BindException.class, () -> {
-			__network.start(__eventManager, __configuration, __msgObjectPool, __byteArrayPool);
-		});
-	}
-
-	@AfterEach
-	public void tearDown() {
-		__network.shutdown();
-		__eventManager.clear();
-	}
 
 }

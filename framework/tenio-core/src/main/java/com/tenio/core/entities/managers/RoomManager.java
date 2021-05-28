@@ -65,5 +65,7 @@ public interface RoomManager extends Manager {
 	void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) throws IllegalArgumentException;
 
 	int getRoomCount();
+	
+	void clear();
 
 }

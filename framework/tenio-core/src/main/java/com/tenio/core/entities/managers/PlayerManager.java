@@ -70,5 +70,7 @@ public interface PlayerManager extends Manager {
 	void setOwnerRoom(Room room);
 
 	int getPlayerCount();
+	
+	void clear();
 
 }

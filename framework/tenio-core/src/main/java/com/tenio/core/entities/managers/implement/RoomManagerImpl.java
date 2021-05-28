@@ -169,4 +169,10 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 		return __roomByIds.size();
 	}
 
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

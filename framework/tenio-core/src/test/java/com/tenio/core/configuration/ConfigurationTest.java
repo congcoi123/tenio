@@ -36,9 +36,6 @@ import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.SocketConfig;
 
-/**
- * @author kong
- */
 public final class ConfigurationTest {
 
 	private Configuration __configuration;
@@ -72,8 +69,8 @@ public final class ConfigurationTest {
 		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		assertAll("getSocketPortsTypeConfiguration",
 				() -> assertEquals(TransportType.TCP, listSockets.get(0).getType()),
-				() -> assertEquals(TransportType.UDP, listSockets.get(1).getType()),
-				() -> assertEquals(TransportType.TCP, listSockets.get(2).getType()));
+				() -> assertEquals(TransportType.WEB_SOCKET, listSockets.get(1).getType()),
+				() -> assertEquals(TransportType.UDP, listSockets.get(2).getType()));
 	}
 
 	@AfterEach

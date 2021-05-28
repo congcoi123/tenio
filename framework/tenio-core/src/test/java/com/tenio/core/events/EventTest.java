@@ -32,47 +32,35 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.defines.ExtensionEvent;
 import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.implement.PlayerImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.implement.PlayerManagerImpl;
-import com.tenio.core.event.EventManager;
-import com.tenio.core.event.implement.EventManagerImpl;
+import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
-import com.tenio.core.model.PlayerModel;
 
-/**
- * @author kong
- */
 public final class EventTest {
 
 	private EventManager __eventManager;
 	private PlayerManager __playerManager;
-	private int[] __testCCU;
+	private int __testCCU;
 
 	@BeforeEach
 	public void initialize() {
-		__eventManager = new EventManagerImpl();
-		__playerManager = new PlayerManagerImpl(__eventManager);
-		__testCCU = new int[2];
+		__eventManager = EventManager.newInstance();
+		__playerManager = PlayerManagerImpl.newInstance(__eventManager);
 
 		// Create new player
-		var player = new PlayerModel("kong");
+		var player = PlayerImpl.newInstance("kong");
 		try {
-			__playerManager.add(player);
+			__playerManager.addPlayer(player);
 		} catch (AddedDuplicatedPlayerException e) {
 			e.printStackTrace();
 		}
 
 		// Handle events
-		__eventManager.getExtension().on(ExtensionEvent.FETCHED_CCU_NUMBER, args -> {
-			__testCCU[0] = (int) args[0];
-			__testCCU[1] = (int) args[1];
-			return null;
-		});
-
-		__eventManager.getInternal().on(ServerEvent.PLAYER_WAS_FORCED_TO_LEAVE_ROOM, args -> {
-
+		__eventManager.on(ServerEvent.FETCHED_CCU_INFO, params -> {
+			__testCCU = (int) params[0];
 			return null;
 		});
 
@@ -80,7 +68,7 @@ public final class EventTest {
 		__eventManager.subscribe();
 
 		// Make events listener
-		__eventManager.getExtension().emit(ExtensionEvent.FETCHED_CCU_NUMBER, __playerManager.countPlayers(), __playerManager.count());
+		__eventManager.emit(ServerEvent.FETCHED_CCU_INFO, __playerManager.getPlayerCount());
 
 	}
 
@@ -92,19 +80,19 @@ public final class EventTest {
 
 	@Test
 	public void hasTEventSubscribeShouldReturnTrue() {
-		assertTrue(__eventManager.getExtension().hasSubscriber(ExtensionEvent.FETCHED_CCU_NUMBER));
+		assertTrue(__eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
 	}
 
 	@Test
 	public void getCCUEventShouldReturnTrueResult() {
-		assertAll("CCU", () -> assertEquals(0, __testCCU[0]), () -> assertEquals(1, __testCCU[1]));
+		assertAll("CCU", () -> assertEquals(1, __testCCU));
 	}
 
 	@Test
 	public void clearAllTEventShouldReturnZero() {
-		__eventManager.getExtension().clear();
+		__eventManager.clear();
 
-		assertFalse(__eventManager.getExtension().hasSubscriber(ExtensionEvent.FETCHED_CCU_NUMBER));
+		assertFalse(__eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
 	}
 
 }

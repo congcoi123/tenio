@@ -259,7 +259,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 		var message = ServerMessage.newInstance().setData(data);
 
 		var playerIterator = response.getPlayers().iterator();
-		if (playerIterator.hasNext()) {
+		while (playerIterator.hasNext()) {
 			var player = playerIterator.next();
 			__eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
 		}

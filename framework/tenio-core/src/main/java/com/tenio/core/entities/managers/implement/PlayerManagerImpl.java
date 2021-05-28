@@ -98,7 +98,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 		if (session == null) {
 			throw new NullPointerException("Unable to assign a null session for the player");
 		}
-		
+
 		Player newPlayer = PlayerImpl.newInstance(name, session);
 		newPlayer.setActivated(true);
 		newPlayer.setLoggedIn(true);
@@ -223,6 +223,17 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 	@Override
 	public int getPlayerCount() {
 		return __playerCount;
+	}
+
+	@Override
+	public void clear() {
+		synchronized (this) {
+			var iterator = __playerByNames.values().iterator();
+			while (iterator.hasNext()) {
+				var player = iterator.next();
+				__removePlayer(player);
+			}
+		}
 	}
 
 }
