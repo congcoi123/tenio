@@ -23,12 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.packet;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public enum PacketReadState {
 
-	WAIT_NEW_PACKET, WAIT_DATA_SIZE, WAIT_DATA_SIZE_FRAGMENT, WAIT_DATA;
+	WAIT_NEW_PACKET,
+
+	WAIT_DATA_SIZE,
+
+	WAIT_DATA_SIZE_FRAGMENT,
+
+	WAIT_DATA;
+
+	@Override
+	public String toString() {
+		return name();
+	}
 
 }

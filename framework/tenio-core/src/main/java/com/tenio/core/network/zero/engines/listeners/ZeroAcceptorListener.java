@@ -23,10 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.engines.listeners;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroAcceptorListener {
 
 	void handleAcceptableChannels();

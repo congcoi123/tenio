@@ -36,9 +36,6 @@ import com.tenio.core.network.zero.engines.ZeroEngine;
 import com.tenio.core.network.zero.handlers.DatagramIOHandler;
 import com.tenio.core.network.zero.handlers.SocketIOHandler;
 
-/**
- * @author kong
- */
 public abstract class AbstractZeroEngine extends AbstractManager implements ZeroEngine, Runnable {
 
 	private static final int DEFAULT_NUMBER_WORKERS = 5;
@@ -87,9 +84,12 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	}
 
 	private void __halting() throws ServiceRuntimeException {
-		pause();
-		onHalted();
+		__activated = false;
+
+		onShutdown();
+
 		__executor.shutdown();
+
 		while (true) {
 			try {
 				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -99,16 +99,16 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 				error(e);
 			}
 		}
-		info("ENGINE STOPPED", buildgen("engine-", getName(), "-", __id));
-		destroy();
+
+		info("STOPPED SERVICE", buildgen("engine-", getName(), "-", __id));
 		onDestroyed();
-		info("ENGINE DESTROYED", buildgen("engine-", getName(), "-", __id));
+		info("DESTROYED SERVICE", buildgen("engine-", getName(), "-", __id));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		info("ENGINE START", buildgen("engine-", getName(), "-", __id));
+		info("START SERVICE", buildgen("engine-", getName(), "-", __id));
 		__setThreadName();
 
 		while (true) {
@@ -116,8 +116,6 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 				onRunning();
 			}
 		}
-
-		// info("ENGINE STOPPING", buildgen("engine-", getName(), "-", __id));
 	}
 
 	private void __setThreadName() {
@@ -187,28 +185,10 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	}
 
 	@Override
-	public void resume() {
-		onResumed();
-		__activated = true;
-	}
-
-	@Override
-	public void pause() {
-		onPaused();
-		__activated = false;
-	}
-
-	@Override
-	public void halt() {
+	public void shutdown() {
 		__halting();
 	}
 
-	@Override
-	public void destroy() {
-		__executor = null;
-	}
-
-	@Override
 	public boolean isActivated() {
 		return __activated;
 	}

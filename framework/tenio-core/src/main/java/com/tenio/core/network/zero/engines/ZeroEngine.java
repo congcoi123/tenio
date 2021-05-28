@@ -29,10 +29,6 @@ import com.tenio.core.network.zero.handlers.SocketIOHandler;
 import com.tenio.core.service.Service;
 import com.tenio.core.service.ServiceListener;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroEngine extends Service, ServiceListener {
 
 	void setSocketIOHandler(SocketIOHandler socketIOHandler);

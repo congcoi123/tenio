@@ -83,7 +83,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	}
 
 	private void __stop() {
-		pause();
+		__activated = false;
+
 		__executor.shutdown();
 
 		while (true) {
@@ -97,7 +98,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 		}
 
 		info("STOPPED SERVICE", buildgen("controller-", getName(), "-", __id));
-		destroy();
+		__destroy();
 		info("DESTROYED SERVICE", buildgen("controller-", getName(), "-", __id));
 	}
 
@@ -121,6 +122,11 @@ public abstract class AbstractController extends AbstractManager implements Cont
 		}
 	}
 
+	private void __destroy() {
+		__executor = null;
+		onDestroyed();
+	}
+
 	private void __setThreadName() {
 		Thread.currentThread().setName(StringUtility.strgen("controller-", getName(), "-", __id));
 	}
@@ -136,23 +142,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	}
 
 	@Override
-	public void resume() {
-		__activated = true;
-	}
-
-	@Override
-	public void pause() {
-		__activated = false;
-	}
-
-	@Override
-	public void halt() {
+	public void shutdown() {
 		__stop();
-	}
-
-	@Override
-	public void destroy() {
-		__executor = null;
 	}
 
 	@Override

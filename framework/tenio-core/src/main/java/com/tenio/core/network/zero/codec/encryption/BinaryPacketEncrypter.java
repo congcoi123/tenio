@@ -23,14 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.encryption;
 
-/**
- * @author kong
- */
-// TODO: Add description
+import com.tenio.core.exceptions.PacketEncrypterException;
+
 public interface BinaryPacketEncrypter {
 
-	byte[] encrypt(byte[] binary) throws Exception;
+	byte[] encrypt(byte[] binary) throws PacketEncrypterException;
 
-	byte[] decrypt(byte[] binary) throws Exception;
+	byte[] decrypt(byte[] binary) throws PacketEncrypterException;
 
 }

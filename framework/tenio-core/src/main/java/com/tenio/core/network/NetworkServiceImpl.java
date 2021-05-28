@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.network;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,9 +70,11 @@ public final class NetworkServiceImpl implements NetworkService {
 		__sessionManager = SessionManagerImpl.newInstance(eventManager);
 		__networkReaderStatistic = NetworkReaderStatistic.newInstannce();
 		__networkWriterStatistic = NetworkWriterStatistic.newInstance();
-		
+
 		__websocketService.setSessionManager(__sessionManager);
-		
+		__websocketService.setNetworkReaderStatistic(__networkReaderStatistic);
+		__websocketService.setNetworkWriterStatistic(__networkWriterStatistic);
+
 		__socketService.setSessionManager(__sessionManager);
 		__socketService.setNetworkReaderStatistic(__networkReaderStatistic);
 		__socketService.setNetworkWriterStatistic(__networkWriterStatistic);
@@ -70,32 +95,15 @@ public final class NetworkServiceImpl implements NetworkService {
 	}
 
 	@Override
-	public void resume() {
-		__httpService.resume();
-		__websocketService.resume();
-		__socketService.resume();
+	public void shutdown() {
+		__httpService.shutdown();
+		__websocketService.shutdown();
+		__socketService.shutdown();
+
+		__destroy();
 	}
 
-	@Override
-	public void pause() {
-		__httpService.pause();
-		__websocketService.pause();
-		__socketService.pause();
-	}
-
-	@Override
-	public void halt() {
-		__httpService.halt();
-		__websocketService.halt();
-		__socketService.halt();
-	}
-
-	@Override
-	public void destroy() {
-		__httpService.destroy();
-		__websocketService.destroy();
-		__socketService.destroy();
-
+	private void __destroy() {
 		__httpService = null;
 		__websocketService = null;
 		__socketService = null;
@@ -111,7 +119,7 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public String getName() {
-		return "network-service";
+		return "network";
 	}
 
 	@Override

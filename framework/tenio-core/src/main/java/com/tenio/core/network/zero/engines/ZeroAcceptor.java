@@ -29,10 +29,6 @@ import com.tenio.core.network.defines.data.SocketConfig;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroAcceptor extends ZeroEngine {
 
 	void setConnectionFilter(ConnectionFilter connectionFilter);

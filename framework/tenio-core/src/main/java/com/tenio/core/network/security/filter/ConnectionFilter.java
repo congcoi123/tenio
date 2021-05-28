@@ -25,9 +25,6 @@ package com.tenio.core.network.security.filter;
 
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
 
-/**
- * @author kong
- */
 public interface ConnectionFilter {
 
 	void addBannedAddress(String addressIp);

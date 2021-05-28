@@ -42,10 +42,6 @@ import com.tenio.core.network.zero.engines.writers.DatagramWriterHandler;
 import com.tenio.core.network.zero.engines.writers.SocketWriterHandler;
 import com.tenio.core.network.zero.engines.writers.WriterHandler;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter, ZeroWriterListener {
 
 	private BlockingQueue<Session> __sessionTicketsQueue;
@@ -83,9 +79,8 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 		try {
 			Session session = __sessionTicketsQueue.take();
 			__processSessionQueue(session);
-			// FIXME: Need to handle these exceptions
 		} catch (InterruptedException e) {
-			error(e);
+			error(e, "Interruption occured when process a session and its packet");
 		}
 	}
 
@@ -224,22 +219,12 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	}
 
 	@Override
-	public void onResumed() {
-		// do nothing
-	}
-
-	@Override
 	public void onRunning() {
 		__writableLoop();
 	}
 
 	@Override
-	public void onPaused() {
-		// do nothing
-	}
-
-	@Override
-	public void onHalted() {
+	public void onShutdown() {
 		__sessionTicketsQueue.clear();
 	}
 

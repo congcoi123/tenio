@@ -49,10 +49,6 @@ import com.tenio.core.network.zero.engines.ZeroAcceptor;
 import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAcceptor, ZeroAcceptorListener {
 
 	private List<SocketChannel> __acceptableSockets;
@@ -113,7 +109,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 				__boundSockets.add(serverSocketChannel);
 			}
 
-			info("TCP SOCKET BOUND", buildgen("Address: ", __serverAddress, ", Port: ", port));
+			info("TCP SOCKET", buildgen("Started at address: ", __serverAddress, ", port: ", port));
 		} catch (IOException e) {
 			throw new ServiceRuntimeException(e.getMessage());
 		}
@@ -133,7 +129,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 				__boundSockets.add(datagramChannel);
 			}
 
-			info("UDP SOCKET BOUND", buildgen("Address: ", __serverAddress, ", Port: ", port));
+			info("UDP SOCKET", buildgen("Started at address: ", __serverAddress, ", port: ", port));
 		} catch (IOException e) {
 			throw new ServiceRuntimeException(e.getMessage());
 		}
@@ -273,7 +269,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 							try {
 								__connectionFilter.validateAndAddAddress(ipAddress.getHostAddress());
 								socketChannel.configureBlocking(false);
-								// FIXME: need to be configured
 								socketChannel.socket().setTcpNoDelay(true);
 								SelectionKey selectionKey = __zeroReaderListener.acceptSocketChannel(socketChannel);
 
@@ -343,22 +338,12 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	}
 
 	@Override
-	public void onResumed() {
-		// do nothing
-	}
-
-	@Override
 	public void onRunning() {
 		__acceptableLoop();
 	}
 
 	@Override
-	public void onPaused() {
-		// do nothing
-	}
-
-	@Override
-	public void onHalted() {
+	public void onShutdown() {
 		__shutdownBoundSockets();
 		__shutdownAcceptedSockets();
 		__shutdownSelector();

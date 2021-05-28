@@ -31,9 +31,6 @@ import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public final class SocketWriterHandler extends AbstractWriterHandler {
 
 	public static SocketWriterHandler newInstance() {

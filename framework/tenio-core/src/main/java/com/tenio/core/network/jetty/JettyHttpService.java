@@ -139,7 +139,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 			public void run() {
 				if (__executor != null && !__executor.isShutdown()) {
 					try {
-						halt();
+						shutdown();
 					} catch (Exception e) {
 						error(e);
 					}
@@ -149,27 +149,19 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 	}
 
 	@Override
-	public void resume() {
-		// do nothing
-	}
-
-	@Override
-	public void pause() {
-		// do nothing
-	}
-
-	@Override
-	public void halt() {
+	public void shutdown() {
 		try {
 			__server.stop();
 			__executor.shutdownNow();
 		} catch (Exception e) {
 			error(e);
 		}
+		info("STOPPED SERVICE", getName());
+		__destroy();
+		info("DESTROYED SERVICE", getName());
 	}
 
-	@Override
-	public void destroy() {
+	private void __destroy() {
 		__server = null;
 		__executor = null;
 	}

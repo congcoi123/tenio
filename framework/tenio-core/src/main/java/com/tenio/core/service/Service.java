@@ -25,22 +25,13 @@ package com.tenio.core.service;
 
 import com.tenio.core.exceptions.ServiceRuntimeException;
 
-/**
- * @author kong
- */
 public interface Service {
 
 	void initialize() throws ServiceRuntimeException;
 
 	void start() throws ServiceRuntimeException;
 
-	void resume();
-
-	void pause();
-
-	void halt() throws ServiceRuntimeException;
-
-	void destroy();
+	void shutdown();
 
 	boolean isActivated();
 

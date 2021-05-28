@@ -36,12 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
 
-/**
- * This class for initializing a channel.
- * 
- * @author kong
- * 
- */
 public final class NettyWSInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final EventManager __eventManager;

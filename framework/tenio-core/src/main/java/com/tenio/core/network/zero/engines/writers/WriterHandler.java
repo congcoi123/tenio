@@ -31,10 +31,6 @@ import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface WriterHandler {
 
 	void send(PacketQueue packetQueue, Session session, Packet packet);

@@ -25,10 +25,6 @@ package com.tenio.core.network.zero.codec.decoder;
 
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface PacketDecoderResultListener {
 
 	void resultFrame(Session session, byte[] binary);

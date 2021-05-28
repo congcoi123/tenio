@@ -161,7 +161,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 	}
 
 	private void __setupScheduleService(Configuration configuration) {
-		__scheduleService.setCcuScanInterval(configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
+		__scheduleService.setCcuReportInterval(configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
 		__scheduleService.setDeadlockScanInterval(configuration.getInt(CoreConfigurationType.INTERVAL_DEADLOCK_SCAN));
 		__scheduleService.setDisconnectedPlayerScanInterval(
 				configuration.getInt(CoreConfigurationType.INTERVAL_DISCONNECTED_PLAYER_SCAN));
@@ -265,9 +265,9 @@ public final class ServerImpl extends SystemLogger implements Server {
 	}
 
 	private void __shutdownServices() {
-		__internalProcessorService.halt();
-		__networkService.halt();
-		__scheduleService.halt();
+		__internalProcessorService.shutdown();
+		__networkService.shutdown();
+		__scheduleService.shutdown();
 		
 		__internalProcessorService.destroy();
 		__networkService.destroy();

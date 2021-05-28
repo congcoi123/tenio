@@ -28,10 +28,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroReaderListener {
 
 	void acceptDatagramChannel(DatagramChannel datagramChannel) throws ClosedChannelException;

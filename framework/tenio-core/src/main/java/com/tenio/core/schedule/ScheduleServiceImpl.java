@@ -1,3 +1,26 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package com.tenio.core.schedule;
 
 import com.tenio.common.task.TaskManager;
@@ -6,10 +29,21 @@ import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
+import com.tenio.core.network.statistics.NetworkReaderStatistic;
+import com.tenio.core.network.statistics.NetworkWriterStatistic;
+import com.tenio.core.schedule.tasks.AutoDisconnectPlayerTask;
+import com.tenio.core.schedule.tasks.AutoRemoveRoomTask;
+import com.tenio.core.schedule.tasks.CcuReportTask;
+import com.tenio.core.schedule.tasks.DeadlockScanTask;
 
 public final class ScheduleServiceImpl extends AbstractManager implements ScheduleService {
 
 	private final TaskManager __taskManager;
+	
+	private AutoDisconnectPlayerTask __autoDisconnectPlayerTask;
+	private AutoRemoveRoomTask __autoRemoveRoomTask;
+	private CcuReportTask __ccuReportTask;
+	private DeadlockScanTask __deadlockScanTask;
 
 	public static ScheduleService newInstance(EventManager eventManager) {
 		return new ScheduleServiceImpl(eventManager);
@@ -29,6 +63,8 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
 	@Override
 	public void start() {
+		info("START SERVICE", getName());
+
 //		__taskManager.create(CoreConstant.KEY_SCHEDULE_TIME_OUT_SCAN,
 //		(new AutoDisconnectPlayerTask(__eventManager, __playerApi,
 //				configuration.getInt(CoreConfigurationType.IDLE_READER_TIME),
@@ -49,25 +85,15 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void halt() {
+	public void shutdown() {
 		__taskManager.clear();
+
+		info("STOPPED SERVICE", getName());
+		__cleanup();
+		info("DESTROYED SERVICE", getName());
 	}
 
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
+	private void __cleanup() {
 
 	}
 
@@ -79,7 +105,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
 	@Override
 	public String getName() {
-		return "schedule-service";
+		return "schedule-tasks";
 	}
 
 	@Override
@@ -101,7 +127,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	}
 
 	@Override
-	public void setCcuScanInterval(int interval) {
+	public void setCcuReportInterval(int interval) {
 		// TODO Auto-generated method stub
 
 	}
@@ -133,6 +159,16 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	@Override
 	public void setRoomManager(RoomManager roomManager) {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+
+	}
+
+	@Override
+	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
 
 	}
 

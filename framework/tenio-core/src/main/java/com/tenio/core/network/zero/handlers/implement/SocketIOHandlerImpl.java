@@ -29,6 +29,7 @@ import java.nio.channels.SocketChannel;
 
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
@@ -36,9 +37,6 @@ import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handlers.SocketIOHandler;
 
-/**
- * @author kong
- */
 public final class SocketIOHandlerImpl extends AbstractIOHandler
 		implements SocketIOHandler, PacketDecoderResultListener {
 
@@ -54,11 +52,13 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
-		trace("SOCKET RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
+		var data = ZeroObjectImpl.newInstance(binary);
+		var message = ServerMessage.newInstance().setData(data);
+		trace("SOCKET RECEIVED", data.toString());
 		if (!session.isConnected()) {
-			__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, binary);
+			__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
 		} else {
-			__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
+			__eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
 		}
 	}
 

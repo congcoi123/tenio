@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.encryption;
 
-/**
- * @author kong
- */
 public final class DefaultBinaryPacketEncrypter implements BinaryPacketEncrypter {
 
 	@Override

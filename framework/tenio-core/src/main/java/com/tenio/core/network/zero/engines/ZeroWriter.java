@@ -27,10 +27,6 @@ import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroWriter extends ZeroEngine {
 
 	void enqueuePacket(Packet packet);

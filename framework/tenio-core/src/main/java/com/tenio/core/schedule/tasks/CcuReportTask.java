@@ -21,20 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.service;
+package com.tenio.core.schedule.tasks;
 
-import com.tenio.core.exceptions.ServiceRuntimeException;
+import java.util.concurrent.ScheduledFuture;
 
-public interface ServiceListener {
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.common.task.schedule.Task;
+import com.tenio.core.configuration.CoreConfiguration;
 
-	void onInitialized() throws ServiceRuntimeException;
+/**
+ * To retrieve the CCU in period time. You can configure this time in your own
+ * configurations, see {@link CoreConfiguration}
+ */
+public final class CcuReportTask extends SystemLogger implements Task {
 
-	void onStarted() throws ServiceRuntimeException;
-
-	void onRunning();
-
-	void onShutdown();
-	
-	void onDestroyed();
+	@Override
+	public ScheduledFuture<?> run() {
+		return null;
+	}
 
 }

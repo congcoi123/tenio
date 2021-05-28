@@ -23,14 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.compression;
 
-/**
- * @author kong
- */
-// TODO: Add description
+import com.tenio.core.exceptions.PacketCompressorException;
+
 public interface BinaryPacketCompressor {
 
-	byte[] compress(byte[] binary) throws Exception;
+	byte[] compress(byte[] binary) throws PacketCompressorException;
 
-	byte[] uncompress(byte[] binary) throws Exception;
+	byte[] uncompress(byte[] binary) throws PacketCompressorException;
 
 }

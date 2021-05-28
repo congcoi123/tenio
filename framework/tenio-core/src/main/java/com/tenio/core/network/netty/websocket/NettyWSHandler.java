@@ -28,6 +28,7 @@ import java.io.IOException;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
@@ -123,10 +124,13 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			__networkReaderStatistic.updateReadBytes(binary.length);
 			__networkReaderStatistic.updateReadPackets(1);
 
+			var data = ZeroObjectImpl.newInstance(binary);
+			var message = ServerMessage.newInstance().setData(data);
+			
 			if (!session.isConnected()) {
-				__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, binary);
+				__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
 			} else {
-				__eventManager.emit(ServerEvent.SESSION_READ_BINARY, session, binary);
+				__eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
 			}
 
 		}

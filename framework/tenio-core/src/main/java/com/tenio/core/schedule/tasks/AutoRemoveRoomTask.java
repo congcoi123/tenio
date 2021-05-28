@@ -32,15 +32,11 @@ import com.tenio.core.configuration.CoreConfiguration;
 /**
  * To remove the empty room (a room without any players) in period time. You can
  * configure this time in your own configurations, see {@link CoreConfiguration}
- * 
- * @author kong
- * 
  */
 public final class AutoRemoveRoomTask extends SystemLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

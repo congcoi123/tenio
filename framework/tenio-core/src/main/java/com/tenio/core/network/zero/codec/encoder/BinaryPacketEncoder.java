@@ -27,10 +27,6 @@ import com.tenio.core.network.entities.packet.Packet;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface BinaryPacketEncoder {
 
 	Packet encode(Packet packet);

@@ -46,10 +46,6 @@ import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroReader, ZeroReaderListener {
 
 	private ZeroAcceptorListener __zeroAcceptorListener;
@@ -127,16 +123,14 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				keyIterators.remove();
 			}
 
-			// FIXME: Handles necessary exceptions for stopping the process in appropriate
-			// cases
-		} catch (ClosedSelectorException e2) {
-			error(e2, "Selector is closed!");
-		} catch (CancelledKeyException e3) {
-			error(e3, "Cancelled key");
-		} catch (IOException e4) {
-			error(e4, "I/O reading/selection error: ", e4.getMessage());
-		} catch (Exception e5) {
-			error(e5, "Generic reading/selection error: ", e5.getMessage());
+		} catch (ClosedSelectorException e1) {
+			error(e1, "Selector is closed: ", e1.getMessage());
+		} catch (CancelledKeyException e2) {
+			error(e2, "Cancelled key: ", e2.getMessage());
+		} catch (IOException e3) {
+			error(e3, "I/O reading/selection error: ", e3.getMessage());
+		} catch (Exception e4) {
+			error(e4, "Generic reading/selection error: ", e4.getMessage());
 		}
 
 	}
@@ -298,27 +292,17 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	@Override
-	public void onResumed() {
-		// do nothing
-	}
-
-	@Override
 	public void onRunning() {
 		__readableLoop();
 	}
 
 	@Override
-	public void onPaused() {
-		// do nothing
-	}
-
-	@Override
-	public void onHalted() {
+	public void onShutdown() {
 		try {
 			Thread.sleep(500L);
 			__readableSelector.close();
 		} catch (IOException | InterruptedException e) {
-			error(e, "Exception while closing selector");
+			error(e, "Exception while closing the selector");
 		}
 	}
 

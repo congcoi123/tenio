@@ -31,9 +31,6 @@ import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.packet.PacketHeader;
 
-/**
- * @author kong
- */
 public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
 
 	private static final int DEFAULT_COMPRESSION_THRESHOLD_BYTES = 3000;

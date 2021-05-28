@@ -21,27 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.schedule.tasks;
+package com.tenio.core.exceptions;
 
-import java.util.concurrent.ScheduledFuture;
+public final class PacketEncrypterException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4260223574425695248L;
 
-import com.tenio.common.loggers.SystemLogger;
-import com.tenio.common.task.schedule.Task;
-import com.tenio.core.configuration.CoreConfiguration;
-
-/**
- * To retrieve the CCU in period time. You can configure this time in your own
- * configurations, see {@link CoreConfiguration}
- * 
- * @author kong
- * 
- */
-public final class CCUScanTask extends SystemLogger implements Task {
-
-	@Override
-	public ScheduledFuture<?> run() {
-		// TODO Auto-generated method stub
-		return null;
+	public PacketEncrypterException(String message) {
+		super(message);
 	}
 
 }

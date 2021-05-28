@@ -37,9 +37,6 @@ import com.tenio.core.monitoring.system.SystemMonitoring;
 /**
  * To retrieve the current system information in period time. You can configure
  * this time in your own configurations, see {@link CoreConfiguration}
- * 
- * @author kong
- * 
  */
 public final class SystemMonitoringTask extends SystemLogger implements Task {
 

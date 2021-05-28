@@ -28,9 +28,6 @@ import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entities.session.SessionManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 
-/**
- * @author kong
- */
 public abstract class AbstractIOHandler extends AbstractManager {
 
 	protected SessionManager __sessionManager;

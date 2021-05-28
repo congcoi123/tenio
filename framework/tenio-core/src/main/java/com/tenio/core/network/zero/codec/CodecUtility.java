@@ -26,10 +26,6 @@ package com.tenio.core.network.zero.codec;
 import com.tenio.core.network.zero.codec.packet.PacketHeader;
 import com.tenio.core.network.zero.codec.packet.PacketHeaderType;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class CodecUtility {
 
 	private CodecUtility() {

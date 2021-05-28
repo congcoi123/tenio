@@ -30,9 +30,6 @@ import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
-/**
- * @author kong
- */
 public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {
 
 	private BlockingQueue<Session> __sessionTicketsQueue;

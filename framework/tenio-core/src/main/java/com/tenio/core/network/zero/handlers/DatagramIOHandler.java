@@ -27,9 +27,6 @@ import java.nio.channels.DatagramChannel;
 
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
 public interface DatagramIOHandler extends BaseIOHandler {
 
 	void channelRead(DatagramChannel datagramChannel, byte[] binary);

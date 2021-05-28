@@ -26,13 +26,15 @@ package com.tenio.core.network.zero.codec.packet;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public enum PacketHeaderType {
 
-	BINARY(1), BIG_SIZE(4), COMPRESSION(8), ENCRYPTION(16);
+	BINARY(1),
+
+	BIG_SIZE(4),
+
+	COMPRESSION(8),
+
+	ENCRYPTION(16);
 
 	// Reverse-lookup map for getting a type from a value
 	private static final Map<Integer, PacketHeaderType> lookup = new HashMap<Integer, PacketHeaderType>();
@@ -43,19 +45,19 @@ public enum PacketHeaderType {
 		}
 	}
 
-	private final int value;
+	private final int __value;
 
 	private PacketHeaderType(final int value) {
-		this.value = value;
+		__value = value;
 	}
 
 	public final int getValue() {
-		return this.value;
+		return __value;
 	}
 
 	@Override
 	public final String toString() {
-		return this.name();
+		return name();
 	}
 
 	public static PacketHeaderType getByValue(int value) {

@@ -23,10 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.packet;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class ProcessedPacket {
 
 	private PacketReadState __packetReadState;
@@ -54,6 +50,11 @@ public final class ProcessedPacket {
 
 	public void setPacketReadState(PacketReadState packetReadState) {
 		__packetReadState = packetReadState;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ packetReadState: %s, data: bytes[%d] }", __packetReadState.toString(), __data.length);
 	}
 
 }

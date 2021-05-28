@@ -27,10 +27,6 @@ import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroReader extends ZeroEngine {
 
 	void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);

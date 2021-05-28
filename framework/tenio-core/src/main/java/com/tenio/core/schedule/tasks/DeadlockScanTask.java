@@ -37,9 +37,6 @@ import com.tenio.core.configuration.CoreConfiguration;
 /**
  * To detect deadlock in period time. You can configure this time in your own
  * configurations, see {@link CoreConfiguration}
- * 
- * @author kong
- * 
  */
 public final class DeadlockScanTask extends SystemLogger implements Task {
 

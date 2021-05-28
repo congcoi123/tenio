@@ -54,11 +54,6 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
-/**
- * Use <a href="https://netty.io/">Netty</a> to handle a network instance
- * 
- * @author kong
- */
 @ThreadSafe
 public final class NettyWebSocketServiceImpl extends AbstractManager implements NettyWebSocketService {
 
@@ -103,6 +98,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 
 	private void __start() throws InterruptedException {
 
+		info("START SERVICE", getName());
+
 		var defaultWebsocketThreadFactory = new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
 		__websocketAcceptors = new NioEventLoopGroup(__producerWorkerSize, defaultWebsocketThreadFactory);
@@ -114,7 +111,6 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 			sslContext = new WebSocketSslContext();
 		}
 
-		// FIXME: configure here
 		var bootstrap = new ServerBootstrap();
 		bootstrap.group(__websocketAcceptors, __websocketWorkers).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 5).childOption(ChannelOption.SO_SNDBUF, __senderBufferSize)
@@ -138,9 +134,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 				});
 		__serverWebsockets.add(channelFuture.channel());
 
-		info("WEB SOCKET",
-				buildgen("Number of producer workers: ", __producerWorkerSize, " > Number of producer workers: ",
-						__consumerWorkerSize, " > Started at port: ", __socketConfig.getPort()));
+		info("WEB SOCKET", buildgen("Started at port: ", __socketConfig.getPort()));
 
 	}
 
@@ -148,6 +142,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 		for (var socket : __serverWebsockets) {
 			__close(socket);
 		}
+		__serverWebsockets.clear();
+
 		if (__websocketAcceptors != null) {
 			__websocketAcceptors.shutdownGracefully();
 		}
@@ -155,12 +151,15 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 			__websocketWorkers.shutdownGracefully();
 		}
 
+		info("STOPPED SERVICE", getName());
 		__cleanup();
+		info("DESTROYED SERVICE", getName());
 	}
 
 	private void __cleanup() {
-		__serverWebsockets.clear();
 		__serverWebsockets = null;
+		__websocketAcceptors = null;
+		__websocketWorkers = null;
 	}
 
 	/**
@@ -208,28 +207,13 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 	}
 
 	@Override
-	public void resume() {
-		// do nothing
-	}
-
-	@Override
-	public void pause() {
-		// do nothing
-	}
-
-	@Override
-	public void halt() {
+	public void shutdown() {
 		__shutdown();
 	}
 
 	@Override
-	public void destroy() {
-		__cleanup();
-	}
-
-	@Override
 	public String getName() {
-		return "netty-websocket-service";
+		return "netty-websocket";
 	}
 
 	@Override

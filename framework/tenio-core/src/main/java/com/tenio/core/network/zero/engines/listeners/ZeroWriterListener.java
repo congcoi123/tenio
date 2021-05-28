@@ -25,10 +25,6 @@ package com.tenio.core.network.zero.engines.listeners;
 
 import com.tenio.core.network.entities.session.Session;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface ZeroWriterListener {
 
 	void continueWriteInterestOp(Session session);

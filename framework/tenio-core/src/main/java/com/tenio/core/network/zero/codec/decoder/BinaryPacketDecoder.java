@@ -27,10 +27,6 @@ import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public interface BinaryPacketDecoder {
 
 	void decode(Session session, byte[] data);

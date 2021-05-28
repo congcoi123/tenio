@@ -23,10 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.codec.packet;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class PacketHeader {
 
 	private final boolean __binary;

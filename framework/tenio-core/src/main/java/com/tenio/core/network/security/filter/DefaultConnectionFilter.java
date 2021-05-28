@@ -104,7 +104,6 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
 					__addressMap.remove(addressIp);
 				}
 			}
-
 		}
 	}
 

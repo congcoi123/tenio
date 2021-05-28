@@ -46,8 +46,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
  * HTTP Upgrade header[1] to change from the HTTP protocol to the WebSocket
  * protocol.
  * 
- * @author kong
- * 
  */
 public final class NettyWSHandShake extends ChannelInboundHandlerAdapter {
 

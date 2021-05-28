@@ -33,9 +33,6 @@ import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 
-/**
- * @author kong
- */
 public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 
 	private BinaryPacketCompressor __compressor;

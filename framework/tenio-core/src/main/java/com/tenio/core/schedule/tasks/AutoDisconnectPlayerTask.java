@@ -33,15 +33,11 @@ import com.tenio.common.task.schedule.Task;
  * receiving or sending any data from the server or from a client. This task
  * will scan those IDLE players in period time and force them to log out. Those
  * players got a "timeout" error.
- * 
- * @author kong
- * 
  */
 public final class AutoDisconnectPlayerTask extends SystemLogger implements Task {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

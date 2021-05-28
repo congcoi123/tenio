@@ -25,10 +25,6 @@ package com.tenio.core.network.zero.codec.packet;
 
 import java.nio.ByteBuffer;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class PendingPacket {
 
 	private PacketHeader __packetHeader;
@@ -65,6 +61,11 @@ public final class PendingPacket {
 
 	public void setExpectedLength(int expectedLength) {
 		__expectedLength = expectedLength;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ packetHeader: %s, expectedLength: %d }", __packetHeader.toString(), __expectedLength);
 	}
 
 }
