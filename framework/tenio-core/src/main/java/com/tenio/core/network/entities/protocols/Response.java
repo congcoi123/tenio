@@ -36,7 +36,7 @@ public interface Response {
 	Response setContent(byte[] content);
 
 	Collection<Player> getPlayers();
-
+	
 	Collection<Session> getRecipientSocketSessions();
 
 	Collection<Session> getRecipientDatagramSessions();

@@ -48,7 +48,7 @@ public abstract class AbstractApp extends SystemLogger {
 			try {
 				bootstrap.run(entryClazz);
 			} catch (Exception e) {
-				error(e, "The application started with exceptions occured");
+				error(e, "The application started with exceptions occured: ", e.getMessage());
 				System.exit(1);
 			}
 		}
@@ -74,6 +74,7 @@ public abstract class AbstractApp extends SystemLogger {
 			onShutdown();
 			System.exit(0);
 		}));
+
 		// The server was ready
 		onStarted(configuration);
 	}

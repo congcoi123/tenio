@@ -21,24 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.client;
+package com.tenio.example.server;
 
-import com.tenio.core.entities.data.ServerMessage;
+public final class SharedKey {
 
-/**
- * This interface helps you listen to all messages these came from the server's
- * TCP port.
- * 
- * @author kong
- *
- */
-public interface ISocketListener {
+	public static final String KEY_PLAYER_LOGIN = "u";
+	public static final String KEY_CLIENT_SERVER_ECHO = "e";
 
-	/**
-	 * Listen for a new message
-	 * 
-	 * @param message the received message
-	 */
-	void onReceivedTCP(ServerMessage message);
+	private SharedKey() {
+
+	}
 
 }

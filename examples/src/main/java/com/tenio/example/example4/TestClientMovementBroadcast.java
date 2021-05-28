@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.example.client.IDatagramListener;
-import com.tenio.example.client.ISocketListener;
+import com.tenio.example.client.DatagramListener;
+import com.tenio.example.client.SocketListener;
 import com.tenio.example.client.TCP;
 import com.tenio.example.client.UDP;
 
@@ -43,7 +43,7 @@ import com.tenio.example.client.UDP;
  * @author kong
  *
  */
-public final class TestClientMovementBroadcast implements ISocketListener, IDatagramListener {
+public final class TestClientMovementBroadcast implements SocketListener, DatagramListener {
 
 	// Expects 24000 packets per second in one minute
 	private static int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = 4 * 60 * 100;

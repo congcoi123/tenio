@@ -29,17 +29,15 @@ import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventConnectionEstablishedResult;
 import com.tenio.core.network.entities.session.Session;
+import com.tenio.example.server.SharedKey;
 
-/**
- * @author kong
- */
 @Component
 public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
 
 	@Override
 	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
 		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().loginWithSession(message.getData().getString("u"), session);
+			getApi().loginWithSession(message.getData().getString(SharedKey.KEY_PLAYER_LOGIN), session);
 		}
 	}
 

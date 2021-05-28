@@ -84,7 +84,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		});
 
 		__eventManager.on(ServerEvent.SESSION_WILL_BE_CLOSED, params -> {
-			Request request = __createRequest(ServerEvent.SESSION_OCCURED_EXCEPTION, (Session) params[0]);
+			Request request = __createRequest(ServerEvent.SESSION_WILL_BE_CLOSED, (Session) params[0]);
 			request.setAttribute(EVENT_KEY_CONNECTION_DISCONNECTED_MODE, params[1]);
 			enqueueRequest(request);
 
@@ -92,7 +92,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		});
 
 		__eventManager.on(ServerEvent.SESSION_READ_MESSAGE, params -> {
-			Request request = __createRequest(ServerEvent.SESSION_REQUEST_CONNECTION, (Session) params[0]);
+			Request request = __createRequest(ServerEvent.SESSION_READ_MESSAGE, (Session) params[0]);
 			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
 			enqueueRequest(request);
 
@@ -100,7 +100,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		});
 
 		__eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, params -> {
-			Request request = __createRequest(ServerEvent.SESSION_REQUEST_CONNECTION, null);
+			Request request = __createRequest(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, null);
 			request.setAttribute(EVENT_KEY_DATAGRAM, params[0]);
 			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
 			enqueueRequest(request);

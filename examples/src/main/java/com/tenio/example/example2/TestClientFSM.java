@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.example.example2;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.example.client.ISocketListener;
+import com.tenio.example.client.SocketListener;
 import com.tenio.example.client.TCP;
 
 /**
@@ -34,7 +34,7 @@ import com.tenio.example.client.TCP;
  * @author kong
  *
  */
-public final class TestClientFSM implements ISocketListener {
+public final class TestClientFSM implements SocketListener {
 
 	/**
 	 * The entry point

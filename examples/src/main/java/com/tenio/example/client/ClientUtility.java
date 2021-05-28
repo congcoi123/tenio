@@ -21,26 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1.handlers;
+package com.tenio.example.client;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
-import com.tenio.example.server.SharedKey;
+import java.security.SecureRandom;
 
-@Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
-		implements EventReceivedMessageFromPlayer {
+public final class ClientUtility {
 
-	@Override
-	public void handle(Player player, ServerMessage message) {
-		var data = ZeroObjectImpl.newInstance().putString(SharedKey.KEY_CLIENT_SERVER_ECHO, String.format(
-				"Echo(%s): %s", player.getName(), message.getData().getString(SharedKey.KEY_CLIENT_SERVER_ECHO)));
-		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+	private static final String NUMBER = "0123456789";
+
+	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+	private static SecureRandom RANDOM = new SecureRandom();
+
+	private ClientUtility() {
+
 	}
 
+	public static String generateRandomString(int length) {
+		if (length < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		var sb = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			// 0-62 (exclusive), random returns 0-61
+			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+			sb.append(rndChar);
+		}
+
+		return sb.toString();
+	}
 }

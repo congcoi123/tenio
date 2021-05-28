@@ -30,17 +30,16 @@ import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerLoggedinResult;
 import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
+import com.tenio.example.server.SharedKey;
 
-/**
- * @author kong
- */
 @Component
 public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
 
 	@Override
 	public void handle(Player player, PlayerLoggedinResult result) {
 		if (result == PlayerLoggedinResult.SUCCESS) {
-			var data = ZeroObjectImpl.newInstance().putString("r", "Hello from server");
+			var data = ZeroObjectImpl.newInstance().putString(SharedKey.KEY_PLAYER_LOGIN,
+					String.format("Welcome to server: %s", player.getName()));
 			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
 		}
 	}

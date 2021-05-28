@@ -30,7 +30,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstant;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
@@ -294,7 +293,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 	@Override
 	public void write(Response response) {
-		trace("SEND TO PLAYER", response.getPlayers(), ZeroObjectImpl.newInstance(response.getContent()).toString());
 		__networkService.write(response);
 	}
 

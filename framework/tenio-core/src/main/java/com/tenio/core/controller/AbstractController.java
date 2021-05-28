@@ -27,7 +27,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.utilities.StringUtility;
 import com.tenio.core.event.implement.EventManager;
@@ -85,17 +84,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	private void __stop() {
 		__activated = false;
 
-		__executor.shutdown();
-
-		while (true) {
-			try {
-				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
-					break;
-				}
-			} catch (InterruptedException e) {
-				error(e);
-			}
-		}
+		__executor.shutdownNow();
 
 		info("STOPPED SERVICE", buildgen("controller-", getName(), "-", __id));
 		__destroy();
@@ -105,6 +94,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void run() {
 		__id++;
+		
 		info("START SERVICE", buildgen("controller-", getName(), "-", __id));
 		__setThreadName();
 

@@ -30,9 +30,6 @@ import com.tenio.example.server.TestConfiguration;
 
 /**
  * This class shows how a server handle messages that came from a client with DI
- * 
- * @author kong
- *
  */
 @Bootstrap
 public final class TestServerLogin extends AbstractApp {
@@ -52,12 +49,12 @@ public final class TestServerLogin extends AbstractApp {
 
 	@Override
 	public void onStarted(Configuration configuration) {
-
+		// do nothing
 	}
 
 	@Override
 	public void onShutdown() {
-
+		// do nothing
 	}
 
 }

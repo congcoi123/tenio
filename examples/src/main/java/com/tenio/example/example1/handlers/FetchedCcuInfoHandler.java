@@ -27,9 +27,6 @@ import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventFetchedCcuInfo;
 
-/**
- * @author kong
- */
 @Component
 public final class FetchedCcuInfoHandler extends AbstractExtension implements EventFetchedCcuInfo {
 

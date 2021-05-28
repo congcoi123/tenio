@@ -33,7 +33,6 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.utilities.OsUtility;
 import com.tenio.common.utilities.OsUtility.OSType;
@@ -42,9 +41,6 @@ import com.tenio.core.entities.data.ServerMessage;
 /**
  * Create an object for handling a Datagram socket connection. It is used to
  * send messages to a server or receive messages from that one.
- * 
- * @author kong
- * 
  */
 public final class UDP {
 
@@ -98,7 +94,7 @@ public final class UDP {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link CommonObject}
+	 * @param message the desired message
 	 */
 	public void send(ServerMessage message) {
 		var pack = message.getData().toBinary();
@@ -113,9 +109,9 @@ public final class UDP {
 	/**
 	 * Listen for messages that came from the server
 	 * 
-	 * @param listener, see {@link IDatagramListener}
+	 * @param listener
 	 */
-	public void receive(IDatagramListener listener) {
+	public void receive(DatagramListener listener) {
 		var executorService = Executors.newSingleThreadExecutor();
 		__future = executorService.submit(() -> {
 			while (true) {

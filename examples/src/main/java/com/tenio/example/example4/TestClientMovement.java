@@ -34,8 +34,8 @@ import org.apache.commons.lang3.SerializationUtils;
 import com.tenio.common.data.element.CommonObject;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.example.client.IDatagramListener;
-import com.tenio.example.client.ISocketListener;
+import com.tenio.example.client.DatagramListener;
+import com.tenio.example.client.SocketListener;
 import com.tenio.example.client.TCP;
 import com.tenio.example.client.UDP;
 
@@ -50,7 +50,7 @@ import com.tenio.example.client.UDP;
  * @author kong
  *
  */
-public final class TestClientMovement extends AbstractLogger implements ISocketListener, IDatagramListener {
+public final class TestClientMovement extends AbstractLogger implements SocketListener, DatagramListener {
 
 	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
 	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();

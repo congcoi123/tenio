@@ -150,7 +150,7 @@ public final class ResponseImpl implements Response {
 	}
 
 	private void __construct() {
-		// TODO if use udp is in use in case of websocket, use websocket instead
+		// if udp is using in use in case of websocket, use websocket instead
 		__players.stream().forEach(player -> {
 			if (player.containsSession()) {
 				var session = player.getSession();
@@ -174,8 +174,7 @@ public final class ResponseImpl implements Response {
 					}
 				}
 			} else {
-				// TODO: non-session player
-
+				// do nothing
 			}
 		});
 	}

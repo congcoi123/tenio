@@ -25,7 +25,6 @@ package com.tenio.core.network.zero.engines.implement;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.tenio.common.utilities.StringUtility;
 import com.tenio.core.event.implement.EventManager;
@@ -88,17 +87,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
 		onShutdown();
 
-		__executor.shutdown();
-
-		while (true) {
-			try {
-				if (__executor.awaitTermination(5, TimeUnit.SECONDS)) {
-					break;
-				}
-			} catch (InterruptedException e) {
-				error(e);
-			}
-		}
+		__executor.shutdownNow();
 
 		info("STOPPED SERVICE", buildgen("zero-", getName(), "-", __id));
 		onDestroyed();
@@ -108,6 +97,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	@Override
 	public void run() {
 		__id++;
+		
 		info("START SERVICE", buildgen("zero-", getName(), "-", __id));
 		__setThreadName();
 

@@ -46,29 +46,29 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 
 		try {
 			while (data.length > 0) {
-				var process = session.getProcessedPacket();
+				var processedPacket = session.getProcessedPacket();
 				if (readState == PacketReadState.WAIT_NEW_PACKET) {
-					process = __handleNewPacket(session, data);
-					readState = process.getPacketReadState();
-					data = process.getData();
+					processedPacket = __handleNewPacket(session, data);
+					readState = processedPacket.getPacketReadState();
+					data = processedPacket.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE) {
-					process = __handleDataSize(session, data);
-					readState = process.getPacketReadState();
-					data = process.getData();
+					processedPacket = __handleDataSize(session, data);
+					readState = processedPacket.getPacketReadState();
+					data = processedPacket.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA_SIZE_FRAGMENT) {
-					process = __handleDataSizeFragment(session, data);
-					readState = process.getPacketReadState();
-					data = process.getData();
+					processedPacket = __handleDataSizeFragment(session, data);
+					readState = processedPacket.getPacketReadState();
+					data = processedPacket.getData();
 				}
 
 				if (readState == PacketReadState.WAIT_DATA) {
-					process = __handlePacketData(session, data);
-					readState = process.getPacketReadState();
-					data = process.getData();
+					processedPacket = __handlePacketData(session, data);
+					readState = processedPacket.getPacketReadState();
+					data = processedPacket.getData();
 				}
 			}
 		} catch (Exception e) {
@@ -239,8 +239,10 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 				dataBuffer = ByteBuffer.wrap(decryptedData);
 			}
 
+			byte[] result = dataBuffer.array();
+
 			// result a framed packet data
-			__resultListener.resultFrame(session, dataBuffer.array());
+			__resultListener.resultFrame(session, result);
 
 			// counting read packets
 			__resultListener.updateReadPackets(1);

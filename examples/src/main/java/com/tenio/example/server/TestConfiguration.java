@@ -31,9 +31,6 @@ import com.tenio.core.configuration.CoreConfiguration;
  * Create your own configurations
  * 
  * @see CoreConfiguration
- * 
- * @author kong
- *
  */
 public final class TestConfiguration extends CoreConfiguration {
 

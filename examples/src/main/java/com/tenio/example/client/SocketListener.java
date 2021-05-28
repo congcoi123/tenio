@@ -21,26 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.example.example1.handlers;
+package com.tenio.example.client;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
-import com.tenio.example.server.SharedKey;
 
-@Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
-		implements EventReceivedMessageFromPlayer {
+/**
+ * This interface helps you listen to all messages these came from the server's
+ * TCP port.
+ */
+public interface SocketListener {
 
-	@Override
-	public void handle(Player player, ServerMessage message) {
-		var data = ZeroObjectImpl.newInstance().putString(SharedKey.KEY_CLIENT_SERVER_ECHO, String.format(
-				"Echo(%s): %s", player.getName(), message.getData().getString(SharedKey.KEY_CLIENT_SERVER_ECHO)));
-		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
-	}
+	/**
+	 * Listen for a new message
+	 * 
+	 * @param message the received message
+	 */
+	void onReceivedTCP(ServerMessage message);
 
 }

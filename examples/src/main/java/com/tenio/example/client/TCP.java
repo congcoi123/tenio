@@ -30,7 +30,6 @@ import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.data.elements.CommonObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.network.entities.packet.implement.PacketImpl;
@@ -47,15 +46,13 @@ import com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter
 /**
  * Create an object for handling a socket connection. It is used to send
  * messages to a server or receive messages from that one.
- * 
- * @author kong
- * 
  */
 public final class TCP implements PacketDecoderResultListener {
 
+	private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
 	private static final String LOCAL_HOST = "localhost";
 
-	private ISocketListener __listener;
+	private SocketListener __listener;
 	private Future<?> __future;
 	private Socket __socket;
 	private DataOutputStream __out;
@@ -97,7 +94,7 @@ public final class TCP implements PacketDecoderResultListener {
 	/**
 	 * Send a message to the server
 	 * 
-	 * @param message the desired message, see {@link CommonObject}
+	 * @param message the desired message
 	 */
 	public void send(ServerMessage message) {
 		// convert message object to bytes data
@@ -117,13 +114,13 @@ public final class TCP implements PacketDecoderResultListener {
 	/**
 	 * Listen for messages that came from the server
 	 * 
-	 * @param listener, see {@link ISocketListener}
+	 * @param listener
 	 */
-	public void receive(ISocketListener listener) {
+	public void receive(SocketListener listener) {
 		__listener = listener;
 		var executorService = Executors.newSingleThreadExecutor();
 		__future = executorService.submit(() -> {
-			var buffer = new byte[10240];
+			var buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
 			try {
 				while (__in.read(buffer) > 0) {
 					__decoder.decode(__session, buffer);

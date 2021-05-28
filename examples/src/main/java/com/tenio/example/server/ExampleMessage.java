@@ -28,13 +28,10 @@ import java.util.Map;
 
 import com.tenio.engine.message.IMessage;
 
-/**
- * @author kong
- */
 public final class ExampleMessage implements IMessage {
 
 	private Map<String, Object> __content = new HashMap<String, Object>();
-	
+
 	@Override
 	public long getTimestamp() {
 		return 0;

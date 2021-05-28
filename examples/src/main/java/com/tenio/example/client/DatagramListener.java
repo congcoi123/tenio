@@ -28,11 +28,8 @@ import com.tenio.core.entities.data.ServerMessage;
 /**
  * This interface helps you listen to all messages these came from the server's
  * UDP port.
- * 
- * @author kong
- *
  */
-public interface IDatagramListener {
+public interface DatagramListener {
 
 	/**
 	 * Listen for a new message

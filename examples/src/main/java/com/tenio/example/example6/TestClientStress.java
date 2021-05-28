@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tenio.common.data.element.CommonObject;
-import com.tenio.example.client.ISocketListener;
+import com.tenio.example.client.SocketListener;
 import com.tenio.example.client.TCP;
 
 /**
@@ -45,7 +45,7 @@ import com.tenio.example.client.TCP;
  * @author kong
  *
  */
-public final class TestClientStress implements ISocketListener {
+public final class TestClientStress implements SocketListener {
 
 	private static final boolean ENABLED_DEBUG = false;
 	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";

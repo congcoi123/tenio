@@ -27,7 +27,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.PathConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
@@ -49,7 +53,7 @@ import com.tenio.core.network.zero.ZeroSocketServiceImpl;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
-public final class NetworkServiceImpl implements NetworkService {
+public final class NetworkServiceImpl extends AbstractManager implements NetworkService {
 
 	private JettyHttpService __httpService;
 	private NettyWebSocketService __websocketService;
@@ -57,7 +61,7 @@ public final class NetworkServiceImpl implements NetworkService {
 	private SessionManager __sessionManager;
 	private NetworkReaderStatistic __networkReaderStatistic;
 	private NetworkWriterStatistic __networkWriterStatistic;
-	
+
 	private boolean __httpServiceActivated;
 	private boolean __websocketServiceActivated;
 	private boolean __socketServiceActivated;
@@ -67,10 +71,12 @@ public final class NetworkServiceImpl implements NetworkService {
 	}
 
 	private NetworkServiceImpl(EventManager eventManager) {
+		super(eventManager);
+
 		__sessionManager = SessionManagerImpl.newInstance(eventManager);
 		__networkReaderStatistic = NetworkReaderStatistic.newInstannce();
 		__networkWriterStatistic = NetworkWriterStatistic.newInstance();
-		
+
 		__httpService = JettyHttpService.newInstance(eventManager);
 		__websocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
 		__socketService = ZeroSocketServiceImpl.newInstance(eventManager);
@@ -103,7 +109,7 @@ public final class NetworkServiceImpl implements NetworkService {
 		__httpService.shutdown();
 		__websocketService.shutdown();
 		__socketService.shutdown();
-		
+
 		__destroy();
 	}
 
@@ -247,6 +253,17 @@ public final class NetworkServiceImpl implements NetworkService {
 
 	@Override
 	public void write(Response response) {
+		var data = ZeroObjectImpl.newInstance(response.getContent());
+		trace("SEND TO PLAYER", response.getPlayers(), data.toString());
+
+		var message = ServerMessage.newInstance().setData(data);
+
+		var playerIterator = response.getPlayers().iterator();
+		if (playerIterator.hasNext()) {
+			var player = playerIterator.next();
+			__eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
+		}
+
 		var socketSessions = response.getRecipientSocketSessions();
 		var datagramSessions = response.getRecipientDatagramSessions();
 		var websocketSessions = response.getRecipientWebSocketSessions();
