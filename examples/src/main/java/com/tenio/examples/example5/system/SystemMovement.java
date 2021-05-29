@@ -21,41 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example2.constant;
+package com.tenio.examples.example5.system;
 
-public enum MessageType {
+import com.tenio.engine.ecs.bases.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.IExecuteSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.examples.example5.component.Position;
+import com.tenio.examples.example5.constant.Example5Constant;
+import com.tenio.examples.example5.context.GameComponents;
+import com.tenio.examples.example5.context.GameEntity;
 
-	HI_HONEY_IM_HOME(0),
+public final class SystemMovement extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
 
-	STEW_READY(1);
-
-	private int __type;
-
-	private MessageType(final int type) {
-		__type = type;
-	}
-
-	public int get() {
-		return __type;
-	}
-
-	public static String msgToStr(int type) {
-		switch (type) {
-		case 0:
-			return "HiHoneyImHome";
-
-		case 1:
-			return "StewReady";
-
-		default:
-			return "Not recognized!";
-
-		}
+	public SystemMovement(IContext<GameEntity> context) {
+		super(context);
 	}
 
 	@Override
-	public String toString() {
-		return name();
+	public void initialize() {
+
+	}
+
+	@Override
+	public void execute(float deltaTime) {
+		for (var entity : getContext().getEntities().values()) {
+			if (entity.hasComponents(GameComponents.POSITION, GameComponents.MOTION)) {
+				var position = (Position) entity.getComponent(GameComponents.POSITION);
+				if (position.x < Example5Constant.DESIGN_WIDTH) {
+					position.x += deltaTime;
+				} else {
+					position.x = 0;
+				}
+			}
+		}
 	}
 
 }

@@ -25,7 +25,7 @@ package com.tenio.examples.example2.state.miner;
 
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.examples.example2.constant.Location;
+import com.tenio.examples.example2.define.Location;
 import com.tenio.examples.example2.entity.Miner;
 
 /**

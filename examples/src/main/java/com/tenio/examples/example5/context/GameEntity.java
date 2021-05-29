@@ -23,12 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.context;
 
-import com.tenio.engine.ecs.base.Entity;
+import com.tenio.engine.ecs.bases.Entity;
 import com.tenio.examples.example5.component.Position;
 
-/**
- * @author kong
- */
 public final class GameEntity extends Entity {
 
 	public boolean isAnimation() {

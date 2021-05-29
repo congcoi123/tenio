@@ -23,11 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.component;
 
-import com.tenio.engine.ecs.base.IComponent;
+import com.tenio.engine.ecs.bases.IComponent;
 
-/**
- * @author kong
- */
 public final class Motion implements IComponent {
 
 }

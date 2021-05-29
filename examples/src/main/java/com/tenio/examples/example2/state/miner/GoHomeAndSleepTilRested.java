@@ -27,9 +27,9 @@ import com.tenio.common.utilities.TimeUtility;
 import com.tenio.engine.constant.EngineConstant;
 import com.tenio.engine.fsm.entity.State;
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.examples.example2.constant.EntityName;
-import com.tenio.examples.example2.constant.Location;
-import com.tenio.examples.example2.constant.MessageType;
+import com.tenio.examples.example2.define.EntityName;
+import com.tenio.examples.example2.define.Location;
+import com.tenio.examples.example2.define.MessageType;
 import com.tenio.examples.example2.entity.Miner;
 
 /**

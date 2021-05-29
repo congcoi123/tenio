@@ -25,62 +25,60 @@ package com.tenio.examples.example5;
 
 import java.awt.Color;
 
-import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.bases.ContextInfo;
 import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
 import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameContext;
-import com.tenio.examples.example5.system.InitializeSystem;
-import com.tenio.examples.example5.system.MoveSystem;
-import com.tenio.examples.example5.system.RenderSystem;
-import com.tenio.examples.example5.system.TeardownSystem;
+import com.tenio.examples.example5.system.SystemInitialization;
+import com.tenio.examples.example5.system.SystemMovement;
+import com.tenio.examples.example5.system.SystemRenderer;
+import com.tenio.examples.example5.system.SystemTeardown;
 
-/**
- * @author kong
- */
 public final class ECS extends ECSHeartBeat {
-	
+
 	private GameContext __context;
 	private boolean __toggleMotion = true;
 	private boolean __toggleAnimation = true;
 	private boolean __toggleView = true;
-	
+
 	public ECS(int cx, int cy) {
 		super(cx, cy);
-		
-		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(), GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
+
+		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(),
+				GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
 		__context = new GameContext(info);
-		
-		addSystem(new InitializeSystem(__context));
-		addSystem(new MoveSystem(__context));
-		addSystem(new RenderSystem(__context));
-		addSystem(new TeardownSystem(__context));
+
+		addSystem(new SystemInitialization(__context));
+		addSystem(new SystemMovement(__context));
+		addSystem(new SystemRenderer(__context));
+		addSystem(new SystemTeardown(__context));
 	}
-	
+
 	@Override
 	protected void _onAction1() {
 		__toggleMotion = !__toggleMotion;
-		setTextAction1(__toggleMotion ? "On motion" : "Off motion" , Color.LIGHT_GRAY);
+		setTextAction1(__toggleMotion ? "Stop" : "Move", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {
 			entity.setMotion(__toggleMotion);
 		}
 	}
-	
+
 	@Override
 	protected void _onAction2() {
 		__toggleAnimation = !__toggleAnimation;
-		setTextAction2(__toggleAnimation ? "On animation" : "Off animation" , Color.LIGHT_GRAY);
+		setTextAction2(__toggleAnimation ? "Off animation" : "On animation", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {
 			entity.setAnimation(__toggleAnimation);
 		}
 	}
-	
+
 	@Override
 	protected void _onAction3() {
 		__toggleView = !__toggleView;
-		setTextAction3(__toggleView ? "On view" : "Off view" , Color.LIGHT_GRAY);
+		setTextAction3(__toggleView ? "Invisible" : "Visible", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {
 			entity.setView(__toggleView);
 		}
 	}
-	
+
 }

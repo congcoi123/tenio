@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example2.entity;
 
 import com.tenio.engine.fsm.entity.AbstractEntity;
-import com.tenio.examples.example2.constant.EntityName;
+import com.tenio.examples.example2.define.EntityName;
 
 public abstract class BaseEntity extends AbstractEntity {
 

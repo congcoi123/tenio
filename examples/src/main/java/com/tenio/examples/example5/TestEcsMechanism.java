@@ -24,25 +24,18 @@ THE SOFTWARE.
 package com.tenio.examples.example5;
 
 import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.examples.example5.constant.Constants;
+import com.tenio.examples.example5.constant.Example5Constant;
 
-/**
- * @author kong
- */
-public final class TestECS {
+public final class TestEcsMechanism {
 
-	/**
-	 * The entry point
-	 * @throws Exception 
-	 */
 	public static void main(String[] args) throws Exception {
 		// Create a ECS
-		var ecs = new ECS(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+		var ecs = new ECS(Example5Constant.DESIGN_WIDTH, Example5Constant.DESIGN_HEIGHT);
 		// Enable debugger window
 		ecs.debug("[TenIO] Server Debugger : ECS");
 		var hearbeatManager = new HeartBeatManager();
 		hearbeatManager.initialize(1);
 		hearbeatManager.create("ECS", ecs);
 	}
-	
+
 }

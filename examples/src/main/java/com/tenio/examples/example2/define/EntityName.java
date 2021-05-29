@@ -21,30 +21,44 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example5.system;
-
-import com.tenio.engine.ecs.base.IContext;
-import com.tenio.engine.ecs.system.AbstractSystem;
-import com.tenio.engine.ecs.system.IInitializeSystem;
-import com.tenio.examples.example5.constant.Constants;
-import com.tenio.examples.example5.context.GameEntity;
+package com.tenio.examples.example2.define;
 
 /**
- * @author kong
+ * For the quick demo, create temporary some entities' id here. In a real
+ * application, these id will be retrieved from database or other services.
  */
-public final class InitializeSystem extends AbstractSystem<GameEntity> implements IInitializeSystem {
+public enum EntityName {
 
-	public InitializeSystem(IContext<GameEntity> context) {
-		super(context);
+	MINER("miner"),
+
+	WIFE("wife");
+
+	private final String __name;
+
+	private EntityName(final String name) {
+		__name = name;
+	}
+
+	public String get() {
+		return __name;
+	}
+
+	public static String getName(String name) {
+		switch (name) {
+		case "miner":
+			return "Miner Bob";
+
+		case "wife":
+			return "Wife Elsa";
+
+		default:
+			return "No name";
+		}
 	}
 
 	@Override
-	public void initialize() {
-		var entity = (GameEntity) getContext().createEntity();
-		entity.setAnimation(true);
-		entity.setMotion(true);
-		entity.setView(true);
-		entity.setPosition(Constants.DESIGN_WIDTH / 2, Constants.DESIGN_HEIGHT / 2);
+	public String toString() {
+		return name();
 	}
 
 }

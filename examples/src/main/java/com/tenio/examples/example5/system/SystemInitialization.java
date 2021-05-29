@@ -23,23 +23,25 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.base.IContext;
-import com.tenio.engine.ecs.system.AbstractSystem;
-import com.tenio.engine.ecs.system.ITearDownSystem;
+import com.tenio.engine.ecs.bases.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.examples.example5.constant.Example5Constant;
 import com.tenio.examples.example5.context.GameEntity;
 
-/**
- * @author kong
- */
-public final class TeardownSystem extends AbstractSystem<GameEntity> implements ITearDownSystem {
+public final class SystemInitialization extends AbstractSystem<GameEntity> implements IInitializeSystem {
 
-	public TeardownSystem(IContext<GameEntity> context) {
+	public SystemInitialization(IContext<GameEntity> context) {
 		super(context);
 	}
 
 	@Override
-	public void tearDown() {
-		getContext().reset();
+	public void initialize() {
+		var entity = (GameEntity) getContext().createEntity();
+		entity.setAnimation(true);
+		entity.setMotion(true);
+		entity.setView(true);
+		entity.setPosition(Example5Constant.DESIGN_WIDTH / 2, Example5Constant.DESIGN_HEIGHT / 2);
 	}
 
 }

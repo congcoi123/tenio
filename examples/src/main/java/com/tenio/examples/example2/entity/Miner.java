@@ -26,8 +26,8 @@ package com.tenio.examples.example2.entity;
 import com.tenio.engine.fsm.MessageDispatcher;
 import com.tenio.engine.fsm.entity.FSMComponent;
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.examples.example2.constant.EntityName;
-import com.tenio.examples.example2.constant.Location;
+import com.tenio.examples.example2.define.EntityName;
+import com.tenio.examples.example2.define.Location;
 import com.tenio.examples.example2.state.miner.GoHomeAndSleepTilRested;
 
 public final class Miner extends BaseEntity {

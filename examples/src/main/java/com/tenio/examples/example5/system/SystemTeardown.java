@@ -23,41 +23,20 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.base.IContext;
-import com.tenio.engine.ecs.system.AbstractSystem;
-import com.tenio.engine.ecs.system.IExecuteSystem;
-import com.tenio.engine.ecs.system.IInitializeSystem;
-import com.tenio.examples.example5.component.Position;
-import com.tenio.examples.example5.constant.Constants;
-import com.tenio.examples.example5.context.GameComponents;
+import com.tenio.engine.ecs.bases.IContext;
+import com.tenio.engine.ecs.systems.AbstractSystem;
+import com.tenio.engine.ecs.systems.ITearDownSystem;
 import com.tenio.examples.example5.context.GameEntity;
 
-/**
- * @author kong
- */
-public final class MoveSystem extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
+public final class SystemTeardown extends AbstractSystem<GameEntity> implements ITearDownSystem {
 
-	public MoveSystem(IContext<GameEntity> context) {
+	public SystemTeardown(IContext<GameEntity> context) {
 		super(context);
 	}
 
 	@Override
-	public void initialize() {
-
-	}
-
-	@Override
-	public void execute(float deltaTime) {
-		for (var entity : getContext().getEntities().values()) {
-			if (entity.hasComponents(GameComponents.POSITION, GameComponents.MOTION)) {
-				var position = (Position) entity.getComponent(GameComponents.POSITION);
-				if (position.x < Constants.DESIGN_WIDTH) {
-					position.x += deltaTime;
-				} else {
-					position.x = 0;
-				}
-			}
-		}
+	public void tearDown() {
+		getContext().reset();
 	}
 
 }

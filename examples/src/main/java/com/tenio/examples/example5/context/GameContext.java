@@ -23,12 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.context;
 
-import com.tenio.engine.ecs.base.Context;
-import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.bases.Context;
+import com.tenio.engine.ecs.bases.ContextInfo;
 
-/**
- * @author kong
- */
 public final class GameContext extends Context<GameEntity> {
 
 	public GameContext(ContextInfo contextInfo) {

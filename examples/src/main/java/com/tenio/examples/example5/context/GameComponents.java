@@ -28,9 +28,6 @@ import com.tenio.examples.example5.component.Motion;
 import com.tenio.examples.example5.component.Position;
 import com.tenio.examples.example5.component.View;
 
-/**
- * @author kong
- */
 public final class GameComponents {
 
 	public static byte ANIMATION = 0;
@@ -52,6 +49,10 @@ public final class GameComponents {
 
 	public static Class<?>[] getComponentTypes() {
 		return __componentTypes;
+	}
+	
+	private GameComponents() {
+		
 	}
 
 }

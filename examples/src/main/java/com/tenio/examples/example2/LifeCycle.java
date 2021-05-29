@@ -30,7 +30,7 @@ import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
-import com.tenio.examples.example2.constant.EntityName;
+import com.tenio.examples.example2.define.EntityName;
 import com.tenio.examples.example2.entity.BaseEntity;
 import com.tenio.examples.example2.entity.Miner;
 import com.tenio.examples.example2.entity.Wife;
