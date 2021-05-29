@@ -170,7 +170,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
 	@Override
 	public void setHttpPathConfigs(List<PathConfig> pathConfigs) {
-		if (pathConfigs == null || pathConfigs.isEmpty()) {
+		if (pathConfigs == null) {
 			return;
 		}
 		__httpService.setPathConfigs(pathConfigs);
@@ -246,14 +246,14 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 	public void setSocketConfigs(List<SocketConfig> socketConfigs) {
 		if (__containsSocketPort(socketConfigs)) {
 			__socketServiceInitialized = true;
-		}
-		if (__containsWebsocketPort(socketConfigs)) {
-			__websocketServiceInitialized = true;
+			__socketService.setSocketConfigs(socketConfigs);
 		}
 
-		__socketService.setSocketConfigs(socketConfigs);
-		__websocketService.setWebSocketConfig(socketConfigs.stream()
-				.filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET).findFirst().get());
+		if (__containsWebsocketPort(socketConfigs)) {
+			__websocketServiceInitialized = true;
+			__websocketService.setWebSocketConfig(socketConfigs.stream()
+					.filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET).findFirst().get());
+		}
 	}
 
 	private boolean __containsSocketPort(List<SocketConfig> socketConfigs) {

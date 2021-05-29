@@ -32,9 +32,6 @@ import java.net.URL;
 
 /**
  * This class shows how a send HTTP requests to server
- * 
- * @author kong
- *
  */
 public final class TestClientRestful {
 

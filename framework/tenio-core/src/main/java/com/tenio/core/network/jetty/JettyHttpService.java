@@ -59,7 +59,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
 	private JettyHttpService(EventManager eventManager) {
 		super(eventManager);
-		
+
 		__initialized = false;
 	}
 
@@ -111,6 +111,8 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 		try {
 			info("START SERVICE", getName());
 
+			info("Http Info", buildgen("Started at port: ", __port, ", Configuration: ", __pathConfigs.toString()));
+
 			__server.start();
 			__server.join();
 		} catch (Exception e) {
@@ -138,7 +140,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 		if (!__initialized) {
 			return;
 		}
-		
+
 		__executor = Executors.newSingleThreadExecutor();
 		__executor.execute(this);
 
@@ -161,7 +163,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 		if (!__initialized) {
 			return;
 		}
-		
+
 		try {
 			__server.stop();
 			__executor.shutdownNow();

@@ -23,25 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example8;
 
-import java.io.IOException;
-
-import org.json.simple.JSONObject;
-
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.element.CommonObject;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.configuration.define.ExtensionEvent;
-import com.tenio.core.extension.AbstractExtensionHandler;
-import com.tenio.core.extension.IExtension;
-import com.tenio.core.network.define.RestMethod;
+import com.tenio.core.bootstrap.annotations.Bootstrap;
 import com.tenio.examples.server.TestConfiguration;
 
 /**
  * This class demonstrate how to handle HTTP requests
- * 
- * @author kong
- *
  */
+@Bootstrap
 public final class TestServerRestful extends AbstractApp {
 
 	/**
@@ -49,74 +39,21 @@ public final class TestServerRestful extends AbstractApp {
 	 */
 	public static void main(String[] params) {
 		var game = new TestServerRestful();
-		game.start();
-	}
-
-	@Override
-	public IExtension getExtension() {
-		return new Extenstion();
+		game.start(TestServerRestful.class);
 	}
 
 	@Override
 	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.restful.xml");
+		return new TestConfiguration("TenIOConfig.example8.xml");
 	}
 
 	@Override
-	public void onStarted(IExtension extension, Configuration configuration) {
+	public void onStarted(Configuration configuration) {
 
 	}
 
 	@Override
 	public void onShutdown() {
-
-	}
-
-	/**
-	 * Your own logic handler class
-	 */
-	private final class Extenstion extends AbstractExtensionHandler implements IExtension {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void initialize(Configuration configuration) {
-
-			_on(ExtensionEvent.HTTP_REQUEST_VALIDATE, params -> {
-				var method = _getRestMethod(params[0]);
-				// var request = _getHttpServletRequest(params[1]);
-				var response = _getHttpServletResponse(params[2]);
-
-				if (method.equals(RestMethod.DELETE)) {
-					var json = new JSONObject();
-					json.putAll(CommonObject.newInstance().add("status", "failed").add("message", "not supported"));
-					try {
-						response.getWriter().println(json.toString());
-					} catch (IOException e) {
-						_error(e, "request");
-					}
-					return response;
-				}
-
-				return null;
-			});
-
-			_on(ExtensionEvent.HTTP_REQUEST_HANDLE, params -> {
-				// var method = _getRestMethod(params[0]);
-				// var request = _getHttpServletRequest(params[1]);
-				var response = _getHttpServletResponse(params[2]);
-
-				var json = new JSONObject();
-				json.putAll(CommonObject.newInstance().add("status", "ok").add("message", "handler"));
-				try {
-					response.getWriter().println(json.toString());
-				} catch (IOException e) {
-					_error(e, "handler");
-				}
-
-				return null;
-			});
-
-		}
 
 	}
 

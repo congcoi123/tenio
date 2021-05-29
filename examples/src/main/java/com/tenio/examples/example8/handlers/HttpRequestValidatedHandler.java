@@ -21,20 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1.handlers;
+package com.tenio.examples.example8.handlers;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
+import com.tenio.core.extension.events.EventHttpRequestValidation;
+import com.tenio.core.network.defines.RestMethod;
 
 @Component
-public final class AttachConnectionRequestValidatedHandler extends AbstractExtension
-		implements EventAttachConnectionRequestValidation {
+public final class HttpRequestValidatedHandler extends AbstractExtension implements EventHttpRequestValidation {
 
 	@Override
-	public Player handle(ServerMessage message) {
+	public HttpServletResponse handle(RestMethod method, HttpServletRequest request, HttpServletResponse response) {
+		if (method.equals(RestMethod.DELETE)) {
+			var json = new JSONObject();
+			CommonObject.newInstance().add("status", "failed").add("message", "not supported").forEach((key, value) -> {
+				json.put(key, value);
+			});
+			try {
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				error(e, "request");
+			}
+			
+			return response;
+		}
+
 		return null;
 	}
 

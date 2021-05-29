@@ -121,6 +121,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		// subscribing for processes and handlers
 		__internalProcessorService.subscribe();
+
 		eventHandler.initialize(__eventManager);
 
 		// collect all subscribers, listen all the events
@@ -187,8 +188,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz);
 
 		var httpConfig = (List<HttpConfig>) configuration.get(CoreConfigurationType.HTTP_CONFIGS);
-		__networkService.setHttpPort(httpConfig.get(0).getPort());
-		__networkService.setHttpPathConfigs(httpConfig.get(0).getPaths());
+		__networkService.setHttpPort(!httpConfig.isEmpty() ? httpConfig.get(0).getPort() : 0);
+		__networkService.setHttpPathConfigs(!httpConfig.isEmpty() ? httpConfig.get(0).getPaths() : null);
 
 		__networkService.setSocketAcceptorBufferSize(
 				configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));

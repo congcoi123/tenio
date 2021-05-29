@@ -89,7 +89,7 @@ public final class ConfigurationAssessment {
 	}
 
 	private void __checkSubscriberHttpHandler() throws NotDefinedSubscribersException {
-		if (!__containsHttpPathConfigs() && (!__eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_VALIDATION)
+		if (__containsHttpPathConfigs() && (!__eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_VALIDATION)
 				|| !__eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_HANDLE))) {
 			throw new NotDefinedSubscribersException(EventHttpRequestValidation.class, EventHttpRequestHandle.class);
 		}

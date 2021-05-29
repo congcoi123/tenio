@@ -44,7 +44,7 @@ public final class TestServerLogin extends AbstractApp {
 
 	@Override
 	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.xml");
+		return new TestConfiguration("TenIOConfig.example1.xml");
 	}
 
 	@Override

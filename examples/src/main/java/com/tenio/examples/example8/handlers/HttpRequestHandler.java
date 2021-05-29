@@ -21,20 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1.handlers;
+package com.tenio.examples.example8.handlers;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.tenio.common.data.elements.CommonObject;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventAttachedConnectionResult;
+import com.tenio.core.extension.events.EventHttpRequestHandle;
+import com.tenio.core.network.defines.RestMethod;
 
 @Component
-public final class AttachedConnectionHandler extends AbstractExtension implements EventAttachedConnectionResult {
+public final class HttpRequestHandler extends AbstractExtension implements EventHttpRequestHandle {
 
 	@Override
-	public void handle(Player player, AttachedConnectionResult result) {
-
+	public void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response) {
+		var json = new JSONObject();
+		CommonObject.newInstance().add("status", "ok").add("message", "handler").forEach((key, value) -> {
+			json.put(key, value);
+		});
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			error(e, "handler");
+		}
 	}
 
 }
