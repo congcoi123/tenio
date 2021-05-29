@@ -62,9 +62,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 	private NetworkReaderStatistic __networkReaderStatistic;
 	private NetworkWriterStatistic __networkWriterStatistic;
 
-	private boolean __httpServiceActivated;
-	private boolean __websocketServiceActivated;
-	private boolean __socketServiceActivated;
+	private boolean __initialized;
+
+	private boolean __httpServiceInitialized;
+	private boolean __websocketServiceInitialized;
+	private boolean __socketServiceInitialized;
 
 	public static NetworkService newInstance(EventManager eventManager) {
 		return new NetworkServiceImpl(eventManager);
@@ -73,6 +75,12 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 	private NetworkServiceImpl(EventManager eventManager) {
 		super(eventManager);
 
+		__initialized = false;
+
+		__httpServiceInitialized = false;
+		__websocketServiceInitialized = false;
+		__socketServiceInitialized = false;
+
 		__sessionManager = SessionManagerImpl.newInstance(eventManager);
 		__networkReaderStatistic = NetworkReaderStatistic.newInstannce();
 		__networkWriterStatistic = NetworkWriterStatistic.newInstance();
@@ -80,7 +88,15 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 		__httpService = JettyHttpService.newInstance(eventManager);
 		__websocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
 		__socketService = ZeroSocketServiceImpl.newInstance(eventManager);
+	}
 
+	@Override
+	public void initialize() {
+		__initializeServices();
+		__initialized = true;
+	}
+
+	private void __initializeServices() {
 		__websocketService.setSessionManager(__sessionManager);
 		__websocketService.setNetworkReaderStatistic(__networkReaderStatistic);
 		__websocketService.setNetworkWriterStatistic(__networkWriterStatistic);
@@ -88,13 +104,16 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 		__socketService.setSessionManager(__sessionManager);
 		__socketService.setNetworkReaderStatistic(__networkReaderStatistic);
 		__socketService.setNetworkWriterStatistic(__networkWriterStatistic);
-	}
 
-	@Override
-	public void initialize() {
-		__httpService.initialize();
-		__websocketService.initialize();
-		__socketService.initialize();
+		if (__httpServiceInitialized) {
+			__httpService.initialize();
+		}
+		if (__websocketServiceInitialized) {
+			__websocketService.initialize();
+		}
+		if (__socketServiceInitialized) {
+			__socketService.initialize();
+		}
 	}
 
 	@Override
@@ -106,6 +125,13 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
 	@Override
 	public void shutdown() {
+		if (!__initialized) {
+			return;
+		}
+		__shutdown();
+	}
+
+	private void __shutdown() {
 		__httpService.shutdown();
 		__websocketService.shutdown();
 		__socketService.shutdown();
@@ -144,7 +170,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
 	@Override
 	public void setHttpPathConfigs(List<PathConfig> pathConfigs) {
+		if (pathConfigs == null || pathConfigs.isEmpty()) {
+			return;
+		}
 		__httpService.setPathConfigs(pathConfigs);
+		__httpServiceInitialized = true;
 	}
 
 	@Override
@@ -214,9 +244,26 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
 	@Override
 	public void setSocketConfigs(List<SocketConfig> socketConfigs) {
+		if (__containsSocketPort(socketConfigs)) {
+			__socketServiceInitialized = true;
+		}
+		if (__containsWebsocketPort(socketConfigs)) {
+			__websocketServiceInitialized = true;
+		}
+
 		__socketService.setSocketConfigs(socketConfigs);
 		__websocketService.setWebSocketConfig(socketConfigs.stream()
 				.filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET).findFirst().get());
+	}
+
+	private boolean __containsSocketPort(List<SocketConfig> socketConfigs) {
+		return socketConfigs.stream().filter(socketConfig -> socketConfig.getType() == TransportType.TCP
+				|| socketConfig.getType() == TransportType.UDP).findFirst().isPresent();
+	}
+
+	private boolean __containsWebsocketPort(List<SocketConfig> socketConfigs) {
+		return socketConfigs.stream().filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET)
+				.findFirst().isPresent();
 	}
 
 	@Override
@@ -262,6 +309,15 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 		while (playerIterator.hasNext()) {
 			var player = playerIterator.next();
 			__eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
+		}
+
+		var nonSessionPlayers = response.getNonSessionPlayers();
+		if (nonSessionPlayers != null) {
+			var nonSessionIterator = nonSessionPlayers.iterator();
+			while (nonSessionIterator.hasNext()) {
+				var player = nonSessionIterator.next();
+				__eventManager.emit(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, message);
+			}
 		}
 
 		var socketSessions = response.getRecipientSocketSessions();

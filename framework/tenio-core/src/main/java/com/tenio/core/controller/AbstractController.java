@@ -48,6 +48,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	private BlockingQueue<Request> __requestQueue;
 
 	private int __maxQueueSize;
+
+	private boolean __initialized;
 	private volatile boolean __activated;
 
 	protected AbstractController(EventManager eventManager) {
@@ -56,6 +58,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 		__maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
 		__executorSize = DEFAULT_NUMBER_WORKERS;
 		__activated = false;
+		__initialized = false;
 	}
 
 	private void __initializeWorkers() {
@@ -72,7 +75,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 			public void run() {
 				if (__executor != null && !__executor.isShutdown()) {
 					try {
-						__stop();
+						__shutdown();
 					} catch (Exception e) {
 						error(e);
 					}
@@ -81,7 +84,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 		});
 	}
 
-	private void __stop() {
+	private void __shutdown() {
 		__activated = false;
 
 		__executor.shutdownNow();
@@ -94,7 +97,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void run() {
 		__id++;
-		
+
 		info("START SERVICE", buildgen("controller-", getName(), "-", __id));
 		__setThreadName();
 
@@ -124,6 +127,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void initialize() {
 		__initializeWorkers();
+		__initialized = true;
 	}
 
 	@Override
@@ -133,7 +137,10 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 	@Override
 	public void shutdown() {
-		__stop();
+		if (!__initialized) {
+			return;
+		}
+		__shutdown();
 	}
 
 	@Override

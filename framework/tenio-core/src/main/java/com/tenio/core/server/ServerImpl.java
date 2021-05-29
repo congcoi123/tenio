@@ -113,9 +113,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
-		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
-		ConfigsAssessment.assess();
-
 		// show system information
 		var systemInfo = new SystemInfo();
 		systemInfo.logSystemInfo();
@@ -141,6 +138,9 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
+
+		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
+		ConfigsAssessment.assess();
 
 		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
 

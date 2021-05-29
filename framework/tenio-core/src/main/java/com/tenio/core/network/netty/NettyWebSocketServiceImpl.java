@@ -82,6 +82,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 	private NetworkWriterStatistic __networkWriterStatistic;
 	private SocketConfig __socketConfig;
 	private boolean __usingSSL;
+	
+	private boolean __initialized;
 
 	public static NettyWebSocketService newInstance(EventManager eventManager) {
 		return new NettyWebSocketServiceImpl(eventManager);
@@ -94,6 +96,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 		__receiverBufferSize = DEFAULT_RECEIVER_BUFFER_SIZE;
 		__producerWorkerSize = DEFAULT_PRODUCER_WORKER_SIZE;
 		__consumerWorkerSize = DEFAULT_CONSUMER_WORKER_SIZE;
+		
+		__initialized = false;
 	}
 
 	private void __start() throws InterruptedException {
@@ -194,11 +198,15 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 
 	@Override
 	public void initialize() {
-		// do nothing
+		__initialized = true;
 	}
 
 	@Override
 	public void start() {
+		if (!__initialized) {
+			return;
+		}
+		
 		try {
 			__start();
 		} catch (InterruptedException e) {
@@ -208,6 +216,9 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 
 	@Override
 	public void shutdown() {
+		if (!__initialized) {
+			return;
+		}
 		__shutdown();
 	}
 

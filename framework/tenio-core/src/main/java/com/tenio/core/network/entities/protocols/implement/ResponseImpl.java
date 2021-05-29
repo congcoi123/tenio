@@ -36,6 +36,7 @@ public final class ResponseImpl implements Response {
 
 	private byte[] __content;
 	private Collection<Player> __players;
+	private Collection<Player> __nonSessionPlayers;
 	private Collection<Session> __socketSessions;
 	private Collection<Session> __datagramSessions;
 	private Collection<Session> __webSocketSessions;
@@ -52,6 +53,7 @@ public final class ResponseImpl implements Response {
 		__socketSessions = null;
 		__datagramSessions = null;
 		__webSocketSessions = null;
+		__nonSessionPlayers = null;
 		__priority = ResponsePriority.NORMAL;
 		__prioritizedUdp = false;
 		__encrypted = false;
@@ -72,6 +74,11 @@ public final class ResponseImpl implements Response {
 	@Override
 	public Collection<Player> getPlayers() {
 		return __players;
+	}
+
+	@Override
+	public Collection<Player> getNonSessionPlayers() {
+		return __nonSessionPlayers;
 	}
 
 	@Override
@@ -172,9 +179,13 @@ public final class ResponseImpl implements Response {
 					if (__webSocketSessions == null) {
 						__webSocketSessions = new ArrayList<Session>();
 					}
+					__webSocketSessions.add(session);
 				}
 			} else {
-				// do nothing
+				if (__nonSessionPlayers == null) {
+					__nonSessionPlayers = new ArrayList<Player>();
+				}
+				__nonSessionPlayers.add(player);
 			}
 		});
 	}
@@ -182,9 +193,13 @@ public final class ResponseImpl implements Response {
 	@Override
 	public String toString() {
 		return String.format(
-				"{ content: bytes[%d], players: %s, socket: %s, datagram: %s, websocket: %s, priority: %s, udp: %b, encrypted: %b}",
-				__content.length, __players.toString(), __socketSessions.toString(), __datagramSessions.toString(),
-				__webSocketSessions.toString(), __priority.toString(), __prioritizedUdp, __encrypted);
+				"{ content: bytes[%d], players: %s, socket: %s, datagram: %s, websocket: %s, non-session: %s, priority: %s, udp: %b, encrypted: %b}",
+				__content.length, __players != null ? __players.toString() : "null",
+				__socketSessions != null ? __socketSessions.toString() : "null",
+				__datagramSessions != null ? __datagramSessions.toString() : "null",
+				__webSocketSessions != null ? __webSocketSessions.toString() : "null",
+				__nonSessionPlayers != null ? __nonSessionPlayers.toString() : "null", __priority.toString(),
+				__prioritizedUdp, __encrypted);
 	}
 
 }

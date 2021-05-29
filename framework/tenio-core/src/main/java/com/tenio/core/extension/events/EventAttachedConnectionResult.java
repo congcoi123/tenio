@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
-import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 
 public interface EventAttachedConnectionResult {
 
-	void handle(ServerMessage message, AttachedConnectionResult result);
+	void handle(Player player, AttachedConnectionResult result);
 
 }

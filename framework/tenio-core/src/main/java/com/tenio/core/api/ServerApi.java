@@ -45,31 +45,21 @@ public interface ServerApi {
 
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
-	Room createRoom(InitialRoomSetting setting, Player ownder, Room roomToLeave);
-
 	Player getPlayerByName(String playerName);
 
 	Player getPlayerBySession(Session session);
 
-	void joinRoom(Player player, Room room, int slotInRoom);
-
-	void joinRoom(Player player, Room room);
-
-	void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave);
-
-	void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave, int slotInRoom);
+	void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
 
 	void switchPlayerToSpectator(Player player, Room room);
 
 	void switchSpectatorToPlayer(Player player, Room room, int targetSlot);
 
-	void switchSpectatorToPlayer(Player player, Room room);
-
 	void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode);
 
 	void removeRoom(Room room);
 
-	void sendPublicMessage(Room room, Player sender, ServerMessage message);
+	void sendPublicMessage(Player sender, Room room, ServerMessage message);
 
 	void sendPrivateMessage(Player sender, Player recipient, ServerMessage message);
 

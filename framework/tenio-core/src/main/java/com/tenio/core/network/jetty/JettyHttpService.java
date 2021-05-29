@@ -51,6 +51,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 	private ExecutorService __executor;
 	private int __port;
 	private List<PathConfig> __pathConfigs;
+	private boolean __initialized;
 
 	public static JettyHttpService newInstance(EventManager eventManager) {
 		return new JettyHttpService(eventManager);
@@ -58,6 +59,8 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
 	private JettyHttpService(EventManager eventManager) {
 		super(eventManager);
+		
+		__initialized = false;
 	}
 
 	private void __setup() throws DuplicatedUriAndMethodException {
@@ -127,10 +130,15 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 		} catch (DuplicatedUriAndMethodException e) {
 			throw new ServiceRuntimeException(e.getMessage());
 		}
+		__initialized = true;
 	}
 
 	@Override
 	public void start() {
+		if (!__initialized) {
+			return;
+		}
+		
 		__executor = Executors.newSingleThreadExecutor();
 		__executor.execute(this);
 
@@ -150,6 +158,10 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
 	@Override
 	public void shutdown() {
+		if (!__initialized) {
+			return;
+		}
+		
 		try {
 			__server.stop();
 			__executor.shutdownNow();

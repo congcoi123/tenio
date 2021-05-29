@@ -57,6 +57,8 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 
 	private DatagramIOHandler __datagramIOHandler;
 	private SocketIOHandler __socketIOHandler;
+	
+	private boolean __initialized;
 
 	public static ZeroSocketService newInstance(EventManager eventManager) {
 		return new ZeroSocketServiceImpl(eventManager);
@@ -71,6 +73,8 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 
 		__datagramIOHandler = DatagramIOHandlerImpl.newInstance(eventManager);
 		__socketIOHandler = SocketIOHandlerImpl.newInstance(eventManager);
+		
+		__initialized = false;
 	}
 
 	private void __setupAcceptor() {
@@ -100,10 +104,16 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 		__readerEngine.initialize();
 		__writerEngine.initialize();
 		__acceptorEngine.initialize();
+		
+		__initialized = true;
 	}
 
 	@Override
 	public void start() {
+		if (!__initialized) {
+			return;
+		}
+		
 		__acceptorEngine.start();
 		__readerEngine.start();
 		__writerEngine.start();
@@ -111,6 +121,10 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
 
 	@Override
 	public void shutdown() {
+		if (!__initialized) {
+			return;
+		}
+		
 		__acceptorEngine.shutdown();
 		__readerEngine.shutdown();
 		__writerEngine.shutdown();

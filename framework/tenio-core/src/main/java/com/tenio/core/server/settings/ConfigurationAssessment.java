@@ -31,6 +31,12 @@ import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.ConfigurationException;
 import com.tenio.core.exceptions.NotDefinedSubscribersException;
+import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
+import com.tenio.core.extension.events.EventAttachedConnectionResult;
+import com.tenio.core.extension.events.EventHttpRequestHandle;
+import com.tenio.core.extension.events.EventHttpRequestValidation;
+import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
+import com.tenio.core.extension.events.EventPlayerReconnectedResult;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.defines.data.HttpConfig;
 import com.tenio.core.network.defines.data.SocketConfig;
@@ -60,8 +66,8 @@ public final class ConfigurationAssessment {
 		if (__configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION)) {
 			if (!__eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
 					|| !__eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECTED_RESULT)) {
-				throw new NotDefinedSubscribersException(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
-						ServerEvent.PLAYER_RECONNECTED_RESULT);
+				throw new NotDefinedSubscribersException(EventPlayerReconnectRequestHandle.class,
+						EventPlayerReconnectedResult.class);
 			}
 		}
 	}
@@ -70,8 +76,8 @@ public final class ConfigurationAssessment {
 		if (__containsTcpSocketConfig() && __containsUdpSocketConfig()) {
 			if (!__eventManager.hasSubscriber(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION)
 					|| !__eventManager.hasSubscriber(ServerEvent.ATTACHED_CONNECTION_RESULT)) {
-				throw new NotDefinedSubscribersException(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION,
-						ServerEvent.ATTACHED_CONNECTION_RESULT);
+				throw new NotDefinedSubscribersException(EventAttachConnectionRequestValidation.class,
+						EventAttachedConnectionResult.class);
 			}
 		}
 	}
@@ -85,8 +91,7 @@ public final class ConfigurationAssessment {
 	private void __checkSubscriberHttpHandler() throws NotDefinedSubscribersException {
 		if (!__containsHttpPathConfigs() && (!__eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_VALIDATION)
 				|| !__eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_HANDLE))) {
-			throw new NotDefinedSubscribersException(ServerEvent.HTTP_REQUEST_VALIDATION,
-					ServerEvent.HTTP_REQUEST_HANDLE);
+			throw new NotDefinedSubscribersException(EventHttpRequestValidation.class, EventHttpRequestHandle.class);
 		}
 	}
 

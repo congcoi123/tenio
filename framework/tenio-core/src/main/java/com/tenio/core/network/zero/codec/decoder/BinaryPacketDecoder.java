@@ -29,10 +29,10 @@ import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
 
 public interface BinaryPacketDecoder {
 
-	void decode(Session session, byte[] data);
+	void decode(Session session, byte[] data) throws RuntimeException;
 
 	void setResultListener(PacketDecoderResultListener resultListener);
-	
+
 	void setCompressor(BinaryPacketCompressor compressor);
 
 	void setEncrypter(BinaryPacketEncrypter encrypter);

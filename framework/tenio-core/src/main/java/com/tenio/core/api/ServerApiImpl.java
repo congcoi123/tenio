@@ -36,7 +36,6 @@ import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
-import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
@@ -140,17 +139,13 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 			room = __getRoomManager().createRoomWithOwner(setting, owner);
 			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room, setting, RoomCreatedResult.SUCCESS);
 		} catch (IllegalArgumentException e) {
-			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting, null);
+			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
+					RoomCreatedResult.INVALID_NAME_OR_PASSWORD);
 		} catch (CreatedRoomException e) {
 			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting, e.getResult());
 		}
 
 		return room;
-	}
-
-	@Override
-	public Room createRoom(InitialRoomSetting setting, Player ownder, Room roomToLeave) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -164,23 +159,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void joinRoom(Player player, Room room, int slotInRoom) {
-		joinRoom(player, room, null, false, room, slotInRoom);
-	}
-
-	@Override
-	public void joinRoom(Player player, Room room) {
-		joinRoom(player, room, RoomImpl.DEFAULT_SLOT);
-	}
-
-	@Override
-	public void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave) {
-		joinRoom(player, room, roomPassword, asSpectator, roomToLeave, RoomImpl.DEFAULT_SLOT);
-	}
-
-	@Override
-	public void joinRoom(Player player, Room room, String roomPassword, boolean asSpectator, Room roomToLeave,
-			int slotInRoom) {
+	public void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator) {
 //		if (room.containPlayerName(player.getName())) {
 //			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
 //					CoreMessageCode.PLAYER_WAS_IN_ROOM);
@@ -202,17 +181,12 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
 	@Override
 	public void switchPlayerToSpectator(Player player, Room room) {
-		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public void switchSpectatorToPlayer(Player player, Room room, int targetSlot) {
-		throw new UnsupportedOperationException();
-	}
 
-	@Override
-	public void switchSpectatorToPlayer(Player player, Room room) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -261,7 +235,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 //	}
 
 	@Override
-	public void sendPublicMessage(Room room, Player sender, ServerMessage message) {
+	public void sendPublicMessage(Player sender, Room room, ServerMessage message) {
 		throw new UnsupportedOperationException();
 	}
 

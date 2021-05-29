@@ -37,6 +37,8 @@ public interface Response {
 
 	Collection<Player> getPlayers();
 	
+	Collection<Player> getNonSessionPlayers();
+	
 	Collection<Session> getRecipientSocketSessions();
 
 	Collection<Session> getRecipientDatagramSessions();

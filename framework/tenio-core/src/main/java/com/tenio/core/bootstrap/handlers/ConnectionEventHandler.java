@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
@@ -113,10 +114,10 @@ public final class ConnectionEventHandler {
 
 					@Override
 					public Object dispatch(Object... params) {
-						ServerMessage message = (ServerMessage) params[0];
+						Player player = (Player) params[0];
 						AttachedConnectionResult result = (AttachedConnectionResult) params[1];
 
-						event.handle(message, result);
+						event.handle(player, result);
 
 						return null;
 					}

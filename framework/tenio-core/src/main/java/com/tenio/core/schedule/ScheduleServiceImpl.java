@@ -40,7 +40,7 @@ import com.tenio.core.schedule.tasks.TrafficCounterTask;
 
 public final class ScheduleServiceImpl extends AbstractManager implements ScheduleService {
 
-	private final TaskManager __taskManager;
+	private TaskManager __taskManager;
 
 	private AutoDisconnectPlayerTask __autoDisconnectPlayerTask;
 	private AutoRemoveRoomTask __autoRemoveRoomTask;
@@ -49,6 +49,8 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	private SystemMonitoringTask __systemMonitoringTask;
 	private TrafficCounterTask __trafficCounterTask;
 
+	private boolean __initialized;
+
 	public static ScheduleService newInstance(EventManager eventManager) {
 		return new ScheduleServiceImpl(eventManager);
 	}
@@ -56,26 +58,32 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	private ScheduleServiceImpl(EventManager eventManager) {
 		super(eventManager);
 
-		__taskManager = TaskManagerImpl.newInstance();
+		__autoDisconnectPlayerTask = AutoDisconnectPlayerTask.newInstance(__eventManager);
+		__autoRemoveRoomTask = AutoRemoveRoomTask.newInstance(__eventManager);
+		__ccuReportTask = CcuReportTask.newInstance(__eventManager);
+		__deadlockScanTask = DeadlockScanTask.newInstance(__eventManager);
+		__systemMonitoringTask = SystemMonitoringTask.newInstance(__eventManager);
+		__trafficCounterTask = TrafficCounterTask.newInstance(__eventManager);
 
-		__autoDisconnectPlayerTask = AutoDisconnectPlayerTask.newInstance(eventManager);
-		__autoRemoveRoomTask = AutoRemoveRoomTask.newInstance(eventManager);
-		__ccuReportTask = CcuReportTask.newInstance(eventManager);
-		__deadlockScanTask = DeadlockScanTask.newInstance(eventManager);
-		__systemMonitoringTask = SystemMonitoringTask.newInstance(eventManager);
-		__trafficCounterTask = TrafficCounterTask.newInstance(eventManager);
+		__initialized = false;
 	}
 
 	@Override
 	public void initialize() {
-		// do nothing
+		__initializeTasks();
+		__initialized = true;
+	}
+
+	private void __initializeTasks() {
+		__taskManager = TaskManagerImpl.newInstance();
 	}
 
 	@Override
 	public void start() {
 		info("START SERVICE", getName());
 
-		// __taskManager.create("auto-disconnect-player", __autoDisconnectPlayerTask.run());
+		// __taskManager.create("auto-disconnect-player",
+		// __autoDisconnectPlayerTask.run());
 		// __taskManager.create("auto-remove-room", __autoRemoveRoomTask.run());
 		// __taskManager.create("ccu-report", __ccuReportTask.run());
 		// __taskManager.create("dead-lock", __deadlockScanTask.run());
@@ -85,6 +93,13 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
 	@Override
 	public void shutdown() {
+		if (!__initialized) {
+			return;
+		}
+		__shutdown();
+	}
+
+	private void __shutdown() {
 		__taskManager.clear();
 
 		info("STOPPED SERVICE", getName());

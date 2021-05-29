@@ -37,7 +37,6 @@ import com.tenio.core.server.ServerImpl;
  * object in one first handler and in the last handler, that value can be
  * retrieved for another purpose. Notice that, one event can be handled multiple
  * times in different classes.
- * 
  */
 public abstract class AbstractExtension extends AbstractLogger {
 

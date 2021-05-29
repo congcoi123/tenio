@@ -23,8 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.exceptions;
 
-import com.tenio.core.configuration.defines.ServerEvent;
-
 /**
  * @author kong
  */
@@ -34,15 +32,15 @@ public final class NotDefinedSubscribersException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 4569867192216119437L;
 
-	public NotDefinedSubscribersException(ServerEvent... events) {
-		super(__getMessage(events));
+	public NotDefinedSubscribersException(Class<?>... clazzes) {
+		super(__getMessage(clazzes));
 	}
 
-	private static String __getMessage(ServerEvent... events) {
+	private static String __getMessage(Class<?>... clazzes) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Need to implement subscribers: ");
-		for (var event : events) {
-			builder.append(event.toString());
+		builder.append("Need to implement interfaces: ");
+		for (var clazz : clazzes) {
+			builder.append(clazz.getName());
 			builder.append(", ");
 		}
 		return builder.toString();
