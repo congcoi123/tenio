@@ -82,7 +82,10 @@ public final class TestClientLogin implements SocketListener {
 
 		var data = ZeroObjectImpl.newInstance();
 		data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
-		__tcp.send(ServerMessage.newInstance().setData(data));
+		var request = ServerMessage.newInstance().setData(data);
+		__tcp.send(request);
+
+		System.err.println("[SENT TO SERVER] -> " + request);
 	}
 
 }

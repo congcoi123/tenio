@@ -60,7 +60,7 @@ public abstract class AbstractApp extends SystemLogger {
 			server.start(configuration, bootstrap.getEventHandler());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException
-				| NotDefinedSubscribersException | ConfigurationException e) {
+				| NotDefinedSubscribersException | ConfigurationException | InterruptedException e) {
 			error(e, "The application started with exceptions occured: ", e.getMessage());
 			server.shutdown();
 			onShutdown();

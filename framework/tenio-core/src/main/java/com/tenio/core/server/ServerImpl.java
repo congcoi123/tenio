@@ -109,7 +109,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 	@Override
 	public void start(Configuration configuration, EventHandler eventHandler)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException {
+			InvocationTargetException, NoSuchMethodException, SecurityException, InterruptedException {
 
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
@@ -118,6 +118,16 @@ public final class ServerImpl extends SystemLogger implements Server {
 		systemInfo.logSystemInfo();
 		systemInfo.logNetCardsInfo();
 		systemInfo.logDiskInfo();
+
+		// subscribing for processes and handlers
+		__internalProcessorService.subscribe();
+		eventHandler.initialize(__eventManager);
+
+		// collect all subscribers, listen all the events
+		__eventManager.subscribe();
+
+		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
+		ConfigsAssessment.assess();
 
 		info("SERVER", __serverName, "Starting ...");
 
@@ -129,19 +139,9 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__setupScheduleService(configuration);
 
 		__initializeServices();
-
-		__internalProcessorService.subscribe();
-
-		eventHandler.initialize(__eventManager);
-
 		__startServices();
 
-		// collect all subscribers, listen all the events
-		__eventManager.subscribe();
-
-		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
-		ConfigsAssessment.assess();
-
+		// emit "server started" event
 		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
 
 		info("SERVER", __serverName, "Started");

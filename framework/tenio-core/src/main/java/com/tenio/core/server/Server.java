@@ -49,7 +49,7 @@ public interface Server {
 	void start(Configuration configuration, EventHandler eventHandler)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ServiceRuntimeException,
-			NotDefinedSubscribersException, ConfigurationException;
+			NotDefinedSubscribersException, ConfigurationException, InterruptedException;
 
 	/**
 	 * Shut down the server and close all services
