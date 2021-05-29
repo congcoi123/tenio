@@ -301,8 +301,6 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 	@Override
 	public void write(Response response) {
 		var data = ZeroObjectImpl.newInstance(response.getContent());
-		trace("SEND TO PLAYER", response.getPlayers(), data.toString());
-
 		var message = ServerMessage.newInstance().setData(data);
 
 		var playerIterator = response.getPlayers().iterator();

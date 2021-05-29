@@ -110,8 +110,6 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 			buffer.getBytes(buffer.readerIndex(), binary);
 			buffer.release();
 
-			__logger.trace("WEBSOCKET RECEIVED", ZeroObjectImpl.newInstance(binary).toString());
-
 			Session session = __sessionManager.getSessionByWebSocket(ctx.channel());
 
 			if (session == null) {

@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.server.services;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 
 import com.tenio.core.configuration.defines.ServerEvent;
@@ -42,9 +43,10 @@ import com.tenio.core.network.entities.session.Session;
 
 public final class InternalProcessorServiceImpl extends AbstractController implements InternalProcessorService {
 
-	private static final String EVENT_KEY_DATAGRAM = "datagram";
+	private static final String EVENT_KEY_DATAGRAM_CHANNEL = "datagram-channel";
 	private static final String EVENT_KEY_CONNECTION_DISCONNECTED_MODE = "connection-disconnected-mode";
 	private static final String EVENT_KEY_SERVER_MESSAGE = "server-message";
+	private static final String EVENT_KEY_DATAGRAM_REMOTE_ADDRESS = "datagram-remote-address";
 
 	private PlayerManager __playerManager;
 	private int __maxNumberPlayers;
@@ -101,8 +103,9 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 		__eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, params -> {
 			Request request = __createRequest(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, null);
-			request.setAttribute(EVENT_KEY_DATAGRAM, params[0]);
-			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[1]);
+			request.setAttribute(EVENT_KEY_DATAGRAM_CHANNEL, params[0]);
+			request.setAttribute(EVENT_KEY_DATAGRAM_REMOTE_ADDRESS, params[1]);
+			request.setAttribute(EVENT_KEY_SERVER_MESSAGE, params[2]);
 			enqueueRequest(request);
 
 			return null;
@@ -224,7 +227,8 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 	}
 
 	private void __processDatagramChannelReadMessage(Request request) {
-		var datagramChannel = request.getAttribute(EVENT_KEY_DATAGRAM);
+		var datagramChannel = request.getAttribute(EVENT_KEY_DATAGRAM_CHANNEL);
+		var remoteAddress = request.getAttribute(EVENT_KEY_DATAGRAM_REMOTE_ADDRESS);
 		var message = request.getAttribute(EVENT_KEY_SERVER_MESSAGE);
 
 		// the condition for creating sub-connection
@@ -240,7 +244,10 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player,
 					AttachedConnectionResult.INVALID_SESSION_PROTOCOL);
 		} else {
-			player.getSession().setDatagramChannel((DatagramChannel) datagramChannel);
+			var session = player.getSession();
+			var sessionManager = session.getSessionManager();
+			sessionManager.addDatagramForSession((DatagramChannel) datagramChannel, (SocketAddress) remoteAddress,
+					session);
 			__eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player, AttachedConnectionResult.SUCCESS);
 		}
 	}

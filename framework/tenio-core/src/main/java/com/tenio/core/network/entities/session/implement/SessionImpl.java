@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -76,7 +77,7 @@ public final class SessionImpl implements Session {
 
 	private volatile long __inactivatedTime;
 
-	private volatile InetSocketAddress __datagramInetSocketAddress;
+	private volatile SocketAddress __datagramRemoteSocketAddress;
 	private volatile String __clientAddress;
 	private volatile int __clientPort;
 	private int __serverPort;
@@ -247,20 +248,20 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public void setDatagramChannel(DatagramChannel datagramChannel) {
+	public void setDatagramChannel(DatagramChannel datagramChannel, SocketAddress remoteAddress) {
 		__datagramChannel = datagramChannel;
 		if (__datagramChannel == null) {
-			__datagramInetSocketAddress = null;
+			__datagramRemoteSocketAddress = null;
 			__hasUdp = false;
 		} else {
-			__datagramInetSocketAddress = (InetSocketAddress) __datagramChannel.socket().getRemoteSocketAddress();
+			__datagramRemoteSocketAddress = remoteAddress;
 			__hasUdp = true;
 		}
 	}
 
 	@Override
-	public InetSocketAddress getDatagramInetSocketAddress() {
-		return __datagramInetSocketAddress;
+	public SocketAddress getDatagramRemoteSocketAddress() {
+		return __datagramRemoteSocketAddress;
 	}
 
 	@Override
@@ -521,8 +522,8 @@ public final class SessionImpl implements Session {
 
 	@Override
 	public String toString() {
-		return String.format("{ id: %d, transportType: %s, active: %b, connected: %b, hasUdp: %b }", __id,
-				__transportType.toString(), __active, __connected, __hasUdp);
+		return String.format("{ id: %d, name: %s, transportType: %s, active: %b, connected: %b, hasUdp: %b }", __id,
+				__name, __transportType.toString(), __active, __connected, __hasUdp);
 	}
 
 }

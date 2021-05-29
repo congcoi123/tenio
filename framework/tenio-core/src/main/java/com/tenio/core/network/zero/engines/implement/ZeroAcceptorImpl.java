@@ -118,9 +118,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	private void __bindUdpSocket(int port) throws ServiceRuntimeException {
 		try {
 			DatagramChannel datagramChannel = DatagramChannel.open();
-			datagramChannel.configureBlocking(false);
 			datagramChannel.socket().bind(new InetSocketAddress(__serverAddress, port));
 			datagramChannel.socket().setReuseAddress(true);
+			datagramChannel.configureBlocking(false);
 			// udp datagram is a connectionless protocol, we don't need to create
 			// bi-direction connection, that why it's not necessary to register it to
 			// acceptable selector. Just leave it to the reader selector later

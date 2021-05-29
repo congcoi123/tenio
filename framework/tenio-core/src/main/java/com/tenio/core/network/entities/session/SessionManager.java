@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.session;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -49,9 +49,10 @@ public interface SessionManager extends Manager {
 
 	Session getSessionByWebSocket(Channel webSocketChannel);
 
-	void addDatagramForSession(DatagramChannel datagramChannel, Session session) throws IllegalArgumentException;
+	void addDatagramForSession(DatagramChannel datagramChannel, SocketAddress remoteAddress, Session session)
+			throws IllegalArgumentException;
 
-	Session getSessionByDatagram(InetSocketAddress remoteAddress);
+	Session getSessionByDatagram(SocketAddress remoteAddress);
 
 	void emitEvent(ServerEvent event, Object... params);
 
@@ -60,7 +61,7 @@ public interface SessionManager extends Manager {
 			NoSuchMethodException, SecurityException;
 
 	void setPacketQueueSize(int queueSize);
-	
+
 	/**
 	 * Remove session from its manager, this method should not be called. Call
 	 * instead the method {@link Session#close()} to completely eliminate the

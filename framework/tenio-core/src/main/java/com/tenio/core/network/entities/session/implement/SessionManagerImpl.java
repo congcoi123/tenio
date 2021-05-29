@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.session.implement;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -55,7 +55,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 	@GuardedBy("this")
 	private final Map<Channel, Session> __sessionByWebSockets;
 	@GuardedBy("this")
-	private final Map<InetSocketAddress, Session> __sessionByDatagrams;
+	private final Map<SocketAddress, Session> __sessionByDatagrams;
 
 	private PacketQueuePolicy __packetQueuePolicy;
 	private int __packetQueueSize;
@@ -72,7 +72,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 		__sessionByIds = new HashMap<Long, Session>();
 		__sessionBySockets = new HashMap<SocketChannel, Session>();
 		__sessionByWebSockets = new HashMap<Channel, Session>();
-		__sessionByDatagrams = new HashMap<InetSocketAddress, Session>();
+		__sessionByDatagrams = new HashMap<SocketAddress, Session>();
 
 		__sessionCount = 0;
 		__packetQueueSize = DEFAULT_PACKET_QUEUE_SIZE;
@@ -108,19 +108,19 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 	}
 
 	@Override
-	public void addDatagramForSession(DatagramChannel datagramChannel, Session session) {
+	public void addDatagramForSession(DatagramChannel datagramChannel, SocketAddress remoteAddress, Session session) {
 		if (!session.isTcp()) {
 			throw new IllegalArgumentException(
 					String.format("Unable to add datagram channel for the non-TCP session: %s", session.toString()));
 		}
 		synchronized (__sessionByDatagrams) {
-			session.setDatagramChannel(datagramChannel);
-			__sessionByDatagrams.put(session.getDatagramInetSocketAddress(), session);
+			session.setDatagramChannel(datagramChannel, remoteAddress);
+			__sessionByDatagrams.put(session.getDatagramRemoteSocketAddress(), session);
 		}
 	}
 
 	@Override
-	public Session getSessionByDatagram(InetSocketAddress remoteAddress) {
+	public Session getSessionByDatagram(SocketAddress remoteAddress) {
 		synchronized (__sessionByDatagrams) {
 			return __sessionByDatagrams.get(remoteAddress);
 		}
@@ -179,8 +179,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 			switch (session.getTransportType()) {
 			case TCP:
 				if (session.containsUdp()) {
-					__sessionByDatagrams.remove(session.getDatagramInetSocketAddress());
-					session.setDatagramChannel(null);
+					__sessionByDatagrams.remove(session.getDatagramRemoteSocketAddress());
+					session.setDatagramChannel(null, null);
 				}
 				__sessionBySockets.remove(session.getSocketChannel());
 				break;

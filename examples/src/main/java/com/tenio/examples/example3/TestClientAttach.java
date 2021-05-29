@@ -45,6 +45,9 @@ import com.tenio.examples.server.UdpEstablishedState;
  */
 public final class TestClientAttach implements SocketListener, DatagramListener {
 
+	private static final int SOCKET_PORT = 8032;
+	private static final int DATAGRAM_PORT = 8034;
+
 	/**
 	 * The entry point
 	 */
@@ -60,11 +63,11 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
 		__playerName = ClientUtility.generateRandomString(5);
 
 		// create a new TCP object and listen for this port
-		__tcp = new TCP(8032);
+		__tcp = new TCP(SOCKET_PORT);
 		__tcp.receive(this);
 
 		// create a new UDP object and listen for this port
-		__udp = new UDP(8034);
+		__udp = new UDP(DATAGRAM_PORT);
 		__udp.receive(this);
 
 		// send a login request

@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entities.session;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -82,9 +82,9 @@ public interface Session {
 
 	DatagramChannel getDatagramChannel();
 
-	void setDatagramChannel(DatagramChannel datagramChannel);
+	void setDatagramChannel(DatagramChannel datagramChannel, SocketAddress remoteAddress);
 
-	InetSocketAddress getDatagramInetSocketAddress();
+	SocketAddress getDatagramRemoteSocketAddress();
 
 	Channel getWebSocketChannel();
 

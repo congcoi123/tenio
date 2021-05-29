@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engines.implement;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
@@ -45,6 +45,8 @@ import com.tenio.core.network.zero.engines.ZeroReader;
 import com.tenio.core.network.zero.engines.listeners.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroReaderListener;
 import com.tenio.core.network.zero.engines.listeners.ZeroWriterListener;
+
+import javassist.NotFoundException;
 
 public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroReader, ZeroReaderListener {
 
@@ -199,34 +201,30 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	}
 
 	private void __readUpdData(DatagramChannel datagramChannel, SelectionKey selectionKey) {
-		// retrieves session by its datagram channel, hence we are using only one
-		// datagram channel for all sessions, we use incoming request remote address to
-		// distinguish them
-		Session session = getSessionManager()
-				.getSessionByDatagram((InetSocketAddress) datagramChannel.socket().getRemoteSocketAddress());
 
-		if (selectionKey.isWritable()) {
-			// should continue put this session for sending all left packets first
-			__zeroWriterListener.continueWriteInterestOp(session);
-			// now we should set it back to interest in OP_READ
-			selectionKey.interestOps(SelectionKey.OP_READ);
-		}
+		Session session = null;
 
 		if (selectionKey.isReadable()) {
 			// prepares the buffer first
 			__readerBuffer.clear();
 			// reads data from socket and write them to buffer
-			int byteCount = -1;
+			SocketAddress remoteAddress = null;
 			try {
-				byteCount = datagramChannel.read(__readerBuffer);
+				remoteAddress = datagramChannel.receive(__readerBuffer);
 			} catch (IOException e) {
-				if (session == null) {
-					error(e, "An exception was occured on channel: ", datagramChannel.toString());
-					getDatagramIOHandler().channelException(datagramChannel, e);
-				} else {
-					getDatagramIOHandler().sessionException(session, e);
-				}
+				error(e, "An exception was occured on channel: ", datagramChannel.toString());
+				getDatagramIOHandler().channelException(datagramChannel, e);
 			}
+
+			if (remoteAddress == null) {
+				var addressNotFoundException = new NotFoundException("Remove addess for the datagram channel");
+				error(addressNotFoundException, "An exception was occured on channel: ", datagramChannel.toString());
+				getDatagramIOHandler().channelException(datagramChannel, addressNotFoundException);
+				return;
+			}
+
+			int byteCount = __readerBuffer.position();
+
 			// update statistic data
 			__networkReaderStatistic.updateReadBytes(byteCount);
 			// ready to read data from buffer
@@ -235,12 +233,24 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			byte[] binary = new byte[__readerBuffer.limit()];
 			__readerBuffer.get(binary);
 
+			// retrieves session by its datagram channel, hence we are using only one
+			// datagram channel for all sessions, we use incoming request remote address to
+			// distinguish them
+			session = getSessionManager().getSessionByDatagram(remoteAddress);
+
 			if (session == null) {
-				getDatagramIOHandler().channelRead(datagramChannel, binary);
+				getDatagramIOHandler().channelRead(datagramChannel, remoteAddress, binary);
 			} else {
 				session.addReadBytes(byteCount);
 				getDatagramIOHandler().sessionRead(session, binary);
 			}
+		}
+
+		if (selectionKey.isWritable() && session != null) {
+			// should continue put this session for sending all left packets first
+			__zeroWriterListener.continueWriteInterestOp(session);
+			// now we should set it back to interest in OP_READ
+			selectionKey.interestOps(SelectionKey.OP_READ);
 		}
 
 	}

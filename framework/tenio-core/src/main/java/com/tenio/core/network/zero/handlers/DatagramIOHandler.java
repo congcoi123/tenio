@@ -23,13 +23,14 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handlers;
 
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 
 import com.tenio.core.network.entities.session.Session;
 
 public interface DatagramIOHandler extends BaseIOHandler {
 
-	void channelRead(DatagramChannel datagramChannel, byte[] binary);
+	void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress, byte[] binary);
 
 	void sessionRead(Session session, byte[] binary);
 

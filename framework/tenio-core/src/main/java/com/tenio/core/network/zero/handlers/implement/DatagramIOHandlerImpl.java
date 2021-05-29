@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.core.network.zero.handlers.implement;
 
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 
 import com.tenio.common.data.implement.ZeroObjectImpl;
@@ -43,18 +44,16 @@ public final class DatagramIOHandlerImpl extends AbstractIOHandler implements Da
 	}
 
 	@Override
-	public void channelRead(DatagramChannel datagramChannel, byte[] binary) {
+	public void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress, byte[] binary) {
 		var data = ZeroObjectImpl.newInstance(binary);
 		var message = ServerMessage.newInstance().setData(data);
-		trace("DATAGRAM RECEIVED", data.toString());
-		__eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, message);
+		__eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, datagramChannel, remoteAddress, message);
 	}
 
 	@Override
 	public void sessionRead(Session session, byte[] binary) {
 		var data = ZeroObjectImpl.newInstance(binary);
 		var message = ServerMessage.newInstance().setData(data);
-		trace("DATAGRAM RECEIVED", data.toString());
 		__eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
 	}
 

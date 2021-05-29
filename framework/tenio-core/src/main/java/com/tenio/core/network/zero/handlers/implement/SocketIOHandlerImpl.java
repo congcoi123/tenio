@@ -54,7 +54,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 	public void resultFrame(Session session, byte[] binary) {
 		var data = ZeroObjectImpl.newInstance(binary);
 		var message = ServerMessage.newInstance().setData(data);
-		trace("SOCKET RECEIVED", data.toString());
+
 		if (!session.isConnected()) {
 			__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
 		} else {

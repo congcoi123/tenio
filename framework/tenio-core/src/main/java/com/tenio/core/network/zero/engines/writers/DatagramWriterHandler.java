@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engines.writers;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 
 import com.tenio.core.network.entities.packet.Packet;
@@ -48,14 +48,14 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
 		// the InetSocketAddress should be saved when the datagram channel receive first
 		// messages from the client
-		InetSocketAddress inetSocketAddress = session.getDatagramInetSocketAddress();
+		SocketAddress remoteSocketAddress = session.getDatagramRemoteSocketAddress();
 
 		// the datagram need to be declared first, something went wrong here, need to
 		// log the exception content
 		if (datagramChannel == null) {
 			debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
 					", no DatagramChannel was set");
-		} else if (inetSocketAddress == null) {
+		} else if (remoteSocketAddress == null) {
 			debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
 					", no InetSocketAddress was set");
 		}
@@ -81,7 +81,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
 		// send data to the client
 		try {
-			int writtenBytes = datagramChannel.send(getBuffer(), inetSocketAddress);
+			int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
 			// update statistic data
 			getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
 			getNetworkWriterStatistic().updateWrittenPackets(1);
