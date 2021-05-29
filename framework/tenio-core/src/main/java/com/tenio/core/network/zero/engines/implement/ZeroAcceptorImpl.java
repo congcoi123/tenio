@@ -155,6 +155,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		while (keyIterator.hasNext()) {
 			// iterates the list of selection keys
 			SelectionKey selectionKey = keyIterator.next();
+			// once a key is proceeded, it should be removed from the process to prevent
+			// duplicating manipulation
+			keyIterator.remove();
 
 			// a client socket was accepted by a server socket
 			// we only interest in this event
@@ -176,10 +179,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 					error(e);
 				}
 			}
-
-			// once a key is proceeded, it should be removed from the process to prevent
-			// duplicating manipulation
-			keyIterator.remove();
 		}
 
 		// wakes up the reader selector for bellow channels handling
@@ -339,7 +338,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	@Override
 	public void onRunning() {
-		__acceptableLoop();
+		while (true) {
+			if (isActivated()) {
+				__acceptableLoop();
+			}
+		}
 	}
 
 	@Override

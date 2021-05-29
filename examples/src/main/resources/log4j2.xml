@@ -6,7 +6,7 @@
 		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
 		<!-- Logging level: trace -included-> debug -included-> info -included-> 
 			error -->
-		<Property name="target">Console</Property>
+		<Property name="target">File</Property>
 		<Property name="level">trace</Property>
 	</Properties>
 

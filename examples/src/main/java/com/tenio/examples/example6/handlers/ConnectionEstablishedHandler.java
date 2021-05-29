@@ -21,17 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.examples.example6.handlers;
 
-public final class SharedEventKey {
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventConnectionEstablishedResult;
+import com.tenio.core.network.entities.session.Session;
+import com.tenio.examples.server.SharedEventKey;
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
+@Component
+public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
 
-	private SharedEventKey() {
-
+	@Override
+	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+		if (result == ConnectionEstablishedResult.SUCCESS) {
+			getApi().loginWithSession(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+		}
 	}
 
 }

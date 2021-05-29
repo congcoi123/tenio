@@ -87,7 +87,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 		// __taskManager.create("auto-remove-room", __autoRemoveRoomTask.run());
 		// __taskManager.create("ccu-report", __ccuReportTask.run());
 		// __taskManager.create("dead-lock", __deadlockScanTask.run());
-		// __taskManager.create("system-monitoring", __systemMonitoringTask.run());
+		__taskManager.create("system-monitoring", __systemMonitoringTask.run());
 		// __taskManager.create("traffic-counter", __trafficCounterTask.run());
 	}
 

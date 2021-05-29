@@ -21,17 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.examples.example6.handlers;
 
-public final class SharedEventKey {
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventFetchedCcuInfo;
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
+@Component
+public final class CcuInformationHandler extends AbstractExtension implements EventFetchedCcuInfo {
 
-	private SharedEventKey() {
-
+	@Override
+	public void handle(int numberPlayers) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

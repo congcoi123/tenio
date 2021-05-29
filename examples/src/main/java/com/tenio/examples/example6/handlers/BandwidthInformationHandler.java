@@ -21,16 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.examples.example6.handlers;
 
-public final class SharedEventKey {
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
+@Component
+public final class BandwidthInformationHandler extends AbstractExtension implements EventFetchedBandwidthInfo {
 
-	private SharedEventKey() {
+	@Override
+	public void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
+			long writtenPackets, long writtenDroppedPacketsByPolicy, long writtenDroppedPacketsByFull) {
 
 	}
 

@@ -43,7 +43,7 @@ public interface NetworkService extends Service {
 
 	void setHttpPathConfigs(List<PathConfig> pathConfigs);
 
-	void setConnectionFilterClass(Class<? extends ConnectionFilter> clazz)
+	void setConnectionFilterClass(Class<? extends ConnectionFilter> clazz, int maxConnectionsPerIp)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException;
 

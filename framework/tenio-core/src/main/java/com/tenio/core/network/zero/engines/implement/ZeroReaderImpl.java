@@ -54,7 +54,6 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	private ZeroWriterListener __zeroWriterListener;
 	private Selector __readableSelector;
 	private NetworkReaderStatistic __networkReaderStatistic;
-	private ByteBuffer __readerBuffer;
 
 	public static ZeroReader newInstance(EventManager eventManager) {
 		return new ZeroReaderImpl(eventManager);
@@ -74,21 +73,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 		}
 	}
 
-	private void __initializeBuffer() {
-		__readerBuffer = ByteBuffer.allocate(getMaxBufferSize());
+	private void __readableLoop(ByteBuffer readerBuffer) {
+		__zeroAcceptorListener.handleAcceptableChannels();
+		__readIncomingSocketData(readerBuffer);
 	}
 
-	private void __readableLoop() {
-		try {
-			__zeroAcceptorListener.handleAcceptableChannels();
-			__readIncomingSocketData();
-			Thread.sleep(5L);
-		} catch (InterruptedException e) {
-			error(e);
-		}
-	}
-
-	private void __readIncomingSocketData() {
+	private void __readIncomingSocketData(ByteBuffer readerBuffer) {
 		SocketChannel socketChannel = null;
 		DatagramChannel datagramChannel = null;
 		SelectionKey selectionKey = null;
@@ -104,10 +94,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 			// readable selector was registered by OP_READ interested only socket channels,
 			// but in some cases, we can received "can writable" signal from those sockets
 			Set<SelectionKey> readyKeys = __readableSelector.selectedKeys();
-			Iterator<SelectionKey> keyIterators = readyKeys.iterator();
+			Iterator<SelectionKey> keyIterator = readyKeys.iterator();
 
-			while (keyIterators.hasNext()) {
-				selectionKey = keyIterators.next();
+			while (keyIterator.hasNext()) {
+				selectionKey = keyIterator.next();
+				// once a key is proceeded, it should be removed from the process to prevent
+				// duplicating manipulation
+				keyIterator.remove();
 
 				if (selectionKey.isValid()) {
 					SelectableChannel channel = selectionKey.channel();
@@ -115,14 +108,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 					// separate the processes
 					if (channel instanceof SocketChannel) {
 						socketChannel = (SocketChannel) channel;
-						__readTcpData(socketChannel, selectionKey);
+						__readTcpData(socketChannel, selectionKey, readerBuffer);
 					} else if (channel instanceof DatagramChannel) {
 						datagramChannel = (DatagramChannel) channel;
-						__readUpdData(datagramChannel, selectionKey);
+						__readUpdData(datagramChannel, selectionKey, readerBuffer);
 					}
 				}
 
-				keyIterators.remove();
 			}
 
 		} catch (ClosedSelectorException e1) {
@@ -137,7 +129,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	}
 
-	private void __readTcpData(SocketChannel socketChannel, SelectionKey selectionKey) {
+	private void __readTcpData(SocketChannel socketChannel, SelectionKey selectionKey, ByteBuffer readerBuffer) {
 		// retrieves session by its socket channel
 		Session session = getSessionManager().getSessionBySocket(socketChannel);
 
@@ -157,11 +149,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 		if (selectionKey.isReadable()) {
 			// prepares the buffer first
-			__readerBuffer.clear();
+			readerBuffer.clear();
 			// reads data from socket and write them to buffer
 			int byteCount = -1;
 			try {
-				byteCount = socketChannel.read(__readerBuffer);
+				byteCount = socketChannel.read(readerBuffer);
 			} catch (IOException e) {
 				error(e, "An exception was occured on channel: ", socketChannel.toString());
 				getSocketIOHandler().sessionException(session, e);
@@ -174,10 +166,10 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				session.addReadBytes(byteCount);
 				__networkReaderStatistic.updateReadBytes(byteCount);
 				// ready to read data from buffer
-				__readerBuffer.flip();
+				readerBuffer.flip();
 				// reads data from buffer and transfers them to the next process
-				byte[] binary = new byte[__readerBuffer.limit()];
-				__readerBuffer.get(binary);
+				byte[] binary = new byte[readerBuffer.limit()];
+				readerBuffer.get(binary);
 
 				getSocketIOHandler().sessionRead(session, binary);
 			}
@@ -200,17 +192,17 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	}
 
-	private void __readUpdData(DatagramChannel datagramChannel, SelectionKey selectionKey) {
+	private void __readUpdData(DatagramChannel datagramChannel, SelectionKey selectionKey, ByteBuffer readerBuffer) {
 
 		Session session = null;
 
 		if (selectionKey.isReadable()) {
 			// prepares the buffer first
-			__readerBuffer.clear();
+			readerBuffer.clear();
 			// reads data from socket and write them to buffer
 			SocketAddress remoteAddress = null;
 			try {
-				remoteAddress = datagramChannel.receive(__readerBuffer);
+				remoteAddress = datagramChannel.receive(readerBuffer);
 			} catch (IOException e) {
 				error(e, "An exception was occured on channel: ", datagramChannel.toString());
 				getDatagramIOHandler().channelException(datagramChannel, e);
@@ -223,15 +215,15 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 				return;
 			}
 
-			int byteCount = __readerBuffer.position();
+			int byteCount = readerBuffer.position();
 
 			// update statistic data
 			__networkReaderStatistic.updateReadBytes(byteCount);
 			// ready to read data from buffer
-			__readerBuffer.flip();
+			readerBuffer.flip();
 			// reads data from buffer and transfers them to the next process
-			byte[] binary = new byte[__readerBuffer.limit()];
-			__readerBuffer.get(binary);
+			byte[] binary = new byte[readerBuffer.limit()];
+			readerBuffer.get(binary);
 
 			// retrieves session by its datagram channel, hence we are using only one
 			// datagram channel for all sessions, we use incoming request remote address to
@@ -282,7 +274,9 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public void wakeup() {
-		__readableSelector.wakeup();
+		if (isActivated()) {
+			__readableSelector.wakeup();
+		}
 	}
 
 	@Override
@@ -293,7 +287,6 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 	@Override
 	public void onInitialized() {
 		__initializeSelector();
-		__initializeBuffer();
 	}
 
 	@Override
@@ -303,7 +296,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 	@Override
 	public void onRunning() {
-		__readableLoop();
+		ByteBuffer readerBuffer = ByteBuffer.allocate(getMaxBufferSize());
+
+		while (true) {
+			if (isActivated()) {
+				__readableLoop(readerBuffer);
+			}
+		}
 	}
 
 	@Override

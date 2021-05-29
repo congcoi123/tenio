@@ -101,11 +101,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 		info("START SERVICE", buildgen("zero-", getName(), "-", __id));
 		__setThreadName();
 
-		while (true) {
-			if (__activated) {
-				onRunning();
-			}
-		}
+		onRunning();
 	}
 
 	private void __setThreadName() {

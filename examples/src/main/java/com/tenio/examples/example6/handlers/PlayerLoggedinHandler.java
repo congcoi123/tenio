@@ -21,17 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.examples.example6.handlers;
 
-public final class SharedEventKey {
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
+import com.tenio.core.extension.AbstractExtension;
+import com.tenio.core.extension.events.EventPlayerLoggedinResult;
+import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
+import com.tenio.examples.server.SharedEventKey;
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
+@Component
+public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
 
-	private SharedEventKey() {
-
+	@Override
+	public void handle(Player player, PlayerLoggedinResult result) {
+		if (result == PlayerLoggedinResult.SUCCESS) {
+			var data = ZeroObjectImpl.newInstance()
+					.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+							String.format("Welcome to server: %s", player.getName()))
+					.putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName());
+			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+		}
 	}
 
 }

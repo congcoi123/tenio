@@ -35,6 +35,8 @@
 			<Property name="socket-reader-buffer-size">1024</Property>
 			<Property name="socket-writer-buffer-size">1024</Property>
 			<Property name="packet-compression-threshold-bytes">10240</Property>
+			<Property name="allow-change-session">false</Property>
+			<Property name="max-connections-per-ip">10</Property>
 		</Properties>
 		<Http>
 			<Port name="main" value="9999">
@@ -88,8 +90,6 @@
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				getting message from client -->
 			<Property name="max-player-idle-time">180</Property>		<!-- Unit: Seconds -->
-			<!-- Allow to replace the current session with another -->
-			<Property name="allow-change-session">false</Property>
 		</Properties>
 	</Configuration>
 

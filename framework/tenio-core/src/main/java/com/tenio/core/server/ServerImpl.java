@@ -185,7 +185,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		var connectionFilterClazz = Class
 				.forName(configuration.getString(CoreConfigurationType.CLASS_CONNECTION_FILTER).strip());
-		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz);
+		__networkService.setConnectionFilterClass((Class<? extends ConnectionFilter>) connectionFilterClazz,
+				configuration.getInt(CoreConfigurationType.NETWORK_PROP_MAX_CONNECTIONS_PER_IP));
 
 		var httpConfig = (List<HttpConfig>) configuration.get(CoreConfigurationType.HTTP_CONFIGS);
 		__networkService.setHttpPort(!httpConfig.isEmpty() ? httpConfig.get(0).getPort() : 0);

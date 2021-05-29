@@ -81,7 +81,8 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
 		synchronized (__addressMap) {
 			AtomicInteger counter = __addressMap.get(addressIp);
 			if (counter != null && counter.intValue() >= __maxConnectionsPerIp) {
-				throw new RefusedConnectionAddressException("The IP address has reached maximum allowed connections",
+				throw new RefusedConnectionAddressException(
+						String.format("The IP address has reached maximum (%d) allowed connection", counter.intValue()),
 						addressIp);
 			}
 

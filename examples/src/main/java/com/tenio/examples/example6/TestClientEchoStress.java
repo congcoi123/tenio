@@ -23,13 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example6;
 
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
+import com.tenio.examples.server.SharedEventKey;
 
 /**
  * This class shows how a client communicates with the server:<br>
@@ -41,25 +43,18 @@ import com.tenio.examples.client.TCP;
  * [NOTE] The client test is also available on <code>C++</code> and
  * <code>JavaScript</code> language, please see the <code>README.md</code> for
  * more details
- * 
- * @author kong
- *
  */
-public final class TestClientStress implements SocketListener {
+public final class TestClientEchoStress implements SocketListener {
 
+	private static final int SOCKET_PORT = 8032;
+	private static final int NUMBER_CLIENTS = 1000;
 	private static final boolean ENABLED_DEBUG = false;
-	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
-	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
-	private static final String NUMBER = "0123456789";
-
-	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
-	private static SecureRandom RANDOM = new SecureRandom();
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] args) {
-		new TestClientStress();
+		new TestClientEchoStress();
 	}
 
 	/**
@@ -67,53 +62,47 @@ public final class TestClientStress implements SocketListener {
 	 */
 	private Map<String, TCP> __tcps;
 
-	public TestClientStress() {
+	public TestClientEchoStress() {
 		__tcps = new HashMap<String, TCP>();
 		// create a list of TCP objects and listen for this port
-		for (int i = 0; i < 1000; i++) {
-			var name = __generateRandomString(5);
-			var tcp = new TCP(8032);
+		for (int i = 0; i < NUMBER_CLIENTS; i++) {
+			var name = ClientUtility.generateRandomString(5);
+			var tcp = new TCP(SOCKET_PORT);
 			tcp.receive(this);
 			__tcps.put(name, tcp);
-
+			
 			// send a login request
-			var message = CommonObject.newInstance();
-			message.put("u", name);
-			tcp.send(message);
+			var data = ZeroObjectImpl.newInstance();
+			data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+			tcp.send(ServerMessage.newInstance().setData(data));
+
 			if (ENABLED_DEBUG) {
-				System.err.println("Login Request -> " + message);
+				System.err.println("Login Request -> " + data.toString());
 			}
 		}
 
 	}
 
 	@Override
-	public void onReceivedTCP(CommonObject message) {
+	public void onReceivedTCP(ServerMessage message) {
 		if (ENABLED_DEBUG) {
 			System.out.println("[RECV FROM SERVER TCP] -> " + message);
 		}
-		
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		var tcp = __tcps.get(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN));
+
 		// make an echo message
-		var msg = CommonObject.newInstance();
-		msg.put("m", __generateRandomString(5));
-		__tcps.get(message.get("p")).send(msg);
-	}
+		var data = ZeroObjectImpl.newInstance();
+		data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
+		var request = ServerMessage.newInstance().setData(data);
+		tcp.send(request);
 
-	private String __generateRandomString(int length) {
-		if (length < 1) {
-			throw new IllegalArgumentException();
-		}
-
-		var sb = new StringBuilder(length);
-		for (int i = 0; i < length; i++) {
-			// 0-62 (exclusive), random returns 0-61
-			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
-			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
-
-			sb.append(rndChar);
-		}
-
-		return sb.toString();
 	}
 
 }

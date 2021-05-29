@@ -178,10 +178,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 	}
 
 	@Override
-	public void setConnectionFilterClass(Class<? extends ConnectionFilter> clazz)
+	public void setConnectionFilterClass(Class<? extends ConnectionFilter> clazz, int maxConnectionsPerIp)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException {
 		var connectionFilter = clazz.getDeclaredConstructor().newInstance();
+		connectionFilter.setMaxConnectionsPerIp(maxConnectionsPerIp);
 
 		__websocketService.setConnectionFilter(connectionFilter);
 		__socketService.setConnectionFilter(connectionFilter);

@@ -45,8 +45,6 @@ import com.tenio.core.network.zero.engines.writers.WriterHandler;
 public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter, ZeroWriterListener {
 
 	private BlockingQueue<Session> __sessionTicketsQueue;
-	private WriterHandler __socketWriterHandler;
-	private WriterHandler __datagramWriterHandler;
 	private NetworkWriterStatistic __networkWriterStatistic;
 	private BinaryPacketEncoder __packetEncoder;
 
@@ -61,30 +59,35 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 		setName("writer");
 	}
 
-	private void __initializeSocketWriterHandler() {
-		__socketWriterHandler = SocketWriterHandler.newInstance();
-		__socketWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
-		__socketWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
-		__socketWriterHandler.allocateBuffer(getMaxBufferSize());
+	private WriterHandler __createSocketWriterHandler() {
+		var socketWriterHandler = SocketWriterHandler.newInstance();
+		socketWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
+		socketWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
+		socketWriterHandler.allocateBuffer(getMaxBufferSize());
+
+		return socketWriterHandler;
 	}
 
-	private void __initializeDatagramWriterHandler() {
-		__datagramWriterHandler = DatagramWriterHandler.newInstance();
-		__datagramWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
-		__datagramWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
-		__datagramWriterHandler.allocateBuffer(getMaxBufferSize());
+	private WriterHandler __createDatagramWriterHandler() {
+		var datagramWriterHandler = DatagramWriterHandler.newInstance();
+		datagramWriterHandler.setNetworkWriterStatistic(__networkWriterStatistic);
+		datagramWriterHandler.setSessionTicketsQueue(__sessionTicketsQueue);
+		datagramWriterHandler.allocateBuffer(getMaxBufferSize());
+
+		return datagramWriterHandler;
 	}
 
-	private void __writableLoop() {
+	private void __writableLoop(WriterHandler socketWriterHandler, WriterHandler datagramWriterHandler) {
 		try {
 			Session session = __sessionTicketsQueue.take();
-			__processSessionQueue(session);
+			__processSessionQueue(session, socketWriterHandler, datagramWriterHandler);
 		} catch (InterruptedException e) {
 			error(e, "Interruption occured when process a session and its packet");
 		}
 	}
 
-	private void __processSessionQueue(Session session) {
+	private void __processSessionQueue(Session session, WriterHandler socketWriterHandler,
+			WriterHandler datagramWriterHandler) {
 
 		// ignore the null session
 		if (session == null) {
@@ -116,9 +119,9 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 			}
 
 			if (packet.isTcp()) {
-				__socketWriterHandler.send(packetQueue, session, packet);
+				socketWriterHandler.send(packetQueue, session, packet);
 			} else if (packet.isUdp()) {
-				__datagramWriterHandler.send(packetQueue, session, packet);
+				datagramWriterHandler.send(packetQueue, session, packet);
 			}
 		}
 	}
@@ -209,8 +212,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 
 	@Override
 	public void onInitialized() {
-		__initializeSocketWriterHandler();
-		__initializeDatagramWriterHandler();
+		// do nothing
 	}
 
 	@Override
@@ -220,7 +222,14 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 
 	@Override
 	public void onRunning() {
-		__writableLoop();
+		var socketWriterHandler = __createSocketWriterHandler();
+		var datagramWriterHandler = __createDatagramWriterHandler();
+
+		while (true) {
+			if (isActivated()) {
+				__writableLoop(socketWriterHandler, datagramWriterHandler);
+			}
+		}
 	}
 
 	@Override
@@ -231,8 +240,6 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 	@Override
 	public void onDestroyed() {
 		__sessionTicketsQueue = null;
-		__socketWriterHandler = null;
-		__datagramWriterHandler = null;
 	}
 
 }

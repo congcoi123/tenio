@@ -21,16 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.examples.example6;
 
-public final class SharedEventKey {
+import com.tenio.common.configuration.Configuration;
+import com.tenio.core.AbstractApp;
+import com.tenio.core.bootstrap.annotations.Bootstrap;
+import com.tenio.examples.server.TestConfiguration;
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
+/**
+ * This class shows how a server handle 1000 players and communications
+ */
+@Bootstrap
+public final class TestServerEchoStress extends AbstractApp {
 
-	private SharedEventKey() {
+	/**
+	 * The entry point
+	 */
+	public static void main(String[] params) {
+		var game = new TestServerEchoStress();
+		game.start(TestServerEchoStress.class);
+	}
+
+	@Override
+	public TestConfiguration getConfiguration() {
+		return new TestConfiguration("TenIOConfig.example6.xml");
+	}
+
+	@Override
+	public void onStarted(Configuration configuration) {
+
+	}
+
+	@Override
+	public void onShutdown() {
 
 	}
 

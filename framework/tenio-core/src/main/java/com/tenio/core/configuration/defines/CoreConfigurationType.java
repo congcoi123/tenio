@@ -101,8 +101,6 @@ public enum CoreConfigurationType implements ConfigurationType {
 
 	PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
 
-	PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
-
 	NETWORK_PROP_WEBSOCKET_USING_SSL("websocket-using-ssl"),
 
 	NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE("websocket-sender-buffer-size"),
@@ -116,6 +114,10 @@ public enum CoreConfigurationType implements ConfigurationType {
 	NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE("socket-writer-buffer-size"),
 
 	NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES("packet-compression-threshold-bytes"),
+	
+	NETWORK_PROP_MAX_CONNECTIONS_PER_IP("max-connections-per-ip"),
+	
+	NETWORK_PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
 
 	/**
 	 * The list of socket configuration in configuration
