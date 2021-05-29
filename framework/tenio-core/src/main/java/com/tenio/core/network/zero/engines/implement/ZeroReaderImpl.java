@@ -85,36 +85,34 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 		try {
 			// blocks until at least one channel is ready for the events you registered for
-			int readyKeyCount = __readableSelector.selectNow();
+			__readableSelector.select();
 
-			if (readyKeyCount == 0) {
-				return;
-			}
+			synchronized (__readableSelector) {
+				// readable selector was registered by OP_READ interested only socket channels,
+				// but in some cases, we can received "can writable" signal from those sockets
+				Set<SelectionKey> readyKeys = __readableSelector.selectedKeys();
+				Iterator<SelectionKey> keyIterator = readyKeys.iterator();
 
-			// readable selector was registered by OP_READ interested only socket channels,
-			// but in some cases, we can received "can writable" signal from those sockets
-			Set<SelectionKey> readyKeys = __readableSelector.selectedKeys();
-			Iterator<SelectionKey> keyIterator = readyKeys.iterator();
+				while (keyIterator.hasNext()) {
+					selectionKey = keyIterator.next();
+					// once a key is proceeded, it should be removed from the process to prevent
+					// duplicating manipulation
+					keyIterator.remove();
 
-			while (keyIterator.hasNext()) {
-				selectionKey = keyIterator.next();
-				// once a key is proceeded, it should be removed from the process to prevent
-				// duplicating manipulation
-				keyIterator.remove();
-
-				if (selectionKey.isValid()) {
-					SelectableChannel channel = selectionKey.channel();
-					// we already registered 2 types of channels for this selector and need to
-					// separate the processes
-					if (channel instanceof SocketChannel) {
-						socketChannel = (SocketChannel) channel;
-						__readTcpData(socketChannel, selectionKey, readerBuffer);
-					} else if (channel instanceof DatagramChannel) {
-						datagramChannel = (DatagramChannel) channel;
-						__readUpdData(datagramChannel, selectionKey, readerBuffer);
+					if (selectionKey.isValid()) {
+						SelectableChannel channel = selectionKey.channel();
+						// we already registered 2 types of channels for this selector and need to
+						// separate the processes
+						if (channel instanceof SocketChannel) {
+							socketChannel = (SocketChannel) channel;
+							__readTcpData(socketChannel, selectionKey, readerBuffer);
+						} else if (channel instanceof DatagramChannel) {
+							datagramChannel = (DatagramChannel) channel;
+							__readUpdData(datagramChannel, selectionKey, readerBuffer);
+						}
 					}
-				}
 
+				}
 			}
 
 		} catch (ClosedSelectorException e1) {

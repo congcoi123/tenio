@@ -135,8 +135,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 		// Put the current configurations to the logger
 		info("CONFIGURATION", configuration.toString());
 
-		__setupInternalProcessorService(configuration);
 		__setupNetworkService(configuration);
+		__setupInternalProcessorService(configuration);
 		__setupScheduleService(configuration);
 
 		__initializeServices();
@@ -150,14 +150,14 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 	private void __initializeServices() {
 		__networkService.initialize();
-		__scheduleService.initialize();
 		__internalProcessorService.initialize();
+		__scheduleService.initialize();
 	}
 
 	private void __startServices() {
 		__networkService.start();
-		__scheduleService.start();
 		__internalProcessorService.start();
+		__scheduleService.start();
 	}
 
 	private void __setupScheduleService(Configuration configuration) {

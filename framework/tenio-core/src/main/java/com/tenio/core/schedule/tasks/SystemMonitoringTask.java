@@ -52,7 +52,6 @@ public final class SystemMonitoringTask extends AbstractTask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("SYSTEM MONITORING TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			__eventManager.emit(ServerEvent.SYSTEM_MONITORING, __monitoring.getCpuUsage(),
 					__monitoring.getTotalMemory(), __monitoring.getUsedMemory(), __monitoring.getFreeMemory(),

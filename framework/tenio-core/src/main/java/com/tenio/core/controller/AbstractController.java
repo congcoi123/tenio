@@ -67,6 +67,11 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 		__executor = Executors.newFixedThreadPool(__executorSize);
 		for (int i = 0; i < __executorSize; i++) {
+			try {
+				Thread.sleep(100L);
+			} catch (InterruptedException e) {
+				error(e);
+			}
 			__executor.execute(this);
 		}
 
@@ -89,16 +94,15 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 		__executor.shutdownNow();
 
-		info("STOPPED SERVICE", buildgen("controller-", getName(), "-", __id));
+		info("STOPPED SERVICE", buildgen("controller-", getName(), " (", __executorSize, ")"));
 		__destroy();
-		info("DESTROYED SERVICE", buildgen("controller-", getName(), "-", __id));
+		info("DESTROYED SERVICE", buildgen("controller-", getName(), " (", __executorSize, ")"));
 	}
 
 	@Override
 	public void run() {
 		__id++;
 
-		info("START SERVICE", buildgen("controller-", getName(), "-", __id));
 		__setThreadName();
 
 		while (true) {
@@ -133,6 +137,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
 	@Override
 	public void start() {
 		__activated = true;
+		info("START SERVICE", buildgen("controller-", getName(), " (", __executorSize, ")"));
 	}
 
 	@Override

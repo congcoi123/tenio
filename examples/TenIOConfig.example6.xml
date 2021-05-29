@@ -47,7 +47,7 @@
 			<Worker name="socket-writer">30</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
-			<Worker name="internal-processor">2</Worker>
+			<Worker name="internal-processor">20</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 
@@ -66,8 +66,8 @@
 			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
 		<Properties>
-			<Property name="max-packet-queue-size">100</Property>
-			<Property name="max-request-queue-size">100</Property>
+			<Property name="max-packet-queue-size">300</Property>
+			<Property name="max-request-queue-size">300</Property>
 			<!-- When the server get disconnection of one client, can be hold its 
 				player instance until timeout -->
 			<Property name="keep-player-on-disconnection">false</Property>

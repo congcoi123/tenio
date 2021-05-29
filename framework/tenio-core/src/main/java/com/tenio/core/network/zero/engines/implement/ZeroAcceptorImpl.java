@@ -69,6 +69,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		__acceptableSockets = new ArrayList<SocketChannel>();
 		__boundSockets = new ArrayList<SelectableChannel>();
 		__serverAddress = CoreConstant.LOCAL_HOST;
+
 		setName("acceptor");
 	}
 
@@ -135,48 +136,41 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		}
 	}
 
-	private void __acceptableLoop() {
+	private void __acceptableLoop() throws IOException {
 		// blocks until at least one channel is ready for the events you registered for
-		int readyKeysCount = 0;
-		try {
-			readyKeysCount = __acceptableSelector.select();
-		} catch (IOException e) {
-			error(e);
-		}
+		__acceptableSelector.select();
 
-		if (readyKeysCount == 0) {
-			return;
-		}
+		synchronized (__acceptableSelector) {
+			// retrieves a set of selected keys
+			Set<SelectionKey> selectedKeys = __acceptableSelector.selectedKeys();
+			Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
-		// retrieves a set of selected keys
-		Set<SelectionKey> selectedKeys = __acceptableSelector.selectedKeys();
-		Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
+			while (keyIterator.hasNext()) {
+				// iterates the list of selection keys
+				SelectionKey selectionKey = keyIterator.next();
+				// once a key is proceeded, it should be removed from the process to prevent
+				// duplicating manipulation
+				keyIterator.remove();
 
-		while (keyIterator.hasNext()) {
-			// iterates the list of selection keys
-			SelectionKey selectionKey = keyIterator.next();
-			// once a key is proceeded, it should be removed from the process to prevent
-			// duplicating manipulation
-			keyIterator.remove();
+				// a client socket was accepted by a server socket
+				// we only interest in this event
+				if (selectionKey.isAcceptable()) {
+					try {
+						// get the server socket channel from the selector
+						ServerSocketChannel serverChannel = (ServerSocketChannel) selectionKey.channel();
+						// and accept the incoming request from client
+						SocketChannel clientChannel = serverChannel.accept();
 
-			// a client socket was accepted by a server socket
-			// we only interest in this event
-			if (selectionKey.isAcceptable()) {
-				try {
-					// get the server socket channel from the selector
-					ServerSocketChannel serverChannel = (ServerSocketChannel) selectionKey.channel();
-					// and accept the incoming request from client
-					SocketChannel clientChannel = serverChannel.accept();
-
-					// make sure that the socket is available
-					if (clientChannel != null) {
-						synchronized (__acceptableSockets) {
-							__acceptableSockets.add(clientChannel);
+						// make sure that the socket is available
+						if (clientChannel != null) {
+							synchronized (__acceptableSockets) {
+								__acceptableSockets.add(clientChannel);
+							}
 						}
-					}
 
-				} catch (IOException e) {
-					error(e);
+					} catch (IOException e) {
+						error(e);
+					}
 				}
 			}
 		}
@@ -186,43 +180,46 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
 	}
 
-	private synchronized void __shutdownAcceptedSockets() {
-		// iterates the list of client socket channels
-		Iterator<SocketChannel> socketIterator = __acceptableSockets.iterator();
+	private void __shutdownAcceptedSockets() {
+		synchronized (__acceptableSockets) {
+			// iterates the list of client socket channels
+			Iterator<SocketChannel> socketIterator = __acceptableSockets.iterator();
 
-		while (socketIterator.hasNext()) {
-			SocketChannel socketChannel = socketIterator.next();
-			try {
-				getSocketIOHandler().channelInactive(socketChannel);
-				if (!socketChannel.socket().isClosed()) {
-					socketChannel.socket().shutdownInput();
-					socketChannel.socket().shutdownOutput();
-					socketChannel.close();
+			while (socketIterator.hasNext()) {
+				SocketChannel socketChannel = socketIterator.next();
+				socketIterator.remove();
+
+				try {
+					getSocketIOHandler().channelInactive(socketChannel);
+					if (!socketChannel.socket().isClosed()) {
+						socketChannel.socket().shutdownInput();
+						socketChannel.socket().shutdownOutput();
+						socketChannel.close();
+					}
+				} catch (IOException e) {
+					getSocketIOHandler().channelException(socketChannel, e);
+					error(e);
 				}
-			} catch (IOException e) {
-				getSocketIOHandler().channelException(socketChannel, e);
-				error(e);
 			}
 		}
-
-		__acceptableSockets.clear();
 	}
 
 	private synchronized void __shutdownBoundSockets() {
-		// iterates the list of server socket channels, datagram channels
-		Iterator<SelectableChannel> boundSocketIterator = __boundSockets.iterator();
+		synchronized (__boundSockets) {
+			// iterates the list of server socket channels, datagram channels
+			Iterator<SelectableChannel> boundSocketIterator = __boundSockets.iterator();
 
-		while (boundSocketIterator.hasNext()) {
-			SelectableChannel socketChannel = boundSocketIterator.next();
-			try {
-				socketChannel.close();
-			} catch (IOException e) {
-				error(e);
+			while (boundSocketIterator.hasNext()) {
+				SelectableChannel socketChannel = boundSocketIterator.next();
+				boundSocketIterator.remove();
+
+				try {
+					socketChannel.close();
+				} catch (IOException e) {
+					error(e);
+				}
 			}
 		}
-
-		__boundSockets.clear();
-
 	}
 
 	private void __shutdownSelector() {
@@ -243,17 +240,19 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	@Override
 	public void handleAcceptableChannels() {
 
-		if (__acceptableSockets.isEmpty()) {
-			return;
-		}
-
 		// we need to register all new client channel to the reader selector before
 		// reading
 		synchronized (__acceptableSockets) {
+			if (__acceptableSockets.isEmpty()) {
+				return;
+			}
+
 			Iterator<SocketChannel> socketIterator = __acceptableSockets.iterator();
 
 			while (socketIterator.hasNext()) {
 				SocketChannel socketChannel = (SocketChannel) socketIterator.next();
+				// makes sure that the loop will never check this item again
+				socketIterator.remove();
 
 				if (socketChannel == null) {
 					debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
@@ -263,10 +262,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 					if (socket == null) {
 						debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
 					} else {
-						InetAddress ipAddress = socket.getInetAddress();
-						if (ipAddress != null) {
+						InetAddress inetAddress = socket.getInetAddress();
+						if (inetAddress != null) {
 							try {
-								__connectionFilter.validateAndAddAddress(ipAddress.getHostAddress());
+								__connectionFilter.validateAndAddAddress(inetAddress.getHostAddress());
 								socketChannel.configureBlocking(false);
 								socketChannel.socket().setTcpNoDelay(true);
 								SelectionKey selectionKey = __zeroReaderListener.acceptSocketChannel(socketChannel);
@@ -299,9 +298,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 						}
 					}
 				}
-
-				// makes sure that the loop will never check this item again
-				socketIterator.remove();
 			}
 		}
 	}
@@ -340,7 +336,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 	public void onRunning() {
 		while (true) {
 			if (isActivated()) {
-				__acceptableLoop();
+				try {
+					__acceptableLoop();
+				} catch (IOException e) {
+					error(e, e.getMessage());
+				}
 			}
 		}
 	}

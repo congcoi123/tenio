@@ -47,13 +47,12 @@ public final class DeadlockScanTask extends AbstractTask {
 
 	private DeadlockScanTask(EventManager eventManager) {
 		super(eventManager);
-		
+
 		__threadBean = ManagementFactory.getThreadMXBean();
 	}
 
 	@Override
 	public ScheduledFuture<?> run() {
-		info("DEADLOCK SCAN TASK", "Running ...");
 		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
 			__checkForDeadlockedThreads();

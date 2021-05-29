@@ -56,6 +56,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 		super(eventManager);
 
 		__sessionTicketsQueue = new LinkedBlockingQueue<Session>();
+		
 		setName("writer");
 	}
 

@@ -65,6 +65,11 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	private void __initializeWorkers() {
 		__executor = Executors.newFixedThreadPool(__executorSize);
 		for (int i = 0; i < __executorSize; i++) {
+			try {
+				Thread.sleep(100L);
+			} catch (InterruptedException e) {
+				error(e);
+			}
 			__executor.execute(this);
 		}
 
@@ -89,16 +94,15 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
 		__executor.shutdownNow();
 
-		info("STOPPED SERVICE", buildgen("zero-", getName(), "-", __id));
+		info("STOPPED SERVICE", buildgen("zero-", getName(), " (", __executorSize, ")"));
 		onDestroyed();
-		info("DESTROYED SERVICE", buildgen("zero-", getName(), "-", __id));
+		info("DESTROYED SERVICE", buildgen("zero-", getName(), " (", __executorSize, ")"));
 	}
 
 	@Override
 	public void run() {
 		__id++;
-		
-		info("START SERVICE", buildgen("zero-", getName(), "-", __id));
+
 		__setThreadName();
 
 		onRunning();
@@ -168,6 +172,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 	public void start() {
 		onStarted();
 		__activated = true;
+		info("START SERVICE", buildgen("zero-", getName(), " (", __executorSize, ")"));
 	}
 
 	@Override
