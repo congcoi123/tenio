@@ -7,7 +7,7 @@
 		<!-- Logging level: trace -included-> debug -included-> info -included-> 
 			error -->
 		<Property name="target">File</Property>
-		<Property name="level">trace</Property>
+		<Property name="level">info</Property>
 	</Properties>
 
 	<Appenders>

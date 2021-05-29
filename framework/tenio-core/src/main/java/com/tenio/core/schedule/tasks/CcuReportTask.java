@@ -23,9 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.schedule.tasks;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.configuration.defines.ServerEvent;
+import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
 
 /**
@@ -33,6 +37,8 @@ import com.tenio.core.event.implement.EventManager;
  * configurations, see {@link CoreConfiguration}
  */
 public final class CcuReportTask extends AbstractTask {
+
+	private PlayerManager __playerManager;
 
 	public static CcuReportTask newInstance(EventManager eventManager) {
 		return new CcuReportTask(eventManager);
@@ -44,7 +50,13 @@ public final class CcuReportTask extends AbstractTask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		return null;
+		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+			__eventManager.emit(ServerEvent.FETCHED_CCU_INFO, __playerManager.getPlayerCount());
+		}, 0, __interval, TimeUnit.SECONDS);
+	}
+
+	public void setPlayerManager(PlayerManager playerManager) {
+		__playerManager = playerManager;
 	}
 
 }

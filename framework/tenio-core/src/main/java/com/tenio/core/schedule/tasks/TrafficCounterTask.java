@@ -23,13 +23,19 @@ THE SOFTWARE.
 */
 package com.tenio.core.schedule.tasks;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.statistics.NetworkReaderStatistic;
 import com.tenio.core.network.statistics.NetworkWriterStatistic;
 
 public final class TrafficCounterTask extends AbstractTask {
+
+	private NetworkReaderStatistic __networkReaderStatistic;
+	private NetworkWriterStatistic __networkWriterStatistic;
 
 	public static TrafficCounterTask newInstance(EventManager eventManager) {
 		return new TrafficCounterTask(eventManager);
@@ -41,15 +47,21 @@ public final class TrafficCounterTask extends AbstractTask {
 
 	@Override
 	public ScheduledFuture<?> run() {
-		return null;
+		return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+			__eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO, __networkReaderStatistic.getReadBytes(),
+					__networkReaderStatistic.getReadPackets(), __networkReaderStatistic.getReadDroppedPackets(),
+					__networkWriterStatistic.getWrittenBytes(), __networkWriterStatistic.getWrittenPackets(),
+					__networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
+					__networkWriterStatistic.getWrittenDroppedPacketsByFull());
+		}, 0, __interval, TimeUnit.SECONDS);
 	}
-	
+
 	public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-		
+		__networkReaderStatistic = networkReaderStatistic;
 	}
 
 	public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-		
+		__networkWriterStatistic = networkWriterStatistic;
 	}
 
 }

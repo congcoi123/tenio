@@ -32,8 +32,7 @@ public final class CcuInformationHandler extends AbstractExtension implements Ev
 
 	@Override
 	public void handle(int numberPlayers) {
-		// TODO Auto-generated method stub
-		
+		info("CCU INFO", String.format("Current players: %d", numberPlayers));
 	}
 
 }
