@@ -28,8 +28,8 @@ import com.tenio.core.AbstractApp;
 import com.tenio.core.configuration.define.ExtensionEvent;
 import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
-import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
+import com.tenio.engine.message.EMessage;
 import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.entities.Inspector;
 import com.tenio.examples.example4.world.World;
@@ -94,7 +94,7 @@ public final class TestServerMovement extends AbstractApp {
 			// Create a world
 			var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
 			world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
-			var hearbeatManager = new HeartBeatManager();
+			var hearbeatManager = new HeartBeatManagerImpl();
 			try {
 				hearbeatManager.initialize(1);
 				hearbeatManager.create("world", world);
@@ -216,7 +216,7 @@ public final class TestServerMovement extends AbstractApp {
 				var request = _getCommonObject(params[2]);
 
 				if (connectionId == Inspector.MAIN_CHANNEL) {
-					IMessage message = new ExampleMessage();
+					EMessage message = new ExampleMessage();
 					message.putContent("id", player.getName());
 					message.putContent("q", request.get("a"));
 					hearbeatManager.sendMessage("world", message);

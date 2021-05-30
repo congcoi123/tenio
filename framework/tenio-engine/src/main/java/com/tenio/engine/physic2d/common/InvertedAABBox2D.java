@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.engine.physic2d.common;
 
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
@@ -32,11 +32,8 @@ import com.tenio.engine.physic2d.graphic.Paint;
  * Bounding Box</a>. It is a fairly computationally- and memory-efficient way of
  * representing a volume, typically used to see if two objects might be
  * touching.
- * 
- * @author kong
- *
  */
-public class InvertedAABBox2D implements IRender {
+public class InvertedAABBox2D implements Renderable {
 
 	private float __left;
 	private float __top;

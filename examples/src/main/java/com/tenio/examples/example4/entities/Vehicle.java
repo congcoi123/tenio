@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.physic2d.common.MoveableEntity;
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
 import com.tenio.engine.physic2d.utilities.SmootherVector;
@@ -18,7 +18,7 @@ import com.tenio.examples.example4.world.World;
 /**
  * Definition of a simple vehicle that uses steering behaviors
  */
-public final class Vehicle extends MoveableEntity implements IRender {
+public final class Vehicle extends MoveableEntity implements Renderable {
 
 	// a pointer to the world data. So a vehicle can access any obstacle,
 	// path, wall or agent data

@@ -21,16 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.bases;
+package com.tenio.engine.ecs.bases.implement;
 
 import java.util.Arrays;
 
 /**
  * The context information
- * 
- * @author kong
  */
-public class ContextInfo {
+public final class ContextInfo {
 
 	/**
 	 * List of component names of an entity

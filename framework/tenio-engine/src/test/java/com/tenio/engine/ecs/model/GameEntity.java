@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.model;
 
-import com.tenio.engine.ecs.bases.Entity;
+import com.tenio.engine.ecs.bases.implement.EntityImpl;
 import com.tenio.engine.ecs.model.component.Position;
 
 /**
  * @author kong
  */
-public final class GameEntity extends Entity {
+public final class GameEntity extends EntityImpl {
 
 	public boolean isAnimation() {
 		return hasComponent(GameComponents.ANIMATION);

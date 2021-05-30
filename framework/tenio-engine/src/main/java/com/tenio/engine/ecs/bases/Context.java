@@ -23,99 +23,77 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.bases;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.pool.ComponentPool;
-import com.tenio.engine.ecs.pool.EntityPool;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
 
 /**
- * A context manages the life-cycle of entities and groups. You can create and
- * destroy entities and get groups of entities.
+ * A context is used to manage all relative entities and components.
  * 
- * @see IContext
- * 
- * @author kong
+ * @param <TEntity> the entity template
  */
-public class Context<TEntity extends Entity> implements IContext<TEntity> {
+public interface Context<TEntity extends Entity> {
 
-	private final Map<String, TEntity> __entities;
-	private final ContextInfo __contextInfo;
-	private final ElementsPool<IEntity> __entityPool;
-	private final ElementsPool<IComponent>[] __componentPools;
+	/**
+	 * Create new entity
+	 * 
+	 * @return the entity by the corresponding entity template
+	 */
+	TEntity createEntity();
 
-	public Context(ContextInfo contextInfo, Class<TEntity> clazz) {
-		__contextInfo = contextInfo;
-		__entities = new HashMap<String, TEntity>();
-		__entityPool = new EntityPool(clazz, __contextInfo);
-		__componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
-		for (int i = 0; i < __contextInfo.getNumberComponents(); i++) {
-			if (__contextInfo.getComponentTypes()[i] != null) {
-				__componentPools[i] = new ComponentPool(__contextInfo.getComponentTypes()[i]);
-			}
-		}
-	}
+	/**
+	 * Retrieves an entity by entity id
+	 * 
+	 * @param entityId the entity id
+	 * @return the corresponding entity
+	 */
+	TEntity getEntity(String entityId);
 
-	@Override
-	public TEntity createEntity() {
-		@SuppressWarnings("unchecked")
-		var entity = (TEntity) __entityPool.get();
-		entity.setComponentPools(__componentPools);
-		__entities.put(entity.getId(), entity);
-		return entity;
-	}
+	/**
+	 * Check if the entity is existed by entity id
+	 * 
+	 * @param entity the entity
+	 * @return <b>true</b> if this entity is existed in the current context,
+	 *         <b>false</b> otherwise
+	 */
+	boolean hasEntity(TEntity entity);
 
-	@Override
-	public TEntity getEntity(String entityId) {
-		return __entities.get(entityId);
-	}
+	/**
+	 * Remove this entity from the current context
+	 * 
+	 * @param entity the corresponding entity
+	 */
+	void destroyEntity(TEntity entity);
 
-	@Override
-	public void destroyEntity(TEntity entity) {
-		entity.reset();
-		__entities.remove(entity.getId());
-		__entityPool.repay(entity);
-	}
+	/**
+	 * Retrieves all entities of the current context
+	 * 
+	 * @return the map of entities
+	 */
+	Map<String, TEntity> getEntities();
 
-	@Override
-	public boolean hasEntity(TEntity entity) {
-		return __entities.containsKey(entity.getId());
-	}
+	/**
+	 * Retrieves the context information
+	 * 
+	 * @return see {@link ContextInfo}
+	 */
+	ContextInfo getContextInfo();
 
-	@Override
-	public Map<String, TEntity> getEntities() {
-		return __entities;
-	}
+	/**
+	 * Retrieves the number of entities
+	 * 
+	 * @return the entities count
+	 */
+	int getEntitesCount();
 
-	@Override
-	public ContextInfo getContextInfo() {
-		return __contextInfo;
-	}
+	/**
+	 * Remove all context's entities
+	 */
+	void destroyAllEntities();
 
-	@Override
-	public int getEntitesCount() {
-		return __entities.size();
-	}
-
-	@Override
-	public void destroyAllEntities() {
-		__entities.values().forEach(entity -> {
-			entity.reset();
-		});
-		__entities.clear();
-	}
-
-	@Override
-	public void reset() {
-		destroyAllEntities();
-		__entityPool.cleanup();
-		for (var componentPool : __componentPools) {
-			if (componentPool != null) {
-				componentPool.cleanup();
-				componentPool = null;
-			}
-		}
-	}
+	/**
+	 * Reset the current context
+	 */
+	void reset();
 
 }

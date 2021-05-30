@@ -29,9 +29,6 @@ import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * The base game entity class, it aims for creating movable objects.
- * 
- * @author kong
- * 
  */
 public abstract class BaseGameEntity extends AbstractEntity {
 

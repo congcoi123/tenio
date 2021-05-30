@@ -26,9 +26,6 @@ package com.tenio.engine.constant;
 /**
  * All base constants' values for the server are defined here. This class should
  * not be modified.
- * 
- * @author kong
- * 
  */
 public final class EngineConstant {
 

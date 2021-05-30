@@ -23,15 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.systems;
 
-import com.tenio.engine.physic2d.graphic.Paint;
-
 /**
- * Display simple shapes for debugging.
- * 
- * @author kong
+ * The base system.
  */
-public interface IRenderSystem extends ISystem {
-
-	void render(final Paint paint);
+public interface System {
 
 }

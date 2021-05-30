@@ -23,10 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.bases;
 
-import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.exceptions.ComponentIsNotExistedException;
-import com.tenio.engine.exceptions.DuplicatedComponentException;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
+import com.tenio.engine.ecs.pool.ComponentPool;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is
@@ -34,160 +33,123 @@ import com.tenio.engine.exceptions.DuplicatedComponentException;
  * implementations won't define an entity as a concrete piece of data. Instead,
  * an entity is a unique ID, and all components that make up an entity will be
  * tagged with that ID.
- * 
- * @see IEntity
- * 
- * @author kong
- **/
-public class Entity extends AbstractLogger implements IEntity {
+ */
+public interface Entity {
 
-	private ElementsPool<IComponent>[] __componentPools = null;
-	private IComponent[] __components = null;
-	private ContextInfo __contextInfo = null;
-	private String __id = null;
+	/**
+	 * Set new id
+	 * 
+	 * @param id the desired id
+	 */
+	void setId(String id);
 
-	@Override
-	public void setId(String id) {
-		__id = id;
-	}
+	/**
+	 * Retrieves the entity's id
+	 * 
+	 * @return entity's id
+	 */
+	String getId();
 
-	@Override
-	public String getId() {
-		return __id;
-	}
+	/**
+	 * Set context information
+	 * 
+	 * @param contextInfo see {@link ContextInfo}
+	 */
+	void setContextInfo(ContextInfo contextInfo);
 
-	@Override
-	public void setContextInfo(ContextInfo contextInfo) {
-		if (__contextInfo == null) {
-			__contextInfo = contextInfo;
-		}
-		if (__components == null) {
-			__components = new IComponent[contextInfo.getNumberComponents()];
-		}
-	}
+	/**
+	 * Set list of component pools, each component pool manages specific component
+	 * type
+	 * 
+	 * @param __componentPools an array of {@link ComponentPool}
+	 */
+	void setComponentPools(ElementsPool<Component>[] __componentPools);
 
-	@Override
-	public void setComponentPools(ElementsPool<IComponent>[] componentPools) {
-		if (__componentPools == null) {
-			__componentPools = componentPools;
-		}
-	}
+	/**
+	 * Retrieves the list of component pools
+	 * 
+	 * @return an array of {@link ComponentPool}
+	 */
+	ElementsPool<Component>[] getComponentPools();
 
-	@Override
-	public ElementsPool<IComponent>[] getComponentPools() {
-		return __componentPools;
-	}
+	/**
+	 * Retrieves the context information
+	 * 
+	 * @return see {@link ContextInfo}
+	 */
+	ContextInfo getContextInfo();
 
-	@Override
-	public ContextInfo getContextInfo() {
-		return __contextInfo;
-	}
+	/**
+	 * Set new component
+	 * 
+	 * @param index     the component index
+	 * @param component the component object
+	 */
+	void setComponent(int index, Component component);
 
-	@Override
-	public void setComponent(int index, IComponent component) {
-		if (hasComponent(index)) {
-			var e = new DuplicatedComponentException();
-			error(e, "index: ", index);
-			throw e;
-		}
+	/**
+	 * Remove component by index
+	 * 
+	 * @param index the component index
+	 */
+	void removeComponent(int index);
 
-		__components[index] = component;
-	}
+	/**
+	 * Replace old component by new component by index
+	 * 
+	 * @param index     the component index
+	 * @param component the component object
+	 */
+	void replaceComponent(int index, Component component);
 
-	@Override
-	public void removeComponent(int index) {
-		if (!hasComponent(index)) {
-			var e = new ComponentIsNotExistedException();
-			error(e, "index: ", index);
-			throw e;
-		}
+	/**
+	 * Retrieves the component by index
+	 * 
+	 * @param index the component index
+	 * @return the corresponding component
+	 */
+	Component getComponent(int index);
 
-		__replaceComponentInternal(index, null);
-	}
+	/**
+	 * Retrieves a list of the current entity
+	 * 
+	 * @return list of components
+	 */
+	Component[] getComponents();
 
-	@Override
-	public void replaceComponent(int index, IComponent component) {
-		if (hasComponent(index)) {
-			__replaceComponentInternal(index, component);
-		} else {
-			if (component != null) {
-				setComponent(index, component);
-			}
-		}
-	}
+	/**
+	 * Check if the component is existed or not
+	 * 
+	 * @param index component index
+	 * @return <b>true</b> if the component is existed, <b>false</b> otherwise
+	 */
+	boolean hasComponent(int index);
 
-	private void __replaceComponentInternal(int index, IComponent replacement) {
-		IComponent previousComponent = __components[index];
+	/**
+	 * Check if all the components in list are existed or not
+	 * 
+	 * @param indices list of component indices
+	 * @return <b>true</b> if the all components are existed, <b>false</b> otherwise
+	 */
+	boolean hasComponents(int... indices);
 
-		if (replacement != previousComponent) {
-			__components[index] = replacement;
-		}
-	}
+	/**
+	 * Check if one of components in list are existed or not
+	 * 
+	 * @param indices list of component indices
+	 * @return <b>true</b> if the one of components in list is existed, <b>false</b>
+	 *         otherwise
+	 */
+	boolean hasAnyComponent(int... indices);
 
-	@Override
-	public IComponent getComponent(int index) {
-		return __components[index];
-	}
+	/**
+	 * Remove all components
+	 */
+	void removeAllComponents();
 
-	@Override
-	public IComponent[] getComponents() {
-		return __components;
-	}
-
-	@Override
-	public boolean hasComponent(int index) {
-		if (index < __components.length) {
-			return __components[index] != null;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean hasComponents(int... indices) {
-		for (int index : indices) {
-			if (__components[index] == null) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public boolean hasAnyComponent(int... indices) {
-		for (int index : indices) {
-			if (__components[index] != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void removeAllComponents() {
-		for (int i = 0; i < __components.length; i++) {
-			if (__components[i] != null) {
-				replaceComponent(i, null);
-			}
-		}
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass())
-			return false;
-		return this == (Entity) o;
-
-	}
-
-	@Override
-	public int hashCode() {
-		return __id.hashCode();
-	}
-
-	@Override
-	public void reset() {
-		removeAllComponents();
-	}
+	/**
+	 * Reset entity
+	 */
+	void reset();
 
 }

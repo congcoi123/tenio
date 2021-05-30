@@ -25,8 +25,8 @@ package com.tenio.examples.example5.ecs;
 
 import java.awt.Color;
 
-import com.tenio.engine.ecs.bases.ContextInfo;
-import com.tenio.engine.heartbeat.ecs.ECSHeartBeat;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
+import com.tenio.engine.heartbeat.ecs.EcsHeartBeat;
 import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameContext;
 import com.tenio.examples.example5.system.SystemInitialization;
@@ -34,7 +34,7 @@ import com.tenio.examples.example5.system.SystemMovement;
 import com.tenio.examples.example5.system.SystemRenderer;
 import com.tenio.examples.example5.system.SystemTeardown;
 
-public final class ECS extends ECSHeartBeat {
+public final class ECS extends EcsHeartBeat {
 
 	private GameContext __context;
 	private boolean __toggleMotion = true;

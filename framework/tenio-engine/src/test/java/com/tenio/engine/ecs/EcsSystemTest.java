@@ -31,16 +31,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.engine.ecs.bases.ContextInfo;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
 import com.tenio.engine.ecs.model.GameComponents;
 import com.tenio.engine.ecs.model.GameContext;
 import com.tenio.engine.ecs.model.system.TestSystem;
-import com.tenio.engine.ecs.systems.Systems;
+import com.tenio.engine.ecs.systems.implement.Systems;
 
 /**
  * @author kong
  */
-public final class ECSSystemTest {
+public final class EcsSystemTest {
 
 	private Systems __systems;
 	private TestSystem __testSystem;

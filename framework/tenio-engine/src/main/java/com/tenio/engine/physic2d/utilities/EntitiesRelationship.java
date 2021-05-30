@@ -13,9 +13,6 @@ import com.tenio.engine.physic2d.math.Vector2;
  * <a
  * href=https://medium.com/swlh/understanding-3d-matrix-transforms-with-pixijs-c76da3f8bd8>3D
  * Matrix Transforms</a>
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
  */
 public final class EntitiesRelationship {
 

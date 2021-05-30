@@ -23,28 +23,26 @@ THE SOFTWARE.
 */
 package com.tenio.engine.heartbeat.ecs;
 
-import com.tenio.engine.ecs.systems.ISystem;
-import com.tenio.engine.ecs.systems.Systems;
+import com.tenio.engine.ecs.systems.System;
+import com.tenio.engine.ecs.systems.implement.Systems;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * The ECS system base on heart-beat
  * 
  * @see AbstractHeartBeat
- * 
- * @author kong
  */
-public class ECSHeartBeat extends AbstractHeartBeat {
+public class EcsHeartBeat extends AbstractHeartBeat {
 
 	private final Systems __systems = new Systems();
 
-	public ECSHeartBeat(int viewWidth, int viewHeight) {
+	public EcsHeartBeat(int viewWidth, int viewHeight) {
 		super(viewWidth, viewHeight);
 	}
 
-	public void addSystem(ISystem system) {
+	public void addSystem(System system) {
 		__systems.add(system);
 	}
 
@@ -58,7 +56,7 @@ public class ECSHeartBeat extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onMessage(IMessage message) {
+	protected void _onMessage(EMessage message) {
 	}
 
 	@Override

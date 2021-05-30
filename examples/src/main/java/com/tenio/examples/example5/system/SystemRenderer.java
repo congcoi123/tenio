@@ -26,18 +26,18 @@ package com.tenio.examples.example5.system;
 import java.awt.Color;
 
 import com.tenio.common.utilities.MathUtility;
-import com.tenio.engine.ecs.bases.IContext;
-import com.tenio.engine.ecs.systems.AbstractSystem;
-import com.tenio.engine.ecs.systems.IInitializeSystem;
-import com.tenio.engine.ecs.systems.IRenderSystem;
+import com.tenio.engine.ecs.bases.Context;
+import com.tenio.engine.ecs.systems.InitializeSystem;
+import com.tenio.engine.ecs.systems.RenderSystem;
+import com.tenio.engine.ecs.systems.implement.AbstractSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.examples.example5.component.Position;
 import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameEntity;
 
-public final class SystemRenderer extends AbstractSystem<GameEntity> implements IInitializeSystem, IRenderSystem {
+public final class SystemRenderer extends AbstractSystem<GameEntity> implements InitializeSystem, RenderSystem {
 
-	public SystemRenderer(IContext<GameEntity> context) {
+	public SystemRenderer(Context<GameEntity> context) {
 		super(context);
 	}
 

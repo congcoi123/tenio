@@ -21,15 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.systems;
+package com.tenio.engine.ecs.bases;
 
 /**
- * Initialize systems run once at the start of your program.
- * 
- * @author kong
+ * A component can be likened to a C struct. It has no methods and is only
+ * capable of storing data, not acting upon it.
  */
-public interface IInitializeSystem extends ISystem {
-
-	void initialize();
+public interface Component {
 
 }

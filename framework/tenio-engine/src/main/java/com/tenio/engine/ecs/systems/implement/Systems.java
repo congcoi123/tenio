@@ -21,27 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.systems;
+package com.tenio.engine.ecs.systems.implement;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tenio.engine.ecs.systems.ExecuteSystem;
+import com.tenio.engine.ecs.systems.InitializeSystem;
+import com.tenio.engine.ecs.systems.RenderSystem;
+import com.tenio.engine.ecs.systems.System;
+import com.tenio.engine.ecs.systems.TearDownSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * Systems provide a convenient way to group systems. You can add
- * {@link IInitializeSystem}, {@link IExecuteSystem}, {@link IRenderSystem},
- * {@link ITearDownSystem}, initialized and executed based on the order you
- * added them.
- * 
- * @author kong
+ * {@link InitializeSystem}, {@link ExecuteSystem}, {@link RenderSystem},
+ * {@link TearDownSystem}, initialized and executed based on the order you added
+ * them.
  */
-public final class Systems implements IInitializeSystem, IExecuteSystem, IRenderSystem, ITearDownSystem {
+public final class Systems implements InitializeSystem, ExecuteSystem, RenderSystem, TearDownSystem {
 
-	private final List<IInitializeSystem> __initializeSystems;
-	private final List<IExecuteSystem> __executeSystems;
-	private final List<IRenderSystem> __renderSystems;
-	private final List<ITearDownSystem> __tearDownSystems;
+	private final List<InitializeSystem> __initializeSystems;
+	private final List<ExecuteSystem> __executeSystems;
+	private final List<RenderSystem> __renderSystems;
+	private final List<TearDownSystem> __tearDownSystems;
 
 	/**
 	 * Check if systems is running or not
@@ -52,10 +55,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 * Creates a new systems instance.
 	 */
 	public Systems() {
-		__initializeSystems = new ArrayList<IInitializeSystem>();
-		__executeSystems = new ArrayList<IExecuteSystem>();
-		__renderSystems = new ArrayList<IRenderSystem>();
-		__tearDownSystems = new ArrayList<ITearDownSystem>();
+		__initializeSystems = new ArrayList<InitializeSystem>();
+		__executeSystems = new ArrayList<ExecuteSystem>();
+		__renderSystems = new ArrayList<RenderSystem>();
+		__tearDownSystems = new ArrayList<TearDownSystem>();
 	}
 
 	/**
@@ -64,29 +67,29 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	 * @param system new adding system
 	 * @return the current system instance
 	 */
-	public Systems add(ISystem system) {
+	public Systems add(System system) {
 		if (system != null) {
-			if (system instanceof IInitializeSystem) {
-				__initializeSystems.add((IInitializeSystem) system);
+			if (system instanceof InitializeSystem) {
+				__initializeSystems.add((InitializeSystem) system);
 			}
-			if (system instanceof IExecuteSystem) {
-				__executeSystems.add((IExecuteSystem) system);
+			if (system instanceof ExecuteSystem) {
+				__executeSystems.add((ExecuteSystem) system);
 			}
-			if (system instanceof IRenderSystem) {
-				__renderSystems.add((IRenderSystem) system);
+			if (system instanceof RenderSystem) {
+				__renderSystems.add((RenderSystem) system);
 			}
-			if (system instanceof ITearDownSystem) {
-				__tearDownSystems.add((ITearDownSystem) system);
+			if (system instanceof TearDownSystem) {
+				__tearDownSystems.add((TearDownSystem) system);
 			}
 		}
 		return this;
 	}
 
 	/**
-	 * Calls {@code initialize()} on all {@link IInitializeSystem} and other nested
+	 * Calls {@code initialize()} on all {@link InitializeSystem} and other nested
 	 * systems instances in the order you added them.
 	 * 
-	 * @see IInitializeSystem#initialize()
+	 * @see InitializeSystem#initialize()
 	 */
 	public void initialize() {
 		for (var system : __initializeSystems) {
@@ -95,10 +98,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls {@code execute()} on all {@link IExecuteSystem} and other nested
-	 * systems instances in the order you added them.
+	 * Calls {@code execute()} on all {@link ExecuteSystem} and other nested systems
+	 * instances in the order you added them.
 	 * 
-	 * @see IExecuteSystem#execute(float)
+	 * @see ExecuteSystem#execute(float)
 	 * 
 	 * @param deltaTime the delta time
 	 */
@@ -111,10 +114,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls {@code render()} on all {@link IRenderSystem} and other nested systems
+	 * Calls {@code render()} on all {@link RenderSystem} and other nested systems
 	 * instances in the order you added them.
 	 * 
-	 * @see IRenderSystem#render(Paint)
+	 * @see RenderSystem#render(Paint)
 	 * 
 	 * @param paint the renderer object
 	 */
@@ -128,10 +131,10 @@ public final class Systems implements IInitializeSystem, IExecuteSystem, IRender
 	}
 
 	/**
-	 * Calls {@code tearDown()} on all {@link ITearDownSystem} and other nested
+	 * Calls {@code tearDown()} on all {@link TearDownSystem} and other nested
 	 * Systems instances in the order you added them.
 	 * 
-	 * @see ITearDownSystem#tearDown()
+	 * @see TearDownSystem#tearDown()
 	 */
 	public void tearDown() {
 		for (var system : __tearDownSystems) {

@@ -7,9 +7,6 @@ import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * Some useful 2D geometry functions
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
  */
 public final class Geometry {
 

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exceptions.NullElementPoolException;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.bases.IComponent;
+import com.tenio.engine.ecs.bases.Component;
 import com.tenio.engine.ecs.model.component.View;
 import com.tenio.engine.ecs.pool.ComponentPool;
 
@@ -45,7 +45,7 @@ import com.tenio.engine.ecs.pool.ComponentPool;
  */
 public final class ComponentPoolTest {
 
-	private ElementsPool<IComponent> __componentPool;
+	private ElementsPool<Component> __componentPool;
 
 	@BeforeEach
 	public void initialize() {

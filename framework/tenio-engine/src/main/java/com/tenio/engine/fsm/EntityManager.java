@@ -26,17 +26,14 @@ package com.tenio.engine.fsm;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.engine.exceptions.DuplicatedEntityException;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 
 /**
  * This class for managing entities.
- * 
- * @author kong
- * 
  */
-public final class EntityManager extends AbstractLogger {
+public final class EntityManager extends SystemLogger {
 
 	/**
 	 * The list of entities

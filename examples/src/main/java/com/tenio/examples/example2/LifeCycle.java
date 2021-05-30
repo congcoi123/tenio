@@ -24,11 +24,11 @@ THE SOFTWARE.
 package com.tenio.examples.example2;
 
 import com.tenio.engine.fsm.EntityManager;
-import com.tenio.engine.fsm.IMessageListener;
+import com.tenio.engine.fsm.MessageListener;
 import com.tenio.engine.fsm.MessageDispatcher;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.examples.example2.defines.EntityName;
 import com.tenio.examples.example2.entities.BaseEntity;
@@ -38,7 +38,7 @@ import com.tenio.examples.example2.entities.Wife;
 /**
  * The lifecycle, all actions is performed in this class
  */
-public final class LifeCycle extends AbstractHeartBeat implements IMessageListener {
+public final class LifeCycle extends AbstractHeartBeat implements MessageListener {
 
 	private static final float PERIOD_STEPS_IN_SECONDS = 1.0f;
 
@@ -138,7 +138,7 @@ public final class LifeCycle extends AbstractHeartBeat implements IMessageListen
 	}
 
 	@Override
-	protected void _onMessage(IMessage message) {
+	protected void _onMessage(EMessage message) {
 		System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
 	}
 

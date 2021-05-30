@@ -23,15 +23,15 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.bases.IContext;
-import com.tenio.engine.ecs.systems.AbstractSystem;
-import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.engine.ecs.bases.Context;
+import com.tenio.engine.ecs.systems.InitializeSystem;
+import com.tenio.engine.ecs.systems.implement.AbstractSystem;
 import com.tenio.examples.example5.constant.Example5Constant;
 import com.tenio.examples.example5.context.GameEntity;
 
-public final class SystemInitialization extends AbstractSystem<GameEntity> implements IInitializeSystem {
+public final class SystemInitialization extends AbstractSystem<GameEntity> implements InitializeSystem {
 
-	public SystemInitialization(IContext<GameEntity> context) {
+	public SystemInitialization(Context<GameEntity> context) {
 		super(context);
 	}
 

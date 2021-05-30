@@ -30,31 +30,28 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exceptions.NullElementPoolException;
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.bases.ContextInfo;
 import com.tenio.engine.ecs.bases.Entity;
-import com.tenio.engine.ecs.bases.IEntity;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
+import com.tenio.engine.ecs.bases.implement.EntityImpl;
 
 /**
- * The object pool mechanism for {@link IEntity}.
- * 
- * @author kong
- * 
+ * The object pool mechanism for {@link Entity}.
  */
-public final class EntityPool extends AbstractLogger implements ElementsPool<IEntity> {
+public final class EntityPool extends SystemLogger implements ElementsPool<Entity> {
 
 	@GuardedBy("this")
-	private IEntity[] __pool;
+	private Entity[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
-	private final Class<? extends Entity> __clazz;
+	private final Class<? extends EntityImpl> __clazz;
 	private final ContextInfo __contextInfo;
 
-	public EntityPool(Class<? extends Entity> clazz, ContextInfo contextInfo) {
+	public EntityPool(Class<? extends EntityImpl> clazz, ContextInfo contextInfo) {
 		__clazz = clazz;
 		__contextInfo = contextInfo;
-		__pool = new IEntity[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__pool = new Entity[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 		__used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
@@ -72,7 +69,7 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 	}
 
 	@Override
-	public synchronized IEntity get() {
+	public synchronized Entity get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -87,7 +84,7 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new IEntity[oldPool.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
+		__pool = new Entity[oldPool.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -112,7 +109,7 @@ public final class EntityPool extends AbstractLogger implements ElementsPool<IEn
 	}
 
 	@Override
-	public synchronized void repay(IEntity element) {
+	public synchronized void repay(Entity element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {

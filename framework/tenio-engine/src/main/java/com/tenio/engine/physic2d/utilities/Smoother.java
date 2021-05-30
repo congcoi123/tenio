@@ -11,9 +11,6 @@ import com.tenio.engine.physic2d.math.Vector2;
  * += and / operators overloaded.
  *
  * Example: Used to smooth frame rate calculations.
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
  */
 public class Smoother<T extends Number> {
 	/**

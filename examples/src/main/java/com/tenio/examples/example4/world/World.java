@@ -7,7 +7,7 @@ import java.util.List;
 import com.tenio.common.utilities.MathUtility;
 import com.tenio.common.worker.WorkersPool;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 import com.tenio.engine.physic2d.common.BaseGameEntity;
 import com.tenio.engine.physic2d.common.InvertedAABBox2D;
 import com.tenio.engine.physic2d.common.Path;
@@ -521,7 +521,7 @@ public final class World extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onMessage(IMessage message) {
+	protected void _onMessage(EMessage message) {
 		// System.out.println("World._onMessage(): " + message.getContent().toString());
 		if (__listener == null) {
 			return;

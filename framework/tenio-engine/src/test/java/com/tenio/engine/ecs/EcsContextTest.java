@@ -33,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.engine.ecs.bases.ContextInfo;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
 import com.tenio.engine.ecs.model.GameComponents;
 import com.tenio.engine.ecs.model.GameContext;
 import com.tenio.engine.ecs.model.GameEntity;
@@ -43,7 +43,7 @@ import com.tenio.engine.exceptions.DuplicatedComponentException;
 /**
  * @author kong
  */
-public final class ECSContextTest {
+public final class EcsContextTest {
 
 	private GameContext __context;
 	private GameEntity __entity;

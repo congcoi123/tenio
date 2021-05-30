@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example4;
 
-import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
 import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.world.World;
 
@@ -37,7 +37,7 @@ public final class TestMovement {
 		var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
 		// Enable debugger window
 		world.debug("[TenIO] Server Debugger : Movement Simulation");
-		var hearbeatManager = new HeartBeatManager();
+		var hearbeatManager = new HeartBeatManagerImpl();
 		hearbeatManager.initialize(1);
 		hearbeatManager.create("world", world);
 	}

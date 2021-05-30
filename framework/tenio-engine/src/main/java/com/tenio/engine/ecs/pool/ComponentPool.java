@@ -29,32 +29,29 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exceptions.NullElementPoolException;
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.bases.IComponent;
+import com.tenio.engine.ecs.bases.Component;
 
 /**
- * The object pool mechanism for {@link IComponent}.
- * 
- * @author kong
- * 
+ * The object pool mechanism for {@link Component}.
  */
-public final class ComponentPool extends AbstractLogger implements ElementsPool<IComponent> {
+public final class ComponentPool extends SystemLogger implements ElementsPool<Component> {
 
 	@GuardedBy("this")
-	private IComponent[] __pool;
+	private Component[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
 	private final Class<?> __clazz;
 
 	public ComponentPool(Class<?> clazz) {
 		__clazz = clazz;
-		__pool = new IComponent[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__pool = new Component[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 		__used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
-				var component = (IComponent) __clazz.getDeclaredConstructor().newInstance();
+				var component = (Component) __clazz.getDeclaredConstructor().newInstance();
 				__pool[i] = component;
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -65,7 +62,7 @@ public final class ComponentPool extends AbstractLogger implements ElementsPool<
 	}
 
 	@Override
-	public synchronized IComponent get() {
+	public synchronized Component get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -80,12 +77,12 @@ public final class ComponentPool extends AbstractLogger implements ElementsPool<
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new IComponent[oldPool.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
+		__pool = new Component[oldPool.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
 			try {
-				__pool[i] = (IComponent) __clazz.getDeclaredConstructor().newInstance();
+				__pool[i] = (Component) __clazz.getDeclaredConstructor().newInstance();
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -93,8 +90,8 @@ public final class ComponentPool extends AbstractLogger implements ElementsPool<
 			}
 		}
 
-		info("COMPONENT POOL",
-				buildgen("Increase the number of elements by ", CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		info("COMPONENT POOL", buildgen("Increase the number of elements by ",
+				CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -102,7 +99,7 @@ public final class ComponentPool extends AbstractLogger implements ElementsPool<
 	}
 
 	@Override
-	public synchronized void repay(IComponent element) {
+	public synchronized void repay(Component element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {

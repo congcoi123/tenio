@@ -21,14 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.ecs.bases;
+package com.tenio.engine.ecs.systems.implement;
+
+import com.tenio.engine.ecs.bases.Context;
+import com.tenio.engine.ecs.bases.Entity;
 
 /**
- * A component can be likened to a C struct. It has no methods and is only
- * capable of storing data, not acting upon it.
+ * The base system.
  * 
- * @author kong
+ * @param <EntityExt> the entity template
  */
-public interface IComponent {
+public abstract class AbstractSystem<EntityExt extends Entity> {
+
+	private Context<EntityExt> __context;
+
+	public AbstractSystem(Context<EntityExt> context) {
+		__context = context;
+	}
+
+	/**
+	 * Retrieves the current context
+	 * 
+	 * @return the corresponding context
+	 */
+	public Context<EntityExt> getContext() {
+		return __context;
+	}
 
 }

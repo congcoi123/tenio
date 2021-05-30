@@ -23,31 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.systems;
 
-import com.tenio.engine.ecs.bases.IContext;
-import com.tenio.engine.ecs.bases.IEntity;
-
 /**
- * The base system.
- * 
- * @param <TEntity> the entity template
- * 
- * @author kong
+ * Teardown systems run once at the end of your program. This is where you can
+ * clean up all resources acquired throughout the lifetime of your game.
  */
-public abstract class AbstractSystem<TEntity extends IEntity> {
+public interface TearDownSystem extends System {
 
-	private IContext<TEntity> __context;
-
-	public AbstractSystem(IContext<TEntity> context) {
-		__context = context;
-	}
-
-	/**
-	 * Retrieves the current context
-	 * 
-	 * @return the corresponding context
-	 */
-	public IContext<TEntity> getContext() {
-		return __context;
-	}
+	void tearDown();
 
 }

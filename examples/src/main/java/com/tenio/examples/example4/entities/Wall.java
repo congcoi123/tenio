@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example4.entities;
 
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
 
@@ -31,7 +31,7 @@ import com.tenio.engine.physic2d.math.Vector2;
  * This class is used to create and render 2D walls. Defined as the two vectors
  * A - B with a perpendicular normal
  */
-public final class Wall implements IRender {
+public final class Wall implements Renderable {
 
 	private final Vector2 __temp = Vector2.newInstance();
 

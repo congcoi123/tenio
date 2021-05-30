@@ -23,18 +23,18 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.bases.IContext;
-import com.tenio.engine.ecs.systems.AbstractSystem;
-import com.tenio.engine.ecs.systems.IExecuteSystem;
-import com.tenio.engine.ecs.systems.IInitializeSystem;
+import com.tenio.engine.ecs.bases.Context;
+import com.tenio.engine.ecs.systems.ExecuteSystem;
+import com.tenio.engine.ecs.systems.InitializeSystem;
+import com.tenio.engine.ecs.systems.implement.AbstractSystem;
 import com.tenio.examples.example5.component.Position;
 import com.tenio.examples.example5.constant.Example5Constant;
 import com.tenio.examples.example5.context.GameComponents;
 import com.tenio.examples.example5.context.GameEntity;
 
-public final class SystemMovement extends AbstractSystem<GameEntity> implements IInitializeSystem, IExecuteSystem {
+public final class SystemMovement extends AbstractSystem<GameEntity> implements InitializeSystem, ExecuteSystem {
 
-	public SystemMovement(IContext<GameEntity> context) {
+	public SystemMovement(Context<GameEntity> context) {
 		super(context);
 	}
 

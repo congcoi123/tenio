@@ -23,9 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.engine.exceptions;
 
-/**
- * @author kong
- */
 public final class ComponentIsNotExistedException extends RuntimeException {
 	/**
 	 * 

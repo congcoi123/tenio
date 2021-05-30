@@ -24,13 +24,10 @@ THE SOFTWARE.
 package com.tenio.engine.fsm.entity;
 
 import com.tenio.common.utilities.TimeUtility;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 
 /**
  * This object is used for communication between entities.
- * 
- * @author kong
- * 
  */
 @SuppressWarnings("rawtypes")
 public class Telegram implements Comparable {
@@ -66,7 +63,7 @@ public class Telegram implements Comparable {
 	/**
 	 * The extra information
 	 */
-	private IMessage __info;
+	private EMessage __info;
 
 	public Telegram() {
 		__createdTime = TimeUtility.currentTimeSeconds();
@@ -80,7 +77,7 @@ public class Telegram implements Comparable {
 		this(delayTime, sender, receiver, type, null);
 	}
 
-	public Telegram(double delayTime, String sender, String receiver, int type, IMessage info) {
+	public Telegram(double delayTime, String sender, String receiver, int type, EMessage info) {
 		__delayTime = delayTime;
 		__sender = sender;
 		__receiver = receiver;
@@ -112,7 +109,7 @@ public class Telegram implements Comparable {
 		return __createdTime;
 	}
 
-	public IMessage getInfo() {
+	public EMessage getInfo() {
 		return __info;
 	}
 

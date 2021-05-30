@@ -7,16 +7,13 @@ import java.util.ListIterator;
 
 import com.tenio.engine.physic2d.common.BaseGameEntity;
 import com.tenio.engine.physic2d.common.InvertedAABBox2D;
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * This class is used to defines a cell containing a list of pointers to
  * entities
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- * 
  */
 class Cell<E extends Object> {
 	/**
@@ -50,7 +47,7 @@ class Cell<E extends Object> {
  * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
  *
  */
-public class CellSpacePartition<E extends BaseGameEntity> implements IRender {
+public class CellSpacePartition<E extends BaseGameEntity> implements Renderable {
 
 	/**
 	 * Only for temporary calculations

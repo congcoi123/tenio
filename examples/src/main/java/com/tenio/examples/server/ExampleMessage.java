@@ -26,9 +26,9 @@ package com.tenio.examples.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 
-public final class ExampleMessage implements IMessage {
+public final class ExampleMessage implements EMessage {
 
 	private Map<String, Object> __content;
 

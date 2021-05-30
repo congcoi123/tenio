@@ -27,13 +27,13 @@ import java.awt.Color;
 
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.physic2d.common.BaseGameEntity;
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * Just a simple obstacle class
  */
-public final class Obstacle extends BaseGameEntity implements IRender {
+public final class Obstacle extends BaseGameEntity implements Renderable {
 
 	public Obstacle(float x, float y, float radius) {
 		super(0, x, y, radius);

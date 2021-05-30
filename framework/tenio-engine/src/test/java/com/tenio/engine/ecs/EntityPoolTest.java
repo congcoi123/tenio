@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.exceptions.NullElementPoolException;
 import com.tenio.common.pool.ElementsPool;
-import com.tenio.engine.ecs.bases.ContextInfo;
-import com.tenio.engine.ecs.bases.IEntity;
+import com.tenio.engine.ecs.bases.Entity;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
 import com.tenio.engine.ecs.model.GameComponents;
 import com.tenio.engine.ecs.model.GameEntity;
 import com.tenio.engine.ecs.pool.EntityPool;
@@ -47,7 +47,7 @@ import com.tenio.engine.ecs.pool.EntityPool;
  */
 public final class EntityPoolTest {
 
-	private ElementsPool<IEntity> __entityPool;
+	private ElementsPool<Entity> __entityPool;
 
 	@BeforeEach
 	public void initialize() {
@@ -63,7 +63,7 @@ public final class EntityPoolTest {
 
 	@Test
 	public void createNewEntityShouldReturnSuccess() {
-		IEntity entity = __entityPool.get();
+		Entity entity = __entityPool.get();
 
 		assertNotEquals(null, entity);
 	}
@@ -71,7 +71,7 @@ public final class EntityPoolTest {
 	@Test
 	public void repayAnEntityWithoutGetShouldCauseException() {
 		assertThrows(NullElementPoolException.class, () -> {
-			IEntity entity = new GameEntity();
+			Entity entity = new GameEntity();
 			__entityPool.repay(entity);
 		});
 	}

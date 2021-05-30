@@ -31,13 +31,10 @@ import com.tenio.common.utilities.TimeUtility;
 import com.tenio.engine.constant.EngineConstant;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.fsm.entity.Telegram;
-import com.tenio.engine.message.IMessage;
+import com.tenio.engine.message.EMessage;
 
 /**
  * This class is used for sending messages between entities
- * 
- * @author kong
- * 
  */
 public final class MessageDispatcher {
 
@@ -52,14 +49,14 @@ public final class MessageDispatcher {
 	 */
 	private final EntityManager __manager;
 	/**
-	 * @see IMessageListener
+	 * @see MessageListener
 	 */
-	private final List<IMessageListener> __listeners;
+	private final List<MessageListener> __listeners;
 
 	public MessageDispatcher(EntityManager manager) {
 		__manager = manager;
 		__telegrams = new TreeSet<Telegram>();
-		__listeners = new ArrayList<IMessageListener>();
+		__listeners = new ArrayList<MessageListener>();
 	}
 
 	/**
@@ -73,7 +70,7 @@ public final class MessageDispatcher {
 	 * @param msgType  the message's type
 	 * @param info     the message extra information
 	 */
-	public void dispatchMessage(double delay, String sender, String receiver, int msgType, IMessage info) {
+	public void dispatchMessage(double delay, String sender, String receiver, int msgType, EMessage info) {
 
 		// get pointers to the receiver
 		var pReceiver = __manager.get(receiver);
@@ -149,7 +146,7 @@ public final class MessageDispatcher {
 		}
 	}
 
-	public void listen(IMessageListener listener) {
+	public void listen(MessageListener listener) {
 		__listeners.add(listener);
 	}
 

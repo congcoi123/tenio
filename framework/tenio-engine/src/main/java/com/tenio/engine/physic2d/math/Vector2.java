@@ -27,9 +27,6 @@ import com.tenio.common.utilities.MathUtility;
 
 /**
  * A 2D Vector. Allows chaining methods by returning a reference to itself.
- * 
- * @author kong
- *
  */
 public class Vector2 {
 

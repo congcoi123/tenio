@@ -9,9 +9,6 @@ import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * Some functions for converting 2D vectors between World and Local space
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- * 
  */
 public final class Transformation {
 

@@ -24,13 +24,10 @@ THE SOFTWARE.
 package com.tenio.engine.ecs.systems;
 
 /**
- * Execute systems run once per frame. This is where you put code that needs to
- * run every frame.
- * 
- * @author kong
+ * Initialize systems run once at the start of your program.
  */
-public interface IExecuteSystem extends ISystem {
+public interface InitializeSystem extends System {
 
-	void execute(float deltaTime);
+	void initialize();
 
 }

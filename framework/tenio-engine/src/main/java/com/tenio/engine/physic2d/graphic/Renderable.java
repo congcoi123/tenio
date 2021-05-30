@@ -21,26 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.fsm;
-
-import com.tenio.engine.fsm.entity.Telegram;
+package com.tenio.engine.physic2d.graphic;
 
 /**
- * 
- * This interface provides a method for listening all messages of entities
- *
- * @author kong
- * 
+ * This interface provides a method for rending objects to a screen
  */
-public interface IMessageListener {
+public interface Renderable {
 
 	/**
-	 * To listen message communication
+	 * To render objects to screen
 	 * 
-	 * @param msg         see {@link Telegram}
-	 * @param flagHandled set <b>true</b> if you want the message can be handled,
-	 *                    <b>false</b> otherwise
+	 * @param paint see {@link Paint}
 	 */
-	void onListen(final Telegram msg, boolean flagHandled);
+	void render(Paint paint);
 
 }

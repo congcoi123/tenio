@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example2;
 
-import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
 import com.tenio.examples.server.ExampleMessage;
 
 /**
@@ -33,7 +33,7 @@ public final class TestFsmMechanism {
 
 	public static void main(String[] args) throws Exception {
 		// create a heart-beat
-		var hearbeatManager = new HeartBeatManager();
+		var hearbeatManager = new HeartBeatManagerImpl();
 		hearbeatManager.initialize(1);
 		hearbeatManager.create("daily-life", LifeCycle.newInstance());
 

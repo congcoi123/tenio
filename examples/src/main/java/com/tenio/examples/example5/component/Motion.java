@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example5.component;
 
-import com.tenio.engine.ecs.bases.IComponent;
+import com.tenio.engine.ecs.bases.Component;
 
-public final class Motion implements IComponent {
+public final class Motion implements Component {
 
 }

@@ -21,21 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.engine.physic2d.graphic;
+package com.tenio.engine.message;
 
-/**
- * This interface provides a method for rending objects to a screen
- * 
- * @author kong
- *
- */
-public interface IRender {
+import java.util.Map;
 
-	/**
-	 * To render objects to screen
-	 * 
-	 * @param paint see {@link Paint}
-	 */
-	void render(Paint paint);
+public interface EMessage {
+
+	long getTimestamp();
+
+	void putContent(String key, Object value);
+
+	Map<String, Object> getContent();
+
+	Object getContentByKey(String key);
 
 }

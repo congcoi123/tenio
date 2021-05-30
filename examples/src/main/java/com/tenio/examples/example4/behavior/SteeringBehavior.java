@@ -7,7 +7,7 @@ import java.util.List;
 import com.tenio.common.utilities.MathUtility;
 import com.tenio.engine.physic2d.common.BaseGameEntity;
 import com.tenio.engine.physic2d.common.Path;
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
 import com.tenio.engine.physic2d.utilities.Geometry;
@@ -24,7 +24,7 @@ import com.tenio.examples.example4.entities.Wall;
  * 
  * @see Vehicle
  */
-public final class SteeringBehavior implements IRender {
+public final class SteeringBehavior implements Renderable {
 
 	// the radius of the constraining circle for the wander behavior
 	public static final float WANDER_RADIUS = 1.2f;
