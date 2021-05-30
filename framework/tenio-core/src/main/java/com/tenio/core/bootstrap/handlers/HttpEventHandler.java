@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;

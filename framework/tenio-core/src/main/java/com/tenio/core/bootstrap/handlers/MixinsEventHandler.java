@@ -26,8 +26,9 @@ package com.tenio.core.bootstrap.handlers;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
+import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
@@ -75,8 +76,9 @@ public final class MixinsEventHandler {
 					@Override
 					public Object dispatch(Object... params) {
 						String serverName = (String) params[0];
+						Configuration configuration = (Configuration) params[1];
 
-						event.handle(serverName);
+						event.handle(serverName, configuration);
 
 						return null;
 					}

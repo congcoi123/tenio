@@ -21,16 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.common.bootstrap.annotations;
 
-public final class NoImplementedClassFoundException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2836756456705984458L;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	public NoImplementedClassFoundException(Class<?> clazz) {
-		super(String.format("Unable to find any implementation for the class: %s", clazz.getName()));
-	}
+/**
+ * This annotation can be used to avoid conflict if there are multiple
+ * implementations of the same interface
+ */
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface AutowiredQualifier {
+
+	String value() default "";
 
 }

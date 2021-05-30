@@ -88,5 +88,11 @@ public final class CommonConstant {
 	 * Base FPS in server
 	 */
 	public static final float FPS = 1 / 60.0f;
+	
+	public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
+	
+	public static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
+	
+	public static final String DEFAULT_ENGINE_HEARTBEAT_PACKAGE = "com.tenio.engine.heartbeat";
 
 }

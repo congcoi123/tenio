@@ -26,8 +26,8 @@ package com.tenio.core.bootstrap.handlers;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;

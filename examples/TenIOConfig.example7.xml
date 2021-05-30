@@ -5,7 +5,7 @@
 		<!-- The server name -->
 		<Property name="server-name">Example</Property>
 		<!-- The server id (module name) -->
-		<Property name="server-id">tenio-example</Property>
+		<Property name="server-id">tenio-example-7</Property>
 		<!-- The current version code of your server in integer type (comparable) -->
 		<Property name="version-code">1</Property>
 		<!-- The current version name of your server in string type -->

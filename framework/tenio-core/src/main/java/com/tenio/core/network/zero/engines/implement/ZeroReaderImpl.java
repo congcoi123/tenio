@@ -85,7 +85,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
 		try {
 			// blocks until at least one channel is ready for the events you registered for
-			__readableSelector.select();
+			int countReadyKeys = __readableSelector.selectNow();
+
+			if (countReadyKeys == 0) {
+				return;
+			}
 
 			synchronized (__readableSelector) {
 				// readable selector was registered by OP_READ interested only socket channels,

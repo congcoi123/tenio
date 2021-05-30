@@ -33,6 +33,6 @@ public interface WorldListener {
 
 	void updateVehiclePosition(Vehicle vehicle);
 
-	void reponseVehicleNeighbours(String playerName, List<Vehicle> neighbours);
+	void reponseVehicleNeighbours(String playerName, List<Vehicle> neighbours, int currentFps);
 
 }

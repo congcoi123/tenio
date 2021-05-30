@@ -51,49 +51,49 @@ public class EcsHeartBeat extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onCreate() {
+	protected void __onCreate() {
 		__systems.initialize();
 	}
 
 	@Override
-	protected void _onMessage(EMessage message) {
+	protected void __onMessage(EMessage message) {
 	}
 
 	@Override
-	protected void _onUpdate(float deltaTime) {
+	protected void __onUpdate(float deltaTime) {
 		__systems.execute(deltaTime);
 	}
 
 	@Override
-	protected void _onRender(Paint paint) {
+	protected void __onRender(Paint paint) {
 		__systems.render(paint);
 	}
 
 	@Override
-	protected void _onPause() {
+	protected void __onPause() {
 		__systems.paused(true);
 	}
 
 	@Override
-	protected void _onResume() {
+	protected void __onResume() {
 		__systems.paused(false);
 	}
 
 	@Override
-	protected void _onDispose() {
+	protected void __onDispose() {
 		__systems.tearDown();
 	}
 
 	@Override
-	protected void _onAction1() {
+	protected void __onAction1() {
 	}
 
 	@Override
-	protected void _onAction2() {
+	protected void __onAction2() {
 	}
 
 	@Override
-	protected void _onAction3() {
+	protected void __onAction3() {
 	}
 
 }

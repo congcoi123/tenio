@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example7.handlers;
 
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.data.implement.ZeroArrayImpl;
 import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;

@@ -26,6 +26,7 @@ package com.tenio.core;
 import java.lang.reflect.InvocationTargetException;
 
 import com.tenio.common.configuration.Configuration;
+import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.exceptions.ConfigurationException;
@@ -46,7 +47,9 @@ public abstract class AbstractApp extends SystemLogger {
 		if (entryClazz != null) {
 			bootstrap = Bootstrapper.newInstance();
 			try {
-				bootstrap.run(entryClazz);
+				bootstrap.run(entryClazz, CommonConstant.DEFAULT_BOOTSTRAP_PACKAGE,
+						CommonConstant.DEFAULT_EXTENSION_EVENT_PACKAGE,
+						CommonConstant.DEFAULT_ENGINE_HEARTBEAT_PACKAGE);
 			} catch (Exception e) {
 				error(e, "The application started with exceptions occured: ", e.getMessage());
 				System.exit(1);

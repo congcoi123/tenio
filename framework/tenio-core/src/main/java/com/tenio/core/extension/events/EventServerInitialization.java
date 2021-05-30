@@ -23,8 +23,10 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension.events;
 
+import com.tenio.common.configuration.Configuration;
+
 public interface EventServerInitialization {
 
-	void handle(String serverName);
+	void handle(String serverName, Configuration configuration);
 
 }

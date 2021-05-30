@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.api;
 
+import java.util.Collection;
+
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.data.ServerMessage;
@@ -51,6 +53,10 @@ public interface ServerApi {
 	Player getPlayerByName(String playerName);
 
 	Player getPlayerBySession(Session session);
+	
+	int getPlayerCount();
+	
+	Collection<Player> getAllPlayers();
 
 	Room getRoomById(long roomId);
 

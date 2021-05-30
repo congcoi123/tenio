@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example6.handlers;
 
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventFetchedCcuInfo;
 
