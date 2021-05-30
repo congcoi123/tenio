@@ -2,15 +2,12 @@ package com.tenio.examples.example4.configuration;
 
 import java.io.IOException;
 
-import com.tenio.common.utility.MathUtility;
+import com.tenio.common.utilities.MathUtility;
 
 /**
  * Class to configuration
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
  */
-public class ParamLoader extends FileLoaderBase {
+public final class ParamLoader extends FileLoaderBase {
 
 	private final static ParamLoader __instance;
 

@@ -37,7 +37,7 @@ public final class ConnectionEstablishedHandler extends AbstractExtension implem
 	@Override
 	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
 		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().loginWithSession(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+			getApi().login(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
 		}
 	}
 

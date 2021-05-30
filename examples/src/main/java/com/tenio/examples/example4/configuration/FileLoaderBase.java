@@ -11,11 +11,8 @@ import java.util.regex.Pattern;
 
 /**
  * This class is used for configuration loader
- * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
  */
-public class FileLoaderBase {
+public abstract class FileLoaderBase {
 
 	private BufferedReader __file;
 	private String __line = "";

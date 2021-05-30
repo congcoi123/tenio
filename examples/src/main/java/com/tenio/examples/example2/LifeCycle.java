@@ -30,10 +30,10 @@ import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
 import com.tenio.engine.message.IMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
-import com.tenio.examples.example2.define.EntityName;
-import com.tenio.examples.example2.entity.BaseEntity;
-import com.tenio.examples.example2.entity.Miner;
-import com.tenio.examples.example2.entity.Wife;
+import com.tenio.examples.example2.defines.EntityName;
+import com.tenio.examples.example2.entities.BaseEntity;
+import com.tenio.examples.example2.entities.Miner;
+import com.tenio.examples.example2.entities.Wife;
 
 /**
  * The lifecycle, all actions is performed in this class

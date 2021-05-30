@@ -21,24 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1.handlers;
+package com.tenio.examples.example2.entities;
 
-import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.network.entities.session.Session;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.engine.fsm.entity.AbstractEntity;
+import com.tenio.examples.example2.defines.EntityName;
 
-@Component
-public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
+public abstract class BaseEntity extends AbstractEntity {
 
-	@Override
-	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().login(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-		}
+	private final EntityName __name;
+	/**
+	 * An extra information
+	 */
+	private String __mood;
+
+	public BaseEntity(EntityName name) {
+		super(name.get());
+		__name = name;
+	}
+
+	public String getName() {
+		return EntityName.getName(__name.get());
+	}
+
+	public String getMood() {
+		return __mood;
+	}
+
+	public void setMood(String mood) {
+		__mood = mood;
 	}
 
 }

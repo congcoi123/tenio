@@ -30,8 +30,9 @@ import com.tenio.core.extension.AbstractExtensionHandler;
 import com.tenio.core.extension.IExtension;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.message.IMessage;
-import com.tenio.examples.example4.constant.Constants;
-import com.tenio.examples.example4.entity.Inspector;
+import com.tenio.examples.example4.constant.Example4Constant;
+import com.tenio.examples.example4.entities.Inspector;
+import com.tenio.examples.example4.world.World;
 import com.tenio.examples.server.ExampleMessage;
 import com.tenio.examples.server.TestConfiguration;
 
@@ -91,7 +92,7 @@ public final class TestServerMovement extends AbstractApp {
 		public void initialize(Configuration configuration) {
 
 			// Create a world
-			var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+			var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
 			world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
 			var hearbeatManager = new HeartBeatManager();
 			try {

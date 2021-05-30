@@ -34,10 +34,14 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
 import com.tenio.core.extension.events.EventFetchedCcuInfo;
 import com.tenio.core.extension.events.EventServerException;
+import com.tenio.core.extension.events.EventServerInitialization;
 import com.tenio.core.extension.events.EventSystemMonitoring;
 
 @Component
 public final class MixinsEventHandler {
+
+	@AutowiredAcceptNull
+	private EventServerInitialization __eventServerInitialization;
 
 	@AutowiredAcceptNull
 	private EventServerException __eventServerException;
@@ -53,11 +57,32 @@ public final class MixinsEventHandler {
 
 	public void initialize(EventManager eventManager) {
 
+		Optional<EventServerInitialization> eventServerInitializationOp = Optional
+				.ofNullable(__eventServerInitialization);
 		Optional<EventServerException> eventServerExceptionOp = Optional.ofNullable(__eventServerException);
+
 		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);
 		Optional<EventFetchedCcuInfo> eventFetchedCcuInfoOp = Optional.ofNullable(__eventFetchedCcuInfo);
 		Optional<EventSystemMonitoring> eventSystemMonitoringOp = Optional.ofNullable(__eventSystemMonitoring);
+
+		eventServerInitializationOp.ifPresent(new Consumer<EventServerInitialization>() {
+
+			@Override
+			public void accept(EventServerInitialization event) {
+				eventManager.on(ServerEvent.SERVER_INITIALIZATION, new Subscriber() {
+
+					@Override
+					public Object dispatch(Object... params) {
+						String serverName = (String) params[0];
+
+						event.handle(serverName);
+
+						return null;
+					}
+				});
+			}
+		});
 
 		eventServerExceptionOp.ifPresent(new Consumer<EventServerException>() {
 

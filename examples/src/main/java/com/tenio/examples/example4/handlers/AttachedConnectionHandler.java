@@ -21,23 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1.handlers;
+package com.tenio.examples.example4.handlers;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
+import com.tenio.core.entities.Player;
+import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.network.entities.session.Session;
+import com.tenio.core.extension.events.EventAttachedConnectionResult;
+import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.UdpEstablishedState;
 
 @Component
-public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
+public final class AttachedConnectionHandler extends AbstractExtension implements EventAttachedConnectionResult {
 
 	@Override
-	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().login(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+	public void handle(Player player, AttachedConnectionResult result) {
+		if (result == AttachedConnectionResult.SUCCESS) {
+			var data = ZeroObjectImpl.newInstance().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH,
+					UdpEstablishedState.ATTACHED);
+			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
 		}
 	}
 

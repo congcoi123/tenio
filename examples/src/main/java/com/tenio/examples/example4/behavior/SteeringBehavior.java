@@ -4,29 +4,27 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenio.common.utility.MathUtility;
+import com.tenio.common.utilities.MathUtility;
 import com.tenio.engine.physic2d.common.BaseGameEntity;
 import com.tenio.engine.physic2d.common.Path;
 import com.tenio.engine.physic2d.graphic.IRender;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
-import com.tenio.engine.physic2d.utility.Geometry;
-import com.tenio.engine.physic2d.utility.Transformation;
+import com.tenio.engine.physic2d.utilities.Geometry;
+import com.tenio.engine.physic2d.utilities.Transformation;
 import com.tenio.examples.example4.configuration.ParamLoader;
 import com.tenio.examples.example4.constant.Behavior;
 import com.tenio.examples.example4.constant.Deceleration;
 import com.tenio.examples.example4.constant.SummingMethod;
-import com.tenio.examples.example4.entity.Vehicle;
-import com.tenio.examples.example4.entity.Wall;
+import com.tenio.examples.example4.entities.Vehicle;
+import com.tenio.examples.example4.entities.Wall;
 
 /**
- * This class is used to encapsulate steering behaviors for a vehicle @see
- * {@link Vehicle}
+ * This class is used to encapsulate steering behaviors for a vehicle
  * 
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
- *
+ * @see Vehicle
  */
-public class SteeringBehavior implements IRender {
+public final class SteeringBehavior implements IRender {
 
 	// the radius of the constraining circle for the wander behavior
 	public static final float WANDER_RADIUS = 1.2f;
@@ -344,8 +342,8 @@ public class SteeringBehavior implements IRender {
 		var target = __temp1.set(__wanderDistance, 0).add(__temp2);
 
 		// project the target into world space
-		var targetToWorldSpace = Transformation.pointToWorldSpace(target, __vehicle.getHeading(),
-				__vehicle.getSide(), __vehicle.getPosition());
+		var targetToWorldSpace = Transformation.pointToWorldSpace(target, __vehicle.getHeading(), __vehicle.getSide(),
+				__vehicle.getPosition());
 
 		// and steer towards it
 		return targetToWorldSpace.sub(__vehicle.getPosition());
@@ -607,8 +605,8 @@ public class SteeringBehavior implements IRender {
 		var steeringForce = __temp1.zero();
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
-				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld().getCellSpace()
+				.isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure this agent isn't included in the calculations and that
 			// the agent being examined is close enough
 			if (pV != __vehicle) {
@@ -638,8 +636,8 @@ public class SteeringBehavior implements IRender {
 		float neighborCount = 0;
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
-				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld().getCellSpace()
+				.isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure *this* agent isn't included in the calculations and that
 			// the agent being examined is close enough
 			if (pV != __vehicle) {
@@ -672,8 +670,8 @@ public class SteeringBehavior implements IRender {
 		int neighborCount = 0;
 
 		// iterate through the neighbors and sum up all the position vectors
-		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld()
-				.getCellSpace().isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
+		for (var pV = __vehicle.getWorld().getCellSpace().getFrontOfNeighbor(); !__vehicle.getWorld().getCellSpace()
+				.isEndOfNeighbors(); pV = __vehicle.getWorld().getCellSpace().getNextOfNeighbor()) {
 			// make sure *this* agent isn't included in the calculations and that
 			// the agent being examined is close enough
 			if (pV != __vehicle) {
@@ -729,8 +727,7 @@ public class SteeringBehavior implements IRender {
 		while (it.hasNext()) {
 			var curOb = it.next();
 			// calculate the position of the hiding spot for this obstacle
-			var hidingSpot = __getHidingPosition(curOb.getPosition(), curOb.getBoundingRadius(),
-					hunter.getPosition());
+			var hidingSpot = __getHidingPosition(curOb.getPosition(), curOb.getBoundingRadius(), hunter.getPosition());
 
 			// work in distance-squared space to find the closest hiding
 			// spot to the agent

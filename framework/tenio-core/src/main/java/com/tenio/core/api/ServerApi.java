@@ -35,7 +35,7 @@ public interface ServerApi {
 
 	void login(String playerName);
 
-	void loginWithSession(String playerName, Session session);
+	void login(String playerName, Session session);
 
 	void logout(Player player);
 
@@ -43,6 +43,8 @@ public interface ServerApi {
 
 	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
 
+	Room createRoom(InitialRoomSetting setting);
+	
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
 	Player getPlayerByName(String playerName);

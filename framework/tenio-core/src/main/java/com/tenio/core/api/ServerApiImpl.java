@@ -71,7 +71,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void loginWithSession(String playerName, Session session) {
+	public void login(String playerName, Session session) {
 		try {
 			var player = __getPlayerManager().createPlayerWithSession(playerName, session);
 			session.setName(playerName);
@@ -133,11 +133,20 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
+	public Room createRoom(InitialRoomSetting setting) {
+		return createRoom(setting, null);
+	}
+
+	@Override
 	public Room createRoom(InitialRoomSetting setting, Player owner) {
 		Room room = null;
 		try {
-			room = __getRoomManager().createRoomWithOwner(setting, owner);
-			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room, setting, RoomCreatedResult.SUCCESS);
+			if (owner == null) {
+				room = __getRoomManager().createRoom(setting);
+			} else {
+				room = __getRoomManager().createRoomWithOwner(setting, owner);
+				__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, room, setting, RoomCreatedResult.SUCCESS);
+			}
 		} catch (IllegalArgumentException e) {
 			__getEventManager().emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
 					RoomCreatedResult.INVALID_NAME_OR_PASSWORD);

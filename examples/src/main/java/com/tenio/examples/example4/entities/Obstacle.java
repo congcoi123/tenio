@@ -21,24 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example1.handlers;
+package com.tenio.examples.example4.entities;
 
-import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.network.entities.session.Session;
-import com.tenio.examples.server.SharedEventKey;
+import java.awt.Color;
 
-@Component
-public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
+import com.tenio.engine.fsm.entity.Telegram;
+import com.tenio.engine.physic2d.common.BaseGameEntity;
+import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.engine.physic2d.graphic.Paint;
+
+/**
+ * Just a simple obstacle class
+ */
+public final class Obstacle extends BaseGameEntity implements IRender {
+
+	public Obstacle(float x, float y, float radius) {
+		super(0, x, y, radius);
+	}
 
 	@Override
-	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().login(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-		}
+	public void render(Paint paint) {
+		paint.setPenColor(Color.BLACK);
+		paint.drawCircle(getPositionX(), getPositionY(), getBoundingRadius());
+	}
+
+	@Override
+	public void update(float delta) {
+
+	}
+
+	@Override
+	public boolean handleMessage(Telegram msg) {
+		return false;
 	}
 
 }

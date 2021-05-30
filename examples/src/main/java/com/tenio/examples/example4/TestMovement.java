@@ -24,23 +24,22 @@ THE SOFTWARE.
 package com.tenio.examples.example4;
 
 import com.tenio.engine.heartbeat.HeartBeatManager;
-import com.tenio.examples.example4.constant.Constants;
+import com.tenio.examples.example4.constant.Example4Constant;
+import com.tenio.examples.example4.world.World;
 
 /**
  * Only for testing the movement behavior of vehicles
- * 
- * @author kong
- * 
  */
 public final class TestMovement {
 
 	/**
 	 * The entry point
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
 		// Create a world
-		var world = new World(Constants.DESIGN_WIDTH, Constants.DESIGN_HEIGHT);
+		var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
 		// Enable debugger window
 		world.debug("[TenIO] Server Debugger : Movement Simulation");
 		var hearbeatManager = new HeartBeatManager();
