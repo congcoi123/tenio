@@ -21,25 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.annotations;
+package com.tenio.common.exceptions;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public final class MultipleImplementedClassForInterfaceException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9186053637398483773L;
 
-/**
- * This annotation can be used to avoid conflict if there are multiple
- * implementations of the same interface
- */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface AutowiredQualifier {
-
-	String value() default "";
+	public MultipleImplementedClassForInterfaceException(Class<?> clazz) {
+		super(String.format("Mutiple implementations for the class: %s found", clazz.getName()));
+	}
 
 }

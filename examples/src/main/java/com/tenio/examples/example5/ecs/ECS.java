@@ -55,7 +55,7 @@ public final class ECS extends EcsHeartBeat {
 	}
 
 	@Override
-	protected void _onAction1() {
+	protected void __onAction1() {
 		__toggleMotion = !__toggleMotion;
 		setTextAction1(__toggleMotion ? "Stop" : "Move", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {
@@ -64,7 +64,7 @@ public final class ECS extends EcsHeartBeat {
 	}
 
 	@Override
-	protected void _onAction2() {
+	protected void __onAction2() {
 		__toggleAnimation = !__toggleAnimation;
 		setTextAction2(__toggleAnimation ? "Off animation" : "On animation", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {
@@ -73,7 +73,7 @@ public final class ECS extends EcsHeartBeat {
 	}
 
 	@Override
-	protected void _onAction3() {
+	protected void __onAction3() {
 		__toggleView = !__toggleView;
 		setTextAction3(__toggleView ? "Invisible" : "Visible", Color.LIGHT_GRAY);
 		for (var entity : __context.getEntities().values()) {

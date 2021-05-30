@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
+import com.tenio.common.bootstrap.annotations.Bootstrap;
+import com.tenio.common.bootstrap.injector.Injector;
 import com.tenio.common.loggers.SystemLogger;
-import com.tenio.core.bootstrap.annotations.Bootstrap;
-import com.tenio.core.bootstrap.injector.Injector;
 
 public final class Bootstrapper extends SystemLogger {
 
@@ -37,14 +37,14 @@ public final class Bootstrapper extends SystemLogger {
 	}
 
 	private Bootstrapper() {
-		__injector = new Injector();
+		__injector = Injector.newInstance();
 	}
 
-	public boolean run(Class<?> entryClazz) throws Exception {
+	public boolean run(Class<?> entryClazz, String... packages) throws Exception {
 		boolean hasExtApplicationAnnotation = entryClazz.isAnnotationPresent(Bootstrap.class);
 
 		if (hasExtApplicationAnnotation) {
-			__start(entryClazz);
+			__start(entryClazz, packages);
 			__eventHandler = __injector.getInstance(EventHandler.class);
 			return true;
 		} else {
@@ -52,10 +52,10 @@ public final class Bootstrapper extends SystemLogger {
 		}
 	}
 
-	private void __start(Class<?> entryClazz) {
+	private void __start(Class<?> entryClazz, String... packages) {
 		try {
 			synchronized (Bootstrapper.class) {
-				__injector.scanPackages(entryClazz);
+				__injector.scanPackages(entryClazz, packages);
 			}
 		} catch (Exception e) {
 			error(e);

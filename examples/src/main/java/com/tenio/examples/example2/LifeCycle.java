@@ -74,12 +74,12 @@ public final class LifeCycle extends AbstractHeartBeat implements MessageListene
 	}
 
 	@Override
-	protected void _onCreate() {
+	protected void __onCreate() {
 		System.out.println("HeartBeat.onCreate()");
 	}
 
 	@Override
-	protected void _onUpdate(float delta) {
+	protected void __onUpdate(float delta) {
 		if (__tick >= PERIOD_STEPS_IN_SECONDS) {
 			__entities.gets().values().forEach(entity -> {
 				var base = (BaseEntity) entity;
@@ -98,17 +98,17 @@ public final class LifeCycle extends AbstractHeartBeat implements MessageListene
 	}
 
 	@Override
-	protected void _onPause() {
+	protected void __onPause() {
 		System.out.println("HeartBeat.onPause()");
 	}
 
 	@Override
-	protected void _onResume() {
+	protected void __onResume() {
 		System.out.println("HeartBeat.onResume()");
 	}
 
 	@Override
-	protected void _onDispose() {
+	protected void __onDispose() {
 		System.out.println("HeartBeat._onDispose()");
 	}
 
@@ -118,27 +118,27 @@ public final class LifeCycle extends AbstractHeartBeat implements MessageListene
 	}
 
 	@Override
-	protected void _onRender(Paint paint) {
+	protected void __onRender(Paint paint) {
 
 	}
 
 	@Override
-	protected void _onAction1() {
+	protected void __onAction1() {
 		System.out.println("HeartBeat._onAction1()");
 	}
 
 	@Override
-	protected void _onAction2() {
+	protected void __onAction2() {
 		System.out.println("HeartBeat._onAction2()");
 	}
 
 	@Override
-	protected void _onAction3() {
+	protected void __onAction3() {
 		System.out.println("HeartBeat._onAction3()");
 	}
 
 	@Override
-	protected void _onMessage(EMessage message) {
+	protected void __onMessage(EMessage message) {
 		System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
 	}
 

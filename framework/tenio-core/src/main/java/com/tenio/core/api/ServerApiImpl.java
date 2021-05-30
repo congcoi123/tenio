@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.core.api;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
@@ -170,6 +171,16 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	@Override
 	public Player getPlayerBySession(Session session) {
 		return __getPlayerManager().getPlayerBySession(session);
+	}
+
+	@Override
+	public int getPlayerCount() {
+		return __getPlayerManager().getPlayerCount();
+	}
+
+	@Override
+	public Collection<Player> getAllPlayers() {
+		return __getPlayerManager().getAllPlayers();
 	}
 
 	@Override

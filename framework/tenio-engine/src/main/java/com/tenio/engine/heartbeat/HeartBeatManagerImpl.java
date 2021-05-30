@@ -33,6 +33,7 @@ import java.util.concurrent.Future;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.engine.exceptions.HeartbeatNotFoundException;
 import com.tenio.engine.message.EMessage;
@@ -47,6 +48,7 @@ import com.tenio.engine.message.EMessage;
  * @see HeartBeatManager
  */
 @ThreadSafe
+@Component
 public final class HeartBeatManagerImpl extends SystemLogger implements HeartBeatManager {
 
 	@GuardedBy("this")

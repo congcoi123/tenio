@@ -14,7 +14,6 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<org.reflections.version>0.9.9-RC1</org.reflections.version>
 		<io.netty.version>4.1.63.Final</io.netty.version>
 		<org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
@@ -22,19 +21,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>${org.reflections.version}</version>
-			<scope>compile</scope>
-
-			<exclusions>
-				<exclusion>
-					<groupId>dom4j</groupId>
-					<artifactId>dom4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tenio-common</artifactId>

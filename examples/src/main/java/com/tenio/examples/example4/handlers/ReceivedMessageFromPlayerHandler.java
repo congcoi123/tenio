@@ -23,24 +23,33 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example4.handlers;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
+import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.examples.server.ExampleMessage;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
 public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 		implements EventReceivedMessageFromPlayer {
 
+	@AutowiredAcceptNull
+	private HeartBeatManager __heartbeatManager;
+
 	@Override
 	public void handle(Player player, ServerMessage message) {
-		var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format(
-				"Echo(%s): %s", player.getName(), message.getData().getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).prioritizedUdp().write();
+		
+		if (message.getData().containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
+			var request = ExampleMessage.newInstance();
+			request.putContent("id", player.getName());
+			request.putContent("q", message.getData().getString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS));
+			__heartbeatManager.sendMessage("world", request);
+		}
+
 	}
 
 }

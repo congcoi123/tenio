@@ -21,16 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.exceptions;
+package com.tenio.common.bootstrap.annotations;
 
-public final class MultipleImplementedClassForInterfaceException extends RuntimeException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 9186053637398483773L;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-	public MultipleImplementedClassForInterfaceException(Class<?> clazz) {
-		super(String.format("Mutiple implementations for the class: %s found", clazz.getName()));
-	}
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Target({ METHOD, CONSTRUCTOR, FIELD })
+@Retention(RUNTIME)
+@Documented
+public @interface Autowired {
 
 }

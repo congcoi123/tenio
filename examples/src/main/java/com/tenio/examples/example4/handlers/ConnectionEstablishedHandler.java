@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example4.handlers;
 
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.extension.AbstractExtension;

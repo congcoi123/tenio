@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.data.elements.CommonObject;
-import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.network.defines.RestMethod;

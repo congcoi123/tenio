@@ -192,7 +192,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		var session = request.getSender();
 		var connectionClosedMode = (ConnectionDisconnectMode) request
 				.getAttribute(EVENT_KEY_CONNECTION_DISCONNECTED_MODE);
-		var playerClosedMode = (ConnectionDisconnectMode) request.getAttribute(EVENT_KEY_PLAYER_DISCONNECTED_MODE);
+		var playerClosedMode = (PlayerDisconnectMode) request.getAttribute(EVENT_KEY_PLAYER_DISCONNECTED_MODE);
 
 		var player = __playerManager.getPlayerBySession(session);
 		// the player maybe existed

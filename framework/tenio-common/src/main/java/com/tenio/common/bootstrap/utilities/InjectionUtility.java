@@ -21,18 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.utilities;
+package com.tenio.common.bootstrap.utilities;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.tenio.core.bootstrap.annotations.Autowired;
-import com.tenio.core.bootstrap.annotations.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotations.AutowiredQualifier;
-import com.tenio.core.bootstrap.injector.Injector;
-import com.tenio.core.exceptions.NoImplementedClassFoundException;
+import com.tenio.common.bootstrap.annotations.Autowired;
+import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
+import com.tenio.common.bootstrap.annotations.AutowiredQualifier;
+import com.tenio.common.bootstrap.injector.Injector;
+import com.tenio.common.exceptions.NoImplementedClassFoundException;
 
 public final class InjectionUtility {
 

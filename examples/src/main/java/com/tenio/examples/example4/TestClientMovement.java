@@ -163,8 +163,8 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 				break;
 
 			}
-		} else if (message.getData().containsKey(SharedEventKey.KEY_PLAYER_GET_RESPONSE)) {
-			int fps = message.getData().getInteger(SharedEventKey.KEY_PLAYER_GET_RESPONSE);
+		} else if (message.getData().containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
+			int fps = message.getData().getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
 			long receivedTimestamp = TimeUtility.currentTimeMillis();
 			long latency = receivedTimestamp - __sentTimestamp;
 

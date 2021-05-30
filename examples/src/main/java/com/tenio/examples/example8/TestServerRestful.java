@@ -23,9 +23,9 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example8;
 
+import com.tenio.common.bootstrap.annotations.Bootstrap;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.AbstractApp;
-import com.tenio.core.bootstrap.annotations.Bootstrap;
 import com.tenio.examples.server.TestConfiguration;
 
 /**

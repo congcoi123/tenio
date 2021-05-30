@@ -26,9 +26,9 @@ package com.tenio.examples.example6.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.utilities.MathUtility;
-import com.tenio.core.bootstrap.annotations.Component;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;

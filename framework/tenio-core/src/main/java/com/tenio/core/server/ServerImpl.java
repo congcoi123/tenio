@@ -143,7 +143,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__startServices();
 
 		// emit "server started" event
-		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName);
+		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName, configuration);
 
 		info("SERVER", __serverName, "Started");
 	}

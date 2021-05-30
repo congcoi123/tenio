@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.injector;
+package com.tenio.common.bootstrap.injector;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -36,21 +36,22 @@ import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 
-import com.tenio.core.bootstrap.annotations.Component;
-import com.tenio.core.bootstrap.utilities.ClazzLoaderUtility;
-import com.tenio.core.bootstrap.utilities.InjectionUtility;
-import com.tenio.core.exceptions.MultipleImplementedClassForInterfaceException;
-import com.tenio.core.exceptions.NoImplementedClassFoundException;
+import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.utilities.ClazzLoaderUtility;
+import com.tenio.common.bootstrap.utilities.InjectionUtility;
+import com.tenio.common.exceptions.MultipleImplementedClassForInterfaceException;
+import com.tenio.common.exceptions.NoImplementedClassFoundException;
 
 public final class Injector {
-
-	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
 
 	private final Map<Class<?>, Class<?>> __implementedClazzsMap;
 	private final Map<Class<?>, Object> __clazzInstancesMap;
 
-	public Injector() {
+	public static Injector newInstance() {
+		return new Injector();
+	}
+
+	private Injector() {
 		__implementedClazzsMap = new HashMap<Class<?>, Class<?>>();
 		__clazzInstancesMap = new HashMap<Class<?>, Object>();
 	}
@@ -59,20 +60,20 @@ public final class Injector {
 		return __getBeanInstance(clazz);
 	}
 
-	public void scanPackages(Class<?> entryClazz)
+	public void scanPackages(Class<?> entryClazz, String... packages)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
-		Class<?>[] clazzsBootstrap = ClazzLoaderUtility.getClazzs(DEFAULT_BOOTSTRAP_PACKAGE);
-		Class<?>[] clazzsEvent = ClazzLoaderUtility.getClazzs(DEFAULT_EXTENSION_EVENT_PACKAGE);
 		Class<?>[] clazzs = ClazzLoaderUtility.getClazzs(entryClazz.getPackage().getName());
-		clazzs = Stream.concat(Arrays.stream(clazzs), Arrays.stream(clazzsBootstrap)).toArray(Class<?>[]::new);
-		clazzs = Stream.concat(Arrays.stream(clazzs), Arrays.stream(clazzsEvent)).toArray(Class<?>[]::new);
-
-		Reflections reflectionsBootstrap = new Reflections(DEFAULT_BOOTSTRAP_PACKAGE);
-		Reflections reflectionsEvent = new Reflections(DEFAULT_EXTENSION_EVENT_PACKAGE);
 		Reflections reflections = new Reflections(entryClazz.getPackage().getName());
-		reflections = reflections.merge(reflectionsBootstrap).merge(reflectionsEvent);
+
+		for (String pack : packages) {
+			Class<?>[] clazzPackage = ClazzLoaderUtility.getClazzs(pack);
+			clazzs = Stream.concat(Arrays.stream(clazzs), Arrays.stream(clazzPackage)).toArray(Class<?>[]::new);
+
+			Reflections reflectionPackage = new Reflections(pack);
+			reflections.merge(reflectionPackage);
+		}
 
 		Set<Class<?>> implementedClazzs = reflections.getTypesAnnotatedWith(Component.class);
 

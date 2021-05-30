@@ -352,7 +352,7 @@ public final class World extends AbstractHeartBeat {
 	// ------------------------------ Render ----------------------------------
 	// ------------------------------------------------------------------------
 	@Override
-	public void _onRender(Paint paint) {
+	public void __onRender(Paint paint) {
 		paint.enableOpaqueText(false);
 
 		// render any walls
@@ -432,7 +432,7 @@ public final class World extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onCreate() {
+	protected void __onCreate() {
 
 	}
 
@@ -440,7 +440,7 @@ public final class World extends AbstractHeartBeat {
 	 * Create a smoother to smooth the frame-rate
 	 */
 	@Override
-	protected void _onUpdate(float delta) {
+	protected void __onUpdate(float delta) {
 
 		__sendingInterval += delta;
 
@@ -484,44 +484,44 @@ public final class World extends AbstractHeartBeat {
 	}
 
 	@Override
-	protected void _onPause() {
+	protected void __onPause() {
 
 	}
 
 	@Override
-	protected void _onResume() {
+	protected void __onResume() {
 
 	}
 
 	@Override
-	protected void _onDispose() {
+	protected void __onDispose() {
 		__workersPool.waitUntilAllTasksFinished();
 		__workersPool.stop();
 	}
 
 	@Override
-	protected void _onAction1() {
+	protected void __onAction1() {
 		__vehicles.forEach(vehicle -> {
 			vehicle.getBehavior().setSummingMethod(SummingMethod.PRIORITIZED);
 		});
 	}
 
 	@Override
-	protected void _onAction2() {
+	protected void __onAction2() {
 		__vehicles.forEach(vehicle -> {
 			vehicle.getBehavior().setSummingMethod(SummingMethod.WEIGHTED_AVERAGE);
 		});
 	}
 
 	@Override
-	protected void _onAction3() {
+	protected void __onAction3() {
 		__vehicles.forEach(vehicle -> {
 			vehicle.getBehavior().setSummingMethod(SummingMethod.DITHERED);
 		});
 	}
 
 	@Override
-	protected void _onMessage(EMessage message) {
+	protected void __onMessage(EMessage message) {
 		// System.out.println("World._onMessage(): " + message.getContent().toString());
 		if (__listener == null) {
 			return;
@@ -538,7 +538,7 @@ public final class World extends AbstractHeartBeat {
 
 				List<Vehicle> neighbours = __getNeighboursOf(entityId);
 
-				__listener.reponseVehicleNeighbours(name, neighbours);
+				__listener.reponseVehicleNeighbours(name, neighbours, __getFPS());
 			}, name);
 		} catch (Exception e) {
 			error(e);

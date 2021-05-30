@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.core.bootstrap.annotations.Autowired;
-import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotations.Autowired;
+import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.core.bootstrap.handlers.ConnectionEventHandler;
 import com.tenio.core.bootstrap.handlers.HttpEventHandler;
 import com.tenio.core.bootstrap.handlers.MixinsEventHandler;

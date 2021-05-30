@@ -16,6 +16,7 @@
 	<properties>
 		<google.guava.version>30.0-jre</google.guava.version>
 		<logging.log4j.version>2.13.3</logging.log4j.version>
+		<org.reflections.version>0.9.9-RC1</org.reflections.version>
 	</properties>
 
 	<dependencies>
@@ -28,6 +29,19 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${logging.log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${org.reflections.version}</version>
+			<scope>compile</scope>
+
+			<exclusions>
+				<exclusion>
+					<groupId>dom4j</groupId>
+					<artifactId>dom4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
