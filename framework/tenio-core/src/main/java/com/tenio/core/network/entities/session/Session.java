@@ -30,6 +30,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
@@ -148,6 +149,7 @@ public interface Session {
 
 	void setSessionManager(SessionManager sessionManager);
 
-	void close(ConnectionDisconnectMode mode) throws IOException;
+	void close(ConnectionDisconnectMode connectionDisconnectMode, PlayerDisconnectMode playerDisconnectMode)
+			throws IOException;
 
 }

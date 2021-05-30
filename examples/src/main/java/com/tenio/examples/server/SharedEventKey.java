@@ -29,6 +29,7 @@ public final class SharedEventKey {
 	public static final String KEY_ALLOW_TO_ATTACH = "a";
 	public static final String KEY_CLIENT_SERVER_ECHO = "e";
 	public static final String KEY_INTEGER_ARRAY = "i";
+	public static final String KEY_PLAYER_POSITION = "p";
 
 	private SharedEventKey() {
 

@@ -468,4 +468,10 @@ public final class RoomImpl implements Room {
 		__roomCredentialValidatedStrategy = roomCredentialValidatedStrategy;
 	}
 
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

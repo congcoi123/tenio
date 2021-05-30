@@ -50,10 +50,10 @@ public final class HttpEventHandler {
 	public void initialize(EventManager eventManager) {
 
 		Optional<EventHttpRequestHandle> eventHttpRequestHandleOp = Optional.ofNullable(__eventHttpRequestHandle);
-		Optional<EventHttpRequestValidation> eventHttpRequestValidateOp = Optional
+		Optional<EventHttpRequestValidation> eventHttpRequestValidatedOp = Optional
 				.ofNullable(__eventHttpRequestValidation);
 
-		eventHttpRequestValidateOp.ifPresent(new Consumer<EventHttpRequestValidation>() {
+		eventHttpRequestValidatedOp.ifPresent(new Consumer<EventHttpRequestValidation>() {
 
 			@Override
 			public void accept(EventHttpRequestValidation event) {

@@ -134,5 +134,7 @@ public interface Room {
 	RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy();
 
 	void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy);
+	
+	void clear();
 
 }

@@ -96,13 +96,11 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		}
 
 		try {
-			__getPlayerManager().removePlayerByName(player.getName());
-
 			if (player.isInRoom()) {
 				leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
 			}
 
-			__disconnectPlayer(player, PlayerDisconnectMode.DEFAULT);
+			__disconnectPlayer(player);
 
 			player = null;
 		} catch (RemovedNonExistentPlayerException e) {
@@ -123,12 +121,14 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		throw new UnsupportedOperationException();
 	}
 
-	// FIXME: Needs to be considered
-	private void __disconnectPlayer(Player player, PlayerDisconnectMode disconnectMode) throws IOException {
+	private void __disconnectPlayer(Player player) throws IOException {
 		if (player.containsSession()) {
-			player.getSession().close(ConnectionDisconnectMode.DEFAULT);
+			player.getSession().close(ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
 		} else {
-
+			__getEventManager().emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
+			__getPlayerManager().removePlayerByName(player.getName());
+			player.clean();
+			player = null;
 		}
 	}
 
@@ -168,6 +168,11 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
+	public Room getRoomById(long roomId) {
+		return __getRoomManager().getRoomById(roomId);
+	}
+
+	@Override
 	public void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator) {
 //		if (room.containPlayerName(player.getName())) {
 //			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
@@ -185,6 +190,11 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 //		player.setCurrentRoom(room);
 //		// fire an event
 //		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
+
+	}
+
+	@Override
+	public void joinRoom(Player player, Room room) {
 
 	}
 

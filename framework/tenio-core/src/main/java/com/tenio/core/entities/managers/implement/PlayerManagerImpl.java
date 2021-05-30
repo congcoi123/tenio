@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.managers.implement;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +31,6 @@ import javax.annotation.concurrent.GuardedBy;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.implement.PlayerImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
@@ -164,36 +162,6 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 			}
 			__playerCount = __playerByNames.size();
 		}
-	}
-
-	@Override
-	public void disconnectPlayerByName(String playerName, ConnectionDisconnectMode mode) throws IOException {
-		var player = getPlayerByName(playerName);
-		if (player == null) {
-			throw new IllegalArgumentException(
-					String.format("Unable to disconnect player: %s, the player does not exist", playerName));
-		}
-		if (!player.containsSession()) {
-			throw new IllegalArgumentException(
-					String.format("Unable to disconnect player: %s, the player does not contain session", playerName));
-		}
-
-		player.getSession().close(mode);
-	}
-
-	@Override
-	public void disconnectPlayerBySession(Session session, ConnectionDisconnectMode mode) throws IOException {
-		if (session == null) {
-			throw new IllegalArgumentException(
-					String.format("Unable to disconnect player, the player's session does not exist"));
-		}
-		var player = getPlayerBySession(session);
-		if (player == null) {
-			throw new IllegalArgumentException(String.format(
-					"Unable to disconnect player with session: %s, the player does not exist", session.toString()));
-		}
-
-		player.getSession().close(mode);
 	}
 
 	@Override

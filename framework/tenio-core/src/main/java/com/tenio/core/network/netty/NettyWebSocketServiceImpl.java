@@ -82,7 +82,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 	private NetworkWriterStatistic __networkWriterStatistic;
 	private SocketConfig __socketConfig;
 	private boolean __usingSSL;
-	
+
 	private boolean __initialized;
 
 	public static NettyWebSocketService newInstance(EventManager eventManager) {
@@ -96,13 +96,13 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 		__receiverBufferSize = DEFAULT_RECEIVER_BUFFER_SIZE;
 		__producerWorkerSize = DEFAULT_PRODUCER_WORKER_SIZE;
 		__consumerWorkerSize = DEFAULT_CONSUMER_WORKER_SIZE;
-		
+
 		__initialized = false;
 	}
 
 	private void __start() throws InterruptedException {
 
-		info("START SERVICE", getName());
+		info("START SERVICE", buildgen(getName(), " (", __producerWorkerSize + __consumerWorkerSize, ")"));
 
 		var defaultWebsocketThreadFactory = new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
@@ -155,9 +155,9 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 			__websocketWorkers.shutdownGracefully();
 		}
 
-		info("STOPPED SERVICE", getName());
+		info("STOPPED SERVICE", buildgen(getName(), " (", __producerWorkerSize + __consumerWorkerSize, ")"));
 		__cleanup();
-		info("DESTROYED SERVICE", getName());
+		info("DESTROYED SERVICE", buildgen(getName(), " (", __producerWorkerSize + __consumerWorkerSize, ")"));
 	}
 
 	private void __cleanup() {
@@ -206,7 +206,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager implements 
 		if (!__initialized) {
 			return;
 		}
-		
+
 		try {
 			__start();
 		} catch (InterruptedException e) {

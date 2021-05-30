@@ -43,6 +43,7 @@ public final class NotDefinedSubscribersException extends RuntimeException {
 			builder.append(clazz.getName());
 			builder.append(", ");
 		}
+		builder.setLength(builder.length() - 2);
 		return builder.toString();
 	}
 

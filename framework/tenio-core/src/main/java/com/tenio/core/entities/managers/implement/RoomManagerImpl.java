@@ -91,15 +91,15 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 		}
 
 		Room newRoom = RoomImpl.newInstance();
+		newRoom.setPlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
+		newRoom.setRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
+		newRoom.setRoomRemoveMode(roomSetting.getRoomRemoveMode());
 		newRoom.setName(roomSetting.getName());
 		newRoom.setPassword(roomSetting.getPassword());
 		newRoom.setActivated(roomSetting.isActivated());
 		newRoom.setCapacity(roomSetting.getMaxPlayers(), roomSetting.getMaxSpectators());
 		newRoom.setOwner(player);
 		newRoom.setPlayerManager(PlayerManagerImpl.newInstance(__eventManager));
-		newRoom.setPlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
-		newRoom.setRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
-		newRoom.setRoomRemoveMode(roomSetting.getRoomRemoveMode());
 
 		addRoom(newRoom);
 

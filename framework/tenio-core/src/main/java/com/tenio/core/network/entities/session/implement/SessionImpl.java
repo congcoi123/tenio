@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.tenio.common.utilities.TimeUtility;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.network.defines.TransportType;
 import com.tenio.core.network.entities.packet.PacketQueue;
 import com.tenio.core.network.entities.session.Session;
@@ -456,11 +457,13 @@ public final class SessionImpl implements Session {
 	}
 
 	@Override
-	public void close(ConnectionDisconnectMode mode) throws IOException {
+	public void close(ConnectionDisconnectMode connectionDisconnectMode, PlayerDisconnectMode playerDisconnectMode)
+			throws IOException {
 		__packetQueue.clear();
 		__packetQueue = null;
 
-		getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this, mode);
+		getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this, connectionDisconnectMode,
+				playerDisconnectMode);
 
 		switch (__transportType) {
 		case TCP:

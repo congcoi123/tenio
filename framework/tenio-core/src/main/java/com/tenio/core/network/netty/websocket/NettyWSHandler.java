@@ -30,6 +30,7 @@ import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.RefusedConnectionAddressException;
 import com.tenio.core.network.entities.session.Session;
@@ -91,7 +92,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 		}
 
 		try {
-			session.close(ConnectionDisconnectMode.LOST);
+			session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
 		} catch (IOException e) {
 			__logger.error(e, "Session: ", session.toString());
 			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, e);
@@ -124,7 +125,7 @@ public final class NettyWSHandler extends ChannelInboundHandlerAdapter {
 
 			var data = ZeroObjectImpl.newInstance(binary);
 			var message = ServerMessage.newInstance().setData(data);
-			
+
 			if (!session.isConnected()) {
 				__eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
 			} else {

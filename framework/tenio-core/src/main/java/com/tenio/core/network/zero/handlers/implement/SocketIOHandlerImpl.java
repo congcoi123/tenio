@@ -31,6 +31,7 @@ import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
+import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
@@ -91,7 +92,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 		}
 
 		try {
-			session.close(ConnectionDisconnectMode.LOST);
+			session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
 		} catch (IOException e) {
 			error(e, "Session closed with error: ", session.toString());
 			__eventManager.emit(ServerEvent.SESSION_OCCURED_EXCEPTION, session, e);

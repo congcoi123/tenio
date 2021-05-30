@@ -50,8 +50,12 @@ public interface ServerApi {
 	Player getPlayerByName(String playerName);
 
 	Player getPlayerBySession(Session session);
+	
+	Room getRoomById(long roomId);
 
 	void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
+	
+	void joinRoom(Player player, Room room);
 
 	void switchPlayerToSpectator(Player player, Room room);
 

@@ -45,6 +45,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 	private static final String EVENT_KEY_DATAGRAM_CHANNEL = "datagram-channel";
 	private static final String EVENT_KEY_CONNECTION_DISCONNECTED_MODE = "connection-disconnected-mode";
+	private static final String EVENT_KEY_PLAYER_DISCONNECTED_MODE = "player-disconnected-mode";
 	private static final String EVENT_KEY_SERVER_MESSAGE = "server-message";
 	private static final String EVENT_KEY_DATAGRAM_REMOTE_ADDRESS = "datagram-remote-address";
 
@@ -88,6 +89,7 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 		__eventManager.on(ServerEvent.SESSION_WILL_BE_CLOSED, params -> {
 			Request request = __createRequest(ServerEvent.SESSION_WILL_BE_CLOSED, (Session) params[0]);
 			request.setAttribute(EVENT_KEY_CONNECTION_DISCONNECTED_MODE, params[1]);
+			request.setAttribute(EVENT_KEY_PLAYER_DISCONNECTED_MODE, params[2]);
 			enqueueRequest(request);
 
 			return null;
@@ -173,7 +175,8 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 				__eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_RESULT, session, message,
 						ConnectionEstablishedResult.REACHED_MAX_CONNECTION);
 				try {
-					session.close(ConnectionDisconnectMode.REACHED_MAX_CONNECTION);
+					session.close(ConnectionDisconnectMode.REACHED_MAX_CONNECTION,
+							PlayerDisconnectMode.CONNECTION_LOST);
 				} catch (IOException e) {
 					error(e, "Session closed with error: ", session.toString());
 				}
@@ -185,16 +188,16 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 	}
 
-	// FIXME: Needs to be considered
 	private void __processSessionWillBeClosed(Request request) {
 		var session = request.getSender();
 		var connectionClosedMode = (ConnectionDisconnectMode) request
 				.getAttribute(EVENT_KEY_CONNECTION_DISCONNECTED_MODE);
+		var playerClosedMode = (ConnectionDisconnectMode) request.getAttribute(EVENT_KEY_PLAYER_DISCONNECTED_MODE);
 
 		var player = __playerManager.getPlayerBySession(session);
 		// the player maybe existed
 		if (player != null) {
-			__eventManager.emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.CONNECTION_LOST);
+			__eventManager.emit(ServerEvent.DISCONNECT_PLAYER, player, playerClosedMode);
 			player.setSession(null);
 			if (!__keepPlayerOnDisconnection) {
 				__playerManager.removePlayerByName(player.getName());

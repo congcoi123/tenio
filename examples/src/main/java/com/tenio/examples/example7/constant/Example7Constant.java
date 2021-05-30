@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example4.constant;
+package com.tenio.examples.example7.constant;
 
-public final class Example4Constant {
+public final class Example7Constant {
 
-	public static final int DESIGN_WIDTH = 500;
-	public static final int DESIGN_HEIGHT = 500;
-	
-	private Example4Constant() {
-		
+	public static final String PLAYER_POSITION_X = "x";
+	public static final String PLAYER_POSITION_Y = "y";
+
+	private Example7Constant() {
+
 	}
 
 }
