@@ -34,6 +34,7 @@ import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
+import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
 import com.tenio.core.entities.defines.results.SwitchedPlayerSpectatorResult;
 import com.tenio.core.entities.settings.InitialRoomSetting;
@@ -97,9 +98,9 @@ public final class RoomEventHandler {
 					public Object dispatch(Object... params) {
 						Player player = (Player) params[0];
 						Room room = (Room) params[1];
-						PlayerLeaveRoomMode mode = (PlayerLeaveRoomMode) (params[1]);
+						PlayerLeftRoomResult result = (PlayerLeftRoomResult) (params[1]);
 
-						event.handle(player, room, mode);
+						event.handle(player, room, result);
 
 						return null;
 					}

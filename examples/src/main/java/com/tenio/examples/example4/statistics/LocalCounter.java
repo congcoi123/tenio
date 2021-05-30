@@ -21,25 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.entities.defines.results;
+package com.tenio.examples.example4.statistics;
 
-public enum PlayerJoinedRoomResult {
+public final class LocalCounter {
 
-	SUCCESS,
+	private volatile int __countReceivedPacketSizeOneMinute;
+	private volatile int __countUdpPacketsOneMinute;
 
-	ROOM_IS_FULL,
+	public static LocalCounter newInstance() {
+		return new LocalCounter();
+	}
 
-	SLOT_UNAVAILABLE_IN_ROOM,
+	private LocalCounter() {
+		__countReceivedPacketSizeOneMinute = 0;
+		__countUdpPacketsOneMinute = 0;
+	}
+
+	public int getCountReceivedPacketSizeOneMinute() {
+		return __countReceivedPacketSizeOneMinute;
+	}
+
+	public void setCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
+		__countReceivedPacketSizeOneMinute = countReceivedPacketSizeOneMinute;
+	}
 	
-	DUPLICATED_PLAYER,
+	public int getCountUdpPacketsOneMinute() {
+		return __countUdpPacketsOneMinute;
+	}
+
+	public void setCountUdpPacketsOneMinute(int countUdpPacketsOneMinute) {
+		__countUdpPacketsOneMinute = countUdpPacketsOneMinute;
+	}
 	
-	PLAYER_OR_ROOM_UNAVAILABLE,
-	
-	PLAYER_IS_IN_ANOTHER_ROOM;
-	
-	@Override
-	public String toString() {
-		return this.name();
+	public void addCountUdpPacketsOneMinute() {
+		__countUdpPacketsOneMinute++;
 	}
 
 }

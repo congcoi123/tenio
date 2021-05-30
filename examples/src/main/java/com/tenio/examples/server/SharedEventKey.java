@@ -30,6 +30,8 @@ public final class SharedEventKey {
 	public static final String KEY_CLIENT_SERVER_ECHO = "e";
 	public static final String KEY_INTEGER_ARRAY = "i";
 	public static final String KEY_PLAYER_POSITION = "p";
+	public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
+	public static final String KEY_PLAYER_GET_RESPONSE = "rr";
 
 	private SharedEventKey() {
 

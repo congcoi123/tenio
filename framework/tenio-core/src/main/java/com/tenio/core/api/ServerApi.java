@@ -28,6 +28,7 @@ import com.tenio.core.entities.Room;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
@@ -44,17 +45,17 @@ public interface ServerApi {
 	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
 
 	Room createRoom(InitialRoomSetting setting);
-	
+
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
 	Player getPlayerByName(String playerName);
 
 	Player getPlayerBySession(Session session);
-	
+
 	Room getRoomById(long roomId);
 
 	void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
-	
+
 	void joinRoom(Player player, Room room);
 
 	void switchPlayerToSpectator(Player player, Room room);
@@ -63,7 +64,7 @@ public interface ServerApi {
 
 	void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode);
 
-	void removeRoom(Room room);
+	void removeRoom(Room room, RoomRemoveMode removeRoomMode);
 
 	void sendPublicMessage(Player sender, Room room, ServerMessage message);
 

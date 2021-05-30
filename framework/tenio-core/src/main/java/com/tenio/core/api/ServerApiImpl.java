@@ -34,14 +34,19 @@ import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
 import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
+import com.tenio.core.entities.defines.modes.RoomRemoveMode;
+import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
+import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
+import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exceptions.AddedDuplicatedPlayerException;
 import com.tenio.core.exceptions.CreatedRoomException;
+import com.tenio.core.exceptions.PlayerJoinedRoomException;
 import com.tenio.core.exceptions.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entities.session.Session;
 import com.tenio.core.server.Server;
@@ -174,84 +179,92 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
 	@Override
 	public void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator) {
-//		if (room.containPlayerName(player.getName())) {
-//			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
-//					CoreMessageCode.PLAYER_WAS_IN_ROOM);
-//			return CoreMessageCode.PLAYER_WAS_IN_ROOM;
-//		}
-//
-//		if (room.isFull()) {
-//			__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, false,
-//					CoreMessageCode.ROOM_IS_FULL);
-//			return CoreMessageCode.ROOM_IS_FULL;
-//		}
-//
-//		room.addPlayer(player);
-//		player.setCurrentRoom(room);
-//		// fire an event
-//		__eventManager.getExtension().emit(ExtEvent.PLAYER_JOIN_ROOM_HANDLE, player, room, true, null);
+		if (player == null || room == null) {
+			__getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+					PlayerJoinedRoomResult.PLAYER_OR_ROOM_UNAVAILABLE);
+			return;
+		}
+
+		if (player.isInRoom()) {
+			__getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+					PlayerJoinedRoomResult.PLAYER_IS_IN_ANOTHER_ROOM);
+			return;
+		}
+
+		try {
+			room.addPlayer(player, asSpectator, slotInRoom);
+			player.setCurrentRoom(room);
+			__getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+					PlayerJoinedRoomResult.SUCCESS);
+		} catch (PlayerJoinedRoomException e) {
+			__getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room, e.getResult());
+		} catch (AddedDuplicatedPlayerException e) {
+			error(e, e.getMessage());
+			__getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+					PlayerJoinedRoomResult.DUPLICATED_PLAYER);
+		}
 
 	}
 
 	@Override
 	public void joinRoom(Player player, Room room) {
-
+		joinRoom(player, room, null, RoomImpl.DEFAULT_SLOT, false);
 	}
 
 	@Override
 	public void switchPlayerToSpectator(Player player, Room room) {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void switchSpectatorToPlayer(Player player, Room room, int targetSlot) {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode) {
-//		var room = player.getCurrentRoom();
-//		if (room == null) {
-//			return CoreMessageCode.PLAYER_ALREADY_LEFT_ROOM;
-//		}
-//
-//		// fire an event
-//		__eventManager.getExtension().emit(ExtEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room);
-//		room.removePlayer(player);
-//		player.setCurrentRoom(null);
-//		// fire an event
-//		__eventManager.getExtension().emit(ExtEvent.PLAYER_AFTER_LEFT_ROOM, player, room, force);
-//
-//		return null;
+		if (!player.isInRoom()) {
+			__getEventManager().emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, null,
+					PlayerLeftRoomResult.PLAYER_ALREADY_LEFT_ROOM);
+			return;
+		}
+
+		var room = player.getCurrentRoom();
+
+		__getEventManager().emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room, leaveRoomMode);
+
+		try {
+			room.removePlayer(player);
+			__getEventManager().emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, room, PlayerLeftRoomResult.SUCCESS);
+		} catch (RemovedNonExistentPlayerException e) {
+			__getEventManager().emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, room,
+					PlayerLeftRoomResult.PLAYER_ALREADY_LEFT_ROOM);
+		}
+
 	}
 
 	@Override
-	public void removeRoom(Room room) {
-//		synchronized (__rooms) {
-//			if (!__rooms.containsKey(room.getId())) {
-//				throw new NullRoomException(room.getId());
-//			}
-//
-//			// fire an event
-//			__eventManager.getExtension().emit(ExtEvent.ROOM_WILL_BE_REMOVED, room);
-//			// force all players to leave this room
-//			__forceAllPlayersLeaveRoom(room);
-//			// remove itself from the current list
-//			__rooms.remove(room.getId());
-//		}
-	}
+	public void removeRoom(Room room, RoomRemoveMode removeRoomMode) {
+		if (room == null) {
+			// nothing needs to do
+			return;
+		}
 
-//	private void __forceAllPlayersLeaveRoom(IRoom room) {
-//		final List<IPlayer> removePlayers = new ArrayList<IPlayer>();
-//		var players = room.getPlayers().values();
-//		players.forEach(player -> {
-//			removePlayers.add(player);
-//		});
-//		for (var player : removePlayers) {
-//			makePlayerLeaveRoom(player, true);
-//		}
-//		removePlayers.clear();
-//	}
+		__getEventManager().emit(ServerEvent.ROOM_WILL_BE_REMOVED, room, removeRoomMode);
+
+		var players = room.getAllPlayersList();
+		var iterator = players.iterator();
+
+		while (iterator.hasNext()) {
+			var player = iterator.next();
+			leaveRoom(player, PlayerLeaveRoomMode.ROOM_REMOVED);
+		}
+
+		__getRoomManager().removeRoomById(room.getId());
+
+		room = null;
+
+	}
 
 	@Override
 	public void sendPublicMessage(Player sender, Room room, ServerMessage message) {

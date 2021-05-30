@@ -25,10 +25,10 @@ package com.tenio.core.extension.events;
 
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
+import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 
 public interface EventPlayerAfterLeftRoom {
 
-	void handle(Player player, Room room, PlayerLeaveRoomMode mode);
+	void handle(Player player, Room room, PlayerLeftRoomResult result);
 
 }

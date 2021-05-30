@@ -23,20 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.defines.results;
 
-public enum PlayerJoinedRoomResult {
+public enum PlayerLeftRoomResult {
 
 	SUCCESS,
 
-	ROOM_IS_FULL,
+	PLAYER_ALREADY_LEFT_ROOM;
 
-	SLOT_UNAVAILABLE_IN_ROOM,
-	
-	DUPLICATED_PLAYER,
-	
-	PLAYER_OR_ROOM_UNAVAILABLE,
-	
-	PLAYER_IS_IN_ANOTHER_ROOM;
-	
 	@Override
 	public String toString() {
 		return this.name();
