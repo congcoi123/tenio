@@ -34,7 +34,7 @@
 </p>
 
 # TenIO [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=TenIO%20is%20a%20java%20NIO%20based%20server%20specifically%20designed%20for%20multiplayer%20games.%0D%0A&url=https://github.com/congcoi123/tenio%0D%0A&hashtags=tenio,java,gameserver,multiplayer,nio,netty,jetty,msgpack,cocos2dx,unity,libgdx,phaserjs%0D%0A&via=congcoi123)
-`TenIO` is an opensource project to create multiplayer online game. It incluses a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games which supports UDP, TCP, Websocket, HTTP transports and available simple client projects for quick development.
+`TenIO` is an open-source project to create multiplayer online games. It includes a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games, which supports UDP, TCP, Websocket, HTTP transports, and available simple client projects for quick development.
 
 ## Features
 - Scalable, distributed design
@@ -81,18 +81,18 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## Dependencies
+```txt
 - guava 30.0-jre
 - log4j-core 2.13.3
-
 - reflections 0.9.9-RC1
 - netty-all 4.1.63.Final
 - jetty-server 9.4.38.v20210224
 - jetty-servlet 9.4.38.v20210224
 - servlet-api 2.5
 - json 20180130
-
 - spring-boot
 - spring-cloud
+```
 
 ## Requirements
 - Java 11
