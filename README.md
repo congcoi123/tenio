@@ -57,22 +57,6 @@
 - Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 
-## Testing
-- Testing Environment
-```txt
-  Model Name:               MacBook Pro
-  Processor Speed:          2.3 GHz
-  Number of Processors:     1
-  Total Number of Cores:    4
-  Memory:                   16 GB
-```
-- Example 4 Testing Script
-![Example 4 Testing Script](documentations/testing/example-4-test/example-4-test-script.png)
-- Example 4 Testing Results
-![Example 4 Testing Results](documentations/testing/example-4-test/example-4-test-results.png)
-
-- Please check out the [testing scripts](documentations/testing) for more details.
-
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
