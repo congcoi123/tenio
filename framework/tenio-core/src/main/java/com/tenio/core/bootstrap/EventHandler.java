@@ -23,43 +23,40 @@ THE SOFTWARE.
 */
 package com.tenio.core.bootstrap;
 
-import com.tenio.core.bootstrap.annotation.ExtAutowired;
-import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.bootstrap.handler.ConnectionEventHandler;
-import com.tenio.core.bootstrap.handler.HttpEventHandler;
-import com.tenio.core.bootstrap.handler.MixinsEventHandler;
-import com.tenio.core.bootstrap.handler.PlayerEventHandler;
-import com.tenio.core.bootstrap.handler.RoomEventHandler;
-import com.tenio.core.extension.AbstractExtensionHandler;
+import com.tenio.core.bootstrap.annotations.Autowired;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.bootstrap.handlers.ConnectionEventHandler;
+import com.tenio.core.bootstrap.handlers.HttpEventHandler;
+import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
+import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
+import com.tenio.core.bootstrap.handlers.RoomEventHandler;
+import com.tenio.core.event.implement.EventManager;
 
-/**
- * @author kong
- */
-@ExtComponent
-public final class EventHandler extends AbstractExtensionHandler {
+@Component
+public final class EventHandler {
 
-	@ExtAutowired
+	@Autowired
 	private ConnectionEventHandler __connectionEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private PlayerEventHandler __playerEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private RoomEventHandler __roomEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private HttpEventHandler __httpEventHandler;
 
-	@ExtAutowired
+	@Autowired
 	private MixinsEventHandler __mixinsEventHandler;
 
-	public void initialize() {
+	public void initialize(EventManager eventManager) {
 
-		__connectionEventHandler.initialize();
-		__playerEventHandler.initialize();
-		__roomEventHandler.initialize();
-		__httpEventHandler.initialize();
-		__mixinsEventHandler.initialize();
+		__connectionEventHandler.initialize(eventManager);
+		__playerEventHandler.initialize(eventManager);
+		__roomEventHandler.initialize(eventManager);
+		__httpEventHandler.initialize(eventManager);
+		__mixinsEventHandler.initialize(eventManager);
 
 	}
 

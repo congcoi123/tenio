@@ -28,20 +28,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.tenio.common.utility.MathUtility;
-import com.tenio.engine.physic2d.graphic.IRender;
+import com.tenio.common.utilities.MathUtility;
+import com.tenio.engine.physic2d.graphic.Renderable;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
-import com.tenio.engine.physic2d.utility.Transformation;
+import com.tenio.engine.physic2d.utilities.Transformation;
 
 /**
  * This class is used to define, manage, and traverse a path (defined by a
  * series of 2D vectors)
- * 
- * @author kong
- *
  */
-public final class Path implements IRender {
+public final class Path implements Renderable {
 
 	/**
 	 * The list of way points

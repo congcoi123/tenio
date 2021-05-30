@@ -32,9 +32,6 @@ import com.tenio.engine.fsm.MessageDispatcher;
  * for more details.
  * 
  * @param <T> the state template
- * 
- * @author kong
- * 
  */
 public final class FSMComponent<T> extends Component<T> {
 
@@ -101,25 +98,25 @@ public final class FSMComponent<T> extends Component<T> {
 	public void update(double delta) {
 		// if a global state exists, call its execute method, else do nothing
 		if (__globalState != null) {
-			__globalState.execute(_entity);
+			__globalState.execute(__entity);
 		}
 
 		// same for the current state
 		if (__currentState != null) {
-			__currentState.execute(_entity);
+			__currentState.execute(__entity);
 		}
 	}
 
 	public boolean handleMessage(Telegram msg) {
 		// First see if the current state is valid and that it can handle
 		// the message
-		if (__currentState != null && __currentState.onMessage(_entity, msg)) {
+		if (__currentState != null && __currentState.onMessage(__entity, msg)) {
 			return true;
 		}
 
 		// If not, and if a global state has been implemented, send
 		// the message to the global state
-		if (__globalState != null && __globalState.onMessage(_entity, msg)) {
+		if (__globalState != null && __globalState.onMessage(__entity, msg)) {
 			return true;
 		}
 
@@ -131,13 +128,13 @@ public final class FSMComponent<T> extends Component<T> {
 		__previousState = __currentState;
 
 		// call the exit method of the existing state
-		__currentState.exit(_entity);
+		__currentState.exit(__entity);
 
 		// change state to the new state
 		__currentState = state;
 
 		// call the entry method of the new state
-		__currentState.enter(_entity);
+		__currentState.enter(__entity);
 	}
 
 	/**

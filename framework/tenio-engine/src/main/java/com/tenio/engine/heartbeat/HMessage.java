@@ -25,15 +25,12 @@ package com.tenio.engine.heartbeat;
 
 import java.util.UUID;
 
-import com.tenio.common.utility.TimeUtility;
-import com.tenio.engine.message.IMessage;
+import com.tenio.common.utilities.TimeUtility;
+import com.tenio.engine.message.EMessage;
 
 /**
  * The message which is used for communication between one heart-beat and
  * outside
- * 
- * @author kong
- * 
  */
 @SuppressWarnings("rawtypes")
 final class HMessage implements Comparable {
@@ -57,13 +54,13 @@ final class HMessage implements Comparable {
 	/**
 	 * The main information
 	 */
-	private IMessage __message;
+	private EMessage __message;
 
-	public static HMessage newInstance(IMessage message, double delayTime) {
+	public static HMessage newInstance(EMessage message, double delayTime) {
 		return new HMessage(message, delayTime);
 	}
 
-	private HMessage(IMessage message, double delayTime) {
+	private HMessage(EMessage message, double delayTime) {
 		__id = UUID.randomUUID().toString();
 		__setDelayTime(delayTime);
 		__message = message;
@@ -99,9 +96,9 @@ final class HMessage implements Comparable {
 	/**
 	 * Retrieves the message
 	 * 
-	 * @return see {@link IMessage}
+	 * @return see {@link EMessage}
 	 */
-	public IMessage getMessage() {
+	public EMessage getMessage() {
 		return __message;
 	}
 

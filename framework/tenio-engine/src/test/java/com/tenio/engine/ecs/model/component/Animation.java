@@ -23,11 +23,11 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.model.component;
 
-import com.tenio.engine.ecs.base.IComponent;
+import com.tenio.engine.ecs.bases.Component;
 
 /**
  * @author kong
  */
-public final class Animation implements IComponent {
+public final class Animation implements Component {
 	
 }

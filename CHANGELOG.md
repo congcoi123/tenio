@@ -1,50 +1,9 @@
 # CHANGELOG
 
-### 4.2.0 2020-09-03 Feature release
-Feature release
-- Added MMORPG projects template
-
-### 4.1.0 2020-08-31 Feature release, Breaking changes, Update recommended
-Feature release
-- Standardized the project's structure
-
-## 4.0.0 2020-06-24 Feature release, Breaking changes, Update recommended
-Feature release
-- Split project modules
-- Standardized package names and class names
-- Scalable, distributed design
-
-#### 3.1.1 2020-06-05 Bugfix release
-Bugfix release
-- Updated all dependencies
-- Refactored exception classes
-
-### 3.1.0 2020-05-22 Feature release
-Feature release
-- Standardized package names and class names
-- Supported HTTP protocol
-- Bugfixed
-
-## 3.0.0 2020-05-17 Feature release
-Feature release
-- Allowed defining multiple connections
-- Standardized messages APIs
-- Bugfixed
-
-## 2.0.0 2020-04-15 Feature release
-Feature release
-- Standardized package names and class names
-- Added a new event for showing the current bandwidth
-- Added a Unit Test for the network package
-- Changed the way of using the event manager
-
-#### 1.0.1 2020-04-12 Bugfix release, Update recommended
-Bugfix release
-- Fixed bug in extension configuration
-
-## 1.0.0 2020-04-08 Feature release
+## 0.0.1 2021-05-30 Feature release
 Initial release
 - NIO mechanism
+- TCP, UDP, Websocket, HTTP supported
 - Connection management
 - Player management
 - Room management

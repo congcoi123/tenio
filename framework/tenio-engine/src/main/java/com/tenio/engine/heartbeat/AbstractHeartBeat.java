@@ -36,10 +36,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.utility.MathUtility;
-import com.tenio.common.utility.TimeUtility;
-import com.tenio.engine.message.IMessage;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.utilities.MathUtility;
+import com.tenio.common.utilities.TimeUtility;
+import com.tenio.engine.message.EMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
@@ -47,9 +47,6 @@ import com.tenio.engine.physic2d.graphic.Paint;
  * loop because the game keeps doing a series of actions over and over again
  * until the user quits. If a game runs at 60 FPS (frames per second), this
  * means that the game loop completes 60 iterations every second.
- * 
- * @author kong
- *
  */
 public abstract class AbstractHeartBeat extends AbstractLogger implements Callable<Void>, ActionListener {
 
@@ -401,9 +398,9 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called when the heart-beat receives a message from outside
 	 * 
-	 * @param message the coming message, see {@link IMessage}
+	 * @param message the coming message, see {@link EMessage}
 	 */
-	protected abstract void _onMessage(IMessage message);
+	protected abstract void _onMessage(EMessage message);
 
 	/**
 	 * It is called every frame in a game loop

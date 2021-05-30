@@ -31,9 +31,6 @@ import com.tenio.engine.fsm.MessageDispatcher;
  * for more details
  * 
  * @param <T> the entity template
- * 
- * @author kong
- * 
  */
 public abstract class State<T> {
 

@@ -36,19 +36,16 @@ import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 
-import com.tenio.core.bootstrap.annotation.ExtComponent;
-import com.tenio.core.bootstrap.utitlity.ClazzLoaderUtility;
-import com.tenio.core.bootstrap.utitlity.InjectionUtility;
-import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
-import com.tenio.core.exception.NoImplementedClassFoundException;
+import com.tenio.core.bootstrap.annotations.Component;
+import com.tenio.core.bootstrap.utilities.ClazzLoaderUtility;
+import com.tenio.core.bootstrap.utilities.InjectionUtility;
+import com.tenio.core.exceptions.MultipleImplementedClassForInterfaceException;
+import com.tenio.core.exceptions.NoImplementedClassFoundException;
 
-/**
- * @author kong
- */
 public final class Injector {
 
 	private static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.event";
+	private static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
 
 	private final Map<Class<?>, Class<?>> __implementedClazzsMap;
 	private final Map<Class<?>, Object> __clazzInstancesMap;
@@ -77,7 +74,7 @@ public final class Injector {
 		Reflections reflections = new Reflections(entryClazz.getPackage().getName());
 		reflections = reflections.merge(reflectionsBootstrap).merge(reflectionsEvent);
 
-		Set<Class<?>> implementedClazzs = reflections.getTypesAnnotatedWith(ExtComponent.class);
+		Set<Class<?>> implementedClazzs = reflections.getTypesAnnotatedWith(Component.class);
 
 		// scan all interface with its implemented classes
 		for (Class<?> implementedClazz : implementedClazzs) {
@@ -93,7 +90,7 @@ public final class Injector {
 
 		// create class instance based on annotations
 		for (Class<?> clazz : clazzs) {
-			if (clazz.isAnnotationPresent(ExtComponent.class)) {
+			if (clazz.isAnnotationPresent(Component.class)) {
 				Object clazzInstance = clazz.getDeclaredConstructor().newInstance();
 				__clazzInstancesMap.put(clazz, clazzInstance);
 				// recursively create field instance for this class instance
@@ -130,7 +127,7 @@ public final class Injector {
 				.filter(entry -> entry.getValue() == clazzInterface).collect(Collectors.toSet());
 
 		if (implementedClazzs == null || implementedClazzs.isEmpty()) {
-			throw new NoImplementedClassFoundException(clazzInterface.getName());
+			throw new NoImplementedClassFoundException(clazzInterface);
 		} else if (implementedClazzs.size() == 1) {
 			// just only one implemented class for the interface
 			Optional<Entry<Class<?>, Class<?>>> optional = implementedClazzs.stream().findFirst();
@@ -147,7 +144,7 @@ public final class Injector {
 				return optional.get().getKey();
 			} else {
 				// could not find a appropriately single instance, so throw an exception
-				throw new MultipleImplementedClassForInterfaceException(clazzInterface.getName());
+				throw new MultipleImplementedClassForInterfaceException(clazzInterface);
 			}
 		}
 

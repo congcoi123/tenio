@@ -23,15 +23,12 @@ THE SOFTWARE.
 */
 package com.tenio.engine.physic2d.common;
 
-import com.tenio.common.utility.MathUtility;
+import com.tenio.common.utilities.MathUtility;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.physic2d.math.Vector2;
 
 /**
  * The base game entity class, it aims for creating movable objects.
- * 
- * @author kong
- * 
  */
 public abstract class BaseGameEntity extends AbstractEntity {
 

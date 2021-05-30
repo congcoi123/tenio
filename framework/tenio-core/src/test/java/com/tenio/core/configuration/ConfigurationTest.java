@@ -32,13 +32,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.define.TransportType;
-import com.tenio.core.configuration.entity.SocketConfig;
+import com.tenio.core.configuration.defines.CoreConfigurationType;
+import com.tenio.core.network.defines.TransportType;
+import com.tenio.core.network.defines.data.SocketConfig;
 
-/**
- * @author kong
- */
 public final class ConfigurationTest {
 
 	private Configuration __configuration;
@@ -60,7 +57,7 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsShouldReturnTrueValue() {
-		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		assertAll("getSocketPortsConfiguration", () -> assertEquals(8032, listSockets.get(0).getPort()),
 				() -> assertEquals(8033, listSockets.get(1).getPort()),
 				() -> assertEquals(8034, listSockets.get(2).getPort()));
@@ -69,11 +66,11 @@ public final class ConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getConfigurationSocketPortsTypeShouldReturnTrueType() {
-		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_PORTS));
+		var listSockets = (List<SocketConfig>) (__configuration.get(CoreConfigurationType.SOCKET_CONFIGS));
 		assertAll("getSocketPortsTypeConfiguration",
 				() -> assertEquals(TransportType.TCP, listSockets.get(0).getType()),
-				() -> assertEquals(TransportType.UDP, listSockets.get(1).getType()),
-				() -> assertEquals(TransportType.TCP, listSockets.get(2).getType()));
+				() -> assertEquals(TransportType.WEB_SOCKET, listSockets.get(1).getType()),
+				() -> assertEquals(TransportType.UDP, listSockets.get(2).getType()));
 	}
 
 	@AfterEach

@@ -1,0 +1,57 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+package com.tenio.core.network.defines.data;
+
+import com.tenio.core.network.defines.TransportType;
+
+public final class SocketConfig {
+
+	private final String __name;
+	private final TransportType __type;
+	private final int __port;
+
+	public SocketConfig(String name, TransportType type, int port) {
+		__name = name;
+		__type = type;
+		__port = port;
+	}
+
+	public String getName() {
+		return __name;
+	}
+
+	public TransportType getType() {
+		return __type;
+	}
+
+	public int getPort() {
+		return __port;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{ name:%s, type:%s, port:%d }", __name, __type.name(), __port);
+	}
+
+}
