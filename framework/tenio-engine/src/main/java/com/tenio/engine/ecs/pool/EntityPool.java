@@ -28,34 +28,31 @@ import java.util.UUID;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import com.tenio.common.configuration.constant.CommonConstants;
-import com.tenio.common.exception.NullElementPoolException;
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.pool.IElementsPool;
-import com.tenio.engine.ecs.base.ContextInfo;
-import com.tenio.engine.ecs.base.Entity;
-import com.tenio.engine.ecs.base.IEntity;
+import com.tenio.common.configuration.constant.CommonConstant;
+import com.tenio.common.exceptions.NullElementPoolException;
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.common.pool.ElementsPool;
+import com.tenio.engine.ecs.bases.Entity;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
+import com.tenio.engine.ecs.bases.implement.EntityImpl;
 
 /**
- * The object pool mechanism for {@link IEntity}.
- * 
- * @author kong
- * 
+ * The object pool mechanism for {@link Entity}.
  */
-public final class EntityPool extends AbstractLogger implements IElementsPool<IEntity> {
+public final class EntityPool extends SystemLogger implements ElementsPool<Entity> {
 
 	@GuardedBy("this")
-	private IEntity[] __pool;
+	private Entity[] __pool;
 	@GuardedBy("this")
 	private boolean[] __used;
-	private final Class<? extends Entity> __clazz;
+	private final Class<? extends EntityImpl> __clazz;
 	private final ContextInfo __contextInfo;
 
-	public EntityPool(Class<? extends Entity> clazz, ContextInfo contextInfo) {
+	public EntityPool(Class<? extends EntityImpl> clazz, ContextInfo contextInfo) {
 		__clazz = clazz;
 		__contextInfo = contextInfo;
-		__pool = new IEntity[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
-		__used = new boolean[CommonConstants.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__pool = new Entity[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
 		for (int i = 0; i < __pool.length; i++) {
 			try {
@@ -66,13 +63,13 @@ public final class EntityPool extends AbstractLogger implements IElementsPool<IE
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				_error(e);
+				error(e);
 			}
 		}
 	}
 
 	@Override
-	public synchronized IEntity get() {
+	public synchronized Entity get() {
 		for (int i = 0; i < __used.length; i++) {
 			if (!__used[i]) {
 				__used[i] = true;
@@ -83,11 +80,11 @@ public final class EntityPool extends AbstractLogger implements IElementsPool<IE
 		// increase the number in our pool by @ADD_ELEMENT_POOL (arbitrary value for
 		// illustration purposes).
 		var oldUsed = __used;
-		__used = new boolean[oldUsed.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
+		__used = new boolean[oldUsed.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldUsed, 0, __used, 0, oldUsed.length);
 
 		var oldPool = __pool;
-		__pool = new IEntity[oldPool.length + CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL];
+		__pool = new Entity[oldPool.length + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL];
 		System.arraycopy(oldPool, 0, __pool, 0, oldPool.length);
 
 		for (int i = oldPool.length; i < __pool.length; i++) {
@@ -99,12 +96,12 @@ public final class EntityPool extends AbstractLogger implements IElementsPool<IE
 				__used[i] = false;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				_error(e);
+				error(e);
 			}
 		}
 
-		_info("COMPONENT POOL", _buildgen("Increase the number of elements by ",
-				CommonConstants.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
+		info("COMPONENT POOL", buildgen("Increase the number of elements by ",
+				CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", __used.length));
 
 		// and allocate the last old ELement
 		__used[oldPool.length - 1] = true;
@@ -112,7 +109,7 @@ public final class EntityPool extends AbstractLogger implements IElementsPool<IE
 	}
 
 	@Override
-	public synchronized void repay(IEntity element) {
+	public synchronized void repay(Entity element) {
 		boolean flagFound = false;
 		for (int i = 0; i < __pool.length; i++) {
 			if (__pool[i] == element) {
@@ -124,7 +121,7 @@ public final class EntityPool extends AbstractLogger implements IElementsPool<IE
 		}
 		if (!flagFound) {
 			var e = new NullElementPoolException();
-			_error(e);
+			error(e);
 			throw e;
 		}
 	}

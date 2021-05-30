@@ -23,16 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.common.task;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.tenio.common.exception.RunningScheduledTaskException;
-import com.tenio.common.logger.AbstractLogger;
 
 /**
  * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
@@ -41,71 +32,37 @@ import com.tenio.common.logger.AbstractLogger;
  * you want to create a time counter before starting a match or send messages
  * periodically for one player.
  * 
- * @see ITaskManager
- * 
  * @author kong
  * 
  */
-@ThreadSafe
-public final class TaskManager extends AbstractLogger implements ITaskManager {
+public interface TaskManager {
 
 	/**
-	 * A list of tasks in the server
+	 * Create a new task.
+	 * 
+	 * @param id   the unique id for management
+	 * @param task the running task, see {@link ScheduledFuture}
 	 */
-	@GuardedBy("this")
-	private final Map<String, ScheduledFuture<?>> __tasks;
+	void create(String id, ScheduledFuture<?> task);
 
-	public TaskManager() {
-		__tasks = new HashMap<String, ScheduledFuture<?>>();
-	}
+	/**
+	 * Kill or stop a running task.
+	 * 
+	 * @param id the unique id
+	 */
+	void kill(String id);
 
-	@Override
-	public synchronized void create(String id, ScheduledFuture<?> task) {
-		if (__tasks.containsKey(id)) {
-			try {
-				if (!__tasks.get(id).isDone() || !__tasks.get(id).isCancelled()) {
-					throw new RunningScheduledTaskException();
-				}
-			} catch (RunningScheduledTaskException e) {
-				_error(e, "task id: ", id);
-				return;
-			}
-		}
+	/**
+	 * Kill or stop all running tasks.
+	 */
+	void clear();
 
-		__tasks.put(id, task);
-		_info("RUN TASK", _buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
-	}
-
-	@Override
-	public synchronized void kill(String id) {
-		if (__tasks.containsKey(id)) {
-			_info("KILLED TASK", id);
-			__tasks.remove(id);
-			var task = __tasks.get(id);
-			if (task != null && (!task.isDone() || !task.isCancelled())) {
-				task.cancel(true);
-			}
-		}
-	}
-
-	@Override
-	public synchronized void clear() {
-		__tasks.forEach((id, task) -> {
-			_info("KILLED TASK", id);
-			if (task != null && (!task.isDone() || !task.isCancelled())) {
-				task.cancel(true);
-			}
-		});
-		__tasks.clear();
-	}
-
-	@Override
-	public synchronized int getRemainTime(String id) {
-		var task = __tasks.get(id);
-		if (task != null) {
-			return (int) task.getDelay(TimeUnit.SECONDS);
-		}
-		return -1;
-	}
+	/**
+	 * Retrieve the remain time of one task.
+	 * 
+	 * @param id the unique for retrieving the desired task
+	 * @return the left time
+	 */
+	int getRemainTime(String id);
 
 }

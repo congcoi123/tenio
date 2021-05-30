@@ -28,12 +28,13 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.logger.SystemAbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 
 /**
  * @author kong
  */
-public final class WorkersPool extends SystemAbstractLogger {
+// TODO: Add description
+public final class WorkersPool extends SystemLogger {
 
 	private final BlockingQueue<Runnable> __taskQueue;
 	private final List<WorkerPoolRunnable> __runnables;
@@ -46,8 +47,8 @@ public final class WorkersPool extends SystemAbstractLogger {
 		__name = name;
 		__isStopped = false;
 
-		_info("CREATED NEW WORKERS",
-				_buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
+		info("CREATED NEW WORKERS",
+				buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
 
 		for (int i = 0; i < noOfThreads; i++) {
 			__runnables.add(new WorkerPoolRunnable(__name, i, __taskQueue));
@@ -62,7 +63,7 @@ public final class WorkersPool extends SystemAbstractLogger {
 			throw new IllegalStateException("WorkersPool is stopped");
 		}
 
-		_debug("EXECUTED A TASK", debugText);
+		debug("EXECUTED A TASK", debugText);
 		__taskQueue.offer(task);
 	}
 
@@ -78,7 +79,7 @@ public final class WorkersPool extends SystemAbstractLogger {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
-				_error(e);
+				error(e);
 			}
 		}
 	}

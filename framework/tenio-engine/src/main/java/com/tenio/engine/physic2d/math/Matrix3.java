@@ -31,9 +31,6 @@ import java.util.List;
  * More detail in <a href=
  * "https://medium.com/swlh/understanding-3d-matrix-transforms-with-pixijs-c76da3f8bd8">this
  * document</a>.
- * 
- * @author kong
- *
  */
 public final class Matrix3 {
 

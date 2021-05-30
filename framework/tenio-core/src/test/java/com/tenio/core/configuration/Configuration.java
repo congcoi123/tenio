@@ -27,12 +27,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Create your own configurations
+ * Create your own configurations.
  * 
  * @see CoreConfiguration
- * 
- * @author kong
- *
  */
 public final class Configuration extends CoreConfiguration {
 
@@ -41,10 +38,10 @@ public final class Configuration extends CoreConfiguration {
 	}
 
 	@Override
-	protected void _extend(Map<String, String> extProperties) {
+	protected void __extend(Map<String, String> extProperties) {
 		for (Entry<String, String> entry : extProperties.entrySet()) {
 			var paramName = entry.getKey();
-			_push(TestConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+			__push(TestConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
 		}
 	}
 

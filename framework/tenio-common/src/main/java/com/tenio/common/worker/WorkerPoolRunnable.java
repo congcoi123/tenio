@@ -25,11 +25,12 @@ package com.tenio.common.worker;
 
 import java.util.concurrent.BlockingQueue;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 
 /**
  * @author kong
  */
+// TODO: Add description
 public final class WorkerPoolRunnable extends AbstractLogger implements Runnable {
 
 	private Thread __thread;
@@ -55,7 +56,7 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
 			} catch (Exception e) {
 				// log or otherwise report exception,
 				// but keep pool thread alive.
-				_error(e);
+				error(e);
 			}
 		}
 	}

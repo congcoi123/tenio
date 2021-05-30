@@ -36,10 +36,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.common.utility.MathUtility;
-import com.tenio.common.utility.TimeUtility;
-import com.tenio.engine.message.IMessage;
+import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.utilities.MathUtility;
+import com.tenio.common.utilities.TimeUtility;
+import com.tenio.engine.message.EMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
@@ -47,9 +47,6 @@ import com.tenio.engine.physic2d.graphic.Paint;
  * loop because the game keeps doing a series of actions over and over again
  * until the user quits. If a game runs at 60 FPS (frames per second), this
  * means that the game loop completes 60 iterations every second.
- * 
- * @author kong
- *
  */
 public abstract class AbstractHeartBeat extends AbstractLogger implements Callable<Void>, ActionListener {
 
@@ -158,7 +155,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	private void __start() {
 		// seed random number generator
 		MathUtility.setSeed(0);
-		_onCreate();
+		__onCreate();
 		// main loop
 		__loop();
 	}
@@ -168,12 +165,12 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * 
 	 * @param pause set <b>true</b> if you want to pause the current game loop
 	 */
-	protected void _pause(final boolean pause) {
+	protected void __pause(final boolean pause) {
 		if (pause) { // pause
 			__running = !pause;
-			_onPause();
+			__onPause();
 		} else { // resume
-			_onResume();
+			__onResume();
 			__running = !pause;
 		}
 	}
@@ -183,7 +180,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	 * 
 	 * @return the FPS
 	 */
-	protected int _getFPS() {
+	protected int __getFPS() {
 		return __currentFps;
 	}
 
@@ -232,11 +229,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	public void actionPerformed(ActionEvent e) {
 		var s = e.getSource();
 		if (s == __action1) {
-			_onAction1();
+			__onAction1();
 		} else if (s == __action2) {
-			_onAction2();
+			__onAction2();
 		} else if (s == __action3) {
-			_onAction3();
+			__onAction3();
 		}
 	}
 
@@ -272,13 +269,13 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 					// read the message from the front of the queue
 					var message = __listener.last();
 					// listening
-					_onMessage(message.getMessage());
+					__onMessage(message.getMessage());
 					// remove it from the queue
 					__listener.remove(message);
 				}
 
 				// Main update
-				_onUpdate(delta);
+				__onUpdate(delta);
 
 				lastUpdateTime += TIME_BETWEEN_UPDATES;
 				updateCount++;
@@ -324,7 +321,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 					Thread.sleep(1);
 				} catch (Exception e) {
 					// can dispose
-					_onDispose();
+					__onDispose();
 					return;
 				}
 
@@ -359,7 +356,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 			__paint.startDrawing(graphic);
 			// fill our back buffer with white
 			__paint.fillRect(Color.WHITE, 0, 0, __viewWidth, __viewHeight);
-			_onRender(__paint);
+			__onRender(__paint);
 
 			// show FPS
 			graphic.setColor(Color.BLACK);
@@ -396,59 +393,59 @@ public abstract class AbstractHeartBeat extends AbstractLogger implements Callab
 	/**
 	 * It is called when start a game loop
 	 */
-	protected abstract void _onCreate();
+	protected abstract void __onCreate();
 
 	/**
 	 * It is called when the heart-beat receives a message from outside
 	 * 
-	 * @param message the coming message, see {@link IMessage}
+	 * @param message the coming message, see {@link EMessage}
 	 */
-	protected abstract void _onMessage(IMessage message);
+	protected abstract void __onMessage(EMessage message);
 
 	/**
 	 * It is called every frame in a game loop
 	 * 
 	 * @param deltaTime the time between two frames
 	 */
-	protected abstract void _onUpdate(float deltaTime);
+	protected abstract void __onUpdate(float deltaTime);
 
 	/**
-	 * It is called every frame after {@link #_onUpdate(float)}
+	 * It is called every frame after {@link #__onUpdate(float)}
 	 * 
 	 * @param paint the painting object
 	 */
-	protected abstract void _onRender(Paint paint);
+	protected abstract void __onRender(Paint paint);
 
 	/**
-	 * It is called when you call {@link #_pause(boolean)} with <b>true</b>
+	 * It is called when you call {@link #__pause(boolean)} with <b>true</b>
 	 * parameter
 	 */
-	protected abstract void _onPause();
+	protected abstract void __onPause();
 
 	/**
-	 * It is called when you call {@link #_pause(boolean)} with <b>false</b>
+	 * It is called when you call {@link #__pause(boolean)} with <b>false</b>
 	 * parameter
 	 */
-	protected abstract void _onResume();
+	protected abstract void __onResume();
 
 	/**
 	 * It is called when the game loop is stopped or destroyed
 	 */
-	protected abstract void _onDispose();
+	protected abstract void __onDispose();
 
 	/**
 	 * Customize the button 1 action
 	 */
-	protected abstract void _onAction1();
+	protected abstract void __onAction1();
 
 	/**
 	 * Customize the button 2 action
 	 */
-	protected abstract void _onAction2();
+	protected abstract void __onAction2();
 
 	/**
 	 * Customize the button 3 action
 	 */
-	protected abstract void _onAction3();
+	protected abstract void __onAction3();
 
 }

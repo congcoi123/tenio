@@ -23,66 +23,74 @@ THE SOFTWARE.
 */
 package com.tenio.core;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
-import com.tenio.common.configuration.IConfiguration;
-import com.tenio.common.logger.AbstractLogger;
-import com.tenio.core.exception.DuplicatedUriAndMethodException;
-import com.tenio.core.exception.NotDefinedSocketConnectionException;
-import com.tenio.core.exception.NotDefinedSubscribersException;
-import com.tenio.core.extension.IExtension;
-import com.tenio.core.server.Server;
+import com.tenio.common.configuration.Configuration;
+import com.tenio.common.configuration.constant.CommonConstant;
+import com.tenio.common.loggers.SystemLogger;
+import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.exceptions.ConfigurationException;
+import com.tenio.core.exceptions.NotDefinedSubscribersException;
+import com.tenio.core.exceptions.ServiceRuntimeException;
+import com.tenio.core.server.ServerImpl;
 
 /**
  * Your application will start from here.
- * 
- * @author kong
- * 
  */
-public abstract class AbstractApp extends AbstractLogger {
+public abstract class AbstractApp extends SystemLogger {
 
 	/**
-	 * Start The Game Server
+	 * Start The Game Server With DI
 	 */
-	public void start() {
-		var configuration = getConfiguration();
-		var extension = getExtension();
+	public void start(Class<?> entryClazz) {
+		Bootstrapper bootstrap = null;
+		if (entryClazz != null) {
+			bootstrap = Bootstrapper.newInstance();
+			try {
+				bootstrap.run(entryClazz, CommonConstant.DEFAULT_BOOTSTRAP_PACKAGE,
+						CommonConstant.DEFAULT_EXTENSION_EVENT_PACKAGE,
+						CommonConstant.DEFAULT_ENGINE_HEARTBEAT_PACKAGE);
+			} catch (Exception e) {
+				error(e, "The application started with exceptions occured: ", e.getMessage());
+				System.exit(1);
+			}
+		}
 
-		var server = Server.getInstance();
-		server.setExtension(extension);
+		var configuration = getConfiguration();
+
+		var server = ServerImpl.getInstance();
 		try {
-			server.start(configuration);
-		} catch (IOException | InterruptedException | NotDefinedSocketConnectionException
-				| NotDefinedSubscribersException | DuplicatedUriAndMethodException e) {
-			_error(e, "The application started with exceptions occured");
+			server.start(configuration, bootstrap.getEventHandler());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException
+				| NotDefinedSubscribersException | ConfigurationException | InterruptedException e) {
+			error(e, "The application started with exceptions occured: ", e.getMessage());
 			server.shutdown();
 			onShutdown();
 			// exit with errors
 			System.exit(1);
 		}
+
 		// Suddenly shutdown
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			server.shutdown();
 			onShutdown();
+			System.exit(0);
 		}));
+
 		// The server was ready
-		onStarted(extension, configuration);
+		onStarted(configuration);
 	}
 
 	/**
-	 * @return an extension for handling your own logic class
+	 * @return your own class that derived from {@link Configuration} class
 	 */
-	public abstract IExtension getExtension();
-
-	/**
-	 * @return your own class that derived from {@link IConfiguration} class
-	 */
-	public abstract IConfiguration getConfiguration();
+	public abstract Configuration getConfiguration();
 
 	/**
 	 * The trigger is called when server was started
 	 */
-	public abstract void onStarted(IExtension extension, IConfiguration configuration);
+	public abstract void onStarted(Configuration configuration);
 
 	/**
 	 * The trigger is called when server was tear down

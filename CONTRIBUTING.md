@@ -27,7 +27,7 @@ type(scope): commit message
 
 Example:
 ```sh
-$ git commit -m "fix: can not found the configuration file"
+$ git commit -m "fix: could not find the configuration file"
 ```
 
 ##### Allowed `type` values:

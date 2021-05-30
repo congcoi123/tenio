@@ -26,7 +26,7 @@ package com.tenio.common.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.loggers.AbstractLogger;
 
 /**
  * This server needs some basic configuration to start running. The
@@ -34,12 +34,9 @@ import com.tenio.common.logger.AbstractLogger;
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
  * 
- * <h1>Configuration for game server, declared in properties file</h1> <br>
- * 
  * @author kong
- * 
  */
-public abstract class CommonConfiguration extends AbstractLogger implements IConfiguration {
+public abstract class CommonConfiguration extends AbstractLogger implements Configuration {
 
 	/**
 	 * All configuration values will be held in this map. You access values by your
@@ -97,12 +94,12 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * @param key   key
 	 * @param value value
 	 */
-	protected void _push(ConfigurationType key, Object value) {
+	protected void __push(ConfigurationType key, Object value) {
 		if (key == null) {
 			return;
 		}
 		if (__configuration.containsKey(key)) {
-			_info("CONFIGURATION", _buildgen("Configuration key [", key, "] attempted to replace the old value ",
+			info("CONFIGURATION", buildgen("Configuration key [", key, "] attempted to replace the old value ",
 					__configuration.get(key), " by the new one ", value));
 			return;
 		}
@@ -115,6 +112,6 @@ public abstract class CommonConfiguration extends AbstractLogger implements ICon
 	 * 
 	 * @param extProperties the extension data in key-value format (see {@link Map})
 	 */
-	protected abstract void _extend(Map<String, String> extProperties);
+	protected abstract void __extend(Map<String, String> extProperties);
 
 }

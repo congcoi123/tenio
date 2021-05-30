@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.model;
 
-import com.tenio.engine.ecs.base.Context;
-import com.tenio.engine.ecs.base.ContextInfo;
+import com.tenio.engine.ecs.bases.implement.ContextImpl;
+import com.tenio.engine.ecs.bases.implement.ContextInfo;
 
 /**
  * @author kong
  */
-public final class GameContext extends Context<GameEntity> {
+public final class GameContext extends ContextImpl<GameEntity> {
 
 	public GameContext(ContextInfo contextInfo) {
 		super(contextInfo, GameEntity.class);

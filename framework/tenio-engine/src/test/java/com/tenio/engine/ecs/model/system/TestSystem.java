@@ -23,27 +23,27 @@ THE SOFTWARE.
 */
 package com.tenio.engine.ecs.model.system;
 
-import com.tenio.engine.ecs.base.IContext;
+import com.tenio.engine.ecs.bases.Context;
 import com.tenio.engine.ecs.model.GameEntity;
-import com.tenio.engine.ecs.system.AbstractSystem;
-import com.tenio.engine.ecs.system.IExecuteSystem;
-import com.tenio.engine.ecs.system.IInitializeSystem;
-import com.tenio.engine.ecs.system.IRenderSystem;
-import com.tenio.engine.ecs.system.ITearDownSystem;
+import com.tenio.engine.ecs.systems.ExecuteSystem;
+import com.tenio.engine.ecs.systems.InitializeSystem;
+import com.tenio.engine.ecs.systems.RenderSystem;
+import com.tenio.engine.ecs.systems.TearDownSystem;
+import com.tenio.engine.ecs.systems.implement.AbstractSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 
 /**
  * @author kong
  */
 public final class TestSystem extends AbstractSystem<GameEntity>
-		implements IInitializeSystem, IExecuteSystem, IRenderSystem, ITearDownSystem {
+		implements InitializeSystem, ExecuteSystem, RenderSystem, TearDownSystem {
 
 	private boolean __flagInitialize;
 	private boolean __flagExecute;
 	private boolean __flagRender;
 	private boolean __flagTearDown;
 
-	public TestSystem(IContext<GameEntity> context) {
+	public TestSystem(Context<GameEntity> context) {
 		super(context);
 
 		__flagInitialize = false;

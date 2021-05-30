@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server>
+
+	<Properties>
+		<!-- The server name -->
+		<Property name="server-name">Example</Property>
+		<!-- The server id (module name) -->
+		<Property name="server-id">tenio-example-6</Property>
+		<!-- The current version code of your server in integer type (comparable) -->
+		<Property name="version-code">1</Property>
+		<!-- The current version name of your server in string type -->
+		<Property name="version-name">1.0</Property>
+	</Properties>
+
+	<Implements>
+		<Class name="packet-encrypter">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter</Class>
+		<Class name="packet-compressor">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
+		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder</Class>
+		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder</Class>
+		<Class name="connection-filter">com.tenio.core.network.security.filter.DefaultConnectionFilter</Class>
+		<Class name="packet-queue-policy">com.tenio.core.network.entities.packet.policy.DefaultPacketQueuePolicy</Class>
+	</Implements>
+
+	<Network>
+		<Sockets>
+			<Port name="socket" type="tcp">8032</Port>
+		</Sockets>
+		<Properties>
+			<Property name="websocket-using-ssl">false</Property>
+			<Property name="websocket-sender-buffer-size">1024</Property>
+			<Property name="websocket-receiver-buffer-size">1024</Property>
+			<Property name="socket-acceptor-buffer-size">1024</Property>
+			<Property name="socket-reader-buffer-size">1024</Property>
+			<Property name="socket-writer-buffer-size">1024</Property>
+			<Property name="packet-compression-threshold-bytes">10240</Property>
+			<Property name="allow-change-session">false</Property>
+			<Property name="max-connections-per-ip">1000</Property>
+		</Properties>
+		<Http>
+		</Http>
+	</Network>
+
+	<Configuration>
+		<Workers>
+			<Worker name="socket-acceptor">5</Worker>
+			<Worker name="socket-reader">30</Worker>
+			<Worker name="socket-writer">30</Worker>
+			<Worker name="websocket-producer">1</Worker>
+			<Worker name="websocket-consumer">2</Worker>
+			<Worker name="internal-processor">20</Worker>
+		</Workers>
+		<Schedules>
+			<!-- Get the period checking in seconds which server can keep the empty 
+				room -->
+			<Task name="removed-room-scan-interval">30</Task>	<!-- Unit: Seconds -->
+			<!-- The period checking player time out in seconds -->
+			<Task name="disconnected-player-scan-interval">45</Task>		<!-- Unit: Seconds -->
+			<!-- The period checking CCU in seconds -->
+			<Task name="ccu-scan-interval">60</Task>			<!-- Unit: Seconds -->
+			<!-- Schedule detecting deadlocked threads -->
+			<Task name="deadlock-scan-interval">60</Task>			<!-- Unit: Seconds -->
+			<!-- The delay between two computations of performances for channels or 
+				0 if no statics are to be computed -->
+			<Task name="traffic-counter-interval">60</Task>	<!-- Unit: Seconds -->
+			<!-- The period monitoring system -->
+			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
+		</Schedules>
+		<Properties>
+			<Property name="max-packet-queue-size">300</Property>
+			<Property name="max-request-queue-size">300</Property>
+			<!-- When the server get disconnection of one client, can be hold its 
+				player instance until timeout -->
+			<Property name="keep-player-on-disconnection">false</Property>
+			<!-- The maximum number of players which game can handle -->
+			<Property name="max-number-players">1000</Property>
+			<!-- The maximum number of rooms which game can handle -->
+			<Property name="max-number-rooms">1000</Property>
+			<!-- The max IDLE time in seconds which server can wait from the last 
+				getting message from client -->
+			<Property name="max-player-idle-time">180</Property>		<!-- Unit: Seconds -->
+		</Properties>
+	</Configuration>
+
+	<!-- Your customizable configurations -->
+	<Extension>
+		<Properties>
+			<Property name="custom-value-1">String</Property>
+			<Property name="custom-value-2">1</Property>
+			<Property name="custom-value-3">1.5</Property>
+			<Property name="custom-value-4">True</Property>
+		</Properties>
+	</Extension>
+
+</Server>

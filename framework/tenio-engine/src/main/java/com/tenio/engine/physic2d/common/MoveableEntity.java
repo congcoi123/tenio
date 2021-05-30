@@ -29,9 +29,6 @@ import com.tenio.engine.physic2d.math.Vector2;
 /**
  * A base class defining an entity that moves. The entity has a local coordinate
  * system <b>root(0, 0)</b> and members for defining its mass and velocity.
- * 
- * @author kong
- *
  */
 public abstract class MoveableEntity extends BaseGameEntity {
 
