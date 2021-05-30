@@ -58,14 +58,9 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 		// average measurement
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
-			System.err.println(String.format("[AVERAGE LATENCY] Total Requests: %d -> Average Latency: %.2f ms",
-					__statistics.getLatencySize(), __statistics.getLatencyAverage()));
-
-			System.err.println(String.format("[AVERAGE FPS] Total Requests: %d -> Average FPS: %.2f",
-					__statistics.getFpsSize(), __statistics.getFpsAverage()));
-
-			System.err.println(String.format("[AVERAGE LOST PACKETS] Average Lost Packets: %.2f %%",
-					__statistics.getLostPacketsAverage()));
+			__logLatencyAverage();
+			__logFpsAverage();
+			__logLostPacketsAverage();
 
 		}, 0, Example4Constant.AVERAGE_LATENCY_MEASUREMENT_INTERVAL, TimeUnit.MINUTES);
 
@@ -79,6 +74,21 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 			}
 		}
 
+	}
+
+	private static void __logLatencyAverage() {
+		System.err.println(String.format("[AVERAGE LATENCY] Total Requests: %d -> Average Latency: %.2f ms",
+				__statistics.getLatencySize(), __statistics.getLatencyAverage()));
+	}
+
+	private static void __logFpsAverage() {
+		System.err.println(String.format("[AVERAGE FPS] Total Requests: %d -> Average FPS: %.2f",
+				__statistics.getFpsSize(), __statistics.getFpsAverage()));
+	}
+
+	private static void __logLostPacketsAverage() {
+		System.err.println(String.format("[AVERAGE LOST PACKETS] Average Lost Packets: %.2f %%",
+				__statistics.getLostPacketsAverage()));
 	}
 
 	private final TCP __tcp;
@@ -108,10 +118,8 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 			float lostPacket = (float) ((float) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS
 					- __counter.getCountUdpPacketsOneMinute()) / Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS
 					* 100);
-			info("COUNTING",
-					String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-							__playerName, __counter.getCountUdpPacketsOneMinute(), lostPacket,
-							(float) __counter.getCountReceivedPacketSizeOneMinute() / 1000));
+
+			__logLostPacket(lostPacket);
 
 			__counter.setCountUdpPacketsOneMinute(0);
 			__counter.setCountReceivedPacketSizeOneMinute(0);
@@ -120,6 +128,13 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 
 		}, 1, 1, TimeUnit.MINUTES);
 
+	}
+
+	private void __logLostPacket(float lostPacket) {
+		info("COUNTING",
+				String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB", __playerName,
+						__counter.getCountUdpPacketsOneMinute(), lostPacket,
+						(float) __counter.getCountReceivedPacketSizeOneMinute() / 1000));
 	}
 
 	private void __sendLoginRequest() {
