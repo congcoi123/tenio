@@ -200,12 +200,14 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 
 	@Override
 	public void onReceivedUDP(ServerMessage message) {
+		// System.err.println("[RECV FROM SERVER UDP] -> " + message);
+		
 		__counting(message);
 	}
 
 	private void __counting(ServerMessage message) {
 		__counter.addCountUdpPacketsOneMinute();
-		__counter.setCountReceivedPacketSizeOneMinute((message.getData().toBinary().length));
+		__counter.addCountReceivedPacketSizeOneMinute((message.getData().toBinary().length));
 	}
 
 }

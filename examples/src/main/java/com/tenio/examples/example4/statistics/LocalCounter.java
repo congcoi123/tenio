@@ -45,6 +45,10 @@ public final class LocalCounter {
 		__countReceivedPacketSizeOneMinute = countReceivedPacketSizeOneMinute;
 	}
 	
+	public void addCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
+		__countReceivedPacketSizeOneMinute += countReceivedPacketSizeOneMinute;
+	}
+	
 	public int getCountUdpPacketsOneMinute() {
 		return __countUdpPacketsOneMinute;
 	}
