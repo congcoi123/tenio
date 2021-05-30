@@ -32,11 +32,6 @@ import com.tenio.examples.example4.world.World;
  */
 public final class TestMovement {
 
-	/**
-	 * The entry point
-	 * 
-	 * @throws Exception
-	 */
 	public static void main(String[] args) throws Exception {
 		// Create a world
 		var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);

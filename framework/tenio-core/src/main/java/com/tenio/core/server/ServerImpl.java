@@ -127,8 +127,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
 
-		var ConfigsAssessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
-		ConfigsAssessment.assess();
+		var assessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
+		assessment.assess();
 
 		info("SERVER", __serverName, "Starting ...");
 

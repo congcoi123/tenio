@@ -80,7 +80,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
 	@Override
 	public void start() {
-		info("START SERVICE", getName());
+		info("START SERVICE", buildgen(getName(), " (", 1, ")"));
 
 		// __taskManager.create("auto-disconnect-player",
 		// __autoDisconnectPlayerTask.run());
@@ -102,9 +102,9 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 	private void __shutdown() {
 		__taskManager.clear();
 
-		info("STOPPED SERVICE", getName());
+		info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
 		__cleanup();
-		info("DESTROYED SERVICE", getName());
+		info("DESTROYED SERVICE", buildgen(getName(), " (", 1, ")"));
 	}
 
 	private void __cleanup() {

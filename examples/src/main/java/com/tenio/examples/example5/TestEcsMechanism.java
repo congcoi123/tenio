@@ -25,6 +25,7 @@ package com.tenio.examples.example5;
 
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.examples.example5.constant.Example5Constant;
+import com.tenio.examples.example5.ecs.ECS;
 
 public final class TestEcsMechanism {
 
