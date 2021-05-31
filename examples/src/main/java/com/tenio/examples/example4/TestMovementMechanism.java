@@ -30,7 +30,7 @@ import com.tenio.examples.example4.world.World;
 /**
  * Only for testing the movement behavior of vehicles
  */
-public final class TestMovement {
+public final class TestMovementMechanism {
 
 	public static void main(String[] args) throws Exception {
 		// Create a world
