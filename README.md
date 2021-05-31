@@ -116,9 +116,9 @@ Please start the server before its corresponding client in each example package.
     |-- example4
     |   |-- TestClientMovement
     |   |-- TestServerMovement
-    |   |-- (*)TestMovement
+    |   |-- (*)TestMovementMechanism
     |-- example5
-    |   |-- TestEcsMechanism
+    |   |-- (*)TestEcsMechanism
     |-- example6
     |   |-- TestClientEchoStress
     |   |-- TestServerEchoStress
