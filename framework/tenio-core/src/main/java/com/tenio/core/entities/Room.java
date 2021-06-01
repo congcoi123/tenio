@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.tenio.core.entities.defines.modes.RoomRemoveMode;
+import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.settings.strategies.RoomCredentialValidatedStrategy;
 import com.tenio.core.entities.settings.strategies.RoomPlayerSlotGeneratedStrategy;
@@ -111,9 +112,14 @@ public interface Room {
 	void addPlayer(Player player, boolean asSpectator, int targetSlot)
 			throws PlayerJoinedRoomException, AddedDuplicatedPlayerException;
 
-	void addPlayer(Player player, boolean asSpectator) throws PlayerJoinedRoomException, AddedDuplicatedPlayerException;
+	default void addPlayer(Player player, boolean asSpectator)
+			throws PlayerJoinedRoomException, AddedDuplicatedPlayerException {
+		addPlayer(player, asSpectator, RoomImpl.DEFAULT_SLOT);
+	}
 
-	void addPlayer(Player player) throws PlayerJoinedRoomException, AddedDuplicatedPlayerException;
+	default void addPlayer(Player player) throws PlayerJoinedRoomException, AddedDuplicatedPlayerException {
+		addPlayer(player, false);
+	}
 
 	void removePlayer(Player player) throws RemovedNonExistentPlayerException;
 
@@ -121,7 +127,9 @@ public interface Room {
 
 	void switchSpectatorToPlayer(Player player, int targetSlot) throws SwitchedPlayerSpectatorException;
 
-	void switchSpectatorToPlayer(Player player) throws SwitchedPlayerSpectatorException;
+	default void switchSpectatorToPlayer(Player player) throws SwitchedPlayerSpectatorException {
+		switchSpectatorToPlayer(player, RoomImpl.DEFAULT_SLOT);
+	}
 
 	boolean isEmpty();
 
@@ -134,7 +142,9 @@ public interface Room {
 	RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy();
 
 	void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy);
-	
-	void clear();
+
+	default void clear() {
+		throw new UnsupportedOperationException();
+	}
 
 }

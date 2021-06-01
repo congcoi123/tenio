@@ -35,39 +35,8 @@ import com.tenio.common.pool.ElementsPool;
 public final class CommonConstant {
 
 	private CommonConstant() {
+		
 	}
-
-	public static final String CREDIT[] = new String[] { 
-			"********************************************************",
-			"**                                                    **",
-			"**                                ■■■                 **",
-			"**                              ■   ■■                **",
-			"**                                  ■■■               **",
-			"**                       ■■■■■■    ■■■                **",
-			"**                    ■■■■■■■■■■■■■■■                 **",
-			"**                 ■■■■■            ■■                **",
-			"**               ■■                  ■                **",
-			"**              ■■■    ■■  ■■     ■■■  ■  ■■■         **",
-			"**         ■■■■■■■    ■■■■■ ■■   ■■■■■  ■   ■■        **",
-			"**       ■■    ■■■   ■ ■■■■  ■     ■■■  ■ ■   ■■      **",
-			"**      ■■     ■■■■     ■■  ■■         ■  ■ ■  ■      **",
-			"**      ■■  ■  ■■■■   ■    ■■      ■■■■  ■■■   ■      **",
-			"**      ■■  ■■ ■■■■■    ■■■              ■■   ■■      **",
-			"**       ■■     ■■■                     ■■■  ■■       **",
-			"**        ■■■■■■■■■      ■               ■■           **",
-			"**           ■■  ■■       ■■  ■■         ■            **",
-			"**                ■                                   **",
-			"**                 ■■                                 **",
-			"**                    ■■                              **",
-			"**                       ■■■■■■■■                     **",
-			"**                                                    **",
-			"**                                                    **",
-			"**                       TenIO                        **",
-			"**            Copyright (c) 2016-2021, Kong           **",
-			"**                All rights reserved.                **",
-			"**                                                    **",
-			"********************************************************" 
-	};
 
 	/**
 	 * The number of elements in a bulk those created for the first time.
@@ -83,16 +52,16 @@ public final class CommonConstant {
 	 * @see ElementsPool
 	 */
 	public static final int ADDITIONAL_NUMBER_ELEMENTS_POOL = 32;
-	
+
 	/**
 	 * Base FPS in server
 	 */
 	public static final float FPS = 1 / 60.0f;
-	
+
 	public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-	
+
 	public static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
-	
+
 	public static final String DEFAULT_ENGINE_HEARTBEAT_PACKAGE = "com.tenio.engine.heartbeat";
 
 }

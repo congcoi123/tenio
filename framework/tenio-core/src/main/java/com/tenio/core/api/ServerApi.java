@@ -31,6 +31,7 @@ import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.PlayerBanMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.defines.modes.RoomRemoveMode;
+import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.network.entities.session.Session;
 
@@ -42,38 +43,55 @@ public interface ServerApi {
 
 	void logout(Player player);
 
-	void kickPlayer(Player player, String message, int delayInSeconds);
+	default void kickPlayer(Player player, String message, int delayInSeconds) {
+		throw new UnsupportedOperationException();
+	}
 
-	void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes, int delayInSeconds);
+	default void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes,
+			int delayInSeconds) {
+		throw new UnsupportedOperationException();
+	}
 
-	Room createRoom(InitialRoomSetting setting);
+	default Room createRoom(InitialRoomSetting setting) {
+		return createRoom(setting, null);
+	}
 
 	Room createRoom(InitialRoomSetting setting, Player owner);
 
 	Player getPlayerByName(String playerName);
 
 	Player getPlayerBySession(Session session);
-	
+
 	int getPlayerCount();
-	
+
 	Collection<Player> getAllPlayers();
 
 	Room getRoomById(long roomId);
 
 	void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
 
-	void joinRoom(Player player, Room room);
+	default void joinRoom(Player player, Room room) {
+		joinRoom(player, room, null, RoomImpl.DEFAULT_SLOT, false);
+	}
 
-	void switchPlayerToSpectator(Player player, Room room);
+	default void switchPlayerToSpectator(Player player, Room room) {
+		throw new UnsupportedOperationException();
+	}
 
-	void switchSpectatorToPlayer(Player player, Room room, int targetSlot);
+	default void switchSpectatorToPlayer(Player player, Room room, int targetSlot) {
+		throw new UnsupportedOperationException();
+	}
 
 	void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode);
 
 	void removeRoom(Room room, RoomRemoveMode removeRoomMode);
 
-	void sendPublicMessage(Player sender, Room room, ServerMessage message);
+	default void sendPublicMessage(Player sender, Room room, ServerMessage message) {
+		throw new UnsupportedOperationException();
+	}
 
-	void sendPrivateMessage(Player sender, Player recipient, ServerMessage message);
+	default void sendPrivateMessage(Player sender, Player recipient, ServerMessage message) {
+		throw new UnsupportedOperationException();
+	}
 
 }

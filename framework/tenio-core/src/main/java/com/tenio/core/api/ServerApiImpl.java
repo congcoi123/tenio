@@ -30,9 +30,7 @@ import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
-import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
-import com.tenio.core.entities.defines.modes.PlayerBanMode;
 import com.tenio.core.entities.defines.modes.PlayerDisconnectMode;
 import com.tenio.core.entities.defines.modes.PlayerLeaveRoomMode;
 import com.tenio.core.entities.defines.modes.RoomRemoveMode;
@@ -40,7 +38,6 @@ import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
 import com.tenio.core.entities.defines.results.PlayerLeftRoomResult;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.entities.defines.results.RoomCreatedResult;
-import com.tenio.core.entities.implement.RoomImpl;
 import com.tenio.core.entities.managers.PlayerManager;
 import com.tenio.core.entities.managers.RoomManager;
 import com.tenio.core.entities.settings.InitialRoomSetting;
@@ -116,17 +113,6 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 		}
 	}
 
-	@Override
-	public void kickPlayer(Player player, String message, int delayInSeconds) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes,
-			int delayInSeconds) {
-		throw new UnsupportedOperationException();
-	}
-
 	private void __disconnectPlayer(Player player) throws IOException {
 		if (player.containsSession()) {
 			player.getSession().close(ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
@@ -136,11 +122,6 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 			player.clean();
 			player = null;
 		}
-	}
-
-	@Override
-	public Room createRoom(InitialRoomSetting setting) {
-		return createRoom(setting, null);
 	}
 
 	@Override
@@ -218,21 +199,6 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 	}
 
 	@Override
-	public void joinRoom(Player player, Room room) {
-		joinRoom(player, room, null, RoomImpl.DEFAULT_SLOT, false);
-	}
-
-	@Override
-	public void switchPlayerToSpectator(Player player, Room room) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void switchSpectatorToPlayer(Player player, Room room, int targetSlot) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void leaveRoom(Player player, PlayerLeaveRoomMode leaveRoomMode) {
 		if (!player.isInRoom()) {
 			__getEventManager().emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, null,
@@ -275,16 +241,6 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
 		room = null;
 
-	}
-
-	@Override
-	public void sendPublicMessage(Player sender, Room room, ServerMessage message) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void sendPrivateMessage(Player sender, Player recipient, ServerMessage message) {
-		throw new UnsupportedOperationException();
 	}
 
 	private EventManager __getEventManager() {

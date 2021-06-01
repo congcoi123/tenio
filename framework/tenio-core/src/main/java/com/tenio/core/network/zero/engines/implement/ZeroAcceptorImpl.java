@@ -204,7 +204,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 		}
 	}
 
-	private synchronized void __shutdownBoundSockets() {
+	private void __shutdownBoundSockets() {
 		synchronized (__boundSockets) {
 			// iterates the list of server socket channels, datagram channels
 			Iterator<SelectableChannel> boundSocketIterator = __boundSockets.iterator();
