@@ -41,7 +41,9 @@ public interface RoomManager extends Manager {
 
 	void addRoom(Room room) throws AddedDuplicatedRoomException;
 
-	Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CreatedRoomException;
+	default Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CreatedRoomException {
+		return createRoomWithOwner(roomSetting, null);
+	}
 
 	Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player)
 			throws IllegalArgumentException, CreatedRoomException;
@@ -65,7 +67,9 @@ public interface RoomManager extends Manager {
 	void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) throws IllegalArgumentException;
 
 	int getRoomCount();
-	
-	void clear();
+
+	default void clear() {
+		throw new UnsupportedOperationException();
+	}
 
 }

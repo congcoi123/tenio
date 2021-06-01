@@ -29,7 +29,7 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.configuration.constant.CommonConstant;
+import com.tenio.common.configuration.constant.Trademark;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
@@ -82,7 +82,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__serverApi = ServerApiImpl.newInstance(this);
 
 		// print out the framework's preface
-		for (var line : CommonConstant.CREDIT) {
+		for (var line : Trademark.CONTENT) {
 			info("", "", line);
 		}
 	} // prevent creation manually
@@ -118,6 +118,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 		systemInfo.logSystemInfo();
 		systemInfo.logNetCardsInfo();
 		systemInfo.logDiskInfo();
+		
+		info("SERVER", __serverName, "Starting ...");
 
 		// subscribing for processes and handlers
 		__internalProcessorService.subscribe();
@@ -129,8 +131,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 
 		var assessment = ConfigurationAssessment.newInstance(__eventManager, configuration);
 		assessment.assess();
-
-		info("SERVER", __serverName, "Starting ...");
 
 		// Put the current configurations to the logger
 		info("CONFIGURATION", configuration.toString());

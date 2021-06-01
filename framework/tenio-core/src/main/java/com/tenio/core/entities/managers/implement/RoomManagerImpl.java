@@ -77,11 +77,6 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 	}
 
 	@Override
-	public Room createRoom(InitialRoomSetting roomSetting) {
-		return createRoomWithOwner(roomSetting, null);
-	}
-
-	@Override
 	public Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player) {
 		int roomCount = getRoomCount();
 		if (roomCount >= getMaxRooms()) {
@@ -167,12 +162,6 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 	@Override
 	public int getRoomCount() {
 		return __roomByIds.size();
-	}
-
-	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

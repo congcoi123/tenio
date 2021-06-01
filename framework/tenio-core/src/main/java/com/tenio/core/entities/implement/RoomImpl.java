@@ -328,16 +328,6 @@ public final class RoomImpl implements Room {
 	}
 
 	@Override
-	public void addPlayer(Player player, boolean asSpectator) {
-		addPlayer(player, asSpectator, DEFAULT_SLOT);
-	}
-
-	@Override
-	public void addPlayer(Player player) {
-		addPlayer(player, false);
-	}
-
-	@Override
 	public void removePlayer(Player player) {
 		__roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
 		__playerManager.removePlayerByName(player.getName());
@@ -404,11 +394,6 @@ public final class RoomImpl implements Room {
 
 	}
 
-	@Override
-	public void switchSpectatorToPlayer(Player player) {
-		switchSpectatorToPlayer(player, DEFAULT_SLOT);
-	}
-
 	private void __updateElementsCounter() {
 		__playerCount = getPlayersList().size();
 		__spectatorCount = getSpectatorsList().size();
@@ -466,12 +451,6 @@ public final class RoomImpl implements Room {
 	@Override
 	public void setRoomCredentialValidatedStrategy(RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
 		__roomCredentialValidatedStrategy = roomCredentialValidatedStrategy;
-	}
-
-	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
