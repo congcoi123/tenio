@@ -36,9 +36,9 @@ public interface Response {
 	Response setContent(byte[] content);
 
 	Collection<Player> getPlayers();
-	
+
 	Collection<Player> getNonSessionPlayers();
-	
+
 	Collection<Session> getRecipientSocketSessions();
 
 	Collection<Session> getRecipientDatagramSessions();
@@ -61,6 +61,8 @@ public interface Response {
 
 	void write();
 
-	void writeInDelay(int delayInSeconds);
+	default void writeInDelay(int delayInSeconds) {
+		throw new UnsupportedOperationException();
+	}
 
 }

@@ -35,7 +35,7 @@ public enum ResponsePriority {
 
 	private final int __value;
 
-	private ResponsePriority(int value) {
+	private ResponsePriority(final int value) {
 		__value = value;
 	}
 

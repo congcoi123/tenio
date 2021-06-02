@@ -462,7 +462,7 @@ public final class World extends AbstractHeartBeat {
 
 						// update the vehicles
 						var iterator = vehicles.iterator();
-						if (iterator.hasNext()) {
+						while (iterator.hasNext()) {
 							var vehicle = iterator.next();
 							__listener.updateVehiclePosition(vehicle);
 						}

@@ -7,7 +7,7 @@
 		<!-- Logging level: trace -included-> debug -included-> info -included-> 
 			error -->
 		<Property name="target">File</Property>
-		<Property name="level">info</Property>
+		<Property name="level">debug</Property>
 	</Properties>
 
 	<Appenders>
@@ -53,12 +53,12 @@
 
 	<Loggers>
 
-		<Logger name="com.tenio.example.example4.TestClientMovement"
+		<Logger name="com.tenio.examples.example4.TestClientMovement"
 			level="${level}" additivity="false">
 			<AppenderRef ref="TestClientMovement" />
 		</Logger>
 
-		<Logger name="com.tenio.example.example4.TestServerMovement"
+		<Logger name="com.tenio.examples.example4.TestServerMovement"
 			level="${level}" additivity="false">
 			<AppenderRef ref="TestServerMovement" />
 		</Logger>

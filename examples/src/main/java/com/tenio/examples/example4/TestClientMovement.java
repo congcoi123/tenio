@@ -51,13 +51,16 @@ import com.tenio.examples.server.UdpEstablishedState;
  */
 public final class TestClientMovement extends AbstractLogger implements SocketListener, DatagramListener {
 
+	private static final boolean LOGGER_DEBUG = false;
 	private static final NetworkStatistics __statistics = NetworkStatistics.newInstance();
+	private static final long START_EXECUTION_TIME = TimeUtility.currentTimeSeconds();
 
 	public static void main(String[] args) throws InterruptedException {
 
 		// average measurement
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
+			__logExecutionTime();
 			__logLatencyAverage();
 			__logFpsAverage();
 			__logLostPacketsAverage();
@@ -74,6 +77,11 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 			}
 		}
 
+	}
+
+	private static void __logExecutionTime() {
+		System.out.println(String.format("[EXECUTION TIME -> CCU: %d] %s", Example4Constant.NUMBER_OF_PLAYERS,
+				ClientUtility.getTimeFormat(TimeUtility.currentTimeSeconds() - START_EXECUTION_TIME)));
 	}
 
 	private static void __logLatencyAverage() {
@@ -112,29 +120,6 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 		// send a login request
 		__sendLoginRequest();
 
-		// packets counting
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-
-			float lostPacket = (float) ((float) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS
-					- __counter.getCountUdpPacketsOneMinute()) / Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS
-					* 100);
-
-			__logLostPacket(lostPacket);
-
-			__counter.setCountUdpPacketsOneMinute(0);
-			__counter.setCountReceivedPacketSizeOneMinute(0);
-
-			__statistics.addLostPackets(lostPacket);
-
-		}, 1, 1, TimeUnit.MINUTES);
-
-	}
-
-	private void __logLostPacket(float lostPacket) {
-		info("COUNTING",
-				String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB", __playerName,
-						__counter.getCountUdpPacketsOneMinute(), lostPacket,
-						(float) __counter.getCountReceivedPacketSizeOneMinute() / 1000));
 	}
 
 	private void __sendLoginRequest() {
@@ -142,12 +127,16 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 		data.putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);
 		__tcp.send(ServerMessage.newInstance().setData(data));
 
-		System.err.println("Login Request -> " + data.toString());
+		if (LOGGER_DEBUG) {
+			System.err.println("Login Request -> " + data.toString());
+		}
 	}
 
 	@Override
 	public void onReceivedTCP(ServerMessage message) {
-		System.err.println("[RECV FROM SERVER TCP] -> " + message);
+		if (LOGGER_DEBUG) {
+			System.err.println("[RECV FROM SERVER TCP] -> " + message);
+		}
 
 		if (message.getData().containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
 			switch (message.getData().getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
@@ -157,13 +146,32 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 				var request = ServerMessage.newInstance().setData(data);
 				__udp.send(request);
 
-				System.out.println("Request a UDP connection -> " + request);
+				if (LOGGER_DEBUG) {
+					System.out.println("Request a UDP connection -> " + request);
+				}
 			}
 				break;
 
 			case UdpEstablishedState.ATTACHED: {
 				// the UDP connected successful, you now can send test requests
-				System.out.println("Start the conversation ...");
+				if (LOGGER_DEBUG) {
+					System.out.println("Start the conversation ...");
+				}
+
+				// packets counting
+				Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+
+					int countPackets = __counter.getCountUdpPacketsOneMinute();
+					double lostPacket = ((double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS - countPackets)
+							/ (double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS) * (double) 100;
+
+					__statistics.addLostPackets(lostPacket);
+					__logLostPacket(lostPacket);
+
+					__counter.setCountUdpPacketsOneMinute(0);
+					__counter.setCountReceivedPacketSizeOneMinute(0);
+
+				}, 1, 1, TimeUnit.MINUTES);
 
 				// send requests to calculate latency
 				Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -191,6 +199,13 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 
 	}
 
+	private void __logLostPacket(double lostPacket) {
+		info("COUNTING",
+				String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB", __playerName,
+						__counter.getCountUdpPacketsOneMinute(), lostPacket,
+						(float) __counter.getCountReceivedPacketSizeOneMinute() / 1000.0f));
+	}
+
 	private void __requestNeighbours() {
 		var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
 				ClientUtility.generateRandomString(10));
@@ -200,8 +215,10 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 
 	@Override
 	public void onReceivedUDP(ServerMessage message) {
-		// System.err.println("[RECV FROM SERVER UDP] -> " + message);
-		
+		if (LOGGER_DEBUG) {
+			System.err.println("[RECV FROM SERVER UDP] -> " + message);
+		}
+
 		__counting(message);
 	}
 

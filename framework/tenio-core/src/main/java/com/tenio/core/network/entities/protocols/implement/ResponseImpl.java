@@ -147,13 +147,12 @@ public final class ResponseImpl implements Response {
 
 	@Override
 	public void write() {
+		if (__players == null || __players.isEmpty()) {
+			return;
+		}
+
 		__construct();
 		ServerImpl.getInstance().write(this);
-	}
-
-	@Override
-	public void writeInDelay(int delayInSeconds) {
-		throw new UnsupportedOperationException();
 	}
 
 	private void __construct() {

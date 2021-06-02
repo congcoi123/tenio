@@ -34,6 +34,9 @@ public final class ClientUtility {
 	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
 	private static SecureRandom RANDOM = new SecureRandom();
 
+	private static final int SECONDS_IN_HOUR = 3600;
+	private static final int SECONDS_IN_MINUTE = 60;
+
 	private ClientUtility() {
 
 	}
@@ -54,4 +57,13 @@ public final class ClientUtility {
 
 		return sb.toString();
 	}
+
+	public static String getTimeFormat(long seconds) {
+		long hours = seconds / SECONDS_IN_HOUR;
+		long minutes = (seconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+		long secs = seconds % SECONDS_IN_MINUTE;
+
+		return String.format("%02d:%02d:%02d", hours, minutes, secs);
+	}
+
 }
