@@ -37,7 +37,7 @@ public final class Example4Constant {
 	// time in seconds
 	public static final int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	public static final int NUMBER_OF_PLAYERS = 50;
+	public static final int NUMBER_OF_PLAYERS = 100;
 
 	public static final int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
 

@@ -38,7 +38,7 @@ public final class TimeUtility {
 	 * @return the current time in seconds
 	 */
 	public static long currentTimeSeconds() {
-		return System.currentTimeMillis() * 1000;
+		return System.currentTimeMillis() / 1000L;
 	}
 
 	/**

@@ -53,12 +53,14 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 
 	private static final boolean LOGGER_DEBUG = false;
 	private static final NetworkStatistics __statistics = NetworkStatistics.newInstance();
+	private static final long START_EXECUTION_TIME = TimeUtility.currentTimeSeconds();
 
 	public static void main(String[] args) throws InterruptedException {
 
 		// average measurement
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
+			__logExecutionTime();
 			__logLatencyAverage();
 			__logFpsAverage();
 			__logLostPacketsAverage();
@@ -75,6 +77,11 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 			}
 		}
 
+	}
+
+	private static void __logExecutionTime() {
+		System.out.println(String.format("[EXECUTION TIME -> CCU: %d] %s", Example4Constant.NUMBER_OF_PLAYERS,
+				ClientUtility.getTimeFormat(TimeUtility.currentTimeSeconds() - START_EXECUTION_TIME)));
 	}
 
 	private static void __logLatencyAverage() {
@@ -154,16 +161,15 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 				// packets counting
 				Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 
-					double lostPacket = (double) (((double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS
-							- (double) __counter.getCountUdpPacketsOneMinute())
-							/ (double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS * 100));
+					int countPackets = __counter.getCountUdpPacketsOneMinute();
+					double lostPacket = ((double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS - countPackets)
+							/ (double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS) * (double) 100;
 
+					__statistics.addLostPackets(lostPacket);
 					__logLostPacket(lostPacket);
 
 					__counter.setCountUdpPacketsOneMinute(0);
 					__counter.setCountReceivedPacketSizeOneMinute(0);
-
-					__statistics.addLostPackets(lostPacket);
 
 				}, 1, 1, TimeUnit.MINUTES);
 
