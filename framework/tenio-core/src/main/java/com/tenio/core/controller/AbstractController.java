@@ -121,6 +121,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
 	private void __destroy() {
 		__executor = null;
+		__requestQueue.clear();
+		__requestQueue = null;
 		onDestroyed();
 	}
 

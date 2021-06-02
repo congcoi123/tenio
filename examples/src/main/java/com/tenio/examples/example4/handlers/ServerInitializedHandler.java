@@ -64,7 +64,7 @@ public final class ServerInitializedHandler extends AbstractExtension implements
 				array.add((int) vehicle.getPositionY());
 				array.add((int) vehicle.getRotation());
 				data.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
-
+				
 				ResponseImpl.newInstance().setRecipients(players).setContent(data.toBinary()).prioritizedUdp().write();
 			}
 

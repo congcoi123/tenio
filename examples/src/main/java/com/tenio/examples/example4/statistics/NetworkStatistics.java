@@ -30,7 +30,7 @@ public final class NetworkStatistics {
 
 	private final List<Long> __latencyRecorder;
 	private final List<Integer> __fpsRecorder;
-	private final List<Float> __lostPacketRecorder;
+	private final List<Double> __lostPacketRecorder;
 
 	public static NetworkStatistics newInstance() {
 		return new NetworkStatistics();
@@ -39,7 +39,7 @@ public final class NetworkStatistics {
 	private NetworkStatistics() {
 		__latencyRecorder = new ArrayList<Long>();
 		__fpsRecorder = new ArrayList<Integer>();
-		__lostPacketRecorder = new ArrayList<Float>();
+		__lostPacketRecorder = new ArrayList<Double>();
 	}
 
 	public double getLatencyAverage() {
@@ -94,10 +94,10 @@ public final class NetworkStatistics {
 
 	public double getLostPacketsAverage() {
 		synchronized (__lostPacketRecorder) {
-			int average = 0;
+			double average = 0;
 			int size = __lostPacketRecorder.size();
 			for (int i = 0; i < size; i++) {
-				average += __lostPacketRecorder.get(i).floatValue();
+				average += __lostPacketRecorder.get(i).doubleValue();
 			}
 			double result = (double) average / (double) size;
 
@@ -111,7 +111,7 @@ public final class NetworkStatistics {
 		}
 	}
 
-	public void addLostPackets(float packets) {
+	public void addLostPackets(double packets) {
 		synchronized (__lostPacketRecorder) {
 			__lostPacketRecorder.add(packets);
 		}

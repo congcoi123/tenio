@@ -44,11 +44,11 @@
 	<Configuration>
 		<Workers>
 			<Worker name="socket-acceptor">10</Worker>
-			<Worker name="socket-reader">30</Worker>
-			<Worker name="socket-writer">30</Worker>
+			<Worker name="socket-reader">40</Worker>
+			<Worker name="socket-writer">40</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
-			<Worker name="internal-processor">20</Worker>
+			<Worker name="internal-processor">40</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 

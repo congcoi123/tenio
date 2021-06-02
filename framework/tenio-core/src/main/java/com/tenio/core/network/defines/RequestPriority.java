@@ -35,7 +35,7 @@ public enum RequestPriority {
 
 	private final int __value;
 
-	private RequestPriority(int value) {
+	private RequestPriority(final int value) {
 		__value = value;
 	}
 

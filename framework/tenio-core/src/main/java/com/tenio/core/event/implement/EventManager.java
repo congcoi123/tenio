@@ -66,7 +66,11 @@ public final class EventManager extends SystemLogger {
 	 * @see EventProducer#emit(ServerEvent, Object...)
 	 */
 	public Object emit(ServerEvent event, Object... params) {
-		trace(event.toString(), params);
+		if (__isEventForTracing(event)) {
+			trace(event.toString(), params);
+		} else {
+			debug(event.toString(), params);
+		}
 		return __producer.emit(event, params);
 	}
 
@@ -123,6 +127,22 @@ public final class EventManager extends SystemLogger {
 	public void clear() {
 		__eventSubscribers.clear();
 		__producer.clear();
+	}
+
+	private boolean __isEventForTracing(ServerEvent event) {
+
+		switch (event) {
+		case HTTP_REQUEST_HANDLE:
+		case HTTP_REQUEST_VALIDATION:
+		case DATAGRAM_CHANNEL_READ_MESSAGE:
+		case RECEIVED_MESSAGE_FROM_PLAYER:
+		case SESSION_READ_MESSAGE:
+		case SEND_MESSAGE_TO_PLAYER:
+			return true;
+		default:
+			return false;
+		}
+
 	}
 
 }
