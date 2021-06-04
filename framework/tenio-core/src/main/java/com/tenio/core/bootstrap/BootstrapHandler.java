@@ -21,29 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.server;
+package com.tenio.core.bootstrap;
 
-import java.util.Map;
+import com.tenio.common.bootstrap.annotations.Autowired;
+import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.core.bootstrap.configuration.ConfigurationHandler;
+import com.tenio.core.bootstrap.event.EventHandler;
 
-import com.tenio.core.configuration.CoreConfiguration;
+@Component
+public final class BootstrapHandler {
 
-/**
- * Create your own configurations
- * 
- * @see CoreConfiguration
- */
-public final class TestConfiguration extends CoreConfiguration {
+	@Autowired
+	private EventHandler __eventHandler;
 
-	public TestConfiguration(final String file) {
-		super(file);
+	@Autowired
+	private ConfigurationHandler __configurationHandler;
+
+	public EventHandler getEventHandler() {
+		return __eventHandler;
 	}
 
-	@Override
-	protected void __extend(Map<String, String> extProperties) {
-		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-			var paramName = entry.getKey();
-			__push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-		}
+	public ConfigurationHandler getConfigurationHandler() {
+		return __configurationHandler;
 	}
 
 }

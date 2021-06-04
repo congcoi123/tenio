@@ -33,7 +33,8 @@ import com.tenio.common.configuration.constant.Trademark;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.ServerApiImpl;
-import com.tenio.core.bootstrap.EventHandler;
+import com.tenio.core.bootstrap.BootstrapHandler;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.defines.CoreConfigurationType;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.managers.PlayerManager;
@@ -63,8 +64,6 @@ import com.tenio.core.server.settings.ConfigurationAssessment;
  * This class manages the workflow of the current server. The instruction's
  * orders are important, event subscribes must be set last and all configuration
  * values should be confirmed.
- * 
- * @author kong
  */
 @ThreadSafe
 public final class ServerImpl extends SystemLogger implements Server {
@@ -107,9 +106,17 @@ public final class ServerImpl extends SystemLogger implements Server {
 	private String __serverName;
 
 	@Override
-	public void start(Configuration configuration, EventHandler eventHandler)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, InterruptedException {
+	public void start(BootstrapHandler bootstrapHandler, String[] params) throws Exception {
+
+		// get the file path
+		var file = params.length == 0 ? null : params[0];
+		if (file == null) {
+			file = CoreConstant.DEFAULT_CONNFIGURATION_FILE;
+		}
+
+		// load configuration file
+		var configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
+		configuration.load(file);
 
 		__serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
@@ -118,13 +125,13 @@ public final class ServerImpl extends SystemLogger implements Server {
 		systemInfo.logSystemInfo();
 		systemInfo.logNetCardsInfo();
 		systemInfo.logDiskInfo();
-		
+
 		info("SERVER", __serverName, "Starting ...");
 
 		// subscribing for processes and handlers
 		__internalProcessorService.subscribe();
 
-		eventHandler.initialize(__eventManager);
+		bootstrapHandler.getEventHandler().initialize(__eventManager);
 
 		// collect all subscribers, listen all the events
 		__eventManager.subscribe();
@@ -143,7 +150,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__startServices();
 
 		// emit "server started" event
-		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName, configuration);
+		__eventManager.emit(ServerEvent.SERVER_INITIALIZATION, __serverName, configuration);
 
 		info("SERVER", __serverName, "Started");
 	}
@@ -263,6 +270,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 	@Override
 	public void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
+		// emit "server shutdown" event
+		__eventManager.emit(ServerEvent.SERVER_TEARDOWN, __serverName);
 		__shutdownServices();
 		info("SERVER", __serverName, "Stopped");
 	}

@@ -54,7 +54,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	private final List<SocketConfig> __socketPorts;
 
 	/**
-	 * All ports in http zone
+	 * All ports in HTTPs zone
 	 */
 	private final List<HttpConfig> __httpPorts;
 
@@ -64,15 +64,9 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @param file The name of your configuration file and this file needs to be put
 	 *             in same folder with your application
 	 */
-	public CoreConfiguration(String file) {
+	public CoreConfiguration() {
 		__socketPorts = new ArrayList<SocketConfig>();
 		__httpPorts = new ArrayList<HttpConfig>();
-
-		try {
-			__load(file);
-		} catch (Exception e) {
-			error(e, "file: ", file);
-		}
 	}
 
 	/**
@@ -83,7 +77,8 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 	 * @throws Exception some exceptions, which can be occurred in reading or
 	 *                   parsing the file
 	 */
-	private void __load(String file) throws Exception {
+	@Override
+	public void load(String file) throws Exception {
 
 		Document xDoc = XMLUtility.parseFile(new File(file));
 		Node root = xDoc.getFirstChild();

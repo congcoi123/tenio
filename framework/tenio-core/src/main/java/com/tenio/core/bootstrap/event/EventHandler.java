@@ -21,40 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.server;
+package com.tenio.core.bootstrap.event;
 
-import com.tenio.core.api.ServerApi;
-import com.tenio.core.bootstrap.BootstrapHandler;
-import com.tenio.core.entities.managers.PlayerManager;
-import com.tenio.core.entities.managers.RoomManager;
+import com.tenio.common.bootstrap.annotations.Autowired;
+import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.core.bootstrap.event.handlers.ConnectionEventHandler;
+import com.tenio.core.bootstrap.event.handlers.HttpEventHandler;
+import com.tenio.core.bootstrap.event.handlers.MixinsEventHandler;
+import com.tenio.core.bootstrap.event.handlers.PlayerEventHandler;
+import com.tenio.core.bootstrap.event.handlers.RoomEventHandler;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entities.protocols.Response;
 
-/**
- * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set last and all configuration
- * values should be confirmed.
- */
-public interface Server {
+@Component
+public final class EventHandler {
 
-	/**
-	 * Start the server base on your own configurations
-	 */
-	void start(BootstrapHandler bootstrapHandler, String[] params) throws Exception;
+	@Autowired
+	private ConnectionEventHandler __connectionEventHandler;
 
-	/**
-	 * Shut down the server and close all services
-	 */
-	void shutdown();
+	@Autowired
+	private PlayerEventHandler __playerEventHandler;
 
-	ServerApi getApi();
+	@Autowired
+	private RoomEventHandler __roomEventHandler;
 
-	EventManager getEventManager();
+	@Autowired
+	private HttpEventHandler __httpEventHandler;
 
-	PlayerManager getPlayerManager();
+	@Autowired
+	private MixinsEventHandler __mixinsEventHandler;
 
-	RoomManager getRoomManager();
+	public void initialize(EventManager eventManager) {
 
-	void write(Response response);
+		__connectionEventHandler.initialize(eventManager);
+		__playerEventHandler.initialize(eventManager);
+		__roomEventHandler.initialize(eventManager);
+		__httpEventHandler.initialize(eventManager);
+		__mixinsEventHandler.initialize(eventManager);
+
+	}
 
 }

@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap.handlers;
+package com.tenio.core.bootstrap.event.handlers;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -36,6 +36,7 @@ import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
 import com.tenio.core.extension.events.EventFetchedCcuInfo;
 import com.tenio.core.extension.events.EventServerException;
 import com.tenio.core.extension.events.EventServerInitialization;
+import com.tenio.core.extension.events.EventServerTeardown;
 import com.tenio.core.extension.events.EventSystemMonitoring;
 
 @Component
@@ -46,6 +47,9 @@ public final class MixinsEventHandler {
 
 	@AutowiredAcceptNull
 	private EventServerException __eventServerException;
+
+	@AutowiredAcceptNull
+	private EventServerTeardown __eventServerTeardown;
 
 	@AutowiredAcceptNull
 	private EventFetchedBandwidthInfo __eventFetchedBandwidthInfo;
@@ -61,6 +65,7 @@ public final class MixinsEventHandler {
 		Optional<EventServerInitialization> eventServerInitializationOp = Optional
 				.ofNullable(__eventServerInitialization);
 		Optional<EventServerException> eventServerExceptionOp = Optional.ofNullable(__eventServerException);
+		Optional<EventServerTeardown> eventServerTeardownOp = Optional.ofNullable(__eventServerTeardown);
 
 		Optional<EventFetchedBandwidthInfo> eventFetchedBandwidthInfoOp = Optional
 				.ofNullable(__eventFetchedBandwidthInfo);
@@ -97,6 +102,24 @@ public final class MixinsEventHandler {
 						Throwable throwable = (Throwable) params[0];
 
 						event.handle(throwable);
+
+						return null;
+					}
+				});
+			}
+		});
+
+		eventServerTeardownOp.ifPresent(new Consumer<EventServerTeardown>() {
+
+			@Override
+			public void accept(EventServerTeardown event) {
+				eventManager.on(ServerEvent.SERVER_TEARDOWN, new Subscriber() {
+
+					@Override
+					public Object dispatch(Object... params) {
+						String serverName = (String) params[0];
+
+						event.handle(serverName);
 
 						return null;
 					}

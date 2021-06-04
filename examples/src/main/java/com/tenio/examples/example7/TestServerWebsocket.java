@@ -24,37 +24,19 @@ THE SOFTWARE.
 package com.tenio.examples.example7;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class shows how a server handle websocket connection
  */
 @Bootstrap
-public final class TestServerWebsocket extends AbstractApp {
+public final class TestServerWebsocket {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerWebsocket();
-		game.start(TestServerWebsocket.class);
-	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example7.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
+		ApplicationLaunch.run(TestServerWebsocket.class, params);
 	}
 
 }

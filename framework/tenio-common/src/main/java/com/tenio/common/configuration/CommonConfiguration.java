@@ -26,17 +26,15 @@ package com.tenio.common.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.common.loggers.AbstractLogger;
+import com.tenio.common.loggers.SystemLogger;
 
 /**
  * This server needs some basic configuration to start running. The
  * configuration file can be defined as an XML file. See an example in
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
- * 
- * @author kong
  */
-public abstract class CommonConfiguration extends AbstractLogger implements Configuration {
+public abstract class CommonConfiguration extends SystemLogger implements Configuration {
 
 	/**
 	 * All configuration values will be held in this map. You access values by your

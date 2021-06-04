@@ -24,37 +24,19 @@ THE SOFTWARE.
 package com.tenio.examples.example6;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class shows how a server handle 1000 players and communications
  */
 @Bootstrap
-public final class TestServerEchoStress extends AbstractApp {
+public final class TestServerEchoStress {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerEchoStress();
-		game.start(TestServerEchoStress.class);
-	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example6.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
+		ApplicationLaunch.run(TestServerEchoStress.class, params);
 	}
 
 }

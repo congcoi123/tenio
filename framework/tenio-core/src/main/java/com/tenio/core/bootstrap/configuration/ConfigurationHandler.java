@@ -21,43 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.core.bootstrap;
+package com.tenio.core.bootstrap.configuration;
 
 import com.tenio.common.bootstrap.annotations.Autowired;
 import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.core.bootstrap.handlers.ConnectionEventHandler;
-import com.tenio.core.bootstrap.handlers.HttpEventHandler;
-import com.tenio.core.bootstrap.handlers.MixinsEventHandler;
-import com.tenio.core.bootstrap.handlers.PlayerEventHandler;
-import com.tenio.core.bootstrap.handlers.RoomEventHandler;
-import com.tenio.core.event.implement.EventManager;
+import com.tenio.common.configuration.Configuration;
 
 @Component
-public final class EventHandler {
+public final class ConfigurationHandler {
 
 	@Autowired
-	private ConnectionEventHandler __connectionEventHandler;
+	private Configuration __configuration;
 
-	@Autowired
-	private PlayerEventHandler __playerEventHandler;
-
-	@Autowired
-	private RoomEventHandler __roomEventHandler;
-
-	@Autowired
-	private HttpEventHandler __httpEventHandler;
-
-	@Autowired
-	private MixinsEventHandler __mixinsEventHandler;
-
-	public void initialize(EventManager eventManager) {
-
-		__connectionEventHandler.initialize(eventManager);
-		__playerEventHandler.initialize(eventManager);
-		__roomEventHandler.initialize(eventManager);
-		__httpEventHandler.initialize(eventManager);
-		__mixinsEventHandler.initialize(eventManager);
-
+	public Configuration getConfiguration() {
+		return __configuration;
 	}
 
 }

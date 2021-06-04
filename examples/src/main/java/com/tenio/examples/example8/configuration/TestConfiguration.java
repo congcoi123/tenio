@@ -21,46 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.common.configuration.constant;
+package com.tenio.examples.example8.configuration;
 
-import com.tenio.common.pool.ElementsPool;
+import java.util.Map;
+
+import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.configuration.Configuration;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.examples.server.ExampleConfigurationType;
 
 /**
- * All base constants' values for the server are defined here. This class should
- * not be modified.
+ * Create your own configurations
  */
-public final class CommonConstant {
+@Component
+public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
-	private CommonConstant() {
-
+	@Override
+	protected void __extend(Map<String, String> extProperties) {
+		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+			var paramName = entry.getKey();
+			__push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+		}
 	}
-
-	/**
-	 * The number of elements in a bulk those created for the first time.
-	 * 
-	 * @see ElementsPool
-	 */
-	public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 64;
-
-	/**
-	 * When the desired number of elements exceeded the first configuration. The new
-	 * number of elements will be added.
-	 * 
-	 * @see ElementsPool
-	 */
-	public static final int ADDITIONAL_NUMBER_ELEMENTS_POOL = 32;
-
-	/**
-	 * Base FPS in server
-	 */
-	public static final float FPS = 1 / 60.0f;
-
-	public static final String DEFAULT_CONFIGURATION_PACKAGE = "com.tenio.common.configuration";
-
-	public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-
-	public static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
-
-	public static final String DEFAULT_ENGINE_HEARTBEAT_PACKAGE = "com.tenio.engine.heartbeat";
 
 }
