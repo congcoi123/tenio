@@ -102,6 +102,13 @@ $ git clone https://github.com/congcoi123/tenio.git
 
 ## Examples
 Please start the server before its corresponding client in each example package.
+```code
+$ java <server_main_class> <server_configuration_file.xml>
+```
+For instance:
+```code
+$ java TestServerLogin TenIOConfig.example1.xml
+```
 
 ```txt
 |-- example
