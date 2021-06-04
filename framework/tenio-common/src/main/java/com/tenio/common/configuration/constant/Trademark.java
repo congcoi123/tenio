@@ -24,6 +24,8 @@ THE SOFTWARE.
 package com.tenio.common.configuration.constant;
 
 public final class Trademark {
+	
+	private static final String VERSION = "0.0.1"; 
 
 	public static final String CONTENT[] = new String[] { 
 			"********************************************************",
@@ -52,7 +54,8 @@ public final class Trademark {
 			"**                                                    **",
 			"**                       TenIO                        **",
 			"**            Copyright (c) 2016-2021, Kong           **",
-			"**                All rights reserved.                **",
+			"**                 All rights reserved                **",
+			"**                       (v" + VERSION + ")                     **",
 			"**                                                    **",
 			"********************************************************" 
 	};

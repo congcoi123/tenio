@@ -24,37 +24,19 @@ THE SOFTWARE.
 package com.tenio.examples.example1;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class shows how a server handle messages that came from a client with DI
  */
 @Bootstrap
-public final class TestServerLogin extends AbstractApp {
+public final class TestServerLogin {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerLogin();
-		game.start(TestServerLogin.class);
-	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example1.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-		// do nothing
-	}
-
-	@Override
-	public void onShutdown() {
-		// do nothing
+		ApplicationLaunch.run(TestServerLogin.class, params);
 	}
 
 }

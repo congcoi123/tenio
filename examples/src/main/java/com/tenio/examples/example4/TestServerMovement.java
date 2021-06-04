@@ -24,34 +24,16 @@ THE SOFTWARE.
 package com.tenio.examples.example4;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
  */
 @Bootstrap
-public final class TestServerMovement extends AbstractApp {
+public final class TestServerMovement {
 
 	public static void main(String[] params) {
-		var game = new TestServerMovement();
-		game.start(TestServerMovement.class);
-	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example4.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
+		ApplicationLaunch.run(TestServerMovement.class, params);
 	}
 
 }

@@ -33,10 +33,6 @@ import java.util.Map.Entry;
  */
 public final class Configuration extends CoreConfiguration {
 
-	public Configuration(String file) {
-		super(file);
-	}
-
 	@Override
 	protected void __extend(Map<String, String> extProperties) {
 		for (Entry<String, String> entry : extProperties.entrySet()) {

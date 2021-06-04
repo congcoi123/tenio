@@ -24,37 +24,19 @@ THE SOFTWARE.
 package com.tenio.examples.example8;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class demonstrate how to handle HTTP requests
  */
 @Bootstrap
-public final class TestServerRestful extends AbstractApp {
+public final class TestServerRestful {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerRestful();
-		game.start(TestServerRestful.class);
+		ApplicationLaunch.run(TestServerRestful.class, params);
 	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example8.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
-	}
-
+	
 }

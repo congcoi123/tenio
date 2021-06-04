@@ -41,8 +41,9 @@ public final class ConfigurationTest {
 	private Configuration __configuration;
 
 	@BeforeEach
-	public void initialize() {
-		__configuration = new Configuration("TenIOConfig.example.xml");
+	public void initialize() throws Exception {
+		__configuration = new Configuration();
+		__configuration.load("TenIOConfig.example.xml");
 	}
 
 	@Test

@@ -30,7 +30,7 @@ import com.tenio.common.loggers.SystemLogger;
 public final class Bootstrapper extends SystemLogger {
 
 	private final Injector __injector;
-	private EventHandler __eventHandler;
+	private BootstrapHandler __bootstrapHandler;
 
 	public static Bootstrapper newInstance() {
 		return new Bootstrapper();
@@ -45,7 +45,7 @@ public final class Bootstrapper extends SystemLogger {
 
 		if (hasExtApplicationAnnotation) {
 			__start(entryClazz, packages);
-			__eventHandler = __injector.getInstance(EventHandler.class);
+			__bootstrapHandler = __injector.getInstance(BootstrapHandler.class);
 			return true;
 		} else {
 			return false;
@@ -62,8 +62,8 @@ public final class Bootstrapper extends SystemLogger {
 		}
 	}
 
-	public EventHandler getEventHandler() {
-		return __eventHandler;
+	public BootstrapHandler getBootstrapHandler() {
+		return __bootstrapHandler;
 	}
 
 }

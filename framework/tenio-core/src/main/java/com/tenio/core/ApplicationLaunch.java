@@ -23,32 +23,31 @@ THE SOFTWARE.
 */
 package com.tenio.core;
 
-import java.lang.reflect.InvocationTargetException;
-
-import com.tenio.common.configuration.Configuration;
 import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.loggers.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
-import com.tenio.core.exceptions.ConfigurationException;
-import com.tenio.core.exceptions.NotDefinedSubscribersException;
-import com.tenio.core.exceptions.ServiceRuntimeException;
 import com.tenio.core.server.ServerImpl;
 
 /**
  * Your application will start from here.
  */
-public abstract class AbstractApp extends SystemLogger {
+public final class ApplicationLaunch extends SystemLogger {
+
+	public static void run(Class<?> entryClazz, String[] params) {
+		var application = ApplicationLaunch.newInstance();
+		application.start(entryClazz, params);
+	}
 
 	/**
 	 * Start The Game Server With DI
 	 */
-	public void start(Class<?> entryClazz) {
+	public void start(Class<?> entryClazz, String[] params) {
 		Bootstrapper bootstrap = null;
 		if (entryClazz != null) {
 			bootstrap = Bootstrapper.newInstance();
 			try {
-				bootstrap.run(entryClazz, CommonConstant.DEFAULT_BOOTSTRAP_PACKAGE,
-						CommonConstant.DEFAULT_EXTENSION_EVENT_PACKAGE,
+				bootstrap.run(entryClazz, CommonConstant.DEFAULT_CONFIGURATION_PACKAGE,
+						CommonConstant.DEFAULT_BOOTSTRAP_PACKAGE, CommonConstant.DEFAULT_EXTENSION_EVENT_PACKAGE,
 						CommonConstant.DEFAULT_ENGINE_HEARTBEAT_PACKAGE);
 			} catch (Exception e) {
 				error(e, "The application started with exceptions occured: ", e.getMessage());
@@ -56,17 +55,12 @@ public abstract class AbstractApp extends SystemLogger {
 			}
 		}
 
-		var configuration = getConfiguration();
-
 		var server = ServerImpl.getInstance();
 		try {
-			server.start(configuration, bootstrap.getEventHandler());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException | ServiceRuntimeException
-				| NotDefinedSubscribersException | ConfigurationException | InterruptedException e) {
+			server.start(bootstrap.getBootstrapHandler(), params);
+		} catch (Exception e) {
 			error(e, "The application started with exceptions occured: ", e.getMessage());
 			server.shutdown();
-			onShutdown();
 			// exit with errors
 			System.exit(1);
 		}
@@ -74,27 +68,16 @@ public abstract class AbstractApp extends SystemLogger {
 		// Suddenly shutdown
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			server.shutdown();
-			onShutdown();
 			System.exit(0);
 		}));
-
-		// The server was ready
-		onStarted(configuration);
 	}
 
-	/**
-	 * @return your own class that derived from {@link Configuration} class
-	 */
-	public abstract Configuration getConfiguration();
+	private static ApplicationLaunch newInstance() {
+		return new ApplicationLaunch();
+	}
 
-	/**
-	 * The trigger is called when server was started
-	 */
-	public abstract void onStarted(Configuration configuration);
+	private ApplicationLaunch() {
 
-	/**
-	 * The trigger is called when server was tear down
-	 */
-	public abstract void onShutdown();
+	}
 
 }
