@@ -28,12 +28,7 @@ package com.tenio.common.configuration;
  * configuration file can be defined as an XML file. See an example in
  * TenIOConfig.example.xml. You can also extend this file to create your own
  * configuration values.
- * 
- * <h1>Configuration for game server, declared in properties file</h1> <br>
- * 
- * @author kong
- * 
  */
 public interface ConfigurationType {
-	
+
 }

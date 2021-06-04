@@ -24,37 +24,19 @@ THE SOFTWARE.
 package com.tenio.examples.example3;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.common.configuration.Configuration;
-import com.tenio.core.AbstractApp;
-import com.tenio.examples.server.TestConfiguration;
+import com.tenio.core.ApplicationLaunch;
 
 /**
  * This class shows how a server handle messages that came from a client
  */
 @Bootstrap
-public final class TestServerAttach extends AbstractApp {
+public final class TestServerAttach {
 
 	/**
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		var game = new TestServerAttach();
-		game.start(TestServerAttach.class);
-	}
-
-	@Override
-	public TestConfiguration getConfiguration() {
-		return new TestConfiguration("TenIOConfig.example3.xml");
-	}
-
-	@Override
-	public void onStarted(Configuration configuration) {
-
-	}
-
-	@Override
-	public void onShutdown() {
-
+		ApplicationLaunch.run(TestServerAttach.class, params);
 	}
 
 }

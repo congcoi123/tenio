@@ -25,8 +25,6 @@ package com.tenio.core.configuration.defines;
 
 public enum ServerEvent {
 
-	SERVER_STARTED,
-
 	SESSION_CREATED,
 
 	SESSION_REQUEST_CONNECTION,
@@ -85,7 +83,9 @@ public enum ServerEvent {
 
 	HTTP_REQUEST_HANDLE,
 
-	SERVER_EXCEPTION;
+	SERVER_EXCEPTION,
+	
+	SERVER_TEARDOWN;
 
 	@Override
 	public String toString() {
