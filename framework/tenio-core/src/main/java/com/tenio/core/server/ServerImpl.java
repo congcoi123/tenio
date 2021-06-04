@@ -150,7 +150,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 		__startServices();
 
 		// emit "server started" event
-		__eventManager.emit(ServerEvent.SERVER_STARTED, __serverName, configuration);
+		__eventManager.emit(ServerEvent.SERVER_INITIALIZATION, __serverName, configuration);
 
 		info("SERVER", __serverName, "Started");
 	}
@@ -270,6 +270,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 	@Override
 	public void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
+		// emit "server shutdown" event
+		__eventManager.emit(ServerEvent.SERVER_INITIALIZATION, __serverName);
 		__shutdownServices();
 		info("SERVER", __serverName, "Stopped");
 	}

@@ -63,10 +63,6 @@ public final class InternalProcessorServiceImpl extends AbstractController imple
 
 	@Override
 	public void subscribe() {
-		__eventManager.on(ServerEvent.SERVER_STARTED, params -> {
-			__eventManager.emit(ServerEvent.SERVER_INITIALIZATION, params);
-			return null;
-		});
 
 		__eventManager.on(ServerEvent.SESSION_CREATED, params -> {
 			// do nothing
