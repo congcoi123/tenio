@@ -271,7 +271,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 	public void shutdown() {
 		info("SERVER", __serverName, "Stopping ...");
 		// emit "server shutdown" event
-		__eventManager.emit(ServerEvent.SERVER_INITIALIZATION, __serverName);
+		__eventManager.emit(ServerEvent.SERVER_TEARDOWN, __serverName);
 		__shutdownServices();
 		info("SERVER", __serverName, "Stopped");
 	}
