@@ -30,13 +30,7 @@ import java.util.Map.Entry;
 
 import com.tenio.common.data.elements.ZeroData;
 
-/**
- * @author kong
- */
-// TODO: Add description
-public interface ZeroObject {
-
-	byte[] toBinary();
+public interface ZeroObject extends ZeroElement {
 
 	boolean isNull(String key);
 
@@ -45,8 +39,6 @@ public interface ZeroObject {
 	boolean removeElement(String key);
 
 	Set<String> getKeys();
-
-	int size();
 
 	Iterator<Entry<String, ZeroData>> iterator();
 

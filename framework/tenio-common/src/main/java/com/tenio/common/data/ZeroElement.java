@@ -21,25 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example6.handlers;
+package com.tenio.common.data;
 
-import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.ZeroObject;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.network.entities.session.Session;
-import com.tenio.examples.server.SharedEventKey;
+public interface ZeroElement {
 
-@Component
-public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
-
-	@Override
-	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().login(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-		}
-	}
-
+	byte[] toBinary();
+	
+	int size();
+	
 }

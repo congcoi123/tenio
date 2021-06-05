@@ -26,15 +26,45 @@ package com.tenio.common.data;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public enum ZeroDataType {
 
-	NULL(0), BOOLEAN(1), BYTE(2), SHORT(3), INTEGER(4), LONG(5), FLOAT(6), DOUBLE(7), STRING(8), BOOLEAN_ARRAY(9),
-	BYTE_ARRAY(10), SHORT_ARRAY(11), INTEGER_ARRAY(12), LONG_ARRAY(13), FLOAT_ARRAY(14), DOUBLE_ARRAY(15),
-	STRING_ARRAY(16), ZERO_ARRAY(17), ZERO_OBJECT(18);
+	NULL(0),
+
+	BOOLEAN(1),
+
+	BYTE(2),
+
+	SHORT(3),
+
+	INTEGER(4),
+
+	LONG(5),
+
+	FLOAT(6),
+
+	DOUBLE(7),
+
+	STRING(8),
+
+	BOOLEAN_ARRAY(9),
+
+	BYTE_ARRAY(10),
+
+	SHORT_ARRAY(11),
+
+	INTEGER_ARRAY(12),
+
+	LONG_ARRAY(13),
+
+	FLOAT_ARRAY(14),
+
+	DOUBLE_ARRAY(15),
+
+	STRING_ARRAY(16),
+
+	ZERO_ARRAY(17),
+
+	ZERO_OBJECT(18);
 
 	// Reverse-lookup map for getting a type from a value
 	private static final Map<Integer, ZeroDataType> lookup = new HashMap<Integer, ZeroDataType>();
@@ -63,5 +93,5 @@ public enum ZeroDataType {
 	public static ZeroDataType getByValue(int value) {
 		return lookup.get(value);
 	}
-	
+
 }

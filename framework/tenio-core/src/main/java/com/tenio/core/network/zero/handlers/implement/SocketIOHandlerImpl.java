@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.utilities.ZeroDataSerializerUtility;
 import com.tenio.core.configuration.defines.ServerEvent;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.modes.ConnectionDisconnectMode;
@@ -53,7 +53,7 @@ public final class SocketIOHandlerImpl extends AbstractIOHandler
 
 	@Override
 	public void resultFrame(Session session, byte[] binary) {
-		var data = ZeroObjectImpl.newInstance(binary);
+		var data = ZeroDataSerializerUtility.binaryToElement(binary);
 		var message = ServerMessage.newInstance().setData(data);
 
 		if (!session.isConnected()) {

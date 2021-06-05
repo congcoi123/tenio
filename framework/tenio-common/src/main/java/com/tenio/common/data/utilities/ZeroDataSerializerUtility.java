@@ -32,6 +32,7 @@ import java.util.Set;
 
 import com.tenio.common.data.ZeroArray;
 import com.tenio.common.data.ZeroDataType;
+import com.tenio.common.data.ZeroElement;
 import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.elements.ZeroData;
 import com.tenio.common.data.implement.ZeroArrayImpl;
@@ -40,13 +41,25 @@ import com.tenio.common.data.implement.ZeroObjectImpl;
 /**
  * @author kong
  */
-// TODO: Add description
 public final class ZeroDataSerializerUtility {
 
 	private static int BUFFER_CHUNK_BYTES = 512;
-	
+
 	private ZeroDataSerializerUtility() {
-		
+
+	}
+
+	public static ZeroElement binaryToElement(byte[] binary) {
+		switch (ZeroDataType.getByValue(binary[0])) {
+		case ZERO_OBJECT:
+			return binaryToObject(binary);
+
+		case ZERO_ARRAY:
+			return binaryToArray(binary);
+
+		default:
+			return null;
+		}
 	}
 
 	public static ZeroArray binaryToArray(byte[] binary) {

@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example7.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroArrayImpl;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
@@ -40,7 +41,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
 	@Override
 	public void handle(Player player, ServerMessage message) {
-		var position = message.getData().getIntegerArray(SharedEventKey.KEY_PLAYER_POSITION).toArray();
+		var position = ((ZeroObject) message.getData()).getIntegerArray(SharedEventKey.KEY_PLAYER_POSITION).toArray();
 
 		player.setProperty(Example7Constant.PLAYER_POSITION_X, position[0]);
 		player.setProperty(Example7Constant.PLAYER_POSITION_Y, position[1]);

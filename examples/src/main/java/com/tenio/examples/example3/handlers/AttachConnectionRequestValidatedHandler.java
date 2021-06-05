@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example3.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.data.ZeroObject;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
@@ -36,7 +37,7 @@ public final class AttachConnectionRequestValidatedHandler extends AbstractExten
 
 	@Override
 	public Player handle(ServerMessage message) {
-		return getApi().getPlayerByName(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN));
+		return getApi().getPlayerByName(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 	}
 
 }
