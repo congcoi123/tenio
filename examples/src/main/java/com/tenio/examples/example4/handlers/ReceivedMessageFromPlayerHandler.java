@@ -31,6 +31,7 @@ import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
 import com.tenio.engine.heartbeat.HeartBeatManager;
+import com.tenio.examples.example4.constant.ServerEventKey;
 import com.tenio.examples.server.ExampleMessage;
 import com.tenio.examples.server.SharedEventKey;
 
@@ -47,8 +48,10 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 		var data = (ZeroObject) message.getData();
 		if (data.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
 			var request = ExampleMessage.newInstance();
-			request.putContent("id", player.getName());
-			request.putContent("q", data.getString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS));
+			request.putContent(ServerEventKey.KEY_PLAYER_NAME, player.getName());
+			request.putContent(ServerEventKey.KEY_PLAYER_REQUEST,
+					data.getString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS));
+			
 			__heartbeatManager.sendMessage("world", request);
 		}
 

@@ -25,12 +25,10 @@ package com.tenio.examples.example3.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
@@ -39,10 +37,10 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
 	@Override
 	public void handle(Player player, ServerMessage message) {
-		var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-				String.format("Echo(%s): %s", player.getName(),
-						((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).prioritizedUdp().write();
+		var data = object().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+				player.getName(), ((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+
+		response().setContent(data.toBinary()).setRecipient(player).prioritizedUdp().write();
 	}
 
 }

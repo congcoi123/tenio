@@ -25,7 +25,6 @@ package com.tenio.examples.example7.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.entities.settings.InitialRoomSetting;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventServerInitialization;
 
@@ -34,9 +33,9 @@ public final class ServerInitializedHandler extends AbstractExtension implements
 
 	@Override
 	public void handle(String serverName, Configuration configuration) {
-		InitialRoomSetting roomSetting = new InitialRoomSetting.Builder().setActivated(true).setMaxPlayers(2)
-				.setName("test-room").build();
-		getApi().createRoom(roomSetting);
+		var roomSetting = roomSetting().setActivated(true).setMaxPlayers(2).setName("test-room").build();
+
+		api().createRoom(roomSetting);
 	}
 
 }

@@ -37,7 +37,9 @@ public final class AttachConnectionRequestValidatedHandler extends AbstractExten
 
 	@Override
 	public Player handle(ServerMessage message) {
-		return getApi().getPlayerByName(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
+		var data = (ZeroObject) message.getData();
+
+		return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
 	}
 
 }

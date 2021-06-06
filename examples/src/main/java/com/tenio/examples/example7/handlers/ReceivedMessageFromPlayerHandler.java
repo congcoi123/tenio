@@ -25,13 +25,10 @@ package com.tenio.examples.example7.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.implement.ZeroArrayImpl;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.example7.constant.Example7Constant;
 import com.tenio.examples.server.SharedEventKey;
 
@@ -48,16 +45,17 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
 		var players = player.getCurrentRoom().getAllPlayersList();
 
-		var pack = ZeroArrayImpl.newInstance();
-		var parray = ZeroArrayImpl.newInstance();
+		var pack = array();
+		var parray = array();
 		parray.addString(player.getName());
 		parray.addInteger((int) position[0]);
 		parray.addInteger((int) position[1]);
 
 		pack.addZeroArray(parray);
 
-		var request = ZeroObjectImpl.newInstance().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
-		ResponseImpl.newInstance().setRecipients(players).setContent(request.toBinary()).write();
+		var request = object().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
+
+		response().setRecipients(players).setContent(request.toBinary()).write();
 	}
 
 }
