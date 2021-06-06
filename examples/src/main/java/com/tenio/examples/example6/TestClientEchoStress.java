@@ -26,6 +26,7 @@ package com.tenio.examples.example6;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
@@ -70,7 +71,7 @@ public final class TestClientEchoStress implements SocketListener {
 			var tcp = new TCP(SOCKET_PORT);
 			tcp.receive(this);
 			__tcps.put(name, tcp);
-			
+
 			// send a login request
 			var data = ZeroObjectImpl.newInstance();
 			data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
@@ -95,7 +96,7 @@ public final class TestClientEchoStress implements SocketListener {
 			e.printStackTrace();
 		}
 
-		var tcp = __tcps.get(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN));
+		var tcp = __tcps.get(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 
 		// make an echo message
 		var data = ZeroObjectImpl.newInstance();

@@ -29,10 +29,8 @@ import java.util.List;
 import com.tenio.common.bootstrap.annotations.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotations.Component;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventServerInitialization;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.entities.Vehicle;
@@ -55,33 +53,33 @@ public final class ServerInitializedHandler extends AbstractExtension implements
 
 			@Override
 			public void updateVehiclePosition(Vehicle vehicle) {
-				var players = getApi().getAllPlayers();
+				var players = api().getAllPlayers();
 
-				var data = ZeroObjectImpl.newInstance();
+				var data = object();
 				var array = new ArrayList<Integer>();
 				array.add(vehicle.getIndex());
 				array.add((int) vehicle.getPositionX());
 				array.add((int) vehicle.getPositionY());
 				array.add((int) vehicle.getRotation());
 				data.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
-				
-				ResponseImpl.newInstance().setRecipients(players).setContent(data.toBinary()).prioritizedUdp().write();
+
+				response().setRecipients(players).setContent(data.toBinary()).prioritizedUdp().write();
 			}
 
 			@Override
 			public void reponseVehicleNeighbours(String playerName, List<Vehicle> neighbours, int currentFps) {
-				var player = getApi().getPlayerByName(playerName);
+				var player = api().getPlayerByName(playerName);
 				if (player != null) {
-					var data = ZeroObjectImpl.newInstance();
+					var data = object();
 					data.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
 
-					ResponseImpl.newInstance().setRecipient(player).setContent(data.toBinary()).write();
+					response().setRecipient(player).setContent(data.toBinary()).write();
 				}
 			}
 
 			@Override
 			public int getCcu() {
-				return getApi().getPlayerCount();
+				return api().getPlayerCount();
 			}
 		});
 

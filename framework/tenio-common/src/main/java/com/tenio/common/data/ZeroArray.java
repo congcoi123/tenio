@@ -28,13 +28,7 @@ import java.util.Iterator;
 
 import com.tenio.common.data.elements.ZeroData;
 
-/**
- * @author kong
- */
-// TODO: Add description
-public interface ZeroArray {
-
-	byte[] toBinary();
+public interface ZeroArray extends ZeroElement {
 
 	boolean contains(Object element);
 
@@ -43,8 +37,6 @@ public interface ZeroArray {
 	Object getElementAt(int index);
 
 	void removeElementAt(int index);
-
-	int size();
 
 	boolean isNull(int index);
 

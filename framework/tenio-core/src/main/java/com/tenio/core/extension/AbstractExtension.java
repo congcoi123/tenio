@@ -23,27 +23,44 @@ THE SOFTWARE.
 */
 package com.tenio.core.extension;
 
+import com.tenio.common.data.ZeroArray;
+import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.implement.ZeroArrayImpl;
+import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.core.api.ServerApi;
+import com.tenio.core.entities.settings.InitialRoomSetting;
+import com.tenio.core.network.entities.protocols.Response;
+import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 
 /**
  * This class provides you all the necessary APIs for your own logic game
- * handling. The entry point class must implement the {@link Extension}
- * interface. After that, you can create your desired number of handled logic
- * classes. These logic instances in the entry point object will be handled from
- * up to bottom. It works like a chain, you try to add a new value into an
- * object in one first handler and in the last handler, that value can be
- * retrieved for another purpose. Notice that, one event can be handled multiple
- * times in different classes.
+ * handling.
  */
 public abstract class AbstractExtension extends AbstractLogger {
 
 	private final Server __server = ServerImpl.getInstance();
 
-	public final ServerApi getApi() {
+	public final ServerApi api() {
 		return __server.getApi();
+	}
+
+	public final Response response() {
+		return ResponseImpl.newInstance();
+	}
+
+	public final ZeroArray array() {
+		return ZeroArrayImpl.newInstance();
+	}
+
+	public final ZeroObject object() {
+		return ZeroObjectImpl.newInstance();
+	}
+
+	public InitialRoomSetting.Builder roomSetting() {
+		return InitialRoomSetting.Builder.newInstance();
 	}
 
 }
