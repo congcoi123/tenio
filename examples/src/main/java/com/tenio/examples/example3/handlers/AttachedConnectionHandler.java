@@ -24,12 +24,10 @@ THE SOFTWARE.
 package com.tenio.examples.example3.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.AttachedConnectionResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventAttachedConnectionResult;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
 
@@ -39,9 +37,9 @@ public final class AttachedConnectionHandler extends AbstractExtension implement
 	@Override
 	public void handle(Player player, AttachedConnectionResult result) {
 		if (result == AttachedConnectionResult.SUCCESS) {
-			var data = ZeroObjectImpl.newInstance().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH,
-					UdpEstablishedState.ATTACHED);
-			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+			var data = object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ATTACHED);
+
+			response().setContent(data.toBinary()).setRecipient(player).write();
 		}
 	}
 

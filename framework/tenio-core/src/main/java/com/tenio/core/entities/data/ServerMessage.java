@@ -23,13 +23,13 @@ THE SOFTWARE.
 */
 package com.tenio.core.entities.data;
 
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroElement;
 import com.tenio.common.utilities.TimeUtility;
 
 public final class ServerMessage {
 
 	private long __createdTimestamp;
-	private ZeroObject __data;
+	private ZeroElement __data;
 
 	public static ServerMessage newInstance() {
 		return new ServerMessage();
@@ -43,11 +43,11 @@ public final class ServerMessage {
 		return __createdTimestamp;
 	}
 
-	public ZeroObject getData() {
+	public ZeroElement getData() {
 		return __data;
 	}
 
-	public ServerMessage setData(ZeroObject data) {
+	public ServerMessage setData(ZeroElement data) {
 		__data = data;
 		return this;
 	}

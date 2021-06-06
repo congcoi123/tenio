@@ -44,7 +44,7 @@ public final class PlayerLoggedinHandler extends AbstractExtension implements Ev
 			player.setProperty(Example7Constant.PLAYER_POSITION_X, x);
 			player.setProperty(Example7Constant.PLAYER_POSITION_Y, y);
 
-			getApi().joinRoom(player, getApi().getRoomById(0));
+			api().joinRoom(player, api().getRoomById(0));
 		}
 	}
 

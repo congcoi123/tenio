@@ -24,14 +24,11 @@ THE SOFTWARE.
 package com.tenio.examples.example7.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.implement.ZeroArrayImpl;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.Room;
 import com.tenio.core.entities.defines.results.PlayerJoinedRoomResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.example7.constant.Example7Constant;
 import com.tenio.examples.server.SharedEventKey;
 
@@ -44,11 +41,11 @@ public final class PlayerJoinedRoomHandler extends AbstractExtension implements 
 			var players = room.getAllPlayersList();
 			var iterator = players.iterator();
 
-			var pack = ZeroArrayImpl.newInstance();
+			var pack = array();
 			if (iterator.hasNext()) {
 				var rplayer = iterator.next();
 
-				var parray = ZeroArrayImpl.newInstance();
+				var parray = array();
 				parray.addString(rplayer.getName());
 				parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_X));
 				parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_Y));
@@ -56,8 +53,9 @@ public final class PlayerJoinedRoomHandler extends AbstractExtension implements 
 				pack.addZeroArray(parray);
 			}
 
-			var message = ZeroObjectImpl.newInstance().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
-			ResponseImpl.newInstance().setRecipients(players).setContent(message.toBinary()).write();
+			var message = object().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
+
+			response().setRecipients(players).setContent(message.toBinary()).write();
 		}
 	}
 

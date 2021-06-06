@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example2;
 
 import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
+import com.tenio.examples.example2.lifecycle.LifeCycle;
 import com.tenio.examples.server.ExampleMessage;
 
 /**

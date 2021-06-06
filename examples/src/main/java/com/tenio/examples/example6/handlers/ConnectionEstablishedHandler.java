@@ -24,6 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example6.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.data.ZeroObject;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.entities.defines.results.ConnectionEstablishedResult;
 import com.tenio.core.extension.AbstractExtension;
@@ -37,7 +38,9 @@ public final class ConnectionEstablishedHandler extends AbstractExtension implem
 	@Override
 	public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
 		if (result == ConnectionEstablishedResult.SUCCESS) {
-			getApi().login(message.getData().getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+			var data = (ZeroObject) message.getData();
+
+			api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
 		}
 	}
 

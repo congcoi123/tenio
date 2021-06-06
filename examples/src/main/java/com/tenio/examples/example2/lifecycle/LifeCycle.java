@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example2;
+package com.tenio.examples.example2.lifecycle;
 
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.MessageListener;

@@ -98,7 +98,11 @@ public final class InitialRoomSetting {
 		private RoomCredentialValidatedStrategy __credentialValidatedStrategy;
 		private RoomPlayerSlotGeneratedStrategy __playerSlotGeneratedStrategy;
 
-		public Builder() {
+		public static Builder newInstance() {
+			return new Builder();
+		}
+
+		private Builder() {
 			__name = null;
 			__password = null;
 			__maxPlayers = 0;

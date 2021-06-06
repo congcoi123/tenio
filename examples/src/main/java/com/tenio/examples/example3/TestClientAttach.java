@@ -23,6 +23,7 @@ THE SOFTWARE.
 */
 package com.tenio.examples.example3;
 
+import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
@@ -82,7 +83,7 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
 	public void onReceivedTCP(ServerMessage message) {
 		System.err.println("[RECV FROM SERVER TCP] -> " + message);
 
-		switch (message.getData().getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
+		switch (((ZeroObject) message.getData()).getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
 		case UdpEstablishedState.ALLOW_TO_ATTACH: {
 			// now you can send request for UDP connection request
 			var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);

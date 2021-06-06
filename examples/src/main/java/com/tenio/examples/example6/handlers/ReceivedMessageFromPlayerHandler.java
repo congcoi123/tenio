@@ -27,13 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.ZeroObject;
 import com.tenio.common.utilities.MathUtility;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
@@ -42,12 +41,13 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
 	@Override
 	public void handle(Player player, ServerMessage message) {
-		var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName())
+		var data = object().putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName())
 				.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
 						String.format("Echo(%s): %s", player.getName(),
-								message.getData().getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)))
+								((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)))
 				.putIntegerArray(SharedEventKey.KEY_INTEGER_ARRAY, __getSortRandomNumberArray());
-		ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+
+		response().setContent(data.toBinary()).setRecipient(player).write();
 	}
 
 	private List<Integer> __getSortRandomNumberArray() {
@@ -56,7 +56,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 			// storing random integers in an array
 			arr.add(MathUtility.randInt(0, 100));
 		}
-		
+
 		return new ArrayList<Integer>(arr);
 	}
 

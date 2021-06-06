@@ -25,10 +25,6 @@ package com.tenio.common.data.elements;
 
 import com.tenio.common.data.ZeroDataType;
 
-/**
- * @author kong
- */
-// TODO: Add description
 public final class ZeroData {
 
 	private final ZeroDataType __type;

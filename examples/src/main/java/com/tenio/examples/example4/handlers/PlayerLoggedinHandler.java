@@ -24,12 +24,10 @@ THE SOFTWARE.
 package com.tenio.examples.example4.handlers;
 
 import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerLoggedinResult;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
 
@@ -39,9 +37,9 @@ public final class PlayerLoggedinHandler extends AbstractExtension implements Ev
 	@Override
 	public void handle(Player player, PlayerLoggedinResult result) {
 		if (result == PlayerLoggedinResult.SUCCESS) {
-			var data = ZeroObjectImpl.newInstance().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH,
-					UdpEstablishedState.ALLOW_TO_ATTACH);
-			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+			var data = object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH);
+
+			response().setContent(data.toBinary()).setRecipient(player).write();
 		}
 	}
 

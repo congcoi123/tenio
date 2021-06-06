@@ -26,6 +26,7 @@ package com.tenio.examples.example4;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
 import com.tenio.common.loggers.AbstractLogger;
 import com.tenio.common.utilities.TimeUtility;
@@ -138,12 +139,13 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 			System.err.println("[RECV FROM SERVER TCP] -> " + message);
 		}
 
-		if (message.getData().containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
-			switch (message.getData().getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
+		var data = (ZeroObject) message.getData();
+		if (data.containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
+			switch (data.getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
 			case UdpEstablishedState.ALLOW_TO_ATTACH: {
 				// now you can send request for UDP connection request
-				var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);
-				var request = ServerMessage.newInstance().setData(data);
+				var sendData = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);
+				var request = ServerMessage.newInstance().setData(sendData);
 				__udp.send(request);
 
 				if (LOGGER_DEBUG) {
@@ -186,8 +188,8 @@ public final class TestClientMovement extends AbstractLogger implements SocketLi
 				break;
 
 			}
-		} else if (message.getData().containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
-			int fps = message.getData().getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
+		} else if (data.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
+			int fps = data.getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
 			long receivedTimestamp = TimeUtility.currentTimeMillis();
 			long latency = receivedTimestamp - __sentTimestamp;
 

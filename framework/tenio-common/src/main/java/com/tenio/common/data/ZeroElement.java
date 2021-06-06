@@ -21,25 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example3.handlers;
+package com.tenio.common.data;
 
-import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.common.data.ZeroObject;
-import com.tenio.core.entities.Player;
-import com.tenio.core.entities.data.ServerMessage;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
-import com.tenio.examples.server.SharedEventKey;
+public interface ZeroElement {
 
-@Component
-public final class AttachConnectionRequestValidatedHandler extends AbstractExtension
-		implements EventAttachConnectionRequestValidation {
-
-	@Override
-	public Player handle(ServerMessage message) {
-		var data = (ZeroObject) message.getData();
-
-		return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
-	}
-
+	byte[] toBinary();
+	
+	int size();
+	
 }

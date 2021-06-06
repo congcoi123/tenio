@@ -32,9 +32,6 @@ import com.tenio.core.ApplicationLaunch;
 @Bootstrap
 public final class TestServerLogin {
 
-	/**
-	 * The entry point
-	 */
 	public static void main(String[] params) {
 		ApplicationLaunch.run(TestServerLogin.class, params);
 	}
