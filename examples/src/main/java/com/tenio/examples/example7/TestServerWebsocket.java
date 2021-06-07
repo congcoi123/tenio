@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example7;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class shows how a server handle websocket connection
@@ -36,7 +36,7 @@ public final class TestServerWebsocket {
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerWebsocket.class, params);
+		ApplicationLauncher.run(TestServerWebsocket.class, params);
 	}
 
 }

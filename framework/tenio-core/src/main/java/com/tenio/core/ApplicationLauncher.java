@@ -31,10 +31,10 @@ import com.tenio.core.server.ServerImpl;
 /**
  * Your application will start from here.
  */
-public final class ApplicationLaunch extends SystemLogger {
+public final class ApplicationLauncher extends SystemLogger {
 
 	public static void run(Class<?> entryClazz, String[] params) {
-		var application = ApplicationLaunch.newInstance();
+		var application = ApplicationLauncher.newInstance();
 		application.start(entryClazz, params);
 	}
 
@@ -72,11 +72,11 @@ public final class ApplicationLaunch extends SystemLogger {
 		}));
 	}
 
-	private static ApplicationLaunch newInstance() {
-		return new ApplicationLaunch();
+	private static ApplicationLauncher newInstance() {
+		return new ApplicationLauncher();
 	}
 
-	private ApplicationLaunch() {
+	private ApplicationLauncher() {
 
 	}
 

@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example6;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class shows how a server handle 1000 players and communications
@@ -36,7 +36,7 @@ public final class TestServerEchoStress {
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerEchoStress.class, params);
+		ApplicationLauncher.run(TestServerEchoStress.class, params);
 	}
 
 }
