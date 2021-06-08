@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example1;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class shows how a server handle messages that came from a client with DI
@@ -33,7 +33,7 @@ import com.tenio.core.ApplicationLaunch;
 public final class TestServerLogin {
 
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerLogin.class, params);
+		ApplicationLauncher.run(TestServerLogin.class, params);
 	}
 
 }

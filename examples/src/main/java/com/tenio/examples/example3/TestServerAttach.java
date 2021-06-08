@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example3;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class shows how a server handle messages that came from a client
@@ -36,7 +36,7 @@ public final class TestServerAttach {
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerAttach.class, params);
+		ApplicationLauncher.run(TestServerAttach.class, params);
 	}
 
 }

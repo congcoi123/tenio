@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example8;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class demonstrate how to handle HTTP requests
@@ -36,7 +36,7 @@ public final class TestServerRestful {
 	 * The entry point
 	 */
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerRestful.class, params);
+		ApplicationLauncher.run(TestServerRestful.class, params);
 	}
 	
 }

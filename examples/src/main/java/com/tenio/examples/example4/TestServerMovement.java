@@ -24,7 +24,7 @@ THE SOFTWARE.
 package com.tenio.examples.example4;
 
 import com.tenio.common.bootstrap.annotations.Bootstrap;
-import com.tenio.core.ApplicationLaunch;
+import com.tenio.core.ApplicationLauncher;
 
 /**
  * This class makes a simple simulator for the physic 2d movement.
@@ -33,7 +33,7 @@ import com.tenio.core.ApplicationLaunch;
 public final class TestServerMovement {
 
 	public static void main(String[] params) {
-		ApplicationLaunch.run(TestServerMovement.class, params);
+		ApplicationLauncher.run(TestServerMovement.class, params);
 	}
 
 }
