@@ -43,7 +43,7 @@ public final class ConfigurationTest {
 	@BeforeEach
 	public void initialize() throws Exception {
 		__configuration = new Configuration();
-		__configuration.load("TenIOConfig.example.xml");
+		__configuration.load("configuration.example.xml");
 	}
 
 	@Test

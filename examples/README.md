@@ -5,7 +5,7 @@ $ java <server_main_class> <server_configuration_file.xml>
 ```
 For instance:
 ```code
-$ java TestServerLogin TenIOConfig.example1.xml
+$ java TestServerLogin configuration.example1.xml
 ```
 
 ```txt

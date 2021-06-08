@@ -52,6 +52,6 @@ public final class CoreConstant {
 
 	public static final String LOCAL_HOST = "localhost";
 
-	public static final String DEFAULT_CONNFIGURATION_FILE = "TenIOConfig.xml";
+	public static final String DEFAULT_CONNFIGURATION_FILE = "configuration.xml";
 
 }
