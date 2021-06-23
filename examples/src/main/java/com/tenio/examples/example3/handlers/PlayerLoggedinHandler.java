@@ -28,7 +28,6 @@ import com.tenio.core.entities.Player;
 import com.tenio.core.entities.defines.results.PlayerLoggedinResult;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventPlayerLoggedinResult;
-import com.tenio.core.network.entities.protocols.implement.ResponseImpl;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
 
@@ -40,7 +39,7 @@ public final class PlayerLoggedinHandler extends AbstractExtension implements Ev
 		if (result == PlayerLoggedinResult.SUCCESS) {
 			var data = object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH);
 
-			ResponseImpl.newInstance().setContent(data.toBinary()).setRecipient(player).write();
+			response().setContent(data.toBinary()).setRecipient(player).write();
 		}
 	}
 

@@ -32,9 +32,6 @@ import com.tenio.core.ApplicationLauncher;
 @Bootstrap
 public final class TestServerAttach {
 
-	/**
-	 * The entry point
-	 */
 	public static void main(String[] params) {
 		ApplicationLauncher.run(TestServerAttach.class, params);
 	}

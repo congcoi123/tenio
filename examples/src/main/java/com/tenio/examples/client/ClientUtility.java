@@ -38,7 +38,7 @@ public final class ClientUtility {
 	private static final int SECONDS_IN_MINUTE = 60;
 
 	private ClientUtility() {
-
+		throw new UnsupportedOperationException();
 	}
 
 	public static String generateRandomString(int length) {

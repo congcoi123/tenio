@@ -21,25 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example6.handlers;
+package com.tenio.examples.client;
 
-import com.tenio.common.bootstrap.annotations.Component;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventSystemMonitoring;
-import com.tenio.examples.client.ServerUtility;
+public final class ServerUtility {
 
-@Component
-public final class SystemMonitoringHandler extends AbstractExtension implements EventSystemMonitoring {
+	private static final int CONVERT_TO_MB = 1024 * 1024;
 
-	@Override
-	public void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, int countRunningThreads) {
-		var info = String.format(
-				"cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
-				(float) cpuUsage * 100, ServerUtility.convertBytesToMB(totalMemory),
-				ServerUtility.convertBytesToMB(usedMemory), ServerUtility.convertBytesToMB(freeMemory),
-				countRunningThreads);
+	private ServerUtility() {
+		throw new UnsupportedOperationException();
+	}
 
-		info("SYSTEM MONITORING", info);
+	public static float convertBytesToMB(long bytes) {
+		return (float) bytes / CONVERT_TO_MB;
 	}
 
 }
