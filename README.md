@@ -57,6 +57,61 @@
 - Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 
+## Simple Implementation
+```Java
+@Bootstrap
+public final class TestServerLogin {
+
+    public static void main(String[] params) {
+        ApplicationLauncher.run(TestServerLogin.class, params);
+    }
+
+}
+
+@Component
+public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
+
+    @Override
+    public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+        if (result == ConnectionEstablishedResult.SUCCESS) {
+            var data = (ZeroObject) message.getData();
+
+            api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        }
+    }
+
+}
+
+@Component
+public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
+
+    @Override
+    public void handle(Player player, PlayerLoggedinResult result) {
+        if (result == PlayerLoggedinResult.SUCCESS) {
+            var data = object().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+                    String.format("Welcome to server: %s", player.getName()));
+
+            response().setContent(data.toBinary()).setRecipient(player).write();
+        }
+    }
+
+}
+
+@Component
+public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
+        implements EventReceivedMessageFromPlayer {
+
+    @Override
+    public void handle(Player player, ServerMessage message) {
+        var data = object().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+                player.getName(), ((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+
+        response().setContent(data.toBinary()).setRecipient(player).write();
+    }
+
+}
+```
+
 ## Wiki
 The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation level details and answers to general questions that a developer starting to use `TenIO` might have about it.
 
