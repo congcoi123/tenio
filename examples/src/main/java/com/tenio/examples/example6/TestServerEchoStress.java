@@ -32,9 +32,6 @@ import com.tenio.core.ApplicationLauncher;
 @Bootstrap
 public final class TestServerEchoStress {
 
-	/**
-	 * The entry point
-	 */
 	public static void main(String[] params) {
 		ApplicationLauncher.run(TestServerEchoStress.class, params);
 	}
