@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="info">
+	<Properties>
+		<Property name="logdir">./logs</Property>
+		<Property name="logfile">tenio-examples</Property>
+		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
+		<!-- Logging level: trace -included-> debug -included-> info -included-> 
+			error -->
+		<Property name="target">Console</Property>
+		<Property name="level">debug</Property>
+	</Properties>
+
+	<Appenders>
+
+		<Console name="Console">
+			<PatternLayout pattern="${layout}" />
+		</Console>
+
+		<RollingFile name="File"
+			fileName="${logdir}/${logfile}.log"
+			filePattern="${logdir}/${logfile}.%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${layout}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+
+		<RollingFile name="TestServerMovement"
+			fileName="${logdir}/${logfile}-server-movement.log"
+			filePattern="${logdir}/${logfile}-server-movement.%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${layout}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+
+		<RollingFile name="TestClientMovement"
+			fileName="${logdir}/${logfile}-client-movement.log"
+			filePattern="${logdir}/${logfile}-client-movement.%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${layout}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+
+	</Appenders>
+
+	<Loggers>
+
+		<Logger name="com.tenio.examples.example4.TestClientMovement"
+			level="${level}" additivity="false">
+			<AppenderRef ref="TestClientMovement" />
+		</Logger>
+
+		<Logger name="com.tenio.examples.example4.TestServerMovement"
+			level="${level}" additivity="false">
+			<AppenderRef ref="TestServerMovement" />
+		</Logger>
+
+		<Logger name="io.netty" level="warn" additivity="false">
+			<AppenderRef ref="${target}" />
+			<AppenderRef ref="TestServerMovement" />
+		</Logger>
+
+		<Logger name="org.eclipse.jetty" level="warn"
+			additivity="false">
+			<AppenderRef ref="${target}" />
+		</Logger>
+
+		<Root level="${level}">
+			<AppenderRef ref="${target}" />
+		</Root>
+
+	</Loggers>
+</Configuration>
