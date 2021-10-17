@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="info">
+	<Properties>
+		<!-- Please change your own path of the log file here -->
+		<!-- <Property name="logdir">/Users/kong/Downloads/logs</Property> -->
+		<!-- Or use the relative path -->
+		<Property name="logdir">./logs</Property>
+		<Property name="logfile">tenio-engine</Property>
+		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
+		<!-- Log data can be displayed in the Console or save to a File -->
+		<Property name="target">Console</Property>
+		<!-- Logging level: trace -included-> debug -included-> info -included-> error -->
+		<Property name="level">debug</Property>
+	</Properties>
+
+	<Appenders>
+
+		<Console name="Console">
+			<PatternLayout pattern="${layout}" />
+		</Console>
+
+		<RollingFile name="File"
+			fileName="${logdir}/${logfile}.log"
+			filePattern="${logdir}/${logfile}.%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="${layout}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+
+	</Appenders>
+
+	<Loggers>
+
+		<Logger name="io.netty" level="warn" additivity="false">
+			<AppenderRef ref="${target}" />
+		</Logger>
+
+		<Logger name="org.eclipse.jetty" level="warn"
+			additivity="false">
+			<AppenderRef ref="${target}" />
+		</Logger>
+
+		<Root level="${level}">
+			<AppenderRef ref="${target}" />
+		</Root>
+
+	</Loggers>
+</Configuration>
