@@ -21,8 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.client;
 
+import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.utility.OsUtility;
+import com.tenio.core.entity.data.ServerMessage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -33,109 +37,102 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.common.utilities.OsUtility;
-import com.tenio.common.utilities.OsUtility.OSType;
-import com.tenio.core.entities.data.ServerMessage;
-
 /**
  * Create an object for handling a Datagram socket connection. It is used to
  * send messages to a server or receive messages from that one.
  */
 public final class UDP {
 
-	private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
-	private static final String BROADCAST_ADDRESS = "0.0.0.0";
+  private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
+  private static final String BROADCAST_ADDRESS = "0.0.0.0";
+  /**
+   * The desired port for listening.
+   */
+  private final int port;
+  private Future<?> future;
+  private DatagramSocket datagramSocket;
+  private InetAddress inetAddress;
 
-	private Future<?> __future;
-	private DatagramSocket __socket;
-	private InetAddress __address;
-	/**
-	 * The desired port for listening
-	 */
-	private int __port;
+  /**
+   * Listen in a port on the local machine.
+   *
+   * @param port the desired port
+   */
+  public UDP(int port, boolean broadcast) {
+    try {
+      if (broadcast) {
+        datagramSocket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
+        datagramSocket.setBroadcast(true);
+        if (OsUtility.getOperatingSystemType() == OsUtility.OsType.Windows) {
+          datagramSocket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+        } else {
+          datagramSocket.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+        }
+      } else {
+        datagramSocket = new DatagramSocket();
+      }
+    } catch (SocketException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    try {
+      inetAddress = InetAddress.getLocalHost();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    }
+    this.port = port;
+  }
 
-	/**
-	 * Listen in a port on the local machine
-	 * 
-	 * @param port the desired port
-	 */
-	public UDP(int port, boolean broadcast) {
-		try {
-			if (broadcast) {
-				__socket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
-				__socket.setBroadcast(true);
-				if (OsUtility.getOperatingSystemType() == OSType.Windows) {
-					__socket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-				} else {
-					__socket.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-				}
-			} else {
-				__socket = new DatagramSocket();
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			__address = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		__port = port;
-	}
+  public UDP(int port) {
+    this(port, false);
+  }
 
-	public UDP(int port) {
-		this(port, false);
-	}
+  /**
+   * Send a message to the server.
+   *
+   * @param message the desired message
+   */
+  public void send(ServerMessage message) {
+    var pack = message.getData().toBinary();
+    var request = new DatagramPacket(pack, pack.length, inetAddress, port);
+    try {
+      datagramSocket.send(request);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-	/**
-	 * Send a message to the server
-	 * 
-	 * @param message the desired message
-	 */
-	public void send(ServerMessage message) {
-		var pack = message.getData().toBinary();
-		var request = new DatagramPacket(pack, pack.length, __address, __port);
-		try {
-			__socket.send(request);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+  /**
+   * Listen for messages that came from the server.
+   *
+   * @param listener
+   */
+  public void receive(DatagramListener listener) {
+    var executorService = Executors.newSingleThreadExecutor();
+    future = executorService.submit(() -> {
+      while (true) {
+        try {
+          byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
+          var response = new DatagramPacket(buffer, buffer.length);
+          datagramSocket.receive(response);
+          var data = ZeroObjectImpl.newInstance(buffer);
+          listener.onReceivedUDP(ServerMessage.newInstance().setData(data));
+        } catch (IOException e) {
+          e.printStackTrace();
+          return;
+        }
+      }
+    });
+  }
 
-	/**
-	 * Listen for messages that came from the server
-	 * 
-	 * @param listener
-	 */
-	public void receive(DatagramListener listener) {
-		var executorService = Executors.newSingleThreadExecutor();
-		__future = executorService.submit(() -> {
-			while (true) {
-				try {
-					byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
-					var response = new DatagramPacket(buffer, buffer.length);
-					__socket.receive(response);
-					var data = ZeroObjectImpl.newInstance(buffer);
-					listener.onReceivedUDP(ServerMessage.newInstance().setData(data));
-				} catch (IOException e) {
-					e.printStackTrace();
-					return;
-				}
-			}
-		});
-	}
-
-	/**
-	 * Close this connection
-	 */
-	public void close() {
-		__socket.close();
-		__future.cancel(true);
-	}
-
+  /**
+   * Close this connection.
+   */
+  public void close() {
+    datagramSocket.close();
+    future.cancel(true);
+  }
 }

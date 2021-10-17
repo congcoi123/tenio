@@ -21,19 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example6;
 
-import com.tenio.common.bootstrap.annotations.Bootstrap;
+import com.tenio.common.bootstrap.annotation.Bootstrap;
 import com.tenio.core.ApplicationLauncher;
 
 /**
- * This class shows how a server handle 1000 players and communications
+ * This class shows how a server handle 1000 players and communications.
  */
 @Bootstrap
 public final class TestServerEchoStress {
 
-	public static void main(String[] params) {
-		ApplicationLauncher.run(TestServerEchoStress.class, params);
-	}
-
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerEchoStress.class, params);
+  }
 }

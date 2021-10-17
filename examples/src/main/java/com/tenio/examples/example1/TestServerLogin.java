@@ -21,19 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example1;
 
-import com.tenio.common.bootstrap.annotations.Bootstrap;
+import com.tenio.common.bootstrap.annotation.Bootstrap;
 import com.tenio.core.ApplicationLauncher;
 
 /**
- * This class shows how a server handle messages that came from a client with DI
+ * This class shows how a server handle messages that came from a client with DI.
  */
 @Bootstrap
 public final class TestServerLogin {
 
-	public static void main(String[] params) {
-		ApplicationLauncher.run(TestServerLogin.class, params);
-	}
-
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerLogin.class, params);
+  }
 }

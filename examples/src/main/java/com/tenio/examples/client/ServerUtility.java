@@ -21,18 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.client;
 
+/**
+ * The utility class for server.
+ */
 public final class ServerUtility {
 
-	private static final int CONVERT_TO_MB = 1024 * 1024;
+  private static final int CONVERT_TO_MB = 1024 * 1024;
 
-	private ServerUtility() {
-		throw new UnsupportedOperationException();
-	}
+  private ServerUtility() {
+    throw new UnsupportedOperationException();
+  }
 
-	public static float convertBytesToMB(long bytes) {
-		return (float) bytes / CONVERT_TO_MB;
-	}
-
+  public static float convertBytesToMB(long bytes) {
+    return (float) bytes / CONVERT_TO_MB;
+  }
 }

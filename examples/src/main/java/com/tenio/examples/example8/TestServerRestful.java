@@ -21,19 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example8;
 
-import com.tenio.common.bootstrap.annotations.Bootstrap;
+import com.tenio.common.bootstrap.annotation.Bootstrap;
 import com.tenio.core.ApplicationLauncher;
 
 /**
- * This class demonstrate how to handle HTTP requests
+ * This class demonstrate how to handle HTTP requests.
  */
 @Bootstrap
 public final class TestServerRestful {
 
-	public static void main(String[] params) {
-		ApplicationLauncher.run(TestServerRestful.class, params);
-	}
-	
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerRestful.class, params);
+  }
 }

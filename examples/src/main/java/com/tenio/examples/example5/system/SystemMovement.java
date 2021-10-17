@@ -21,40 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.bases.Context;
-import com.tenio.engine.ecs.systems.ExecuteSystem;
-import com.tenio.engine.ecs.systems.InitializeSystem;
-import com.tenio.engine.ecs.systems.implement.AbstractSystem;
+import com.tenio.engine.ecs.basis.Context;
+import com.tenio.engine.ecs.system.ExecuteSystem;
+import com.tenio.engine.ecs.system.InitializeSystem;
+import com.tenio.engine.ecs.system.implement.AbstractSystem;
 import com.tenio.examples.example5.component.Position;
 import com.tenio.examples.example5.constant.Example5Constant;
-import com.tenio.examples.example5.context.GameComponents;
+import com.tenio.examples.example5.context.GameComponent;
 import com.tenio.examples.example5.context.GameEntity;
 
-public final class SystemMovement extends AbstractSystem<GameEntity> implements InitializeSystem, ExecuteSystem {
+public final class SystemMovement extends AbstractSystem<GameEntity>
+    implements InitializeSystem, ExecuteSystem {
 
-	public SystemMovement(Context<GameEntity> context) {
-		super(context);
-	}
+  private static final int VELOCITY = 5;
 
-	@Override
-	public void initialize() {
+  public SystemMovement(Context<GameEntity> context) {
+    super(context);
+  }
 
-	}
+  @Override
+  public void initialize() {
+  }
 
-	@Override
-	public void execute(float deltaTime) {
-		for (var entity : getContext().getEntities().values()) {
-			if (entity.hasComponents(GameComponents.POSITION, GameComponents.MOTION)) {
-				var position = (Position) entity.getComponent(GameComponents.POSITION);
-				if (position.x < Example5Constant.DESIGN_WIDTH) {
-					position.x += deltaTime;
-				} else {
-					position.x = 0;
-				}
-			}
-		}
-	}
-
+  @Override
+  public void execute(float deltaTime) {
+    for (var entity : getContext().getEntities().values()) {
+      if (entity.hasComponents(GameComponent.POSITION, GameComponent.MOTION)) {
+        var position = (Position) entity.getComponent(GameComponent.POSITION);
+        if (position.x < Example5Constant.DESIGN_WIDTH) {
+          position.x += deltaTime * VELOCITY;
+        } else {
+          position.x = 0;
+        }
+      }
+    }
+  }
 }

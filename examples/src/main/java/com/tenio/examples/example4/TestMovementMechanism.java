@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example4;
 
 import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
@@ -28,18 +29,17 @@ import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.world.World;
 
 /**
- * Only for testing the movement behavior of vehicles
+ * Only for testing the movement behavior of vehicles.
  */
 public final class TestMovementMechanism {
 
-	public static void main(String[] args) throws Exception {
-		// Create a world
-		var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
-		// Enable debugger window
-		world.debug("[TenIO] Server Debugger : Movement Simulation");
-		var hearbeatManager = new HeartBeatManagerImpl();
-		hearbeatManager.initialize(1);
-		hearbeatManager.create("world", world);
-	}
-
+  public static void main(String[] args) throws Exception {
+    // Create a world
+    var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
+    // Enable debugger window
+    world.debug("[TenIO] Server Debugger : Movement Simulation");
+    var heartBeatManager = new HeartBeatManagerImpl();
+    heartBeatManager.initialize(1);
+    heartBeatManager.create("world", world);
+  }
 }

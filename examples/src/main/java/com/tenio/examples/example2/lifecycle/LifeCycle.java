@@ -21,125 +21,124 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example2.lifecycle;
 
 import com.tenio.engine.fsm.EntityManager;
-import com.tenio.engine.fsm.MessageListener;
 import com.tenio.engine.fsm.MessageDispatcher;
+import com.tenio.engine.fsm.MessageListener;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.heartbeat.AbstractHeartBeat;
-import com.tenio.engine.message.EMessage;
+import com.tenio.engine.message.ExtraMessage;
 import com.tenio.engine.physic2d.graphic.Paint;
-import com.tenio.examples.example2.defines.EntityName;
-import com.tenio.examples.example2.entities.BaseEntity;
-import com.tenio.examples.example2.entities.Miner;
-import com.tenio.examples.example2.entities.Wife;
+import com.tenio.examples.example2.define.EntityName;
+import com.tenio.examples.example2.entity.BaseEntity;
+import com.tenio.examples.example2.entity.Miner;
+import com.tenio.examples.example2.entity.Wife;
 
 /**
- * The lifecycle, all actions is performed in this class
+ * The lifecycle, all actions is performed in this class.
  */
 public final class LifeCycle extends AbstractHeartBeat implements MessageListener {
 
-	private static final float PERIOD_STEPS_IN_SECONDS = 1.0f;
+  private static final float PERIOD_STEPS_IN_SECONDS = 1.0f;
 
-	private final EntityManager __entities;
-	private final MessageDispatcher __dispatcher;
+  private final EntityManager entityManager;
+  private final MessageDispatcher messageDispatcher;
 
-	/**
-	 * Making slow steps to inspect what happening
-	 */
-	private float __tick = 0;
+  /**
+   * Making slow steps to inspect what happening.
+   */
+  private float tick = 0;
 
-	public static LifeCycle newInstance() {
-		return new LifeCycle();
-	}
+  private LifeCycle() {
+    // create a manager
+    entityManager = new EntityManager();
+    messageDispatcher = new MessageDispatcher(entityManager);
 
-	private LifeCycle() {
-		// create a manager
-		__entities = new EntityManager();
-		__dispatcher = new MessageDispatcher(__entities);
+    messageDispatcher.listen(this);
 
-		__dispatcher.listen(this);
+    // create a miner
+    var Bob = new Miner(messageDispatcher, EntityName.MINER);
 
-		// create a miner
-		var Bob = new Miner(__dispatcher, EntityName.MINER);
+    // create his wife
+    var Elsa = new Wife(messageDispatcher, EntityName.WIFE);
 
-		// create his wife
-		var Elsa = new Wife(__dispatcher, EntityName.WIFE);
+    // register them with the entity manager
+    entityManager.register(Bob);
+    entityManager.register(Elsa);
+  }
 
-		// register them with the entity manager
-		__entities.register(Bob);
-		__entities.register(Elsa);
+  public static LifeCycle newInstance() {
+    return new LifeCycle();
+  }
 
-	}
+  @Override
+  protected void onCreate() {
+    System.out.println("HeartBeat.onCreate()");
+  }
 
-	@Override
-	protected void __onCreate() {
-		System.out.println("HeartBeat.onCreate()");
-	}
+  @Override
+  protected void onUpdate(float delta) {
+    if (tick >= PERIOD_STEPS_IN_SECONDS) {
+      entityManager.gets().values().forEach(entity -> {
+        var base = (BaseEntity) entity;
+        if (base.getMood() != null) {
+          // send to all inspectors
+          // ...
+        }
+      });
+      // need to update ...
+      entityManager.update(delta);
+      messageDispatcher.update(delta);
 
-	@Override
-	protected void __onUpdate(float delta) {
-		if (__tick >= PERIOD_STEPS_IN_SECONDS) {
-			__entities.gets().values().forEach(entity -> {
-				var base = (BaseEntity) entity;
-				if (base.getMood() != null) {
-					// send to all inspectors
-					// ...
-				}
-			});
-			// need to update ...
-			__entities.update(delta);
-			__dispatcher.update(delta);
+      tick = 0;
+    }
+    tick += delta;
+  }
 
-			__tick = 0;
-		}
-		__tick += delta;
-	}
+  @Override
+  protected void onPause() {
+    System.out.println("HeartBeat.onPause()");
+  }
 
-	@Override
-	protected void __onPause() {
-		System.out.println("HeartBeat.onPause()");
-	}
+  @Override
+  protected void onResume() {
+    System.out.println("HeartBeat.onResume()");
+  }
 
-	@Override
-	protected void __onResume() {
-		System.out.println("HeartBeat.onResume()");
-	}
+  @Override
+  protected void onDispose() {
+    System.out.println("HeartBeat._onDispose()");
+  }
 
-	@Override
-	protected void __onDispose() {
-		System.out.println("HeartBeat._onDispose()");
-	}
+  @Override
+  public void onListen(Telegram msg, boolean isHandled) {
+    System.out.println("HeartBeat.onListen()");
+  }
 
-	@Override
-	public void onListen(Telegram msg, boolean isHandled) {
-		System.out.println("HeartBeat.onListen()");
-	}
+  @Override
+  protected void onRender(Paint paint) {
 
-	@Override
-	protected void __onRender(Paint paint) {
+  }
 
-	}
+  @Override
+  protected void onAction1() {
+    System.out.println("HeartBeat._onAction1()");
+  }
 
-	@Override
-	protected void __onAction1() {
-		System.out.println("HeartBeat._onAction1()");
-	}
+  @Override
+  protected void onAction2() {
+    System.out.println("HeartBeat._onAction2()");
+  }
 
-	@Override
-	protected void __onAction2() {
-		System.out.println("HeartBeat._onAction2()");
-	}
+  @Override
+  protected void onAction3() {
+    System.out.println("HeartBeat._onAction3()");
+  }
 
-	@Override
-	protected void __onAction3() {
-		System.out.println("HeartBeat._onAction3()");
-	}
-
-	@Override
-	protected void __onMessage(EMessage message) {
-		System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
-	}
-
+  @Override
+  protected void onMessage(ExtraMessage message) {
+    System.err.println("LifeCycle._onMessage(): " + message + " at: " + System.currentTimeMillis());
+  }
 }

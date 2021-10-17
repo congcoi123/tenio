@@ -21,10 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example1;
 
 import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
@@ -42,50 +43,46 @@ import com.tenio.examples.server.SharedEventKey;
  */
 public final class TestClientLogin implements SocketListener {
 
-	private static final int SOCKET_PORT = 8032;
+  private static final int SOCKET_PORT = 8032;
+  private final TCP tcp;
+  private final String name;
+  public TestClientLogin() {
+    // create a new TCP object and listen for this port
+    tcp = new TCP(SOCKET_PORT);
+    tcp.receive(this);
 
-	/**
-	 * The entry point
-	 */
-	public static void main(String[] args) {
-		new TestClientLogin();
-	}
+    name = ClientUtility.generateRandomString(5);
 
-	private TCP __tcp;
-	private String __name;
+    // send a login request
+    var data = ZeroObjectImpl.newInstance();
+    data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+    tcp.send(ServerMessage.newInstance().setData(data));
 
-	public TestClientLogin() {
-		// create a new TCP object and listen for this port
-		__tcp = new TCP(SOCKET_PORT);
-		__tcp.receive(this);
+    System.err.println("Login Request -> " + data);
+  }
 
-		__name = ClientUtility.generateRandomString(5);
+  /**
+   * The entry point
+   */
+  public static void main(String[] args) {
+    new TestClientLogin();
+  }
 
-		// send a login request
-		var data = ZeroObjectImpl.newInstance();
-		data.putString(SharedEventKey.KEY_PLAYER_LOGIN, __name);
-		__tcp.send(ServerMessage.newInstance().setData(data));
+  @Override
+  public void onReceivedTCP(ServerMessage message) {
+    System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
 
-		System.err.println("Login Request -> " + data.toString());
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
-	}
+    var data = ZeroObjectImpl.newInstance();
+    data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
+    var request = ServerMessage.newInstance().setData(data);
+    tcp.send(request);
 
-	@Override
-	public void onReceivedTCP(ServerMessage message) {
-		System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		var data = ZeroObjectImpl.newInstance();
-		data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
-		var request = ServerMessage.newInstance().setData(data);
-		__tcp.send(request);
-
-		System.err.println("[SENT TO SERVER] -> " + request);
-	}
-
+    System.err.println("[SENT TO SERVER] -> " + request);
+  }
 }

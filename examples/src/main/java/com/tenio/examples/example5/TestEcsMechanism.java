@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5;
 
 import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
@@ -29,14 +30,13 @@ import com.tenio.examples.example5.ecs.ECS;
 
 public final class TestEcsMechanism {
 
-	public static void main(String[] args) throws Exception {
-		// Create a ECS
-		var ecs = new ECS(Example5Constant.DESIGN_WIDTH, Example5Constant.DESIGN_HEIGHT);
-		// Enable debugger window
-		ecs.debug("[TenIO] Server Debugger : ECS");
-		var hearbeatManager = new HeartBeatManagerImpl();
-		hearbeatManager.initialize(1);
-		hearbeatManager.create("ECS", ecs);
-	}
-
+  public static void main(String[] args) throws Exception {
+    // Create a ECS
+    var ecs = new ECS(Example5Constant.DESIGN_WIDTH, Example5Constant.DESIGN_HEIGHT);
+    // Enable debugger window
+    ecs.debug("[TenIO] Server Debugger : ECS");
+    var heartbeatManager = new HeartBeatManagerImpl();
+    heartbeatManager.initialize(1);
+    heartbeatManager.create("ECS", ecs);
+  }
 }

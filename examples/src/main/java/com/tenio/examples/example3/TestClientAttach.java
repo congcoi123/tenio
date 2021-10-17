@@ -21,11 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example3;
 
 import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
@@ -46,85 +47,84 @@ import com.tenio.examples.server.UdpEstablishedState;
  */
 public final class TestClientAttach implements SocketListener, DatagramListener {
 
-	private static final int SOCKET_PORT = 8032;
-	private static final int DATAGRAM_PORT = 8034;
+  private static final int SOCKET_PORT = 8032;
+  private static final int DATAGRAM_PORT = 8034;
+  private final TCP tcp;
+  private final UDP udp;
+  private final String playerName;
 
-	/**
-	 * The entry point
-	 */
-	public static void main(String[] args) {
-		new TestClientAttach();
-	}
+  public TestClientAttach() {
+    playerName = ClientUtility.generateRandomString(5);
 
-	private final TCP __tcp;
-	private final UDP __udp;
-	private final String __playerName;
+    // create a new TCP object and listen for this port
+    tcp = new TCP(SOCKET_PORT);
+    tcp.receive(this);
 
-	public TestClientAttach() {
-		__playerName = ClientUtility.generateRandomString(5);
+    // create a new UDP object and listen for this port
+    udp = new UDP(DATAGRAM_PORT);
+    udp.receive(this);
 
-		// create a new TCP object and listen for this port
-		__tcp = new TCP(SOCKET_PORT);
-		__tcp.receive(this);
+    // send a login request
+    var data =
+        ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+    var message = ServerMessage.newInstance().setData(data);
+    tcp.send(message);
 
-		// create a new UDP object and listen for this port
-		__udp = new UDP(DATAGRAM_PORT);
-		__udp.receive(this);
+    System.out.println("Login Request -> " + message);
+  }
 
-		// send a login request
-		var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);
-		var message = ServerMessage.newInstance().setData(data);
-		__tcp.send(message);
+  /**
+   * The entry point.
+   */
+  public static void main(String[] args) {
+    new TestClientAttach();
+  }
 
-		System.out.println("Login Request -> " + message);
-	}
+  @Override
+  public void onReceivedTCP(ServerMessage message) {
+    System.err.println("[RECV FROM SERVER TCP] -> " + message);
 
-	@Override
-	public void onReceivedTCP(ServerMessage message) {
-		System.err.println("[RECV FROM SERVER TCP] -> " + message);
+    switch (((ZeroObject) message.getData()).getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
+      case UdpEstablishedState.ALLOW_TO_ATTACH: {
+        // now you can send request for UDP connection request
+        var data =
+            ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+        var request = ServerMessage.newInstance().setData(data);
+        udp.send(request);
 
-		switch (((ZeroObject) message.getData()).getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
-		case UdpEstablishedState.ALLOW_TO_ATTACH: {
-			// now you can send request for UDP connection request
-			var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, __playerName);
-			var request = ServerMessage.newInstance().setData(data);
-			__udp.send(request);
+        System.out.println("Request a UDP connection -> " + request);
+      }
+      break;
 
-			System.out.println("Request a UDP connection -> " + request);
-		}
-			break;
+      case UdpEstablishedState.ATTACHED: {
+        // the UDP connected successful, you now can send test requests
+        System.out.println("Start the conversation ...");
 
-		case UdpEstablishedState.ATTACHED: {
-			// the UDP connected successful, you now can send test requests
-			System.out.println("Start the conversation ...");
+        for (int i = 1; i <= 100; i++) {
+          var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+              String.format("Hello from client %d", i));
+          var request = ServerMessage.newInstance().setData(data);
+          udp.send(request);
 
-			for (int i = 1; i <= 100; i++) {
-				var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-						String.format("Hello from client %d", i));
-				var request = ServerMessage.newInstance().setData(data);
-				__udp.send(request);
+          System.out.println("[SENT TO SERVER " + i + "] -> " + request);
 
-				System.out.println("[SENT TO SERVER " + i + "] -> " + request);
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
 
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+        tcp.close();
+        udp.close();
 
-			__tcp.close();
-			__udp.close();
+      }
+      break;
+    }
+  }
 
-		}
-			break;
-
-		}
-	}
-
-	@Override
-	public void onReceivedUDP(ServerMessage message) {
-		System.err.println("[RECV FROM SERVER UDP] -> " + message);
-	}
-
+  @Override
+  public void onReceivedUDP(ServerMessage message) {
+    System.err.println("[RECV FROM SERVER UDP] -> " + message);
+  }
 }

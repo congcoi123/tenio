@@ -21,18 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package com.tenio.examples.example6;
 
-import java.util.HashMap;
-import java.util.Map;
+package com.tenio.examples.example6;
 
 import com.tenio.common.data.ZeroObject;
 import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
 import com.tenio.examples.server.SharedEventKey;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class shows how a client communicates with the server:<br>
@@ -40,70 +40,67 @@ import com.tenio.examples.server.SharedEventKey;
  * 2. Send a login request.<br>
  * 3. Receive messages via TCP connection from the server.<br>
  * 4. Be logout by server.
- * 
+ * <p>
  * [NOTE] The client test is also available on <code>C++</code> and
  * <code>JavaScript</code> language, please see the <code>README.md</code> for
  * more details
  */
 public final class TestClientEchoStress implements SocketListener {
 
-	private static final int SOCKET_PORT = 8032;
-	private static final int NUMBER_CLIENTS = 1000;
-	private static final boolean ENABLED_DEBUG = false;
+  private static final int SOCKET_PORT = 8032;
+  private static final int NUMBER_CLIENTS = 1000;
+  private static final boolean ENABLED_DEBUG = false;
+  /**
+   * List of TCP clients
+   */
+  private final Map<String, TCP> tcps;
 
-	/**
-	 * The entry point
-	 */
-	public static void main(String[] args) {
-		new TestClientEchoStress();
-	}
+  public TestClientEchoStress() {
+    tcps = new HashMap<String, TCP>();
+    // create a list of TCP objects and listen for this port
+    for (int i = 0; i < NUMBER_CLIENTS; i++) {
+      var name = ClientUtility.generateRandomString(5);
+      var tcp = new TCP(SOCKET_PORT);
+      tcp.receive(this);
+      tcps.put(name, tcp);
 
-	/**
-	 * List of TCP clients
-	 */
-	private Map<String, TCP> __tcps;
+      // send a login request
+      var data = ZeroObjectImpl.newInstance();
+      data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+      tcp.send(ServerMessage.newInstance().setData(data));
 
-	public TestClientEchoStress() {
-		__tcps = new HashMap<String, TCP>();
-		// create a list of TCP objects and listen for this port
-		for (int i = 0; i < NUMBER_CLIENTS; i++) {
-			var name = ClientUtility.generateRandomString(5);
-			var tcp = new TCP(SOCKET_PORT);
-			tcp.receive(this);
-			__tcps.put(name, tcp);
+      if (ENABLED_DEBUG) {
+        System.err.println("Login Request -> " + data);
+      }
+    }
+  }
 
-			// send a login request
-			var data = ZeroObjectImpl.newInstance();
-			data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-			tcp.send(ServerMessage.newInstance().setData(data));
+  /**
+   * The entry point
+   */
+  public static void main(String[] args) {
+    new TestClientEchoStress();
+  }
 
-			if (ENABLED_DEBUG) {
-				System.err.println("Login Request -> " + data.toString());
-			}
-		}
+  @Override
+  public void onReceivedTCP(ServerMessage message) {
+    if (ENABLED_DEBUG) {
+      System.out.println("[RECV FROM SERVER TCP] -> " + message);
+    }
 
-	}
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
-	@Override
-	public void onReceivedTCP(ServerMessage message) {
-		if (ENABLED_DEBUG) {
-			System.out.println("[RECV FROM SERVER TCP] -> " + message);
-		}
+    var tcp =
+        tcps.get(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		var tcp = __tcps.get(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
-
-		// make an echo message
-		var data = ZeroObjectImpl.newInstance();
-		data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
-		var request = ServerMessage.newInstance().setData(data);
-		tcp.send(request);
-
-	}
-
+    // make an echo message
+    var data = ZeroObjectImpl.newInstance();
+    data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
+    var request = ServerMessage.newInstance().setData(data);
+    tcp.send(request);
+  }
 }

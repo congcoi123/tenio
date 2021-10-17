@@ -21,27 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.bases.Context;
-import com.tenio.engine.ecs.systems.InitializeSystem;
-import com.tenio.engine.ecs.systems.implement.AbstractSystem;
+import com.tenio.engine.ecs.basis.Context;
+import com.tenio.engine.ecs.system.InitializeSystem;
+import com.tenio.engine.ecs.system.implement.AbstractSystem;
 import com.tenio.examples.example5.constant.Example5Constant;
 import com.tenio.examples.example5.context.GameEntity;
 
-public final class SystemInitialization extends AbstractSystem<GameEntity> implements InitializeSystem {
+public final class SystemInitialization extends AbstractSystem<GameEntity> implements
+    InitializeSystem {
 
-	public SystemInitialization(Context<GameEntity> context) {
-		super(context);
-	}
+  public SystemInitialization(Context<GameEntity> context) {
+    super(context);
+  }
 
-	@Override
-	public void initialize() {
-		var entity = (GameEntity) getContext().createEntity();
-		entity.setAnimation(true);
-		entity.setMotion(true);
-		entity.setView(true);
-		entity.setPosition(Example5Constant.DESIGN_WIDTH / 2, Example5Constant.DESIGN_HEIGHT / 2);
-	}
-
+  @Override
+  public void initialize() {
+    var entity = (GameEntity) getContext().createEntity();
+    entity.setAnimation(true);
+    entity.setMotion(true);
+    entity.setView(true);
+    entity.setPosition(Example5Constant.DESIGN_WIDTH / 2, Example5Constant.DESIGN_HEIGHT / 2);
+  }
 }

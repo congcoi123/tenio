@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example2;
 
 import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
@@ -28,34 +29,33 @@ import com.tenio.examples.example2.lifecycle.LifeCycle;
 import com.tenio.examples.server.ExampleMessage;
 
 /**
- * Only for testing the FSM mechanism
+ * Only for testing the FSM mechanism.
  */
 public final class TestFsmMechanism {
 
-	public static void main(String[] args) throws Exception {
-		// create a heart-beat
-		var hearbeatManager = new HeartBeatManagerImpl();
-		hearbeatManager.initialize(1);
-		hearbeatManager.create("daily-life", LifeCycle.newInstance());
+  public static void main(String[] args) throws Exception {
+    // create a heart-beat
+    var heartbeatManager = new HeartBeatManagerImpl();
+    heartbeatManager.initialize(1);
+    heartbeatManager.create("daily-life", LifeCycle.newInstance());
 
-		// try to send messages immediately
-		for (int i = 1; i <= 5; i++) {
-			var message = ExampleMessage.newInstance();
-			message.putContent("IMMEDIATELY",
-					"Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
-			System.out.println("SEND IMMEDIATELY: " + message);
-			hearbeatManager.sendMessage("daily-life", message);
-		}
+    // try to send messages immediately
+    for (int i = 1; i <= 5; i++) {
+      var message = ExampleMessage.newInstance();
+      message.putContent("IMMEDIATELY",
+          "Hello Heartbeat at: " + System.currentTimeMillis() + " with order: " + i);
+      System.out.println("SEND IMMEDIATELY: " + message);
+      heartbeatManager.sendMessage("daily-life", message);
+    }
 
-		// try to send messages with delay time
-		for (int i = 1; i <= 5; i++) {
-			var message = ExampleMessage.newInstance();
-			message.putContent("DELAY",
-					"Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 + " second");
-			System.out.println("SEND DELAY: " + message);
-			hearbeatManager.sendMessage("daily-life", message, i * 10);
-		}
-
-	}
-
+    // try to send messages with delay time
+    for (int i = 1; i <= 5; i++) {
+      var message = ExampleMessage.newInstance();
+      message.putContent("DELAY",
+          "Hello Heartbeat at: " + System.currentTimeMillis() + " with delay: " + i * 10 +
+              " second");
+      System.out.println("SEND DELAY: " + message);
+      heartbeatManager.sendMessage("daily-life", message, i * 10);
+    }
+  }
 }

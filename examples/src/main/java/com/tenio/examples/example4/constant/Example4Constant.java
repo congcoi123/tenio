@@ -21,30 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example4.constant;
 
 public final class Example4Constant {
 
-	public static final int DESIGN_WIDTH = 500;
-	public static final int DESIGN_HEIGHT = 500;
+  public static final int DESIGN_WIDTH = 500;
+  public static final int DESIGN_HEIGHT = 500;
 
-	public static final int SOCKET_PORT = 8032;
-	public static final int DATAGRAM_PORT = 8034;
+  public static final int SOCKET_PORT = 8032;
+  public static final int DATAGRAM_PORT = 8034;
 
-	public static final float DELAY_CREATION = 0.1f;
-	// time in minutes
-	public static final int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
-	// time in seconds
-	public static final int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
+  public static final float DELAY_CREATION = 0.1f;
+  // time in minutes
+  public static final int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
+  // time in seconds
+  public static final int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
 
-	public static final int NUMBER_OF_PLAYERS = 100;
+  public static final int NUMBER_OF_PLAYERS = 100;
 
-	public static final int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
+  public static final int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
 
-	public static final int ONE_MINUTE_EXPECT_RECEIVE_PACKETS = ONE_SECOND_EXPECT_RECEIVE_PACKETS * 60 * 100;
+  public static final int ONE_MINUTE_EXPECT_RECEIVE_PACKETS =
+      ONE_SECOND_EXPECT_RECEIVE_PACKETS * 60 * 100;
 
-	private Example4Constant() {
-
-	}
-
+  private Example4Constant() {
+    throw new UnsupportedOperationException();
+  }
 }

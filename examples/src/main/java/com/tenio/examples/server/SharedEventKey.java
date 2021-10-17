@@ -21,20 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.server;
 
 public final class SharedEventKey {
 
-	public static final String KEY_PLAYER_LOGIN = "u";
-	public static final String KEY_ALLOW_TO_ATTACH = "a";
-	public static final String KEY_CLIENT_SERVER_ECHO = "e";
-	public static final String KEY_INTEGER_ARRAY = "i";
-	public static final String KEY_PLAYER_POSITION = "p";
-	public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
-	public static final String KEY_PLAYER_GET_RESPONSE = "rr";
+  public static final String KEY_PLAYER_LOGIN = "u";
+  public static final String KEY_ALLOW_TO_ATTACH = "a";
+  public static final String KEY_CLIENT_SERVER_ECHO = "e";
+  public static final String KEY_INTEGER_ARRAY = "i";
+  public static final String KEY_PLAYER_POSITION = "p";
+  public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
+  public static final String KEY_PLAYER_GET_RESPONSE = "rr";
 
-	private SharedEventKey() {
-
-	}
-
+  private SharedEventKey() {
+    throw new UnsupportedOperationException("This class does not support to create a new "
+        + "instance");
+  }
 }

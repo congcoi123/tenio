@@ -21,50 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5.system;
 
-import java.awt.Color;
-
-import com.tenio.common.utilities.MathUtility;
-import com.tenio.engine.ecs.bases.Context;
-import com.tenio.engine.ecs.systems.InitializeSystem;
-import com.tenio.engine.ecs.systems.RenderSystem;
-import com.tenio.engine.ecs.systems.implement.AbstractSystem;
+import com.tenio.common.utility.MathUtility;
+import com.tenio.engine.ecs.basis.Context;
+import com.tenio.engine.ecs.system.InitializeSystem;
+import com.tenio.engine.ecs.system.RenderSystem;
+import com.tenio.engine.ecs.system.implement.AbstractSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.examples.example5.component.Position;
-import com.tenio.examples.example5.context.GameComponents;
+import com.tenio.examples.example5.context.GameComponent;
 import com.tenio.examples.example5.context.GameEntity;
+import java.awt.Color;
 
-public final class SystemRenderer extends AbstractSystem<GameEntity> implements InitializeSystem, RenderSystem {
+public final class SystemRenderer extends AbstractSystem<GameEntity>
+    implements InitializeSystem, RenderSystem {
 
-	public SystemRenderer(Context<GameEntity> context) {
-		super(context);
-	}
+  public SystemRenderer(Context<GameEntity> context) {
+    super(context);
+  }
 
-	@Override
-	public void initialize() {
+  @Override
+  public void initialize() {
+  }
 
-	}
-
-	@Override
-	public void render(final Paint paint) {
-		for (var entity : getContext().getEntities().values()) {
-			if (entity.hasComponent(GameComponents.POSITION)) {
-				if (entity.hasComponent(GameComponents.VIEW)) {
-					if (entity.hasComponent(GameComponents.ANIMATION)) {
-						if (MathUtility.randBool()) {
-							paint.setPenColor(Color.BLACK);
-						} else {
-							paint.setPenColor(Color.RED);
-						}
-					} else {
-						paint.setPenColor(Color.RED);
-					}
-					var position = (Position) entity.getComponent(GameComponents.POSITION);
-					paint.drawCircle(position.x, position.y, 20);
-				}
-			}
-		}
-	}
-
+  @Override
+  public void render(final Paint paint) {
+    for (var entity : getContext().getEntities().values()) {
+      if (entity.hasComponent(GameComponent.POSITION)) {
+        if (entity.hasComponent(GameComponent.VIEW)) {
+          if (entity.hasComponent(GameComponent.ANIMATION)) {
+            if (MathUtility.randBool()) {
+              paint.setPenColor(Color.BLACK);
+              paint.setBgColor(Color.BLACK);
+            } else {
+              paint.setPenColor(Color.RED);
+              paint.setBgColor(Color.RED);
+            }
+          } else {
+            paint.setPenColor(Color.RED);
+            paint.setBgColor(Color.RED);
+          }
+          var position = (Position) entity.getComponent(GameComponent.POSITION);
+          paint.drawCircle(position.x, position.y, 20);
+        }
+      }
+    }
+  }
 }

@@ -10,173 +10,169 @@ import java.net.URL;
 import java.util.regex.Pattern;
 
 /**
- * This class is used for configuration loader
+ * This class is used for configuration loader.
  */
 public abstract class FileLoaderBase {
 
-	private BufferedReader __file;
-	private String __line = "";
-	private boolean __flagGoodFile;
+  private BufferedReader file;
+  private String line = "";
+  private boolean flagGoodFile;
 
-	public FileLoaderBase(URL filename) {
-		__line = "";
-		__flagGoodFile = true;
-		try {
-			__file = new BufferedReader(new FileReader(new File(filename.toURI())));
-		} catch (FileNotFoundException ex) {
-			__flagGoodFile = false;
-		} catch (URISyntaxException ex) {
-			__flagGoodFile = false;
-		}
-	}
+  public FileLoaderBase(String filename) {
+    line = "";
+    flagGoodFile = true;
+    try {
+      file = new BufferedReader(new FileReader(filename));
+    } catch (FileNotFoundException ex) {
+      flagGoodFile = false;
+    }
+  }
 
-	private String __getParameterValueAsString(String line) {
-		// define some delimiters
-		final String delims = "[ ;=,]";
-		final Pattern pattern = Pattern.compile(delims);
-		var s = pattern.split(line);
-		if (s.length > 0) {
-			return s[s.length - 1];
-		}
-		return "";
-	}
+  // removes any commenting from a line of text
+  public static String removeCommentingFromLine(String line) {
+    // search for any comment and remove
+    int idx = line.indexOf("//");
 
-	private String __getNextParameter() throws IOException {
-		// this will be the string that holds the next parameter
-		String line;
+    if (idx != -1) {
+      // cut out the comment
+      return line.substring(0, idx);
+    }
+    return line;
+  }
 
-		line = __file.readLine();
+  private String getParameterValueAsString(String line) {
+    // define some delimiters
+    final String delims = "[ ;=,]";
+    final Pattern pattern = Pattern.compile(delims);
+    var s = pattern.split(line);
+    if (s.length > 0) {
+      return s[s.length - 1];
+    }
+    return "";
+  }
 
-		line = removeCommentingFromLine(line);
+  private String getNextParameter() throws IOException {
+    // this will be the string that holds the next parameter
+    String line = null;
 
-		// if the line is of zero length, get the next line from
-		// the file
-		if (line.length() == 0) {
-			return __getNextParameter();
-		}
+    line = file.readLine();
 
-		line = __getParameterValueAsString(line);
-		return line;
-	}
+    line = removeCommentingFromLine(line);
 
-	private String __getNextToken() throws IOException {
-		// strip the line of any commenting
-		while (__line.equals("")) {
-			__line = __file.readLine();
-			__line = removeCommentingFromLine(__line);
-		}
+    // if the line is of zero length, get the next line from
+    // the file
+    if (line.length() == 0) {
+      return getNextParameter();
+    }
 
-		// find beginning of parameter description
-		int begIdx = __line.length();
-		int endIdx = __line.length();
+    line = getParameterValueAsString(line);
+    return line;
+  }
 
-		// define some delimiters
-		final String delims = "[ ;=,]+";
-		var pattern = Pattern.compile(delims);
-		var matcher = pattern.matcher(__line);
+  private String getNextToken() throws IOException {
+    // strip the line of any commenting
+    while (line.equals("")) {
+      line = file.readLine();
+      line = removeCommentingFromLine(line);
+    }
 
-		// find the end of the parameter description
-		if (matcher.find()) {
-			begIdx = matcher.end();
-			if (matcher.find()) {
-				endIdx = matcher.start();
-			} else {
-				endIdx = __line.length();
-			}
-		}
+    // find beginning of parameter description
+    int begIdx = line.length();
+    int endIdx = line.length();
 
-		String s = __line.substring(begIdx, endIdx);
+    // define some delimiters
+    final String delims = "[ ;=,]+";
+    var pattern = Pattern.compile(delims);
+    var matcher = pattern.matcher(line);
 
-		if (endIdx != __line.length()) {
-			// strip the token from the line
-			__line = __line.substring(endIdx + 1, __line.length());
-		} else {
-			__line = "";
-		}
+    // find the end of the parameter description
+    if (matcher.find()) {
+      begIdx = matcher.end();
+      if (matcher.find()) {
+        endIdx = matcher.start();
+      } else {
+        endIdx = line.length();
+      }
+    }
 
-		return s;
+    String s = line.substring(begIdx, endIdx);
 
-	}
+    if (endIdx != line.length()) {
+      // strip the token from the line
+      line = line.substring(endIdx + 1);
+    } else {
+      line = "";
+    }
 
-	// helper methods. They convert the next parameter value found into the
-	// relevant type
-	public double getNextParameterDouble() throws IOException {
-		if (__flagGoodFile) {
-			return Double.valueOf(__getNextParameter());
-		}
-		throw new RuntimeException("bad file");
-	}
+    return s;
+  }
 
-	public float getNextParameterFloat() throws IOException {
-		if (__flagGoodFile) {
-			return Float.valueOf(__getNextParameter());
-		}
-		throw new RuntimeException("bad file");
-	}
+  // helper methods. They convert the next parameter value found into the
+  // relevant type
+  public double getNextParameterDouble() throws IOException {
+    if (flagGoodFile) {
+      return Double.valueOf(getNextParameter());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public int getNextParameterInt() throws IOException {
-		if (__flagGoodFile) {
-			return Integer.valueOf(__getNextParameter());
-		}
-		throw new RuntimeException("bad file");
-	}
+  public float getNextParameterFloat() throws IOException {
+    if (flagGoodFile) {
+      return Float.valueOf(getNextParameter());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public boolean getNextParameterBool() throws IOException {
-		if (__flagGoodFile) {
-			return 0 != Integer.valueOf(__getNextParameter());
-		}
-		throw new RuntimeException("bad file");
-	}
+  public int getNextParameterInt() throws IOException {
+    if (flagGoodFile) {
+      return Integer.valueOf(getNextParameter());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public double getNextTokenAsDouble() throws IOException {
-		if (__flagGoodFile) {
-			return Double.valueOf(__getNextToken());
-		}
-		throw new RuntimeException("bad file");
-	}
+  public boolean getNextParameterBool() throws IOException {
+    if (flagGoodFile) {
+      return 0 != Integer.valueOf(getNextParameter());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public float getNextTokenAsFloat() throws IOException {
-		if (__flagGoodFile) {
-			return Float.valueOf(__getNextToken());
-		}
-		throw new RuntimeException("bad file");
-	}
+  public double getNextTokenAsDouble() throws IOException {
+    if (flagGoodFile) {
+      return Double.valueOf(getNextToken());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public int getNextTokenAsInt() throws IOException {
-		if (__flagGoodFile) {
-			return Integer.valueOf(__getNextToken());
-		}
-		throw new RuntimeException("bad file");
-	}
+  public float getNextTokenAsFloat() throws IOException {
+    if (flagGoodFile) {
+      return Float.valueOf(getNextToken());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public String getNextTokenAsString() throws IOException {
-		if (__flagGoodFile) {
-			return __getNextToken();
-		}
-		throw new RuntimeException("bad file");
-	}
+  public int getNextTokenAsInt() throws IOException {
+    if (flagGoodFile) {
+      return Integer.valueOf(getNextToken());
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public boolean isEOF() throws IOException {
-		if (__flagGoodFile) {
-			return !__file.ready();
-		}
-		throw new RuntimeException("bad file");
-	}
+  public String getNextTokenAsString() throws IOException {
+    if (flagGoodFile) {
+      return getNextToken();
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	public boolean isFileIsGood() {
-		return __flagGoodFile;
-	}
+  public boolean isEOF() throws IOException {
+    if (flagGoodFile) {
+      return !file.ready();
+    }
+    throw new RuntimeException("bad file");
+  }
 
-	// removes any commenting from a line of text
-	public static String removeCommentingFromLine(String line) {
-		// search for any comment and remove
-		int idx = line.indexOf("//");
-
-		if (idx != -1) {
-			// cut out the comment
-			return line.substring(0, idx);
-		}
-		return line;
-	}
-
+  public boolean isFileIsGood() {
+    return flagGoodFile;
+  }
 }

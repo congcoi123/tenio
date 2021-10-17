@@ -21,49 +21,50 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.client;
 
 import java.security.SecureRandom;
 
+/**
+ * The utility class for client.
+ */
 public final class ClientUtility {
 
-	private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
-	private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
-	private static final String NUMBER = "0123456789";
+  private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+  private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+  private static final String NUMBER = "0123456789";
+  private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+  private static final int SECONDS_IN_HOUR = 3600;
+  private static final int SECONDS_IN_MINUTE = 60;
+  private static final SecureRandom RANDOM = new SecureRandom();
 
-	private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
-	private static SecureRandom RANDOM = new SecureRandom();
+  private ClientUtility() {
+    throw new UnsupportedOperationException();
+  }
 
-	private static final int SECONDS_IN_HOUR = 3600;
-	private static final int SECONDS_IN_MINUTE = 60;
+  public static String generateRandomString(int length) {
+    if (length < 1) {
+      throw new IllegalArgumentException();
+    }
 
-	private ClientUtility() {
-		throw new UnsupportedOperationException();
-	}
+    var sb = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+      // 0-62 (exclusive), random returns 0-61
+      int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+      char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
 
-	public static String generateRandomString(int length) {
-		if (length < 1) {
-			throw new IllegalArgumentException();
-		}
+      sb.append(rndChar);
+    }
 
-		var sb = new StringBuilder(length);
-		for (int i = 0; i < length; i++) {
-			// 0-62 (exclusive), random returns 0-61
-			int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
-			char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+    return sb.toString();
+  }
 
-			sb.append(rndChar);
-		}
+  public static String getTimeFormat(long seconds) {
+    long hours = seconds / SECONDS_IN_HOUR;
+    long minutes = (seconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+    long secs = seconds % SECONDS_IN_MINUTE;
 
-		return sb.toString();
-	}
-
-	public static String getTimeFormat(long seconds) {
-		long hours = seconds / SECONDS_IN_HOUR;
-		long minutes = (seconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
-		long secs = seconds % SECONDS_IN_MINUTE;
-
-		return String.format("%02d:%02d:%02d", hours, minutes, secs);
-	}
-
+    return String.format("%02d:%02d:%02d", hours, minutes, secs);
+  }
 }

@@ -21,27 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example3.configuration;
 
-import java.util.Map;
-
-import com.tenio.common.bootstrap.annotations.Component;
+import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.examples.server.ExampleConfigurationType;
+import java.util.Map;
 
 /**
- * Create your own configurations
+ * Create your own configuration.
  */
 @Component
 public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
-	@Override
-	protected void __extend(Map<String, String> extProperties) {
-		for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-			var paramName = entry.getKey();
-			__push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-		}
-	}
-
+  @Override
+  protected void extend(Map<String, String> extProperties) {
+    for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+      var paramName = entry.getKey();
+      push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+    }
+  }
 }

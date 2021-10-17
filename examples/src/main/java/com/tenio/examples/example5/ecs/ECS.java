@@ -21,64 +21,63 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5.ecs;
 
-import java.awt.Color;
-
-import com.tenio.engine.ecs.bases.implement.ContextInfo;
+import com.tenio.engine.ecs.basis.implement.ContextInfo;
 import com.tenio.engine.heartbeat.ecs.EcsHeartBeat;
-import com.tenio.examples.example5.context.GameComponents;
+import com.tenio.examples.example5.context.GameComponent;
 import com.tenio.examples.example5.context.GameContext;
 import com.tenio.examples.example5.system.SystemInitialization;
 import com.tenio.examples.example5.system.SystemMovement;
 import com.tenio.examples.example5.system.SystemRenderer;
 import com.tenio.examples.example5.system.SystemTeardown;
+import java.awt.Color;
 
 public final class ECS extends EcsHeartBeat {
 
-	private GameContext __context;
-	private boolean __toggleMotion = true;
-	private boolean __toggleAnimation = true;
-	private boolean __toggleView = true;
+  private final GameContext gameContext;
+  private boolean toggleMotion = true;
+  private boolean toggleAnimation = true;
+  private boolean toggleView = true;
 
-	public ECS(int cx, int cy) {
-		super(cx, cy);
+  public ECS(int cx, int cy) {
+    super(cx, cy);
 
-		ContextInfo info = new ContextInfo("Game", GameComponents.getComponentNames(),
-				GameComponents.getComponentTypes(), GameComponents.getNumberComponents());
-		__context = new GameContext(info);
+    ContextInfo info = new ContextInfo("Game", GameComponent.getComponentNames(),
+        GameComponent.getComponentTypes(), GameComponent.getNumberComponents());
+    gameContext = new GameContext(info);
 
-		addSystem(new SystemInitialization(__context));
-		addSystem(new SystemMovement(__context));
-		addSystem(new SystemRenderer(__context));
-		addSystem(new SystemTeardown(__context));
-	}
+    addSystem(new SystemInitialization(gameContext));
+    addSystem(new SystemMovement(gameContext));
+    addSystem(new SystemRenderer(gameContext));
+    addSystem(new SystemTeardown(gameContext));
+  }
 
-	@Override
-	protected void __onAction1() {
-		__toggleMotion = !__toggleMotion;
-		setTextAction1(__toggleMotion ? "Stop" : "Move", Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities().values()) {
-			entity.setMotion(__toggleMotion);
-		}
-	}
+  @Override
+  protected void onAction1() {
+    toggleMotion = !toggleMotion;
+    setTextAction1(toggleMotion ? "Stop" : "Move", Color.LIGHT_GRAY);
+    for (var entity : gameContext.getEntities().values()) {
+      entity.setMotion(toggleMotion);
+    }
+  }
 
-	@Override
-	protected void __onAction2() {
-		__toggleAnimation = !__toggleAnimation;
-		setTextAction2(__toggleAnimation ? "Off animation" : "On animation", Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities().values()) {
-			entity.setAnimation(__toggleAnimation);
-		}
-	}
+  @Override
+  protected void onAction2() {
+    toggleAnimation = !toggleAnimation;
+    setTextAction2(toggleAnimation ? "Off animation" : "On animation", Color.LIGHT_GRAY);
+    for (var entity : gameContext.getEntities().values()) {
+      entity.setAnimation(toggleAnimation);
+    }
+  }
 
-	@Override
-	protected void __onAction3() {
-		__toggleView = !__toggleView;
-		setTextAction3(__toggleView ? "Invisible" : "Visible", Color.LIGHT_GRAY);
-		for (var entity : __context.getEntities().values()) {
-			entity.setView(__toggleView);
-		}
-	}
-
+  @Override
+  protected void onAction3() {
+    toggleView = !toggleView;
+    setTextAction3(toggleView ? "Invisible" : "Visible", Color.LIGHT_GRAY);
+    for (var entity : gameContext.getEntities().values()) {
+      entity.setView(toggleView);
+    }
+  }
 }

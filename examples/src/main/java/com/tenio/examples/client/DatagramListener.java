@@ -21,9 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.client;
 
-import com.tenio.core.entities.data.ServerMessage;
+import com.tenio.core.entity.data.ServerMessage;
 
 /**
  * This interface helps you listen to all messages these came from the server's
@@ -31,11 +32,10 @@ import com.tenio.core.entities.data.ServerMessage;
  */
 public interface DatagramListener {
 
-	/**
-	 * Listen for a new message
-	 * 
-	 * @param message the received message
-	 */
-	void onReceivedUDP(ServerMessage message);
-
+  /**
+   * Listen for a new message.
+   *
+   * @param message the received message
+   */
+  void onReceivedUDP(ServerMessage message);
 }

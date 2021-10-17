@@ -21,18 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example4.world;
 
+import com.tenio.examples.example4.entity.Vehicle;
 import java.util.List;
-
-import com.tenio.examples.example4.entities.Vehicle;
 
 public interface WorldListener {
 
-	int getCcu();
+  int getCcu();
 
-	void updateVehiclePosition(Vehicle vehicle);
+  void updateVehiclePosition(Vehicle vehicle);
 
-	void reponseVehicleNeighbours(String playerName, List<Vehicle> neighbours, int currentFps);
-
+  void responseVehicleNeighbours(String playerName, List<Vehicle> neighbours, int currentFps);
 }

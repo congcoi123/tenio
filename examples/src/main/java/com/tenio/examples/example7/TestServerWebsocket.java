@@ -21,19 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example7;
 
-import com.tenio.common.bootstrap.annotations.Bootstrap;
+import com.tenio.common.bootstrap.annotation.Bootstrap;
 import com.tenio.core.ApplicationLauncher;
 
 /**
- * This class shows how a server handle websocket connection
+ * This class shows how a server handle websocket connection.
  */
 @Bootstrap
 public final class TestServerWebsocket {
 
-	public static void main(String[] params) {
-		ApplicationLauncher.run(TestServerWebsocket.class, params);
-	}
-
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerWebsocket.class, params);
+  }
 }

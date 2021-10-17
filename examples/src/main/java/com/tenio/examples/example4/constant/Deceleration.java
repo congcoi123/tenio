@@ -2,25 +2,22 @@ package com.tenio.examples.example4.constant;
 
 public enum Deceleration {
 
-	SLOW(3),
+  SLOW(3),
+  NORMAL(2),
+  FAST(1);
 
-	NORMAL(2),
+  private final int value;
 
-	FAST(1);
+  Deceleration(final int value) {
+    this.value = value;
+  }
 
-	private int __value;
+  public int get() {
+    return value;
+  }
 
-	private Deceleration(final int value) {
-		__value = value;
-	}
-
-	public int get() {
-		return __value;
-	}
-
-	@Override
-	public String toString() {
-		return name();
-	}
-
+  @Override
+  public String toString() {
+    return name();
+  }
 }

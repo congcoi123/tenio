@@ -21,22 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.example5.system;
 
-import com.tenio.engine.ecs.bases.Context;
-import com.tenio.engine.ecs.systems.TearDownSystem;
-import com.tenio.engine.ecs.systems.implement.AbstractSystem;
+import com.tenio.engine.ecs.basis.Context;
+import com.tenio.engine.ecs.system.TearDownSystem;
+import com.tenio.engine.ecs.system.implement.AbstractSystem;
 import com.tenio.examples.example5.context.GameEntity;
 
 public final class SystemTeardown extends AbstractSystem<GameEntity> implements TearDownSystem {
 
-	public SystemTeardown(Context<GameEntity> context) {
-		super(context);
-	}
+  public SystemTeardown(Context<GameEntity> context) {
+    super(context);
+  }
 
-	@Override
-	public void tearDown() {
-		getContext().reset();
-	}
-
+  @Override
+  public void tearDown() {
+    getContext().reset();
+  }
 }

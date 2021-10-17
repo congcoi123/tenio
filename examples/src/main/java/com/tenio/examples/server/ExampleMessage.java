@@ -21,43 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 package com.tenio.examples.server;
 
+import com.tenio.engine.message.ExtraMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tenio.engine.message.EMessage;
+public final class ExampleMessage implements ExtraMessage {
 
-public final class ExampleMessage implements EMessage {
+  private final Map<String, Object> content;
 
-	private Map<String, Object> __content;
+  private ExampleMessage() {
+    content = new HashMap<String, Object>();
+  }
 
-	public static ExampleMessage newInstance() {
-		return new ExampleMessage();
-	}
+  public static ExampleMessage newInstance() {
+    return new ExampleMessage();
+  }
 
-	private ExampleMessage() {
-		__content = new HashMap<String, Object>();
-	}
+  @Override
+  public long getTimestamp() {
+    return 0;
+  }
 
-	@Override
-	public long getTimestamp() {
-		return 0;
-	}
+  @Override
+  public void putContent(String key, Object value) {
+    content.put(key, value);
+  }
 
-	@Override
-	public void putContent(String key, Object value) {
-		__content.put(key, value);
-	}
+  @Override
+  public Map<String, Object> getContent() {
+    return content;
+  }
 
-	@Override
-	public Map<String, Object> getContent() {
-		return __content;
-	}
-
-	@Override
-	public Object getContentByKey(String key) {
-		return __content.get(key);
-	}
-
+  @Override
+  public Object getContentByKey(String key) {
+    return content.get(key);
+  }
 }

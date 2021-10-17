@@ -4,21 +4,9 @@
     </a>
 </p>
 <p align="center">
-    <a href="https://mvnrepository.com/artifact/io.github.congcoi123/tenio">
-        <img src="https://img.shields.io/maven-central/v/io.github.congcoi123/tenio.svg">
-    </a>
-    <a href="https://javadoc.io/doc/io.github.congcoi123/tenio">
-        <img src="https://javadoc.io/badge2/io.github.congcoi123/tenio/javadoc.svg">
-    </a>
     <a href="LICENSE">
         <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
-    <a href="https://travis-ci.org/github/congcoi123/tenio">
-        <img src="https://travis-ci.org/congcoi123/tenio.svg?branch=master">
-    </a>    
-    <a href="https://coveralls.io/github/congcoi123/tenio">
-        <img src="https://coveralls.io/repos/github/congcoi123/tenio/badge.svg?branch=master">
-    </a>   
     <a href="#">
         <img src="https://img.shields.io/github/last-commit/congcoi123/tenio">
     </a>
@@ -119,30 +107,21 @@ The [wiki](https://github.com/congcoi123/tenio/wiki) provides implementation lev
 | [<img src="assets/cocos2dx-logo.png" width="150px;"/><br /><sub><b>TenIO Cocos2dx</b></sub>](https://github.com/congcoi123/tenio-cocos2dx)<br />        | [<img src="assets/libgdx-logo.png" width="150px;"/><br /><sub><b>TenIO Libgdx</b></sub>](https://github.com/congcoi123/tenio-libgdx)<br /> | [<img src="assets/unity-logo.png" width="150px;"/><br /><sub><b>TenIO Unity</b></sub>](https://github.com/congcoi123/tenio-unity)<br />          | [<img src="assets/phaserjs-logo.png" width="150px;"/><br /><sub><b>TenIO Phaserjs</b></sub>](https://github.com/congcoi123/tenio-phaserjs)<br /> |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
-## Dependencies
-```txt
-- guava 30.0-jre
-- log4j-core 2.13.3
-- reflections 0.9.9-RC1
-- netty-all 4.1.63.Final
-- jetty-server 9.4.38.v20210224
-- jetty-servlet 9.4.38.v20210224
-- servlet-api 2.5
-- json 20180130
-- spring-boot
-- spring-cloud
-```
+## Framework
+The project is strongly based on the same name framework as you can be referenced by the following repositories.
+- [`tenio-common`](https://github.com/congcoi123/tenio-common.git)
+- [`tenio-core`](https://github.com/congcoi123/tenio-core.git)
+- [`tenio-engine`](https://github.com/congcoi123/tenio-engine.git)
 
 ## Requirements
+```txt
 - Java 11
 - Java 8
 - Docker
+```
 
 ## License
 The `TenIO` project is currently available under the [MIT](LICENSE) License.
-
-## Changelog
-Please check out the [changelog](CHANGELOG.md) for more details.
 
 ## Contributing
 Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
@@ -156,39 +135,9 @@ $ git clone https://github.com/congcoi123/tenio.git
 ```
 
 ## Examples
-Please start the server before its corresponding client in each example package.
-```code
-$ java <server_main_class> <server_configuration_file.xml>
-```
-For instance:
-```code
-$ java TestServerLogin configuration.example1.xml
-```
-
-```txt
-|-- example
-    |-- example1
-    |   |-- TestClientLogin
-    |   |-- TestServerLogin
-    |-- example2
-    |   |-- (*)TestFsmMechanism
-    |-- example3
-    |   |-- TestClientAttach
-    |   |-- TestServerAttach
-    |-- example4
-    |   |-- TestClientMovement
-    |   |-- TestServerMovement
-    |   |-- (*)TestMovementMechanism
-    |-- example5
-    |   |-- (*)TestEcsMechanism
-    |-- example6
-    |   |-- TestClientEchoStress
-    |   |-- TestServerEchoStress
-    |-- example7
-    |   |-- TestServerWebsocket
-    |-- example8
-    |   |-- TestClientRestful
-    |   |-- TestServerRestful
-```
+### Collection
+Please check out [`this repository`](https://github.com/congcoi123/tenio-examples.git) for reference.
+### Wanna try Kotlin?
+Then should should check out [`this showcase`](https://github.com/congcoi123/lonely-dragon.git) for more detail.
 
 > Happy coding !

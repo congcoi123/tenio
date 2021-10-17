@@ -18,7 +18,7 @@
 		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder</Class>
 		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder</Class>
 		<Class name="connection-filter">com.tenio.core.network.security.filter.DefaultConnectionFilter</Class>
-		<Class name="packet-queue-policy">com.tenio.core.network.entities.packet.policy.DefaultPacketQueuePolicy</Class>
+		<Class name="packet-queue-policy">com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy</Class>
 	</Implements>
 
 	<Network>
