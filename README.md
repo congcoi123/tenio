@@ -136,8 +136,8 @@ $ git clone https://github.com/congcoi123/tenio.git
 
 ## Examples
 ### Collection
-Please check out [`this repository`](https://github.com/congcoi123/tenio-examples.git) for reference.
+Please check out [`this repository`](https://github.com/congcoi123/tenio-examples.git) for references.
 ### Wanna try Kotlin?
-Then should should check out [`this showcase`](https://github.com/congcoi123/lonely-dragon.git) for more detail.
+Then you should check out [`this showcase`](https://github.com/congcoi123/lonely-dragon.git) for more details.
 
 > Happy coding !
