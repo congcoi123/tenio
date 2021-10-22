@@ -145,7 +145,8 @@ public final class RequestImpl implements Request {
   @Override
   public String toString() {
     return String.format("{ event: %s, sender: %s, priority: %s, timestamp: %d, attributes: %s }",
-        event.toString(), sender.toString(), priority.toString(), timestamp,
+        event.toString(), (sender != null ? sender.toString() : "null"), priority.toString(),
+        timestamp,
         attributes.toString());
   }
 }

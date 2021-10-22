@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,6 +39,8 @@
     </scm>
 
     <properties>
+        <tenio.common.version>0.0.2</tenio.common.version>
+
         <io.netty.version>4.1.68.Final</io.netty.version>
         <org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
         <javax.servlet.version>2.5</javax.servlet.version>
@@ -75,7 +77,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tenio-common</artifactId>
-            <version>${project.version}</version>
+            <version>${tenio.common.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
