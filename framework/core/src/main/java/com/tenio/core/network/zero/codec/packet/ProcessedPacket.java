@@ -57,7 +57,7 @@ public final class ProcessedPacket {
 
   @Override
   public String toString() {
-    return String.format("{ packetReadState: %s, data: bytes[%d] }", packetReadState.toString(),
+    return String.format("{ packetReadState: %s, data: bytes[%d] }", packetReadState != null ? packetReadState.toString() : "null",
         binary.length);
   }
 }

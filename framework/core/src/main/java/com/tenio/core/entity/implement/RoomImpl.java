@@ -432,7 +432,7 @@ public final class RoomImpl implements Room {
   @Override
   public String toString() {
     return String.format("{ id: %d, name: %s, password: %s, max player: %d, max spectator: %d }",
-        id, name, password, maxPlayers, maxSpectators);
+        id, name != null ? name : "null", password != null ? password : "null", maxPlayers, maxSpectators);
   }
 
   @Override

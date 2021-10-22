@@ -68,7 +68,7 @@ public final class PendingPacket {
 
   @Override
   public String toString() {
-    return String.format("{ packetHeader: %s, expectedLength: %d }", packetHeader.toString(),
+    return String.format("{ packetHeader: %s, expectedLength: %d }", packetHeader != null ? packetHeader.toString() : "null",
         expectedLength);
   }
 }

@@ -533,6 +533,6 @@ public final class SessionImpl implements Session {
   public String toString() {
     return String.format(
         "{ id: %d, name: %s, transportType: %s, active: %b, connected: %b, hasUdp: %b }", id,
-        name, transportType.toString(), activated, connected, hasUdp);
+        name != null ? name : "null", transportType.toString(), activated, connected, hasUdp);
   }
 }
