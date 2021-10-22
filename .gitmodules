@@ -1,15 +1,3 @@
-[submodule "clients/tenio-cocos2dx"]
-	path = clients/tenio-cocos2dx
-	url = git@github.com:congcoi123/tenio-cocos2dx.git
-[submodule "clients/tenio-libgdx"]
-	path = clients/tenio-libgdx
-	url = git@github.com:congcoi123/tenio-libgdx.git
-[submodule "clients/tenio-phaserjs"]
-	path = clients/tenio-phaserjs
-	url = git@github.com:congcoi123/tenio-phaserjs.git
-[submodule "clients/tenio-unity"]
-	path = clients/tenio-unity
-	url = git@github.com:congcoi123/tenio-unity.git
 [submodule "mmorpg/client"]
 	path = mmorpg/client
 	url = git@github.com:congcoi123/tenio-mmorpg-client.git
