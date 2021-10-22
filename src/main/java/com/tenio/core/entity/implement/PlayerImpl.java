@@ -43,7 +43,7 @@ public final class PlayerImpl implements Player {
   private volatile Room currentRoom;
   private volatile PlayerState state;
 
-  private volatile long lastLoginedTime;
+  private volatile long lastLoginTime;
   private volatile long lastJoinedRoomTime;
   private volatile int playerSlotInCurrentRoom;
 
@@ -61,7 +61,7 @@ public final class PlayerImpl implements Player {
 
     properties = new ConcurrentHashMap<String, Object>();
 
-    lastLoginedTime = 0L;
+    lastLoginTime = 0L;
     lastJoinedRoomTime = 0L;
 
     setCurrentRoom(null);
@@ -129,11 +129,11 @@ public final class PlayerImpl implements Player {
 
   @Override
   public long getLastLoggedInTime() {
-    return lastLoginedTime;
+    return lastLoginTime;
   }
 
   private void setLastLoggedInTime() {
-    lastLoginedTime = TimeUtility.currentTimeMillis();
+    lastLoginTime = TimeUtility.currentTimeMillis();
   }
 
   @Override
@@ -251,7 +251,7 @@ public final class PlayerImpl implements Player {
   @Override
   public String toString() {
     return String.format("{ name: %s, session: %b, loggedIn: %b, spectator: %b, activated: %b }",
-        name,
+        name != null ? name : "null",
         hasSession, loggedIn, isSpectator, activated);
   }
 }
