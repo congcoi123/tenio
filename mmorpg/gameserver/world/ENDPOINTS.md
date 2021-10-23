@@ -1,3 +1,0 @@
-## World
-
-> Happy coding !
