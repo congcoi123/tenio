@@ -57,7 +57,7 @@ public final class TestServerLogin {
 }
 
 @Component
-public final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
+final class ConnectionEstablishedHandler extends AbstractExtension implements EventConnectionEstablishedResult {
 
     @Override
     public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
@@ -71,7 +71,7 @@ public final class ConnectionEstablishedHandler extends AbstractExtension implem
 }
 
 @Component
-public final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
+final class PlayerLoggedinHandler extends AbstractExtension implements EventPlayerLoggedinResult {
 
     @Override
     public void handle(Player player, PlayerLoggedinResult result) {
@@ -86,7 +86,7 @@ public final class PlayerLoggedinHandler extends AbstractExtension implements Ev
 }
 
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
+final class ReceivedMessageFromPlayerHandler extends AbstractExtension
         implements EventReceivedMessageFromPlayer {
 
     @Override
