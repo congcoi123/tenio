@@ -40,7 +40,7 @@
 
     <properties>
         <google.guava.version>31.0.1-jre</google.guava.version>
-        <logging.log4j.version>2.14.1</logging.log4j.version>
+        <logging.log4j.version>2.16.0</logging.log4j.version>
         <org.reflections.version>0.10</org.reflections.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
