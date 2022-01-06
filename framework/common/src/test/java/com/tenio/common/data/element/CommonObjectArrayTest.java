@@ -22,43 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.task;
+package com.tenio.common.data.element;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Task Manager")
-class TaskManagerTest {
+@DisplayName("Unit Test Cases For Common Object Array")
+class CommonObjectArrayTest {
 
-  @Test
-  @DisplayName("Allow creating a new task")
-  void createNewTaskShouldWork() {
-    var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
+  private final CommonObjectArray dummyObjectArray = CommonObjectArray.newInstance();
+  private final CommonObjectArray commonObjectArray = CommonObjectArray.newInstance();
 
-    assertEquals(taskManager.getRemainTime("test-task"), DefaultTask.DELAY_SECOND - 1);
+  @BeforeEach
+  void initialization() {
+    commonObjectArray.put(100.0).put(100.0F).put(100L).put(100).put(true).put("test")
+        .put(dummyObjectArray).put(dummyObjectArray);
   }
 
   @Test
-  @DisplayName("Allow killing a task")
-  void killATaskShouldWork() {
-    var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
-    taskManager.kill("test-task");
-
-    assertEquals(taskManager.getRemainTime("test-task"), -1);
-  }
-
-  @Test
-  @DisplayName("Starting a running task should not throw any exception")
-  void startARunningTaskShouldNotThrowException() {
-    var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
-    taskManager.create("test-task", new DefaultTask().run());
-
-    assertTrue(true);
+  @DisplayName("Allow fetching all inserted data from the array")
+  void itShouldFetchAllInsertedData() {
+    assertAll("itShouldFetchAllInsertedData",
+        () -> assertEquals(commonObjectArray.getDouble(0), 100.0),
+        () -> assertEquals(commonObjectArray.getFloat(1), 100.0F),
+        () -> assertEquals(commonObjectArray.getLong(2), 100L),
+        () -> assertEquals(commonObjectArray.getInt(3), 100),
+        () -> assertTrue(commonObjectArray.getBoolean(4)),
+        () -> assertEquals(commonObjectArray.getString(5), "test"),
+        () -> assertEquals(commonObjectArray.getCommonObjectArray(6), dummyObjectArray),
+        () -> assertTrue(commonObjectArray.getObject(7) instanceof CommonObjectArray)
+    );
   }
 }

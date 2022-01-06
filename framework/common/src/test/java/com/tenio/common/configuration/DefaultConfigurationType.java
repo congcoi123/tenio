@@ -22,7 +22,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.utility;
+package com.tenio.common.configuration;
 
-public final class TimeUtilityTest {
+import java.util.HashMap;
+import java.util.Map;
+
+enum DefaultConfigurationType implements ConfigurationType {
+  BOOLEAN("BOOLEAN"),
+  INTEGER("INTEGER"),
+  FLOAT("FLOAT"),
+  STRING("STRING"),
+  OBJECT("OBJECT"),
+  NOT_DEFINED("NOT_DEFINED"),
+  NULL_DEFINED("NULL_DEFINED");
+
+  // Reverse-lookup map for getting a type from a value
+  private static final Map<String, DefaultConfigurationType> lookup =
+      new HashMap<String, DefaultConfigurationType>();
+
+  static {
+    for (var configurationType : DefaultConfigurationType.values()) {
+      lookup.put(configurationType.getValue(), configurationType);
+    }
+  }
+
+  private final String value;
+
+  DefaultConfigurationType(final String value) {
+    this.value = value;
+  }
+
+  public static DefaultConfigurationType getByValue(String value) {
+    return lookup.get(value);
+  }
+
+  public final String getValue() {
+    return value;
+  }
+
+  @Override
+  public final String toString() {
+    return name();
+  }
 }

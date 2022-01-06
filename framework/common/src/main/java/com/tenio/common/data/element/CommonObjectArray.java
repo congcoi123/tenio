@@ -75,7 +75,7 @@ public final class CommonObjectArray extends ArrayList<Object> implements Serial
     return get(index);
   }
 
-  public CommonObjectArray getObjectAt(int index) {
+  public CommonObjectArray getCommonObjectArray(int index) {
     return (CommonObjectArray) get(index);
   }
 }

@@ -44,13 +44,13 @@ public final class OsUtility {
   public static OsType getOperatingSystemType() {
     var osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
     if ((osName.indexOf("mac") >= 0) || (osName.indexOf("darwin") >= 0)) {
-      return OsType.MacOS;
+      return OsType.MAC;
     } else if (osName.indexOf("win") >= 0) {
-      return OsType.Windows;
+      return OsType.WINDOWS;
     } else if (osName.indexOf("nux") >= 0) {
-      return OsType.Linux;
+      return OsType.LINUX;
     } else {
-      return OsType.Other;
+      return OsType.OTHER;
     }
   }
 
@@ -58,6 +58,9 @@ public final class OsUtility {
    * Types of Operating Systems.
    */
   public enum OsType {
-    Windows, MacOS, Linux, Other
+    WINDOWS,
+    MAC,
+    LINUX,
+    OTHER
   }
 }

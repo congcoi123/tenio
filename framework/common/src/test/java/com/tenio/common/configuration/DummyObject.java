@@ -22,18 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.bootstrap.circular;
+package com.tenio.common.configuration;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+class DummyObject {
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
-
-  @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  @Override
+  public String toString() {
+    return "Dummy Object";
   }
 }

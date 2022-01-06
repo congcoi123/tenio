@@ -24,5 +24,42 @@ THE SOFTWARE.
 
 package com.tenio.common.utility;
 
-public final class OsUtilityTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+
+@DisplayName("Unit Test Cases For OS Utility")
+class OsUtilityTest {
+
+  @Test
+  @EnabledOnOs(OS.MAC)
+  @DisplayName("Fetch operation system type should return MAC")
+  void getOperatingSystemTypeMac() {
+    assertEquals(OsUtility.OsType.MAC, OsUtility.getOperatingSystemType());
+  }
+
+  @Test
+  @EnabledIfSystemProperty(named = "os.name", matches = "win")
+  @DisplayName("Fetch operation system type should return WINDOWS")
+  void getOperatingSystemTypeWindows() {
+    assertEquals(OsUtility.OsType.WINDOWS, OsUtility.getOperatingSystemType());
+  }
+
+  @Test
+  @EnabledIfSystemProperty(named = "os.name", matches = "nux")
+  @DisplayName("Fetch operation system type should return LINUX")
+  void getOperatingSystemTypeLinux() {
+    assertEquals(OsUtility.OsType.LINUX, OsUtility.getOperatingSystemType());
+  }
+
+  @Test
+  @EnabledOnOs(OS.OTHER)
+  @DisplayName("Fetch operation system type should return OTHER")
+  void getOperatingSystemTypeOther() {
+    assertEquals(OsUtility.OsType.OTHER, OsUtility.getOperatingSystemType());
+  }
 }
