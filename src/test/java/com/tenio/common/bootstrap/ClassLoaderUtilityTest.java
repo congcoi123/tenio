@@ -29,13 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.bootstrap.utility.ClassLoaderUtility;
-import java.io.IOException;
+import com.tenio.common.custom.DisabledTestFindingSolution;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public final class ClassLoaderUtilityTest {
+@DisplayName("Unit Test Cases For Class Loader")
+class ClassLoaderUtilityTest {
 
   @Test
-  public void scanPackageShouldReturnListOfClasses() throws IOException, ClassNotFoundException {
+  @DisplayName("Scanning a package should return a list of classes inside it")
+  void scanPackageShouldReturnListOfClasses() throws ClassNotFoundException {
     var listClasses = ClassLoaderUtility.getClasses("com.tenio.common.bootstrap.loader");
     assertAll("scanPackageShouldReturnListOfClasses",
         () -> assertEquals(listClasses.size(), 3),
@@ -52,16 +55,28 @@ public final class ClassLoaderUtilityTest {
   }
 
   @Test
-  public void scanNonExistedPackageShouldReturnEmptyArray()
-      throws IOException, ClassNotFoundException {
+  @DisplayName("Scanning a non-existed package should return an empty list of classes")
+  void scanNonExistedPackageShouldReturnEmptyArray() throws ClassNotFoundException {
     var listClasses = ClassLoaderUtility.getClasses("com.tenio.common.bootstrap.null");
     assertTrue(listClasses.isEmpty());
   }
 
   @Test
-  public void scanExternalLibraryShouldReturnListOfClasses()
-      throws IOException, ClassNotFoundException {
+  @DisplayName("To be able to scan a package of a jar file and return a list of classes inside it")
+  void scanExternalLibraryShouldReturnListOfClasses() throws ClassNotFoundException {
     var listClasses = ClassLoaderUtility.getClasses("com.google.common.annotations");
     assertTrue(listClasses.size() > 0);
+  }
+
+
+  @DisabledTestFindingSolution
+  @DisplayName("Attempt to recall the private constructor in order to create an instance should " +
+      "throw an exception")
+  void tryToReCreateClassLoaderShouldThrowException() {
+  }
+
+  @DisabledTestFindingSolution
+  @DisplayName("Try to procedure throwable exception cases")
+  void getClassesInInvalidWaysShouldThrowException() {
   }
 }

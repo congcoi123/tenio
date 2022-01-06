@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class TestTask implements Task {
+class DefaultTask implements Task {
 
   public static final int DELAY_SECOND = 10;
 

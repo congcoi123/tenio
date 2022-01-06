@@ -30,7 +30,16 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
+// @Suite
 @SuiteDisplayName("Test all unit test cases for tenio-common module")
-@SelectPackages("com.tenio")
-public final class TenIOCommonTest {
+@SelectPackages({
+    "com.tenio.common.bootstrap",
+    "com.tenio.common.configuration",
+    "com.tenio.common.data",
+    "com.tenio.common.pool",
+    "com.tenio.common.task",
+    "com.tenio.common.utility",
+    "com.tenio.common.worker"
+})
+class TenIOCommonTest {
 }

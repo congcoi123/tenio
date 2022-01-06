@@ -24,5 +24,28 @@ THE SOFTWARE.
 
 package com.tenio.common.utility;
 
-public final class XmlUtilityTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import javax.imageio.metadata.IIOMetadataNode;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
+
+class XmlUtilityTest {
+
+  @Test
+  void testGetNodeValue() throws DOMException {
+    Node node = mock(Node.class);
+    when(node.getTextContent()).thenReturn("Not all who wander are lost");
+    assertEquals("Not all who wander are lost", XmlUtility.getNodeValue(node));
+    verify(node).getTextContent();
+  }
+
+  @Test
+  void testGetAttrVal() {
+    assertEquals("", XmlUtility.getAttrVal(new IIOMetadataNode("Node Name"), "Name"));
+  }
 }

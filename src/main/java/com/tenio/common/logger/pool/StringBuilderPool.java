@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.logger.pool;
 
 import com.google.common.base.Throwables;
-import com.tenio.common.configuration.constant.CommonConstant;
+import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.ElementPool;
 import javax.annotation.concurrent.GuardedBy;
@@ -48,6 +48,10 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
   private boolean[] used;
 
   private StringBuilderPool() {
+    initialization();
+  }
+
+  private void initialization() {
     pool = new StringBuilder[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
     used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
@@ -133,6 +137,8 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
       pool[i] = null;
       used[i] = false;
     }
+
+    initialization();
   }
 
   @Override

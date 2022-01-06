@@ -22,18 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.bootstrap.circular;
+package com.tenio.common.custom;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
+public class StringArrayConverter extends SimpleArgumentConverter {
 
-  @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  @Override
+  protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+    if (source instanceof String && String[].class.isAssignableFrom(targetType)) {
+      return ((String) source).split("\\s*,\\s*");
+    } else {
+      throw new IllegalArgumentException("Conversion from " + source.getClass() + " to "
+          + targetType + " not supported.");
+    }
   }
 }

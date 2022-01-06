@@ -22,18 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.bootstrap.circular;
+package com.tenio.common.configuration;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
+class DefaultConfiguration extends CommonConfiguration {
 
-  @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  public DummyObject dummyObject = new DummyObject();
+
+  @Override
+  protected void extend(Map<String, String> extProperties) {
+    // do nothing
+  }
+
+  @Override
+  public void load(String file) {
+    // import data
+    push(DefaultConfigurationType.BOOLEAN, "true");
+    push(DefaultConfigurationType.FLOAT, "100F");
+    push(DefaultConfigurationType.INTEGER, "99");
+    push(DefaultConfigurationType.STRING, "test");
+    push(DefaultConfigurationType.STRING, "test overridden");
+    push(DefaultConfigurationType.NOT_DEFINED, "-1");
+    push(DefaultConfigurationType.OBJECT, dummyObject);
   }
 }

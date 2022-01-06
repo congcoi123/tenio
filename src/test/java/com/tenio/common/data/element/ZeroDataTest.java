@@ -22,18 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.bootstrap.circular;
+package com.tenio.common.data.element;
 
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.tenio.common.data.ZeroDataType;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
+@DisplayName("Unit Test Cases For Zero Data")
+class ZeroDataTest {
 
   @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  @DisplayName("Creating a new instance should work")
+  void createNewInstanceShouldWork() {
+    ZeroData zeroData = ZeroData.newInstance(ZeroDataType.NULL, "Element");
+    assertEquals(ZeroDataType.NULL, zeroData.getType());
+    assertEquals(zeroData.getElement(), "Element");
+    assertEquals("{ type: NULL, value: Element }", zeroData.toString());
   }
 }
