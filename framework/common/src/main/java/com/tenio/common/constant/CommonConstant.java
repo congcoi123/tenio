@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.configuration.constant;
+package com.tenio.common.constant;
 
 import com.tenio.common.pool.ElementPool;
 

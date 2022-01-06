@@ -27,20 +27,32 @@ package com.tenio.common.pool;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.pool.StringBuilderPool;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public final class StringBuilderPoolTest {
+@DisplayName("Unit Test Cases For String Builder Pool")
+class StringBuilderPoolTest {
+
+  @BeforeEach
+  void initialization() {
+    StringBuilderPool.getInstance().cleanup();
+  }
 
   @Test
-  public void getBuilderFromPoolShouldWork() {
+  @DisplayName("To be able to get a builder instance from pool")
+  void getBuilderFromPoolShouldWork() {
     var builder = StringBuilderPool.getInstance().get();
     assertTrue(builder instanceof StringBuilder);
   }
 
   @Test
-  public void getAndPayBuilderShouldWork() {
+  @DisplayName("After retrieving a builder, allow to pay it back to the pool")
+  void getAndRePayBuilderShouldWork() {
     var pool = StringBuilderPool.getInstance();
     var sizeBefore = pool.getAvailableSlot();
     var builder = pool.get();
@@ -51,7 +63,8 @@ public final class StringBuilderPoolTest {
   }
 
   @Test
-  public void poolSizeDecreaseShouldBeAsExpected() {
+  @DisplayName("Taking builder from pool should decrease the pool size as expected")
+  void poolSizeDecreaseShouldBeAsExpected() {
     var pool = StringBuilderPool.getInstance();
     var sizeBefore = pool.getAvailableSlot();
     var takenNumber = 10;
@@ -64,7 +77,24 @@ public final class StringBuilderPoolTest {
   }
 
   @Test
-  public void clearPoolShouldReturnTheAvailableSlotsEqualsSize() {
+  @DisplayName("When retrieving the instances reaches threshold, it automatically expands the " +
+      "pool size")
+  void poolSizeIncreaseShouldBeAsExpected() {
+    var pool = StringBuilderPool.getInstance();
+    var takenNumber = CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + 1;
+    for (int i = 0; i < takenNumber; i++) {
+      pool.get();
+    }
+    var sizeAfter = pool.getPoolSize();
+    var sizeExpected =
+        CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL;
+
+    assertTrue(sizeAfter == sizeExpected);
+  }
+
+  @Test
+  @DisplayName("Clear the pool should free all slots and reset the pool size")
+  void clearPoolShouldReturnTheAvailableSlotsEqualsSize() {
     var pool = StringBuilderPool.getInstance();
     var takenNumber = 10;
     for (int i = 0; i < takenNumber; i++) {
@@ -76,7 +106,8 @@ public final class StringBuilderPoolTest {
   }
 
   @Test
-  public void repayAnInvalidElementShouldThrowAnException() {
+  @DisplayName("Attempt to repay an invalid builder instance should throw an exception")
+  void repayAnInvalidElementShouldThrowAnException() {
     var pool = StringBuilderPool.getInstance();
 
     assertThrows(NullElementPoolException.class, () -> {

@@ -22,18 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.bootstrap.circular;
+package com.tenio.common.worker;
 
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.concurrent.ArrayBlockingQueue;
 import org.junit.jupiter.api.Test;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
-
+class WorkerPoolRunnableTest {
   @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  void testConstructor() {
+    assertFalse(
+        (new WorkerPoolRunnable("Name", 1, new ArrayBlockingQueue<Runnable>(3))).isStopped());
+    assertFalse(
+        (new WorkerPoolRunnable("Name", 1, new ArrayBlockingQueue<Runnable>(3))).isStopped());
   }
 }
+

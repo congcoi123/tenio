@@ -71,11 +71,11 @@ public final class CommonObject extends HashMap<String, Object> implements Seria
     return get(key);
   }
 
-  public CommonObject getMessageObject(String key) {
+  public CommonObject getCommonObject(String key) {
     return (CommonObject) get(key);
   }
 
-  public CommonObjectArray getMessageObjectArray(String key) {
+  public CommonObjectArray getCommonObjectArray(String key) {
     return (CommonObjectArray) get(key);
   }
 
