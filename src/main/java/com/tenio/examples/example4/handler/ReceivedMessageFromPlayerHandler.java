@@ -26,7 +26,7 @@ package com.tenio.examples.example4.handler;
 
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
@@ -46,7 +46,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
   @Override
   public void handle(Player player, ServerMessage message) {
 
-    var data = (ZeroObject) message.getData();
+    var data = (ZeroMap) message.getData();
     if (data.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
       var request = ExampleMessage.newInstance();
       request.putContent(ServerEventKey.KEY_PLAYER_NAME, player.getName());

@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example7.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
@@ -40,13 +40,13 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
   @Override
   public void handle(Player player, ServerMessage message) {
     var position =
-        ((ZeroObject) message.getData()).getIntegerArray(SharedEventKey.KEY_PLAYER_POSITION)
+        ((ZeroMap) message.getData()).getIntegerArray(SharedEventKey.KEY_PLAYER_POSITION)
             .toArray();
 
     player.setProperty(Example7Constant.PLAYER_POSITION_X, position[0]);
     player.setProperty(Example7Constant.PLAYER_POSITION_Y, position[1]);
 
-    var players = player.getCurrentRoom().getAllPlayersList();
+    var players = player.getCurrentRoom().get().getReadonlyPlayersList();
 
     var pack = array();
     var parray = array();
@@ -58,6 +58,6 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
 
     var request = object().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
 
-    response().setRecipients(players).setContent(request.toBinary()).write();
+    response().setRecipientPlayers(players).setContent(request.toBinary()).write();
   }
 }

@@ -43,7 +43,7 @@ public final class PlayerLoggedInHandler extends AbstractExtension
               String.format("Welcome to server: %s", player.getName()))
           .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName());
 
-      response().setContent(data.toBinary()).setRecipient(player).write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

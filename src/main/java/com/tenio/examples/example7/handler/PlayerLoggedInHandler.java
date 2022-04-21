@@ -46,7 +46,7 @@ public final class PlayerLoggedInHandler extends AbstractExtension
       player.setProperty(Example7Constant.PLAYER_POSITION_X, x);
       player.setProperty(Example7Constant.PLAYER_POSITION_Y, y);
 
-      api().joinRoom(player, api().getRoomById(0));
+      api().joinRoom(player, api().getRoomById(0).get());
     }
   }
 }

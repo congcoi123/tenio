@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example3;
 
-import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.ZeroMap;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
@@ -66,7 +66,7 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
 
     // send a login request
     var data =
-        ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+        ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     var message = ServerMessage.newInstance().setData(data);
     tcp.send(message);
 
@@ -84,11 +84,11 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
   public void onReceivedTCP(ServerMessage message) {
     System.err.println("[RECV FROM SERVER TCP] -> " + message);
 
-    switch (((ZeroObject) message.getData()).getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
+    switch (((ZeroMap) message.getData()).getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
       case UdpEstablishedState.ALLOW_TO_ATTACH: {
         // now you can send request for UDP connection request
         var data =
-            ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+            ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
         var request = ServerMessage.newInstance().setData(data);
         udp.send(request);
 
@@ -101,7 +101,7 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
         System.out.println("Start the conversation ...");
 
         for (int i = 1; i <= 100; i++) {
-          var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+          var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
           var request = ServerMessage.newInstance().setData(data);
           udp.send(request);

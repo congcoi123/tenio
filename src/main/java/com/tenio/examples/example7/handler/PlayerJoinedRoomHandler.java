@@ -40,7 +40,7 @@ public final class PlayerJoinedRoomHandler extends AbstractExtension
   @Override
   public void handle(Player player, Room room, PlayerJoinedRoomResult result) {
     if (result == PlayerJoinedRoomResult.SUCCESS) {
-      var players = room.getAllPlayersList();
+      var players = room.getReadonlyPlayersList();
       var iterator = players.iterator();
 
       var pack = array();
@@ -57,7 +57,7 @@ public final class PlayerJoinedRoomHandler extends AbstractExtension
 
       var message = object().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
 
-      response().setRecipients(players).setContent(message.toBinary()).write();
+      response().setRecipientPlayers(players).setContent(message.toBinary()).write();
     }
   }
 }
