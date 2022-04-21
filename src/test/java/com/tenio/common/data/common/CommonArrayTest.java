@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,40 +22,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.element;
+package com.tenio.common.data.common;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Common Object Array")
-class CommonObjectArrayTest {
+@DisplayName("Unit Test Cases For Common Array")
+class CommonArrayTest {
 
-  private final CommonObjectArray dummyObjectArray = CommonObjectArray.newInstance();
-  private final CommonObjectArray commonObjectArray = CommonObjectArray.newInstance();
+  private final CommonArray dummyArray = CommonArray.newInstance();
+  private final CommonArray commonArray = CommonArray.newInstance();
 
   @BeforeEach
   void initialization() {
-    commonObjectArray.put(100.0).put(100.0F).put(100L).put(100).put(true).put("test")
-        .put(dummyObjectArray).put(dummyObjectArray);
+    commonArray.put(100.0).put(100.0F).put(100L).put(100).put(true).put("test")
+        .put(dummyArray).put(dummyArray);
   }
 
   @Test
   @DisplayName("Allow fetching all inserted data from the array")
   void itShouldFetchAllInsertedData() {
     assertAll("itShouldFetchAllInsertedData",
-        () -> assertEquals(commonObjectArray.getDouble(0), 100.0),
-        () -> assertEquals(commonObjectArray.getFloat(1), 100.0F),
-        () -> assertEquals(commonObjectArray.getLong(2), 100L),
-        () -> assertEquals(commonObjectArray.getInt(3), 100),
-        () -> assertTrue(commonObjectArray.getBoolean(4)),
-        () -> assertEquals(commonObjectArray.getString(5), "test"),
-        () -> assertEquals(commonObjectArray.getCommonObjectArray(6), dummyObjectArray),
-        () -> assertTrue(commonObjectArray.getObject(7) instanceof CommonObjectArray)
+        () -> assertEquals(commonArray.getDouble(0), 100.0),
+        () -> assertEquals(commonArray.getFloat(1), 100.0F),
+        () -> assertEquals(commonArray.getLong(2), 100L),
+        () -> assertEquals(commonArray.getInt(3), 100),
+        () -> assertTrue(commonArray.getBoolean(4)),
+        () -> assertEquals(commonArray.getString(5), "test"),
+        () -> assertEquals(commonArray.getCommonObjectArray(6), dummyArray),
+        () -> assertTrue(commonArray.getObject(7) instanceof CommonArray)
     );
+  }
+
+  @Test
+  @DisplayName("An exception should be thrown when a readonly array is tried to modify")
+  void itShouldThrowExceptionWhenTryToModifyReadonlyArray() {
+    var readonlyList = commonArray.getReadonlyList();
+    Assertions.assertThrows(UnsupportedOperationException.class,
+        () -> readonlyList.add("new value"));
   }
 }

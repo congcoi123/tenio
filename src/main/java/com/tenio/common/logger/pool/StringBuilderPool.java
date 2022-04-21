@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,16 +51,6 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
     initialization();
   }
 
-  private void initialization() {
-    pool = new StringBuilder[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
-    used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
-
-    for (int i = 0; i < pool.length; i++) {
-      pool[i] = new StringBuilder();
-      used[i] = false;
-    }
-  }
-
   /**
    * Preventing Singleton object instantiation from outside creates multiple instance if two
    * thread access this method simultaneously.
@@ -78,6 +68,16 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
       }
     }
     return reference;
+  }
+
+  private void initialization() {
+    pool = new StringBuilder[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
+    used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
+
+    for (int i = 0; i < pool.length; i++) {
+      pool[i] = new StringBuilder();
+      used[i] = false;
+    }
   }
 
   @Override
@@ -104,7 +104,7 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
       used[i] = false;
     }
 
-    infoWithoutPool("STRINGBUILDER POOL", strgen("Increased the number of elements by ",
+    infoWithoutPool(strgen("Increased the number of elements by ",
         CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
 
     // and allocate the last old element
@@ -149,8 +149,8 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
   @Override
   public synchronized int getAvailableSlot() {
     int slot = 0;
-    for (int i = 0; i < used.length; i++) {
-      if (!used[i]) {
+    for (boolean b : used) {
+      if (!b) {
         slot++;
       }
     }
@@ -162,16 +162,13 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * Only use for {@link StringBuilderPool}. It might cause out of memory, so be
    * careful if you use it. You are warned!
    *
-   * @param tag the tag type
    * @param msg the message content
    */
-  private void infoWithoutPool(String tag, String msg) {
+  private void infoWithoutPool(String msg) {
     if (!logger.isInfoEnabled()) {
       return;
     }
-    var builder = new StringBuilder();
-    builder.append("[").append(tag).append("] ").append(msg);
-    logger.info(builder.toString());
+    logger.info("[STRINGBUILDER POOL] " + msg);
   }
 
   /**
@@ -184,9 +181,7 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
     if (!logger.isErrorEnabled()) {
       return;
     }
-    var builder = new StringBuilder();
-    builder.append(Throwables.getStackTraceAsString(cause));
-    logger.error(builder.toString());
+    logger.error(Throwables.getStackTraceAsString(cause));
   }
 
   /**

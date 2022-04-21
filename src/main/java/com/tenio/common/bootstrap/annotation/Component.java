@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that an annotated class is a <b>"component"</b>. Such classes are considered as
- * candidates for auto-detection when using annotation-based configuration and classpath scanning.
+ * A class annotated by this annotation is considered as a candidate for the <b>auto-detection</b>
+ * when using <b>annotation-based</b> configuration and <b>classpath scanning</b>.
+ *
+ * <p>An instance of the class can be retrieved by using the annotation {@link Autowired}.
  */
 @Retention(RUNTIME)
 @Target(TYPE)

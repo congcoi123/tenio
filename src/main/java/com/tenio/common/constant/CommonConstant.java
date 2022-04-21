@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,7 @@ package com.tenio.common.constant;
 import com.tenio.common.pool.ElementPool;
 
 /**
- * All base constants' values for the server are defined here. This class should
- * not be modified.
+ * All base constants' values for the server are defined here.
  */
 public final class CommonConstant {
 
@@ -39,20 +38,12 @@ public final class CommonConstant {
    */
   public static final int DEFAULT_NUMBER_ELEMENTS_POOL = 64;
   /**
-   * When the desired number of elements exceeded the first configuration. The new
-   * number of elements will be added.
+   * When the desired number of elements exceeded the first configuration, the new number of
+   * elements will be added.
    *
    * @see ElementPool
    */
   public static final int ADDITIONAL_NUMBER_ELEMENTS_POOL = 32;
-  /**
-   * The base FPS value in server.
-   */
-  public static final float FPS = 1 / 60.0f;
-  public static final String DEFAULT_CONFIGURATION_PACKAGE = "com.tenio.common.configuration";
-  public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
-  public static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
-  public static final String DEFAULT_ENGINE_HEARTBEAT_PACKAGE = "com.tenio.engine.heartbeat";
 
   private CommonConstant() {
     throw new UnsupportedOperationException("This class doesn't support to create a new instance");

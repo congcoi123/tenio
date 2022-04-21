@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-@DisplayName("Unit Test Cases For Zero Data Type")
-class ZeroDataTypeTest {
+@DisplayName("Unit Test Cases For Zero Type")
+class ZeroTypeTest {
 
   @ParameterizedTest
   @CsvSource({
@@ -53,12 +53,12 @@ class ZeroDataTypeTest {
       "DOUBLE_ARRAY, 15",
       "STRING_ARRAY, 16",
       "ZERO_ARRAY, 17",
-      "ZERO_OBJECT, 18"
+      "ZERO_MAP, 18"
   })
   @DisplayName("Test All Enumerated Values")
   void testAllEnumValues(String name, int value) {
-    ZeroDataType zeroDataType = ZeroDataType.valueOf(name);
-    assertEquals(value, zeroDataType.getValue());
-    assertEquals(name, zeroDataType.toString());
+    ZeroType zeroType = ZeroType.valueOf(name);
+    assertEquals(value, zeroType.getValue());
+    assertEquals(name, zeroType.toString());
   }
 }

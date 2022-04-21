@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,22 +33,46 @@ public final class ByteUtility {
     throw new UnsupportedOperationException("This class does not support to create a new instance");
   }
 
+  /**
+   * Converts a primitive integer value to an array of binaries.
+   *
+   * @param value the primitive number
+   * @return an array of binaries (Big Endian)
+   */
   public static byte[] intToBytes(int value) {
     return new byte[] {(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8),
         (byte) value};
   }
 
+  /**
+   * Converts an array of binaries to an integer value.
+   *
+   * @param bytes an array of binaries
+   * @return a integer number
+   */
   public static int bytesToInt(byte[] bytes) {
     return ((bytes[0] & 0xFF) << 24) | ((bytes[1] & 0xFF) << 16) | ((bytes[2] & 0xFF) << 8)
-        | ((bytes[3] & 0xFF) << 0);
+        | ((bytes[3] & 0xFF));
   }
 
+  /**
+   * Converts a primitive short value to an array of binaries.
+   *
+   * @param value the primitive number
+   * @return an array of binaries (Big Endian)
+   */
   public static byte[] shortToBytes(short value) {
     return new byte[] {(byte) (value >> 8), (byte) value};
   }
 
+  /**
+   * Converts an array of binaries to a short value.
+   *
+   * @param bytes an array of binaries
+   * @return a short value number
+   */
   public static short bytesToShort(byte[] bytes) {
-    return (short) (((bytes[0] & 0xFF) << 8) | ((bytes[1] & 0xFF) << 0));
+    return (short) (((bytes[0] & 0xFF) << 8) | ((bytes[1] & 0xFF)));
   }
 
   /**

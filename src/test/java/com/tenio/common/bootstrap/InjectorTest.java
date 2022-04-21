@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.tenio.common.bootstrap.bean.TestBeanClass;
 import com.tenio.common.bootstrap.injector.Injector;
 import com.tenio.common.bootstrap.test.BootstrapComponent;
 import com.tenio.common.bootstrap.test.impl.TestClassA;
@@ -54,7 +55,7 @@ class InjectorTest {
   void scanPackageShouldRetrieveInstanceOfA()
       throws IOException, ClassNotFoundException, InvocationTargetException, InstantiationException,
       IllegalAccessException, NoSuchMethodException {
-    injector.scanPackages(BootstrapComponent.class, null);
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.common.bootstrap.bean");
 
     var bean = injector.getBean(BootstrapComponent.class).a;
     assertAll("scanPackageShouldRetrieveInstanceOfA",
@@ -68,7 +69,7 @@ class InjectorTest {
   void scanPackageShouldRetrieveNullInstanceOfB()
       throws IOException, ClassNotFoundException, InvocationTargetException, InstantiationException,
       IllegalAccessException, NoSuchMethodException {
-    injector.scanPackages(BootstrapComponent.class, null);
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.common.bootstrap.bean");
 
     var bean = injector.getBean(BootstrapComponent.class).b;
     assertEquals(bean, null);
@@ -80,7 +81,7 @@ class InjectorTest {
   void scanPackageShouldRetrieveInstanceOfC()
       throws IOException, ClassNotFoundException, InvocationTargetException, InstantiationException,
       IllegalAccessException, NoSuchMethodException {
-    injector.scanPackages(BootstrapComponent.class, null);
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.common.bootstrap.bean");
 
     var bean = injector.getBean(BootstrapComponent.class).c;
     assertAll("scanPackageShouldRetrieveInstanceOfC",
@@ -95,7 +96,7 @@ class InjectorTest {
   void scanPackageShouldRetrieveInstanceOfAlone()
       throws IOException, ClassNotFoundException, InvocationTargetException, InstantiationException,
       IllegalAccessException, NoSuchMethodException {
-    injector.scanPackages(BootstrapComponent.class, null);
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.common.bootstrap.bean");
 
     var bean = injector.getBean(BootstrapComponent.class).alone;
     assertTrue(bean instanceof TestClassAlone);
@@ -119,6 +120,22 @@ class InjectorTest {
       injector.scanPackages(null, "com.tenio.common.bootstrap.test.impl", "com.tenio.common" +
           ".bootstrap.test.inf", "com.tenio.common.bootstrap.exception.two");
     });
+  }
+
+  @Test
+  @DisplayName("After scanning the package should retrieve an instance of bean class - a class " +
+      "declared by @Bean and @Configuration annotations")
+  void scanPackageShouldRetrieveInstanceOfBean()
+      throws IOException, ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.common.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).bean;
+    assertAll("scanPackageShouldRetrieveInstanceOfBean",
+        () -> assertTrue(bean instanceof TestBeanClass),
+        () -> assertEquals(2022, bean.getValue()),
+        () -> assertEquals("This is a bean class", bean.toString())
+    );
   }
 
   @DisabledTestFindingSolution

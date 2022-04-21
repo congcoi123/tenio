@@ -3,7 +3,7 @@ We are happy with your help in making the `TenIO` project better. Please read th
 
 ## Project roles
 ### Reviewer
-If you having submit a pull request, you can assign a reviewer is any members below to review and merge your pull request.
+If you're having submit a pull request, you can assign a reviewer is any members below to review and merge your pull request.
 - [Kong](https://github.com/congcoi123)
 
 ### Core Committer

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.element;
+package com.tenio.common.task;
 
-import com.tenio.common.data.ZeroDataType;
+import java.util.concurrent.ScheduledFuture;
 
 /**
- * This class holds a relationship between the self-definition data type and its value.
+ * This class provides a {@link ScheduledFuture} to do a mission.
  */
-public final class ZeroData {
+public interface Task {
 
-  private final ZeroDataType type;
-  private final Object element;
-
-  private ZeroData(ZeroDataType type, Object element) {
-    this.type = type;
-    this.element = element;
-  }
-
-  public static ZeroData newInstance(ZeroDataType type, Object element) {
-    return new ZeroData(type, element);
-  }
-
-  public ZeroDataType getType() {
-    return type;
-  }
-
-  public Object getElement() {
-    return element;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("{ type: %s, value: %s }", type.toString(), element.toString());
-  }
+  /**
+   * Executes a task.
+   *
+   * @return a {@link ScheduledFuture} instance to manage its task
+   */
+  ScheduledFuture<?> run();
 }
