@@ -13,7 +13,7 @@
 	</Properties>
 
 	<Implements>
-		<Class name="packet-encrypter">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter</Class>
+		<Class name="packet-encryptor">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncryptor</Class>
 		<Class name="packet-compressor">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
 		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder</Class>
 		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder</Class>

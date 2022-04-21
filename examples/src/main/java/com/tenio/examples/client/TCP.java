@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
@@ -35,7 +35,7 @@ import com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncryptor;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -76,18 +76,18 @@ public final class TCP implements PacketDecoderResultListener {
       byteArrayOutputStream = new ByteArrayOutputStream();
 
       session = SessionImpl.newInstance();
-      session.createPacketSocketHandle();
+      session.createPacketSocketHandler();
 
       var binaryCompressor = new DefaultBinaryPacketCompressor();
-      var binaryEncrypter = new DefaultBinaryPacketEncrypter();
+      var binaryEncryptor = new DefaultBinaryPacketEncryptor();
 
       binaryPacketEncoder = new DefaultBinaryPacketEncoder();
       binaryPacketEncoder.setCompressor(binaryCompressor);
-      binaryPacketEncoder.setEncrypter(binaryEncrypter);
+      binaryPacketEncoder.setEncryptor(binaryEncryptor);
 
       binaryPacketDecoder = new DefaultBinaryPacketDecoder();
       binaryPacketDecoder.setCompressor(binaryCompressor);
-      binaryPacketDecoder.setEncrypter(binaryEncrypter);
+      binaryPacketDecoder.setEncryptor(binaryEncryptor);
       binaryPacketDecoder.setResultListener(this);
     } catch (IOException e) {
       e.printStackTrace();
@@ -124,7 +124,7 @@ public final class TCP implements PacketDecoderResultListener {
     var executorService = Executors.newSingleThreadExecutor();
     future = executorService.submit(() -> {
       var binary = new byte[DEFAULT_BYTE_BUFFER_SIZE];
-      int readBytes = -1;
+      int readBytes;
       try {
         while ((readBytes = dataInputStream.read(binary, 0, binary.length)) != -1) {
           byteArrayOutputStream.reset();
@@ -133,7 +133,6 @@ public final class TCP implements PacketDecoderResultListener {
         }
       } catch (IOException | RuntimeException e) {
         e.printStackTrace();
-        return;
       }
     });
   }
@@ -152,12 +151,12 @@ public final class TCP implements PacketDecoderResultListener {
 
   @Override
   public void resultFrame(Session session, byte[] binary) {
-    var data = ZeroObjectImpl.newInstance(binary);
+    var data = ZeroUtility.binaryToMap(binary);
     socketListener.onReceivedTCP(ServerMessage.newInstance().setData(data));
   }
 
   @Override
-  public void updateDroppedPackets(long numberPackets) {
+  public void updateReadDroppedPackets(long numberPackets) {
     // do nothing
   }
 

@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4;
 
-import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.ZeroMap;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.data.ServerMessage;
@@ -95,37 +95,33 @@ public final class TestClientMovement extends AbstractLogger
 
       new TestClientMovement(String.valueOf(i));
 
-      if (Example4Constant.DELAY_CREATION != -1) {
-        Thread.sleep((long) (Example4Constant.DELAY_CREATION * 1000));
-      }
+      Thread.sleep((long) (Example4Constant.DELAY_CREATION * 1000));
     }
 
   }
 
   private static void logExecutionTime() {
-    System.out.println(
-        String.format("[EXECUTION TIME -> CCU: %d] %s", Example4Constant.NUMBER_OF_PLAYERS,
-            ClientUtility.getTimeFormat(TimeUtility.currentTimeSeconds() - START_EXECUTION_TIME)));
+    System.out.printf("[EXECUTION TIME -> CCU: %d] %s%n", Example4Constant.NUMBER_OF_PLAYERS,
+        ClientUtility.getTimeFormat(TimeUtility.currentTimeSeconds() - START_EXECUTION_TIME));
   }
 
   private static void logLatencyAverage() {
-    System.err.println(
-        String.format("[AVERAGE LATENCY] Total Requests: %d -> Average Latency: %.2f ms",
-            statistic.getLatencySize(), statistic.getLatencyAverage()));
+    System.err.printf("[AVERAGE LATENCY] Total Requests: %d -> Average Latency: %.2f ms%n",
+        statistic.getLatencySize(), statistic.getLatencyAverage());
   }
 
   private static void logFpsAverage() {
-    System.err.println(String.format("[AVERAGE FPS] Total Requests: %d -> Average FPS: %.2f",
-        statistic.getFpsSize(), statistic.getFpsAverage()));
+    System.err.printf("[AVERAGE FPS] Total Requests: %d -> Average FPS: %.2f%n",
+        statistic.getFpsSize(), statistic.getFpsAverage());
   }
 
   private static void logLostPacketsAverage() {
-    System.err.println(String.format("[AVERAGE LOST PACKETS] Average Lost Packets: %.2f %%",
-        statistic.getLostPacketsAverage()));
+    System.err.printf("[AVERAGE LOST PACKETS] Average Lost Packets: %.2f %%%n",
+        statistic.getLostPacketsAverage());
   }
 
   private void sendLoginRequest() {
-    var data = ZeroObjectImpl.newInstance();
+    var data = ZeroUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     tcp.send(ServerMessage.newInstance().setData(data));
 
@@ -140,13 +136,13 @@ public final class TestClientMovement extends AbstractLogger
       System.err.println("[RECV FROM SERVER TCP] -> " + message);
     }
 
-    var data = (ZeroObject) message.getData();
+    var data = (ZeroMap) message.getData();
     if (data.containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
       switch (data.getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
         case UdpEstablishedState.ALLOW_TO_ATTACH: {
           // now you can send request for UDP connection request
           var sendData =
-              ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+              ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
           var request = ServerMessage.newInstance().setData(sendData);
           udp.send(request);
 
@@ -213,7 +209,7 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void requestNeighbours() {
-    var data = ZeroObjectImpl.newInstance().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
+    var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
         ClientUtility.generateRandomString(10));
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);

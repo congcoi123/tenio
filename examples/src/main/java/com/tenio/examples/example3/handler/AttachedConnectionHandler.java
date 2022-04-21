@@ -31,17 +31,18 @@ import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventAttachedConnectionResult;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
+import java.util.Optional;
 
 @Component
 public final class AttachedConnectionHandler extends AbstractExtension
     implements EventAttachedConnectionResult {
 
   @Override
-  public void handle(Player player, AttachedConnectionResult result) {
+  public void handle(Optional<Player> player, AttachedConnectionResult result) {
     if (result == AttachedConnectionResult.SUCCESS) {
       var data = object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ATTACHED);
 
-      response().setContent(data.toBinary()).setRecipient(player).write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player.get()).write();
     }
   }
 }

@@ -54,7 +54,7 @@ public final class ServerInitializedHandler extends AbstractExtension
 
       @Override
       public void updateVehiclePosition(Vehicle vehicle) {
-        var players = api().getAllPlayers();
+        var players = api().getReadonlyPlayersList();
 
         var data = object();
         var array = new ArrayList<Integer>();
@@ -64,18 +64,18 @@ public final class ServerInitializedHandler extends AbstractExtension
         array.add((int) vehicle.getRotation());
         data.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
 
-        response().setRecipients(players).setContent(data.toBinary()).prioritizedUdp().write();
+        response().setRecipientPlayers(players).setContent(data.toBinary()).prioritizedUdp().write();
       }
 
       @Override
       public void responseVehicleNeighbours(String playerName, List<Vehicle> neighbours,
                                             int currentFps) {
         var player = api().getPlayerByName(playerName);
-        if (player != null) {
+        if (player.isPresent()) {
           var data = object();
           data.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
 
-          response().setRecipient(player).setContent(data.toBinary()).write();
+          response().setRecipientPlayer(player.get()).setContent(data.toBinary()).write();
         }
       }
 

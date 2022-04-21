@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example1;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
@@ -45,16 +45,16 @@ public final class TestClientLogin implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
-  private final String name;
+
   public TestClientLogin() {
     // create a new TCP object and listen for this port
     tcp = new TCP(SOCKET_PORT);
     tcp.receive(this);
 
-    name = ClientUtility.generateRandomString(5);
+    String name = ClientUtility.generateRandomString(5);
 
     // send a login request
-    var data = ZeroObjectImpl.newInstance();
+    var data = ZeroUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
     tcp.send(ServerMessage.newInstance().setData(data));
 
@@ -78,7 +78,7 @@ public final class TestClientLogin implements SocketListener {
       e.printStackTrace();
     }
 
-    var data = ZeroObjectImpl.newInstance();
+    var data = ZeroUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);

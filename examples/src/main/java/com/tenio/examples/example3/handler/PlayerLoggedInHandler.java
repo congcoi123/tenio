@@ -42,7 +42,7 @@ public final class PlayerLoggedInHandler extends AbstractExtension
       var data =
           object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH);
 
-      response().setContent(data.toBinary()).setRecipient(player).write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

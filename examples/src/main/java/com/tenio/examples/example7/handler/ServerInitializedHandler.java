@@ -36,7 +36,7 @@ public final class ServerInitializedHandler extends AbstractExtension
   @Override
   public void handle(String serverName, Configuration configuration) {
     var roomSetting =
-        roomSetting().setActivated(true).setMaxPlayers(2).setName("test-room").build();
+        roomSetting().setActivated(true).setMaxParticipants(2).setName("test-room").build();
 
     api().createRoom(roomSetting);
   }
