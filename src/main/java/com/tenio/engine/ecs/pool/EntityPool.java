@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.engine.ecs.pool;
 
-import com.tenio.common.configuration.constant.CommonConstant;
+import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.pool.ElementPool;
@@ -32,6 +32,7 @@ import com.tenio.engine.ecs.basis.Entity;
 import com.tenio.engine.ecs.basis.implement.ContextInfo;
 import com.tenio.engine.ecs.basis.implement.EntityImpl;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.UUID;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -133,9 +134,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
 
   @Override
   public synchronized void cleanup() {
-    for (int i = 0; i < pool.length; i++) {
-      pool[i] = null;
-    }
+    Arrays.fill(pool, null);
     used = null;
     pool = null;
   }
@@ -148,8 +147,8 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
   @Override
   public int getAvailableSlot() {
     int slot = 0;
-    for (int i = 0; i < used.length; i++) {
-      if (!used[i]) {
+    for (boolean b : used) {
+      if (!b) {
         slot++;
       }
     }

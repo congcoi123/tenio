@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -137,13 +137,11 @@ final class HeartbeatMessage implements Comparable {
 
   @Override
   public String toString() {
-    var builder = new StringBuilder();
-    builder.append("Id: ");
-    builder.append(id);
-    builder.append(", Time: ");
-    builder.append(delayTime);
-    builder.append(", Message: ");
-    builder.append(message);
-    return builder.toString();
+    return "Id: " +
+        id +
+        ", Time: " +
+        delayTime +
+        ", Message: " +
+        message;
   }
 }

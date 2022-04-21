@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.List;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+import java.util.Objects;
 
 /**
  * This class provides some methods for painting objects to a screen.
@@ -59,8 +59,8 @@ public final class Paint {
   private Color textColor;
 
   private Paint() {
-    if (instance != null) {
-      throw new CommandLine.InitializationException("Could not recreate this instance");
+    if (Objects.nonNull(instance)) {
+      throw new UnsupportedOperationException("Could not recreate this instance");
     }
 
     brush = null;
@@ -136,7 +136,7 @@ public final class Paint {
    * @return the font's height
    */
   public int getFontHeight() {
-    if (brush == null) {
+    if (Objects.isNull(brush)) {
       return 0;
     }
     return brush.getFontMetrics().getHeight();
@@ -222,7 +222,7 @@ public final class Paint {
     polygon.addPoint((int) arrowPoint2.x, (int) arrowPoint2.y);
     polygon.addPoint((int) to.x, (int) to.y);
 
-    if (bgColor != null) {
+    if (Objects.nonNull(bgColor)) {
       brush.setColor(bgColor);
       brush.fillPolygon(polygon);
     }
@@ -276,7 +276,7 @@ public final class Paint {
     }
     brush.setColor(penColor);
     brush.drawRect(left, top, right - left, bottom - top);
-    if (bgColor != null) {
+    if (Objects.nonNull(bgColor)) {
       brush.setColor(bgColor);
       brush.fillRect(left, top, right - left, bottom - top);
     }
@@ -300,7 +300,7 @@ public final class Paint {
     }
     brush.setColor(penColor);
     brush.drawPolygon(polygon);
-    if (bgColor != null) {
+    if (Objects.nonNull(bgColor)) {
       brush.fillPolygon(polygon);
     }
   }
@@ -320,7 +320,7 @@ public final class Paint {
     brush.setColor(penColor);
     brush.drawOval((int) (x - radius), (int) (y - radius), (int) (radius * 2),
         (int) (radius * 2));
-    if (bgColor != null) {
+    if (Objects.nonNull(bgColor)) {
       brush.setColor(bgColor);
       brush.fillOval((int) (x - radius + 1), (int) (y - radius + 1), (int) (radius * 2 - 1),
           (int) (radius * 2 - 1));

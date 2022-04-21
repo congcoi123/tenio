@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.tenio.engine.fsm.entity;
 
 import com.tenio.engine.fsm.Component;
 import com.tenio.engine.fsm.MessageDispatcher;
+import java.util.Objects;
 
 /**
  * Check out the
@@ -71,12 +72,12 @@ public final class FsmComponent<T> extends Component<T> {
   @Override
   public void update(double delta) {
     // if a global state exists, call its execute method, else do nothing
-    if (globalState != null) {
+    if (Objects.nonNull(globalState)) {
       globalState.execute(entity);
     }
 
     // same for the current state
-    if (currentState != null) {
+    if (Objects.nonNull(currentState)) {
       currentState.execute(entity);
     }
   }
@@ -90,13 +91,13 @@ public final class FsmComponent<T> extends Component<T> {
   public boolean handleMessage(Telegram message) {
     // First see if the current state is valid and that it can handle
     // the message
-    if (currentState != null && currentState.onMessage(entity, message)) {
+    if (Objects.nonNull(currentState) && currentState.onMessage(entity, message)) {
       return true;
     }
 
     // If not, and if a global state has been implemented, send
     // the message to the global state
-    return globalState != null && globalState.onMessage(entity, message);
+    return Objects.nonNull(globalState) && globalState.onMessage(entity, message);
   }
 
   /**

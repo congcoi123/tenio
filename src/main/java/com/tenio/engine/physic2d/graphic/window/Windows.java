@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,8 +52,7 @@ public final class Windows {
    */
   public static Image loadIcon(String file) {
     var iconUrl = Windows.class.getResource(file);
-    var img = Toolkit.getDefaultToolkit().createImage(iconUrl);
-    return img;
+    return Toolkit.getDefaultToolkit().createImage(iconUrl);
   }
 
   /**
