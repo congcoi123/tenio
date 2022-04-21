@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,9 @@ public interface Subscriber {
   /**
    * To dispatch results from one event.
    *
-   * @param params all the results in an array
-   * @return an object or <b>null</b>
+   * @param params an array of results from an emitter as {@link Object} arguments
+   * @return an {@link Object} result or {@code null}
+   * @see Emitter
    */
   Object dispatch(Object... params);
 }

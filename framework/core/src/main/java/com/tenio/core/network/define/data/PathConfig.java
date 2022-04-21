@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.tenio.core.network.define.data;
 import com.tenio.core.network.define.RestMethod;
 
 /**
- * Forms a configuration for the HTTP's REST method.
+ * Forms a configuration for an HTTP's REST method.
  */
 public final class PathConfig {
 
@@ -40,11 +40,11 @@ public final class PathConfig {
   /**
    * Initialization.
    *
-   * @param name        the configuration name
-   * @param method      the REST method
-   * @param uri         the URI
-   * @param description the description
-   * @param version     the current API version
+   * @param name        the {@link String} configuration name
+   * @param method      the {@link RestMethod}
+   * @param uri         the URI {@link String} value
+   * @param description the {@link String} description
+   * @param version     the current API version ({@code integer} value)
    */
   public PathConfig(String name, RestMethod method, String uri, String description,
                     int version) {
@@ -55,22 +55,47 @@ public final class PathConfig {
     this.version = version;
   }
 
+  /**
+   * Retrieves the endpoint's name.
+   *
+   * @return the {@link String} endpoint's name
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Retrieves the REST method of the endpoint.
+   *
+   * @return the {@link RestMethod} in use
+   */
   public RestMethod getMethod() {
     return method;
   }
 
+  /**
+   * Retrieves the endpoint's URI.
+   *
+   * @return the {@link String} endpoint's URI
+   */
   public String getUri() {
     return uri;
   }
 
+  /**
+   * Retrieves the endpoint's description.
+   *
+   * @return the {@link String} endpoint's description
+   */
   public String getDescription() {
     return description;
   }
 
+  /**
+   * Retrieves the endpoint's version.
+   *
+   * @return the {@link String} endpoint's version
+   */
   public int getVersion() {
     return version;
   }

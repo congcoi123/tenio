@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.extension.events;
 
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.network.entity.session.Session;
@@ -31,7 +32,21 @@ import com.tenio.core.network.entity.session.Session;
 /**
  * Returns the result when a player tried to reconnect to the server.
  */
+@FunctionalInterface
 public interface EventPlayerReconnectedResult {
 
+  /**
+   * When a player tried to reconnect to the server. The situation happens if the player gets in
+   * an IDLE state for long time enough to be disconnected from the server automatically.
+   *
+   * @param player  the reconnecting {@link Player}
+   * @param session a new {@link Session} which the player is using to reconnect to the server
+   * @param result  the reconnecting result presented by {@link PlayerReconnectedResult}. A
+   *                player is considered as it rejoined the server when the result equals to success
+   * @see PlayerReconnectedResult#SUCCESS
+   * @see CoreConfigurationType#PROP_KEEP_PLAYER_ON_DISCONNECTION
+   * @see CoreConfigurationType#PROP_MAX_PLAYER_IDLE_TIME
+   * @see EventPlayerReconnectRequestHandle
+   */
   void handle(Player player, Session session, PlayerReconnectedResult result);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 
 /**
@@ -33,16 +34,33 @@ import com.tenio.core.network.statistic.NetworkReaderStatistic;
 public interface BaseIoHandler {
 
   /**
-   * Set session manager.
+   * When a new message comes from a session then this method is invoked.
    *
-   * @param sessionManager the session manager
+   * @param session the {@link Session} using to communicate to client side
+   * @param binary  an array of {@code byte} data sent by client side
+   */
+  void sessionRead(Session session, byte[] binary);
+
+  /**
+   * When any exception occurred on a session then this method is invoked.
+   *
+   * @param session   the {@link Session} using to communicate to client side
+   * @param exception an {@link Exception} emerging
+   */
+  void sessionException(Session session, Exception exception);
+
+  /**
+   * Set a session manager.
+   *
+   * @param sessionManager the {@link SessionManager}
    */
   void setSessionManager(SessionManager sessionManager);
 
   /**
-   * Set the network reader statistic object.
+   * Sets a network reader statistic instance which takes responsibility recording the
+   * receiving data from clients.
    *
-   * @param networkReaderStatistic the network reader statistic object
+   * @param networkReaderStatistic a {@link NetworkReaderStatistic} instance
    */
   void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
 }

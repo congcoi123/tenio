@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +40,10 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public final class PlayerAndRoomTest {
+class PlayerAndRoomTest {
 
   private EventManager eventManager;
 
@@ -116,6 +117,7 @@ public final class PlayerAndRoomTest {
   }
 
   @Test
+  @Disabled
   public void createNewRoomShouldReturnSuccess() {
     var room = RoomImpl.newInstance();
     roomManager.addRoom(room);

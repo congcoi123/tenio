@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,17 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 /**
- * When you miss defining the subscriber for a declared event.
+ * When a declared event is in missing on defining its subscriber.
  */
 public final class NotDefinedSubscribersException extends RuntimeException {
 
   private static final long serialVersionUID = 4569867192216119437L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param classes an array of {@link Class} that are missing in declaration
+   */
   public NotDefinedSubscribersException(Class<?>... classes) {
     super(getMessage(classes));
   }

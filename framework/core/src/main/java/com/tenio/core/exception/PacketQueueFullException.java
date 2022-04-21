@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,21 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import com.tenio.core.network.entity.packet.PacketQueue;
+
 /**
- * When the packet queue is full.
+ * When the packet queue, which is using to send packet from the server to clients side, is full.
  */
 public final class PacketQueueFullException extends RuntimeException {
 
   private static final long serialVersionUID = -2526342485508899328L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param currentSize the current size of the packet queue ({@code integer} value)
+   * @see PacketQueue
+   */
   public PacketQueueFullException(int currentSize) {
     super(String.format("Reached max queue size, the packet was dropped. The current size: %d",
         currentSize));

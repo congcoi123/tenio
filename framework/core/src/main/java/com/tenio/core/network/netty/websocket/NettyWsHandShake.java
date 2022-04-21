@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.websocket;
 
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * <a href="https://en.wikipedia.org/wiki/WebSocket">WebSocket</a> is distinct
@@ -69,7 +69,7 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
   }
 
   @Override
-  public void channelRead(ChannelHandlerContext ctx, Object msgRaw) throws Exception {
+  public void channelRead(ChannelHandlerContext ctx, Object msgRaw) {
 
     // check the request for handshake
     if (msgRaw instanceof HttpRequest) {
@@ -88,8 +88,6 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
         // do the Handshake to upgrade connection from HTTP to WebSocket protocol
         handleHandshake(ctx, httpRequest);
       }
-    } else {
-      // do nothing or logging
     }
   }
 
@@ -98,10 +96,8 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
    *
    * @param ctx the channel, see {@link ChannelHandlerContext}
    * @param req the request, see {@link HttpRequest}
-   * @throws URISyntaxException the exception
    */
-  private void handleHandshake(ChannelHandlerContext ctx, HttpRequest req)
-      throws URISyntaxException {
+  private void handleHandshake(ChannelHandlerContext ctx, HttpRequest req) {
     var wsFactory = new WebSocketServerHandshakerFactory(getWebSocketUrl(req), null, true);
     /*
      The handshake starts with an HTTP request/response, allowing servers to
@@ -110,7 +106,7 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
      binary protocol which does not conform to the HTTP protocol.
      */
     var handshaker = wsFactory.newHandshaker(req);
-    if (handshaker == null) {
+    if (Objects.isNull(handshaker)) {
       WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
     } else {
       handshaker.handshake(ctx.channel(), req);
@@ -118,9 +114,6 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
   }
 
   private String getWebSocketUrl(HttpRequest req) {
-    var url =
-        new StringBuilder().append("ws://").append(req.headers().get("Host")).append(req.uri())
-            .toString();
-    return url;
+    return "ws://" + req.headers().get("Host") + req.uri();
   }
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.entity.define.result;
+package com.tenio.core.extension.events;
+
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
 
 /**
- * The results when a player tried to switch to a spectator and vice versa.
+ * Returns the result when a participant tries to change to be a spectator.
  */
-public enum SwitchedPlayerSpectatorResult {
+@FunctionalInterface
+public interface EventSwitchParticipantToSpectatorResult {
 
-  SUCCESS,
-  PLAYER_WAS_NOT_IN_ROOM,
-  SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE,
-  SWITCH_NO_PLAYER_SLOTS_AVAILABLE,
-  SLOT_UNAVAILABLE_IN_ROOM;
-
-  @Override
-  public String toString() {
-    return this.name();
-  }
+  /**
+   * When a participant tries to change to be a spectator in its room.
+   *
+   * @param player the considering {@link Player}
+   * @param room   the player's {@link Room}
+   * @param result the result {@link SwitchedPlayerRoleInRoomResult} of processing
+   */
+  void handle(Player player, Room room, SwitchedPlayerRoleInRoomResult result);
 }

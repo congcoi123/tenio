@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,30 @@ THE SOFTWARE.
 
 package com.tenio.core.network.define;
 
+import com.tenio.core.controller.RequestComparator;
+
 /**
- * Definition the priority for incoming requests.
+ * Definition the priority for an incoming request.
+ *
+ * @see RequestComparator
  */
 public enum RequestPriority {
 
+  /**
+   * The lowest priority of a request waiting to be processed.
+   */
   LOWEST(1),
+  /**
+   * The low priority of a request waiting to be processed.
+   */
   LOW(2),
+  /**
+   * The regular priority of a request waiting to be processed.
+   */
   NORMAL(3),
+  /**
+   * The highest priority of a request waiting to be processed.
+   */
   QUICKEST(4);
 
   private final int value;
@@ -40,6 +56,11 @@ public enum RequestPriority {
     this.value = value;
   }
 
+  /**
+   * Retrieves a numeric value of a request's priority.
+   *
+   * @return the {@code integer} value of a request's priority
+   */
   public final int getValue() {
     return value;
   }

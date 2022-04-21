@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,19 +34,17 @@ import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
-import com.tenio.core.entity.define.result.SwitchedPlayerSpectatorResult;
+import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
 import com.tenio.core.entity.setting.InitialRoomSetting;
-import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
 import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
 import com.tenio.core.extension.events.EventRoomCreatedResult;
 import com.tenio.core.extension.events.EventRoomWillBeRemoved;
-import com.tenio.core.extension.events.EventSwitchPlayerToSpectatorResult;
-import com.tenio.core.extension.events.EventSwitchSpectatorToPlayerResult;
+import com.tenio.core.extension.events.EventSwitchParticipantToSpectatorResult;
+import com.tenio.core.extension.events.EventSwitchSpectatorToParticipantResult;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Dispatching all events related to rooms.
@@ -70,10 +68,10 @@ public final class RoomEventHandler {
   private EventRoomWillBeRemoved eventRoomWillBeRemoved;
 
   @AutowiredAcceptNull
-  private EventSwitchPlayerToSpectatorResult eventSwitchPlayerToSpectatorResult;
+  private EventSwitchParticipantToSpectatorResult eventSwitchParticipantToSpectatorResult;
 
   @AutowiredAcceptNull
-  private EventSwitchSpectatorToPlayerResult eventSwitchSpectatorToPlayerResult;
+  private EventSwitchSpectatorToParticipantResult eventSwitchSpectatorToParticipantResult;
 
   /**
    * Initialization.
@@ -94,150 +92,85 @@ public final class RoomEventHandler {
     final var eventRoomWillBeRemovedOp =
         Optional.ofNullable(eventRoomWillBeRemoved);
 
-    final var eventSwitchPlayerToSpectatorResultOp =
-        Optional.ofNullable(eventSwitchPlayerToSpectatorResult);
-    final var eventSwitchSpectatorToPlayerResultOp =
-        Optional.ofNullable(eventSwitchSpectatorToPlayerResult);
+    final var eventSwitchParticipantToSpectatorResultOp =
+        Optional.ofNullable(eventSwitchParticipantToSpectatorResult);
+    final var eventSwitchSpectatorToParticipantResultOp =
+        Optional.ofNullable(eventSwitchSpectatorToParticipantResult);
 
-    eventPlayerAfterLeftRoomOp.ifPresent(new Consumer<EventPlayerAfterLeftRoom>() {
+    eventPlayerAfterLeftRoomOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, params -> {
+          var player = (Player) params[0];
+          var room = (Room) params[1];
+          var result = (PlayerLeftRoomResult) (params[2]);
 
-      @Override
-      public void accept(EventPlayerAfterLeftRoom event) {
-        eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, new Subscriber() {
+          event.handle(player, room, result);
 
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var room = (Room) params[1];
-            var result = (PlayerLeftRoomResult) (params[2]);
+          return null;
+        }));
 
-            event.handle(player, room, result);
+    eventPlayerBeforeLeaveRoomOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, params -> {
+          var player = (Player) params[0];
+          var room = (Room) params[1];
+          var mode = (PlayerLeaveRoomMode) (params[2]);
 
-            return null;
-          }
-        });
-      }
-    });
+          event.handle(player, room, mode);
 
-    eventPlayerBeforeLeaveRoomOp.ifPresent(new Consumer<EventPlayerBeforeLeaveRoom>() {
+          return null;
+        }));
 
-      @Override
-      public void accept(EventPlayerBeforeLeaveRoom event) {
-        eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, new Subscriber() {
+    eventPlayerJoinedRoomResultOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_JOINED_ROOM_RESULT, params -> {
+          var player = (Player) params[0];
+          var room = (Room) params[1];
+          var result = (PlayerJoinedRoomResult) params[2];
 
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var room = (Room) params[1];
-            var mode = (PlayerLeaveRoomMode) (params[2]);
+          event.handle(player, room, result);
 
-            event.handle(player, room, mode);
+          return null;
+        }));
 
-            return null;
-          }
-        });
-      }
-    });
+    eventRoomCreatedResultOp.ifPresent(event -> eventManager.on(ServerEvent.ROOM_CREATED_RESULT,
+        params -> {
+          var room = (Room) params[0];
+          var setting = (InitialRoomSetting) params[1];
+          var result = (RoomCreatedResult) params[2];
 
-    eventPlayerJoinedRoomResultOp.ifPresent(new Consumer<EventPlayerJoinedRoomResult>() {
+          event.handle(room, setting, result);
 
-      @Override
-      public void accept(EventPlayerJoinedRoomResult event) {
-        eventManager.on(ServerEvent.PLAYER_JOINED_ROOM_RESULT, new Subscriber() {
+          return null;
+        }));
 
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var room = (Room) params[1];
-            var result = (PlayerJoinedRoomResult) params[2];
+    eventRoomWillBeRemovedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.ROOM_WILL_BE_REMOVED, params -> {
+          var room = (Room) params[0];
+          var mode = (RoomRemoveMode) params[1];
 
-            event.handle(player, room, result);
+          event.handle(room, mode);
 
-            return null;
-          }
-        });
-      }
-    });
+          return null;
+        }));
 
-    eventRoomCreatedResultOp.ifPresent(new Consumer<EventRoomCreatedResult>() {
+    eventSwitchParticipantToSpectatorResultOp.ifPresent(
+        event -> eventManager.on(ServerEvent.SWITCH_PARTICIPANT_TO_SPECTATOR, params -> {
+          var player = (Player) params[0];
+          var room = (Room) params[1];
+          var result = (SwitchedPlayerRoleInRoomResult) params[2];
 
-      @Override
-      public void accept(EventRoomCreatedResult event) {
-        eventManager.on(ServerEvent.ROOM_CREATED_RESULT, new Subscriber() {
+          event.handle(player, room, result);
 
-          @Override
-          public Object dispatch(Object... params) {
-            var room = (Room) params[0];
-            var setting = (InitialRoomSetting) params[1];
-            var result = (RoomCreatedResult) params[2];
+          return null;
+        }));
 
-            event.handle(room, setting, result);
+    eventSwitchSpectatorToParticipantResultOp.ifPresent(
+        event -> eventManager.on(ServerEvent.SWITCH_SPECTATOR_TO_PARTICIPANT, params -> {
+          var player = (Player) params[0];
+          var room = (Room) params[1];
+          var result = (SwitchedPlayerRoleInRoomResult) params[2];
 
-            return null;
-          }
-        });
-      }
-    });
+          event.handle(player, room, result);
 
-    eventRoomWillBeRemovedOp.ifPresent(new Consumer<EventRoomWillBeRemoved>() {
-
-      @Override
-      public void accept(EventRoomWillBeRemoved event) {
-        eventManager.on(ServerEvent.ROOM_WILL_BE_REMOVED, new Subscriber() {
-
-          @Override
-          public Object dispatch(Object... params) {
-            var room = (Room) params[0];
-            var mode = (RoomRemoveMode) params[1];
-
-            event.handle(room, mode);
-
-            return null;
-          }
-        });
-      }
-    });
-
-    eventSwitchPlayerToSpectatorResultOp.ifPresent(
-        new Consumer<EventSwitchPlayerToSpectatorResult>() {
-
-          @Override
-          public void accept(EventSwitchPlayerToSpectatorResult event) {
-            eventManager.on(ServerEvent.SWITCH_PLAYER_TO_SPECTATOR, new Subscriber() {
-
-              @Override
-              public Object dispatch(Object... params) {
-                var player = (Player) params[0];
-                var room = (Room) params[1];
-                var result = (SwitchedPlayerSpectatorResult) params[2];
-
-                event.handle(player, room, result);
-
-                return null;
-              }
-            });
-          }
-        });
-
-    eventSwitchSpectatorToPlayerResultOp.ifPresent(
-        new Consumer<EventSwitchSpectatorToPlayerResult>() {
-
-          @Override
-          public void accept(EventSwitchSpectatorToPlayerResult event) {
-            eventManager.on(ServerEvent.SWITCH_SPECTATOR_TO_PLAYER, new Subscriber() {
-
-              @Override
-              public Object dispatch(Object... params) {
-                var player = (Player) params[0];
-                var room = (Room) params[1];
-                var result = (SwitchedPlayerSpectatorResult) params[2];
-
-                event.handle(player, room, result);
-
-                return null;
-              }
-            });
-          }
-        });
+          return null;
+        }));
   }
 }

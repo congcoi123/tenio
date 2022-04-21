@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,10 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.codec.packet;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
- * Holding the pending packet state for the next steps.
+ * Holds a pending packet for the next steps.
  */
 public final class PendingPacket {
 
@@ -38,37 +39,73 @@ public final class PendingPacket {
   private PendingPacket() {
   }
 
+  /**
+   * Create a new instance.
+   *
+   * @return a new instance of {@link PendingPacket}
+   */
   public static PendingPacket newInstance() {
     return new PendingPacket();
   }
 
+  /**
+   * Retrieves a packet's header.
+   *
+   * @return the {@link PacketHeader} of the packet
+   */
   public PacketHeader getPacketHeader() {
     return packetHeader;
   }
 
-  public void setPacketHeader(PacketHeader header) {
-    packetHeader = header;
+  /**
+   * Sets a packetHeader for a packet.
+   *
+   * @param packetHeader a {@link PacketHeader} of the packet
+   */
+  public void setPacketHeader(PacketHeader packetHeader) {
+    this.packetHeader = packetHeader;
   }
 
+  /**
+   * Retrieves a {@link ByteBuffer} instance to read/write packet's data.
+   *
+   * @return a {@link ByteBuffer} instance to read/write packet's data
+   */
   public ByteBuffer getBuffer() {
     return byteBuffer;
   }
 
-  public void setBuffer(ByteBuffer buffer) {
-    byteBuffer = buffer;
+  /**
+   * Sets a {@link ByteBuffer} instance to read/write packet's data.
+   *
+   * @param byteBuffer a {@link ByteBuffer} instance to read/write packet's data
+   */
+  public void setBuffer(ByteBuffer byteBuffer) {
+    this.byteBuffer = byteBuffer;
   }
 
+  /**
+   * Retrieves the expected length of packet's data.
+   *
+   * @return the expected length of packet's data ({@code integer} value)
+   */
   public int getExpectedLength() {
     return expectedLength;
   }
 
+  /**
+   * Sets the expected length for the packet's data.
+   *
+   * @param expectedLength the expected length of packet's data ({@code integer} value)
+   */
   public void setExpectedLength(int expectedLength) {
     this.expectedLength = expectedLength;
   }
 
   @Override
   public String toString() {
-    return String.format("{ packetHeader: %s, expectedLength: %d }", packetHeader != null ? packetHeader.toString() : "null",
+    return String.format("{ packetHeader: %s, expectedLength: %d }",
+        Objects.nonNull(packetHeader) ? packetHeader.toString() : "null",
         expectedLength);
   }
 }

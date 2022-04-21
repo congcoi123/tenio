@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import com.tenio.core.event.implement.EventManager;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -53,15 +54,14 @@ public final class DeadlockScanTask extends AbstractTask {
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-      checkForDeadlockedThreads();
-    }, 0, interval, TimeUnit.SECONDS);
+    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+        this::checkForDeadlockedThreads, 0, interval, TimeUnit.SECONDS);
   }
 
   private void checkForDeadlockedThreads() {
     long[] threadIds = findDeadlockedThreads();
 
-    if (threadIds != null && threadIds.length > 0) {
+    if (Objects.nonNull(threadIds) && threadIds.length > 0) {
       var threads = new Thread[threadIds.length];
 
       var logger = buildgen("\n");
@@ -73,9 +73,11 @@ public final class DeadlockScanTask extends AbstractTask {
         logger.append("\t").append("Thread Id : ").append(threadInfo.getThreadId()).append("\n");
         logger.append("\t").append("Thread Name : ").append(threadInfo.getThreadName())
             .append("\n");
-        logger.append("\t").append("LockName : " + threadInfo.getLockName()).append("\n");
-        logger.append("\t").append("LockOwnerId : " + threadInfo.getLockOwnerId()).append("\n");
-        logger.append("\t").append("LockOwnerName : " + threadInfo.getLockOwnerName()).append("\n");
+        logger.append("\t").append("LockName : ").append(threadInfo.getLockName()).append("\n");
+        logger.append("\t").append("LockOwnerId : ").append(threadInfo.getLockOwnerId())
+            .append("\n");
+        logger.append("\t").append("LockOwnerName : ").append(threadInfo.getLockOwnerName())
+            .append("\n");
 
         try {
           threads[i] = findMatchingThread(threadInfo);
@@ -96,7 +98,7 @@ public final class DeadlockScanTask extends AbstractTask {
   private Thread findMatchingThread(ThreadInfo threadInfo) throws IllegalStateException {
     var iterator = Thread.getAllStackTraces().keySet().iterator();
 
-    Thread thread = null;
+    Thread thread;
     do {
       if (!iterator.hasNext()) {
         throw new IllegalStateException("Deadlocked Thread not found");

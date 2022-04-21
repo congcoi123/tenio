@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,13 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * The default implementation for the connection filter.
- *
- * @see ConnectionFilter
  */
 @ThreadSafe
 public final class DefaultConnectionFilter implements ConnectionFilter {
@@ -50,8 +49,8 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
    * Initialization.
    */
   public DefaultConnectionFilter() {
-    bannedAddresses = new HashSet<String>();
-    addressMap = new HashMap<String, AtomicInteger>();
+    bannedAddresses = new HashSet<>();
+    addressMap = new HashMap<>();
     maxConnectionsPerIp = DEFAULT_MAX_CONNECTIONS_PER_IP;
   }
 
@@ -71,7 +70,7 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
 
   @Override
   public String[] getBannedAddresses() {
-    String[] set = null;
+    String[] set;
     synchronized (bannedAddresses) {
       set = new String[bannedAddresses.size()];
       set = bannedAddresses.toArray(set);
@@ -87,14 +86,14 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
 
     synchronized (addressMap) {
       var counter = addressMap.get(addressIp);
-      if (counter != null && counter.intValue() >= maxConnectionsPerIp) {
+      if (Objects.nonNull(counter) && counter.intValue() >= maxConnectionsPerIp) {
         throw new RefusedConnectionAddressException(
             String.format("The IP address has reached maximum (%d) allowed connection",
                 counter.intValue()),
             addressIp);
       }
 
-      if (counter == null) {
+      if (Objects.isNull(counter)) {
         counter = new AtomicInteger(1);
         addressMap.put(addressIp, counter);
       } else {
@@ -107,7 +106,7 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
   public void removeAddress(String addressIp) {
     synchronized (addressMap) {
       var counter = addressMap.get(addressIp);
-      if (counter != null) {
+      if (Objects.nonNull(counter)) {
         int value = counter.decrementAndGet();
         if (value == 0) {
           addressMap.remove(addressIp);

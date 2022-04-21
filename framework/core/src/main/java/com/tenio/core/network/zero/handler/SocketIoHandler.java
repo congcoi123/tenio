@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,46 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
-import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 /**
- * The socket IO handler.
+ * The Socket IO handler.
  */
 public interface SocketIoHandler extends BaseIoHandler {
 
+  /**
+   * When the first connection signal sent from client side to the server via socket (TCP) channel
+   * then this method is invoked.
+   *
+   * @param socketChannel the active {@link SocketChannel}
+   * @param selectionKey  the {@link SelectionKey} used to distinguish each session
+   */
   void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 
-  void sessionRead(Session session, byte[] binary);
-
+  /**
+   * When a disconnection signal sent from client side to the server via socket (TCP) channel
+   * then this method is invoked.
+   *
+   * @param socketChannel the inactive {@link SocketChannel}
+   */
   void channelInactive(SocketChannel socketChannel);
 
+  /**
+   * When any exception occurred on the socket (TCP) channel then this method is invoked.
+   *
+   * @param socketChannel the {@link SocketChannel} created on the server
+   * @param exception     an {@link Exception} emerging
+   */
   void channelException(SocketChannel socketChannel, Exception exception);
 
-  void sessionException(Session session, Exception exception);
-
+  /**
+   * Sets the packet decoder for the socket (TCP), every packet should be decoded for
+   * the following steps. In theory, every kind of decoder should be acceptable,
+   * for example a text decoder. However, this server is using binary decoder for all processes.
+   *
+   * @param packetDecoder an instance of {@link BinaryPacketDecoder}
+   */
   void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.session.implement;
+package com.tenio.core.network.entity.session.manager;
 
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
@@ -31,7 +31,7 @@ import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.implement.SessionImpl;
 import io.netty.channel.Channel;
 import java.lang.reflect.InvocationTargetException;
 import java.net.SocketAddress;
@@ -59,19 +59,17 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private final Map<Channel, Session> sessionByWebSockets;
   @GuardedBy("this")
   private final Map<SocketAddress, Session> sessionByDatagrams;
-
   private PacketQueuePolicy packetQueuePolicy;
   private int packetQueueSize;
-
   private volatile int sessionCount;
 
   private SessionManagerImpl(EventManager eventManager) {
     super(eventManager);
 
-    sessionByIds = new HashMap<Long, Session>();
-    sessionBySockets = new HashMap<SocketChannel, Session>();
-    sessionByWebSockets = new HashMap<Channel, Session>();
-    sessionByDatagrams = new HashMap<SocketAddress, Session>();
+    sessionByIds = new HashMap<>();
+    sessionBySockets = new HashMap<>();
+    sessionByWebSockets = new HashMap<>();
+    sessionByDatagrams = new HashMap<>();
 
     sessionCount = 0;
     packetQueueSize = DEFAULT_PACKET_QUEUE_SIZE;

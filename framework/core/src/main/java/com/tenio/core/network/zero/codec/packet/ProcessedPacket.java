@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.codec.packet;
 
+import java.util.Objects;
+
 /**
- * Holding the processed packet state for the next steps.
+ * Holds the processed packet for the next steps.
  */
 public final class ProcessedPacket {
 
@@ -35,29 +37,55 @@ public final class ProcessedPacket {
   private ProcessedPacket() {
   }
 
+  /**
+   * Initialization.
+   *
+   * @return a new instance of {@link ProcessedPacket}
+   */
   public static ProcessedPacket newInstance() {
     return new ProcessedPacket();
   }
 
+  /**
+   * Retrieves the current processing data in the packet.
+   *
+   * @return the {@code byte} array, current processing data in the packet
+   */
   public byte[] getData() {
     return binary;
   }
 
+  /**
+   * Sets the current processing data in the packet.
+   *
+   * @param binary the {@code byte} array, current processing data in the packet
+   */
   public void setData(byte[] binary) {
     this.binary = binary;
   }
 
+  /**
+   * Retrieves the current reading state for a processing packet.
+   *
+   * @return the {@link PacketReadState} for a processing packet
+   */
   public PacketReadState getPacketReadState() {
     return packetReadState;
   }
 
+  /**
+   * Sets the current reading state for a processing packet.
+   *
+   * @param packetReadState the {@link PacketReadState} for a processing packet
+   */
   public void setPacketReadState(PacketReadState packetReadState) {
     this.packetReadState = packetReadState;
   }
 
   @Override
   public String toString() {
-    return String.format("{ packetReadState: %s, data: bytes[%d] }", packetReadState != null ? packetReadState.toString() : "null",
+    return String.format("{ packetReadState: %s, data: bytes[%d] }",
+        Objects.nonNull(packetReadState) ? packetReadState.toString() : "null",
         binary.length);
   }
 }

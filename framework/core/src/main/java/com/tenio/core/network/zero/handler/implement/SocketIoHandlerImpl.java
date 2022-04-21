@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.utility.ZeroDataSerializerUtility;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
@@ -37,6 +37,7 @@ import com.tenio.core.network.zero.handler.SocketIoHandler;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 
 /**
  * The implementation for socket IO handler.
@@ -56,7 +57,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
 
   @Override
   public void resultFrame(Session session, byte[] binary) {
-    var data = ZeroDataSerializerUtility.binaryToElement(binary);
+    var data = ZeroUtility.binaryToCollection(binary);
     var message = ServerMessage.newInstance().setData(data);
 
     if (!session.isConnected()) {
@@ -67,7 +68,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   }
 
   @Override
-  public void updateDroppedPackets(long numberPackets) {
+  public void updateReadDroppedPackets(long numberPackets) {
     networkReaderStatistic.updateReadDroppedPackets(numberPackets);
   }
 
@@ -90,7 +91,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   @Override
   public void channelInactive(SocketChannel socketChannel) {
     var session = sessionManager.getSessionBySocket(socketChannel);
-    if (session == null) {
+    if (Objects.isNull(session)) {
       return;
     }
 

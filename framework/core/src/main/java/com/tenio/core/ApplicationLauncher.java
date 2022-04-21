@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,22 @@ THE SOFTWARE.
 
 package com.tenio.core;
 
-import com.tenio.common.configuration.constant.CommonConstant;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.server.ServerImpl;
+import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 /**
- * Your application will start from here.
+ * The application will start from here.
  */
 public final class ApplicationLauncher extends SystemLogger {
 
   private static final ApplicationLauncher instance = new ApplicationLauncher();
 
   private ApplicationLauncher() {
-    if (instance != null) {
+    if (Objects.nonNull(instance)) {
       throw new CommandLine.InitializationException("Could not recreate this class instance");
     }
   }
@@ -46,8 +47,8 @@ public final class ApplicationLauncher extends SystemLogger {
   /**
    * Run the application.
    *
-   * @param entryClass the root class
-   * @param params     the parameters
+   * @param entryClass the {@link Class} which is placed in the root package
+   * @param params     the additional parameters
    */
   public static void run(Class<?> entryClass, String[] params) {
     var application = ApplicationLauncher.newInstance();
@@ -59,20 +60,18 @@ public final class ApplicationLauncher extends SystemLogger {
   }
 
   /**
-   * Start The Game Server With DI.
+   * Start the game server with DI mechanism.
    *
-   * @param entryClass the root class
-   * @param params     the parameters
+   * @param entryClass the {@link Class} which is placed in the root package
+   * @param params     the additional parameters
    */
   public void start(Class<?> entryClass, String[] params) {
     Bootstrapper bootstrap = null;
-    if (entryClass != null) {
+    if (Objects.nonNull(entryClass)) {
       bootstrap = Bootstrapper.newInstance();
       try {
-        bootstrap.run(entryClass, CommonConstant.DEFAULT_CONFIGURATION_PACKAGE,
-            CommonConstant.DEFAULT_BOOTSTRAP_PACKAGE,
-            CommonConstant.DEFAULT_EXTENSION_EVENT_PACKAGE,
-            CommonConstant.DEFAULT_ENGINE_HEARTBEAT_PACKAGE);
+        bootstrap.run(entryClass, CoreConstant.DEFAULT_BOOTSTRAP_PACKAGE,
+            CoreConstant.DEFAULT_EXTENSION_EVENT_PACKAGE);
       } catch (Exception e) {
         error(e, "The application started with exceptions occurred: ", e.getMessage());
         System.exit(1);
@@ -81,6 +80,7 @@ public final class ApplicationLauncher extends SystemLogger {
 
     var server = ServerImpl.getInstance();
     try {
+      assert bootstrap != null;
       server.start(bootstrap.getBootstrapHandler(), params);
     } catch (Exception e) {
       error(e, "The application started with exceptions occurred: ", e.getMessage());

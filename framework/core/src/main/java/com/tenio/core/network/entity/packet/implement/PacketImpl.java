@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -156,7 +157,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
   @Override
   public boolean isFragmented() {
-    return fragmentBuffer != null;
+    return Objects.nonNull(fragmentBuffer);
   }
 
   @Override
@@ -187,7 +188,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
   @Override
   public int compareTo(Packet packet2) {
     var packet1 = this;
-    return Integer.compare(packet1.getPriority().getValue(), packet2.getPriority().getValue()) != 0
+    return packet1.getPriority().getValue() != packet2.getPriority().getValue()
         ? Integer.compare(packet1.getPriority().getValue(), packet2.getPriority().getValue())
         : Long.compare(packet2.getId(), packet1.getId());
   }

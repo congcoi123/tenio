@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,10 @@ import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
+import java.util.Objects;
 
 /**
- * For socket writing.
+ * The Socket writing handler.
  */
 public final class SocketWriterHandler extends AbstractWriterHandler {
 
@@ -49,7 +49,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
     // this channel can be deactivated by some reasons, no need to throw an
     // exception here
-    if (channel == null) {
+    if (Objects.isNull(channel)) {
       debug("SOCKET CHANNEL SEND", "Skipping this packet, found null socket for session: ",
           session);
       return;
@@ -102,7 +102,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
         // isWritable() method
         // when that event occurred, re-add the session to the tickets queue
         var selectionKey = session.getSelectionKey();
-        if (selectionKey != null && selectionKey.isValid()) {
+        if (Objects.nonNull(selectionKey) && selectionKey.isValid()) {
           selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         } else {
           debug("SOCKET CHANNEL SEND", "Something went wrong with OP_WRITE key for session: ",

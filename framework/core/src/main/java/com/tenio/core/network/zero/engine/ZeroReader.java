@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,39 @@ import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 
 /**
- * The engine supports reading binary from sockets.
+ * The engine supports reading binaries data from sockets.
  */
 public interface ZeroReader extends ZeroEngine {
 
+  /**
+   * Sets a listener for the acceptor engine which is using for communication between two engines.
+   *
+   * @param zeroAcceptorListener the {@link ZeroAcceptorListener} instance
+   * @see ZeroAcceptor
+   */
   void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);
 
+  /**
+   * Sets a listener for the writer engine which is using for communication between two engines.
+   *
+   * @param zeroWriterListener the {@link ZeroWriterListener} instance
+   * @see ZeroWriter
+   */
   void setZeroWriterListener(ZeroWriterListener zeroWriterListener);
 
+  /**
+   * Retrieves a network reader statistic instance which takes responsibility recording the
+   * receiving data from clients.
+   *
+   * @return a {@link NetworkReaderStatistic} instance
+   */
   NetworkReaderStatistic getNetworkReaderStatistic();
 
+  /**
+   * Sets a network reader statistic instance which takes responsibility recording the
+   * receiving data from clients.
+   *
+   * @param networkReaderStatistic a {@link NetworkReaderStatistic} instance
+   */
   void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
 }

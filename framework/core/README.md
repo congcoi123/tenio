@@ -39,13 +39,34 @@ based server specifically designed for multiplayer games, which supports UDP, TC
 
 This module provides all the main features for the framework to operate. It contains an NIO mechanism, server configuration solution, events handling, and other necessary functions that you may find helpful.
 
-## Dependencies
+## All supported events
 ```txt
-- netty 4.1.68.Final
-- jetty 9.4.38.v20210224
-- servlet 2.5
-- org.json 20210307
-- tenio-common 0.0.1
+EventAttachConnectionRequestValidation
+EventAttachedConnectionResult
+EventConnectionEstablishedResult
+EventDisconnectConnection
+EventDisconnectPlayer
+EventFetchedBandwidthInfo
+EventFetchedCcuInfo
+EventHttpRequestHandle
+EventHttpRequestValidation
+EventPlayerAfterLeftRoom
+EventPlayerBeforeLeaveRoom
+EventPlayerJoinedRoomResult
+EventPlayerLoggedinResult
+EventPlayerReconnectedResult
+EventPlayerReconnectRequestHandle
+EventReceivedMessageFromPlayer
+EventRoomCreatedResult
+EventRoomWillBeRemoved
+EventSendMessageToPlayer
+EventServerException
+EventServerInitialization
+EventServerTeardown
+EventSwitchParticipantToSpectatorResult
+EventSwitchSpectatorToParticipantResult
+EventSystemMonitoring
+EventWriteMessageToConnection
 ```
 
 ## Requirements
@@ -58,7 +79,7 @@ The [`TenIO`](https://github.com/congcoi123/tenio) project is currently availabl
 Please check out the [changelog](CHANGELOG.md) for more details.
 
 ## Contributing
-Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
+Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
 
 ## Installation
 ```sh

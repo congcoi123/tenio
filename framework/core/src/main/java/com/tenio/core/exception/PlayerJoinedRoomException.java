@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.tenio.core.exception;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 
 /**
- * Something went wrong when a player try to join a room.
+ * Something went wrong when a player tries to join a room.
  */
 public final class PlayerJoinedRoomException extends RuntimeException {
 
@@ -35,11 +35,24 @@ public final class PlayerJoinedRoomException extends RuntimeException {
 
   private final PlayerJoinedRoomResult result;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param message a warning {@link String} message
+   * @param result  a {@link PlayerJoinedRoomResult} singleton value indicates the result when
+   *                player tries to get in a room
+   */
   public PlayerJoinedRoomException(String message, PlayerJoinedRoomResult result) {
     super(message);
     this.result = result;
   }
 
+  /**
+   * Retrieves a result when a player tried to get in a room.
+   *
+   * @return a {@link PlayerJoinedRoomResult} singleton value indicates the result when
+   * player tries to get in a room
+   */
   public PlayerJoinedRoomResult getResult() {
     return result;
   }

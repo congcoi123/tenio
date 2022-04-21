@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -50,9 +50,9 @@ public final class CcuReportTask extends AbstractTask {
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-      eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount());
-    }, 0, interval, TimeUnit.SECONDS);
+    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+        () -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount()), 0,
+        interval, TimeUnit.SECONDS);
   }
 
   public void setPlayerManager(PlayerManager playerManager) {

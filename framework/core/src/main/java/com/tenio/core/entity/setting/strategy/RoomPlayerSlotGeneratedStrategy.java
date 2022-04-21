@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,49 @@ package com.tenio.core.entity.setting.strategy;
 import com.tenio.core.entity.Room;
 
 /**
- * The strategy is for accomplish a room's slot of a player.
+ * The strategy is for accomplish a room's slot of a participant.
  */
 public interface RoomPlayerSlotGeneratedStrategy {
 
+  /**
+   * Initializes default data if needed.
+   */
   void initialize();
 
+  /**
+   * Retrieves a free slot available for a participant in the room.
+   *
+   * @return a position ({@code integer} value) of slot if available, otherwise
+   * {@code -1} should be used
+   */
   int getFreePlayerSlotInRoom();
 
+  /**
+   * Frees a participant's slot when the player left the room.
+   *
+   * @param slot the player's slot position ({@code integer} value) before it leave the room
+   */
   void freeSlotWhenPlayerLeft(int slot);
 
+  /**
+   * When a new player wants to join the room, and it tries to acquire a slot.
+   *
+   * @param slot an {@code integer} value of slot position
+   * @throws IllegalArgumentException when the required slot value is invalid
+   */
   void tryTakeSlot(int slot) throws IllegalArgumentException;
 
+  /**
+   * Retrieves the room which is applying this strategy.
+   *
+   * @return an instance of {@link Room}
+   */
   Room getRoom();
 
+  /**
+   * Sets a room that applies the strategy.
+   *
+   * @param room an instance of {@link Room}
+   */
   void setRoom(Room room);
 }

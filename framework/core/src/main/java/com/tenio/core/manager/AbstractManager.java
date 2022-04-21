@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.event.implement.EventManager;
 
 /**
- * The abstraction for manager.
+ * The abstraction for a manager class.
  */
 public abstract class AbstractManager extends SystemLogger {
 
@@ -40,7 +40,7 @@ public abstract class AbstractManager extends SystemLogger {
   /**
    * Initialization.
    *
-   * @param eventManager the event manager
+   * @param eventManager an instance of {@link EventManager}
    */
   protected AbstractManager(EventManager eventManager) {
     this.eventManager = eventManager;

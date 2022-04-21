@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,17 @@ import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 /**
  * The event occurs before a player leave its current room.
  */
+@FunctionalInterface
 public interface EventPlayerBeforeLeaveRoom {
 
+  /**
+   * When a player is going to leave its current room.
+   *
+   * @param player the leaving {@link Player}
+   * @param room   the {@link Room} which the player is going to leave out
+   * @param mode   the leaving {@link PlayerLeaveRoomMode} applied for the player when it leaves
+   *               the room
+   * @see EventPlayerAfterLeftRoom
+   */
   void handle(Player player, Room room, PlayerLeaveRoomMode mode);
 }

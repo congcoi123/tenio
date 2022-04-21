@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.exception;
+package com.tenio.core.extension.events;
 
-import com.tenio.core.entity.define.result.SwitchedPlayerSpectatorResult;
+import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.session.Session;
 
 /**
- * When a player try to change its role to a spectator and vice versa.
+ * When the server sends a packet to a connection.
  */
-public final class SwitchedPlayerSpectatorException extends RuntimeException {
+@FunctionalInterface
+public interface EventWriteMessageToConnection {
 
-  private static final long serialVersionUID = 8858056991799548907L;
-
-  private final SwitchedPlayerSpectatorResult result;
-
-  public SwitchedPlayerSpectatorException(String message, SwitchedPlayerSpectatorResult result) {
-    super(message);
-    this.result = result;
-  }
-
-  public SwitchedPlayerSpectatorResult getResult() {
-    return result;
-  }
+  /**
+   * When the server sends a packet to a connection.
+   *
+   * @param session the {@link Session} which is connecting to the server
+   * @param packet  the sending {@link Packet}
+   */
+  void handle(Session session, Packet packet);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,21 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.listener;
 
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.zero.engine.ZeroReader;
 
 /**
- * The writer engine listener.
+ * The writer engine listener. Invoked by the reader engine.
+ *
+ * @see ZeroReader
  */
 public interface ZeroWriterListener {
 
+  /**
+   * In reading phase (the reader engine), it set higher priority to continually put the session
+   * for sending all left packets first.
+   *
+   * @param session the {@link Session} is in processing
+   * @see ZeroReader
+   */
   void continueWriteInterestOp(Session session);
 }

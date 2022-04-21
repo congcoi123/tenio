@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.schedule.task;
 
 import com.tenio.common.logger.SystemLogger;
-import com.tenio.common.task.schedule.Task;
+import com.tenio.common.task.Task;
 import com.tenio.core.event.implement.EventManager;
 
 /**

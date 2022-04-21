@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,26 @@ THE SOFTWARE.
 
 package com.tenio.core.extension.events;
 
+import com.tenio.core.configuration.define.CoreConfigurationType;
+
 /**
- * Shows the system monitoring information.
+ * Monitoring the system information.
  */
+@FunctionalInterface
 public interface EventSystemMonitoring {
 
+  /**
+   * Monitoring the system information on the server. The information should be frequently
+   * updated every interval time.
+   *
+   * @param cpuUsage            {@code double} value, the current CPU's usage
+   * @param totalMemory         {@code long} value, the total size of memory in byte that
+   *                            the JVM occupy from the host machine
+   * @param usedMemory          {@code long} value, the memory volume that the JVM is consuming
+   * @param freeMemory          {@code long} value, the available memory that the JVM can use
+   * @param countRunningThreads {@code integer} value, the current running threads on the JVM
+   * @see CoreConfigurationType#INTERVAL_SYSTEM_MONITORING
+   */
   void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory,
               int countRunningThreads);
 }

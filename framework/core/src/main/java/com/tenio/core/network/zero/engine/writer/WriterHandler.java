@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,59 +32,63 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * The APIs designed for writing binary to socket.
+ * The APIs designed for writing binaries data to sockets.
  */
 public interface WriterHandler {
 
   /**
-   * Send a packet to a session.
+   * Sends a packet to a session.
    *
-   * @param packetQueue the packet queue
-   * @param session     the session
-   * @param packet      the packet
+   * @param packetQueue the {@link PacketQueue}
+   * @param session     the {@link Session}
+   * @param packet      the {@link Packet}
    */
   void send(PacketQueue packetQueue, Session session, Packet packet);
 
   /**
-   * Retrieves the blocking queue of sessions.
+   * Retrieves a blocking queue of all sessions.
    *
-   * @return the blocking queue
+   * @return the blocking queue of all {@link Session}s
+   * @see BlockingQueue
    */
   BlockingQueue<Session> getSessionTicketsQueue();
 
   /**
-   * Set the blocking queue of sessions.
+   * Sets a blocking queue of sessions.
    *
-   * @param sessionTicketsQueue the blocking queue
+   * @param sessionTicketsQueue a blocking queue of all {@link Session}s
+   * @see BlockingQueue
    */
   void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue);
 
   /**
-   * Retrieves the network writer statistic.
+   * Retrieves a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
    *
-   * @return the network writer statistic object
+   * @return a {@link NetworkWriterStatistic} instance
    */
   NetworkWriterStatistic getNetworkWriterStatistic();
 
   /**
-   * Set the network writer statistic object.
+   * Sets a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
    *
-   * @param networkWriterStatistic the network writer statistic object
+   * @param networkWriterStatistic a {@link NetworkWriterStatistic} instance
    */
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
   /**
-   * Retrieves the byte buffer.
+   * Retrieves a byte buffer which a socket can read/write binaries data from/down.
    *
-   * @return the byte buffer
+   * @return an instance of {@link ByteBuffer}
    */
   ByteBuffer getBuffer();
 
   /**
-   * a
-   * Allocates a byte buffer.
+   * Allocates a byte buffer capacity.
    *
-   * @param capacity the capacity
+   * @param capacity the capacity of a byte buffer ({@code integer} value)
+   * @see ByteBuffer
    */
   void allocateBuffer(int capacity);
 }

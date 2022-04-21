@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,34 @@ THE SOFTWARE.
 package com.tenio.core.entity.define.mode;
 
 /**
- * All modes associated with player disconnected phase.
+ * All modes associated with the player disconnected phase.
  */
 public enum PlayerDisconnectMode {
 
+  /**
+   * When a player manually disconnect from the server.
+   */
   DEFAULT,
+  /**
+   * When a player's connection is lost and the reason comes from the client side.
+   */
   CONNECTION_LOST,
+  /**
+   * When a player falls in IDLE state for a long time enough to be disconnected.
+   */
   IDLE,
+  /**
+   * When a player is removed from the server in purpose.
+   */
   KICK,
+  /**
+   * When a player is removed from the server in purpose and its IP address is also listed in
+   * the black list.
+   */
   BAN,
+  /**
+   * Disconnected by other reasons.
+   */
   UNKNOWN;
 
   @Override

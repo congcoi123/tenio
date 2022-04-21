@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,19 @@ import com.tenio.core.network.entity.packet.PacketQueue;
 
 /**
  * The packet queue policy.
+ *
+ * @see PacketQueue
  */
 public interface PacketQueuePolicy {
 
+  /**
+   * Applies policies on a queue whenever a new packet is added into it.
+   *
+   * @param packetQueue the checking {@link PacketQueue}
+   * @param packet      a new appended {@link Packet}
+   * @throws PacketQueuePolicyViolationException whenever a new added packet violates the queue's
+   * policies
+   */
   void applyPolicy(PacketQueue packetQueue, Packet packet)
       throws PacketQueuePolicyViolationException;
 }

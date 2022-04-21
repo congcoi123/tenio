@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
@@ -37,8 +37,8 @@ import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.entity.session.SessionManager;
-import com.tenio.core.network.entity.session.implement.SessionManagerImpl;
+import com.tenio.core.network.entity.session.manager.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttpService;
 import com.tenio.core.network.netty.NettyWebSocketService;
 import com.tenio.core.network.netty.NettyWebSocketServiceImpl;
@@ -52,6 +52,7 @@ import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation for network service.
@@ -175,7 +176,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
   @Override
   public void setHttpPathConfigs(List<PathConfig> pathConfigs) {
-    if (pathConfigs == null) {
+    if (Objects.isNull(pathConfigs)) {
       return;
     }
     httpService.setPathConfigs(pathConfigs);
@@ -266,14 +267,14 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   private boolean containsSocketPort(List<SocketConfig> socketConfigs) {
-    return socketConfigs.stream().filter(socketConfig -> socketConfig.getType() == TransportType.TCP
-        || socketConfig.getType() == TransportType.UDP).findFirst().isPresent();
+    return socketConfigs.stream()
+        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.TCP
+            || socketConfig.getType() == TransportType.UDP);
   }
 
   private boolean containsWebSocketPort(List<SocketConfig> socketConfigs) {
     return socketConfigs.stream()
-        .filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET)
-        .findFirst().isPresent();
+        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET);
   }
 
   @Override
@@ -311,17 +312,17 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
   @Override
   public void write(Response response) {
-    var data = ZeroObjectImpl.newInstance(response.getContent());
+    var data = ZeroUtility.binaryToMap(response.getContent());
     var message = ServerMessage.newInstance().setData(data);
 
-    var playerIterator = response.getPlayers().iterator();
+    var playerIterator = response.getRecipientPlayers().iterator();
     while (playerIterator.hasNext()) {
       var player = playerIterator.next();
       eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
     }
 
-    var nonSessionPlayers = response.getNonSessionPlayers();
-    if (nonSessionPlayers != null) {
+    var nonSessionPlayers = response.getNonSessionRecipientPlayers();
+    if (Objects.nonNull(nonSessionPlayers)) {
       var nonSessionIterator = nonSessionPlayers.iterator();
       while (nonSessionIterator.hasNext()) {
         var player = nonSessionIterator.next();
@@ -333,19 +334,25 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     var datagramSessions = response.getRecipientDatagramSessions();
     var webSocketSessions = response.getRecipientWebSocketSessions();
 
-    if (socketSessions != null) {
+    if (Objects.nonNull(socketSessions)) {
       var packet = createPacket(response, socketSessions, TransportType.TCP);
       socketService.write(packet);
+      socketSessions.forEach(
+          session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 
-    if (datagramSessions != null) {
+    if (Objects.nonNull(datagramSessions)) {
       var packet = createPacket(response, datagramSessions, TransportType.UDP);
       socketService.write(packet);
+      datagramSessions.forEach(
+          session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 
-    if (webSocketSessions != null) {
+    if (Objects.nonNull(webSocketSessions)) {
       var packet = createPacket(response, webSocketSessions, TransportType.WEB_SOCKET);
       webSocketService.write(packet);
+      webSocketSessions.forEach(
+          session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
   }
 

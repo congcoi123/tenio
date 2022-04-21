@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,21 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import com.tenio.core.controller.AbstractController;
+
 /**
- * When the request queue is full.
+ * When the coming requests queue is full.
  */
 public final class RequestQueueFullException extends RuntimeException {
 
   private static final long serialVersionUID = 6981972099759381035L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param currentSize the current size of the queue ({@code integer} value)
+   * @see AbstractController
+   */
   public RequestQueueFullException(int currentSize) {
     super(String.format("Reached max queue size, the request was dropped. The current size: %d",
         currentSize));

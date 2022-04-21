@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,12 @@ import com.tenio.common.logger.SystemLogger;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.Security;
+import java.util.Objects;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 /**
- * The SSL configuration for the websockets.
+ * The SSL configuration for the WebSocket.
  */
 public final class WebSocketSslContext extends SystemLogger {
 
@@ -53,7 +54,7 @@ public final class WebSocketSslContext extends SystemLogger {
 
     try {
       var algorithm = Security.getProperty(KEY_MANAGER_FACTORY_ALGORITHM);
-      if (algorithm == null) {
+      if (Objects.isNull(algorithm)) {
         algorithm = DEFAULT_ALGORITHM;
       }
 
@@ -76,6 +77,11 @@ public final class WebSocketSslContext extends SystemLogger {
     }
   }
 
+  /**
+   * Retrieves the server context.
+   *
+   * @return a {@link SSLContext} instance
+   */
   public SSLContext getServerContext() {
     return serverContext;
   }

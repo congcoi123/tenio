@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.websocket;
 
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.ssl.WebSocketSslContext;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -36,7 +36,7 @@ import io.netty.handler.ssl.SslHandler;
 import javax.net.ssl.SSLEngine;
 
 /**
- * The initialization for the netty websockets.
+ * An initialization for the Netty websockets.
  */
 public final class NettyWsInitializer extends ChannelInitializer<SocketChannel> {
 
@@ -81,7 +81,7 @@ public final class NettyWsInitializer extends ChannelInitializer<SocketChannel> 
   }
 
   @Override
-  protected void initChannel(SocketChannel channel) throws Exception {
+  protected void initChannel(SocketChannel channel) {
     var pipeline = channel.pipeline();
 
     // add ssl handler

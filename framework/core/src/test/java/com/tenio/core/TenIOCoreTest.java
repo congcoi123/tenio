@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,18 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
+// @Suite
 @SuiteDisplayName("Test all unit test cases for tenio-core module")
-@SelectPackages("com.tenio")
-public final class TenIOCoreTest {
+@SelectPackages({
+    "com.tenio.core.api",
+    "com.tenio.core.bootstrap",
+    "com.tenio.core.configuration",
+    "com.tenio.core.controller",
+    "com.tenio.core.entity",
+    "com.tenio.core.event",
+    "com.tenio.core.monitoring",
+    "com.tenio.core.network",
+    "com.tenio.core.server"
+})
+class TenIOCoreTest {
 }

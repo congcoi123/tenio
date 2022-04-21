@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,10 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.configuration.constant.Trademark;
+import com.tenio.common.constant.Trademark;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.api.ServerApi;
-import com.tenio.core.api.ServerApiImpl;
+import com.tenio.core.api.implement.ServerApiImpl;
 import com.tenio.core.bootstrap.BootstrapHandler;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
@@ -49,15 +49,18 @@ import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.schedule.ScheduleService;
 import com.tenio.core.schedule.ScheduleServiceImpl;
 import com.tenio.core.server.service.InternalProcessorService;
 import com.tenio.core.server.service.InternalProcessorServiceImpl;
 import com.tenio.core.server.setting.ConfigurationAssessment;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.concurrent.ThreadSafe;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * This class manages the workflow of the current server. The instruction's
@@ -87,9 +90,8 @@ public final class ServerImpl extends SystemLogger implements Server {
     serverApi = ServerApiImpl.newInstance(this);
 
     // print out the framework's preface
-    for (var line : Trademark.CONTENT) {
-      info("", "", line);
-    }
+    var trademark = String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
+    info("HAPPY CODING", trademark);
   } // prevent creation manually
 
   /**
@@ -99,7 +101,7 @@ public final class ServerImpl extends SystemLogger implements Server {
    * @return a new instance
    */
   public static Server getInstance() {
-    if (instance == null) {
+    if (Objects.isNull(instance)) {
       instance = new ServerImpl();
     }
     return instance;
@@ -110,7 +112,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 
     // get the file path
     var file = params.length == 0 ? null : params[0];
-    if (file == null) {
+    if (Objects.isNull(file)) {
       file = CoreConstant.DEFAULT_CONFIGURATION_FILE;
     }
 
@@ -251,10 +253,10 @@ public final class ServerImpl extends SystemLogger implements Server {
     final var binaryPacketCompressor =
         (BinaryPacketCompressor) binaryPacketCompressorClazz.getDeclaredConstructor()
             .newInstance();
-    final var binaryPacketEncrypterClazz = Class
-        .forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCRYPTER).strip());
-    final var binaryPacketEncrypter =
-        (BinaryPacketEncrypter) binaryPacketEncrypterClazz.getDeclaredConstructor()
+    final var binaryPacketEncryptorClazz = Class
+        .forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCRYPTOR).strip());
+    final var binaryPacketEncryptor =
+        (BinaryPacketEncryptor) binaryPacketEncryptorClazz.getDeclaredConstructor()
             .newInstance();
     final var binaryPacketEncoderClazz = Class
         .forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_ENCODER).strip());
@@ -269,10 +271,10 @@ public final class ServerImpl extends SystemLogger implements Server {
         configuration.getInt(
             CoreConfigurationType.NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES));
     binaryPacketEncoder.setCompressor(binaryPacketCompressor);
-    binaryPacketEncoder.setEncrypter(binaryPacketEncrypter);
+    binaryPacketEncoder.setEncryptor(binaryPacketEncryptor);
 
     binaryPacketDecoder.setCompressor(binaryPacketCompressor);
-    binaryPacketDecoder.setEncrypter(binaryPacketEncrypter);
+    binaryPacketDecoder.setEncryptor(binaryPacketEncryptor);
 
     networkService.setPacketDecoder(binaryPacketDecoder);
     networkService.setPacketEncoder(binaryPacketEncoder);

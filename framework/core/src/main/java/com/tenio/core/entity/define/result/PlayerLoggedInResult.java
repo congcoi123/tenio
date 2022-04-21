@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,17 @@ package com.tenio.core.entity.define.result;
  */
 public enum PlayerLoggedInResult {
 
+  /**
+   * Success.
+   */
   SUCCESS,
+  /**
+   * The player fails to log in the server cause its session can not be found.
+   */
   SESSION_NOT_FOUND,
+  /**
+   * The player fails to log in the server because it is already in. It should throw an exception.
+   */
   DUPLICATED_PLAYER;
 
   @Override

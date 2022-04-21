@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,8 @@ public abstract class BaseProcessServlet extends AbstractLogger implements Servl
   /**
    * Implements handling.
    *
-   * @param request  the request
-   * @param response the response
+   * @param request  the {@link HttpServletRequest}
+   * @param response the {@link HttpServletResponse}
    */
   protected abstract void handleImpl(HttpServletRequest request, HttpServletResponse response);
 }

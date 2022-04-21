@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.constant;
 
+import com.tenio.core.bootstrap.Bootstrapper;
+
 /**
- * This class holds constant values.
+ * This class holds constant values for the module.
  */
 public final class CoreConstant {
 
@@ -42,12 +44,30 @@ public final class CoreConstant {
    */
   public static final String CONTENT_TYPE_TEXT = "text/html";
   /**
-   * The default URI path when a HTTP server was started (To confirm if the server
+   * The default URI path when the HTTP service was started (To confirm if the service
    * was started or not).
    */
   public static final String PING_PATH = "/ping";
+  /**
+   * The server local host.
+   */
   public static final String LOCAL_HOST = "localhost";
+  /**
+   * The server's default configuration file name.
+   */
   public static final String DEFAULT_CONFIGURATION_FILE = "configuration.xml";
+  /**
+   * The default bootstrap package name using for the bootstrap to scan all classes inside it.
+   *
+   * @see Bootstrapper
+   */
+  public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
+  /**
+   * The default events package name using for the bootstrap to scan all event interfaces inside it.
+   *
+   * @see Bootstrapper
+   */
+  public static final String DEFAULT_EXTENSION_EVENT_PACKAGE = "com.tenio.core.extension.events";
 
   private CoreConstant() {
     throw new UnsupportedOperationException("This class does not support to create a new instance");

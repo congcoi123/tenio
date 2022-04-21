@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,48 @@ THE SOFTWARE.
 
 package com.tenio.core.extension.events;
 
+import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.controller.AbstractController;
+import com.tenio.core.exception.PacketQueueFullException;
+import com.tenio.core.exception.PacketQueuePolicyViolationException;
+import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+
 /**
- * Returns the fetched bandwitch information.
+ * Fetches the bandwidth information on the server.
  */
+@FunctionalInterface
 public interface EventFetchedBandwidthInfo {
 
+  /**
+   * Fetches the bandwidth information on the server. The information should be frequently
+   * updated every interval time.
+   *
+   * @param readBytes                     {@code long} value, the current total number of
+   *                                      read binary data from clients side
+   * @param readPackets                   {@code long} value, the current total number of
+   *                                      read packets from clients side
+   * @param readDroppedPackets            {@code long} value, the current total number of
+   *                                      dropped packets sent from clients side which violated
+   *                                      request queue policies and could not be processed
+   * @param writtenBytes                  {@code long} value, the current total number of
+   *                                      sending binary data to clients side
+   * @param writtenPackets                {@code long} value, the current total number of
+   *                                      sending packets to clients side
+   * @param writtenDroppedPacketsByPolicy {@code long} value, the current total number of
+   *                                      dropped packets which could not sent to clients side
+   *                                      because they violated the packet queue policies
+   * @param writtenDroppedPacketsByFull   {@code long} value, the current total number of
+   *                                      dropped packets which could not sent to clients side
+   *                                      because packet queue is full and could not hold any
+   *                                      written packet
+   * @see CoreConfigurationType#INTERVAL_TRAFFIC_COUNTER
+   * @see AbstractController
+   * @see PacketQueue
+   * @see PacketQueuePolicy
+   * @see PacketQueuePolicyViolationException
+   * @see PacketQueueFullException
+   */
   void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
               long writtenPackets,
               long writtenDroppedPacketsByPolicy, long writtenDroppedPacketsByFull);

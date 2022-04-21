@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 
 /**
- * This class provides the instance of the project's configuration.
+ * This class provides an instance of the server's configuration.
  */
 @Component
 public final class ConfigurationHandler {
@@ -37,6 +37,11 @@ public final class ConfigurationHandler {
   @Autowired
   private Configuration configuration;
 
+  /**
+   * Retrieves a configuration instance for the server.
+   *
+   * @return the server's {@link Configuration}
+   */
   public Configuration getConfiguration() {
     return configuration;
   }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,7 @@ import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 import com.tenio.core.network.zero.engine.writer.DatagramWriterHandler;
 import com.tenio.core.network.zero.engine.writer.SocketWriterHandler;
 import com.tenio.core.network.zero.engine.writer.WriterHandler;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -53,9 +54,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
   private ZeroWriterImpl(EventManager eventManager) {
     super(eventManager);
-
-    sessionTicketsQueue = new LinkedBlockingQueue<Session>();
-
+    sessionTicketsQueue = new LinkedBlockingQueue<>();
     setName("writer");
   }
 
@@ -95,7 +94,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
                                    WriterHandler datagramWriterHandler) {
 
     // ignore the null session
-    if (session == null) {
+    if (Objects.isNull(session)) {
       return;
     }
 
@@ -115,7 +114,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
       var packet = packetQueue.peek();
       // ignore the null packet and remove it from queue
-      if (packet == null) {
+      if (Objects.isNull(packet)) {
         if (!packetQueue.isEmpty()) {
           packetQueue.take();
         }
@@ -135,7 +134,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
   public void enqueuePacket(Packet packet) {
     // retrieve all recipient sessions from the packet
     var recipients = packet.getRecipients();
-    if (recipients == null) {
+    if (Objects.isNull(recipients)) {
       return;
     }
 
@@ -166,7 +165,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
     // loops through the packet queue and handles its packets
     var packetQueue = session.getPacketQueue();
-    if (packetQueue != null) {
+    if (Objects.nonNull(packetQueue)) {
       synchronized (packetQueue) {
         try {
           // get the current state first
@@ -194,7 +193,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
   @Override
   public void continueWriteInterestOp(Session session) {
-    if (session != null) {
+    if (Objects.nonNull(session)) {
       sessionTicketsQueue.add(session);
     }
   }

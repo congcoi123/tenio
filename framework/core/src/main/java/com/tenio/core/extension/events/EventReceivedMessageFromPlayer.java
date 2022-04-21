@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,14 @@ import com.tenio.core.entity.data.ServerMessage;
 /**
  * When the server receives a message from a player.
  */
+@FunctionalInterface
 public interface EventReceivedMessageFromPlayer {
 
+  /**
+   * When the server receives a message from a player.
+   *
+   * @param player  the {@link Player} which is sending a message to the server
+   * @param message the receiving {@link ServerMessage}
+   */
   void handle(Player player, ServerMessage message);
 }

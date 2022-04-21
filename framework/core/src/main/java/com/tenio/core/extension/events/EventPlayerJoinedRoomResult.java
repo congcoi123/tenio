@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,19 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 
 /**
- * When a player joined a room.
+ * When a player tried to join a room.
  */
+@FunctionalInterface
 public interface EventPlayerJoinedRoomResult {
 
+  /**
+   * When a player tried to join a room.
+   *
+   * @param player the joining {@link Player}
+   * @param room   the {@link Room} which the player attempts to join in
+   * @param result the joining result presented by {@link PlayerJoinedRoomResult}. A player is
+   *               considered as it joined the room when the result equals to success
+   * @see PlayerJoinedRoomResult#SUCCESS
+   */
   void handle(Player player, Room room, PlayerJoinedRoomResult result);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.jetty.server.Server;
@@ -45,7 +46,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * This class provides the methods for creating HTTP services.
+ * This class provides methods for creating HTTP service.
  */
 public final class JettyHttpService extends AbstractManager implements Service, Runnable {
 
@@ -61,13 +62,19 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     initialized = false;
   }
 
+  /**
+   * Initialization.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return an instance of {@link JettyHttpService}
+   */
   public static JettyHttpService newInstance(EventManager eventManager) {
     return new JettyHttpService(eventManager);
   }
 
   private void setup() throws DuplicatedUriAndMethodException {
     // Collect the same URI path for one servlet
-    Map<String, List<PathConfig>> servlets = new HashMap<String, List<PathConfig>>();
+    Map<String, List<PathConfig>> servlets = new HashMap<>();
     for (var path : pathConfigs) {
       if (!servlets.containsKey(path.getUri())) {
         var servlet = new ArrayList<PathConfig>();
@@ -101,9 +108,9 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
     // Configuration
     context.addServlet(new ServletHolder(new PingServlet()), CoreConstant.PING_PATH);
-    servlets.forEach((uri, list) -> {
-      context.addServlet(new ServletHolder(new ServletManager(eventManager, list)), uri);
-    });
+    servlets.forEach(
+        (uri, list) -> context.addServlet(new ServletHolder(new ServletManager(eventManager, list)),
+            uri));
 
     server.setHandler(context);
   }
@@ -148,18 +155,15 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     executorService = Executors.newSingleThreadExecutor();
     executorService.execute(this);
 
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {
-        if (executorService != null && !executorService.isShutdown()) {
-          try {
-            shutdown();
-          } catch (Exception e) {
-            error(e);
-          }
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
+        try {
+          shutdown();
+        } catch (Exception e) {
+          error(e);
         }
       }
-    });
+    }));
   }
 
   @Override
@@ -171,12 +175,13 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     try {
       server.stop();
       executorService.shutdownNow();
+
+      info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
+      destroy();
+      info("DESTROYED SERVICE", buildgen(getName(), " (", 1, ")"));
     } catch (Exception e) {
       error(e);
     }
-    info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
-    destroy();
-    info("DESTROYED SERVICE", buildgen(getName(), " (", 1, ")"));
   }
 
   private void destroy() {

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import com.tenio.core.network.zero.codec.packet.PacketHeader;
 import com.tenio.core.network.zero.codec.packet.PacketHeaderType;
 
 /**
- * The utility class provides methods to work with packet and binary.
+ * The utility class provides methods to work with packet and binary data.
  */
 public final class CodecUtility {
 
@@ -39,8 +39,8 @@ public final class CodecUtility {
   /**
    * Decoding the header byte to find the packet header setting.
    *
-   * @param headerByte the first read byte
-   * @return the setup packet header
+   * @param headerByte the first read {@code byte}
+   * @return the new instance of {@link PacketHeader}
    */
   public static PacketHeader decodeFirstHeaderByte(byte headerByte) {
     return PacketHeader.newInstance((headerByte & PacketHeaderType.BINARY.getValue()) > 0,

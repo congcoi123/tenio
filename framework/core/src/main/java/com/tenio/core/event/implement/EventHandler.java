@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public final class EventHandler<T> {
   private final Map<ServerEvent, Emitter<T>> delegate;
 
   public EventHandler() {
-    delegate = new HashMap<ServerEvent, Emitter<T>>();
+    delegate = new HashMap<>();
   }
 
   /**
@@ -63,7 +63,8 @@ public final class EventHandler<T> {
    * @param params a list parameters of this event
    * @return the event result (the response of its subscribers), see {@link Object} or <b>null</b>
    */
-  public Object emit(ServerEvent event, @SuppressWarnings("unchecked") T... params) {
+  @SafeVarargs
+  public final Object emit(ServerEvent event, T... params) {
     if (delegate.containsKey(event)) {
       return delegate.get(event).emit(params);
     }

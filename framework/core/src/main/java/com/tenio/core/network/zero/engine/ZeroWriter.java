@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,19 +25,44 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine;
 
 import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 
 /**
- * The engine supports writing binary to sockets.
+ * The engine supports writing binaries data to sockets.
  */
 public interface ZeroWriter extends ZeroEngine {
 
+  /**
+   * Enqueue a packet from the packet queue to process.
+   *
+   * @param packet the processing {@link Packet}
+   * @see PacketQueue
+   */
   void enqueuePacket(Packet packet);
 
+  /**
+   * Retrieves a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
+   *
+   * @return a {@link NetworkWriterStatistic} instance
+   */
   NetworkWriterStatistic getNetworkWriterStatistic();
 
+  /**
+   * Sets a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
+   *
+   * @param networkWriterStatistic a {@link NetworkWriterStatistic} instance
+   */
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
+  /**
+   * Sets an instance of packet encoder to encode packets for sending to clients side via the
+   * socket (TCP).
+   *
+   * @param packetEncoder an instance of {@link BinaryPacketEncoder}
+   */
   void setPacketEncoder(BinaryPacketEncoder packetEncoder);
 }

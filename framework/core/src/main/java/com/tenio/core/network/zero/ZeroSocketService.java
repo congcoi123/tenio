@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,45 +26,130 @@ package com.tenio.core.network.zero;
 
 import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * The APIs designed for working with sockets.
+ * All APIs designed for working with sockets (TCP/UDP).
  */
 public interface ZeroSocketService extends Service {
 
+  /**
+   * Sets size of {@link ByteBuffer} using for an acceptor worker to read/write binaries data
+   * from/down.
+   *
+   * @param bufferSize the size of {@link ByteBuffer} ({@code integer} value) for
+   *                   reading/writing binaries data
+   */
   void setAcceptorBufferSize(int bufferSize);
 
+  /**
+   * Sets the number of acceptor workers for the socket (TCP) which are using to accept new coming
+   * clients.
+   *
+   * @param workerSize the number of acceptor workers for the socket ({@code integer} value)
+   */
   void setAcceptorWorkerSize(int workerSize);
 
+  /**
+   * Sets size of {@link ByteBuffer} using for a reader worker to read/write binaries data
+   * from/down.
+   *
+   * @param bufferSize the size of {@link ByteBuffer} ({@code integer} value) for
+   *                   reading/writing binaries data
+   */
   void setReaderBufferSize(int bufferSize);
 
+  /**
+   * Sets the number of reader workers for the socket (TCP) which are using to read coming packets
+   * from clients side.
+   *
+   * @param workerSize the number of reader workers for the socket ({@code integer} value)
+   */
   void setReaderWorkerSize(int workerSize);
 
+  /**
+   * Sets size of {@link ByteBuffer} using for a writer worker to read/write binaries data
+   * from/down.
+   *
+   * @param bufferSize the size of {@link ByteBuffer} ({@code integer} value) for
+   *                   reading/writing binaries data
+   */
   void setWriterBufferSize(int bufferSize);
 
+  /**
+   * Sets the number of writer workers for the socket (TCP) which are using to send packets to
+   * clients side.
+   *
+   * @param workerSize the number of writer workers for the socket ({@code integer} value)
+   */
   void setWriterWorkerSize(int workerSize);
 
+  /**
+   * Sets an instance for the connection filter.
+   *
+   * @param connectionFilter an instance of {@link ConnectionFilter}
+   */
   void setConnectionFilter(ConnectionFilter connectionFilter);
 
+  /**
+   * Set a session manager.
+   *
+   * @param sessionManager the {@link SessionManager}
+   */
   void setSessionManager(SessionManager sessionManager);
 
-  void setNetworkReaderStatistic(NetworkReaderStatistic readerStatistic);
+  /**
+   * Sets a network reader statistic instance which takes responsibility recording the
+   * receiving data from clients.
+   *
+   * @param networkReaderStatistic a {@link NetworkReaderStatistic} instance
+   */
+  void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
 
-  void setNetworkWriterStatistic(NetworkWriterStatistic writerStatistic);
+  /**
+   * Sets a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
+   *
+   * @param networkWriterStatistic a {@link NetworkWriterStatistic} instance
+   */
+  void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
+  /**
+   * Declares a list of socket configurations for the network.
+   *
+   * @param socketConfigs a list of {@link SocketConfig}
+   * @see List
+   */
   void setSocketConfigs(List<SocketConfig> socketConfigs);
 
+  /**
+   * Sets an instance of packet encoder to encode packets for sending to clients side via the
+   * socket (TCP).
+   *
+   * @param packetEncoder an instance of {@link BinaryPacketEncoder}
+   */
   void setPacketEncoder(BinaryPacketEncoder packetEncoder);
 
+  /**
+   * Sets an instance of packet decoder to decode packets sent from clients side via the socket
+   * (TCP).
+   *
+   * @param packetDecoder an instance of {@link BinaryPacketDecoder}
+   */
   void setPacketDecoder(BinaryPacketDecoder packetDecoder);
 
+  /**
+   * Writes down (binaries) data to socket/channel in order to send them to client side.
+   *
+   * @param packet an instance of {@link Packet} using to carry conveying information
+   */
   void write(Packet packet);
 }
