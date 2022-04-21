@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
@@ -54,12 +55,12 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
    */
   public ContextImpl(ContextInfo contextInfo, Class<T> clazz) {
     this.contextInfo = contextInfo;
-    entities = new HashMap<String, T>();
+    entities = new HashMap<>();
     entityPool = new EntityPool(clazz, this.contextInfo);
     componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
 
     for (int i = 0; i < this.contextInfo.getNumberComponents(); i++) {
-      if (this.contextInfo.getComponentTypes()[i] != null) {
+      if (Objects.nonNull(this.contextInfo.getComponentTypes()[i])) {
         componentPools[i] = new ComponentPool(this.contextInfo.getComponentTypes()[i]);
       }
     }
@@ -108,9 +109,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
 
   @Override
   public void destroyAllEntities() {
-    entities.values().forEach(entity -> {
-      entity.reset();
-    });
+    entities.values().forEach(EntityImpl::reset);
     entities.clear();
   }
 
@@ -119,7 +118,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
     destroyAllEntities();
     entityPool.cleanup();
     for (var componentPool : componentPools) {
-      if (componentPool != null) {
+      if (Objects.nonNull(componentPool)) {
         componentPool.cleanup();
       }
     }

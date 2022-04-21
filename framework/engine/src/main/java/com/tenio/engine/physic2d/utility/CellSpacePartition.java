@@ -8,6 +8,7 @@ import com.tenio.engine.physic2d.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * This class is used to divide a 2D space into a grid of cells each of which
@@ -32,7 +33,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
   /**
    * The required amount of cells in the space.
    */
-  private final List<Cell<T>> cells = new ArrayList<Cell<T>>();
+  private final List<Cell<T>> cells = new ArrayList<>();
   /**
    * This is used to store any valid neighbors when an agent searches its
    * neighboring space.
@@ -44,8 +45,6 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
   // The number of cells the space is going to be divided up into
   private final int numCellsX;
   private final int numCellsY;
-  private final float cellSizeX;
-  private final float cellSizeY;
   /**
    * This iterator will be used by the methods next and begin to traverse through
    * the above vector of neighbors.
@@ -66,10 +65,10 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
     spaceHeight = height;
     numCellsX = cellsX;
     numCellsY = cellsY;
-    neighbors = new ArrayList<T>(maxEntities);
+    neighbors = new ArrayList<>(maxEntities);
     // calculate bounds of each cell
-    cellSizeX = width / cellsX;
-    cellSizeY = height / cellsY;
+    float cellSizeX = width / cellsX;
+    float cellSizeY = height / cellsY;
 
     // create the cells
     for (int y = 0; y < numCellsY; ++y) {
@@ -79,7 +78,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
         float top = y * cellSizeY;
         float bot = top + cellSizeY;
 
-        cells.add(new Cell<T>(left, top, right, bot));
+        cells.add(new Cell<>(left, top, right, bot));
       }
     }
   }
@@ -205,7 +204,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @return the next entity in the neighbor vector
    */
   public T getNextOfNeighbor() {
-    if (currNeighbor == null || !currNeighbor.hasNext()) {
+    if (Objects.isNull(currNeighbor) || !currNeighbor.hasNext()) {
       return null;
     }
     return currNeighbor.next();
@@ -217,7 +216,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @return <b>true</b> if the end of the vector is found (a zero value marks the end)
    */
   public boolean isEndOfNeighbors() {
-    return (currNeighbor == null || (!currNeighbor.hasNext()));
+    return (Objects.isNull(currNeighbor) || (!currNeighbor.hasNext()));
   }
 
   /**

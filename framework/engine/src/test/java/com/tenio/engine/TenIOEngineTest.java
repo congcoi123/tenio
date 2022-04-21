@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,13 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
+// @Suite
 @SuiteDisplayName("Test all unit test cases for tenio-engine module")
-@SelectPackages("com.tenio")
-public final class TenIOEngineTest {
+@SelectPackages({
+    "com.tenio.engine.ecs",
+    "com.tenio.engine.fsm",
+    "com.tenio.engine.heartbeat",
+    "com.tenio.engine.physic2d"
+})
+class TenIOEngineTest {
 }

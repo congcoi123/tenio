@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.engine.heartbeat;
 
-import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.engine.exception.HeartbeatNotFoundException;
 import com.tenio.engine.message.ExtraMessage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,7 +47,6 @@ import javax.annotation.concurrent.ThreadSafe;
  * @see HeartBeatManager
  */
 @ThreadSafe
-@Component
 public final class HeartBeatManagerImpl extends SystemLogger implements HeartBeatManager {
 
   @GuardedBy("this")
@@ -62,8 +61,8 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
   private ExecutorService executorService;
 
   public HeartBeatManagerImpl() {
-    threadsManager = new HashMap<String, Future<Void>>();
-    messagesManager = new HashMap<String, TreeSet<HeartbeatMessage>>();
+    threadsManager = new HashMap<>();
+    messagesManager = new HashMap<>();
   }
 
   @Override
@@ -96,7 +95,7 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       }
 
       var future = threadsManager.get(id);
-      if (future == null) {
+      if (Objects.isNull(future)) {
         throw new NullPointerException();
       }
 
@@ -108,8 +107,6 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       // Remove the listener
       messagesManager.get(id).clear();
       messagesManager.remove(id);
-
-      future = null;
 
     } catch (Exception e) {
       error(e, "id: ", id);
@@ -123,7 +120,7 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
 
   @Override
   public synchronized void clear() {
-    if (executorService != null) {
+    if (Objects.nonNull(executorService)) {
       executorService.shutdownNow();
     }
     executorService = null;

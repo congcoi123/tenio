@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import com.tenio.engine.ecs.system.TearDownSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Systems provide a convenient way to group systems. You can add
@@ -56,10 +57,10 @@ public final class Systems
    * Creates a new systems instance.
    */
   public Systems() {
-    initializeSystems = new ArrayList<InitializeSystem>();
-    executeSystems = new ArrayList<ExecuteSystem>();
-    renderSystems = new ArrayList<RenderSystem>();
-    tearDownSystems = new ArrayList<TearDownSystem>();
+    initializeSystems = new ArrayList<>();
+    executeSystems = new ArrayList<>();
+    renderSystems = new ArrayList<>();
+    tearDownSystems = new ArrayList<>();
   }
 
   /**
@@ -69,7 +70,7 @@ public final class Systems
    * @return the current system instance
    */
   public Systems add(System system) {
-    if (system != null) {
+    if (Objects.nonNull(system)) {
       if (system instanceof InitializeSystem) {
         initializeSystems.add((InitializeSystem) system);
       }
