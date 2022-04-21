@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.tenio.core.network.define.data;
 import com.tenio.core.network.define.TransportType;
 
 /**
- * The configuration for sockets.
+ * A configuration for a socket.
  */
 public final class SocketConfig {
 
@@ -38,9 +38,9 @@ public final class SocketConfig {
   /**
    * Initialization.
    *
-   * @param name the configuration name
-   * @param type the transportation type
-   * @param port the opened port
+   * @param name the {@link String} configuration name
+   * @param type the {@link TransportType}
+   * @param port the opened port ({@code integer} value)
    */
   public SocketConfig(String name, TransportType type, int port) {
     this.name = name;
@@ -48,14 +48,29 @@ public final class SocketConfig {
     this.port = port;
   }
 
+  /**
+   * Retrieves the socket's name.
+   *
+   * @return the {@link String} socket's name
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Retrieves the socket's transportation type.
+   *
+   * @return the {@link TransportType} of socket
+   */
   public TransportType getType() {
     return type;
   }
 
+  /**
+   * Retrieves the socket's port number.
+   *
+   * @return the socket's port number ({@code integer} value)
+   */
   public int getPort() {
     return port;
   }

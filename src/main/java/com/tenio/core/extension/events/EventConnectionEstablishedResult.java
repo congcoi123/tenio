@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,35 @@ THE SOFTWARE.
 
 package com.tenio.core.extension.events;
 
+import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
+import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
+import java.util.List;
 
 /**
- * When a connection request to establish itself in the server, and it returns a result.
+ * When a connection requests to establish itself on the server, and the server returns a result.
  */
+@FunctionalInterface
 public interface EventConnectionEstablishedResult {
 
+  /**
+   * When a connection requests to establish itself on the server, and the server returns a result.
+   *
+   * @param session when the first request from client side passes the filter process and get on
+   *                the server, then an instance of {@link Session} is created.
+   * @param message the {@link ServerMessage} sent by client side. The information it carries is
+   *                used to decide the following actions. In case the connection does not fulfill
+   *                any condition, then the session should be closed manually, otherwise, let the
+   *                client login the server and becomes a player.
+   * @param result  the returned {@link ConnectionEstablishedResult} from the server. In any case
+   *                if the result does not equal to {@link ConnectionEstablishedResult#SUCCESS}
+   *                then the established session should close. However, before it is closed, the
+   *                session could be used to send responses to the client side.
+   * @see ServerEvent#CONNECTION_ESTABLISHED_RESULT
+   * @see Response#setRecipientSession(Session)
+   * @see Session#close()
+   */
   void handle(Session session, ServerMessage message, ConnectionEstablishedResult result);
 }

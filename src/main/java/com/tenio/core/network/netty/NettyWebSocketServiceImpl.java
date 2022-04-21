@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.netty.websocket.NettyWsInitializer;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.ssl.WebSocketSslContext;
@@ -44,16 +44,15 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * The implementation for netty's websockets services.
+ * The implementation for the Netty's websockets services.
  */
 @ThreadSafe
 public final class NettyWebSocketServiceImpl extends AbstractManager
@@ -114,7 +113,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     websocketAcceptors =
         new NioEventLoopGroup(producerWorkerSize, defaultWebsocketThreadFactory);
     websocketWorkers = new NioEventLoopGroup(consumerWorkerSize, defaultWebsocketThreadFactory);
-    serverWebsockets = new ArrayList<Channel>();
+    serverWebsockets = new ArrayList<>();
 
     WebSocketSslContext sslContext = null;
     if (usingSsl) {
@@ -132,14 +131,10 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
                 networkReaderStatistic, sslContext, usingSsl));
 
     var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
-        .addListener(new GenericFutureListener<Future<? super Void>>() {
-
-          @Override
-          public void operationComplete(Future<? super Void> future) throws Exception {
-            if (!future.isSuccess()) {
-              error(future.cause());
-              throw new IOException(String.valueOf(socketConfig.getPort()));
-            }
+        .addListener(future -> {
+          if (!future.isSuccess()) {
+            error(future.cause());
+            throw new IOException(String.valueOf(socketConfig.getPort()));
           }
         });
     serverWebsockets.add(channelFuture.channel());
@@ -153,10 +148,10 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     }
     serverWebsockets.clear();
 
-    if (websocketAcceptors != null) {
+    if (Objects.nonNull(websocketAcceptors)) {
       websocketAcceptors.shutdownGracefully();
     }
-    if (websocketWorkers != null) {
+    if (Objects.nonNull(websocketWorkers)) {
       websocketWorkers.shutdownGracefully();
     }
 
@@ -177,21 +172,17 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
    * Close a channel, see {@link Channel}.
    *
    * @param channel the closed channel
-   * @return <b>true</b> if the channel is closed without any exceptions
+   * @return {@code true} if the channel is closed without any exceptions
    */
   private boolean close(Channel channel) {
-    if (channel == null) {
+    if (Objects.isNull(channel)) {
       return false;
     }
 
     try {
-      channel.close().sync().addListener(new GenericFutureListener<Future<? super Void>>() {
-
-        @Override
-        public void operationComplete(Future<? super Void> future) throws Exception {
-          if (!future.isSuccess()) {
-            error(future.cause());
-          }
+      channel.close().sync().addListener(future -> {
+        if (!future.isSuccess()) {
+          error(future.cause());
         }
       });
       return true;
@@ -273,13 +264,13 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   }
 
   @Override
-  public void setNetworkReaderStatistic(NetworkReaderStatistic readerStatistic) {
-    networkReaderStatistic = readerStatistic;
+  public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+    this.networkReaderStatistic = networkReaderStatistic;
   }
 
   @Override
-  public void setNetworkWriterStatistic(NetworkWriterStatistic writerStatistic) {
-    networkWriterStatistic = writerStatistic;
+  public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
+    this.networkWriterStatistic = networkWriterStatistic;
   }
 
   @Override

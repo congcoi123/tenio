@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.codec.encryption;
-
-import com.tenio.core.exception.PacketEncrypterException;
+package com.tenio.core.entity.define.result;
 
 /**
- * The APIs designed for encrypting and decrypting packets.
+ * The results when a player tried to switch to a spectator and vice versa.
  */
-public interface BinaryPacketEncrypter {
+public enum SwitchedPlayerRoleInRoomResult {
 
-  byte[] encrypt(byte[] binary) throws PacketEncrypterException;
+  /**
+   * Success.
+   */
+  SUCCESS,
+  /**
+   * The player fails to switch its role cause it is not in the room anymore.
+   */
+  PLAYER_WAS_NOT_IN_ROOM,
+  /**
+   * The player fails to switch to be a spectator cause there is no slot available in the room.
+   */
+  SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE,
+  /**
+   * The spectator fails to switch to be a participant cause there is no slot available in the room.
+   */
+  SWITCH_NO_PARTICIPANT_SLOTS_AVAILABLE,
+  /**
+   * The player fails to switch to spectator cause it try to occupy an invalid slot in the room.
+   */
+  SLOT_UNAVAILABLE_IN_ROOM;
 
-  byte[] decrypt(byte[] binary) throws PacketEncrypterException;
+  @Override
+  public String toString() {
+    return this.name();
+  }
 }

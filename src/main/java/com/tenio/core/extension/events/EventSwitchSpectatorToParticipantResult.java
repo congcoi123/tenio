@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.codec.encryption;
+package com.tenio.core.extension.events;
+
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
 
 /**
- * The default implementation for the binary packet encryption.
- *
- * @see BinaryPacketEncrypter
+ * Returns the result when a spectator tries to change to be a participant.
  */
-public final class DefaultBinaryPacketEncrypter implements BinaryPacketEncrypter {
+@FunctionalInterface
+public interface EventSwitchSpectatorToParticipantResult {
 
-  @Override
-  public byte[] decrypt(byte[] binary) {
-    return binary;
-  }
-
-  @Override
-  public byte[] encrypt(byte[] binary) {
-    return binary;
-  }
+  /**
+   * When a spectator tries to change to be a participant in its room.
+   *
+   * @param player the considering {@link Player}
+   * @param room   the player's {@link Room}
+   * @param result the result {@link SwitchedPlayerRoleInRoomResult} of processing
+   */
+  void handle(Player player, Room room, SwitchedPlayerRoleInRoomResult result);
 }

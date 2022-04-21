@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.0.4</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,27 +39,26 @@
     </scm>
 
     <properties>
-        <tenio.common.version>0.0.2</tenio.common.version>
-
-        <io.netty.version>4.1.68.Final</io.netty.version>
+        <io.netty.version>4.1.75.Final</io.netty.version>
         <org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
         <javax.servlet.version>2.5</javax.servlet.version>
-        <org.json.version>20210307</org.json.version>
+        <org.json.version>20220320</org.json.version>
 
-        <logging.log4j.version>2.14.1</logging.log4j.version>
+        <logging.log4j.version>2.17.2</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <org.junit.jupiter.version>5.8.1</org.junit.jupiter.version>
-        <org.junit.platform.version>1.8.1</org.junit.platform.version>
+        <org.junit.jupiter.version>5.8.2</org.junit.jupiter.version>
+        <org.junit.platform.version>1.8.2</org.junit.platform.version>
+        <org.mockito.core.version>4.4.0</org.mockito.core.version>
 
         <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
         <jdk.release>11</jdk.release>
         <jdk.vendor>oracle</jdk.vendor>
 
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
-        <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
@@ -70,14 +69,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tenio-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <artifactId>log4j-api</artifactId>
             <version>${logging.log4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tenio-common</artifactId>
-            <version>${tenio.common.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${logging.log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -117,6 +121,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${org.junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-runner</artifactId>
             <version>${org.junit.platform.version}</version>
@@ -126,6 +136,24 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>${org.junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${org.junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${org.mockito.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${org.mockito.core.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -196,6 +224,7 @@
             </plugin>
             <!-- Attach source jars -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven.source.plugin.version}</version>
                 <executions>
@@ -225,7 +254,6 @@
                 <!-- for java 11 compatible -->
                 <configuration>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                    <doclint>all,-missing</doclint>
                 </configuration>
             </plugin>
             <!-- Sign artifacts for uploading to maven central -->

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,5 +32,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface ServletHandler {
 
+  /**
+   * Handles a servlet.
+   *
+   * @param request  the {@link HttpServletRequest}
+   * @param response the {@link HttpServletResponse}
+   */
   void handle(HttpServletRequest request, HttpServletResponse response);
 }

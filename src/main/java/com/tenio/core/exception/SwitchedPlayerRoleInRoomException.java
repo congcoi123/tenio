@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,36 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
+
 /**
- * When something went wrong with the packet encryption.
+ * When a participant tries to change its role to be a spectator and vice versa.
  */
-public final class PacketEncrypterException extends RuntimeException {
+public final class SwitchedPlayerRoleInRoomException extends RuntimeException {
 
-  private static final long serialVersionUID = -4260223574425695248L;
+  private static final long serialVersionUID = 8858056991799548907L;
 
-  public PacketEncrypterException(String message) {
+  private final SwitchedPlayerRoleInRoomResult result;
+
+  /**
+   * Creates a new exception.
+   *
+   * @param message a warning {@link String} message
+   * @param result  a {@link SwitchedPlayerRoleInRoomResult} singleton value indicates result of
+   *                switching
+   */
+  public SwitchedPlayerRoleInRoomException(String message, SwitchedPlayerRoleInRoomResult result) {
     super(message);
+    this.result = result;
+  }
+
+  /**
+   * Retrieves the switching result.
+   *
+   * @return result a {@link SwitchedPlayerRoleInRoomResult} singleton value indicates result of
+   * switching
+   */
+  public SwitchedPlayerRoleInRoomResult getResult() {
+    return result;
   }
 }

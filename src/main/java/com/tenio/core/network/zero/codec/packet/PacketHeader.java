@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.codec.packet;
 
 /**
- * The packet header contains settings for the packet by combining the conditions.
+ * The packet header contains all settings for a packet by combining some conditions.
  */
 public final class PacketHeader {
 
@@ -41,23 +41,56 @@ public final class PacketHeader {
     this.encrypted = encrypted;
   }
 
+  /**
+   * Initialization.
+   *
+   * @param binary     sets to {@code true} if the data is written by binary, otherwise
+   *                   {@code false}
+   * @param compressed sets to {@code true} if the data is compressed, otherwise
+   *                   {@code false}
+   * @param bigSized   sets to {@code true} if the data size is considered big size,
+   *                   otherwise returns {@code false}
+   * @param encrypted  sets to {@code true} if the data is encrypted, otherwise
+   *                   {@code false}
+   */
   public static PacketHeader newInstance(boolean binary, boolean compressed, boolean bigSized,
                                          boolean encrypted) {
     return new PacketHeader(binary, compressed, bigSized, encrypted);
   }
 
+  /**
+   * Determines whether the data is written by binary.
+   *
+   * @return {@code true} if the data is written by binary, otherwise returns {@code false}
+   */
   public boolean isBinary() {
     return binary;
   }
 
+  /**
+   * Determines whether the data is compressed.
+   *
+   * @return {@code true} if the data is compressed, otherwise returns {@code false}
+   */
   public boolean isCompressed() {
     return compressed;
   }
 
+  /**
+   * Determines whether the data size is big.
+   *
+   * @return {@code true} if the data size is considered as big size, otherwise
+   * {@code false}
+   */
   public boolean isBigSized() {
     return bigSized;
   }
 
+  /**
+   * Determines whether the data is encrypted.
+   *
+   * @return {@code true} if the data is encrypted, otherwise returns {@code false}
+   */
   public boolean isEncrypted() {
     return encrypted;
   }

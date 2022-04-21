@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,17 @@ package com.tenio.core.entity.implement;
 
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.Player;
+import com.tenio.core.entity.PlayerRoleInRoom;
 import com.tenio.core.entity.PlayerState;
 import com.tenio.core.entity.Room;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An implemented player class is for using in the server.
+ * An implemented class is for a player using on the server.
  */
 public final class PlayerImpl implements Player {
 
@@ -42,6 +45,7 @@ public final class PlayerImpl implements Player {
   private volatile Session session;
   private volatile Room currentRoom;
   private volatile PlayerState state;
+  private volatile PlayerRoleInRoom roleInRoom;
 
   private volatile long lastLoginTime;
   private volatile long lastJoinedRoomTime;
@@ -49,7 +53,6 @@ public final class PlayerImpl implements Player {
 
   private volatile boolean loggedIn;
   private volatile boolean activated;
-  private volatile boolean isSpectator;
   private volatile boolean hasSession;
 
   private PlayerImpl(String name) {
@@ -58,23 +61,33 @@ public final class PlayerImpl implements Player {
 
   private PlayerImpl(String name, Session session) {
     this.name = name;
-
-    properties = new ConcurrentHashMap<String, Object>();
-
+    properties = new ConcurrentHashMap<>();
     lastLoginTime = 0L;
     lastJoinedRoomTime = 0L;
-
     setCurrentRoom(null);
+    setRoleInRoom(PlayerRoleInRoom.SPECTATOR);
     setSession(session);
     setLoggedIn(false);
     setActivated(false);
-    setSpectator(true);
   }
 
+  /**
+   * Create a new instance without session.
+   *
+   * @param name a unique name for player on the server
+   * @return a new instance
+   */
   public static Player newInstance(String name) {
     return new PlayerImpl(name);
   }
 
+  /**
+   * Create a new instance.
+   *
+   * @param name    a unique name for player on the server
+   * @param session a session associated to the player
+   * @return a new instance
+   */
   public static Player newInstance(String name, Session session) {
     return new PlayerImpl(name, session);
   }
@@ -137,14 +150,14 @@ public final class PlayerImpl implements Player {
   }
 
   @Override
-  public Session getSession() {
-    return session;
+  public Optional<Session> getSession() {
+    return Optional.ofNullable(session);
   }
 
   @Override
   public void setSession(Session session) {
     this.session = session;
-    hasSession = this.session != null;
+    hasSession = Objects.nonNull(this.session);
   }
 
   @Override
@@ -153,24 +166,24 @@ public final class PlayerImpl implements Player {
   }
 
   @Override
-  public boolean isSpectator() {
-    return isSpectator;
+  public PlayerRoleInRoom getRoleInRoom() {
+    return roleInRoom;
   }
 
   @Override
-  public void setSpectator(boolean isSpectator) {
-    this.isSpectator = isSpectator;
+  public void setRoleInRoom(PlayerRoleInRoom roleInRoom) {
+    this.roleInRoom = roleInRoom;
   }
 
   @Override
-  public Room getCurrentRoom() {
-    return currentRoom;
+  public Optional<Room> getCurrentRoom() {
+    return Optional.ofNullable(currentRoom);
   }
 
   @Override
   public void setCurrentRoom(Room room) {
     currentRoom = room;
-    if (currentRoom == null) {
+    if (Objects.isNull(currentRoom)) {
       playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
     } else {
       playerSlotInCurrentRoom = RoomImpl.DEFAULT_SLOT;
@@ -244,14 +257,13 @@ public final class PlayerImpl implements Player {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + (Objects.isNull(name) ? 0 : name.hashCode());
     return result;
   }
 
   @Override
   public String toString() {
-    return String.format("{ name: %s, session: %b, loggedIn: %b, spectator: %b, activated: %b }",
-        name != null ? name : "null",
-        hasSession, loggedIn, isSpectator, activated);
+    return String.format("{ name: %s, session: %b, loggedIn: %b, role: %s, activated: %b }",
+        Objects.nonNull(name) ? name : "null", hasSession, loggedIn, roleInRoom.name(), activated);
   }
 }

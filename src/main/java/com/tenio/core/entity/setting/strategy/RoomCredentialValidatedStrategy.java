@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,23 @@ THE SOFTWARE.
 package com.tenio.core.entity.setting.strategy;
 
 /**
- * The strategy is for validating room's name and password.
+ * The strategy is for validating a room's credentials.
  */
 public interface RoomCredentialValidatedStrategy {
 
+  /**
+   * Validates a room's name.
+   *
+   * @param name a {@link String} value of room's name for assessment
+   * @throws IllegalArgumentException when an invalid name is used
+   */
   void validateName(String name) throws IllegalArgumentException;
 
+  /**
+   * Validates the room's password.
+   *
+   * @param password the {@link String} value of room's password for assessment
+   * @throws IllegalArgumentException when an invalid name is used
+   */
   void validatePassword(String password) throws IllegalArgumentException;
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
-import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventDisconnectPlayer;
 import com.tenio.core.extension.events.EventPlayerLoggedinResult;
@@ -42,7 +41,6 @@ import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
 import com.tenio.core.extension.events.EventSendMessageToPlayer;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Dispatching all events related to players.
@@ -91,120 +89,65 @@ public final class PlayerEventHandler {
     final var eventDisconnectPlayerOp =
         Optional.ofNullable(eventDisconnectPlayer);
 
-    eventPlayerLoggedInResultOp.ifPresent(new Consumer<EventPlayerLoggedinResult>() {
+    eventPlayerLoggedInResultOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_LOGGEDIN_RESULT, params -> {
+          var player = (Player) params[0];
+          var result = (PlayerLoggedInResult) params[1];
 
-      public void accept(EventPlayerLoggedinResult event) {
+          event.handle(player, result);
 
-        eventManager.on(ServerEvent.PLAYER_LOGGEDIN_RESULT, new Subscriber() {
-
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var result = (PlayerLoggedInResult) params[1];
-
-            event.handle(player, result);
-
-            return null;
-          }
-        });
-      }
-    });
+          return null;
+        }));
 
     eventPlayerReconnectRequestHandleOp.ifPresent(
-        new Consumer<EventPlayerReconnectRequestHandle>() {
+        event -> eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE, params -> {
+          var session = (Session) params[0];
+          var message = (ServerMessage) params[1];
 
-          public void accept(EventPlayerReconnectRequestHandle event) {
+          event.handle(session, message);
 
-            eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE, new Subscriber() {
+          return null;
+        }));
 
-              @Override
-              public Object dispatch(Object... params) {
-                var session = (Session) params[0];
-                var message = (ServerMessage) params[1];
+    eventPlayerReconnectedResultOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_RECONNECTED_RESULT, params -> {
+          var player = (Player) params[0];
+          var session = (Session) params[1];
+          var result = (PlayerReconnectedResult) params[2];
 
-                event.handle(session, message);
+          event.handle(player, session, result);
 
-                return null;
-              }
-            });
-          }
-        });
+          return null;
+        }));
 
-    eventPlayerReconnectedResultOp.ifPresent(new Consumer<EventPlayerReconnectedResult>() {
+    eventReceivedMessageFromPlayerOp.ifPresent(
+        event -> eventManager.on(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+          var player = (Player) params[0];
+          var message = (ServerMessage) params[1];
 
-      public void accept(EventPlayerReconnectedResult event) {
+          event.handle(player, message);
 
-        eventManager.on(ServerEvent.PLAYER_RECONNECTED_RESULT, new Subscriber() {
+          return null;
+        }));
 
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var session = (Session) params[1];
-            var result = (PlayerReconnectedResult) params[2];
+    eventSendMessageToPlayerOp.ifPresent(
+        event -> eventManager.on(ServerEvent.SEND_MESSAGE_TO_PLAYER, params -> {
+          var player = (Player) params[0];
+          var message = (ServerMessage) params[1];
 
-            event.handle(player, session, result);
+          event.handle(player, message);
 
-            return null;
-          }
-        });
-      }
-    });
+          return null;
+        }));
 
-    eventReceivedMessageFromPlayerOp.ifPresent(new Consumer<EventReceivedMessageFromPlayer>() {
+    eventDisconnectPlayerOp.ifPresent(event -> eventManager.on(ServerEvent.DISCONNECT_PLAYER,
+        params -> {
+          var player = (Player) params[0];
+          var mode = (PlayerDisconnectMode) params[1];
 
-      @Override
-      public void accept(EventReceivedMessageFromPlayer event) {
-        eventManager.on(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, new Subscriber() {
+          event.handle(player, mode);
 
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var message = (ServerMessage) params[1];
-
-            event.handle(player, message);
-
-            return null;
-          }
-        });
-      }
-    });
-
-    eventSendMessageToPlayerOp.ifPresent(new Consumer<EventSendMessageToPlayer>() {
-
-      @Override
-      public void accept(EventSendMessageToPlayer event) {
-        eventManager.on(ServerEvent.SEND_MESSAGE_TO_PLAYER, new Subscriber() {
-
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var message = (ServerMessage) params[1];
-
-            event.handle(player, message);
-
-            return null;
-          }
-        });
-      }
-    });
-
-    eventDisconnectPlayerOp.ifPresent(new Consumer<EventDisconnectPlayer>() {
-
-      @Override
-      public void accept(EventDisconnectPlayer event) {
-        eventManager.on(ServerEvent.DISCONNECT_PLAYER, new Subscriber() {
-
-          @Override
-          public Object dispatch(Object... params) {
-            var player = (Player) params[0];
-            var mode = (PlayerDisconnectMode) params[1];
-
-            event.handle(player, mode);
-
-            return null;
-          }
-        });
-      }
-    });
+          return null;
+        }));
   }
 }

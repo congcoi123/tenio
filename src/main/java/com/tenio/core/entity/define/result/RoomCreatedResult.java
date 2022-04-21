@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,17 @@ package com.tenio.core.entity.define.result;
  */
 public enum RoomCreatedResult {
 
+  /**
+   * Success.
+   */
   SUCCESS,
+  /**
+   * It fails to create a new room cause the number of room reaches the limitation.
+   */
   REACHED_MAX_ROOMS,
+  /**
+   * It fails to create a new room cause its name or password is in invalid format.
+   */
   INVALID_NAME_OR_PASSWORD;
 
   @Override

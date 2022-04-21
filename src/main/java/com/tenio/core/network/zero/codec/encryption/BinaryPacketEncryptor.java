@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.extension.events;
+package com.tenio.core.network.zero.codec.encryption;
 
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
-import com.tenio.core.entity.define.result.SwitchedPlayerSpectatorResult;
+import com.tenio.core.exception.PacketEncryptorException;
 
 /**
- * Returns the result when a spectator tries to change its role to be a player.
+ * The APIs designed for encrypting and decrypting packets.
  */
-public interface EventSwitchSpectatorToPlayerResult {
+public interface BinaryPacketEncryptor {
 
-  void handle(Player player, Room room, SwitchedPlayerSpectatorResult result);
+  /**
+   * Encrypts the binary data in a packet.
+   *
+   * @param binary an array of {@code byte} data for encrypting
+   * @return an array of encrypted {@code byte} data
+   * @throws PacketEncryptorException when any issue emerged while encrypting process
+   */
+  byte[] encrypt(byte[] binary) throws PacketEncryptorException;
+
+  /**
+   * Decrypts the binary data in a packet.
+   *
+   * @param binary an array of {@code byte} data for decrypting
+   * @return an array of decrypted {@code byte} data
+   * @throws PacketEncryptorException when any issue emerged while decrypting process
+   */
+  byte[] decrypt(byte[] binary) throws PacketEncryptorException;
 }

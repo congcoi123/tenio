@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,56 @@ THE SOFTWARE.
 
 package com.tenio.core.entity.data;
 
-import com.tenio.common.data.ZeroElement;
+import com.tenio.common.data.ZeroCollection;
 import com.tenio.common.utility.TimeUtility;
 
 /**
- * Holding the data sent from client associated with timestamp and vice versa.
+ * Holds the data sent from client side, associated with the sending timestamp and other
+ * information.
  */
 public final class ServerMessage {
 
   private final long createdTimestamp;
-  private ZeroElement data;
+  private ZeroCollection data;
 
   private ServerMessage() {
     createdTimestamp = TimeUtility.currentTimeMillis();
   }
 
+  /**
+   * Initialization.
+   *
+   * @return a new instance of {@link ServerMessage}
+   */
   public static ServerMessage newInstance() {
     return new ServerMessage();
   }
 
+  /**
+   * Retrieves the created timestamp for the message in milliseconds.
+   *
+   * @return the created timestamp in milliseconds ({@code long} value)
+   */
   public long getCreatedTimestamp() {
     return createdTimestamp;
   }
 
-  public ZeroElement getData() {
+  /**
+   * Retrieves the data content carried by the message.
+   *
+   * @return the {@link ZeroCollection} data content
+   */
+  public ZeroCollection getData() {
     return data;
   }
 
-  public ServerMessage setData(ZeroElement data) {
+  /**
+   * Sets the data content carried by the message.
+   *
+   * @param data the {@link ZeroCollection} data content
+   * @return the pointer of this instance
+   */
+  public ServerMessage setData(ZeroCollection data) {
     this.data = data;
     return this;
   }

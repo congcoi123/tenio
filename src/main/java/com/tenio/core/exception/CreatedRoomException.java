@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.tenio.core.exception;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 
 /**
- * When you try to create a room and something went wrong.
+ * When something went wrong while creating a new room.
  */
 public final class CreatedRoomException extends RuntimeException {
 
@@ -35,11 +35,22 @@ public final class CreatedRoomException extends RuntimeException {
 
   private final RoomCreatedResult result;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param message a warning {@link String} message
+   * @param result  a {@link RoomCreatedResult} singleton value indicates the room creation result
+   */
   public CreatedRoomException(String message, RoomCreatedResult result) {
     super(message);
     this.result = result;
   }
 
+  /**
+   * Retrieves the room creation result.
+   *
+   * @return a {@link RoomCreatedResult} singleton value indicates the room creation result
+   */
   public RoomCreatedResult getResult() {
     return result;
   }

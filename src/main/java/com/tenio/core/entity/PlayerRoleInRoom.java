@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.extension.events;
-
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
-import com.tenio.core.entity.define.result.SwitchedPlayerSpectatorResult;
+package com.tenio.core.entity;
 
 /**
- * Returns the result when a player tries to change its role to be a spectator.
+ * Definitions of a player role when it is in a room.
  */
-public interface EventSwitchPlayerToSpectatorResult {
-
-  void handle(Player player, Room room, SwitchedPlayerSpectatorResult result);
+public enum PlayerRoleInRoom {
+  /**
+   * When a player joins a room as a participant, it has full permission for all activities in
+   * the room.
+   */
+  PARTICIPANT,
+  /**
+   * When a player joins a room as a spectator, it can only be allowed to observe others'
+   * activities.
+   */
+  SPECTATOR
 }

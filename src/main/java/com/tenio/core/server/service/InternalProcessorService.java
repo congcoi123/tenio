@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,15 +28,37 @@ import com.tenio.core.controller.Controller;
 import com.tenio.core.entity.manager.PlayerManager;
 
 /**
- * The internal processor service, the heart of server.
+ * The internal processor service, the heart of the server.
  */
 public interface InternalProcessorService extends Controller {
 
+  /**
+   * Subscribes all events on the server.
+   */
   void subscribe();
 
+  /**
+   * Sets the maximum number of players allowed participating on the server.
+   *
+   * @param maxPlayers {@code integer} value, the maximum number of players allowed
+   *                   participating on the server
+   */
   void setMaxNumberPlayers(int maxPlayers);
 
+  /**
+   * Determines if a player could be kept its connection when it is disconnected from the server
+   * for a while.
+   *
+   * @param keepPlayerOnDisconnection sets to {@code true} if a player could be kept its
+   *                                  connection when it is disconnected from the server for a
+   *                                  while, otherwise returns {@code false}
+   */
   void setKeepPlayerOnDisconnection(boolean keepPlayerOnDisconnection);
 
+  /**
+   * Sets a player manager for the server which is used to manage all players.
+   *
+   * @param playerManager an instance of {@link PlayerManager}
+   */
   void setPlayerManager(PlayerManager playerManager);
 }

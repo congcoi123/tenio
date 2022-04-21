@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,28 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
-import com.tenio.core.network.entity.session.Session;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 
 /**
- * The datagram IO handler.
+ * The Datagram IO handler.
  */
 public interface DatagramIoHandler extends BaseIoHandler {
 
+  /**
+   * When a new message comes from client side then this method is invoked.
+   *
+   * @param datagramChannel a {@link DatagramChannel} created on the server
+   * @param remoteAddress   a remote {@link SocketAddress} of client side
+   * @param binary          an array of {@code byte} data sent by client side
+   */
   void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress, byte[] binary);
 
-  void sessionRead(Session session, byte[] binary);
-
+  /**
+   * When any exception occurred on the Datagram channel then this method is invoked.
+   *
+   * @param datagramChannel the {@link DatagramChannel} created on the server
+   * @param exception       an {@link Exception} emerging
+   */
   void channelException(DatagramChannel datagramChannel, Exception exception);
-
-  void sessionException(Session session, Exception exception);
 }

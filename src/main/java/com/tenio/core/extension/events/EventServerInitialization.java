@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,14 @@ import com.tenio.common.configuration.Configuration;
 /**
  * When the server is initialized.
  */
+@FunctionalInterface
 public interface EventServerInitialization {
 
+  /**
+   * When the server finished initialization process.
+   *
+   * @param serverName    the {@link String} name of the server
+   * @param configuration all server settings in {@link Configuration}
+   */
   void handle(String serverName, Configuration configuration);
 }

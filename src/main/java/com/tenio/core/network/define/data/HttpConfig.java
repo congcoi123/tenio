@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * Holds configuration for HTTP setup.
+ * Holds configurations for the HTTP service.
  */
 @ThreadSafe
 public final class HttpConfig {
@@ -41,15 +41,20 @@ public final class HttpConfig {
   /**
    * Initialization.
    *
-   * @param name the configuration name
-   * @param port the associated port
+   * @param name a {@link String} configuration name
+   * @param port an associated port ({@code integer} value)
    */
   public HttpConfig(String name, int port) {
-    paths = new ArrayList<PathConfig>();
+    paths = new ArrayList<>();
     this.name = name;
     this.port = port;
   }
 
+  /**
+   * Retrieves the configuration name.
+   *
+   * @return a {@link String} name for the configuration
+   */
   public String getName() {
     return name;
   }
@@ -57,7 +62,8 @@ public final class HttpConfig {
   /**
    * Retrieves paths associated with the configuration.
    *
-   * @return list of paths
+   * @return a list of {@link PathConfig}
+   * @see List
    */
   public List<PathConfig> getPaths() {
     synchronized (paths) {
@@ -66,7 +72,7 @@ public final class HttpConfig {
   }
 
   /**
-   * Add a new path to the paths' list.
+   * Adds a new path to the paths' list.
    *
    * @param path the new {@link PathConfig}
    */
@@ -76,6 +82,11 @@ public final class HttpConfig {
     }
   }
 
+  /**
+   * Retrieves the port number.
+   *
+   * @return the port number ({@code integer} value)
+   */
   public int getPort() {
     return port;
   }

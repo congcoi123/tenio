@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,31 @@ package com.tenio.core.network.zero.codec.decoder;
 import com.tenio.core.network.entity.session.Session;
 
 /**
- * The listener for receives data from the packet decoder.
+ * The listener for receiving data from the packet decoder.
  */
 public interface PacketDecoderResultListener {
 
+  /**
+   * The final binary data processed by the session.
+   *
+   * @param session the processing {@link Session}
+   * @param binary  the processed {@code byte} data
+   */
   void resultFrame(Session session, byte[] binary);
 
-  void updateDroppedPackets(long numberPackets);
+  /**
+   * Updates the current number of refused packets from clients side which violated the policies.
+   *
+   * @param numberPackets the additional packets refused to handle from clients side
+   *                      ({@code long} value)
+   */
+  void updateReadDroppedPackets(long numberPackets);
 
+  /**
+   * Updates the current number of received packets from clients side.
+   *
+   * @param numberPackets the additional packets received from client sides ({@code long}
+   *                      value)
+   */
   void updateReadPackets(long numberPackets);
 }

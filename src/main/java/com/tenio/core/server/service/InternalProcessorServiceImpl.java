@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,8 @@ import com.tenio.core.network.entity.session.Session;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The implementation for the processor service.
@@ -119,8 +121,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
   }
 
   private Request createRequest(ServerEvent event, Session session) {
-    var request = RequestImpl.newInstance().setEvent(event).setSender(session);
-    return request;
+    return RequestImpl.newInstance().setEvent(event).setSender(session);
   }
 
   @Override
@@ -160,20 +161,11 @@ public final class InternalProcessorServiceImpl extends AbstractController
     }
 
     // check reconnected case
-    if (player != null) {
-      if (!(player instanceof Player)) {
-        var castException = new ClassCastException(
-            String.format("Unable to cast the object: %s to class Player", player.toString()));
-        error(castException);
-        eventManager.emit(ServerEvent.SERVER_EXCEPTION, castException);
-        eventManager.emit(ServerEvent.PLAYER_RECONNECTED_RESULT, player,
-            PlayerReconnectedResult.INVALID_PLAYER_FORMAT);
-      } else {
-        session.setName(player.getName());
-        player.setSession(session);
-        eventManager.emit(ServerEvent.PLAYER_RECONNECTED_RESULT, player,
-            PlayerReconnectedResult.SUCCESS);
-      }
+    if (Objects.nonNull(player)) {
+      session.setName(player.getName());
+      player.setSession(session);
+      eventManager.emit(ServerEvent.PLAYER_RECONNECTED_RESULT, player,
+          PlayerReconnectedResult.SUCCESS);
       // check new reconnection
     } else {
       // check the number of current players
@@ -202,7 +194,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
     var player = playerManager.getPlayerBySession(session);
     // the player maybe existed
-    if (player != null) {
+    if (Objects.nonNull(player)) {
       eventManager.emit(ServerEvent.DISCONNECT_PLAYER, player, playerClosedMode);
       player.setSession(null);
       if (!keepPlayerOnDisconnection) {
@@ -217,7 +209,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
     var session = request.getSender();
 
     var player = playerManager.getPlayerBySession(session);
-    if (player == null) {
+    if (Objects.isNull(player)) {
       var illegalValueException = new IllegalArgumentException(
           String.format("Unable to find player for the session: %s", session.toString()));
       error(illegalValueException);
@@ -232,29 +224,30 @@ public final class InternalProcessorServiceImpl extends AbstractController
   }
 
   private void processDatagramChannelReadMessage(Request request) {
-    var datagramChannel = request.getAttribute(EVENT_KEY_DATAGRAM_CHANNEL);
-    var remoteAddress = request.getAttribute(EVENT_KEY_DATAGRAM_REMOTE_ADDRESS);
     var message = request.getAttribute(EVENT_KEY_SERVER_MESSAGE);
 
-    // the condition for creating sub-connection
+    // a condition for creating sub-connection
     var player =
-        (Player) eventManager.emit(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION, message);
+        (Optional<Player>) eventManager.emit(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION,
+            message);
 
-    if (player == null) {
-      eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, null,
+    if (player.isEmpty()) {
+      eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player,
           AttachedConnectionResult.PLAYER_NOT_FOUND);
-    } else if (!player.containsSession()) {
+    } else if (!player.get().containsSession()) {
       eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player,
           AttachedConnectionResult.SESSION_NOT_FOUND);
-    } else if (!player.getSession().isTcp()) {
+    } else if (!player.get().getSession().get().isTcp()) {
       eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player,
           AttachedConnectionResult.INVALID_SESSION_PROTOCOL);
     } else {
-      var session = player.getSession();
-      var sessionManager = session.getSessionManager();
+      var datagramChannel = request.getAttribute(EVENT_KEY_DATAGRAM_CHANNEL);
+      var remoteAddress = request.getAttribute(EVENT_KEY_DATAGRAM_REMOTE_ADDRESS);
+
+      var session = player.get().getSession();
+      var sessionManager = session.get().getSessionManager();
       sessionManager.addDatagramForSession((DatagramChannel) datagramChannel,
-          (SocketAddress) remoteAddress,
-          session);
+          (SocketAddress) remoteAddress, session.get());
       eventManager.emit(ServerEvent.ATTACHED_CONNECTION_RESULT, player,
           AttachedConnectionResult.SUCCESS);
     }
@@ -266,13 +259,13 @@ public final class InternalProcessorServiceImpl extends AbstractController
   }
 
   @Override
-  public void setMaxNumberPlayers(int maxPlayers) {
-    maxNumberPlayers = maxPlayers;
+  public void setMaxNumberPlayers(int maxNumberPlayers) {
+    this.maxNumberPlayers = maxNumberPlayers;
   }
 
   @Override
-  public void setKeepPlayerOnDisconnection(boolean keep) {
-    keepPlayerOnDisconnection = keep;
+  public void setKeepPlayerOnDisconnection(boolean keepPlayerOnDisconnection) {
+    this.keepPlayerOnDisconnection = keepPlayerOnDisconnection;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,15 +30,37 @@ import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 import java.util.List;
 
 /**
- * The engine supports working with new incoming connections.
+ * The engine supports working with new coming socket connections.
  */
 public interface ZeroAcceptor extends ZeroEngine {
 
+  /**
+   * Sets an instance for the connection filter.
+   *
+   * @param connectionFilter an instance of {@link ConnectionFilter}
+   */
   void setConnectionFilter(ConnectionFilter connectionFilter);
 
+  /**
+   * Sets a listener for the reader engine which is using for communication between two engines.
+   *
+   * @param zeroReaderListener the {@link ZeroReaderListener} instance
+   * @see ZeroReader
+   */
   void setZeroReaderListener(ZeroReaderListener zeroReaderListener);
 
+  /**
+   * Declares the server IP address.
+   *
+   * @param serverAddress the {@link String} value of server IP address
+   */
   void setServerAddress(String serverAddress);
 
+  /**
+   * Declares a list of socket configurations for the network.
+   *
+   * @param socketConfigs a list of {@link SocketConfig}
+   * @see List
+   */
   void setSocketConfigs(List<SocketConfig> socketConfigs);
 }

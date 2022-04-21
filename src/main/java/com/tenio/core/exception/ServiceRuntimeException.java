@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,17 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 /**
- * Something went wrong with the running service.
+ * Something went wrong with a running service.
  */
 public final class ServiceRuntimeException extends RuntimeException {
 
   private static final long serialVersionUID = 998770370227398281L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param message the warning {@link String} message
+   */
   public ServiceRuntimeException(String message) {
     super(message);
   }

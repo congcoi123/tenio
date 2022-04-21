@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,60 +24,125 @@ THE SOFTWARE.
 
 package com.tenio.core.network.statistic;
 
+import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
- * This class supports creating instance for holding the network written data.
+ * This class supports creating an instance for holding the network written data to clients side.
  */
 public final class NetworkWriterStatistic {
 
-  private volatile long writtenBytes;
-  private volatile long writtenPackets;
-  private volatile long writtenDroppedPacketsByPolicy;
-  private volatile long writtenDroppedPacketsByFull;
+  private final AtomicLong writtenBytes;
+  private final AtomicLong writtenPackets;
+  private final AtomicLong writtenDroppedPacketsByPolicy;
+  private final AtomicLong writtenDroppedPacketsByFull;
 
   private NetworkWriterStatistic() {
-    writtenBytes = 0L;
-    writtenPackets = 0L;
-    writtenDroppedPacketsByPolicy = 0L;
-    writtenDroppedPacketsByFull = 0L;
+    writtenBytes = new AtomicLong();
+    writtenPackets = new AtomicLong();
+    writtenDroppedPacketsByPolicy = new AtomicLong();
+    writtenDroppedPacketsByFull = new AtomicLong();
   }
 
+  /**
+   * Initialization.
+   *
+   * @return a new instance of {@link NetworkWriterStatistic}
+   */
   public static NetworkWriterStatistic newInstance() {
     return new NetworkWriterStatistic();
   }
 
+  /**
+   * Updates the number of sent bytes data to clients side.
+   *
+   * @param numberBytes {@code long} value, the number of sent bytes data to clients side
+   */
   public void updateWrittenBytes(long numberBytes) {
-    writtenBytes += numberBytes;
+    writtenBytes.addAndGet(numberBytes);
   }
 
+  /**
+   * Updates the number of sent packets to clients side.
+   *
+   * @param numberPackets {@code long} value, the number of sent packets to clients side
+   */
   public void updateWrittenPackets(long numberPackets) {
-    writtenPackets += numberPackets;
+    writtenPackets.addAndGet(numberPackets);
   }
 
+  /**
+   * Updates the number of dropped packets which violated policies and not be able to send to
+   * clients side.
+   *
+   * @param numberPackets {@code long} value, the number of dropped packets which violated
+   *                      policies
+   * @see PacketQueuePolicy
+   */
   public void updateWrittenDroppedPacketsByPolicy(long numberPackets) {
-    writtenDroppedPacketsByPolicy += numberPackets;
+    writtenDroppedPacketsByPolicy.addAndGet(numberPackets);
   }
 
+  /**
+   * Updates the number of dropped packets which cannot append to a full queue and not be able to
+   * send to clients side.
+   *
+   * @param numberPackets {@code long} value, the number of dropped packets which cannot
+   *                      append to the full queue
+   * @see PacketQueuePolicy
+   */
   public void updateWrittenDroppedPacketsByFull(long numberPackets) {
-    writtenDroppedPacketsByFull += numberPackets;
+    writtenDroppedPacketsByFull.addAndGet(numberPackets);
   }
 
+  /**
+   * Retrieves the current number of sending bytes data to clients side.
+   *
+   * @return {@code long} value, the current number of sending bytes data to clients side
+   */
   public long getWrittenBytes() {
-    return writtenBytes;
+    return writtenBytes.longValue();
   }
 
+  /**
+   * Retrieves the current number of sending packets to clients side.
+   *
+   * @return {@code long} value, the current number of sending packets to clients side
+   */
   public long getWrittenPackets() {
-    return writtenPackets;
+    return writtenPackets.longValue();
   }
 
+  /**
+   * Retrieves the current number of dropped packets which violated policies and not be able to
+   * send to clients side.
+   *
+   * @return {@code long} value, the number of dropped packets which violated policies
+   * @see PacketQueuePolicy
+   */
   public long getWrittenDroppedPacketsByPolicy() {
-    return writtenDroppedPacketsByPolicy;
+    return writtenDroppedPacketsByPolicy.longValue();
   }
 
+  /**
+   * Retrieves the current number of dropped packets which cannot append to the full queue and
+   * not be able to send to clients side.
+   *
+   * @return the number of dropped packets which cannot append to a full queue
+   * @see PacketQueuePolicy
+   */
   public long getWrittenDroppedPacketsByFull() {
-    return writtenDroppedPacketsByFull;
+    return writtenDroppedPacketsByFull.longValue();
   }
 
+  /**
+   * Retrieves the current number of dropped packets which are not able to send to clients side.
+   *
+   * @return the number of dropped packets which are not able to send to clients side
+   * @see #getWrittenDroppedPacketsByPolicy
+   * @see #getWrittenDroppedPacketsByFull
+   */
   public long getWrittenDroppedPackets() {
-    return writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull;
+    return writtenDroppedPacketsByPolicy.longValue() + writtenDroppedPacketsByFull.longValue();
   }
 }

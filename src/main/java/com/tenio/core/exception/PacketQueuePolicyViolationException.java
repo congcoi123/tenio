@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,25 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 
 /**
- * When the packet queue policy is violated.
+ * When the packet queue, which is using to send packet from the server to clients side, has
+ * any policy is violated.
  */
 public final class PacketQueuePolicyViolationException extends RuntimeException {
 
   private static final long serialVersionUID = -1620230030870946508L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param packet         the dropping {@link Packet}
+   * @param percentageUsed the current usage of queue in percent ({@code float} value)
+   * @see PacketQueue
+   * @see PacketQueuePolicy
+   */
   public PacketQueuePolicyViolationException(Packet packet, float percentageUsed) {
     super(String.format("Dropped packet: [%s], current packet queue usage: %f%%", packet.toString(),
         percentageUsed));

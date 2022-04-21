@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,18 @@ import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
 /**
  * When a player left its current room.
  */
+@FunctionalInterface
 public interface EventPlayerAfterLeftRoom {
 
+  /**
+   * When a player has just left its current room.
+   *
+   * @param player the left {@link Player}
+   * @param room   the {@link Room} which the player has just left out
+   * @param result the leaving result presented by {@link PlayerLeftRoomResult}. A player is
+   *               considered as it has already left its room when the result equals to success
+   * @see PlayerLeftRoomResult#SUCCESS
+   * @see EventPlayerBeforeLeaveRoom
+   */
   void handle(Player player, Room room, PlayerLeftRoomResult result);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Handling the HTTP request.
+ * Handles an HTTP request which sent to the HTTP service from clients side.
  */
+@FunctionalInterface
 public interface EventHttpRequestHandle {
 
+  /**
+   * Handles an HTTP request which sent to the HTTP service from client side.
+   *
+   * @param method   a {@link RestMethod} using in request
+   * @param request  a {@link HttpServletRequest} comes from client side
+   * @param response a {@link HttpServletResponse} sends to client side
+   */
   void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,8 @@ import com.tenio.core.event.Subscriber;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * An object which creates a mapping between an event type with a subscriber.
+ * An instance which creates a mapping between a server event type with its corresponding
+ * subscriber.
  */
 @ThreadSafe
 public final class EventSubscriber {
@@ -43,14 +44,31 @@ public final class EventSubscriber {
     this.subscriber = subscriber;
   }
 
+  /**
+   * Initialization.
+   *
+   * @param event      the {@link ServerEvent} that should be subscribed
+   * @param subscriber the corresponding {@link Subscriber} for the event
+   * @return a new instance of {@link EventSubscriber}
+   */
   public static EventSubscriber newInstance(ServerEvent event, Subscriber subscriber) {
     return new EventSubscriber(event, subscriber);
   }
 
+  /**
+   * Retrieves a server event that is subscribed.
+   *
+   * @return {@link ServerEvent} that is subscribed
+   */
   public ServerEvent getEvent() {
     return serverEvent;
   }
 
+  /**
+   * Retrieves a server event subscriber.
+   *
+   * @return an instance of {@link Subscriber} for the server event
+   */
   public Subscriber getSubscriber() {
     return subscriber;
   }
