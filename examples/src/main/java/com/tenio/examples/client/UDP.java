@@ -24,14 +24,13 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
@@ -63,7 +62,7 @@ public final class UDP {
       if (broadcast) {
         datagramSocket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
         datagramSocket.setBroadcast(true);
-        if (OsUtility.getOperatingSystemType() == OsUtility.OsType.Windows) {
+        if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
           datagramSocket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         } else {
           datagramSocket.setOption(StandardSocketOptions.SO_REUSEPORT, true);
@@ -71,10 +70,6 @@ public final class UDP {
       } else {
         datagramSocket = new DatagramSocket();
       }
-    } catch (SocketException e) {
-      e.printStackTrace();
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -118,7 +113,7 @@ public final class UDP {
           byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
           var response = new DatagramPacket(buffer, buffer.length);
           datagramSocket.receive(response);
-          var data = ZeroObjectImpl.newInstance(buffer);
+          var data = ZeroUtility.binaryToMap(buffer);
           listener.onReceivedUDP(ServerMessage.newInstance().setData(data));
         } catch (IOException e) {
           e.printStackTrace();

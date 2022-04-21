@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -92,8 +92,7 @@ public final class XmlUtility {
    * @return its content in string value
    */
   public static String getNodeValue(Node node) {
-    String dataValue = node.getTextContent();
-    return dataValue;
+    return node.getTextContent();
   }
 
   /**
@@ -105,8 +104,7 @@ public final class XmlUtility {
    * @throws XPathExpressionException the exception
    */
   public static NodeList getNodeList(Node node, String xpath) throws XPathExpressionException {
-    var nodeList = (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
-    return nodeList;
+    return (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
   }
 
   /**
@@ -118,8 +116,7 @@ public final class XmlUtility {
    * @throws XPathExpressionException the exception
    */
   public static Node getNode(Node node, String xpath) throws XPathExpressionException {
-    var nodeRet = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
-    return nodeRet;
+    return (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
   }
 
   /**

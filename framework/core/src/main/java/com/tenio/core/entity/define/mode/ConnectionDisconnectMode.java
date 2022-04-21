@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.entity.define.mode;
 
 /**
- * All modes associated with connection disconnected phase.
+ * All modes associated with the connection disconnected phase.
  */
 public enum ConnectionDisconnectMode {
 
@@ -34,13 +34,30 @@ public enum ConnectionDisconnectMode {
    */
   DEFAULT,
   /**
-   * When the connection is lost and causing by the client side.
+   * When the connection is lost and its caused by the client side.
    */
   LOST,
+  /**
+   * When the number of connection reaches limitation and the server decides to refuse a
+   * new one.
+   */
   REACHED_MAX_CONNECTION,
+  /**
+   * When a connection falls in IDLE state for a long time enough to be disconnected.
+   */
   IDLE,
+  /**
+   * When a connection is removed from the server in purpose.
+   */
   KICK,
+  /**
+   * When a connection is removed from the server in purpose and its IP address is also listed in
+   * the black list.
+   */
   BAN,
+  /**
+   * Disconnected by other reasons.
+   */
   UNKNOWN;
 
   @Override

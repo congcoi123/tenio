@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,15 @@ import com.tenio.core.network.entity.session.Session;
 /**
  * When a connection is disconnected.
  */
+@FunctionalInterface
 public interface EventDisconnectConnection {
 
+  /**
+   * When a connection is disconnected from server, and it is also removed from the management list.
+   *
+   * @param session the disconnected {@link Session}
+   * @param mode    the corresponding {@link ConnectionDisconnectMode} which shows the reason for
+   *               disconnection
+   */
   void handle(Session session, ConnectionDisconnectMode mode);
 }

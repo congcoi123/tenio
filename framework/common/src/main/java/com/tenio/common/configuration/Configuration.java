@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,9 @@ THE SOFTWARE.
 package com.tenio.common.configuration;
 
 /**
- * This server needs some basic configuration to start running. The
- * configuration file can be defined as an XML file. See an example in
- * <b>configuration.example.xml</b>. You can also extend this file to create your own
- * configuration values.
+ * This server needs some basic configuration to start running. The configuration file can be
+ * defined as an XML file. See an example in <code>configuration.example.xml</code>. You can also
+ * extend this file to create your own configuration values.
  */
 public interface Configuration {
 
@@ -81,12 +80,11 @@ public interface Configuration {
   Object get(ConfigurationType key);
 
   /**
-   * Determine if this configuration is existed or defined. If you want some
-   * configuration value to be treated as an "undefined" status, let its value
-   * "-1".
+   * Determines if this configuration is existed or defined. If you want some configuration value
+   * to be treated as an <code>undefined</code> status, let its value <code>-1</code>.
    *
    * @param key The desired configuration's key
-   * @return <b>true</b> if the configuration is defined, otherwise return <b>false</b>
+   * @return <code>true</code> if the configuration is defined, otherwise return <code>false</code>
    */
   boolean isDefined(ConfigurationType key);
 

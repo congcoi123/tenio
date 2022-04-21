@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,15 @@ THE SOFTWARE.
 package com.tenio.common.constant;
 
 /**
- * The class holds values for printing out the logo, version, ...
+ * The class holds values for printing out the logo, version, etc.
  */
 public final class Trademark {
 
-  private static final String VERSION = "0.0.1";
+  private static final String VERSION = "0.2.0";
 
+  /**
+   * The trademark content.
+   */
   public static final String[] CONTENT = new String[] {
       "********************************************************",
       "**                                                    **",
@@ -57,7 +60,7 @@ public final class Trademark {
       "**                                                    **",
       "**                                                    **",
       "**                       TenIO                        **",
-      "**            Copyright (c) 2016-2021, Kong           **",
+      "**            Copyright (c) 2016-2022, Kong           **",
       "**                 All rights reserved                **",
       "**                       (v" + VERSION + ")                     **",
       "**                                                    **",

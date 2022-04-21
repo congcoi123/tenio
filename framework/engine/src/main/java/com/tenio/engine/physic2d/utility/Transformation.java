@@ -317,6 +317,6 @@ public final class Transformation {
   }
 
   private static List<Vector2> clone(List<Vector2> list) {
-    return list.stream().map(e -> e.clone()).collect(Collectors.toList());
+    return list.stream().map(Vector2::clone).collect(Collectors.toList());
   }
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,35 +26,68 @@ package com.tenio.core.server;
 
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.bootstrap.BootstrapHandler;
+import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.protocol.Response;
+import io.netty.bootstrap.Bootstrap;
 
 /**
- * This class manages the workflow of the current server. The instruction's
- * orders are important, event subscribes must be set last and all configuration
- * values should be confirmed.
+ * This class manages the workflow of the current server. The instruction's orders are important,
+ * event subscribes must be set last and all configuration values should be confirmed.
  */
 public interface Server {
 
   /**
-   * Start the server base on your own configurations.
+   * Starts the server bases on the configurations.
+   *
+   * @param bootstrapHandler a {@link BootstrapHandler} handles all processes concerning the DI
+   *                         mechanism
+   * @param params           a list of {@link String} arguments used by the boostrap
+   * @throws Exception whenever any issue emerged
+   * @see Bootstrap
+   * @see Bootstrapper
    */
   void start(BootstrapHandler bootstrapHandler, String[] params) throws Exception;
 
   /**
-   * Shut down the server and close all services.
+   * Shuts down the server and closes all services.
    */
   void shutdown();
 
+  /**
+   * Retrieves a server APIs object which provides all supporting APIs on the server.
+   *
+   * @return an instance of {@link ServerApi}
+   */
   ServerApi getApi();
 
+  /**
+   * Retrieves a event manager object which manages all events supporting on the server.
+   *
+   * @return an instance of {@link EventManager}
+   */
   EventManager getEventManager();
 
+  /**
+   * Retrieves a player manager object which manages all players on the server.
+   *
+   * @return an instance of {@link PlayerManager}
+   */
   PlayerManager getPlayerManager();
 
+  /**
+   * Retrieves a room manager object which manages all rooms on the server.
+   *
+   * @return an instance of {@link RoomManager}
+   */
   RoomManager getRoomManager();
 
+  /**
+   * Writes down data to socket/channel to send them to client sides.
+   *
+   * @param response an instance of {@link Response} using to carry conveying information
+   */
   void write(Response response);
 }

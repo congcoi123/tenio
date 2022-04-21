@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import com.tenio.core.network.define.RequestPriority;
 import com.tenio.core.network.entity.protocol.Request;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -53,7 +54,7 @@ public final class RequestImpl implements Request {
     id = ID_COUNTER.getAndIncrement();
     priority = RequestPriority.NORMAL;
     timestamp = TimeUtility.currentTimeMillis();
-    attributes = new ConcurrentHashMap<String, Object>();
+    attributes = new ConcurrentHashMap<>();
   }
 
   public static Request newInstance() {
@@ -101,7 +102,7 @@ public final class RequestImpl implements Request {
   }
 
   @Override
-  public long getTimestamp() {
+  public long getCreatedTimestamp() {
     return timestamp;
   }
 
@@ -145,8 +146,7 @@ public final class RequestImpl implements Request {
   @Override
   public String toString() {
     return String.format("{ event: %s, sender: %s, priority: %s, timestamp: %d, attributes: %s }",
-        event.toString(), (sender != null ? sender.toString() : "null"), priority.toString(),
-        timestamp,
-        attributes.toString());
+        event.toString(), (Objects.nonNull(sender) ? sender.toString() : "null"), priority.toString(),
+        timestamp, attributes.toString());
   }
 }

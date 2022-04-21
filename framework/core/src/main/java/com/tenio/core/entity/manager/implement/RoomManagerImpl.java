@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
 import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.manager.AbstractManager;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +53,7 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   private RoomManagerImpl(EventManager eventManager) {
     super(eventManager);
 
-    roomByIds = new ConcurrentHashMap<Long, Room>();
+    roomByIds = new ConcurrentHashMap<>();
     maxRooms = DEFAULT_MAX_ROOMS;
   }
 
@@ -96,7 +96,7 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
     newRoom.setName(roomSetting.getName());
     newRoom.setPassword(roomSetting.getPassword());
     newRoom.setActivated(roomSetting.isActivated());
-    newRoom.setCapacity(roomSetting.getMaxPlayers(), roomSetting.getMaxSpectators());
+    newRoom.setCapacity(roomSetting.getMaxParticipants(), roomSetting.getMaxSpectators());
     newRoom.setOwner(player);
     newRoom.setPlayerManager(PlayerManagerImpl.newInstance(eventManager));
 
@@ -112,8 +112,7 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 
   @Override
   public boolean containsRoomName(String roomName) {
-    return roomByIds.values().stream().filter(room -> room.getName().equals(roomName)).findFirst()
-        .isPresent();
+    return roomByIds.values().stream().anyMatch(room -> room.getName().equals(roomName));
   }
 
   @Override
@@ -122,15 +121,19 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public List<Room> getRoomListByName(String roomName) {
-    var rooms = roomByIds.values().stream().filter(room -> room.getName().equals(roomName))
+  public List<Room> getReadonlyRoomsListByName(String roomName) {
+    return roomByIds.values().stream().filter(room -> room.getName().equals(roomName))
         .collect(Collectors.toList());
-    return new ArrayList<Room>(rooms);
   }
 
   @Override
-  public List<Room> getRoomList() {
-    return new ArrayList<Room>(roomByIds.values());
+  public Iterator<Room> getRoomIterator() {
+    return roomByIds.values().iterator();
+  }
+
+  @Override
+  public List<Room> getReadonlyRoomsList() {
+    return List.copyOf(roomByIds.values());
   }
 
   @Override
@@ -149,12 +152,12 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public void changeRoomCapacity(Room room, int maxPlayers, int maxSpectators) {
-    if (maxPlayers <= room.getPlayerCount()) {
+  public void changeRoomCapacity(Room room, int maxParticipants, int maxSpectators) {
+    if (maxParticipants <= room.getParticipantCount()) {
       throw new IllegalArgumentException(String.format(
-          "Unable to assign the new max player number: %d, "
-              + "because it's less than the current number of players: %d",
-          maxPlayers, room.getPlayerCount()));
+          "Unable to assign the new max participants number: %d, "
+              + "because it's less than the current number of participants: %d",
+          maxParticipants, room.getParticipantCount()));
     }
     if (maxSpectators <= room.getSpectatorCount()) {
       throw new IllegalArgumentException(String.format(
@@ -163,7 +166,7 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
           maxSpectators, room.getSpectatorCount()));
     }
 
-    room.setCapacity(maxPlayers, maxSpectators);
+    room.setCapacity(maxParticipants, maxSpectators);
   }
 
   @Override

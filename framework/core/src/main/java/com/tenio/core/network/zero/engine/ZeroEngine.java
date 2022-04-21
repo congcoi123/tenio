@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,84 +24,84 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine;
 
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.zero.handler.DatagramIoHandler;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
 import com.tenio.core.service.Service;
 import com.tenio.core.service.ServiceListener;
 
 /**
- * The common APIs for a zero engine instance.
+ * The common APIs for a zero engine.
  */
 public interface ZeroEngine extends Service, ServiceListener {
 
   /**
    * Retrieves the socket IO handler.
    *
-   * @return the socket IO handler
+   * @return a {@link SocketIoHandler} instance
    */
   SocketIoHandler getSocketIoHandler();
 
   /**
-   * Set the socket IO handler.
+   * Sets the socket IO handler.
    *
-   * @param socketIoHandler the socket IO handler
+   * @param socketIoHandler a {@link SocketIoHandler} instance
    */
   void setSocketIoHandler(SocketIoHandler socketIoHandler);
 
   /**
-   * Retrieves the datagram IO handler.
+   * Retrieves the Datagram IO handler.
    *
-   * @return the datagram IO handler
+   * @return a {@link DatagramIoHandler} instance
    */
   DatagramIoHandler getDatagramIoHandler();
 
   /**
-   * Set the datagram IO handler.
+   * Sets a Datagram IO handler.
    *
-   * @param datagramIoHandler the datagram IO handler
+   * @param datagramIoHandler a {@link DatagramIoHandler} instance
    */
   void setDatagramIoHandler(DatagramIoHandler datagramIoHandler);
 
   /**
-   * Retrieves the session manager.
+   * Retrieves the Session Manager.
    *
-   * @return the session manager
+   * @return a {@link SessionManager} instance
    */
   SessionManager getSessionManager();
 
   /**
-   * Set the session manager.
+   * Sets a Session Manager.
    *
-   * @param sessionManager the session manager
+   * @param sessionManager a {@link SessionManager} instance
    */
   void setSessionManager(SessionManager sessionManager);
 
   /**
    * Retrieves the thread pool size.
    *
-   * @return the thread pool size
+   * @return the thread pool size ({@code integer} value)
    */
   int getThreadPoolSize();
 
   /**
-   * Set the thread pool size.
+   * Sets the thread pool size.
    *
-   * @param maxSize the thread pool size
+   * @param maxSize the thread pool size ({@code integer} value)
    */
   void setThreadPoolSize(int maxSize);
 
   /**
-   * Retrieves the max buffer size.
+   * Retrieves the maximum value of buffer size.
    *
-   * @return the max buffer size
+   * @return the maximum value buffer size ({@code integer} value)
    */
   int getMaxBufferSize();
 
   /**
-   * Set the max buffer size.
+   * Sets the maximum value of buffer size.
    *
-   * @param maxSize the max buffer size
+   * @param maxSize the maximum value buffer size ({@code integer} value)
    */
   void setMaxBufferSize(int maxSize);
 }

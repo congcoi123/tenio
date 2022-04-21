@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import com.tenio.common.utility.ByteUtility;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.CodecUtility;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 import java.nio.ByteBuffer;
@@ -39,7 +39,7 @@ import java.nio.ByteBuffer;
 public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 
   private BinaryPacketCompressor compressor;
-  private BinaryPacketEncrypter encrypter;
+  private BinaryPacketEncryptor encryptor;
   private PacketDecoderResultListener decoderResultListener;
 
   @Override
@@ -93,8 +93,8 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
   }
 
   @Override
-  public void setEncrypter(BinaryPacketEncrypter encrypter) {
-    this.encrypter = encrypter;
+  public void setEncryptor(BinaryPacketEncryptor encryptor) {
+    this.encryptor = encryptor;
   }
 
   private ProcessedPacket handleNewPacket(Session session, byte[] data) {
@@ -207,7 +207,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
     return processedPacket;
   }
 
-  private ProcessedPacket handlePacketData(Session session, byte[] data) throws Exception {
+  private ProcessedPacket handlePacketData(Session session, byte[] data) {
     var packetReadState = PacketReadState.WAIT_DATA;
     var pendingPacket = session.getPendingPacket();
     var dataBuffer = pendingPacket.getBuffer();
@@ -239,7 +239,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
       // check if data needs to be unencrypted
       if (pendingPacket.getPacketHeader().isEncrypted()) {
         byte[] encryptedData = dataBuffer.array();
-        byte[] decryptedData = encrypter.decrypt(encryptedData);
+        byte[] decryptedData = encryptor.decrypt(encryptedData);
         dataBuffer = ByteBuffer.wrap(decryptedData);
       }
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import com.tenio.common.bootstrap.annotation.Autowired;
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.AutowiredQualifier;
 import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.common.bootstrap.bean.TestBeanClass;
 import com.tenio.common.bootstrap.test.impl.TestClassAlone;
 import com.tenio.common.bootstrap.test.inf.TestInterfaceA;
 import com.tenio.common.bootstrap.test.inf.TestInterfaceB;
@@ -50,4 +51,6 @@ public class BootstrapComponent {
   public TestInterfaceC c;
   @Autowired
   public TestClassAlone alone;
+  @Autowired
+  public TestBeanClass bean;
 }

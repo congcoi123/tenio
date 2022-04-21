@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example8.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.common.CommonMap;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventHttpRequestValidation;
 import com.tenio.core.network.define.RestMethod;
@@ -43,7 +43,7 @@ public final class HttpRequestValidatedHandler extends AbstractExtension
                                     HttpServletResponse response) {
     if (method.equals(RestMethod.DELETE)) {
       var json = new JSONObject();
-      CommonObject.newInstance().add("status", "failed").add("message", "not supported")
+      CommonMap.newInstance().add("status", "failed").add("message", "not supported")
           .forEach((key, value) -> {
             json.put(key, value);
           });

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,21 @@ THE SOFTWARE.
 
 package com.tenio.core.extension.events;
 
+import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.entity.Player;
+
 /**
- * Returns fetched CCU information.
+ * Fetches the CCU information on the server.
  */
+@FunctionalInterface
 public interface EventFetchedCcuInfo {
 
+  /**
+   * Fetches the CCU information on the server.The information should be frequently updated every
+   * interval time.
+   *
+   * @param numberPlayers the concurrent number of {@link Player} on the server.
+   * @see CoreConfigurationType#INTERVAL_CCU_SCAN
+   */
   void handle(int numberPlayers);
 }

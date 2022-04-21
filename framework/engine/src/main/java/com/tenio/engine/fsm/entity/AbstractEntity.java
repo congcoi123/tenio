@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import com.tenio.engine.fsm.MessageDispatcher;
 import java.util.UUID;
 
 /**
- * An entity is an element of one game, such as a hero, a dragon, a wall, ...
+ * An entity is an element of one game, such as a hero, a dragon, a wall, etc.
  */
 public abstract class AbstractEntity extends AbstractLogger {
 
@@ -38,6 +38,9 @@ public abstract class AbstractEntity extends AbstractLogger {
    */
   private String id;
 
+  /**
+   * Creates a new instance of entity.
+   */
   public AbstractEntity() {
     id = UUID.randomUUID().toString();
   }

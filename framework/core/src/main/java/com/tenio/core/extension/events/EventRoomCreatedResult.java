@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,20 @@ import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 
 /**
- * Returns the result when you try to create a new room.
+ * Returns the result when the server attempts to create a new room.
  */
+@FunctionalInterface
 public interface EventRoomCreatedResult {
 
+  /**
+   * Retrieves the result when the server attempts to create a new room.
+   *
+   * @param room    a new creating {@link Room}
+   * @param setting all settings in {@link InitialRoomSetting} needs for the room creation
+   * @param result  the creation result presented by {@link RoomCreatedResult}. A
+   *                new room is considered as it is created and is added to the management list
+   *                when the result equals to success
+   * @see RoomCreatedResult#SUCCESS
+   */
   void handle(Room room, InitialRoomSetting setting, RoomCreatedResult result);
 }

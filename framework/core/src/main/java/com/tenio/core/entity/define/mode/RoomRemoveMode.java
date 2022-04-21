@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,25 @@ THE SOFTWARE.
 package com.tenio.core.entity.define.mode;
 
 /**
- * All modes associated with removing room conditions.
+ * All modes associated with the removing room conditions.
  */
 public enum RoomRemoveMode {
 
+  /**
+   * Condition: Room is removed in purpose.
+   */
   DEFAULT,
+  /**
+   * Condition: Room is empty.
+   */
   WHEN_EMPTY,
+  /**
+   * Condition: Room is empty and its creator is gone.
+   */
   WHEN_EMPTY_AND_CREATOR_IS_GONE,
+  /**
+   * Condition: Room is never removed.
+   */
   NEVER_REMOVE;
 
   @Override

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import com.tenio.core.network.security.filter.ConnectionFilter;
+
 /**
  * When a refused connection try to connect to the server.
  */
@@ -31,6 +33,13 @@ public final class RefusedConnectionAddressException extends RuntimeException {
 
   private static final long serialVersionUID = -1063120976899708365L;
 
+  /**
+   * Creates a new exception.
+   *
+   * @param reason  a {@link String} value of refusing reason
+   * @param address a {@link String} IP address of requesting connection
+   * @see ConnectionFilter
+   */
   public RefusedConnectionAddressException(String reason, String address) {
     super(String.format("%s : %s", reason, address));
   }

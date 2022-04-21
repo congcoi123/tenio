@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,29 +36,29 @@ import java.util.concurrent.ScheduledFuture;
 public interface TaskManager {
 
   /**
-   * Create a new task.
+   * Creates a new task.
    *
-   * @param id   the unique id for management
+   * @param id   the unique {@link String} id for management
    * @param task the running task, see {@link ScheduledFuture}
    */
   void create(String id, ScheduledFuture<?> task);
 
   /**
-   * Kill or stop a running task.
+   * Kills or stops a running task.
    *
-   * @param id the unique id
+   * @param id the unique {@link String} id
    */
   void kill(String id);
 
   /**
-   * Kill or stop all running tasks.
+   * Kills or stops all running tasks.
    */
   void clear();
 
   /**
-   * Retrieve the remained time of one task.
+   * Retrieves the remaining time of one task.
    *
-   * @param id the unique for retrieving the desired task
+   * @param id the unique {@link String} value for retrieving the desired task
    * @return the left time
    */
   int getRemainTime(String id);

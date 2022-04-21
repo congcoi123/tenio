@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.session.SessionManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
@@ -207,16 +207,16 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   }
 
   @Override
-  public void setNetworkReaderStatistic(NetworkReaderStatistic readerStatistic) {
-    readerEngine.setNetworkReaderStatistic(readerStatistic);
+  public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+    readerEngine.setNetworkReaderStatistic(networkReaderStatistic);
 
-    datagramIoHandler.setNetworkReaderStatistic(readerStatistic);
-    socketIoHandler.setNetworkReaderStatistic(readerStatistic);
+    datagramIoHandler.setNetworkReaderStatistic(networkReaderStatistic);
+    socketIoHandler.setNetworkReaderStatistic(networkReaderStatistic);
   }
 
   @Override
-  public void setNetworkWriterStatistic(NetworkWriterStatistic writerStatistic) {
-    writerEngine.setNetworkWriterStatistic(writerStatistic);
+  public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
+    writerEngine.setNetworkWriterStatistic(networkWriterStatistic);
   }
 
   @Override

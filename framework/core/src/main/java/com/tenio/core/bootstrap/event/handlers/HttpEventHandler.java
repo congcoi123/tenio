@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,11 @@ package com.tenio.core.bootstrap.event.handlers;
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.event.Subscriber;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.extension.events.EventHttpRequestValidation;
 import com.tenio.core.network.define.RestMethod;
 import java.util.Optional;
-import java.util.function.Consumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -61,42 +59,24 @@ public final class HttpEventHandler {
     var eventHttpRequestValidatedOp =
         Optional.ofNullable(eventHttpRequestValidation);
 
-    eventHttpRequestValidatedOp.ifPresent(new Consumer<EventHttpRequestValidation>() {
+    eventHttpRequestValidatedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.HTTP_REQUEST_VALIDATION, params -> {
+          var method = (RestMethod) params[0];
+          var request = (HttpServletRequest) params[1];
+          var response = (HttpServletResponse) params[2];
 
-      @Override
-      public void accept(EventHttpRequestValidation event) {
-        eventManager.on(ServerEvent.HTTP_REQUEST_VALIDATION, new Subscriber() {
+          return event.handle(method, request, response);
+        }));
 
-          @Override
-          public Object dispatch(Object... params) {
-            var method = (RestMethod) params[0];
-            var request = (HttpServletRequest) params[1];
-            var response = (HttpServletResponse) params[2];
+    eventHttpRequestHandleOp.ifPresent(event -> eventManager.on(ServerEvent.HTTP_REQUEST_HANDLE,
+        params -> {
+          var method = (RestMethod) params[0];
+          var request = (HttpServletRequest) params[1];
+          var response = (HttpServletResponse) params[2];
 
-            return event.handle(method, request, response);
-          }
-        });
-      }
-    });
+          event.handle(method, request, response);
 
-    eventHttpRequestHandleOp.ifPresent(new Consumer<EventHttpRequestHandle>() {
-
-      @Override
-      public void accept(EventHttpRequestHandle event) {
-        eventManager.on(ServerEvent.HTTP_REQUEST_HANDLE, new Subscriber() {
-
-          @Override
-          public Object dispatch(Object... params) {
-            var method = (RestMethod) params[0];
-            var request = (HttpServletRequest) params[1];
-            var response = (HttpServletResponse) params[2];
-
-            event.handle(method, request, response);
-
-            return null;
-          }
-        });
-      }
-    });
+          return null;
+        }));
   }
 }

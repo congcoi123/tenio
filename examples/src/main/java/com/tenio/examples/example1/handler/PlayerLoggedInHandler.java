@@ -41,7 +41,7 @@ public final class PlayerLoggedInHandler extends AbstractExtension
       var data = object().putString(SharedEventKey.KEY_PLAYER_LOGIN,
           String.format("Welcome to server: %s", player.getName()));
 
-      response().setContent(data.toBinary()).setRecipient(player).write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example6.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroMap;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
@@ -44,10 +44,10 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
     var data = object().putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName())
         .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
             String.format("Echo(%s): %s", player.getName(),
-                ((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)))
+                ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)))
         .putIntegerArray(SharedEventKey.KEY_INTEGER_ARRAY, getSortRandomNumberArray());
 
-    response().setContent(data.toBinary()).setRecipient(player).write();
+    response().setContent(data.toBinary()).setRecipientPlayer(player).write();
   }
 
   private List<Integer> getSortRandomNumberArray() {

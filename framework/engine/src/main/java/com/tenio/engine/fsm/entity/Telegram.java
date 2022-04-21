@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.tenio.engine.fsm.entity;
 
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.engine.message.ExtraMessage;
+import java.util.Objects;
 
 /**
  * This object is used for communication between entities.
@@ -134,8 +135,8 @@ public class Telegram implements Comparable {
     var t1 = this;
     var t2 = (Telegram) o;
     return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY)
-        && (t1.getSender() == t2.getSender())
-        && (t1.getReceiver() == t2.getReceiver()) && (t1.getType() == t2.getType());
+        && (Objects.equals(t1.getSender(), t2.getSender()))
+        && (Objects.equals(t1.getReceiver(), t2.getReceiver())) && (t1.getType() == t2.getType());
   }
 
   /**
@@ -165,17 +166,15 @@ public class Telegram implements Comparable {
 
   @Override
   public String toString() {
-    var builder = new StringBuilder();
-    builder.append("Time: ");
-    builder.append(delayTime);
-    builder.append(", Sender: ");
-    builder.append(sender);
-    builder.append(", Receiver: ");
-    builder.append(receiver);
-    builder.append(", MsgType: ");
-    builder.append(type);
-    builder.append(", Info: ");
-    builder.append(info.toString());
-    return builder.toString();
+    return "Time: " +
+        delayTime +
+        ", Sender: " +
+        sender +
+        ", Receiver: " +
+        receiver +
+        ", MsgType: " +
+        type +
+        ", Info: " +
+        info.toString();
   }
 }

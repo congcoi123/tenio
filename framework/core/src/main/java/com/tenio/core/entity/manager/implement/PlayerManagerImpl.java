@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +34,11 @@ import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entity.session.Session;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -50,17 +52,13 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   private final Map<Session, Player> playerBySessions;
 
   private Room ownerRoom;
-
   private volatile int playerCount;
 
   private PlayerManagerImpl(EventManager eventManager) {
     super(eventManager);
-
-    playerByNames = new HashMap<String, Player>();
-    playerBySessions = new HashMap<Session, Player>();
-
+    playerByNames = new HashMap<>();
+    playerBySessions = new HashMap<>();
     ownerRoom = null;
-
     playerCount = 0;
   }
 
@@ -77,7 +75,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
     synchronized (this) {
       playerByNames.put(player.getName(), player);
       if (player.containsSession()) {
-        playerBySessions.put(player.getSession(), player);
+        playerBySessions.put(player.getSession().get(), player);
       }
       playerCount = playerByNames.size();
     }
@@ -96,7 +94,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
   @Override
   public Player createPlayerWithSession(String name, Session session) {
-    if (session == null) {
+    if (Objects.isNull(session)) {
       throw new NullPointerException("Unable to assign a null session for the player");
     }
 
@@ -124,23 +122,37 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public Collection<Player> getAllPlayers() {
-    synchronized (playerByNames) {
-      return playerByNames.values();
+  public Iterator<Player> getPlayerIterator() {
+    synchronized (this) {
+      return playerByNames.values().iterator();
     }
   }
 
   @Override
-  public Collection<Session> getAllSessions() {
-    synchronized (playerBySessions) {
-      return playerBySessions.keySet();
+  public List<Player> getReadonlyPlayersList() {
+    synchronized (this) {
+      return List.copyOf(playerByNames.values());
+    }
+  }
+
+  @Override
+  public Iterator<Session> getSessionIterator() {
+    synchronized (this) {
+      return playerBySessions.keySet().iterator();
+    }
+  }
+
+  @Override
+  public List<Session> getReadonlySessionsList() {
+    synchronized (this) {
+      return List.copyOf(playerBySessions.keySet());
     }
   }
 
   @Override
   public void removePlayerByName(String playerName) {
     var player = getPlayerByName(playerName);
-    if (player == null) {
+    if (Objects.isNull(player)) {
       throw new RemovedNonExistentPlayerFromRoomException(playerName, ownerRoom);
     }
 
@@ -150,7 +162,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   @Override
   public void removePlayerBySession(Session session) {
     var player = getPlayerBySession(session);
-    if (player == null) {
+    if (Objects.isNull(player)) {
       throw new RemovedNonExistentPlayerFromRoomException(session.toString(), ownerRoom);
     }
 
@@ -161,7 +173,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
     synchronized (this) {
       playerByNames.remove(player.getName());
       if (player.containsSession()) {
-        playerBySessions.remove(player.getSession());
+        playerBySessions.remove(player.getSession().get());
       }
       playerCount = playerByNames.size();
     }
@@ -199,7 +211,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   @Override
   public void clear() {
     synchronized (this) {
-      var iterator = new ArrayList<Player>(playerByNames.values()).iterator();
+      var iterator = new ArrayList<>(playerByNames.values()).iterator();
       while (iterator.hasNext()) {
         var player = iterator.next();
         removePlayer(player);

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,18 @@ THE SOFTWARE.
 package com.tenio.core.entity.define.result;
 
 /**
- * The results when a connection tried to establish.
+ * The results when a connection tried to establish itself on the server.
  */
 public enum ConnectionEstablishedResult {
 
+  /**
+   * Success.
+   */
   SUCCESS,
+  /**
+   * Connection fails to connect to the server because the server reached maximum number of
+   * connections.
+   */
   REACHED_MAX_CONNECTION;
 
   @Override

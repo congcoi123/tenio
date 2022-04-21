@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.message.ExtraMessage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 
 /**
@@ -56,8 +57,8 @@ public final class MessageDispatcher {
    */
   public MessageDispatcher(EntityManager manager) {
     entityManager = manager;
-    telegrams = new TreeSet<Telegram>();
-    messageListeners = new ArrayList<MessageListener>();
+    telegrams = new TreeSet<>();
+    messageListeners = new ArrayList<>();
   }
 
   /**
@@ -78,7 +79,7 @@ public final class MessageDispatcher {
     var preceiver = entityManager.get(receiver);
 
     // make sure the receiver is valid
-    if (preceiver == null) {
+    if (Objects.isNull(preceiver)) {
       return;
     }
 
@@ -138,13 +139,9 @@ public final class MessageDispatcher {
   private void discharge(AbstractEntity receiver, Telegram message) {
     if (!receiver.handleMessage(message)) {
       // Telegram could not be handled
-      messageListeners.forEach(listener -> {
-        listener.onListen(message, false);
-      });
+      messageListeners.forEach(listener -> listener.onListen(message, false));
     } else {
-      messageListeners.forEach(listener -> {
-        listener.onListen(message, true);
-      });
+      messageListeners.forEach(listener -> listener.onListen(message, true));
     }
   }
 

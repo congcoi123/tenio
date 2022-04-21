@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import com.tenio.core.network.define.data.PathConfig;
 import java.util.List;
 
 /**
- * When you try to define an existing Uri method in the HTTP server.
+ * When an existing Uri method on the HTTP service is defined again.
  */
 public final class DuplicatedUriAndMethodException extends RuntimeException {
 
@@ -38,8 +38,9 @@ public final class DuplicatedUriAndMethodException extends RuntimeException {
   /**
    * Initialization.
    *
-   * @param method      the rest method
-   * @param pathConfigs the path configuration
+   * @param method      a {@link RestMethod}
+   * @param pathConfigs a list of {@link PathConfig}
+   * @see List
    */
   public DuplicatedUriAndMethodException(RestMethod method, List<PathConfig> pathConfigs) {
     super(String.format("Duplicated REST method: %s, with the list of configurations: %s",

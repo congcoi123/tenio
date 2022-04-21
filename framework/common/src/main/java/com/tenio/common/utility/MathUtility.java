@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,14 +31,41 @@ import java.util.Random;
  */
 public final class MathUtility {
 
+  /**
+   * The maximum value of an integer number.
+   */
   public static final int MAX_INT = Integer.MAX_VALUE;
+  /**
+   * The minimum value of an integer number.
+   */
   public static final int MIN_INT = Integer.MIN_VALUE;
+  /**
+   * The maximum value of a float number.
+   */
   public static final float MAX_FLOAT = Float.MAX_VALUE;
+  /**
+   * The minimum value of a float number.
+   */
   public static final float MIN_FLOAT = Float.MIN_VALUE;
+  /**
+   * The <a href="https://en.wikipedia.org/wiki/Pi">Pi</a> number.
+   */
   public static final float PI = (float) Math.PI;
+  /**
+   * The double value of <a href="https://en.wikipedia.org/wiki/Pi">Pi</a> number.
+   */
   public static final float TWO_PI = PI * 2;
+  /**
+   * The half value of <a href="https://en.wikipedia.org/wiki/Pi">Pi</a> number.
+   */
   public static final float HALF_PI = PI / 2;
+  /**
+   * The quarter value <a href="https://en.wikipedia.org/wiki/Pi">Pi</a> number.
+   */
   public static final float QUARTER_PI = PI / 4;
+  /**
+   * The epsilon value in float.
+   */
   public static final float EPSILON_FLOAT = Float.MIN_NORMAL;
   // ----------------------------------------------
   // some random number functions
@@ -51,10 +78,24 @@ public final class MathUtility {
     throw new UnsupportedOperationException("This class does not support to create a new instance");
   }
 
+  /**
+   * Determines if an object is not <code>null</code>.
+   *
+   * @param <T> a generic type
+   * @param val the instance
+   * @return <code>true</code> if the instance is not <code>null</code>,
+   * otherwise <code>false</code>
+   */
   public static <T> boolean isNaN(T val) {
-    return !(val != null);
+    return val == null;
   }
 
+  /**
+   * Converts a value from degree to radian unit.
+   *
+   * @param degree the value in degree unit
+   * @return a converted value in radian unit
+   */
   public static float degreeToRadian(float degree) {
     return TWO_PI * (degree / 360);
   }

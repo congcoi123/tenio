@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.schedule;
 
 import com.tenio.common.task.TaskManager;
-import com.tenio.common.task.TaskManagerImpl;
+import com.tenio.common.task.implement.TaskManagerImpl;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
@@ -88,9 +88,8 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   public void start() {
     info("START SERVICE", buildgen(getName(), " (", 1, ")"));
 
-    // __taskManager.create("auto-disconnect-player",
-    // __autoDisconnectPlayerTask.run());
-    // __taskManager.create("auto-remove-room", __autoRemoveRoomTask.run());
+    // taskManager.create("auto-disconnect-player", autoDisconnectPlayerTask.run());
+    // taskManager.create("auto-remove-room", autoRemoveRoomTask.run());
     taskManager.create("ccu-report", ccuReportTask.run());
     taskManager.create("dead-lock", deadlockScanTask.run());
     taskManager.create("system-monitoring", systemMonitoringTask.run());

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,10 +73,6 @@ public abstract class AbstractHeartBeat extends AbstractLogger
    */
   private TreeSet<HeartbeatMessage> listener;
 
-  /**
-   * For displaying debugger.
-   */
-  private JFrame jframe;
   /**
    * For holding a frame.
    */
@@ -190,7 +186,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger
    * @param title the title of debug window
    */
   public void debug(String title) {
-    jframe = new JFrame();
+    JFrame jframe = new JFrame();
     jframe.setTitle(title);
 
     gamePanel = new GamePanel();
@@ -221,6 +217,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger
     debugging = true;
   }
 
+  /**
+   * Updates the CCU information.
+   *
+   * @param currentCcu the current number of concurrent players on the server
+   */
   public void setCcu(int currentCcu) {
     this.currentCcu = currentCcu;
   }

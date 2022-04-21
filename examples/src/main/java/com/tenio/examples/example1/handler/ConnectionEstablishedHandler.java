@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example1.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.extension.AbstractExtension;
@@ -40,7 +40,7 @@ public final class ConnectionEstablishedHandler extends AbstractExtension
   @Override
   public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
     if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroObject) message.getData();
+      var data = (ZeroMap) message.getData();
 
       api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
     }

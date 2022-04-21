@@ -3,6 +3,7 @@ package com.tenio.engine.physic2d.utility;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.engine.physic2d.math.Vector2;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Some useful 2D geometry functions.
@@ -280,8 +281,7 @@ public final class Geometry {
 
     if ((r > 0) && (r < 1) && (s > 0) && (s < 1)) {
       // Point = vectorA + (r * (vectorB - vectorA))
-      var point = Vector2.valueOf(vectorB).sub(vectorA).mul(r).add(vectorA);
-      return point;
+      return Vector2.valueOf(vectorB).sub(vectorA).mul(r).add(vectorA);
     }
 
     return null;
@@ -320,8 +320,7 @@ public final class Geometry {
     float s = stop / sbot;
 
     if ((r > 0) && (r < 1) && (s > 0) && (s < 1)) {
-      float distance = Vector2.newInstance().set(vectorA).getDistanceValue(vectorB) * r;
-      return distance;
+      return Vector2.newInstance().set(vectorA).getDistanceValue(vectorB) * r;
     }
 
     return -1;
@@ -497,7 +496,7 @@ public final class Geometry {
   public static float getTwoCirclesIntersectionArea(float x1, float y1, float r1, float x2,
                                                     float y2, float r2) {
     // first calculate the intersection points
-    if (getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2) == null) {
+    if (Objects.isNull(getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2))) {
       return 0; // no overlap
     }
 
@@ -514,11 +513,8 @@ public final class Geometry {
     // chord CD, by taking the area of the sector of the circle BCD and
     // subtracting the area of triangle BCD. Similarly, we find the area
     // of the sector ACD and subtract the area of triangle ACD.
-    float area =
-        (float) (0.5f * cbd * r2 * r2 - 0.5f * r2 * r2 * Math.sin(cbd) + 0.5f * cad * r1 * r1
-            - 0.5f * r1 * r1 * Math.sin(cad));
-
-    return area;
+    return (float) (0.5f * cbd * r2 * r2 - 0.5f * r2 * r2 * Math.sin(cbd) + 0.5f * cad * r1 * r1
+        - 0.5f * r1 * r1 * Math.sin(cad));
   }
 
   // Given the radius, calculates the area of a circle

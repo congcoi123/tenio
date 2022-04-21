@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,18 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 
 /**
- * Returns the result when player logged in the server.
+ * Returns the result when a player tried to log in the server.
  */
+@FunctionalInterface
 public interface EventPlayerLoggedinResult {
 
+  /**
+   * When a player tried to log in the server.
+   *
+   * @param player the joining {@link Player}
+   * @param result the joining result presented by {@link PlayerLoggedInResult}. A player is
+   *               considered as it joined the server when the result equals to success
+   * @see PlayerLoggedInResult#SUCCESS
+   */
   void handle(Player player, PlayerLoggedInResult result);
 }

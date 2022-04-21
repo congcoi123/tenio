@@ -31,7 +31,7 @@ public class SmootherVector<T extends Vector2> {
    * @param zeroValue  the zero value
    */
   public SmootherVector(int sampleSize, T zeroValue) {
-    histories = new ArrayList<T>(sampleSize);
+    histories = new ArrayList<>(sampleSize);
     for (int i = 0; i < sampleSize; i++) {
       histories.add(zeroValue);
     }

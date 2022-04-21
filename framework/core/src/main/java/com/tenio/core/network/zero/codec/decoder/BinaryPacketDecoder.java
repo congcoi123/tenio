@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,18 +26,40 @@ package com.tenio.core.network.zero.codec.decoder;
 
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 
 /**
  * The APIs designed for decoding binary packets.
  */
 public interface BinaryPacketDecoder {
 
+  /**
+   * Decodes data from clients side sent by session.
+   *
+   * @param session the receiving {@link Session}
+   * @param data    the receiving {@code byte} data
+   * @throws RuntimeException whenever an issue occurred
+   */
   void decode(Session session, byte[] data) throws RuntimeException;
 
+  /**
+   * Sets the listener for packet decoder handler.
+   *
+   * @param resultListener the {@link PacketDecoderResultListener} instance
+   */
   void setResultListener(PacketDecoderResultListener resultListener);
 
+  /**
+   * Sets the compressor for compressing/uncompressing packets.
+   *
+   * @param compressor the {@link BinaryPacketCompressor} instance
+   */
   void setCompressor(BinaryPacketCompressor compressor);
 
-  void setEncrypter(BinaryPacketEncrypter encrypter);
+  /**
+   * Sets the encryptor for encrypting/encrypting packets.
+   *
+   * @param encryptor the {@link BinaryPacketEncryptor} instance
+   */
+  void setEncryptor(BinaryPacketEncryptor encryptor);
 }

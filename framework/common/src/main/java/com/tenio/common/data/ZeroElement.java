@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,38 @@ THE SOFTWARE.
 
 package com.tenio.common.data;
 
+import java.util.Collection;
+
 /**
- * The basic element for the self-definition map and array type.
+ * An element object contains a pair of type and data value.
+ *
+ * @see ZeroType
+ * @see Object
  */
 public interface ZeroElement {
 
-  byte[] toBinary();
+  /**
+   * Retrieves the type of element.
+   *
+   * @return type of data in {@link ZeroType}
+   */
+  ZeroType getType();
 
-  int size();
+  /**
+   * Retrieves the data of element.
+   *
+   * @return an instance in wrapper class of primitive or array types
+   * @see Boolean
+   * @see Byte
+   * @see Short
+   * @see Integer
+   * @see Long
+   * @see Float
+   * @see Double
+   * @see String
+   * @see Collection
+   * @see ZeroArray
+   * @see ZeroMap
+   */
+  Object getData();
 }

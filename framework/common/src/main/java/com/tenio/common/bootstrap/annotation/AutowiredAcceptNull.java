@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation helps you create inject the object dependency like {@link Autowired} does.
- * But the difference is that this one should be used in case you don't know the implementing
- * class was defined or not. When the corresponding class was not found then the variable
- * associated with it will be set by <b>null</b>.
- * <br>
- * Using this annotation will never throw {@link NoImplementedClassFoundException} exception.
+ * This annotation helps you inject the object dependency like {@link Autowired} does.
+ * But the difference is that this one should be used in case you do not know the implementation
+ * class was declared or not. When the corresponding class was not found then the variable
+ * associated with it will be set by <code>null</code>.
+ *
+ * <p>Using this annotation will never throw the {@link NoImplementedClassFoundException} exception.
  */
 @Target({FIELD})
 @Retention(RUNTIME)

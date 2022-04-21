@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.utility.ZeroDataSerializerUtility;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
@@ -49,7 +49,7 @@ public final class DatagramIoHandlerImpl extends AbstractIoHandler implements Da
   @Override
   public void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress,
                           byte[] binary) {
-    var data = ZeroDataSerializerUtility.binaryToElement(binary);
+    var data = ZeroUtility.binaryToCollection(binary);
     var message = ServerMessage.newInstance().setData(data);
     eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, datagramChannel, remoteAddress,
         message);
@@ -57,7 +57,7 @@ public final class DatagramIoHandlerImpl extends AbstractIoHandler implements Da
 
   @Override
   public void sessionRead(Session session, byte[] binary) {
-    var data = ZeroDataSerializerUtility.binaryToElement(binary);
+    var data = ZeroUtility.binaryToCollection(binary);
     var message = ServerMessage.newInstance().setData(data);
     eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
   }

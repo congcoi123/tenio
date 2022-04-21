@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +34,9 @@ import java.lang.annotation.Target;
 /**
  * <b>Autowiring</b> feature enables you to inject the object dependency implicitly, and it
  * internally uses <b>setter</b> or <b>constructor</b> injection.
- * <br>
- * <b>Autowiring</b> can't be used to inject <b>primitive</b> and <b>string values</b> because it
- * works with reference only.
+ *
+ * <p><b>Autowiring</b> cannot be used to inject <b>primitive</b> and <b>string values</b> because
+ * it works with <b>reference</b> only.
  */
 @Target({FIELD})
 @Retention(RUNTIME)

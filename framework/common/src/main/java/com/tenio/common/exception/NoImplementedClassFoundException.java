@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,11 @@ public final class NoImplementedClassFoundException extends RuntimeException {
 
   private static final long serialVersionUID = -2836756456705984458L;
 
+  /**
+   * Creates a new instance.
+   *
+   * @param clazz the interface of which there is no implementation
+   */
   public NoImplementedClassFoundException(Class<?> clazz) {
     super(String.format("Unable to find any implementation for the class: %s", clazz.getName()));
   }

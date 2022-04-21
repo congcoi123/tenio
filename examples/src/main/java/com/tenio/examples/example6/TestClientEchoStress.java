@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6;
 
-import com.tenio.common.data.ZeroObject;
-import com.tenio.common.data.implement.ZeroObjectImpl;
+import com.tenio.common.data.ZeroMap;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
@@ -56,7 +56,7 @@ public final class TestClientEchoStress implements SocketListener {
   private final Map<String, TCP> tcps;
 
   public TestClientEchoStress() {
-    tcps = new HashMap<String, TCP>();
+    tcps = new HashMap<>();
     // create a list of TCP objects and listen for this port
     for (int i = 0; i < NUMBER_CLIENTS; i++) {
       var name = ClientUtility.generateRandomString(5);
@@ -65,7 +65,7 @@ public final class TestClientEchoStress implements SocketListener {
       tcps.put(name, tcp);
 
       // send a login request
-      var data = ZeroObjectImpl.newInstance();
+      var data = ZeroUtility.newZeroMap();
       data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
       tcp.send(ServerMessage.newInstance().setData(data));
 
@@ -95,10 +95,10 @@ public final class TestClientEchoStress implements SocketListener {
     }
 
     var tcp =
-        tcps.get(((ZeroObject) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
+        tcps.get(((ZeroMap) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 
     // make an echo message
-    var data = ZeroObjectImpl.newInstance();
+    var data = ZeroUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);

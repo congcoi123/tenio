@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.jetty.servlet;
 
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.common.CommonMap;
 import com.tenio.core.network.jetty.servlet.support.BaseProcessServlet;
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,17 +39,18 @@ public final class PingServlet extends HttpServlet {
 
   private static final long serialVersionUID = 5999711002391728401L;
 
+  /**
+   * Create a new instance of {@link Process}
+   */
   private final Process process = new Process();
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     process.handle(request, response);
   }
 
@@ -61,10 +61,8 @@ public final class PingServlet extends HttpServlet {
       response.setStatus(HttpServletResponse.SC_OK);
       try {
         var json = new JSONObject();
-        CommonObject.newInstance().add("status", "ok").add("message", "PING PONG")
-            .forEach((key, value) -> {
-              json.put(key, value);
-            });
+        CommonMap.newInstance().add("status", "ok").add("message", "PING PONG")
+            .forEach(json::put);
         response.getWriter().println(json);
       } catch (IOException e) {
         error(e);

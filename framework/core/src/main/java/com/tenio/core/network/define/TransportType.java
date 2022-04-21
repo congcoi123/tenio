@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Definition for all supported transportation types.
+ * The definitions of all supported transportation types on the server.
  */
 public enum TransportType {
 
+  /**
+   * UNKNOWN.
+   */
   UNKNOWN("unknown"),
+  /**
+   * SOCKET.
+   */
   TCP("tcp"),
+  /**
+   * DATAGRAM.
+   */
   UDP("udp"),
+  /**
+   * WEBSOCKET.
+   */
   WEB_SOCKET("websocket"),
+  /**
+   * HTTP.
+   */
   HTTP("http");
 
   // Reverse-lookup map for getting a type from a value
@@ -53,10 +68,21 @@ public enum TransportType {
     this.value = value;
   }
 
+  /**
+   * Retrieves the transportation type by looking at its value.
+   *
+   * @param value the corresponding {@link String} value of transportation type
+   * @return the corresponding {@link TransportType} if it is available, otherwise {@code null}
+   */
   public static TransportType getByValue(String value) {
     return lookup.get(value);
   }
 
+  /**
+   * Retrieves the transportation type in text value.
+   *
+   * @return the transportation type in {@link String} value
+   */
   public final String getValue() {
     return value;
   }

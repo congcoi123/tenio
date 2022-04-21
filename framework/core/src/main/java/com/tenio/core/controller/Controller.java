@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,50 +30,50 @@ import com.tenio.core.service.Service;
 import com.tenio.core.service.ServiceListener;
 
 /**
- * The supported APIs for a controller.
+ * All supported APIs for a controller.
  */
 public interface Controller extends Service, ServiceListener {
 
   /**
-   * Enqueue a request for processing.
+   * Enqueue a request from a request queue for processing.
    *
-   * @param request the request
-   * @throws RequestQueueFullException when the queue is full
+   * @param request the processing {@link Request}
+   * @throws RequestQueueFullException when the request queue is full
    */
   void enqueueRequest(Request request) throws RequestQueueFullException;
 
   /**
-   * Retrieves the max request size.
+   * Retrieves the maximum size of a request queue.
    *
-   * @return the max request size
+   * @return the maximum request queue size ({@code integer} value)
    */
   int getMaxRequestQueueSize();
 
   /**
-   * Set the maximum value size for the queue.
+   * Sets the maximum value size for the request queue.
    *
-   * @param maxSize the max size
+   * @param maxSize the maximum size of a request queue ({@code integer} value)
    */
   void setMaxRequestQueueSize(int maxSize);
 
   /**
-   * Retrieves the current percentage using of request queue.
+   * Retrieves the current percentage using of a request queue.
    *
-   * @return the percentage
+   * @return the percentage of using ({@code float} value)
    */
   float getPercentageUsedRequestQueue();
 
   /**
-   * Retrieves the thread pool size.
+   * Retrieves the thread pool size using for processes.
    *
-   * @return the thread pool size
+   * @return the thread pool size ({@code integer} value)
    */
   int getThreadPoolSize();
 
   /**
-   * Set the thread pool size.
+   * Set the thread pool size using for processes.
    *
-   * @param maxSize the max size
+   * @param maxSize the thread pool size ({@code integer} value)
    */
   void setThreadPoolSize(int maxSize);
 }

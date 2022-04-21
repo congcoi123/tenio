@@ -12,7 +12,7 @@ class Cell<T extends Object> {
   /**
    * All the entities inhabiting this cell.
    */
-  public List<T> members = new LinkedList<T>();
+  public List<T> members = new LinkedList<>();
   /**
    * The cell's bounding box (it's inverted because the Window's default
    * co-ordinate system has a y axis that increases as it descends).

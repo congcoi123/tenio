@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,18 +26,39 @@ package com.tenio.core.network.zero.codec.encoder;
 
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 
 /**
  * The APIs designed for binary packet encoding.
  */
 public interface BinaryPacketEncoder {
 
+  /**
+   * Encodes a packet to send to clients side.
+   *
+   * @param packet the coming {@link Packet}
+   * @return the encoded {@link Packet}
+   */
   Packet encode(Packet packet);
 
+  /**
+   * Sets the compressor for compressing/uncompressing packets.
+   *
+   * @param compressor the {@link BinaryPacketCompressor} instance
+   */
   void setCompressor(BinaryPacketCompressor compressor);
 
-  void setEncrypter(BinaryPacketEncrypter encrypter);
+  /**
+   * Sets the encryptor for encrypting/encrypting packets.
+   *
+   * @param encryptor the {@link BinaryPacketEncryptor} instance
+   */
+  void setEncryptor(BinaryPacketEncryptor encryptor);
 
+  /**
+   * Sets the limitation for compression threshold in bytes.
+   *
+   * @param numberBytes the limitation for compression threshold in bytes
+   */
   void setCompressionThresholdBytes(int numberBytes);
 }

@@ -25,20 +25,21 @@ THE SOFTWARE.
 package com.tenio.examples.example3.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroObject;
+import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
 import com.tenio.examples.server.SharedEventKey;
+import java.util.Optional;
 
 @Component
 public final class AttachConnectionRequestValidatedHandler extends AbstractExtension
     implements EventAttachConnectionRequestValidation {
 
   @Override
-  public Player handle(ServerMessage message) {
-    var data = (ZeroObject) message.getData();
+  public Optional<Player> handle(ServerMessage message) {
+    var data = (ZeroMap) message.getData();
 
     return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }

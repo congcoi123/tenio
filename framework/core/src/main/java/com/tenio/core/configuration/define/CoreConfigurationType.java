@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,16 @@ THE SOFTWARE.
 package com.tenio.core.configuration.define;
 
 import com.tenio.common.configuration.ConfigurationType;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.entity.define.mode.RoomRemoveMode;
+import com.tenio.core.exception.PacketQueueFullException;
+import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,96 +51,194 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   SERVER_NAME("server-name"),
   /**
-   * The server id (module name).
+   * The server ID (module name).
    */
   SERVER_ID("server-id"),
   /**
-   * This current version code of your server in integer type (can be compared).
+   * This server version code in numeric type (It can be used to compare to other versions).
    */
   SERVER_VERSION_CODE("version-code"),
   /**
-   * This current version name of your server in string type.
+   * TThis server version code in text type.
    */
   SERVER_VERSION_NAME("version-name"),
-
-  CLASS_PACKET_ENCRYPTER("packet-encrypter"),
-
-  CLASS_PACKET_COMPRESSOR("packet-compressor"),
-
-  CLASS_PACKET_ENCODER("packet-encoder"),
-
-  CLASS_PACKET_DECODER("packet-decoder"),
-
-  CLASS_CONNECTION_FILTER("connection-filter"),
-
-  CLASS_PACKET_QUEUE_POLICY("packet-queue-policy"),
-
-  THREADS_SOCKET_ACCEPTOR("socket-acceptor"),
-
-  THREADS_SOCKET_READER("socket-reader"),
-
-  THREADS_SOCKET_WRITER("socket-writer"),
-
-  THREADS_WEBSOCKET_PRODUCER("websocket-producer"),
-
-  THREADS_WEBSOCKET_CONSUMER("websocket-consumer"),
-
-  THREADS_INTERNAL_PROCESSOR("internal-processor"),
-
-  INTERVAL_REMOVED_ROOM_SCAN("removed-room-scan-interval"),
-
-  INTERVAL_DISCONNECTED_PLAYER_SCAN("disconnected-player-scan-interval"),
-
-  INTERVAL_CCU_SCAN("ccu-scan-interval"),
-
-  INTERVAL_DEADLOCK_SCAN("deadlock-scan-interval"),
-
-  INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
-
-  INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
-
-  PROP_MAX_PACKET_QUEUE_SIZE("max-packet-queue-size"),
-
-  PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
-
-  PROP_KEEP_PLAYER_ON_DISCONNECTION("keep-player-on-disconnection"),
-
-  PROP_MAX_NUMBER_PLAYERS("max-number-players"),
-
-  PROP_MAX_NUMBER_ROOMS("max-number-rooms"),
-
-  PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
-
-  NETWORK_PROP_WEBSOCKET_USING_SSL("websocket-using-ssl"),
-
-  NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE("websocket-sender-buffer-size"),
-
-  NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE("websocket-receiver-buffer-size"),
-
-  NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE("socket-acceptor-buffer-size"),
-
-  NETWORK_PROP_SOCKET_READER_BUFFER_SIZE("socket-reader-buffer-size"),
-
-  NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE("socket-writer-buffer-size"),
-
-  NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES("packet-compression-threshold-bytes"),
-
-  NETWORK_PROP_MAX_CONNECTIONS_PER_IP("max-connections-per-ip"),
-
-  NETWORK_PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
-
   /**
-   * The list of socket configuration in configuration.
+   * Class: Declares a class for packet encryption handling. The data in packet will be encrypted or
+   * decrypted before sending or after receiving from clients side.
+   *
+   * @see BinaryPacketEncryptor
+   */
+  CLASS_PACKET_ENCRYPTOR("packet-encryptor"),
+  /**
+   * Class: Declares a class for packet compression handling. The data in packet will be compressed
+   * or uncompressed before sending or after receiving from clients side.
+   *
+   * @see BinaryPacketCompressor
+   */
+  CLASS_PACKET_COMPRESSOR("packet-compressor"),
+  /**
+   * Class: Declares a class for packet encoder handling. The data in packet will be encoded before
+   * sending to clients side.
+   *
+   * @see BinaryPacketEncoder
+   */
+  CLASS_PACKET_ENCODER("packet-encoder"),
+  /**
+   * Class: Declares a class for packet decoded handling. The data in packet will be decoded after
+   * receiving from clients side.
+   *
+   * @see BinaryPacketDecoder
+   */
+  CLASS_PACKET_DECODER("packet-decoder"),
+  /**
+   * Class: Declares conditions for connection filter handling. A coming connection will be
+   * applied some rules to check whether it can join the server or not.
+   *
+   * @see ConnectionFilter
+   */
+  CLASS_CONNECTION_FILTER("connection-filter"),
+  /**
+   * Class: Declares a set of rules for a packet queue handling. The packet will be appended
+   * to a queue for handing later. Therefore, in some cases, some packets need to be dropped
+   * based on their priority or the queue size issues.
+   *
+   * @see PacketQueuePolicy
+   */
+  CLASS_PACKET_QUEUE_POLICY("packet-queue-policy"),
+  /**
+   * The number of threads using for handlers to accept new incoming client socket on the server.
+   */
+  THREADS_SOCKET_ACCEPTOR("socket-acceptor"),
+  /**
+   * The number of threads using for handlers to read new messages from client sockets on the
+   * server.
+   */
+  THREADS_SOCKET_READER("socket-reader"),
+  /**
+   * The number of threads using for handlers to write new messages to client sockets on the server.
+   */
+  THREADS_SOCKET_WRITER("socket-writer"),
+  /**
+   * The number of threads using for handlers of WebSocket producers on the server.
+   */
+  THREADS_WEBSOCKET_PRODUCER("websocket-producer"),
+  /**
+   * The number of threads using for handlers of WebSocket consumers on the server.
+   */
+  THREADS_WEBSOCKET_CONSUMER("websocket-consumer"),
+  /**
+   * The number of threads using for handlers to manage internal processes on the server.
+   */
+  THREADS_INTERNAL_PROCESSOR("internal-processor"),
+  /**
+   * Sets an interval to frequently check removable rooms for removing them.
+   *
+   * @see RoomRemoveMode
+   */
+  INTERVAL_REMOVED_ROOM_SCAN("removed-room-scan-interval"),
+  /**
+   * Sets an interval to frequently check disconnected players. In case a disconnected time of a
+   * player excess the allowed time then that player will be logged out from the server.
+   *
+   * @see PlayerDisconnectMode
+   */
+  INTERVAL_DISCONNECTED_PLAYER_SCAN("disconnected-player-scan-interval"),
+  /**
+   * Sets an interval to frequently check the concurrent users activating on the server.
+   */
+  INTERVAL_CCU_SCAN("ccu-scan-interval"),
+  /**
+   * Sets an interval to frequently check whether a deadlock occurred.
+   */
+  INTERVAL_DEADLOCK_SCAN("deadlock-scan-interval"),
+  /**
+   * Sets an interval to frequently report the current read and written number of packets on the
+   * server.
+   */
+  INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
+  /**
+   * Sets an interval to frequently monitoring the server information.
+   */
+  INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
+  /**
+   * Sets the maximum size of a packet queue. Notes that every {@link Session} has its own queue,
+   * and this setting applies for all of them.
+   *
+   * @see PacketQueuePolicy
+   * @see PacketQueueFullException
+   */
+  PROP_MAX_PACKET_QUEUE_SIZE("max-packet-queue-size"),
+  /**
+   * Sets the maximum number of requesting packets in queue. In case there are more packets than
+   * expected, some of them should be removed.
+   */
+  PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
+  /**
+   * Determines whether a disconnected connection could be held for a while or be removed
+   * immediately.
+   */
+  PROP_KEEP_PLAYER_ON_DISCONNECTION("keep-player-on-disconnection"),
+  /**
+   * Sets the maximum number of players allowed to join the server.
+   */
+  PROP_MAX_NUMBER_PLAYERS("max-number-players"),
+  /**
+   * Sets the maximum number of rooms could be created on the server.
+   */
+  PROP_MAX_NUMBER_ROOMS("max-number-rooms"),
+  /**
+   * Sets the maximum time in seconds a player can be in IDLE state (Without sending or receiving
+   * packets). Excesses this time then the player will be removed from the server.
+   */
+  PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
+  /**
+   * Determines whether the WebSocket connection could use SSL configuration.
+   */
+  NETWORK_PROP_WEBSOCKET_USING_SSL("websocket-using-ssl"),
+  /**
+   * Sets packet handling buffer size in bytes for the WebSocket sender.
+   */
+  NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE("websocket-sender-buffer-size"),
+  /**
+   * Sets packet handling buffer size in bytes for the WebSocket receiver.
+   */
+  NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE("websocket-receiver-buffer-size"),
+  /**
+   * Sets packet handling buffer size in bytes for the socket acceptor (Accepting new incoming
+   * client sockets).
+   */
+  NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE("socket-acceptor-buffer-size"),
+  /**
+   * Sets packet handling buffer size in bytes for the socket receiver.
+   */
+  NETWORK_PROP_SOCKET_READER_BUFFER_SIZE("socket-reader-buffer-size"),
+  /**
+   * Sets packet handling buffer size in bytes for the socket sender.
+   */
+  NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE("socket-writer-buffer-size"),
+  /**
+   * Sets packet compression threshold in bytes at that the packet will be compressed.
+   */
+  NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES("packet-compression-threshold-bytes"),
+  /**
+   * Sets maximum number of connections each IP address can have.
+   */
+  NETWORK_PROP_MAX_CONNECTIONS_PER_IP("max-connections-per-ip"),
+  /**
+   * Allows a player can log in a different session then the new session will replace the old one.
+   */
+  NETWORK_PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
+  /**
+   * The list of socket configurations in the server configuration.
    */
   SOCKET_CONFIGS("socket-configs"),
   /**
-   * The list of HTTP configuration in configuration.
+   * The list of HTTP configurations in the server configuration.
    */
   HTTP_CONFIGS("http-configs");
-
   // Reverse-lookup map for getting a type from a value
   private static final Map<String, CoreConfigurationType> lookup =
-      new HashMap<String, CoreConfigurationType>();
+      new HashMap<>();
 
   static {
     for (var configurationType : CoreConfigurationType.values()) {
@@ -144,10 +252,21 @@ public enum CoreConfigurationType implements ConfigurationType {
     this.value = value;
   }
 
+  /**
+   * Retrieves a configuration type by using its value.
+   *
+   * @param value the configuration's {@link String} value
+   * @return a corresponding {@link CoreConfigurationType} instance
+   */
   public static CoreConfigurationType getByValue(String value) {
     return lookup.get(value);
   }
 
+  /**
+   * Retrieves a configuration type's value.
+   *
+   * @return a {@link String} value
+   */
   public final String getValue() {
     return value;
   }

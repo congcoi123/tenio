@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import com.tenio.engine.ecs.basis.Component;
 import com.tenio.engine.ecs.basis.Entity;
 import com.tenio.engine.exception.ComponentIsNotExistedException;
 import com.tenio.engine.exception.DuplicatedComponentException;
+import java.util.Objects;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is
@@ -64,7 +65,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
 
   @Override
   public void setComponentPools(ElementPool<Component>[] componentPools) {
-    if (this.componentPools == null) {
+    if (Objects.isNull(this.componentPools)) {
       this.componentPools = componentPools;
     }
   }
@@ -76,10 +77,10 @@ public class EntityImpl extends AbstractLogger implements Entity {
 
   @Override
   public void setContextInfo(ContextInfo contextInfo) {
-    if (this.contextInfo == null) {
+    if (Objects.isNull(this.contextInfo)) {
       this.contextInfo = contextInfo;
     }
-    if (components == null) {
+    if (Objects.isNull(components)) {
       components = new Component[contextInfo.getNumberComponents()];
     }
   }
@@ -111,7 +112,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
     if (hasComponent(index)) {
       replaceComponentInternal(index, component);
     } else {
-      if (component != null) {
+      if (Objects.nonNull(component)) {
         setComponent(index, component);
       }
     }
@@ -138,7 +139,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasComponent(int index) {
     if (index < components.length) {
-      return components[index] != null;
+      return Objects.nonNull(components[index]);
     } else {
       return false;
     }
@@ -147,7 +148,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasComponents(int... indices) {
     for (int index : indices) {
-      if (components[index] == null) {
+      if (Objects.isNull(components[index])) {
         return false;
       }
     }
@@ -157,7 +158,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasAnyComponent(int... indices) {
     for (int index : indices) {
-      if (components[index] != null) {
+      if (Objects.nonNull(components[index])) {
         return true;
       }
     }
@@ -167,7 +168,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public void removeAllComponents() {
     for (int i = 0; i < components.length; i++) {
-      if (components[i] != null) {
+      if (Objects.nonNull(components[i])) {
         replaceComponent(i, null);
       }
     }

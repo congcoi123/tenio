@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example8.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.element.CommonObject;
+import com.tenio.common.data.common.CommonMap;
 import com.tenio.core.extension.AbstractExtension;
 import com.tenio.core.extension.events.EventHttpRequestHandle;
 import com.tenio.core.network.define.RestMethod;
@@ -40,7 +40,7 @@ public final class HttpRequestHandler extends AbstractExtension implements Event
   @Override
   public void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response) {
     var json = new JSONObject();
-    CommonObject.newInstance().add("status", "ok").add("message", "handler")
+    CommonMap.newInstance().add("status", "ok").add("message", "handler")
         .forEach((key, value) -> {
           json.put(key, value);
         });

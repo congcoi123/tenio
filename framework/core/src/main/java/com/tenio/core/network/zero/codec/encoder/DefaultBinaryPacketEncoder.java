@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.tenio.core.network.zero.codec.encoder;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.zero.codec.CodecUtility;
 import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncrypter;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.zero.codec.packet.PacketHeader;
 import java.nio.ByteBuffer;
 
@@ -42,9 +42,12 @@ public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
   private static final int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;
 
   private BinaryPacketCompressor compressor;
-  private BinaryPacketEncrypter encrypter;
+  private BinaryPacketEncryptor encryptor;
   private int compressionThresholdBytes;
 
+  /**
+   * Initialization.
+   */
   public DefaultBinaryPacketEncoder() {
     compressionThresholdBytes = DEFAULT_COMPRESSION_THRESHOLD_BYTES;
   }
@@ -58,8 +61,7 @@ public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
     boolean isEncrypted = packet.isEncrypted();
     if (isEncrypted) {
       try {
-        binary = encrypter.encrypt(binary);
-        isEncrypted = true;
+        binary = encryptor.encrypt(binary);
       } catch (Exception e) {
         isEncrypted = false;
       }
@@ -72,7 +74,7 @@ public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
         binary = compressor.compress(binary);
         isCompressed = true;
       } catch (Exception e) {
-        isCompressed = false;
+        // do nothing
       }
     }
 
@@ -116,8 +118,8 @@ public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
   }
 
   @Override
-  public void setEncrypter(BinaryPacketEncrypter encrypter) {
-    this.encrypter = encrypter;
+  public void setEncryptor(BinaryPacketEncryptor encryptor) {
+    this.encryptor = encryptor;
   }
 
   @Override
