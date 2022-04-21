@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,71 +24,136 @@ THE SOFTWARE.
 
 package com.tenio.common.data;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Self-definition data types.
  */
-public enum ZeroDataType {
+public enum ZeroType {
 
+  /**
+   * Null Value.
+   */
   NULL(0),
-
+  /**
+   * {@link Boolean} Value.
+   */
   BOOLEAN(1),
-
+  /**
+   * Byte Value.
+   */
   BYTE(2),
-
+  /**
+   * {@link Short} Value.
+   */
   SHORT(3),
-
+  /**
+   * {@link Integer} Value.
+   */
   INTEGER(4),
-
+  /**
+   * {@link Long} Value.
+   */
   LONG(5),
-
+  /**
+   * {@link Float} Value.
+   */
   FLOAT(6),
-
+  /**
+   * {@link Double} Value.
+   */
   DOUBLE(7),
-
+  /**
+   * {@link String} Value.
+   */
   STRING(8),
-
+  /**
+   * Collection of {@link Boolean} Value.
+   *
+   * @see Collection
+   */
   BOOLEAN_ARRAY(9),
-
+  /**
+   * Byte Array Value.
+   */
   BYTE_ARRAY(10),
-
+  /**
+   * Collection of {@link Short} Value.
+   *
+   * @see Collection
+   */
   SHORT_ARRAY(11),
-
+  /**
+   * Collection of {@link Integer} Value.
+   *
+   * @see Collection
+   */
   INTEGER_ARRAY(12),
-
+  /**
+   * Collection of {@link Long} Value.
+   *
+   * @see Collection
+   */
   LONG_ARRAY(13),
-
+  /**
+   * Collection of {@link Float} Value.
+   *
+   * @see Collection
+   */
   FLOAT_ARRAY(14),
-
+  /**
+   * Collection of {@link Double} Value.
+   *
+   * @see Collection
+   */
   DOUBLE_ARRAY(15),
-
+  /**
+   * Collection of {@link String} Value.
+   *
+   * @see Collection
+   */
   STRING_ARRAY(16),
-
+  /**
+   * {@link ZeroArray} Value.
+   */
   ZERO_ARRAY(17),
-
-  ZERO_OBJECT(18);
+  /**
+   * {@link ZeroMap} Value.
+   */
+  ZERO_MAP(18);
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<Integer, ZeroDataType> lookup = new HashMap<Integer, ZeroDataType>();
+  private static final Map<Integer, ZeroType> lookup = new HashMap<>();
 
   static {
-    for (var type : ZeroDataType.values()) {
+    for (var type : ZeroType.values()) {
       lookup.put(type.getValue(), type);
     }
   }
 
   private final int value;
 
-  ZeroDataType(final int value) {
+  ZeroType(int value) {
     this.value = value;
   }
 
-  public static ZeroDataType getByValue(int value) {
+  /**
+   * Retrieves a type by using its value.
+   *
+   * @param value the value in <code>integer</code> number
+   * @return the corresponding {@link ZeroType} if available, otherwise <code>null</code>
+   */
+  public static ZeroType getByValue(int value) {
     return lookup.get(value);
   }
 
+  /**
+   * Fetches the type's value.
+   *
+   * @return the type's value in <code>integer</code> type
+   */
   public final int getValue() {
     return this.value;
   }

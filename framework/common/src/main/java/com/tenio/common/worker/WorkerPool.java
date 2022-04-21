@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,27 +37,25 @@ public final class WorkerPool extends SystemLogger {
 
   private final BlockingQueue<Runnable> taskQueue;
   private final List<WorkerPoolRunnable> runnableWorkerPools;
-  private final String name;
   private boolean isStopped;
 
   /**
-   * Create a new worker pool.
+   * Creates a new worker pool.
    *
    * @param name         the worker pool's name
    * @param noOfThreads  number of provided threads
    * @param maxNoOfTasks the maximum supported tasks
    */
   public WorkerPool(String name, int noOfThreads, int maxNoOfTasks) {
-    taskQueue = new ArrayBlockingQueue<Runnable>(maxNoOfTasks);
-    runnableWorkerPools = new ArrayList<WorkerPoolRunnable>();
-    this.name = name;
+    taskQueue = new ArrayBlockingQueue<>(maxNoOfTasks);
+    runnableWorkerPools = new ArrayList<>();
     isStopped = false;
 
     info("CREATED NEW WORKERS",
         buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
 
     for (int i = 0; i < noOfThreads; i++) {
-      runnableWorkerPools.add(new WorkerPoolRunnable(this.name, i, taskQueue));
+      runnableWorkerPools.add(new WorkerPoolRunnable(name, i, taskQueue));
     }
     for (WorkerPoolRunnable runnable : runnableWorkerPools) {
       new Thread(runnable).start();
@@ -91,7 +89,7 @@ public final class WorkerPool extends SystemLogger {
   }
 
   /**
-   * Wait until all tasks are finished.
+   * Waits until all tasks are finished.
    */
   public synchronized void waitUntilAllTasksFinished() {
     while (taskQueue.size() > 0) {

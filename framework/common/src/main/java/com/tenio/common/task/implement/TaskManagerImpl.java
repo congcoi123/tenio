@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.task;
+package com.tenio.common.task.implement;
 
 import com.tenio.common.exception.RunningScheduledTaskException;
 import com.tenio.common.logger.SystemLogger;
+import com.tenio.common.task.TaskManager;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,9 +52,14 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   private final Map<String, ScheduledFuture<?>> tasks;
 
   private TaskManagerImpl() {
-    tasks = new ConcurrentHashMap<String, ScheduledFuture<?>>();
+    tasks = new ConcurrentHashMap<>();
   }
 
+  /**
+   * Creates a new instance for task manager.
+   *
+   * @return an instance in {@link TaskManager} type
+   */
   public static TaskManager newInstance() {
     return new TaskManagerImpl();
   }
@@ -80,7 +87,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
       info("KILLED TASK", id);
       tasks.remove(id);
       var task = tasks.get(id);
-      if (task != null && (!task.isDone() || !task.isCancelled())) {
+      if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
         task.cancel(true);
       }
     }
@@ -90,7 +97,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   public void clear() {
     tasks.forEach((id, task) -> {
       info("KILLED TASK", id);
-      if (task != null && (!task.isDone() || !task.isCancelled())) {
+      if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
         task.cancel(true);
       }
     });
@@ -100,7 +107,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   @Override
   public int getRemainTime(String id) {
     var task = tasks.get(id);
-    if (task != null) {
+    if (Objects.nonNull(task)) {
       return (int) task.getDelay(TimeUnit.SECONDS);
     }
     return -1;

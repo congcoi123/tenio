@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,30 +32,22 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 
 /**
- * This utility class helps you retrieve all classes from a java package.
+ * This utility class provides methods to retrieve all classes from a java package.
  */
 public final class ClassLoaderUtility {
 
   private ClassLoaderUtility() {
-    throw new UnsupportedOperationException("This class did not support to create a new "
+    throw new UnsupportedOperationException("This class does not support to create a new "
         + "instance");
   }
 
-  /**
-   * Check classes in directory located in the project.
-   *
-   * @param directory The directory to start with
-   * @param packages  The package name to search for. Will be needed for getting the
-   *                  Class object.
-   * @param classes   if a file isn't loaded but still is in the directory
-   * @throws ClassNotFoundException if something went wrong
-   */
   private static void checkDirectory(File directory, String packages,
                                      HashSet<Class<?>> classes) throws ClassNotFoundException {
-    File tmpDirectory = null;
+    File tmpDirectory;
 
     if (directory.exists() && directory.isDirectory()) {
       final var files = directory.list();
@@ -63,6 +55,8 @@ public final class ClassLoaderUtility {
       for (final var file : files) {
         if (file.endsWith(".class")) {
           try {
+            // ignores 6 characters of the word ".class"
+            // only fetch the class name without its extension
             classes.add(Class.forName(packages + '.'
                 + file.substring(0, file.length() - 6)));
           } catch (final NoClassDefFoundError e) {
@@ -76,24 +70,14 @@ public final class ClassLoaderUtility {
     }
   }
 
-  /**
-   * Check classes in a jar file.
-   *
-   * @param connection the connection to the jar
-   * @param packages   the package name to search for
-   * @param classes    the current ArrayList of all classes. This method will simply
-   *                   add new classes.
-   * @throws ClassNotFoundException if a file isn't loaded but still is in the jar file
-   * @throws IOException            if it can't correctly read from the jar file.
-   */
-  private static void checkJarFile(JarURLConnection connection,
-                                   String packages, HashSet<Class<?>> classes)
+  private static void checkJarFile(JarURLConnection connection, String packages,
+                                   HashSet<Class<?>> classes)
       throws ClassNotFoundException, IOException {
     final var jarFile = connection.getJarFile();
     final var entries = jarFile.entries();
-    String name = null;
+    String name;
 
-    for (JarEntry jarEntry = null; entries.hasMoreElements()
+    for (JarEntry jarEntry; entries.hasMoreElements()
         && ((jarEntry = entries.nextElement()) != null); ) {
       name = jarEntry.getName();
 
@@ -113,7 +97,7 @@ public final class ClassLoaderUtility {
    *
    * @param packages the package name to search
    * @return a list of classes that exist within that package
-   * @throws ClassNotFoundException if something went wrong
+   * @throws ClassNotFoundException if the finding class cannot be found
    */
   public static HashSet<Class<?>> getClasses(String packages)
       throws ClassNotFoundException {
@@ -122,15 +106,15 @@ public final class ClassLoaderUtility {
     try {
       final var classLoader = Thread.currentThread().getContextClassLoader();
 
-      if (classLoader == null) {
+      if (Objects.isNull(classLoader)) {
         throw new ClassNotFoundException("Can't get class loader.");
       }
 
       final var resources = classLoader.getResources(packages
           .replace('.', '/'));
-      URLConnection connection = null;
+      URLConnection connection;
 
-      for (URL url = null; resources.hasMoreElements()
+      for (URL url; resources.hasMoreElements()
           && ((url = resources.nextElement()) != null); ) {
         try {
           connection = url.openConnection();

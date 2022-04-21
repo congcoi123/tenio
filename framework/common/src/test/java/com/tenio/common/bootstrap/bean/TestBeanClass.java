@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.task.schedule;
+package com.tenio.common.bootstrap.bean;
 
-import java.util.concurrent.ScheduledFuture;
+public class TestBeanClass {
 
-/**
- * This class provides a {@link ScheduledFuture} to do a mission.
- */
-public interface Task {
+  @Override
+  public String toString() {
+    return "This is a bean class";
+  }
 
-  ScheduledFuture<?> run();
+  public int getValue() {
+    return 2022;
+  }
 }

@@ -40,13 +40,6 @@ based server specifically designed for multiplayer games, which supports UDP, TC
 This module provides common methods, classes for other modules to use. It supports the simple dependency injection 
 mechanism and supplies the self-defined serialized and deserialized processes for transferring data through the network.
 
-## Dependencies
-```txt
-- guava 31.0.1
-- log4j-core 2.14.1
-- reflections 0.10
-```
-
 ## Requirements
 - Java 11
 
@@ -57,7 +50,7 @@ The [`TenIO`](https://github.com/congcoi123/tenio) project is currently availabl
 Please check out the [changelog](CHANGELOG.md) for more details.
 
 ## Contributing
-Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
+Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
 
 ## Installation
 ```sh

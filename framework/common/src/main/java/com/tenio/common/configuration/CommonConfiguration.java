@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,12 @@ package com.tenio.common.configuration;
 import com.tenio.common.logger.SystemLogger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * This server needs some basic configuration to start running. The
- * configuration file can be defined as an XML file. See an example in
- * <b>configuration.example.xml</b>. You can also extend this file to create your own
- * configuration values.
+ * This server needs some basic configuration to start running. The configuration file can be
+ * defined as an XML file. See an example in <code>configuration.example.xml</code>. You can also
+ * extend this file to create your own configuration settings.
  */
 public abstract class CommonConfiguration extends SystemLogger implements Configuration {
 
@@ -42,8 +42,11 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
    */
   private final Map<ConfigurationType, Object> configuration;
 
+  /**
+   * Creates a new instance.
+   */
   public CommonConfiguration() {
-    configuration = new HashMap<ConfigurationType, Object>();
+    configuration = new HashMap<>();
   }
 
   @Override
@@ -73,7 +76,7 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
 
   @Override
   public boolean isDefined(ConfigurationType key) {
-    return configuration.get(key) != null && (!getString(key).equals("-1"));
+    return Objects.nonNull(configuration.get(key)) && (!getString(key).equals("-1"));
   }
 
   @Override
@@ -87,13 +90,13 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
   }
 
   /**
-   * Put a new configuration.
+   * Put a new configuration into the map.
    *
-   * @param key   key
-   * @param value value
+   * @param key   a key for the map
+   * @param value a value for the map
    */
   protected void push(ConfigurationType key, Object value) {
-    if (key == null) {
+    if (Objects.isNull(key)) {
       return;
     }
 
@@ -111,7 +114,8 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
    * Your extension part can be handled here. Check the examples for more details
    * about how to use it.
    *
-   * @param extProperties the extension data in key-value format (see {@link Map})
+   * @param extProperties the extension data in key-value format
+   * @see Map
    */
   protected abstract void extend(Map<String, String> extProperties);
 }

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.tenio.common.data.element.ZeroData;
-import com.tenio.common.data.implement.ZeroArrayImpl;
-import com.tenio.common.data.implement.ZeroObjectImpl;
-import com.tenio.common.data.utility.ZeroDataSerializerUtility;
+import com.tenio.common.data.utility.ZeroUtility;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.jupiter.api.AfterAll;
@@ -40,8 +37,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Zero Data Utility")
-class ZeroDataUtilityTest {
+@DisplayName("Unit Test Cases For Zero Utility")
+class ZeroUtilityTest {
 
   private static Collection<Boolean> booleans;
   private static Collection<Short> shorts;
@@ -53,12 +50,12 @@ class ZeroDataUtilityTest {
 
   @BeforeAll
   static void initialization() {
-    booleans = new ArrayList<Boolean>();
+    booleans = new ArrayList<>();
     booleans.add(true);
     booleans.add(false);
     booleans.add(true);
 
-    shorts = new ArrayList<Short>();
+    shorts = new ArrayList<>();
     shorts.add((short) 10);
     shorts.add((short) 11);
     shorts.add((short) 12);
@@ -66,17 +63,17 @@ class ZeroDataUtilityTest {
     shorts.add((short) 14);
     shorts.add((short) 15);
 
-    integers = new ArrayList<Integer>();
+    integers = new ArrayList<>();
     integers.add(100);
     integers.add(101);
     integers.add(102);
     integers.add(103);
 
-    longs = new ArrayList<Long>();
+    longs = new ArrayList<>();
     longs.add(1000L);
     longs.add(2000L);
 
-    floats = new ArrayList<Float>();
+    floats = new ArrayList<>();
     floats.add(1001.1f);
     floats.add(1002.2f);
     floats.add(1003.3f);
@@ -84,10 +81,10 @@ class ZeroDataUtilityTest {
     floats.add(1005.5f);
     floats.add(1006.6f);
 
-    doubles = new ArrayList<Double>();
+    doubles = new ArrayList<>();
     doubles.add(1000000.11111);
 
-    strings = new ArrayList<String>();
+    strings = new ArrayList<>();
     strings.add("zero");
     strings.add("data");
     strings.add("testing");
@@ -109,11 +106,11 @@ class ZeroDataUtilityTest {
   @Test
   @DisplayName("Allow adding and fetching primitive data to/from ZeroArray")
   void primitiveDataInArrayShouldMatch() {
-    var origin = ZeroArrayImpl.newInstance();
+    var origin = ZeroUtility.newZeroArray();
     origin.addBoolean(true).addShort((short) 11).addInteger(1000).addFloat(101.1f).addLong(1000L)
         .addDouble(1010101.101);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToArray(binary);
+    var newOne = ZeroUtility.binaryToArray(binary);
 
     assertAll("primitiveDataInArrayShouldMatch",
         () -> assertTrue(newOne.getBoolean(0)),
@@ -128,17 +125,17 @@ class ZeroDataUtilityTest {
   @Test
   @DisplayName("Allow adding and fetching nested ZeroArray data to/from ZeroArray")
   void instanceDataInArrayShouldMatch() {
-    var origin = ZeroArrayImpl.newInstance();
-    origin.addNull().addZeroData(ZeroData.newInstance(ZeroDataType.BOOLEAN, false))
+    var origin = ZeroUtility.newZeroArray();
+    origin.addNull().addZeroElement(ZeroUtility.newZeroElement(ZeroType.BOOLEAN, false))
         .addString("test");
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToArray(binary);
+    var newOne = ZeroUtility.binaryToArray(binary);
 
     assertAll("instanceDataInArrayShouldMatch",
         () -> assertTrue(newOne.isNull(0)),
         () -> assertAll("zeroDataShouldMatch",
-            () -> assertEquals(newOne.getZeroData(1).getType(), ZeroDataType.BOOLEAN),
-            () -> assertFalse((boolean) newOne.getZeroData(1).getElement())
+            () -> assertEquals(newOne.getZeroElement(1).getType(), ZeroType.BOOLEAN),
+            () -> assertFalse((boolean) newOne.getZeroElement(1).getData())
         ),
         () -> assertEquals(newOne.getString(2), "test")
     );
@@ -147,11 +144,11 @@ class ZeroDataUtilityTest {
   @Test
   @DisplayName("Allow adding and fetching arrays of primitive data to/from ZeroArray")
   void collectionDataInArrayShouldMatch() {
-    var origin = ZeroArrayImpl.newInstance();
+    var origin = ZeroUtility.newZeroArray();
     origin.addBooleanArray(booleans).addShortArray(shorts).addIntegerArray(integers)
         .addLongArray(longs).addFloatArray(floats).addDoubleArray(doubles).addStringArray(strings);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToArray(binary);
+    var newOne = ZeroUtility.binaryToArray(binary);
 
     assertAll("collectionDataInArrayShouldMatch",
         () -> assertEquals(newOne.getBooleanArray(0).toString(), booleans.toString()),
@@ -167,11 +164,11 @@ class ZeroDataUtilityTest {
   @Test
   @DisplayName("Allow adding and fetching duplicated data to/from ZeroArray")
   void duplicatedValueInArrayShouldWork() {
-    var origin = ZeroArrayImpl.newInstance();
+    var origin = ZeroUtility.newZeroArray();
     origin.addBooleanArray(booleans).addShortArray(shorts).addBooleanArray(booleans)
         .addShortArray(shorts);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToArray(binary);
+    var newOne = ZeroUtility.binaryToArray(binary);
 
     assertAll("duplicatedValueInArrayShouldWork",
         () -> assertEquals(newOne.getBooleanArray(0).toString(), booleans.toString()),
@@ -182,34 +179,34 @@ class ZeroDataUtilityTest {
   }
 
   @Test
-  @DisplayName("Allow adding and fetching ZeroObject data to/from ZeroArray")
-  void zeroObjectInArrayShouldMatch() {
-    var origin = ZeroArrayImpl.newInstance();
-    var zeroObject = ZeroObjectImpl.newInstance();
-    zeroObject.putBoolean("b", true)
+  @DisplayName("Allow adding and fetching ZeroMap data to/from ZeroArray")
+  void zeroMapInArrayShouldMatch() {
+    var origin = ZeroUtility.newZeroArray();
+    var zeroMap = ZeroUtility.newZeroMap();
+    zeroMap.putBoolean("b", true)
         .putShort("s", (short) 10)
         .putInteger("i", 100)
         .putShortArray("sa", shorts);
-    origin.addZeroObject(zeroObject);
+    origin.addZeroMap(zeroMap);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToArray(binary);
+    var newOne = ZeroUtility.binaryToArray(binary);
 
-    assertEquals(zeroObject.toString(), newOne.getZeroObject(0).toString());
+    assertEquals(zeroMap.toString(), newOne.getZeroMap(0).toString());
   }
 
   @Test
-  @DisplayName("Allow adding and fetching primitive data to/from ZeroObject")
-  void primitiveDataInObjectShouldMatch() {
-    var origin = ZeroObjectImpl.newInstance();
+  @DisplayName("Allow adding and fetching primitive data to/from ZeroMap")
+  void primitiveDataInMapShouldMatch() {
+    var origin = ZeroUtility.newZeroMap();
     origin.putBoolean("b", true)
         .putShort("s", (short) 11)
         .putInteger("i", 1000)
         .putFloat("f", 101.1f)
         .putLong("l", 1000L)
         .putDouble("d", 1010101.101)
-        .putZeroArray("za", ZeroArrayImpl.newInstance().addDoubleArray(doubles));
+        .putZeroArray("za", ZeroUtility.newZeroArray().addDoubleArray(doubles));
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToObject(binary);
+    var newOne = ZeroUtility.binaryToMap(binary);
 
     assertAll("primitiveDataInObjectShouldMatch",
         () -> assertTrue(newOne.getBoolean("b")),
@@ -222,29 +219,29 @@ class ZeroDataUtilityTest {
   }
 
   @Test
-  @DisplayName("Allow adding and fetching nested ZeroObject data to/from ZeroObject")
-  void instanceDataInObjectShouldMatch() {
-    var origin = ZeroObjectImpl.newInstance();
+  @DisplayName("Allow adding and fetching nested ZeroMap data to/from ZeroMap")
+  void instanceDataInMapShouldMatch() {
+    var origin = ZeroUtility.newZeroMap();
     origin.putNull("n")
-        .putZeroData("z", ZeroData.newInstance(ZeroDataType.BOOLEAN, false))
+        .putZeroElement("z", ZeroUtility.newZeroElement(ZeroType.BOOLEAN, false))
         .putString("s", "test");
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToObject(binary);
+    var newOne = ZeroUtility.binaryToMap(binary);
 
     assertAll("instanceDataInObjectShouldMatch",
         () -> assertTrue(newOne.isNull("n")),
         () -> assertAll("zeroDataShouldMatch",
-            () -> assertEquals(newOne.getZeroData("z").getType(), ZeroDataType.BOOLEAN),
-            () -> assertFalse((boolean) newOne.getZeroData("z").getElement())
+            () -> assertEquals(newOne.getZeroElement("z").getType(), ZeroType.BOOLEAN),
+            () -> assertFalse((boolean) newOne.getZeroElement("z").getData())
         ),
         () -> assertEquals(newOne.getString("s"), "test")
     );
   }
 
   @Test
-  @DisplayName("Allow adding and fetching arrays of primitive data to/from ZeroObject")
-  void collectionDataInObjectShouldMatch() {
-    var origin = ZeroObjectImpl.newInstance();
+  @DisplayName("Allow adding and fetching arrays of primitive data to/from ZeroMap")
+  void collectionDataInMapShouldMatch() {
+    var origin = ZeroUtility.newZeroMap();
     origin.putBooleanArray("b", booleans)
         .putShortArray("s", shorts)
         .putIntegerArray("i", integers)
@@ -253,7 +250,7 @@ class ZeroDataUtilityTest {
         .putDoubleArray("d", doubles)
         .putStringArray("ss", strings);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToObject(binary);
+    var newOne = ZeroUtility.binaryToMap(binary);
 
     assertAll("collectionDataInObjectShouldMatch",
         () -> assertEquals(newOne.getBooleanArray("b").toString(), booleans.toString()),
@@ -267,13 +264,13 @@ class ZeroDataUtilityTest {
   }
 
   @Test
-  @DisplayName("Allow adding and fetching duplicated arrays of primitive data to/from ZeroObject")
-  void duplicatedValueInObjectShouldWork() {
-    var origin = ZeroObjectImpl.newInstance();
+  @DisplayName("Allow adding and fetching duplicated arrays of primitive data to/from ZeroMap")
+  void duplicatedValueInMapShouldWork() {
+    var origin = ZeroUtility.newZeroMap();
     origin.putBooleanArray("b1", booleans).putShortArray("s1", shorts)
         .putBooleanArray("b2", booleans).putShortArray("s2", shorts);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToObject(binary);
+    var newOne = ZeroUtility.binaryToMap(binary);
 
     assertAll("duplicatedValueInObjectShouldWork",
         () -> assertEquals(newOne.getBooleanArray("b1").toString(), booleans.toString()),
@@ -284,19 +281,19 @@ class ZeroDataUtilityTest {
   }
 
   @Test
-  @DisplayName("Allow adding and fetching nested ZeroObject data to/from ZeroObject")
-  void zeroObjectInObjectShouldMatch() {
-    var origin = ZeroObjectImpl.newInstance();
-    var zeroObject = ZeroObjectImpl.newInstance();
-    zeroObject.putBoolean("b", true)
+  @DisplayName("Allow adding and fetching nested ZeroMap data to/from ZeroMap")
+  void zeroMapInMapShouldMatch() {
+    var origin = ZeroUtility.newZeroMap();
+    var zeroMap = ZeroUtility.newZeroMap();
+    zeroMap.putBoolean("b", true)
         .putShort("s", (short) 10)
         .putInteger("i", 100)
         .putBooleanArray("ba", booleans)
-        .putZeroArray("za", ZeroArrayImpl.newInstance().addDoubleArray(doubles));
-    origin.putZeroObject("z", zeroObject);
+        .putZeroArray("za", ZeroUtility.newZeroArray().addDoubleArray(doubles));
+    origin.putZeroMap("z", zeroMap);
     var binary = origin.toBinary();
-    var newOne = ZeroDataSerializerUtility.binaryToObject(binary);
+    var newOne = ZeroUtility.binaryToMap(binary);
 
-    assertEquals(zeroObject.toString(), newOne.getZeroObject("z").toString());
+    assertEquals(zeroMap.toString(), newOne.getZeroMap("z").toString());
   }
 }
