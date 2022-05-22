@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="109" failures="0" name="com.tenio.common.TenIOCommonTest" time="1.682" errors="0" skipped="7">
+  <properties>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="java.vm.version" value="17+0"/>
+    <property name="sun.boot.library.path" value="/usr/local/Cellar/openjdk/17/libexec/openjdk.jdk/Contents/Home/lib"/>
+    <property name="maven.multiModuleProjectDirectory" value="/Users/kong/Documents/GitHub/tenio-common"/>
+    <property name="java.vm.vendor" value="Homebrew"/>
+    <property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="user.country" value="VN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/kong/Documents/GitHub/tenio-common"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="java.runtime.version" value="17+0"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.io.tmpdir" value="/var/folders/tc/3kb7n3d15j3bgrm2lmlbnkj40000gn/T/"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="classworlds.conf" value="/usr/local/Cellar/maven/3.8.3/libexec/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/kong/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="maven.conf" value="/usr/local/Cellar/maven/3.8.3/libexec/conf"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="61.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="12.3.1"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.8.3/libexec/lib/jansi-native"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/kong"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="17"/>
+    <property name="user.name" value="kong"/>
+    <property name="java.class.path" value="/usr/local/Cellar/maven/3.8.3/libexec/boot/plexus-classworlds-2.6.0.jar"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean deploy"/>
+    <property name="java.home" value="/usr/local/Cellar/openjdk/17/libexec/openjdk.jdk/Contents/Home"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="17"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.vendor" value="Homebrew"/>
+    <property name="sun.stderr.encoding" value="UTF-8"/>
+    <property name="maven.home" value="/usr/local/Cellar/maven/3.8.3/libexec"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.version.date" value="2021-09-14"/>
+    <property name="java.vendor.url.bug" value="https://github.com/Homebrew/homebrew-core/issues"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="java.vendor.version" value="Homebrew"/>
+    <property name="sun.stdout.encoding" value="UTF-8"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+  </properties>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should throw an exception because there are more than 2 classes implement same interface without @AutowiredQualifier declaration" time="0.166"/>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should throw an exception because there is no class implement declared interface" time="0.012"/>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should retrieve an instance of bean class - a class declared by @Bean and @Configuration annotations" time="0.019"/>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should retrieve an instance of alone - a class with @Component and without implementing any interface" time="0.01"/>
+  <testcase classname="Unit Test Cases For Injector" name="Attempt fetching null bean should return null" time="0.012">
+    <skipped/>
+  </testcase>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should retrieve an instance of A" time="0.01"/>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should retrieve an instance of C because of using @AutowiredQualifier in BootstrapComponent class" time="0.008"/>
+  <testcase classname="Unit Test Cases For Injector" name="After scanning the package should not retrieve an instance of B (null)" time="0.008"/>
+  <testcase classname="Unit Test Cases For Class Loader" name="To be able to scan a package of a jar file and return a list of classes inside it" time="0.003"/>
+  <testcase classname="Unit Test Cases For Class Loader" name="Attempt to recall the private constructor in order to create an instance should throw an exception" time="0.003">
+    <skipped/>
+  </testcase>
+  <testcase classname="Unit Test Cases For Class Loader" name="Scanning a non-existed package should return an empty list of classes" time="0.001"/>
+  <testcase classname="Unit Test Cases For Class Loader" name="Try to procedure throwable exception cases" time="0.001">
+    <skipped/>
+  </testcase>
+  <testcase classname="Unit Test Cases For Class Loader" name="Scanning a package should return a list of classes inside it" time="0.002"/>
+  <testcase classname="Unit Test Cases For Configuration" name="It should retrieve all imported data" time="0.528"/>
+  <testcase classname="Unit Test Cases For Configuration" name="To be able to clear all configuration data" time="0"/>
+  <testcase classname="Unit Test Cases For Configuration" name="Not imported data could not be fetched" time="0.002"/>
+  <testcase classname="Unit Test Cases For Zero Data" name="Creating a new instance should work" time="0.005"/>
+  <testcase classname="Unit Test Cases For Common Array" name="An exception should be thrown when a readonly array is tried to modify" time="0.001"/>
+  <testcase classname="Unit Test Cases For Common Array" name="Allow fetching all inserted data from the array" time="0.002"/>
+  <testcase classname="Test All Enumerated Values" name="[1] NULL, 0" time="0.023"/>
+  <testcase classname="Test All Enumerated Values" name="[2] BOOLEAN, 1" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[3] BYTE, 2" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[4] SHORT, 3" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[5] INTEGER, 4" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[6] LONG, 5" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[7] FLOAT, 6" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[8] DOUBLE, 7" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[9] STRING, 8" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[10] BOOLEAN_ARRAY, 9" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[11] BYTE_ARRAY, 10" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[12] SHORT_ARRAY, 11" time="0"/>
+  <testcase classname="Test All Enumerated Values" name="[13] INTEGER_ARRAY, 12" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[14] LONG_ARRAY, 13" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[15] FLOAT_ARRAY, 14" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[16] DOUBLE_ARRAY, 15" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[17] STRING_ARRAY, 16" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[18] ZERO_ARRAY, 17" time="0.001"/>
+  <testcase classname="Test All Enumerated Values" name="[19] ZERO_MAP, 18" time="0"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching nested ZeroArray data to/from ZeroArray" time="0.004"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching duplicated data to/from ZeroArray" time="0.001"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching nested ZeroMap data to/from ZeroMap" time="0.002"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching duplicated arrays of primitive data to/from ZeroMap" time="0.001"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching arrays of primitive data to/from ZeroArray" time="0.002"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching arrays of primitive data to/from ZeroMap" time="0.001"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching primitive data to/from ZeroArray" time="0.001"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching ZeroMap data to/from ZeroArray" time="0.001"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching primitive data to/from ZeroMap" time="0.002"/>
+  <testcase classname="Unit Test Cases For Zero Utility" name="Allow adding and fetching nested ZeroMap data to/from ZeroMap" time="0.001"/>
+  <testcase classname="Unit Test Cases For Common Map" name="An exception should be thrown when a readonly map is tried to modify" time="0.001"/>
+  <testcase classname="Unit Test Cases For Common Map" name="Allow checking existed data" time="0.001"/>
+  <testcase classname="Unit Test Cases For Common Map" name="Allow fetching all inserted data" time="0.002"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="Taking builder from pool should decrease the pool size as expected" time="0"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="Attempt to repay an invalid builder instance should throw an exception" time="0"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="To be able to get a builder instance from pool" time="0"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="Clear the pool should free all slots and reset the pool size" time="0.001"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="When retrieving the instances reaches threshold, it automatically expands the pool size" time="0"/>
+  <testcase classname="Unit Test Cases For String Builder Pool" name="After retrieving a builder, allow to pay it back to the pool" time="0"/>
+  <testcase classname="Unit Test Cases For Task Manager" name="Allow creating a new task" time="0.006"/>
+  <testcase classname="Unit Test Cases For Task Manager" name="Allow killing a task" time="0.001"/>
+  <testcase classname="Unit Test Cases For Task Manager" name="Starting a running task should not throw any exception" time="0.001"/>
+  <testcase classname="Unit Test Cases For Byte Utility" name="testBytesToShort()" time="0.001"/>
+  <testcase classname="[1] 1695609641, 101, 16, -13, 41(testIntToBytes(int, String[]))" name="[1] 1695609641, 101, 16, -13, 41(testIntToBytes" time="0.001"/>
+  <testcase classname="[2] 66320, 0, 1, 3, 16(testIntToBytes(int, String[]))" name="[2] 66320, 0, 1, 3, 16(testIntToBytes" time="0"/>
+  <testcase classname="Unit Test Cases For Byte Utility" name="testResizeBytesArray()" time="0"/>
+  <testcase classname="Unit Test Cases For Byte Utility" name="testBytesToInt()" time="0"/>
+  <testcase classname="Unit Test Cases For Byte Utility" name="testShortToBytes()" time="0"/>
+  <testcase classname="Unit Test Cases For Byte Utility" name="testResizeBytesArray2()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandGaussian()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testClamp()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testIsNaN()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandInRange()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandInRange2()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandInRange3()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandInRange4()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testDegreeToRadian()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandFloat()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandomClamped()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandInt()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandBool()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandInt2()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandInt3()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandInt4()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testClamp2()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testClamp3()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testClamp4()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testSetSeed()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testIsEqual()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandGaussian2()" time="0.001"/>
+  <testcase classname="MathUtilityTest" name="testRandGaussian3()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandGaussian4()" time="0"/>
+  <testcase classname="MathUtilityTest" name="testRandGaussian5()" time="0"/>
+  <testcase classname="XmlUtilityTest" name="testGetAttrVal()" time="0.001"/>
+  <testcase classname="XmlUtilityTest" name="testGetNodeValue()" time="0.769"/>
+  <testcase classname="Unit Test Cases For OS Utility" name="Fetch operation system type should return MAC" time="0.002"/>
+  <testcase classname="Unit Test Cases For OS Utility" name="Fetch operation system type should return WINDOWS" time="0.003">
+    <skipped/>
+  </testcase>
+  <testcase classname="Unit Test Cases For OS Utility" name="Fetch operation system type should return LINUX" time="0.004">
+    <skipped/>
+  </testcase>
+  <testcase classname="Unit Test Cases For OS Utility" name="Fetch operation system type should return OTHER" time="0.004">
+    <skipped/>
+  </testcase>
+  <testcase classname="WorkerPoolRunnableTest" name="testConstructor()" time="0.001"/>
+  <testcase classname="WorkerPoolTest" name="testExecute()" time="0.014"/>
+  <testcase classname="WorkerPoolTest" name="testExecute2()" time="0.001"/>
+  <testcase classname="WorkerPoolTest" name="testStop()" time="0.001">
+    <skipped/>
+  </testcase>
+  <testcase classname="WorkerPoolTest" name="testWaitUntilAllTasksFinished()" time="0.001"/>
+  <testcase classname="WorkerPoolTest" name="testConstructor2()" time="0"/>
+  <testcase classname="WorkerPoolTest" name="testConstructor3()" time="0.012"/>
+  <testcase classname="WorkerPoolTest" name="testWaitUntilAllTasksFinished2()" time="0"/>
+  <testcase classname="WorkerPoolTest" name="testWaitUntilAllTasksFinished3()" time="0.001"/>
+  <testcase classname="WorkerPoolTest" name="testWaitUntilAllTasksFinished4()" time="0.001"/>
+  <testcase classname="WorkerPoolTest" name="testConstructor()" time="0.001"/>
+  <testcase classname="JUnit Platform Suite" name="JUnit Platform Suite" time="0.001"/>
+</testsuite>
