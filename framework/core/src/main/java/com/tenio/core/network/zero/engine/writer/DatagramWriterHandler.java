@@ -44,55 +44,59 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
   @Override
   public void send(PacketQueue packetQueue, Session session, Packet packet) {
-    // retrieve the datagram channel instance from session
-    var datagramChannel = session.getDatagramChannel();
-
-    // the InetSocketAddress should be saved when the datagram channel receive first
-    // messages from the client
-    var remoteSocketAddress = session.getDatagramRemoteSocketAddress();
-
-    // the datagram need to be declared first, something went wrong here, need to
-    // log the exception content
-    if (Objects.isNull(datagramChannel)) {
-      debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
-          ", no DatagramChannel was set");
-      return;
-    } else if (Objects.isNull(remoteSocketAddress)) {
-      debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
-          ", no InetSocketAddress was set");
-      return;
-    }
-
-    // clear the buffer first
-    getBuffer().clear();
-
     // the datagram channel will send data by packet, so no fragment using here
     byte[] sendingData = packet.getData();
 
-    // buffer size is not enough, need to be allocated more bytes
-    if (getBuffer().capacity() < sendingData.length) {
-      debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
-          sendingData.length, " bytes");
-      allocateBuffer(sendingData.length);
-    }
+    if (session.containsKcp()) {
+      session.getUkcp().send(sendingData);
+    } else {
+      // retrieve the datagram channel instance from session
+      var datagramChannel = session.getDatagramChannel();
 
-    // put data to buffer
-    getBuffer().put(sendingData);
+      // the InetSocketAddress should be saved when the datagram channel receive first
+      // messages from the client
+      var remoteSocketAddress = session.getDatagramRemoteSocketAddress();
 
-    // ready to send
-    getBuffer().flip();
+      // the datagram need to be declared first, something went wrong here, need to
+      // log the exception content
+      if (Objects.isNull(datagramChannel)) {
+        debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
+            ", no DatagramChannel was set");
+        return;
+      } else if (Objects.isNull(remoteSocketAddress)) {
+        debug("DATAGRAM CHANNEL SEND", "UDP Packet cannot be sent to ", session.toString(),
+            ", no InetSocketAddress was set");
+        return;
+      }
 
-    // send data to the client
-    try {
-      int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
-      // update statistic data
-      getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
-      getNetworkWriterStatistic().updateWrittenPackets(1);
+      // clear the buffer first
+      getBuffer().clear();
 
-      // update statistic data for session
-      session.addWrittenBytes(writtenBytes);
-    } catch (IOException e) {
-      error(e, "Error occurred in writing on session: ", session.toString());
+      // send data to the client
+      try {
+        // buffer size is not enough, need to be allocated more bytes
+        if (getBuffer().capacity() < sendingData.length) {
+          debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
+              sendingData.length, " bytes");
+          allocateBuffer(sendingData.length);
+        }
+
+        // put data to buffer
+        getBuffer().put(sendingData);
+
+        // ready to send
+        getBuffer().flip();
+
+        int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
+        // update statistic data
+        getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
+        getNetworkWriterStatistic().updateWrittenPackets(1);
+
+        // update statistic data for session
+        session.addWrittenBytes(writtenBytes);
+      } catch (IOException e) {
+        error(e, "Error occurred in writing on session: ", session.toString());
+      }
     }
 
     // it is always safe to remove the packet from queue hence it should be sent

@@ -28,10 +28,12 @@ import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.exception.EmptyUdpChannelsException;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
+import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.PendingPacket;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
@@ -63,6 +65,7 @@ public final class SessionImpl implements Session {
   private SocketChannel socketChannel;
   private SelectionKey selectionKey;
   private DatagramChannel datagramChannel;
+  private Ukcp ukcp;
   private Channel webSocketChannel;
 
   private TransportType transportType;
@@ -93,6 +96,8 @@ public final class SessionImpl implements Session {
   private volatile boolean activated;
   private volatile boolean connected;
   private volatile boolean hasUdp;
+  private volatile boolean enabledKcp;
+  private volatile boolean hasKcp;
 
   private SessionImpl() {
     id = ID_COUNTER.getAndIncrement();
@@ -108,6 +113,8 @@ public final class SessionImpl implements Session {
     activated = false;
     connected = false;
     hasUdp = false;
+    enabledKcp = false;
+    hasKcp = false;
 
     setCreatedTime(now());
     setLastReadTime(now());
@@ -170,6 +177,24 @@ public final class SessionImpl implements Session {
   @Override
   public boolean containsUdp() {
     return hasUdp;
+  }
+
+  @Override
+  public boolean isEnabledKcp() {
+    if (!containsUdp()) {
+      throw new EmptyUdpChannelsException();
+    }
+    return enabledKcp;
+  }
+
+  @Override
+  public void setEnabledKcp(boolean enabledKcp) {
+    this.enabledKcp = enabledKcp;
+  }
+
+  @Override
+  public boolean containsKcp() {
+    return hasKcp;
   }
 
   @Override
@@ -263,6 +288,17 @@ public final class SessionImpl implements Session {
       datagramRemoteSocketAddress = remoteAddress;
       hasUdp = true;
     }
+  }
+
+  @Override
+  public Ukcp getUkcp() {
+    return ukcp;
+  }
+
+  @Override
+  public void setUkcp(Ukcp ukcp) {
+    this.ukcp = ukcp;
+    hasKcp = Objects.nonNull(this.ukcp);
   }
 
   @Override
@@ -472,6 +508,11 @@ public final class SessionImpl implements Session {
         connectionDisconnectMode,
         playerDisconnectMode);
 
+    if (hasKcp) {
+      ukcp.getKcpIoHandler().channelInactiveIn(this);
+      setUkcp(null);
+    }
+
     switch (transportType) {
       case TCP:
         if (Objects.nonNull(socketChannel)) {
@@ -533,7 +574,8 @@ public final class SessionImpl implements Session {
   @Override
   public String toString() {
     return String.format(
-        "{ id: %d, name: %s, transportType: %s, active: %b, connected: %b, hasUdp: %b }", id,
-        Objects.nonNull(name) ? name : "null", transportType.toString(), activated, connected, hasUdp);
+        "{ id: %d, name: %s, transportType: %s, active: %b, connected: %b, hasUdp: %b, hasKcp: %b" +
+            " }", id, Objects.nonNull(name) ? name : "null", transportType.toString(), activated,
+        connected, hasUdp, hasKcp);
   }
 }

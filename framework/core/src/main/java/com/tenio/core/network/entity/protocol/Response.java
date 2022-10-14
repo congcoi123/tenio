@@ -171,10 +171,7 @@ public interface Response {
   /**
    * Writes down the content data to sessions for sending to client sides.
    *
-   * @param delayInSeconds allows delaying in the number of seconds
-   * @throws UnsupportedOperationException unsupported operation at the moment
+   * @param delayInMilliseconds allows delaying in the number of milliseconds
    */
-  default void writeInDelay(int delayInSeconds) {
-    throw new UnsupportedOperationException();
-  }
+  void writeInDelay(long delayInMilliseconds);
 }

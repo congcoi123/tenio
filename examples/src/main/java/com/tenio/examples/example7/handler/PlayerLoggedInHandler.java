@@ -28,12 +28,12 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventPlayerLoggedinResult;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.example7.constant.Example7Constant;
 
 @Component
-public final class PlayerLoggedInHandler extends AbstractExtension
+public final class PlayerLoggedInHandler extends AbstractHandler
     implements EventPlayerLoggedinResult {
 
   @Override

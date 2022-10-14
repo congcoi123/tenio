@@ -28,13 +28,13 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
-public final class ConnectionEstablishedHandler extends AbstractExtension
+public final class ConnectionEstablishedHandler extends AbstractHandler
     implements EventConnectionEstablishedResult {
 
   @Override

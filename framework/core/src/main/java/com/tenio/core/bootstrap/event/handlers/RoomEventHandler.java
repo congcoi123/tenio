@@ -37,13 +37,13 @@ import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
-import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
-import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
-import com.tenio.core.extension.events.EventRoomCreatedResult;
-import com.tenio.core.extension.events.EventRoomWillBeRemoved;
-import com.tenio.core.extension.events.EventSwitchParticipantToSpectatorResult;
-import com.tenio.core.extension.events.EventSwitchSpectatorToParticipantResult;
+import com.tenio.core.handler.event.EventPlayerAfterLeftRoom;
+import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
+import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
+import com.tenio.core.handler.event.EventRoomCreatedResult;
+import com.tenio.core.handler.event.EventRoomWillBeRemoved;
+import com.tenio.core.handler.event.EventSwitchParticipantToSpectatorResult;
+import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
 import java.util.Optional;
 
 /**

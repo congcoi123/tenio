@@ -222,8 +222,23 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
+  public void setSocketAcceptorServerAddress(String serverAddress) {
+    socketService.setAcceptorServerAddress(serverAddress);
+  }
+
+  @Override
+  public void setSocketAcceptorAmountUdpWorkers(int amountUdpWorkers) {
+    socketService.setAcceptorAmountUdpWorkers(amountUdpWorkers);
+  }
+
+  @Override
   public void setSocketAcceptorWorkers(int workerSize) {
     socketService.setAcceptorWorkerSize(workerSize);
+  }
+
+  @Override
+  public void setSocketAcceptorEnabledKcp(boolean enabledKcp) {
+    socketService.setAcceptorEnabledKcp(enabledKcp);
   }
 
   @Override
@@ -266,6 +281,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
   }
 
+  @Override
+  public void setSessionEnabledKcp(boolean enabledKcp) {
+    sessionManager.setEnabledKcp(enabledKcp);
+  }
+
   private boolean containsSocketPort(List<SocketConfig> socketConfigs) {
     return socketConfigs.stream()
         .anyMatch(socketConfig -> socketConfig.getType() == TransportType.TCP
@@ -298,6 +318,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   @Override
   public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
     socketService.setPacketDecoder(packetDecoder);
+  }
+
+  @Override
+  public SessionManager getSessionManager() {
+    return sessionManager;
   }
 
   @Override

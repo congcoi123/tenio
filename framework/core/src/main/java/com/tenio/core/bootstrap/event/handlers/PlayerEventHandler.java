@@ -33,12 +33,12 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.extension.events.EventDisconnectPlayer;
-import com.tenio.core.extension.events.EventPlayerLoggedinResult;
-import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
-import com.tenio.core.extension.events.EventPlayerReconnectedResult;
-import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.extension.events.EventSendMessageToPlayer;
+import com.tenio.core.handler.event.EventDisconnectPlayer;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
+import com.tenio.core.handler.event.EventPlayerReconnectedResult;
+import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.event.EventSendMessageToPlayer;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Optional;
 

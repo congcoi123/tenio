@@ -11,3 +11,11 @@
 
 ## 0.2.0 2022-04-20 Feature release
 - Updated the framework dependencies  
+
+### 0.3.0 2022-10-14 Feature release
+- Supported multiple UDP channels
+- Allowed fetching available UDP channel by using round-robin mechanism
+- Refactoring: renamed package "extension" to "handler"
+- Allowed declaring the server address in configuration file
+- Supported KCP transportation
+- Bugs fixed

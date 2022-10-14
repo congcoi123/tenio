@@ -49,10 +49,6 @@ public final class CoreConstant {
    */
   public static final String PING_PATH = "/ping";
   /**
-   * The server local host.
-   */
-  public static final String LOCAL_HOST = "localhost";
-  /**
    * The server's default configuration file name.
    */
   public static final String DEFAULT_CONFIGURATION_FILE = "configuration.xml";

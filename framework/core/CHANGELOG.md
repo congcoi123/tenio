@@ -16,3 +16,11 @@
 - Optimization
 - Refactoring the project's structure
 - Bugs fixed  
+
+## 0.3.0 2022-10-13 Feature release
+- Supported multiple UDP channels
+- Allowed fetching available UDP channel by using round-robin mechanism
+- Refactoring: renamed package "extension" to "handler"
+- Allowed declaring the server address in configuration file
+- Supported KCP transportation
+- Bugs fixed

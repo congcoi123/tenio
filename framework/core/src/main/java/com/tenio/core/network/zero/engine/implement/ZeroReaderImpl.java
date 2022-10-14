@@ -118,10 +118,8 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
               readUpdData(datagramChannel, selectionKey, readerBuffer);
             }
           }
-
         }
       }
-
     } catch (ClosedSelectorException e1) {
       error(e1, "Selector is closed: ", e1.getMessage());
     } catch (CancelledKeyException e2) {
@@ -241,7 +239,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
         getDatagramIoHandler().channelRead(datagramChannel, remoteAddress, binary);
       } else {
         session.addReadBytes(byteCount);
-        getDatagramIoHandler().sessionRead(session, binary);
+        if (session.containsKcp()) {
+          session.getUkcp().input(binary);
+        } else {
+          getDatagramIoHandler().sessionRead(session, binary);
+        }
       }
     }
 

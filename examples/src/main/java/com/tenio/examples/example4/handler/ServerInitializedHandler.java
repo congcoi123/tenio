@@ -27,8 +27,8 @@ package com.tenio.examples.example4.handler;
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventServerInitialization;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventServerInitialization;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.entity.Vehicle;
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public final class ServerInitializedHandler extends AbstractExtension
+public final class ServerInitializedHandler extends AbstractHandler
     implements EventServerInitialization {
 
   @AutowiredAcceptNull

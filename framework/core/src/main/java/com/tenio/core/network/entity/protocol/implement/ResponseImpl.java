@@ -32,6 +32,7 @@ import com.tenio.core.server.ServerImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The implementation for response.
@@ -171,6 +172,21 @@ public final class ResponseImpl implements Response {
 
     construct();
     ServerImpl.getInstance().write(this);
+  }
+
+  @Override
+  public void writeInDelay(long delayInMilliseconds) {
+    if (Objects.isNull(players) || players.isEmpty()) {
+      return;
+    }
+
+    construct();
+    try {
+      TimeUnit.MILLISECONDS.sleep(delayInMilliseconds);
+      ServerImpl.getInstance().write(this);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   private void construct() {
