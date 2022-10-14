@@ -42,6 +42,20 @@ import java.util.List;
 public interface ZeroSocketService extends Service {
 
   /**
+   * Declares the server IP address.
+   *
+   * @param serverAddress the {@link String} value of server IP address
+   */
+  void setAcceptorServerAddress(String serverAddress);
+
+  /**
+   * Declares the number of Udp channel will be opened on the server.
+   *
+   * @param amountUdpWorkers the number of opening Udp channels
+   */
+  void setAcceptorAmountUdpWorkers(int amountUdpWorkers);
+
+  /**
    * Sets size of {@link ByteBuffer} using for an acceptor worker to read/write binaries data
    * from/down.
    *
@@ -57,6 +71,13 @@ public interface ZeroSocketService extends Service {
    * @param workerSize the number of acceptor workers for the socket ({@code integer} value)
    */
   void setAcceptorWorkerSize(int workerSize);
+
+  /**
+   * Determines if UDP channels can use KCP transportation for communication.
+   *
+   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
+   */
+  void setAcceptorEnabledKcp(boolean enabledKcp);
 
   /**
    * Sets size of {@link ByteBuffer} using for a reader worker to read/write binaries data

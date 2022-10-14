@@ -61,7 +61,7 @@ public final class Bootstrapper extends SystemLogger {
    *
    * @param entryClass a {@link Class} in the root package
    * @param packages   the scanning {@link String} package names
-   * @return {@code true} if successful, otherwise {@code false}>
+   * @return {@code true} if successful, otherwise {@code false}
    * @throws Exception when any exceptions occurred
    */
   public boolean run(Class<?> entryClass, String... packages) throws Exception {

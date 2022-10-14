@@ -115,6 +115,7 @@ public interface RoomManager extends Manager {
    * Retrieves a read-only room management list by searching with the room's name. This method
    * should be used to prevent the "escape references" issue.
    *
+   * @param roomName the room's name that is in inquiring
    * @return a list of all {@link Room}s sharing the same name in the management list
    * @see List
    */

@@ -266,6 +266,11 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
     getRoomManager().removeRoomById(room.getId());
   }
 
+  @Override
+  public int getCurrentAvailableUdpPort() {
+    return server.getUdpChannelManager().getCurrentAvailableUdpPort();
+  }
+
   private EventManager getEventManager() {
     return server.getEventManager();
   }

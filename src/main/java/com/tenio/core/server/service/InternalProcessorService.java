@@ -26,6 +26,8 @@ package com.tenio.core.server.service;
 
 import com.tenio.core.controller.Controller;
 import com.tenio.core.entity.manager.PlayerManager;
+import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.statistic.NetworkWriterStatistic;
 
 /**
  * The internal processor service, the heart of the server.
@@ -56,9 +58,32 @@ public interface InternalProcessorService extends Controller {
   void setKeepPlayerOnDisconnection(boolean keepPlayerOnDisconnection);
 
   /**
+   * Determines if UDP channels can use KCP transportation for communication.
+   *
+   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
+   */
+  void setEnabledKcp(boolean enabledKcp);
+
+  /**
    * Sets a player manager for the server which is used to manage all players.
    *
    * @param playerManager an instance of {@link PlayerManager}
    */
   void setPlayerManager(PlayerManager playerManager);
+
+  /**
+   * Sets a network reader statistic instance which takes responsibility recording the
+   * receiving data from clients.
+   *
+   * @param networkReaderStatistic a {@link NetworkReaderStatistic} instance
+   */
+  void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
+
+  /**
+   * Sets a network writer statistic instance which takes responsibility recording the
+   * sending data from the network.
+   *
+   * @param networkWriterStatistic a {@link NetworkWriterStatistic} instance
+   */
+  void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 }

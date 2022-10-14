@@ -31,6 +31,7 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.zero.engine.manager.UdpChannelManager;
 import io.netty.bootstrap.Bootstrap;
 
 /**
@@ -83,6 +84,13 @@ public interface Server {
    * @return an instance of {@link RoomManager}
    */
   RoomManager getRoomManager();
+
+  /**
+   * Retrieves an Udp channel manager object which allows managing Udp related information.
+   *
+   * @return an instance of {@link UdpChannelManager}
+   */
+  UdpChannelManager getUdpChannelManager();
 
   /**
    * Writes down data to socket/channel to send them to client sides.

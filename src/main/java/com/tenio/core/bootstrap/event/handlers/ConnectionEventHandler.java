@@ -33,11 +33,11 @@ import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.result.AttachedConnectionResult;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
-import com.tenio.core.extension.events.EventAttachedConnectionResult;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.extension.events.EventDisconnectConnection;
-import com.tenio.core.extension.events.EventWriteMessageToConnection;
+import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
+import com.tenio.core.handler.event.EventAttachedConnectionResult;
+import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.handler.event.EventDisconnectConnection;
+import com.tenio.core.handler.event.EventWriteMessageToConnection;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Optional;
@@ -114,9 +114,10 @@ public final class ConnectionEventHandler {
     eventAttachedConnectionResultOp.ifPresent(
         event -> eventManager.on(ServerEvent.ATTACHED_CONNECTION_RESULT, params -> {
           var player = (Optional<Player>) params[0];
-          var result = (AttachedConnectionResult) params[1];
+          var kcpConv = (int) params[1];
+          var result = (AttachedConnectionResult) params[2];
 
-          event.handle(player, result);
+          event.handle(player, kcpConv, result);
 
           return null;
         }));

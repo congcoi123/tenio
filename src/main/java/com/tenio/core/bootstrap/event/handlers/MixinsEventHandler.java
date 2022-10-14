@@ -29,12 +29,12 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
-import com.tenio.core.extension.events.EventFetchedCcuInfo;
-import com.tenio.core.extension.events.EventServerException;
-import com.tenio.core.extension.events.EventServerInitialization;
-import com.tenio.core.extension.events.EventServerTeardown;
-import com.tenio.core.extension.events.EventSystemMonitoring;
+import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
+import com.tenio.core.handler.event.EventFetchedCcuInfo;
+import com.tenio.core.handler.event.EventServerException;
+import com.tenio.core.handler.event.EventServerInitialization;
+import com.tenio.core.handler.event.EventServerTeardown;
+import com.tenio.core.handler.event.EventSystemMonitoring;
 import java.util.Optional;
 
 /**

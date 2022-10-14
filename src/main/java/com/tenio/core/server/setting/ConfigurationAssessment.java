@@ -30,12 +30,12 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ConfigurationException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
-import com.tenio.core.extension.events.EventAttachedConnectionResult;
-import com.tenio.core.extension.events.EventHttpRequestHandle;
-import com.tenio.core.extension.events.EventHttpRequestValidation;
-import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
-import com.tenio.core.extension.events.EventPlayerReconnectedResult;
+import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
+import com.tenio.core.handler.event.EventAttachedConnectionResult;
+import com.tenio.core.handler.event.EventHttpRequestHandle;
+import com.tenio.core.handler.event.EventHttpRequestValidation;
+import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
+import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.define.data.HttpConfig;
 import com.tenio.core.network.define.data.SocketConfig;
@@ -110,22 +110,19 @@ public final class ConfigurationAssessment {
   @SuppressWarnings("unchecked")
   private boolean containsTcpSocketConfig() {
     var socketConfigs =
-        (List<SocketConfig>) configuration.get(CoreConfigurationType.SOCKET_CONFIGS);
+        (List<SocketConfig>) configuration.get(CoreConfigurationType.NETWORK_SOCKET_CONFIGS);
     return socketConfigs.stream()
         .anyMatch(socketConfig -> socketConfig.getType() == TransportType.TCP);
   }
 
   @SuppressWarnings("unchecked")
   private boolean containsUdpSocketConfig() {
-    var socketConfigs =
-        (List<SocketConfig>) configuration.get(CoreConfigurationType.SOCKET_CONFIGS);
-    return socketConfigs.stream()
-        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.UDP);
+    return configuration.getInt(CoreConfigurationType.WORKER_UDP_WORKER) > 0;
   }
 
   @SuppressWarnings("unchecked")
   private boolean containsHttpPathConfigs() {
-    var httpConfigs = (List<HttpConfig>) configuration.get(CoreConfigurationType.HTTP_CONFIGS);
+    var httpConfigs = (List<HttpConfig>) configuration.get(CoreConfigurationType.NETWORK_HTTP_CONFIGS);
     return !httpConfigs.isEmpty();
   }
 }

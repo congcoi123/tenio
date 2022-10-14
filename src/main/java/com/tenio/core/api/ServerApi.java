@@ -34,9 +34,8 @@ import com.tenio.core.entity.implement.RoomImpl;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
-import com.tenio.core.extension.events.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.core.network.entity.session.Session;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -242,7 +241,7 @@ public interface ServerApi {
    * @param player     the checking spectator ({@link Player} instance)
    * @param room       the current spectator's {@link Room}
    * @param targetSlot a new position ({@code integer} value) of transformed "participant" in
-   *                  its room
+   *                   its room
    * @throws UnsupportedOperationException this method is not supported at the moment
    */
   default void switchSpectatorToParticipant(Player player, Room room, int targetSlot) {
@@ -288,4 +287,12 @@ public interface ServerApi {
   default void sendPrivateMessage(Player sender, Player recipient, ServerMessage message) {
     throw new UnsupportedOperationException("Unsupported at the moment");
   }
+
+  /**
+   * Retrieves the current available UDP port.
+   *
+   * @return an {@code integer} value of UDP port
+   * @since 0.3.0
+   */
+  int getCurrentAvailableUdpPort();
 }

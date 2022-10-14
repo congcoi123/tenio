@@ -162,6 +162,16 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   }
 
   @Override
+  public void setAcceptorServerAddress(String serverAddress) {
+    acceptorEngine.setServerAddress(serverAddress);
+  }
+
+  @Override
+  public void setAcceptorAmountUdpWorkers(int amountUdpWorkers) {
+    acceptorEngine.setAmountUdpWorkers(amountUdpWorkers);
+  }
+
+  @Override
   public void setAcceptorBufferSize(int bufferSize) {
     acceptorEngine.setMaxBufferSize(bufferSize);
   }
@@ -169,6 +179,11 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   @Override
   public void setAcceptorWorkerSize(int workerSize) {
     acceptorEngine.setThreadPoolSize(workerSize);
+  }
+
+  @Override
+  public void setAcceptorEnabledKcp(boolean enabledKcp) {
+    acceptorEngine.setEnabledKcp(enabledKcp);
   }
 
   @Override
