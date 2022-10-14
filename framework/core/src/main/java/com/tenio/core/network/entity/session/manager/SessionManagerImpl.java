@@ -39,6 +39,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -61,6 +62,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private final Map<SocketAddress, Session> sessionByDatagrams;
   private PacketQueuePolicy packetQueuePolicy;
   private int packetQueueSize;
+  private boolean enabledKcp;
   private volatile int sessionCount;
 
   private SessionManagerImpl(EventManager eventManager) {
@@ -81,12 +83,20 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
+  public Iterator<Session> getSessionIterator() {
+    synchronized (this) {
+      return sessionByIds.values().iterator();
+    }
+  }
+
+  @Override
   public Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey) {
     var session = SessionImpl.newInstance();
     session.setSocketChannel(socketChannel);
     session.setSelectionKey(selectionKey);
     session.setSessionManager(this);
     session.setPacketQueue(createNewPacketQueue());
+    session.setEnabledKcp(enabledKcp);
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionBySockets.put(session.getSocketChannel(), session);
@@ -209,5 +219,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   @Override
   public int getSessionCount() {
     return sessionCount;
+  }
+
+  @Override
+  public void setEnabledKcp(boolean enabledKcp) {
+    this.enabledKcp = enabledKcp;
   }
 }

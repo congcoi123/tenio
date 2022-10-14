@@ -24,32 +24,32 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.define;
 
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
-import com.tenio.core.extension.events.EventAttachedConnectionResult;
-import com.tenio.core.extension.events.EventConnectionEstablishedResult;
-import com.tenio.core.extension.events.EventDisconnectConnection;
-import com.tenio.core.extension.events.EventDisconnectPlayer;
-import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
-import com.tenio.core.extension.events.EventFetchedCcuInfo;
-import com.tenio.core.extension.events.EventHttpRequestHandle;
-import com.tenio.core.extension.events.EventHttpRequestValidation;
-import com.tenio.core.extension.events.EventPlayerAfterLeftRoom;
-import com.tenio.core.extension.events.EventPlayerBeforeLeaveRoom;
-import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
-import com.tenio.core.extension.events.EventPlayerLoggedinResult;
-import com.tenio.core.extension.events.EventPlayerReconnectRequestHandle;
-import com.tenio.core.extension.events.EventPlayerReconnectedResult;
-import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
-import com.tenio.core.extension.events.EventRoomCreatedResult;
-import com.tenio.core.extension.events.EventRoomWillBeRemoved;
-import com.tenio.core.extension.events.EventSendMessageToPlayer;
-import com.tenio.core.extension.events.EventServerException;
-import com.tenio.core.extension.events.EventServerInitialization;
-import com.tenio.core.extension.events.EventServerTeardown;
-import com.tenio.core.extension.events.EventSwitchParticipantToSpectatorResult;
-import com.tenio.core.extension.events.EventSwitchSpectatorToParticipantResult;
-import com.tenio.core.extension.events.EventSystemMonitoring;
-import com.tenio.core.extension.events.EventWriteMessageToConnection;
+import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
+import com.tenio.core.handler.event.EventAttachedConnectionResult;
+import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.handler.event.EventDisconnectConnection;
+import com.tenio.core.handler.event.EventDisconnectPlayer;
+import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
+import com.tenio.core.handler.event.EventFetchedCcuInfo;
+import com.tenio.core.handler.event.EventHttpRequestHandle;
+import com.tenio.core.handler.event.EventHttpRequestValidation;
+import com.tenio.core.handler.event.EventPlayerAfterLeftRoom;
+import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
+import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
+import com.tenio.core.handler.event.EventPlayerReconnectedResult;
+import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.event.EventRoomCreatedResult;
+import com.tenio.core.handler.event.EventRoomWillBeRemoved;
+import com.tenio.core.handler.event.EventSendMessageToPlayer;
+import com.tenio.core.handler.event.EventServerException;
+import com.tenio.core.handler.event.EventServerInitialization;
+import com.tenio.core.handler.event.EventServerTeardown;
+import com.tenio.core.handler.event.EventSwitchParticipantToSpectatorResult;
+import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
+import com.tenio.core.handler.event.EventSystemMonitoring;
+import com.tenio.core.handler.event.EventWriteMessageToConnection;
 
 /**
  * All supported events could be emitted on the server.

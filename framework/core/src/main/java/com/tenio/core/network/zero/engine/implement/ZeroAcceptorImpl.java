@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
-import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.common.utility.OsUtility;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.exception.ServiceRuntimeException;
@@ -34,6 +34,7 @@ import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
+import com.tenio.core.server.ServerImpl;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -61,6 +62,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private ConnectionFilter connectionFilter;
   private ZeroReaderListener zeroReaderListener;
   private String serverAddress;
+  private int amountUdpWorkers;
+  private boolean enabledKcp;
   private List<SocketConfig> socketConfigs;
 
   private ZeroAcceptorImpl(EventManager eventManager) {
@@ -68,7 +71,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
     acceptableSockets = new ArrayList<>();
     boundSockets = new ArrayList<>();
-    serverAddress = CoreConstant.LOCAL_HOST;
 
     setName("acceptor");
   }
@@ -78,9 +80,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   }
 
   private void initializeSockets() throws ServiceRuntimeException {
-    // opens a selector to handle server socket, udp datagram and accept all
-    // incoming
-    // client socket
+    // opens a selector to handle server socket, udp datagram and accept all incoming client socket
     try {
       acceptableSelector = Selector.open();
     } catch (IOException e) {
@@ -96,8 +96,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private void bindSocket(SocketConfig socketConfig) throws ServiceRuntimeException {
     if (socketConfig.getType() == TransportType.TCP) {
       bindTcpSocket(socketConfig.getPort());
-    } else if (socketConfig.getType() == TransportType.UDP) {
-      bindUdpSocket(socketConfig.getPort());
+    }
+    if (amountUdpWorkers > 0) {
+      bindUdpSocket();
     }
   }
 
@@ -105,36 +106,48 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     try {
       var serverSocketChannel = ServerSocketChannel.open();
       serverSocketChannel.configureBlocking(false);
-      serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+      if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
+        serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+      } else {
+        serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+      }
       serverSocketChannel.socket().bind(new InetSocketAddress(serverAddress, port));
+      info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
+          serverSocketChannel.socket().getLocalPort()));
       // only server socket should interest in this key OP_ACCEPT
       serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
       synchronized (boundSockets) {
         boundSockets.add(serverSocketChannel);
       }
-
-      info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ", port));
     } catch (IOException e) {
       throw new ServiceRuntimeException(e.getMessage());
     }
   }
 
-  private void bindUdpSocket(int port) throws ServiceRuntimeException {
+  private void bindUdpSocket() throws ServiceRuntimeException {
     try {
-      var datagramChannel = DatagramChannel.open();
-      datagramChannel.configureBlocking(false);
-      datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-      datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
-      datagramChannel.socket().bind(new InetSocketAddress(serverAddress, port));
-      // udp datagram is a connectionless protocol, we don't need to create
-      // bi-direction connection, that why it's not necessary to register it to
-      // acceptable selector. Just leave it to the reader selector later
-      zeroReaderListener.acceptDatagramChannel(datagramChannel);
       synchronized (boundSockets) {
-        boundSockets.add(datagramChannel);
+        for (int i = 0; i < amountUdpWorkers; i++) {
+          var datagramChannel = DatagramChannel.open();
+          datagramChannel.configureBlocking(false);
+          if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
+            datagramChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+          } else {
+            datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+          }
+          datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
+          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, 0));
+          // udp datagram is a connectionless protocol, we don't need to create
+          // bi-direction connection, that why it's not necessary to register it to
+          // acceptable selector. Just leave it to the reader selector later
+          zeroReaderListener.acceptDatagramChannel(datagramChannel);
+          int boundPort = datagramChannel.socket().getLocalPort();
+          ServerImpl.getInstance().getUdpChannelManager().appendUdpPort(boundPort);
+          info(enabledKcp ? "UDP CHANNEL (KCP)" : "UDP CHANNEL",
+              buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
+          boundSockets.add(datagramChannel);
+        }
       }
-
-      info("UDP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ", port));
     } catch (IOException e) {
       throw new ServiceRuntimeException(e.getMessage());
     }
@@ -313,6 +326,16 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   @Override
   public void setServerAddress(String serverAddress) {
     this.serverAddress = serverAddress;
+  }
+
+  @Override
+  public void setAmountUdpWorkers(int amountUdpWorkers) {
+    this.amountUdpWorkers = amountUdpWorkers;
+  }
+
+  @Override
+  public void setEnabledKcp(boolean enabledKcp) {
+    this.enabledKcp = enabledKcp;
   }
 
   @Override

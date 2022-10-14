@@ -105,7 +105,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
       socketConfigs.add(port);
     }
-    push(CoreConfigurationType.SOCKET_CONFIGS, socketConfigs);
+    push(CoreConfigurationType.NETWORK_SOCKET_CONFIGS, socketConfigs);
     // Network HTTPs
     var attrNetworkHttps = XmlUtility.getNodeList(root, "//Server/Network/Http/Port");
     for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
@@ -128,7 +128,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
 
       httpConfigs.add(port);
     }
-    push(CoreConfigurationType.HTTP_CONFIGS, httpConfigs);
+    push(CoreConfigurationType.NETWORK_HTTP_CONFIGS, httpConfigs);
 
     // Implemented Classes
     var attrImplementedClasses = XmlUtility.getNodeList(root, "//Server/Implements/Class");

@@ -28,6 +28,7 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.service.Service;
@@ -90,6 +91,13 @@ public interface ScheduleService extends Service {
   void setSystemMonitoringInterval(int interval);
 
   /**
+   * Sets an instance of session manager to the service.
+   *
+   * @param sessionManager an instance of {@link SessionManager}
+   */
+  void setSessionManager(SessionManager sessionManager);
+
+  /**
    * Sets an instance of player manager to the service.
    *
    * @param playerManager an instance of {@link PlayerManager}
@@ -116,4 +124,11 @@ public interface ScheduleService extends Service {
    * @param networkWriterStatistic an instance of {@link NetworkWriterStatistic}
    */
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
+
+  /**
+   * Determines if UDP channels can use KCP transportation for communication.
+   *
+   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
+   */
+  void setEnabledKcp(boolean enabledKcp);
 }
