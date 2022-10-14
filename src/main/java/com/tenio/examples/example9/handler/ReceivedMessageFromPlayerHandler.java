@@ -22,27 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example9.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;
+import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
-public final class ConnectionEstablishedHandler extends AbstractHandler
-    implements EventConnectionEstablishedResult {
+public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
+    implements EventReceivedMessageFromPlayer {
 
   @Override
-  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-    if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroMap) message.getData();
+  public void handle(Player player, ServerMessage message) {
+    var data =
+        object().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+            player.getName(),
+            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-    }
+    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
   }
 }

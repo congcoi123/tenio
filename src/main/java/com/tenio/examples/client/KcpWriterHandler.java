@@ -22,29 +22,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example4.constant;
+package com.tenio.examples.client;
 
-public final class Example4Constant {
+import com.tenio.core.network.zero.engine.KcpWriter;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketAddress;
 
-  public static final int DESIGN_WIDTH = 500;
-  public static final int DESIGN_HEIGHT = 500;
+public class KcpWriterHandler implements KcpWriter<DatagramSocket> {
 
-  public static final int SOCKET_PORT = 8032;
+  private final DatagramSocket datagramSocket;
+  private final InetAddress localAddress;
+  private final int port;
 
-  public static final float DELAY_CREATION = 0.1f;
-  // time in minutes
-  public static final int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
-  // time in seconds
-  public static final int SEND_MEASUREMENT_REQUEST_INTERVAL = 20;
+  public KcpWriterHandler(DatagramSocket datagramSocket, InetAddress localAddress, int port) {
+    this.datagramSocket = datagramSocket;
+    this.localAddress = localAddress;
+    this.port = port;
+  }
 
-  public static final int NUMBER_OF_PLAYERS = 100;
+  @Override
+  public InetAddress getLocalAddress() {
+    return localAddress;
+  }
 
-  public static final int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
-
-  public static final int ONE_MINUTE_EXPECT_RECEIVE_PACKETS =
-      ONE_SECOND_EXPECT_RECEIVE_PACKETS * 60 * NUMBER_OF_PLAYERS;
-
-  private Example4Constant() {
+  @Override
+  public SocketAddress getRemoteAddress() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int getLocalPort() {
+    return port;
+  }
+
+  @Override
+  public DatagramSocket getWriter() {
+    return datagramSocket;
+  }
+
+  @Override
+  public int send(byte[] binaries, int size) throws IOException {
+    var request = new DatagramPacket(binaries, size, getLocalAddress(), getLocalPort());
+    datagramSocket.send(request);
+    return size;
   }
 }

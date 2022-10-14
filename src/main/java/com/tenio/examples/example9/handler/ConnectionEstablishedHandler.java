@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example9.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;

@@ -94,6 +94,10 @@ public final class TCP implements PacketDecoderResultListener {
     }
   }
 
+  public Session getSession() {
+    return session;
+  }
+
   /**
    * Send a message to the server.
    *

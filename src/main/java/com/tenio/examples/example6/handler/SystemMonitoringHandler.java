@@ -25,12 +25,12 @@ THE SOFTWARE.
 package com.tenio.examples.example6.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventSystemMonitoring;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventSystemMonitoring;
 import com.tenio.examples.client.ServerUtility;
 
 @Component
-public final class SystemMonitoringHandler extends AbstractExtension
+public final class SystemMonitoringHandler extends AbstractHandler
     implements EventSystemMonitoring {
 
   @Override

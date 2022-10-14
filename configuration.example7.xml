@@ -6,6 +6,8 @@
 		<Property name="server-name">Example</Property>
 		<!-- The server id (module name) -->
 		<Property name="server-id">tenio-example-7</Property>
+		<!-- The server address -->
+		<Property name="server-address">localhost</Property>
 		<!-- The current version code of your server in integer type (comparable) -->
 		<Property name="version-code">1</Property>
 		<!-- The current version name of your server in string type -->
@@ -35,6 +37,7 @@
 			<Property name="packet-compression-threshold-bytes">10240</Property>
 			<Property name="allow-change-session">false</Property>
 			<Property name="max-connections-per-ip">10</Property>
+			<Property name="enabled-kcp">false</Property>
 		</Properties>
 		<Http>
 		</Http>
@@ -48,6 +51,7 @@
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
 			<Worker name="internal-processor">2</Worker>
+			<Worker name="udp-worker">0</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 

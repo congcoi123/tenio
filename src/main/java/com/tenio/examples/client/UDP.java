@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.common.utility.OsUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import java.io.IOException;
@@ -85,6 +84,22 @@ public final class UDP {
     this(port, false);
   }
 
+  public int getLocalPort() {
+    return datagramSocket.getLocalPort();
+  }
+
+  public InetAddress getLocalAddress() {
+    return inetAddress;
+  }
+
+  public int getRemotePort() {
+    return port;
+  }
+
+  public DatagramSocket getDatagramSocket() {
+    return datagramSocket;
+  }
+
   /**
    * Send a message to the server.
    *
@@ -113,8 +128,7 @@ public final class UDP {
           byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
           var response = new DatagramPacket(buffer, buffer.length);
           datagramSocket.receive(response);
-          var data = ZeroUtility.binaryToMap(buffer);
-          listener.onReceivedUDP(ServerMessage.newInstance().setData(data));
+          listener.onReceivedUDP(buffer);
         } catch (IOException e) {
           e.printStackTrace();
           return;

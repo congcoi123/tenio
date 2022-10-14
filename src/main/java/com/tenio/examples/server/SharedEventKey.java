@@ -28,6 +28,7 @@ public final class SharedEventKey {
 
   public static final String KEY_PLAYER_LOGIN = "u";
   public static final String KEY_ALLOW_TO_ATTACH = "a";
+  public static final String KEY_ALLOW_TO_ATTACH_PORT = "ap";
   public static final String KEY_CLIENT_SERVER_ECHO = "e";
   public static final String KEY_INTEGER_ARRAY = "i";
   public static final String KEY_PLAYER_POSITION = "p";

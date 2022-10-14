@@ -28,13 +28,13 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventAttachConnectionRequestValidation;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
 import com.tenio.examples.server.SharedEventKey;
 import java.util.Optional;
 
 @Component
-public final class AttachConnectionRequestValidatedHandler extends AbstractExtension
+public final class AttachConnectionRequestValidatedHandler extends AbstractHandler
     implements EventAttachConnectionRequestValidation {
 
   @Override

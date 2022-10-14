@@ -26,8 +26,8 @@ package com.tenio.examples.example8.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.common.CommonMap;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventHttpRequestValidation;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventHttpRequestValidation;
 import com.tenio.core.network.define.RestMethod;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 @Component
-public final class HttpRequestValidatedHandler extends AbstractExtension
+public final class HttpRequestValidatedHandler extends AbstractHandler
     implements EventHttpRequestValidation {
 
   @Override

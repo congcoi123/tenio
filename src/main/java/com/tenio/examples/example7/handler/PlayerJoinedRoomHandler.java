@@ -28,13 +28,13 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventPlayerJoinedRoomResult;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
 import com.tenio.examples.example7.constant.Example7Constant;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
-public final class PlayerJoinedRoomHandler extends AbstractExtension
+public final class PlayerJoinedRoomHandler extends AbstractHandler
     implements EventPlayerJoinedRoomResult {
 
   @Override

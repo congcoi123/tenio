@@ -57,7 +57,6 @@ public final class TestClientMovement extends AbstractLogger
   private static final NetworkStatistic statistic = NetworkStatistic.newInstance();
   private static final long START_EXECUTION_TIME = TimeUtility.currentTimeSeconds();
   private final TCP tcp;
-  private final UDP udp;
   private final String playerName;
   private final LocalCounter localCounter;
   private volatile long sentTimestamp;
@@ -69,10 +68,6 @@ public final class TestClientMovement extends AbstractLogger
     // create a new TCP object and listen for this port
     tcp = new TCP(Example4Constant.SOCKET_PORT);
     tcp.receive(this);
-
-    // create a new UDP object and listen for this port
-    udp = new UDP(Example4Constant.DATAGRAM_PORT);
-    udp.receive(this);
 
     // send a login request
     sendLoginRequest();
@@ -140,6 +135,12 @@ public final class TestClientMovement extends AbstractLogger
     if (data.containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
       switch (data.getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
         case UdpEstablishedState.ALLOW_TO_ATTACH: {
+          // create a new UDP object and listen for this port
+          var udp = new UDP(data.getInteger(SharedEventKey.KEY_ALLOW_TO_ATTACH_PORT));
+          udp.receive(this);
+          System.out.println(playerName + " connected to UDP port: " +
+              data.getInteger(SharedEventKey.KEY_ALLOW_TO_ATTACH_PORT));
+
           // now you can send request for UDP connection request
           var sendData =
               ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
@@ -147,16 +148,14 @@ public final class TestClientMovement extends AbstractLogger
           udp.send(request);
 
           if (LOGGER_DEBUG) {
-            System.out.println("Request a UDP connection -> " + request);
+            System.out.println(playerName + " requests a UDP connection -> " + request);
           }
         }
         break;
 
         case UdpEstablishedState.ATTACHED: {
           // the UDP connected successful, you now can send test requests
-          if (LOGGER_DEBUG) {
-            System.out.println("Start the conversation ...");
-          }
+          System.out.println(playerName + " started the conversation -> " + message);
 
           // packets counting
           Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -216,7 +215,10 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   @Override
-  public void onReceivedUDP(ServerMessage message) {
+  public void onReceivedUDP(byte[] binary) {
+    var data = ZeroUtility.binaryToMap(binary);
+    var message = ServerMessage.newInstance().setData(data);
+
     if (LOGGER_DEBUG) {
       System.err.println("[RECV FROM SERVER UDP] -> " + message);
     }
