@@ -25,11 +25,11 @@ THE SOFTWARE.
 package com.tenio.examples.example6.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventFetchedBandwidthInfo;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
 
 @Component
-public final class BandwidthInformationHandler extends AbstractExtension
+public final class BandwidthInformationHandler extends AbstractHandler
     implements EventFetchedBandwidthInfo {
 
   @Override

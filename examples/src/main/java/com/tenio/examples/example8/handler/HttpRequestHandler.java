@@ -26,8 +26,8 @@ package com.tenio.examples.example8.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.common.CommonMap;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventHttpRequestHandle;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventHttpRequestHandle;
 import com.tenio.core.network.define.RestMethod;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 @Component
-public final class HttpRequestHandler extends AbstractExtension implements EventHttpRequestHandle {
+public final class HttpRequestHandler extends AbstractHandler implements EventHttpRequestHandle {
 
   @Override
   public void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response) {

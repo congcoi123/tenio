@@ -22,27 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example9;
 
-import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.network.entity.session.Session;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.common.bootstrap.annotation.Bootstrap;
+import com.tenio.core.ApplicationLauncher;
 
-@Component
-public final class ConnectionEstablishedHandler extends AbstractHandler
-    implements EventConnectionEstablishedResult {
+/**
+ * This class shows how a server handle messages that came from a client.
+ */
+@Bootstrap
+public final class TestServerKcpEcho {
 
-  @Override
-  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-    if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroMap) message.getData();
-
-      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-    }
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerKcpEcho.class, params);
   }
 }

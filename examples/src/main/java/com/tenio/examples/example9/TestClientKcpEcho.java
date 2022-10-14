@@ -22,19 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3;
+package com.tenio.examples.example9;
 
 import com.tenio.common.data.ZeroArray;
 import com.tenio.common.data.ZeroMap;
 import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.core.configuration.kcp.KcpConfiguration;
 import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.network.entity.kcp.Ukcp;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.manager.SessionManager;
+import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.network.zero.handler.KcpIoHandler;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
+import com.tenio.examples.client.KcpWriterHandler;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
 import com.tenio.examples.client.UDP;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class shows how a client communicates with the server:<br>
@@ -46,19 +56,25 @@ import com.tenio.examples.server.UdpEstablishedState;
  * 5. Send messages via UDP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientAttach implements SocketListener, DatagramListener {
+public final class TestClientKcpEcho implements SocketListener, DatagramListener, KcpIoHandler {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
+  private final Session session;
   private final String playerName;
+  private final NetworkWriterStatistic networkWriterStatistic;
   private UDP udp;
 
-  public TestClientAttach() {
+  public TestClientKcpEcho() {
     playerName = ClientUtility.generateRandomString(5);
 
     // create a new TCP object and listen for this port
     tcp = new TCP(SOCKET_PORT);
     tcp.receive(this);
+    session = tcp.getSession();
+    session.setName(playerName);
+
+    networkWriterStatistic = NetworkWriterStatistic.newInstance();
 
     // send a login request
     var data =
@@ -73,7 +89,37 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
    * The entry point.
    */
   public static void main(String[] args) {
-    new TestClientAttach();
+    new TestClientKcpEcho();
+  }
+
+  @Override
+  public void sessionRead(Session session, byte[] binary) {
+    System.out.println("[KCP SESSION READ] " + ZeroUtility.binaryToMap(binary));
+  }
+
+  @Override
+  public void sessionException(Session session, Exception exception) {
+    System.out.println("[KCP EXCEPTION] " + exception.getMessage());
+  }
+
+  @Override
+  public void setSessionManager(SessionManager sessionManager) {
+    // do nothing
+  }
+
+  @Override
+  public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
+    // do nothing
+  }
+
+  @Override
+  public void channelActiveIn(Session session) {
+    System.out.println("[KCP ACTIVATED] " + session.toString());
+  }
+
+  @Override
+  public void channelInactiveIn(Session session) {
+    System.out.println("[KCP INACTIVATED] " + session.toString());
   }
 
   @Override
@@ -92,7 +138,9 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
         udp.receive(this);
         udp.send(request);
 
-        System.out.println("Request a UDP connection -> " + request);
+        System.out.println(
+            udp.getLocalAddress().getHostAddress() + ", " + udp.getLocalPort() + " Request a UDP " +
+                "connection -> " + request);
       }
       break;
 
@@ -100,13 +148,13 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
         // the UDP connected successful, you now can send test requests
         System.out.println("Start the conversation ...");
 
+        var ukcp = initializeKcp(pack.getInteger(1));
+        kcpProcessing();
+
         for (int i = 1; i <= 100; i++) {
           var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
-          var request = ServerMessage.newInstance().setData(data);
-          udp.send(request);
-
-          System.out.println("[SENT TO SERVER " + i + "] -> " + request);
+          ukcp.send(data.toBinary());
 
           try {
             Thread.sleep(1000);
@@ -115,17 +163,37 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
           }
         }
 
-        tcp.close();
+        session.setUkcp(null);
         udp.close();
+        tcp.close();
       }
       break;
     }
   }
 
+  private Ukcp initializeKcp(int conv) {
+    var kcpWriter = new KcpWriterHandler(udp.getDatagramSocket(),
+        udp.getLocalAddress(), udp.getRemotePort());
+    var ukcp =
+        new Ukcp(conv, KcpConfiguration.PROFILE, session, this, kcpWriter, networkWriterStatistic);
+    ukcp.getKcpIoHandler().channelActiveIn(session);
+
+    return ukcp;
+  }
+
+  private void kcpProcessing() {
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+        () -> {
+          if (session.containsKcp()) {
+            var ukcp = session.getUkcp();
+            ukcp.update();
+            ukcp.receive();
+          }
+        }, 0, 10, TimeUnit.MILLISECONDS);
+  }
+
   @Override
   public void onReceivedUDP(byte[] binary) {
-    var data = ZeroUtility.binaryToMap(binary);
-    var message = ServerMessage.newInstance().setData(data);
-    System.err.println("[RECV FROM SERVER UDP] -> " + message);
+    session.getUkcp().input(binary);
   }
 }

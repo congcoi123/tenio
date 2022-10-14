@@ -26,11 +26,11 @@ package com.tenio.examples.example7.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventServerInitialization;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventServerInitialization;
 
 @Component
-public final class ServerInitializedHandler extends AbstractExtension
+public final class ServerInitializedHandler extends AbstractHandler
     implements EventServerInitialization {
 
   @Override

@@ -22,27 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example9.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;
+import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
 import com.tenio.examples.server.SharedEventKey;
+import java.util.Optional;
 
 @Component
-public final class ConnectionEstablishedHandler extends AbstractHandler
-    implements EventConnectionEstablishedResult {
+public final class AttachConnectionRequestValidatedHandler extends AbstractHandler
+    implements EventAttachConnectionRequestValidation {
 
   @Override
-  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-    if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroMap) message.getData();
+  public Optional<Player> handle(ServerMessage message) {
+    var data = (ZeroMap) message.getData();
 
-      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-    }
+    return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

@@ -29,15 +29,15 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.data.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.examples.example4.constant.ServerEventKey;
 import com.tenio.examples.server.ExampleMessage;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractExtension
+public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     implements EventReceivedMessageFromPlayer {
 
   @AutowiredAcceptNull

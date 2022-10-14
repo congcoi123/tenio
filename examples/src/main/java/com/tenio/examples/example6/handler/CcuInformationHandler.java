@@ -25,11 +25,11 @@ THE SOFTWARE.
 package com.tenio.examples.example6.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventFetchedCcuInfo;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventFetchedCcuInfo;
 
 @Component
-public final class CcuInformationHandler extends AbstractExtension implements EventFetchedCcuInfo {
+public final class CcuInformationHandler extends AbstractHandler implements EventFetchedCcuInfo {
 
   @Override
   public void handle(int numberPlayers) {

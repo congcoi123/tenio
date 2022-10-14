@@ -27,20 +27,22 @@ package com.tenio.examples.example3.handler;
 import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.extension.AbstractExtension;
-import com.tenio.core.extension.events.EventPlayerLoggedinResult;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.UdpEstablishedState;
 
 @Component
-public final class PlayerLoggedInHandler extends AbstractExtension
+public final class PlayerLoggedInHandler extends AbstractHandler
     implements EventPlayerLoggedinResult {
 
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
       var data =
-          object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH);
+          object().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ATTACH,
+              array().addByte(UdpEstablishedState.ALLOW_TO_ATTACH)
+                  .addInteger(api().getCurrentAvailableUdpPort()));
 
       response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }

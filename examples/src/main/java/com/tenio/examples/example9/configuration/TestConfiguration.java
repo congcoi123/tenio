@@ -22,27 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example9.configuration;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.network.entity.session.Session;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.common.configuration.Configuration;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.examples.server.ExampleConfigurationType;
+import java.util.Map;
 
+/**
+ * Create your own configuration.
+ */
 @Component
-public final class ConnectionEstablishedHandler extends AbstractHandler
-    implements EventConnectionEstablishedResult {
+public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
   @Override
-  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-    if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroMap) message.getData();
-
-      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+  protected void extend(Map<String, String> extProperties) {
+    for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+      var paramName = entry.getKey();
+      push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
     }
   }
 }
