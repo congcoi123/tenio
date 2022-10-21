@@ -77,6 +77,10 @@ public final class SocketConfig {
 
   @Override
   public String toString() {
-    return String.format("{ name:%s, type:%s, port:%d }", name, type.name(), port);
+    return "SocketConfig{" +
+        "name='" + name + '\'' +
+        ", type=" + type +
+        ", port=" + port +
+        '}';
   }
 }

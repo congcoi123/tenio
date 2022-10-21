@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.netty;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -74,6 +75,13 @@ public interface NettyWebSocketService extends Service {
    * @param connectionFilter an instance of {@link ConnectionFilter}
    */
   void setConnectionFilter(ConnectionFilter connectionFilter);
+
+  /**
+   * Set the data serialization type.
+   *
+   * @param dataType the {@link DataType} value
+   */
+  void setDataType(DataType dataType);
 
   /**
    * Sets a session manager instance.

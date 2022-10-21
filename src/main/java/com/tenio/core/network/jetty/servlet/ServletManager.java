@@ -205,7 +205,7 @@ public final class ServletManager extends BaseServlet {
     }
 
   }
+}
 
-  private final class PrivateLogger extends SystemLogger {
-  }
+class PrivateLogger extends SystemLogger {
 }

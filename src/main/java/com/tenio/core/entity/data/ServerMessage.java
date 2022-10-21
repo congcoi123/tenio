@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.entity.data;
 
-import com.tenio.common.data.ZeroCollection;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.utility.TimeUtility;
 
 /**
@@ -34,7 +34,7 @@ import com.tenio.common.utility.TimeUtility;
 public final class ServerMessage {
 
   private final long createdTimestamp;
-  private ZeroCollection data;
+  private DataCollection data;
 
   private ServerMessage() {
     createdTimestamp = TimeUtility.currentTimeMillis();
@@ -61,25 +61,28 @@ public final class ServerMessage {
   /**
    * Retrieves the data content carried by the message.
    *
-   * @return the {@link ZeroCollection} data content
+   * @return the {@link DataCollection} data content
    */
-  public ZeroCollection getData() {
+  public DataCollection getData() {
     return data;
   }
 
   /**
    * Sets the data content carried by the message.
    *
-   * @param data the {@link ZeroCollection} data content
+   * @param data the {@link DataCollection} data content
    * @return the pointer of this instance
    */
-  public ServerMessage setData(ZeroCollection data) {
+  public ServerMessage setData(DataCollection data) {
     this.data = data;
     return this;
   }
 
   @Override
   public String toString() {
-    return String.format("{ timestamp: %d, data: %s }", createdTimestamp, data.toString());
+    return "ServerMessage{" +
+        "createdTimestamp=" + createdTimestamp +
+        ", data=" + data +
+        '}';
   }
 }

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.bootstrap.event.handlers;
+package com.tenio.core.bootstrap.event.handler;
 
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.Component;

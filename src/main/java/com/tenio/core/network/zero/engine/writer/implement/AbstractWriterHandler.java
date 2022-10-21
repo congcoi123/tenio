@@ -22,11 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.engine.writer;
+package com.tenio.core.network.zero.engine.writer.implement;
 
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.network.zero.engine.writer.WriterHandler;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 

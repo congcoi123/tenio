@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.server.setting;
 
 import com.tenio.common.configuration.Configuration;
+import com.tenio.common.data.DataType;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
@@ -39,7 +40,9 @@ import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.define.data.HttpConfig;
 import com.tenio.core.network.define.data.SocketConfig;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Asserting the configuration files.
@@ -66,10 +69,20 @@ public final class ConfigurationAssessment {
    * @throws ConfigurationException         an exception
    */
   public void assess() throws NotDefinedSubscribersException, ConfigurationException {
+    checkDataSerialization();
     checkSubscriberReconnection();
     checkSubscriberConnectionAttach();
     checkDefinedMainSocketConnection();
     checkSubscriberHttpHandler();
+  }
+
+  private void checkDataSerialization() {
+    var dataSerialization = configuration.getString(CoreConfigurationType.DATA_SERIALIZATION);
+    if (Objects.isNull(DataType.getByValue(dataSerialization))) {
+      throw new ConfigurationException(String.format("Data Serialization Type {%s} is not " +
+              "supported, please reference to the supporting list: %s", dataSerialization,
+          Arrays.toString(DataType.values())));
+    }
   }
 
   private void checkSubscriberReconnection() throws NotDefinedSubscribersException {
@@ -122,7 +135,8 @@ public final class ConfigurationAssessment {
 
   @SuppressWarnings("unchecked")
   private boolean containsHttpPathConfigs() {
-    var httpConfigs = (List<HttpConfig>) configuration.get(CoreConfigurationType.NETWORK_HTTP_CONFIGS);
+    var httpConfigs =
+        (List<HttpConfig>) configuration.get(CoreConfigurationType.NETWORK_HTTP_CONFIGS);
     return !httpConfigs.isEmpty();
   }
 }

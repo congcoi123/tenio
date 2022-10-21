@@ -271,6 +271,16 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
     return server.getUdpChannelManager().getCurrentAvailableUdpPort();
   }
 
+  @Override
+  public long getStartedTime() {
+    return server.getStartedTime();
+  }
+
+  @Override
+  public long getUptime() {
+    return server.getUptime();
+  }
+
   private EventManager getEventManager() {
     return server.getEventManager();
   }

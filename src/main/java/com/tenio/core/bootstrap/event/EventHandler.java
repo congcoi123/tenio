@@ -26,11 +26,11 @@ package com.tenio.core.bootstrap.event;
 
 import com.tenio.common.bootstrap.annotation.Autowired;
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.core.bootstrap.event.handlers.ConnectionEventHandler;
-import com.tenio.core.bootstrap.event.handlers.HttpEventHandler;
-import com.tenio.core.bootstrap.event.handlers.MixinsEventHandler;
-import com.tenio.core.bootstrap.event.handlers.PlayerEventHandler;
-import com.tenio.core.bootstrap.event.handlers.RoomEventHandler;
+import com.tenio.core.bootstrap.event.handler.ConnectionEventHandler;
+import com.tenio.core.bootstrap.event.handler.HttpEventHandler;
+import com.tenio.core.bootstrap.event.handler.MixinsEventHandler;
+import com.tenio.core.bootstrap.event.handler.PlayerEventHandler;
+import com.tenio.core.bootstrap.event.handler.RoomEventHandler;
 import com.tenio.core.event.implement.EventManager;
 
 /**

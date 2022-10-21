@@ -24,12 +24,16 @@ THE SOFTWARE.
 
 package com.tenio.core.handler;
 
-import com.tenio.common.data.ZeroArray;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.msgpack.element.MsgPackArray;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.entity.setting.InitialRoomSetting;
+import com.tenio.core.exception.UnsupportedDataTypeInUseException;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.protocol.implement.ResponseImpl;
 import com.tenio.core.server.Server;
@@ -61,21 +65,51 @@ public abstract class AbstractHandler extends AbstractLogger {
   }
 
   /**
-   * Retrieves a zero array instance.
+   * Retrieves a zero array instance when the {@link DataType} in use is {@link DataType#ZERO}.
    *
    * @return an instance of {@link ZeroArray}
    */
   public final ZeroArray array() {
+    if (server.getDataType() != DataType.ZERO) {
+      throw new UnsupportedDataTypeInUseException(server.getDataType());
+    }
     return ZeroUtility.newZeroArray();
   }
 
   /**
-   * Retrieves an zero map instance.
+   * Retrieves a zero map instance when the {@link DataType} in use is {@link DataType#ZERO}.
    *
    * @return an instance of {@link ZeroMap}
    */
-  public final ZeroMap object() {
+  public final ZeroMap map() {
+    if (server.getDataType() != DataType.ZERO) {
+      throw new UnsupportedDataTypeInUseException(server.getDataType());
+    }
     return ZeroUtility.newZeroMap();
+  }
+
+  /**
+   * Retrieves a msgpack array instance when the {@link DataType} in use is {@link DataType#MSG_PACK}.
+   *
+   * @return an instance of {@link MsgPackArray}
+   */
+  public final MsgPackArray msgarray() {
+    if (server.getDataType() != DataType.MSG_PACK) {
+      throw new UnsupportedDataTypeInUseException(server.getDataType());
+    }
+    return MsgPackArray.newInstance();
+  }
+
+  /**
+   * Retrieves a msgpack map instance when the {@link DataType} in use is {@link DataType#MSG_PACK}.
+   *
+   * @return an instance of {@link MsgPackMap}
+   */
+  public final MsgPackMap msgmap() {
+    if (server.getDataType() != DataType.MSG_PACK) {
+      throw new UnsupportedDataTypeInUseException(server.getDataType());
+    }
+    return MsgPackMap.newInstance();
   }
 
   /**

@@ -22,38 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.handler;
+package com.tenio.core.handler.event;
 
-import com.tenio.common.data.DataType;
-import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
+import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.exception.RefusedConnectionAddressException;
+import java.nio.channels.SocketChannel;
 
 /**
- * The Datagram IO handler.
+ * When a connection is refused to establish itself on the server.
  */
-public interface DatagramIoHandler extends BaseIoHandler {
+@FunctionalInterface
+public interface EventSocketConnectionRefused {
 
   /**
-   * Set the data serialization type.
+   * When a connection is refused to establish itself on the server.
    *
-   * @param dataType the {@link DataType} value
+   * @param channel   the {@link SocketChannel} that is using to transfer data between client and server
+   * @param exception an {@link RefusedConnectionAddressException} occurred with detailed
+   *                  reasons
+   * @see ServerEvent#SOCKET_CONNECTION_REFUSED
+   * @since 0.3.1
    */
-  void setDataType(DataType dataType);
-
-  /**
-   * When a new message comes from client side then this method is invoked.
-   *
-   * @param datagramChannel a {@link DatagramChannel} created on the server
-   * @param remoteAddress   a remote {@link SocketAddress} of client side
-   * @param binary          an array of {@code byte} data sent by client side
-   */
-  void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress, byte[] binary);
-
-  /**
-   * When any exception occurred on the Datagram channel then this method is invoked.
-   *
-   * @param datagramChannel the {@link DatagramChannel} created on the server
-   * @param exception       an {@link Exception} emerging
-   */
-  void channelException(DatagramChannel datagramChannel, Exception exception);
+  void handle(SocketChannel channel, RefusedConnectionAddressException exception);
 }

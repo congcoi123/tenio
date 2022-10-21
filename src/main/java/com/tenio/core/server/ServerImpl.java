@@ -25,7 +25,9 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.constant.Trademark;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.configuration.constant.Trademark;
+import com.tenio.common.data.DataType;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.implement.ServerApiImpl;
@@ -80,6 +82,8 @@ public final class ServerImpl extends SystemLogger implements Server {
   private final ScheduleService scheduleService;
   private final NetworkService networkService;
   private final ServerApi serverApi;
+  private DataType dataType;
+  private long startedTime;
   private String serverName;
 
   private ServerImpl() {
@@ -112,6 +116,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 
   @Override
   public void start(BootstrapHandler bootstrapHandler, String[] params) throws Exception {
+    // record the started time
+    startedTime = TimeUtility.currentTimeMillis();
 
     // get the file path
     var file = params.length == 0 ? null : params[0];
@@ -123,6 +129,8 @@ public final class ServerImpl extends SystemLogger implements Server {
     var configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
     configuration.load(file);
 
+    dataType =
+        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION));
     serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
     // show system information
@@ -248,6 +256,9 @@ public final class ServerImpl extends SystemLogger implements Server {
         .setWebSocketProducerWorkers(
             configuration.getInt(CoreConfigurationType.WORKER_WEBSOCKET_PRODUCER));
 
+    networkService.setDataType(
+        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION)));
+
     networkService.setWebSocketReceiverBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE));
     networkService.setWebSocketSenderBufferSize(
@@ -299,6 +310,8 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   private void setupInternalProcessorService(Configuration configuration) {
+    internalProcessorService.setDataType(
+        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION)));
     internalProcessorService
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
     internalProcessorService.setPlayerManager(playerManager);
@@ -355,6 +368,21 @@ public final class ServerImpl extends SystemLogger implements Server {
   @Override
   public UdpChannelManager getUdpChannelManager() {
     return udpChannelManager;
+  }
+
+  @Override
+  public DataType getDataType() {
+    return dataType;
+  }
+
+  @Override
+  public long getStartedTime() {
+    return startedTime;
+  }
+
+  @Override
+  public long getUptime() {
+    return TimeUtility.currentTimeMillis() - startedTime;
   }
 
   @Override

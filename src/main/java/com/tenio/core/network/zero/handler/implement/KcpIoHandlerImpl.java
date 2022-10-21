@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
@@ -33,6 +33,7 @@ import com.tenio.core.network.zero.handler.KcpIoHandler;
 
 /**
  * The implementation of {@link KcpIoHandler}.
+ *
  * @since 0.3.0
  */
 public final class KcpIoHandlerImpl extends AbstractIoHandler implements KcpIoHandler {
@@ -47,7 +48,7 @@ public final class KcpIoHandlerImpl extends AbstractIoHandler implements KcpIoHa
 
   @Override
   public void sessionRead(Session session, byte[] binary) {
-    var data = ZeroUtility.binaryToCollection(binary);
+    var data = DataUtility.binaryToCollection(dataType, binary);
     var message = ServerMessage.newInstance().setData(data);
 
     eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);

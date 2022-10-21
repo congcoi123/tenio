@@ -105,4 +105,13 @@ public final class NetworkReaderStatistic {
   public long getReadDroppedPackets() {
     return readDroppedPackets.longValue();
   }
+
+  @Override
+  public String toString() {
+    return "NetworkReaderStatistic{" +
+        "readBytes=" + readBytes +
+        ", readPackets=" + readPackets +
+        ", readDroppedPackets=" + readDroppedPackets +
+        '}';
+  }
 }

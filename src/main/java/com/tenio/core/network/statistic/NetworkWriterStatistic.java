@@ -145,4 +145,14 @@ public final class NetworkWriterStatistic {
   public long getWrittenDroppedPackets() {
     return writtenDroppedPacketsByPolicy.longValue() + writtenDroppedPacketsByFull.longValue();
   }
+
+  @Override
+  public String toString() {
+    return "NetworkWriterStatistic{" +
+        "writtenBytes=" + writtenBytes +
+        ", writtenPackets=" + writtenPackets +
+        ", writtenDroppedPacketsByPolicy=" + writtenDroppedPacketsByPolicy +
+        ", writtenDroppedPacketsByFull=" + writtenDroppedPacketsByFull +
+        '}';
+  }
 }

@@ -13,7 +13,7 @@ class SocketConfigTest {
     assertEquals("Name", actualSocketConfig.getName());
     assertEquals(8080, actualSocketConfig.getPort());
     assertEquals(TransportType.UNKNOWN, actualSocketConfig.getType());
-    assertEquals("{ name:Name, type:UNKNOWN, port:8080 }", actualSocketConfig.toString());
+    assertEquals("SocketConfig{name='Name', type=UNKNOWN, port=8080}", actualSocketConfig.toString());
   }
 }
 

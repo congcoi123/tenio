@@ -17,8 +17,7 @@ class PathConfigTest {
     assertEquals("Uri", actualPathConfig.getUri());
     assertEquals(1, actualPathConfig.getVersion());
     assertEquals(
-        "{ name:Name, method:POST, uri:Uri, description:The characteristics of someone or something," +
-            " version:1}",
+        "PathConfig{name='Name', description='The characteristics of someone or something', version=1, method=POST, uri='Uri'}",
         actualPathConfig.toString());
   }
 }

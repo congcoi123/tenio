@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.netty.websocket;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
@@ -40,6 +41,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import java.io.IOException;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * Receive all messages sent from clients side. It converts serialize data to a system's object
@@ -52,39 +54,25 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   private final SessionManager sessionManager;
   private final ConnectionFilter connectionFilter;
   private final NetworkReaderStatistic networkReaderStatistic;
+  private final DataType dataType;
   private final PrivateLogger logger;
 
   private NettyWsHandler(EventManager eventManager, SessionManager sessionManager,
-                         ConnectionFilter connectionFilter,
+                         ConnectionFilter connectionFilter, DataType dataType,
                          NetworkReaderStatistic networkReaderStatistic) {
     this.eventManager = eventManager;
     this.sessionManager = sessionManager;
     this.connectionFilter = connectionFilter;
+    this.dataType = dataType;
     this.networkReaderStatistic = networkReaderStatistic;
     logger = new PrivateLogger();
   }
 
   public static NettyWsHandler newInstance(EventManager eventManager, SessionManager sessionManager,
-                                           ConnectionFilter connectionFilter,
+                                           ConnectionFilter connectionFilter, DataType dataType,
                                            NetworkReaderStatistic networkReaderStatistic) {
-    return new NettyWsHandler(eventManager, sessionManager, connectionFilter,
+    return new NettyWsHandler(eventManager, sessionManager, connectionFilter, dataType,
         networkReaderStatistic);
-  }
-
-  @Override
-  public void channelActive(ChannelHandlerContext ctx) {
-    try {
-      var address = ctx.channel().remoteAddress().toString();
-      connectionFilter.validateAndAddAddress(address);
-
-      var session = sessionManager.createWebSocketSession(ctx.channel());
-      eventManager.emit(ServerEvent.SESSION_CREATED, session);
-    } catch (RefusedConnectionAddressException e) {
-      // TODO: Creates an orphan session for a new event
-      logger.error(e, "Refused connection with address: ", e.getMessage());
-
-      ctx.channel().close();
-    }
   }
 
   @Override
@@ -103,11 +91,11 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   }
 
   @Override
-  public void channelRead(ChannelHandlerContext ctx, Object msgRaw) {
+  public void channelRead(@Nonnull ChannelHandlerContext ctx, @Nonnull Object raw) {
     // only allow this type of frame
-    if (msgRaw instanceof BinaryWebSocketFrame) {
+    if (raw instanceof BinaryWebSocketFrame) {
       // convert the BinaryWebSocketFrame to bytes' array
-      var buffer = ((BinaryWebSocketFrame) msgRaw).content();
+      var buffer = ((BinaryWebSocketFrame) raw).content();
       var binary = new byte[buffer.readableBytes()];
       buffer.getBytes(buffer.readerIndex(), binary);
       buffer.release();
@@ -115,17 +103,25 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
       var session = sessionManager.getSessionByWebSocket(ctx.channel());
 
       if (Objects.isNull(session)) {
-        logger.debug("WEBSOCKET READ CHANNEL",
-            "Reader handle a null session with the web socket channel: ",
-            ctx.channel().toString());
-        return;
+        try {
+          var address = ctx.channel().remoteAddress().toString();
+          connectionFilter.validateAndAddAddress(address);
+        } catch (RefusedConnectionAddressException exception) {
+          logger.error(exception, "Refused connection with address: ", exception.getMessage());
+          // handle refused connection, it should send to the client the reason before closing connection
+          eventManager.emit(ServerEvent.WEBSOCKET_CONNECTION_REFUSED, ctx.channel(), exception);
+          ctx.channel().close();
+        }
+
+        session = sessionManager.createWebSocketSession(ctx.channel());
+        eventManager.emit(ServerEvent.SESSION_CREATED, session);
       }
 
       session.addReadBytes(binary.length);
       networkReaderStatistic.updateReadBytes(binary.length);
       networkReaderStatistic.updateReadPackets(1);
 
-      var data = ZeroUtility.binaryToCollection(binary);
+      var data = DataUtility.binaryToCollection(dataType, binary);
       var message = ServerMessage.newInstance().setData(data);
 
       if (!session.isConnected()) {
@@ -146,7 +142,7 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
       logger.error(cause, "Exception was occurred on channel: %s", ctx.channel().toString());
     }
   }
+}
 
-  private final class PrivateLogger extends SystemLogger {
-  }
+class PrivateLogger extends SystemLogger {
 }

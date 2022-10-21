@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.define.data.PathConfig;
 import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.PacketQueue;
@@ -257,6 +258,13 @@ public interface NetworkService extends Service {
    * @param packetDecoder an instance of {@link BinaryPacketDecoder}
    */
   void setPacketDecoder(BinaryPacketDecoder packetDecoder);
+
+  /**
+   * Set the data serialization type.
+   *
+   * @param dataType the {@link DataType} value
+   */
+  void setDataType(DataType dataType);
 
   /**
    * Retrieves the session manager instance.

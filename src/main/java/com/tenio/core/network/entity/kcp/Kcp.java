@@ -17,8 +17,6 @@ import java.util.function.Consumer;
 
 public abstract class Kcp {
 
-  private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
-
   //=====================================================================
   // KCP BASIC
   //=====================================================================
@@ -156,7 +154,7 @@ public abstract class Kcp {
   //---------------------------------------------------------------------
   // user/upper level recv: returns size, returns below zero for EAGAIN
   //---------------------------------------------------------------------
-  public int Recv(Consumer<byte[]> receiving) {
+  public int Recv(byte[] buffer) {
 
     if (0 == nrcv_que.size()) {
       return -1;
@@ -166,8 +164,6 @@ public abstract class Kcp {
     if (0 > peekSize) {
       return -2;
     }
-
-    byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
 
     if (peekSize > buffer.length) {
       return -3;
@@ -213,8 +209,6 @@ public abstract class Kcp {
       // tell remote my window size
       probe |= IKCP_ASK_TELL;
     }
-
-    receiving.accept(buffer);
 
     return n;
   }
