@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example9.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.ZeroMap;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.handler.AbstractHandler;
@@ -39,7 +39,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
   @Override
   public void handle(Player player, ServerMessage message) {
     var data =
-        object().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
             player.getName(),
             ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 

@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4;
 
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.data.ServerMessage;
@@ -126,7 +128,10 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   @Override
-  public void onReceivedTCP(ServerMessage message) {
+  public void onReceivedTCP(byte[] binaries) {
+    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
+    var message = ServerMessage.newInstance().setData(dat);
+
     if (LOGGER_DEBUG) {
       System.err.println("[RECV FROM SERVER TCP] -> " + message);
     }

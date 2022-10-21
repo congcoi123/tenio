@@ -22,27 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example10.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.UdpEstablishedState;
 
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer {
+public final class PlayerLoggedInHandler extends AbstractHandler
+    implements EventPlayerLoggedinResult {
 
   @Override
-  public void handle(Player player, ServerMessage message) {
-    var data =
-        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-            player.getName(),
-            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+  public void handle(Player player, PlayerLoggedInResult result) {
+    if (result == PlayerLoggedInResult.SUCCESS) {
+      var data =
+          msgmap().putMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ATTACH,
+              msgarray().addInteger(UdpEstablishedState.ALLOW_TO_ATTACH)
+                  .addInteger(api().getCurrentAvailableUdpPort()));
 
-    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+    }
   }
 }

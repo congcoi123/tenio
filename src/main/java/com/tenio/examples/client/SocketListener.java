@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.core.entity.data.ServerMessage;
-
 /**
  * This interface helps you listen to all messages these came from the server's
  * TCP port.
@@ -35,7 +33,7 @@ public interface SocketListener {
   /**
    * Listen for a new message.
    *
-   * @param message the received message
+   * @param binaries the received message
    */
-  void onReceivedTCP(ServerMessage message);
+  void onReceivedTCP(byte[] binaries);
 }
