@@ -34,6 +34,8 @@ public final class SharedEventKey {
   public static final String KEY_PLAYER_POSITION = "p";
   public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
   public static final String KEY_PLAYER_GET_RESPONSE = "rr";
+  public static final String KEY_COMMAND = "c";
+  public static final String KEY_DATA = "d";
 
   private SharedEventKey() {
     throw new UnsupportedOperationException("This class does not support to create a new "

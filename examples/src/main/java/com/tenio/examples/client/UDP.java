@@ -123,9 +123,9 @@ public final class UDP {
   public void receive(DatagramListener listener) {
     var executorService = Executors.newSingleThreadExecutor();
     future = executorService.submit(() -> {
+      var buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
       while (true) {
         try {
-          byte[] buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
           var response = new DatagramPacket(buffer, buffer.length);
           datagramSocket.receive(response);
           listener.onReceivedUDP(buffer);

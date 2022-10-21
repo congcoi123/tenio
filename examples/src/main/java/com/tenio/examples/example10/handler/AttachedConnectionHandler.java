@@ -22,27 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example10.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.entity.define.result.AttachedConnectionResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.event.EventAttachedConnectionResult;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.UdpEstablishedState;
+import java.util.Optional;
 
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer {
+public final class AttachedConnectionHandler extends AbstractHandler
+    implements EventAttachedConnectionResult {
 
   @Override
-  public void handle(Player player, ServerMessage message) {
-    var data =
-        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-            player.getName(),
-            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+  public void handle(Optional<Player> player, int kcpConv, AttachedConnectionResult result) {
+    if (result == AttachedConnectionResult.SUCCESS) {
+      var data = msgmap().putMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ATTACH,
+          msgarray().addInteger(UdpEstablishedState.ATTACHED).addInteger(kcpConv));
 
-    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player.get()).write();
+    }
   }
 }

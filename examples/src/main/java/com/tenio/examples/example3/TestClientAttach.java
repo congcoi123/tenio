@@ -24,9 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.examples.example3;
 
-import com.tenio.common.data.ZeroArray;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
@@ -77,7 +79,10 @@ public final class TestClientAttach implements SocketListener, DatagramListener 
   }
 
   @Override
-  public void onReceivedTCP(ServerMessage message) {
+  public void onReceivedTCP(byte[] binaries) {
+    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
+    var message = ServerMessage.newInstance().setData(dat);
+
     System.err.println("[RECV FROM SERVER TCP] -> " + message);
     ZeroArray pack = ((ZeroMap) message.getData()).getZeroArray(SharedEventKey.KEY_ALLOW_TO_ATTACH);
 

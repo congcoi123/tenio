@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
@@ -155,8 +155,7 @@ public final class TCP implements PacketDecoderResultListener {
 
   @Override
   public void resultFrame(Session session, byte[] binary) {
-    var data = ZeroUtility.binaryToMap(binary);
-    socketListener.onReceivedTCP(ServerMessage.newInstance().setData(data));
+    socketListener.onReceivedTCP(binary);
   }
 
   @Override

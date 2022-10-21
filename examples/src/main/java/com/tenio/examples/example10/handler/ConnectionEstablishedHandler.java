@@ -22,27 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example10.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.entity.Player;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
+import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.examples.server.SharedEventKey;
 
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer {
+public final class ConnectionEstablishedHandler extends AbstractHandler
+    implements EventConnectionEstablishedResult {
 
   @Override
-  public void handle(Player player, ServerMessage message) {
-    var data =
-        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-            player.getName(),
-            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+    if (result == ConnectionEstablishedResult.SUCCESS) {
+      var data = (MsgPackMap) message.getData();
 
-    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
+      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+    }
   }
 }

@@ -40,7 +40,7 @@ public final class AttachedConnectionHandler extends AbstractHandler
   @Override
   public void handle(Optional<Player> player, int kcpConv, AttachedConnectionResult result) {
     if (result == AttachedConnectionResult.SUCCESS) {
-      var data = object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ATTACHED);
+      var data = map().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ATTACHED);
 
       response().setContent(data.toBinary()).setRecipientPlayer(player.get()).write();
     }

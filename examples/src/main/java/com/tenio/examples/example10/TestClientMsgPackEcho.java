@@ -22,13 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example9;
+package com.tenio.examples.example10;
 
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
-import com.tenio.common.data.zero.ZeroArray;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.common.data.zero.utility.ZeroUtility;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.configuration.kcp.KcpConfiguration;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.network.entity.kcp.Ukcp;
@@ -58,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  * 5. Send messages via UDP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientKcpEcho implements SocketListener, DatagramListener, KcpIoHandler {
+public final class TestClientMsgPackEcho implements SocketListener, DatagramListener, KcpIoHandler {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
@@ -67,7 +65,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
   private final NetworkWriterStatistic networkWriterStatistic;
   private UDP udp;
 
-  public TestClientKcpEcho() {
+  public TestClientMsgPackEcho() {
     playerName = ClientUtility.generateRandomString(5);
 
     // create a new TCP object and listen for this port
@@ -80,7 +78,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
 
     // send a login request
     var data =
-        ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+        DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     var message = ServerMessage.newInstance().setData(data);
     tcp.send(message);
 
@@ -91,12 +89,13 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
    * The entry point.
    */
   public static void main(String[] args) {
-    new TestClientKcpEcho();
+    new TestClientMsgPackEcho();
   }
 
   @Override
   public void sessionRead(Session session, byte[] binary) {
-    System.out.println("[KCP SESSION READ] " + ZeroUtility.binaryToMap(binary));
+    System.out.println("[KCP SESSION READ] " + DataUtility.binaryToCollection(DataType.MSG_PACK,
+        binary));
   }
 
   @Override
@@ -131,17 +130,17 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
 
   @Override
   public void onReceivedTCP(byte[] binaries) {
-    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-    var message = ServerMessage.newInstance().setData(dat);
+    var data = DataUtility.binaryToCollection(DataType.MSG_PACK, binaries);
+    var message = ServerMessage.newInstance().setData(data);
 
     System.err.println("[RECV FROM SERVER TCP] -> " + message);
-    ZeroArray pack = ((ZeroMap) message.getData()).getZeroArray(SharedEventKey.KEY_ALLOW_TO_ATTACH);
+    var pack = ((MsgPackMap) message.getData()).getMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ATTACH);
 
-    switch (pack.getByte(0)) {
+    switch (pack.getInteger(0)) {
       case UdpEstablishedState.ALLOW_TO_ATTACH: {
         // now you can send request for UDP connection request
-        var data =
-            ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+        data =
+            DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
         var request = ServerMessage.newInstance().setData(data);
         // create a new UDP object and listen for this port
         udp = new UDP(pack.getInteger(1));
@@ -162,7 +161,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
         kcpProcessing();
 
         for (int i = 1; i <= 100; i++) {
-          var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+          data = DataUtility.newMsgMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
           ukcp.send(data.toBinary());
 

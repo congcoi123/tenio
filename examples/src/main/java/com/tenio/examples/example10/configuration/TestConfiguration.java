@@ -22,27 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example10.configuration;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.common.configuration.Configuration;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.examples.server.ExampleConfigurationType;
+import java.util.Map;
 
+/**
+ * Create your own configuration.
+ */
 @Component
-public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer {
+public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
   @Override
-  public void handle(Player player, ServerMessage message) {
-    var data =
-        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-            player.getName(),
-            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-
-    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
+  protected void extend(Map<String, String> extProperties) {
+    for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+      var paramName = entry.getKey();
+      push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+    }
   }
 }

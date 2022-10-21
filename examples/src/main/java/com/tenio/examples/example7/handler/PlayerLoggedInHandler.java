@@ -39,7 +39,6 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
-      // player.setIgnoreTimeout(true);
       // create the initial position for player
       int x = MathUtility.randInt(100, 400);
       int y = MathUtility.randInt(100, 400);

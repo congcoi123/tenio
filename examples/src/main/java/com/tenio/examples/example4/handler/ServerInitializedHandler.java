@@ -56,7 +56,7 @@ public final class ServerInitializedHandler extends AbstractHandler
       public void updateVehiclePosition(Vehicle vehicle) {
         var players = api().getReadonlyPlayersList();
 
-        var data = object();
+        var data = map();
         var array = new ArrayList<Integer>();
         array.add(vehicle.getIndex());
         array.add((int) vehicle.getPositionX());
@@ -72,7 +72,7 @@ public final class ServerInitializedHandler extends AbstractHandler
                                             int currentFps) {
         var player = api().getPlayerByName(playerName);
         if (player.isPresent()) {
-          var data = object();
+          var data = map();
           data.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
 
           response().setRecipientPlayer(player.get()).setContent(data.toBinary()).write();

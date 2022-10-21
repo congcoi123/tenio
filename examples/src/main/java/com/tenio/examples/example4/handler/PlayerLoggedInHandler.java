@@ -40,7 +40,7 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
       var data =
-          object().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH)
+          map().putByte(SharedEventKey.KEY_ALLOW_TO_ATTACH, UdpEstablishedState.ALLOW_TO_ATTACH)
               .putInteger(SharedEventKey.KEY_ALLOW_TO_ATTACH_PORT,
                   api().getCurrentAvailableUdpPort());
 
