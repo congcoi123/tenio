@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="9.0.1">
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/configuration/CommonConfiguration.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/configuration/Configuration.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/configuration/ConfigurationType.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/logger/AbstractLogger.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/logger/SystemLogger.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/logger/pool/StringBuilderPool.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/Bootstrap.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/Configuration.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/AutowiredQualifier.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/Component.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/Bean.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/Autowired.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/annotation/AutowiredAcceptNull.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/injector/Injector.java">
+<error line="251" severity="warning" message="Line is longer than 100 characters (found 110)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="255" severity="warning" message="Line is longer than 100 characters (found 110)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="258" severity="warning" message="Line is longer than 100 characters (found 110)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="260" severity="warning" message="Line is longer than 100 characters (found 149)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="263" severity="warning" message="Line is longer than 100 characters (found 148)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="265" severity="warning" message="Line is longer than 100 characters (found 110)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="322" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="323" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="324" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="325" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/bootstrap/utility/ClassLoaderUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/constant/Trademark.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/constant/CommonConstant.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/task/TaskManager.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/task/Task.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/task/implement/TaskManagerImpl.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/worker/WorkerPoolRunnable.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/worker/WorkerPool.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ReadonlyZeroArray.java">
+<error line="55" severity="warning" message="Line continuation have incorrect indentation level, expected level should be 4." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck"/>
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ZeroArray.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ZeroCollection.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ReadonlyZeroMap.java">
+<error line="40" severity="warning" message="Line continuation have incorrect indentation level, expected level should be 4." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck"/>
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ZeroType.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/common/CommonArray.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/common/CommonMap.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ZeroMap.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/implement/ZeroMapImpl.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/implement/ZeroElementImpl.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/implement/ZeroArrayImpl.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/ZeroElement.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/data/utility/ZeroUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/pool/ElementPool.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/IllegalDefinedAccessControlException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/MultipleImplementedClassForInterfaceException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/NullElementPoolException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/NoImplementedClassFoundException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/RunningScheduledTaskException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/exception/IllegalReturnTypeException.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/MathUtility.java">
+<error line="87" severity="warning" message="Line continuation have incorrect indentation level, expected level should be 4." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck"/>
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/OsUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/XmlUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/ByteUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/TimeUtility.java">
+</file>
+<file name="/Users/kong/Documents/GitHub/tenio-common/src/main/java/com/tenio/common/utility/StringUtility.java">
+</file>
+</checkstyle>
