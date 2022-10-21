@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.engine.writer;
+package com.tenio.core.network.zero.engine.writer.implement;
 
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.network.zero.engine.KcpWriter;

@@ -26,7 +26,7 @@ package com.tenio.core.entity.implement;
 
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.PlayerRoleInRoom;
+import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.PlayerState;
 import com.tenio.core.entity.Room;
 import com.tenio.core.network.entity.session.Session;
@@ -162,7 +162,7 @@ public final class PlayerImpl implements Player {
 
   @Override
   public boolean isInRoom() {
-    return playerSlotInCurrentRoom >= RoomImpl.NIL_SLOT;
+    return playerSlotInCurrentRoom > RoomImpl.NIL_SLOT;
   }
 
   @Override
@@ -263,7 +263,19 @@ public final class PlayerImpl implements Player {
 
   @Override
   public String toString() {
-    return String.format("{ name: %s, session: %b, loggedIn: %b, role: %s, activated: %b }",
-        Objects.nonNull(name) ? name : "null", hasSession, loggedIn, roleInRoom.name(), activated);
+    return "Player{" +
+        "name='" + name + '\'' +
+        ", properties=" + properties +
+        ", session=" + session +
+        ", currentRoom=" + currentRoom +
+        ", state=" + state +
+        ", roleInRoom=" + roleInRoom +
+        ", lastLoginTime=" + lastLoginTime +
+        ", lastJoinedRoomTime=" + lastJoinedRoomTime +
+        ", playerSlotInCurrentRoom=" + playerSlotInCurrentRoom +
+        ", loggedIn=" + loggedIn +
+        ", activated=" + activated +
+        ", hasSession=" + hasSession +
+        '}';
   }
 }

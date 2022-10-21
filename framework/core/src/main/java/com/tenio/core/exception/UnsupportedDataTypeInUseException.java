@@ -22,20 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.entity;
+package com.tenio.core.exception;
+
+import com.tenio.common.data.DataType;
 
 /**
- * Definitions of a player role when it is in a room.
+ * When wrong data serialization type is attempting to be called.
  */
-public enum PlayerRoleInRoom {
+public final class UnsupportedDataTypeInUseException extends RuntimeException {
+
+  private static final long serialVersionUID = 198854106484130706L;
+
   /**
-   * When a player joins a room as a participant, it has full permission for all activities in
-   * the room.
+   * When wrong data serialization type is attempting to be called.
+   *
+   * @param dataType the appropriate {@link DataType} that should be used
    */
-  PARTICIPANT,
-  /**
-   * When a player joins a room as a spectator, it can only be allowed to observe others'
-   * activities.
-   */
-  SPECTATOR
+  public UnsupportedDataTypeInUseException(DataType dataType) {
+    super(String.format("The method is not supported when server is using this type: %s, please " +
+        "look for other methods that supports %s", dataType.name(), dataType.name()));
+  }
 }

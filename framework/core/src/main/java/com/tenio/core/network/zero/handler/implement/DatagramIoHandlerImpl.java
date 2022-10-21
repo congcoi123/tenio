@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
@@ -49,7 +49,7 @@ public final class DatagramIoHandlerImpl extends AbstractIoHandler implements Da
   @Override
   public void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress,
                           byte[] binary) {
-    var data = ZeroUtility.binaryToCollection(binary);
+    var data = DataUtility.binaryToCollection(dataType, binary);
     var message = ServerMessage.newInstance().setData(data);
     eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, datagramChannel, remoteAddress,
         message);
@@ -57,7 +57,7 @@ public final class DatagramIoHandlerImpl extends AbstractIoHandler implements Da
 
   @Override
   public void sessionRead(Session session, byte[] binary) {
-    var data = ZeroUtility.binaryToCollection(binary);
+    var data = DataUtility.binaryToCollection(dataType, binary);
     var message = ServerMessage.newInstance().setData(data);
     eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
   }

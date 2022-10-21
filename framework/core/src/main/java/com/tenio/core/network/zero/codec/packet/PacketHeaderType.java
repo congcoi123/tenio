@@ -50,8 +50,7 @@ public enum PacketHeaderType {
   ENCRYPTION(16);
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<Integer, PacketHeaderType> lookup =
-      new HashMap<Integer, PacketHeaderType>();
+  private static final Map<Integer, PacketHeaderType> lookup = new HashMap<>();
 
   static {
     for (var type : PacketHeaderType.values()) {

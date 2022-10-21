@@ -22,38 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.zero.handler;
-
-import com.tenio.common.data.DataType;
-import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
+package com.tenio.core.entity.define.room;
 
 /**
- * The Datagram IO handler.
+ * Definitions of a player role when it is in a room.
  */
-public interface DatagramIoHandler extends BaseIoHandler {
-
+public enum PlayerRoleInRoom {
   /**
-   * Set the data serialization type.
-   *
-   * @param dataType the {@link DataType} value
+   * When a player joins a room as a participant, it has full permission for all activities in
+   * the room.
    */
-  void setDataType(DataType dataType);
-
+  PARTICIPANT,
   /**
-   * When a new message comes from client side then this method is invoked.
-   *
-   * @param datagramChannel a {@link DatagramChannel} created on the server
-   * @param remoteAddress   a remote {@link SocketAddress} of client side
-   * @param binary          an array of {@code byte} data sent by client side
+   * When a player joins a room as a spectator, it can only be allowed to observe others'
+   * activities.
    */
-  void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress, byte[] binary);
+  SPECTATOR;
 
-  /**
-   * When any exception occurred on the Datagram channel then this method is invoked.
-   *
-   * @param datagramChannel the {@link DatagramChannel} created on the server
-   * @param exception       an {@link Exception} emerging
-   */
-  void channelException(DatagramChannel datagramChannel, Exception exception);
+  @Override
+  public String toString() {
+    return this.name();
+  }
 }

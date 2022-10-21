@@ -286,7 +286,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
                 getSocketIoHandler().channelActive(socketChannel, selectionKey);
               } catch (RefusedConnectionAddressException e1) {
-                // TODO: Creates an orphan session for a new event
                 getSocketIoHandler().channelException(socketChannel, e1);
                 error(e1, "Refused connection with address: ", e1.getMessage());
 

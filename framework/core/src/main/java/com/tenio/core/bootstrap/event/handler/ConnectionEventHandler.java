@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.bootstrap.event.handlers;
+package com.tenio.core.bootstrap.event.handler;
 
 import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.common.bootstrap.annotation.Component;
@@ -33,13 +33,18 @@ import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.result.AttachedConnectionResult;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
 import com.tenio.core.handler.event.EventAttachedConnectionResult;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventDisconnectConnection;
+import com.tenio.core.handler.event.EventSocketConnectionRefused;
+import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
+import io.netty.channel.Channel;
+import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
 /**
@@ -47,6 +52,12 @@ import java.util.Optional;
  */
 @Component
 public final class ConnectionEventHandler {
+
+  @AutowiredAcceptNull
+  private EventSocketConnectionRefused eventSocketConnectionRefused;
+
+  @AutowiredAcceptNull
+  private EventWebSocketConnectionRefused eventWebSocketConnectionRefused;
 
   @AutowiredAcceptNull
   private EventConnectionEstablishedResult eventConnectionEstablishedResult;
@@ -70,6 +81,10 @@ public final class ConnectionEventHandler {
    */
   public void initialize(EventManager eventManager) {
 
+    final var eventSocketConnectionRefusedOp = Optional.ofNullable(eventSocketConnectionRefused);
+    final var eventWebSocketConnectionRefusedOp =
+        Optional.ofNullable(eventWebSocketConnectionRefused);
+
     final var eventConnectionEstablishedResultOp =
         Optional.ofNullable(eventConnectionEstablishedResult);
     final var eventWriteMessageToConnectionOp =
@@ -82,6 +97,26 @@ public final class ConnectionEventHandler {
 
     final var eventDisconnectConnectionOp =
         Optional.ofNullable(eventDisconnectConnection);
+
+    eventSocketConnectionRefusedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.SOCKET_CONNECTION_REFUSED, params -> {
+          var socketChannel = (SocketChannel) params[0];
+          var exception = (RefusedConnectionAddressException) params[1];
+
+          event.handle(socketChannel, exception);
+
+          return null;
+        }));
+
+    eventWebSocketConnectionRefusedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.WEBSOCKET_CONNECTION_REFUSED, params -> {
+          var channel = (Channel) params[0];
+          var exception = (RefusedConnectionAddressException) params[1];
+
+          event.handle(channel, exception);
+
+          return null;
+        }));
 
     eventConnectionEstablishedResultOp.ifPresent(
         event -> eventManager.on(ServerEvent.CONNECTION_ESTABLISHED_RESULT, params -> {

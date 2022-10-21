@@ -54,7 +54,7 @@ public enum TransportType {
   HTTP("http");
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, TransportType> lookup = new HashMap<String, TransportType>();
+  private static final Map<String, TransportType> lookup = new HashMap<>();
 
   static {
     for (var type : TransportType.values()) {

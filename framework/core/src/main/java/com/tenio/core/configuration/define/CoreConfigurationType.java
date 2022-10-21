@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.configuration.define;
 
 import com.tenio.common.configuration.ConfigurationType;
+import com.tenio.common.data.DataType;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.exception.PacketQueueFullException;
@@ -56,6 +57,7 @@ public enum CoreConfigurationType implements ConfigurationType {
   SERVER_ID("server-id"),
   /**
    * The server address.
+   *
    * @since 0.3.0
    */
   SERVER_ADDRESS("server-address"),
@@ -137,6 +139,7 @@ public enum CoreConfigurationType implements ConfigurationType {
   WORKER_INTERNAL_PROCESSOR("internal-processor"),
   /**
    * The number of UDP channel will be opened on the server.
+   *
    * @since 0.3.0
    */
   WORKER_UDP_WORKER("udp-worker"),
@@ -170,6 +173,13 @@ public enum CoreConfigurationType implements ConfigurationType {
    * Sets an interval to frequently monitoring the server information.
    */
   INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
+  /**
+   * Sets the data serialization mechanism is in use, currently, there are 2 types supported:
+   * (internal) zero and msgpack.
+   *
+   * @see DataType
+   */
+  DATA_SERIALIZATION("data-serialization"),
   /**
    * Sets the maximum size of a packet queue. Notes that every {@link Session} has its own queue,
    * and this setting applies for all of them.
@@ -240,6 +250,7 @@ public enum CoreConfigurationType implements ConfigurationType {
   NETWORK_PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
   /**
    * Allows using KCP transportation in UDP channels.
+   *
    * @since 0.3.0
    */
   NETWORK_PROP_ENABLED_KCP("enabled-kcp"),

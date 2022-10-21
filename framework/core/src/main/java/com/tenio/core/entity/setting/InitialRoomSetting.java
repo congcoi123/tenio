@@ -132,6 +132,20 @@ public final class InitialRoomSetting {
     return roomPlayerSlotGeneratedStrategy;
   }
 
+  @Override
+  public String toString() {
+    return "InitialRoomSetting{" +
+        "name='" + name + '\'' +
+        ", password='" + password + '\'' +
+        ", maxParticipants=" + maxParticipants +
+        ", maxSpectators=" + maxSpectators +
+        ", activated=" + activated +
+        ", roomRemoveMode=" + roomRemoveMode +
+        ", roomCredentialValidatedStrategy=" + roomCredentialValidatedStrategy +
+        ", roomPlayerSlotGeneratedStrategy=" + roomPlayerSlotGeneratedStrategy +
+        '}';
+  }
+
   /**
    * The builder class for collecting setups information.
    */

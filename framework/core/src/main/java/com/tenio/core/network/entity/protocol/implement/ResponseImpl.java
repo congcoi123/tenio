@@ -30,6 +30,7 @@ import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.server.ServerImpl;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -230,15 +231,16 @@ public final class ResponseImpl implements Response {
 
   @Override
   public String toString() {
-    return String.format(
-        "{ content: bytes[%d], players: %s, socket: %s, datagram: %s, "
-            + "WebSocket: %s, non-session: %s, priority: %s, udp: %b, encrypted: %b}",
-        content.length, Objects.nonNull(players) ? players.toString() : "null",
-        Objects.nonNull(socketSessions) ? socketSessions.toString() : "null",
-        Objects.nonNull(datagramSessions) ? datagramSessions.toString() : "null",
-        Objects.nonNull(webSocketSessions) ? webSocketSessions.toString() : "null",
-        Objects.nonNull(nonSessionPlayers) ? nonSessionPlayers.toString() : "null",
-        priority.toString(),
-        isPrioritizedUdp, isEncrypted);
+    return "Response{" +
+        "content(bytes)=" + (Objects.nonNull(content) ? content.length : "null") +
+        ", players=" + players +
+        ", nonSessionPlayers=" + nonSessionPlayers +
+        ", socketSessions=" + socketSessions +
+        ", datagramSessions=" + datagramSessions +
+        ", webSocketSessions=" + webSocketSessions +
+        ", priority=" + priority +
+        ", isPrioritizedUdp=" + isPrioritizedUdp +
+        ", isEncrypted=" + isEncrypted +
+        '}';
   }
 }

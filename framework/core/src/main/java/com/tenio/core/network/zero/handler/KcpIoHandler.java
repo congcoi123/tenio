@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.entity.session.Session;
 
 /**
@@ -31,6 +32,13 @@ import com.tenio.core.network.entity.session.Session;
  * @since 0.3.0
  */
 public interface KcpIoHandler extends BaseIoHandler {
+
+  /**
+   * Set the data serialization type.
+   *
+   * @param dataType the {@link DataType} value
+   */
+  void setDataType(DataType dataType);
 
   /**
    * When a new KCP channel is established in a session.

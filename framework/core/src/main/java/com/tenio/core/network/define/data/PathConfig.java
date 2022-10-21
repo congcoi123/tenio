@@ -102,8 +102,12 @@ public final class PathConfig {
 
   @Override
   public String toString() {
-    return String.format("{ name:%s, method:%s, uri:%s, description:%s, version:%d}", name,
-        method.name(),
-        uri, description, version);
+    return "PathConfig{" +
+        "name='" + name + '\'' +
+        ", description='" + description + '\'' +
+        ", version=" + version +
+        ", method=" + method +
+        ", uri='" + uri + '\'' +
+        '}';
   }
 }

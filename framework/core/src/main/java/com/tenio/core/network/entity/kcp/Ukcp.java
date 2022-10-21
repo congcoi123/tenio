@@ -37,6 +37,8 @@ import java.io.IOException;
  */
 public class Ukcp extends Kcp {
 
+  private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
+
   private final Session session;
   private final KcpIoHandler kcpIoHandler;
   private final KcpWriter<?> kcpWriter;
@@ -62,6 +64,7 @@ public class Ukcp extends Kcp {
     this.kcpIoHandler = kcpIoHandler;
     this.kcpWriter = kcpWriter;
     this.networkWriterStatistic = networkWriterStatistic;
+    this.buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
 
     SetNoDelay(profile.getNoDelay(), profile.getUpdateInterval(), profile.getFastResend(),
         profile.getCongestionControl());
@@ -106,7 +109,7 @@ public class Ukcp extends Kcp {
    * KCP does it internal processing and returns result through {@code byte} buffer array.
    */
   public void receive() {
-    int receive = Recv((buffer) -> this.buffer = buffer);
+    int receive = Recv(buffer);
     if (receive > 0) {
       kcpIoHandler.sessionRead(session, buffer);
     }

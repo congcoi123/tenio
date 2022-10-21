@@ -295,4 +295,20 @@ public interface ServerApi {
    * @since 0.3.0
    */
   int getCurrentAvailableUdpPort();
+
+  /**
+   * Retrieves the time when server starts in milliseconds.
+   *
+   * @return started time in milliseconds
+   * @since 0.3.1
+   */
+  long getStartedTime();
+
+  /**
+   * Retrieves the current uptime of server in milliseconds.
+   *
+   * @return the current server's uptime in milliseconds
+   * @since 0.3.1
+   */
+  long getUptime();
 }

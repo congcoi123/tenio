@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.entity.implement;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.PlayerRoleInRoom;
+import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.RoomState;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
@@ -438,9 +438,20 @@ public final class RoomImpl implements Room {
 
   @Override
   public String toString() {
-    return String.format("{ id: %d, name: %s, password: %s, max participants: %d, max spectator: "
-            + "%d }", id, Objects.nonNull(name) ? name : "null", Objects.nonNull(password) ? password : "null",
-        maxParticipants, maxSpectators);
+    return "Room{" +
+        "id=" + id +
+        ", properties=" + properties +
+        ", name='" + name + '\'' +
+        ", password='" + password + '\'' +
+        ", maxParticipants=" + maxParticipants +
+        ", maxSpectators=" + maxSpectators +
+        ", participantCount=" + participantCount +
+        ", spectatorCount=" + spectatorCount +
+        ", owner=" + owner +
+        ", roomRemoveMode=" + roomRemoveMode +
+        ", state=" + state +
+        ", activated=" + activated +
+        '}';
   }
 
   @Override

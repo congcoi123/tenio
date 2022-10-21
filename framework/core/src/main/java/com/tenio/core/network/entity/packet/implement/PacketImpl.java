@@ -29,6 +29,7 @@ import com.tenio.core.network.define.ResponsePriority;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -195,9 +196,17 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
   @Override
   public String toString() {
-    return String.format(
-        "{ id: %d, createdTime: %d, transportType: %s, priority: %s, encrypted: %b }", id,
-        createdTime, transportType.toString(), priority.toString(), encrypted);
+    return "Packet{" +
+        "id=" + id +
+        ", createdTime=" + createdTime +
+        ", data(bytes)=" + (Objects.nonNull(data) ? data.length : "null") +
+        ", priority=" + priority +
+        ", encrypted=" + encrypted +
+        ", transportType=" + transportType +
+        ", originalSize=" + originalSize +
+        ", recipients=" + recipients +
+        ", fragmentBuffer(bytes)=" + (Objects.nonNull(fragmentBuffer) ? fragmentBuffer.length : "null") +
+        '}';
   }
 
   @Override

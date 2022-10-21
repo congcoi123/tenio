@@ -50,7 +50,7 @@ public enum RestMethod {
   DELETE("delete");
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, RestMethod> lookup = new HashMap<String, RestMethod>();
+  private static final Map<String, RestMethod> lookup = new HashMap<>();
 
   static {
     for (var method : RestMethod.values()) {

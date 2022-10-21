@@ -63,9 +63,11 @@ EventSendMessageToPlayer
 EventServerException
 EventServerInitialization
 EventServerTeardown
+EventSocketConnectionRefused
 EventSwitchParticipantToSpectatorResult
 EventSwitchSpectatorToParticipantResult
 EventSystemMonitoring
+EventWebSocketConnectionRefused
 EventWriteMessageToConnection
 ```
 

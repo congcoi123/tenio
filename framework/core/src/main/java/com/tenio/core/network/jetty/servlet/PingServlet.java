@@ -53,20 +53,20 @@ public final class PingServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     process.handle(request, response);
   }
+}
 
-  private final class Process extends BaseProcessServlet {
+class Process extends BaseProcessServlet {
 
-    @Override
-    protected void handleImpl(HttpServletRequest request, HttpServletResponse response) {
-      response.setStatus(HttpServletResponse.SC_OK);
-      try {
-        var json = new JSONObject();
-        CommonMap.newInstance().add("status", "ok").add("message", "PING PONG")
-            .forEach(json::put);
-        response.getWriter().println(json);
-      } catch (IOException e) {
-        error(e);
-      }
+  @Override
+  protected void handleImpl(HttpServletRequest request, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_OK);
+    try {
+      var json = new JSONObject();
+      CommonMap.newInstance().add("status", "ok").add("message", "PING PONG")
+          .forEach(json::put);
+      response.getWriter().println(json);
+    } catch (IOException e) {
+      error(e);
     }
   }
 }
