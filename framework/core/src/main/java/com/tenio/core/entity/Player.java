@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.entity;
 
+import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Optional;
 

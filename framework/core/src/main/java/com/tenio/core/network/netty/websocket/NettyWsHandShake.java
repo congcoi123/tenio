@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.netty.websocket;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -33,6 +34,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * <a href="https://en.wikipedia.org/wiki/WebSocket">WebSocket</a> is distinct
@@ -49,31 +51,34 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
   private final EventManager eventManager;
   private final SessionManager sessionManager;
   private final ConnectionFilter connectionFilter;
+  private final DataType dataType;
   private final NetworkReaderStatistic networkReaderStatistic;
 
   private NettyWsHandShake(EventManager eventManager, SessionManager sessionManager,
-                           ConnectionFilter connectionFilter,
+                           ConnectionFilter connectionFilter, DataType dataType,
                            NetworkReaderStatistic networkReaderStatistic) {
     this.eventManager = eventManager;
     this.sessionManager = sessionManager;
     this.connectionFilter = connectionFilter;
+    this.dataType = dataType;
     this.networkReaderStatistic = networkReaderStatistic;
   }
 
   public static NettyWsHandShake newInstance(EventManager eventManager,
                                              SessionManager sessionManager,
                                              ConnectionFilter connectionFilter,
+                                             DataType dataType,
                                              NetworkReaderStatistic networkReaderStatistic) {
-    return new NettyWsHandShake(eventManager, sessionManager, connectionFilter,
+    return new NettyWsHandShake(eventManager, sessionManager, connectionFilter, dataType,
         networkReaderStatistic);
   }
 
   @Override
-  public void channelRead(ChannelHandlerContext ctx, Object msgRaw) {
+  public void channelRead(@Nonnull ChannelHandlerContext ctx, @Nonnull Object raw) {
 
     // check the request for handshake
-    if (msgRaw instanceof HttpRequest) {
-      var httpRequest = (HttpRequest) msgRaw;
+    if (raw instanceof HttpRequest) {
+      var httpRequest = (HttpRequest) raw;
       var headers = httpRequest.headers();
 
       if (headers.get("Connection").equalsIgnoreCase("Upgrade")
@@ -83,7 +88,7 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
         // Messages
         ctx.pipeline()
             .replace(this, "handler", NettyWsHandler.newInstance(eventManager, sessionManager,
-                connectionFilter, networkReaderStatistic));
+                connectionFilter, dataType, networkReaderStatistic));
 
         // do the Handshake to upgrade connection from HTTP to WebSocket protocol
         handleHandshake(ctx, httpRequest);
@@ -105,11 +110,11 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
      Once the connection is established, communication switches to a bidirectional
      binary protocol which does not conform to the HTTP protocol.
      */
-    var handshaker = wsFactory.newHandshaker(req);
-    if (Objects.isNull(handshaker)) {
+    var handshake = wsFactory.newHandshaker(req);
+    if (Objects.isNull(handshake)) {
       WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
     } else {
-      handshaker.handshake(ctx.channel(), req);
+      handshake.handshake(ctx.channel(), req);
     }
   }
 

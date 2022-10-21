@@ -46,9 +46,11 @@ import com.tenio.core.handler.event.EventSendMessageToPlayer;
 import com.tenio.core.handler.event.EventServerException;
 import com.tenio.core.handler.event.EventServerInitialization;
 import com.tenio.core.handler.event.EventServerTeardown;
+import com.tenio.core.handler.event.EventSocketConnectionRefused;
 import com.tenio.core.handler.event.EventSwitchParticipantToSpectatorResult;
 import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
 import com.tenio.core.handler.event.EventSystemMonitoring;
+import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
 
 /**
@@ -56,6 +58,20 @@ import com.tenio.core.handler.event.EventWriteMessageToConnection;
  */
 public enum ServerEvent {
 
+  /**
+   * When an incoming connection is refused to establish a session on the server.
+   *
+   * @see EventSocketConnectionRefused
+   * @since 0.3.1
+   */
+  SOCKET_CONNECTION_REFUSED,
+  /**
+   * When an incoming connection is refused to establish a session on the server.
+   *
+   * @see EventWebSocketConnectionRefused
+   * @since 0.3.1
+   */
+  WEBSOCKET_CONNECTION_REFUSED,
   /**
    * When a new session created in the management list.
    */

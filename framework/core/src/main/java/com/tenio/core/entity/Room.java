@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.entity;
 
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
+import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.implement.RoomImpl;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;

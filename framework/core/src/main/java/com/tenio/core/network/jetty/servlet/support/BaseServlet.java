@@ -103,7 +103,7 @@ public abstract class BaseServlet extends HttpServlet {
     }
     return new JSONObject(body);
   }
+}
 
-  private final class PrivateLogger extends SystemLogger {
-  }
+class PrivateLogger extends SystemLogger {
 }

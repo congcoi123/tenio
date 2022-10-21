@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.server.service;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.configuration.kcp.KcpConfiguration;
 import com.tenio.core.controller.AbstractController;
@@ -41,7 +42,7 @@ import com.tenio.core.network.entity.protocol.implement.RequestImpl;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.network.zero.engine.writer.KcpWriterHandler;
+import com.tenio.core.network.zero.engine.writer.implement.KcpWriterHandler;
 import com.tenio.core.network.zero.handler.KcpIoHandler;
 import com.tenio.core.network.zero.handler.implement.KcpIoHandlerImpl;
 import java.io.IOException;
@@ -68,6 +69,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
+  private DataType dataType;
   private PlayerManager playerManager;
   private KcpIoHandler kcpIoHandler;
   private AtomicInteger kcpConvId;
@@ -88,6 +90,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
     super.initialize();
     if (enabledKcp) {
       kcpIoHandler = KcpIoHandlerImpl.newInstance(eventManager);
+      kcpIoHandler.setDataType(dataType);
       kcpConvId = new AtomicInteger(0);
     }
   }
@@ -95,10 +98,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
   @Override
   public void subscribe() {
 
-    eventManager.on(ServerEvent.SESSION_CREATED, params -> {
-      // do nothing
-      return null;
-    });
+    eventManager.on(ServerEvent.SESSION_CREATED, params -> null);
 
     eventManager.on(ServerEvent.SESSION_REQUEST_CONNECTION, params -> {
       var request =
@@ -140,6 +140,11 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
       return null;
     });
+  }
+
+  @Override
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 
   private Request createRequest(ServerEvent event, Session session) {

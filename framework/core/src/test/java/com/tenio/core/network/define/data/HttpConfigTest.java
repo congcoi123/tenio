@@ -12,7 +12,7 @@ class HttpConfigTest {
 
     assertEquals("https://example.org/example", actualHttpConfig.getName());
     assertEquals(8080, actualHttpConfig.getPort());
-    assertEquals("{ paths:[], name:https://example.org/example, port:8080}",
+    assertEquals("HttpConfig{name='https://example.org/example', port=8080, paths=[]}",
         actualHttpConfig.toString());
   }
 

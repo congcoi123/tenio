@@ -130,4 +130,13 @@ public final class DefaultConnectionFilter implements ConnectionFilter {
       return bannedAddresses.contains(addressIp);
     }
   }
+
+  @Override
+  public String toString() {
+    return "DefaultConnectionFilter{" +
+        "bannedAddresses=" + bannedAddresses +
+        ", addressMap=" + addressMap +
+        ", maxConnectionsPerIp=" + maxConnectionsPerIp +
+        '}';
+  }
 }

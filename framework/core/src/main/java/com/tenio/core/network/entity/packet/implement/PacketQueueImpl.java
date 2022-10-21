@@ -132,6 +132,11 @@ public final class PacketQueueImpl implements PacketQueue {
 
   @Override
   public String toString() {
-    return queue.toString();
+    return "PacketQueue{" +
+        "queue=" + queue +
+        ", packetQueuePolicy=" + packetQueuePolicy +
+        ", maxSize=" + maxSize +
+        ", size=" + size +
+        '}';
   }
 }

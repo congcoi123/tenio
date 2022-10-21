@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
@@ -65,6 +66,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   private JettyHttpService httpService;
   private NettyWebSocketService webSocketService;
   private ZeroSocketService socketService;
+  private DataType dataType;
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
 
@@ -321,6 +323,14 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
+
+    socketService.setDataType(dataType);
+    webSocketService.setDataType(dataType);
+  }
+
+  @Override
   public SessionManager getSessionManager() {
     return sessionManager;
   }
@@ -337,7 +347,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
   @Override
   public void write(Response response) {
-    var data = ZeroUtility.binaryToMap(response.getContent());
+    var data = DataUtility.binaryToCollection(dataType, response.getContent());
     var message = ServerMessage.newInstance().setData(data);
 
     var playerIterator = response.getRecipientPlayers().iterator();

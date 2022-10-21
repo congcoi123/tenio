@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.netty;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
@@ -79,6 +80,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   private int consumerWorkerSize;
 
   private ConnectionFilter connectionFilter;
+  private DataType dataType;
   private SessionManager sessionManager;
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
@@ -127,7 +129,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
         .childOption(ChannelOption.SO_RCVBUF, receiverBufferSize)
         .childOption(ChannelOption.SO_KEEPALIVE, true)
         .childHandler(
-            NettyWsInitializer.newInstance(eventManager, sessionManager, connectionFilter,
+            NettyWsInitializer.newInstance(eventManager, sessionManager, connectionFilter, dataType,
                 networkReaderStatistic, sslContext, usingSsl));
 
     var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
@@ -256,6 +258,11 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   @Override
   public void setConnectionFilter(ConnectionFilter connectionFilter) {
     this.connectionFilter = connectionFilter;
+  }
+
+  @Override
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 
   @Override

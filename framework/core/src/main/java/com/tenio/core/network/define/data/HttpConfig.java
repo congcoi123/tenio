@@ -93,6 +93,10 @@ public final class HttpConfig {
 
   @Override
   public String toString() {
-    return String.format("{ paths:%s, name:%s, port:%d}", paths, name, port);
+    return "HttpConfig{" +
+        "name='" + name + '\'' +
+        ", port=" + port +
+        ", paths=" + paths +
+        '}';
   }
 }

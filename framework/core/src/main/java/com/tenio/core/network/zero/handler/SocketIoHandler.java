@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -32,6 +33,13 @@ import java.nio.channels.SocketChannel;
  * The Socket IO handler.
  */
 public interface SocketIoHandler extends BaseIoHandler {
+
+  /**
+   * Set the data serialization type.
+   *
+   * @param dataType the {@link DataType} value
+   */
+  void setDataType(DataType dataType);
 
   /**
    * When the first connection signal sent from client side to the server via socket (TCP) channel

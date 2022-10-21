@@ -79,9 +79,9 @@ public final class SessionImpl implements Session {
   private volatile long lastWriteTime;
   private volatile long lastActivityTime;
 
-  private volatile long readBytes;
-  private volatile long writtenBytes;
-  private volatile long droppedPackets;
+  private final AtomicLong readBytes;
+  private final AtomicLong writtenBytes;
+  private final AtomicLong droppedPackets;
 
   private volatile long inactivatedTime;
 
@@ -105,9 +105,9 @@ public final class SessionImpl implements Session {
     transportType = TransportType.UNKNOWN;
     packetQueue = null;
 
-    readBytes = 0L;
-    writtenBytes = 0L;
-    droppedPackets = 0L;
+    readBytes = new AtomicLong(0L);
+    writtenBytes = new AtomicLong(0L);
+    droppedPackets = new AtomicLong(0L);
 
     inactivatedTime = 0L;
     activated = false;
@@ -384,32 +384,32 @@ public final class SessionImpl implements Session {
 
   @Override
   public long getReadBytes() {
-    return readBytes;
+    return readBytes.get();
   }
 
   @Override
   public void addReadBytes(long bytes) {
-    readBytes += bytes;
+    readBytes.addAndGet(bytes);
   }
 
   @Override
   public long getWrittenBytes() {
-    return writtenBytes;
+    return writtenBytes.get();
   }
 
   @Override
   public void addWrittenBytes(long bytes) {
-    writtenBytes += bytes;
+    writtenBytes.addAndGet(bytes);
   }
 
   @Override
   public long getDroppedPackets() {
-    return droppedPackets;
+    return droppedPackets.get();
   }
 
   @Override
   public void addDroppedPackets(int packets) {
-    droppedPackets += packets;
+    droppedPackets.addAndGet(packets);
   }
 
   @Override
@@ -573,9 +573,29 @@ public final class SessionImpl implements Session {
 
   @Override
   public String toString() {
-    return String.format(
-        "{ id: %d, name: %s, transportType: %s, active: %b, connected: %b, hasUdp: %b, hasKcp: %b" +
-            " }", id, Objects.nonNull(name) ? name : "null", transportType.toString(), activated,
-        connected, hasUdp, hasKcp);
+    return "Session{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", transportType=" + transportType +
+        ", createdTime=" + createdTime +
+        ", lastReadTime=" + lastReadTime +
+        ", lastWriteTime=" + lastWriteTime +
+        ", lastActivityTime=" + lastActivityTime +
+        ", readBytes=" + readBytes +
+        ", writtenBytes=" + writtenBytes +
+        ", droppedPackets=" + droppedPackets +
+        ", inactivatedTime=" + inactivatedTime +
+        ", datagramRemoteSocketAddress=" + datagramRemoteSocketAddress +
+        ", clientAddress='" + clientAddress + '\'' +
+        ", clientPort=" + clientPort +
+        ", serverPort=" + serverPort +
+        ", serverAddress='" + serverAddress + '\'' +
+        ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
+        ", activated=" + activated +
+        ", connected=" + connected +
+        ", hasUdp=" + hasUdp +
+        ", enabledKcp=" + enabledKcp +
+        ", hasKcp=" + hasKcp +
+        '}';
   }
 }

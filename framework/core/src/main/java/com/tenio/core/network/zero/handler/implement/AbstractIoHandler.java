@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -42,6 +43,10 @@ public abstract class AbstractIoHandler extends AbstractManager {
    * The network reader statistic.
    */
   protected NetworkReaderStatistic networkReaderStatistic;
+  /**
+   * Data Serialization Type.
+   */
+  protected DataType dataType;
 
   protected AbstractIoHandler(EventManager eventManager) {
     super(eventManager);
@@ -63,5 +68,14 @@ public abstract class AbstractIoHandler extends AbstractManager {
    */
   public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
     this.networkReaderStatistic = networkReaderStatistic;
+  }
+
+  /**
+   * Set the data serialization type.
+   *
+   * @param dataType the {@link DataType} value
+   */
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 }

@@ -24,3 +24,11 @@
 - Allowed declaring the server address in configuration file
 - Supported KCP transportation
 - Bugs fixed
+
+## 0.3.1 2022-10-21 Feature release
+- Multiple data serialization methods supported (MsgPack)
+- Added new events to handle connection refused cases
+- WebSocket handling issues fixed
+- Allowed showing server's uptime 
+- Refactoring the project's structure
+- Bugs fixed  
