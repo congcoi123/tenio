@@ -24,10 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6;
 
-import com.tenio.common.data.DataType;
-import com.tenio.common.data.DataUtility;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.common.data.zero.utility.ZeroUtility;
+import com.tenio.common.data.ZeroMap;
+import com.tenio.common.data.utility.ZeroUtility;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
@@ -85,10 +83,7 @@ public final class TestClientEchoStress implements SocketListener {
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-    var message = ServerMessage.newInstance().setData(dat);
-
+  public void onReceivedTCP(ServerMessage message) {
     if (ENABLED_DEBUG) {
       System.out.println("[RECV FROM SERVER TCP] -> " + message);
     }

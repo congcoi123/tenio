@@ -28,25 +28,16 @@ import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Component
 public final class ServerInitializedHandler extends AbstractHandler
     implements EventServerInitialization {
 
-  private final String pattern = "yyyy-MM-dd HH:mm:ss";
-  private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
   @Override
   public void handle(String serverName, Configuration configuration) {
-    info("SERVER INITIALIZATION",
-        String.format("Started: %s", simpleDateFormat.format(new Date(api().getStartedTime()))));
-
     var roomSetting =
         roomSetting().setActivated(true).setMaxParticipants(2).setName("test-room").build();
 
-    var room = api().createRoom(roomSetting);
-    info("SERVER INITIALIZATION", String.format("Created room: %s", room.toString()));
+    api().createRoom(roomSetting);
   }
 }

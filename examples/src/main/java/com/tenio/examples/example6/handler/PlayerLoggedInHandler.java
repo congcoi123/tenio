@@ -38,7 +38,7 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
-      var data = map()
+      var data = object()
           .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Welcome to server: %s", player.getName()))
           .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName());
