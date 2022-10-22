@@ -22,65 +22,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6;
+package com.tenio.examples.example0;
 
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
-import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
 import com.tenio.examples.server.SharedEventKey;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class shows how a client communicates with the server:<br>
  * 1. Create connections.<br>
  * 2. Send a login request.<br>
  * 3. Receive messages via TCP connection from the server.<br>
- * 4. Be logout by server.
- * <p>
- * [NOTE] The client test is also available on <code>C++</code> and
- * <code>JavaScript</code> language, please see the <code>README.md</code> for
- * more details
  */
-public final class TestClientEchoStress implements SocketListener {
+public final class TestSimpleClient implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
-  private static final int NUMBER_CLIENTS = 1000;
-  private static final boolean ENABLED_DEBUG = false;
-  /**
-   * List of TCP clients
-   */
-  private final Map<String, TCP> tcps;
+  private final TCP tcp;
 
-  public TestClientEchoStress() {
-    tcps = new HashMap<>();
-    // create a list of TCP objects and listen for this port
-    for (int i = 0; i < NUMBER_CLIENTS; i++) {
-      var name = ClientUtility.generateRandomString(5);
-      var tcp = new TCP(SOCKET_PORT);
-      tcp.receive(this);
-      tcps.put(name, tcp);
+  public TestSimpleClient() {
+    // create a new TCP object and listen for this port
+    tcp = new TCP(SOCKET_PORT);
+    tcp.receive(this);
 
-      // send a login request
-      var data = DataUtility.newZeroMap();
-      data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-      tcp.send(ServerMessage.newInstance().setData(data));
+    String name = ClientUtility.generateRandomString(5);
 
-      if (ENABLED_DEBUG) {
-        System.err.println("Login Request -> " + data);
-      }
-    }
+    // send a login request
+    var data = DataUtility.newZeroMap();
+    data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+    tcp.send(ServerMessage.newInstance().setData(data));
+
+    System.err.println("Login Request -> " + data);
   }
 
   /**
    * The entry point
    */
   public static void main(String[] args) {
-    new TestClientEchoStress();
+    new TestSimpleClient();
   }
 
   @Override
@@ -88,23 +70,19 @@ public final class TestClientEchoStress implements SocketListener {
     var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
     var message = ServerMessage.newInstance().setData(dat);
 
-    if (ENABLED_DEBUG) {
-      System.out.println("[RECV FROM SERVER TCP] -> " + message);
-    }
+    System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
 
     try {
-      Thread.sleep(100);
+      Thread.sleep(1000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    var tcp =
-        tcps.get(((ZeroMap) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
-
-    // make an echo message
     var data = DataUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);
+
+    System.err.println("[SENT TO SERVER] -> " + request);
   }
 }

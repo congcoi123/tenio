@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example1.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.handler.AbstractHandler;
@@ -39,9 +39,9 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
   @Override
   public void handle(Player player, ServerMessage message) {
     var data =
-        map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+        msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
             player.getName(),
-            ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+            ((MsgPackMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
     response().setContent(data.toBinary()).setRecipientPlayer(player).write();
   }

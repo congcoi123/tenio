@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.examples.example1.handler;
 
 import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
@@ -40,7 +40,7 @@ public final class ConnectionEstablishedHandler extends AbstractHandler
   @Override
   public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
     if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (ZeroMap) message.getData();
+      var data = (MsgPackMap) message.getData();
 
       api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
     }

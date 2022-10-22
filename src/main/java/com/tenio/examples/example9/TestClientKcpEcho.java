@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.common.data.zero.utility.ZeroUtility;
 import com.tenio.core.configuration.kcp.KcpConfiguration;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.network.entity.kcp.Ukcp;
@@ -80,7 +79,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
 
     // send a login request
     var data =
-        ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+        DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     var message = ServerMessage.newInstance().setData(data);
     tcp.send(message);
 
@@ -96,7 +95,8 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
 
   @Override
   public void sessionRead(Session session, byte[] binary) {
-    System.out.println("[KCP SESSION READ] " + ZeroUtility.binaryToMap(binary));
+    System.out.println("[KCP SESSION READ] " + DataUtility.binaryToCollection(DataType.ZERO,
+        binary));
   }
 
   @Override
@@ -141,7 +141,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
       case UdpEstablishedState.ALLOW_TO_ATTACH: {
         // now you can send request for UDP connection request
         var data =
-            ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+            DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
         var request = ServerMessage.newInstance().setData(data);
         // create a new UDP object and listen for this port
         udp = new UDP(pack.getInteger(1));
@@ -162,7 +162,7 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
         kcpProcessing();
 
         for (int i = 1; i <= 100; i++) {
-          var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+          var data = DataUtility.newZeroMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
           ukcp.send(data.toBinary());
 

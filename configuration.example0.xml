@@ -5,7 +5,7 @@
 		<!-- The server name -->
 		<Property name="server-name">Example</Property>
 		<!-- The server id (module name) -->
-		<Property name="server-id">tenio-example-1</Property>
+		<Property name="server-id">tenio-example-0</Property>
 		<!-- The server address -->
 		<Property name="server-address">localhost</Property>
 		<!-- The current version code of your server in integer type (comparable) -->
@@ -70,7 +70,7 @@
 			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
 		<Properties>
-			<Property name="data-serialization">msgpack</Property>
+			<Property name="data-serialization">zero</Property>
 			<Property name="max-packet-queue-size">100</Property>
 			<Property name="max-request-queue-size">100</Property>
 			<!-- When the server get disconnection of one client, can be hold its 
