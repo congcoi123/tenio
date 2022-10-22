@@ -22,40 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data;
+package com.tenio.examples.example10.handler;
 
-import java.util.Collection;
+import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.result.AttachedConnectionResult;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventAttachedConnectionResult;
+import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.UdpEstablishedState;
+import java.util.Optional;
 
-/**
- * An element object contains a pair of type and data value.
- *
- * @see ZeroType
- * @see Object
- */
-public interface ZeroElement {
+@Component
+public final class AttachedConnectionHandler extends AbstractHandler
+    implements EventAttachedConnectionResult {
 
-  /**
-   * Retrieves the type of element.
-   *
-   * @return type of data in {@link ZeroType}
-   */
-  ZeroType getType();
+  @Override
+  public void handle(Optional<Player> player, int kcpConv, AttachedConnectionResult result) {
+    if (result == AttachedConnectionResult.SUCCESS) {
+      var data = msgmap().putMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ATTACH,
+          msgarray().addInteger(UdpEstablishedState.ATTACHED).addInteger(kcpConv));
 
-  /**
-   * Retrieves the data of element.
-   *
-   * @return an instance in wrapper class of primitive or array types
-   * @see Boolean
-   * @see Byte
-   * @see Short
-   * @see Integer
-   * @see Long
-   * @see Float
-   * @see Double
-   * @see String
-   * @see Collection
-   * @see ZeroArray
-   * @see ZeroMap
-   */
-  Object getData();
+      response().setContent(data.toBinary()).setRecipientPlayer(player.get()).write();
+    }
+  }
 }

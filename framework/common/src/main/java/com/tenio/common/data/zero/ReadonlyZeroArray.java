@@ -22,14 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data;
+package com.tenio.common.data.zero;
 
+import com.tenio.common.data.DataCollection;
 import java.util.Collection;
 
 /**
  * This class holds sequence elements in read-only mode.
  */
-public interface ReadonlyZeroArray extends ZeroCollection {
+public interface ReadonlyZeroArray extends DataCollection {
 
   /**
    * Determines whether a value is available in array.

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6;
 
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
@@ -65,7 +66,7 @@ public final class TestClientEchoStress implements SocketListener {
       tcps.put(name, tcp);
 
       // send a login request
-      var data = ZeroUtility.newZeroMap();
+      var data = DataUtility.newZeroMap();
       data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
       tcp.send(ServerMessage.newInstance().setData(data));
 
@@ -83,7 +84,10 @@ public final class TestClientEchoStress implements SocketListener {
   }
 
   @Override
-  public void onReceivedTCP(ServerMessage message) {
+  public void onReceivedTCP(byte[] binaries) {
+    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
+    var message = ServerMessage.newInstance().setData(dat);
+
     if (ENABLED_DEBUG) {
       System.out.println("[RECV FROM SERVER TCP] -> " + message);
     }
@@ -98,7 +102,7 @@ public final class TestClientEchoStress implements SocketListener {
         tcps.get(((ZeroMap) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 
     // make an echo message
-    var data = ZeroUtility.newZeroMap();
+    var data = DataUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);

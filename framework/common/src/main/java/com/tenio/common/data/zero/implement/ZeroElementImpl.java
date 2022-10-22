@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.implement;
+package com.tenio.common.data.zero.implement;
 
-import com.tenio.common.data.ZeroElement;
-import com.tenio.common.data.ZeroType;
+import com.tenio.common.data.zero.ZeroElement;
+import com.tenio.common.data.zero.ZeroType;
 import java.util.Objects;
 
 /**
@@ -76,6 +76,9 @@ public final class ZeroElementImpl implements ZeroElement {
 
   @Override
   public String toString() {
-    return String.format("{ type: %s, value: %s }", type.toString(), data.toString());
+    return "ZeroElement{" +
+        "type=" + type +
+        ", data=" + data +
+        '}';
   }
 }

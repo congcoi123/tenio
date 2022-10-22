@@ -22,24 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data;
+package com.tenio.examples.example10.configuration;
+
+import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.common.configuration.Configuration;
+import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.examples.server.ExampleConfigurationType;
+import java.util.Map;
 
 /**
- * A basic collection interface for the self-definition map and array type.
+ * Create your own configuration.
  */
-public interface ZeroCollection {
+@Component
+public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
-  /**
-   * Serializes an object to its corresponding array of <code>bytes</code>.
-   *
-   * @return the object's array of binaries
-   */
-  byte[] toBinary();
-
-  /**
-   * Retrieves the number of elements in collection.
-   *
-   * @return the collection's size
-   */
-  int size();
+  @Override
+  protected void extend(Map<String, String> extProperties) {
+    for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+      var paramName = entry.getKey();
+      push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+    }
+  }
 }

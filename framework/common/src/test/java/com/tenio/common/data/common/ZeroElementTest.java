@@ -26,8 +26,8 @@ package com.tenio.common.data.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.tenio.common.data.ZeroType;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.zero.ZeroType;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +41,6 @@ class ZeroElementTest {
         "Element");
     assertEquals(ZeroType.NULL, zeroElement.getType());
     assertEquals(zeroElement.getData(), "Element");
-    assertEquals("{ type: NULL, value: Element }", zeroElement.toString());
+    assertEquals("ZeroElement{type=NULL, data=Element}", zeroElement.toString());
   }
 }

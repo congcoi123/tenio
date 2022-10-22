@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-common</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -40,6 +40,7 @@
 
     <properties>
         <google.guava.version>31.1-jre</google.guava.version>
+        <org.msgpack.version>0.6.12</org.msgpack.version>
         <logging.log4j.version>2.17.2</logging.log4j.version>
         <org.reflections.version>0.10.2</org.reflections.version>
 
@@ -69,6 +70,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${google.guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>msgpack</artifactId>
+            <version>${org.msgpack.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

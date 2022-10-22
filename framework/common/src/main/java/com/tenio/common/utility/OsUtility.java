@@ -43,11 +43,11 @@ public final class OsUtility {
    */
   public static OsType getOperatingSystemType() {
     var osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-    if ((osName.indexOf("mac") >= 0) || (osName.indexOf("darwin") >= 0)) {
+    if ((osName.contains("mac")) || (osName.contains("darwin"))) {
       return OsType.MAC;
-    } else if (osName.indexOf("win") >= 0) {
+    } else if (osName.contains("win")) {
       return OsType.WINDOWS;
-    } else if (osName.indexOf("nux") >= 0) {
+    } else if (osName.contains("nux")) {
       return OsType.LINUX;
     } else {
       return OsType.OTHER;
@@ -73,6 +73,11 @@ public final class OsUtility {
     /**
      * Unknown OS.
      */
-    OTHER
+    OTHER;
+
+    @Override
+    public String toString() {
+      return name();
+    }
   }
 }
