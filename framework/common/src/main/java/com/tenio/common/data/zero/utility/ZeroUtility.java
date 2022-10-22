@@ -22,16 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.utility;
+package com.tenio.common.data.zero.utility;
 
-import com.tenio.common.data.ZeroArray;
-import com.tenio.common.data.ZeroCollection;
-import com.tenio.common.data.ZeroElement;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.ZeroType;
-import com.tenio.common.data.implement.ZeroArrayImpl;
-import com.tenio.common.data.implement.ZeroElementImpl;
-import com.tenio.common.data.implement.ZeroMapImpl;
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.zero.ZeroElement;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.ZeroType;
+import com.tenio.common.data.zero.implement.ZeroArrayImpl;
+import com.tenio.common.data.zero.implement.ZeroElementImpl;
+import com.tenio.common.data.zero.implement.ZeroMapImpl;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +44,16 @@ import java.util.Objects;
 public final class ZeroUtility {
 
   private static final int BUFFER_CHUNK_BYTES = 512;
+  private static final int ENCODE_SHORT_BYTES = Byte.BYTES + Short.BYTES;
+  private static final int ENCODE_INTEGER_BYTES = Byte.BYTES + Integer.BYTES;
+  private static final int ENCODE_LONG_BYTES = Byte.BYTES + Long.BYTES;
+  private static final int ENCODE_FLOAT_BYTES = Byte.BYTES + Float.BYTES;
+  private static final int ENCODE_DOUBLE_BYTES = Byte.BYTES + Double.BYTES;
+  private static final int ENCODE_HEADER_STRING_BYTES = Byte.BYTES + Short.BYTES;
+  private static final int ENCODE_HEADER_BOOLEAN_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
+  private static final int ENCODE_HEADER_BYTE_ARRAY_BYTES = Byte.BYTES + Integer.BYTES;
+  private static final int ENCODE_HEADER_NUMERIC_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
+  private static final int ENCODE_HEADER_STRING_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
 
   private ZeroUtility() {
     throw new UnsupportedOperationException("This class does not support to create an instance");
@@ -95,7 +105,7 @@ public final class ZeroUtility {
    * @param binary the stream of bytes
    * @return a new zero collection instance
    */
-  public static ZeroCollection binaryToCollection(byte[] binary) {
+  public static DataCollection binaryToCollection(byte[] binary) {
     switch (ZeroType.getByValue(binary[0])) {
       case ZERO_MAP:
         return binaryToMap(binary);
@@ -104,7 +114,8 @@ public final class ZeroUtility {
         return binaryToArray(binary);
 
       default:
-        return null;
+        throw new UnsupportedOperationException(
+            String.format("Unsupported value: %s", ZeroType.getByValue(binary[0])));
     }
   }
 
@@ -614,8 +625,6 @@ public final class ZeroUtility {
     return appendBinaryToBuffer(buffer, binary);
   }
 
-  private static final int ENCODE_SHORT_BYTES = Byte.BYTES + Short.BYTES;
-
   private static ByteBuffer encodeShort(ByteBuffer buffer, Short data) {
     var buf = ByteBuffer.allocate(ENCODE_SHORT_BYTES);
     buf.put((byte) ZeroType.SHORT.getValue());
@@ -623,8 +632,6 @@ public final class ZeroUtility {
 
     return appendBinaryToBuffer(buffer, buf.array());
   }
-
-  private static final int ENCODE_INTEGER_BYTES = Byte.BYTES + Integer.BYTES;
 
   private static ByteBuffer encodeInteger(ByteBuffer buffer, Integer data) {
     var buf = ByteBuffer.allocate(ENCODE_INTEGER_BYTES);
@@ -634,8 +641,6 @@ public final class ZeroUtility {
     return appendBinaryToBuffer(buffer, buf.array());
   }
 
-  private static final int ENCODE_LONG_BYTES = Byte.BYTES + Long.BYTES;
-
   private static ByteBuffer encodeLong(ByteBuffer buffer, Long data) {
     var buf = ByteBuffer.allocate(ENCODE_LONG_BYTES);
     buf.put((byte) ZeroType.LONG.getValue());
@@ -643,8 +648,6 @@ public final class ZeroUtility {
 
     return appendBinaryToBuffer(buffer, buf.array());
   }
-
-  private static final int ENCODE_FLOAT_BYTES = Byte.BYTES + Float.BYTES;
 
   private static ByteBuffer encodeFloat(ByteBuffer buffer, Float data) {
     var buf = ByteBuffer.allocate(ENCODE_FLOAT_BYTES);
@@ -654,8 +657,6 @@ public final class ZeroUtility {
     return appendBinaryToBuffer(buffer, buf.array());
   }
 
-  private static final int ENCODE_DOUBLE_BYTES = Byte.BYTES + Double.BYTES;
-
   private static ByteBuffer encodeDouble(ByteBuffer buffer, Double data) {
     var buf = ByteBuffer.allocate(ENCODE_DOUBLE_BYTES);
     buf.put((byte) ZeroType.DOUBLE.getValue());
@@ -663,8 +664,6 @@ public final class ZeroUtility {
 
     return appendBinaryToBuffer(buffer, buf.array());
   }
-
-  private static final int ENCODE_HEADER_STRING_BYTES = Byte.BYTES + Short.BYTES;
 
   private static ByteBuffer encodeString(ByteBuffer buffer, String data) {
     var stringBytes = data.getBytes();
@@ -675,8 +674,6 @@ public final class ZeroUtility {
 
     return appendBinaryToBuffer(buffer, buf.array());
   }
-
-  private static final int ENCODE_HEADER_BOOLEAN_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
 
   private static ByteBuffer encodeBooleanArray(ByteBuffer buffer, Collection<Boolean> data) {
     var buf = ByteBuffer.allocate(ENCODE_HEADER_BOOLEAN_ARRAY_BYTES + data.size());
@@ -690,8 +687,6 @@ public final class ZeroUtility {
     return appendBinaryToBuffer(buffer, buf.array());
   }
 
-  private static final int ENCODE_HEADER_BYTE_ARRAY_BYTES = Byte.BYTES + Integer.BYTES;
-
   private static ByteBuffer encodeByteArray(ByteBuffer buffer, byte[] data) {
     var buf = ByteBuffer.allocate(ENCODE_HEADER_BYTE_ARRAY_BYTES + data.length);
     buf.put((byte) ZeroType.BYTE_ARRAY.getValue());
@@ -700,8 +695,6 @@ public final class ZeroUtility {
 
     return appendBinaryToBuffer(buffer, buf.array());
   }
-
-  private static final int ENCODE_HEADER_NUMERIC_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
 
   private static ByteBuffer encodeShortArray(ByteBuffer buffer, Collection<Short> data) {
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Short.BYTES * data.size());
@@ -764,8 +757,6 @@ public final class ZeroUtility {
     return appendBinaryToBuffer(buffer, buf.array());
   }
 
-  private static final int ENCODE_HEADER_STRING_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
-  
   private static ByteBuffer encodeStringArray(ByteBuffer buffer, Collection<String> collection) {
     var totalStringsLengthInBytes = 0;
     byte[] stringInBinary;

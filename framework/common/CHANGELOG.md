@@ -13,3 +13,8 @@
 - Optimization  
 - Refactoring the project's structure  
 - Bugs fixed  
+
+## 0.3.0 2022-10-21 Feature release
+- Supported MsgPack
+- Refactoring the project's structure
+- Bugs fixed 

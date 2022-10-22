@@ -22,25 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.common;
+package com.tenio.common.data.zero;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Collection;
 
-import com.tenio.common.data.zero.ZeroType;
-import com.tenio.common.data.zero.utility.ZeroUtility;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+/**
+ * An element object contains a pair of type and data value.
+ *
+ * @see ZeroType
+ * @see Object
+ */
+public interface ZeroElement {
 
-@DisplayName("Unit Test Cases For Zero Data")
-class ZeroElementTest {
+  /**
+   * Retrieves the type of element.
+   *
+   * @return type of data in {@link ZeroType}
+   */
+  ZeroType getType();
 
-  @Test
-  @DisplayName("Creating a new instance should work")
-  void createNewInstanceShouldWork() {
-    var zeroElement = ZeroUtility.newZeroElement(ZeroType.NULL,
-        "Element");
-    assertEquals(ZeroType.NULL, zeroElement.getType());
-    assertEquals(zeroElement.getData(), "Element");
-    assertEquals("ZeroElement{type=NULL, data=Element}", zeroElement.toString());
-  }
+  /**
+   * Retrieves the data of element.
+   *
+   * @return an instance in wrapper class of primitive or array types
+   * @see Boolean
+   * @see Byte
+   * @see Short
+   * @see Integer
+   * @see Long
+   * @see Float
+   * @see Double
+   * @see String
+   * @see Collection
+   * @see ZeroArray
+   * @see ZeroMap
+   */
+  Object getData();
 }

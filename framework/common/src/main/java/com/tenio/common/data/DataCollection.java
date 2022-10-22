@@ -27,7 +27,7 @@ package com.tenio.common.data;
 /**
  * A basic collection interface for the self-definition map and array type.
  */
-public interface ZeroCollection {
+public interface DataCollection {
 
   /**
    * Serializes an object to its corresponding array of <code>bytes</code>.

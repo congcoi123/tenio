@@ -29,7 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.zero.utility.ZeroUtility;
+import com.tenio.common.data.zero.ZeroType;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.jupiter.api.AfterAll;

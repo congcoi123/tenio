@@ -26,6 +26,7 @@ package com.tenio.common.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.tenio.common.data.zero.ZeroType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

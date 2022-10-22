@@ -24,38 +24,59 @@ THE SOFTWARE.
 
 package com.tenio.common.data;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * An element object contains a pair of type and data value.
- *
- * @see ZeroType
- * @see Object
+ * Self-definition data types.
  */
-public interface ZeroElement {
+public enum DataType {
 
   /**
-   * Retrieves the type of element.
-   *
-   * @return type of data in {@link ZeroType}
+   * Uses the internal Zero serialization mechanism.
    */
-  ZeroType getType();
+  ZERO("zero"),
+  /**
+   * Uses the MsgPack tool.
+   */
+  MSG_PACK("msgpack");
+
+  // Reverse-lookup map for getting a type from a value
+  private static final Map<String, DataType> lookup = new HashMap<>();
+
+  static {
+    for (var type : DataType.values()) {
+      lookup.put(type.getValue(), type);
+    }
+  }
+
+  private final String value;
+
+  DataType(String value) {
+    this.value = value;
+  }
 
   /**
-   * Retrieves the data of element.
+   * Retrieves a type by using its value.
    *
-   * @return an instance in wrapper class of primitive or array types
-   * @see Boolean
-   * @see Byte
-   * @see Short
-   * @see Integer
-   * @see Long
-   * @see Float
-   * @see Double
-   * @see String
-   * @see Collection
-   * @see ZeroArray
-   * @see ZeroMap
+   * @param value the value in <code>String</code>
+   * @return the corresponding {@link DataType} if available, otherwise <code>null</code>
    */
-  Object getData();
+  public static DataType getByValue(String value) {
+    return lookup.get(value);
+  }
+
+  /**
+   * Fetches the type's value.
+   *
+   * @return the type's value in <code>String</code> type
+   */
+  public final String getValue() {
+    return this.value;
+  }
+
+  @Override
+  public final String toString() {
+    return getValue();
+  }
 }

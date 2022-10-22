@@ -52,6 +52,8 @@ public final class ClassLoaderUtility {
     if (directory.exists() && directory.isDirectory()) {
       final var files = directory.list();
 
+      assert files != null;
+
       for (final var file : files) {
         if (file.endsWith(".class")) {
           try {

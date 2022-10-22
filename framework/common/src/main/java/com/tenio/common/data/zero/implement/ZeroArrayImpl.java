@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.implement;
+package com.tenio.common.data.zero.implement;
 
-import com.tenio.common.data.ReadonlyZeroArray;
-import com.tenio.common.data.ZeroArray;
-import com.tenio.common.data.ZeroElement;
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.ZeroType;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.zero.ReadonlyZeroArray;
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.zero.ZeroElement;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.ZeroType;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -332,7 +332,7 @@ public final class ZeroArrayImpl implements ZeroArray {
   @Override
   public String toString() {
     var builder = new StringBuilder();
-    builder.append('{');
+    builder.append("ZeroArray{");
 
     Object toString;
     ZeroElement zeroElement;
