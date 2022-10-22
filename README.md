@@ -42,61 +42,83 @@
 ![Game System](documentations/datagram/game-system.jpg)
 
 ## First Glimpse
-- Simple Movement Simulation  
+Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 
 ## Simple Implementation
+Establishes a simple server with only a single Java class.
 ```Java
+/**
+ * This class shows how a simple server handle messages that came from a client.
+ */
 @Bootstrap
-public final class TestServerLogin {
+public final class TestSimpleServer {
 
-    public static void main(String[] params) {
-        ApplicationLauncher.run(TestServerLogin.class, params);
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestSimpleServer.class, params);
+  }
+
+  /**
+   * Create your own configurations.
+   */
+  @Component
+  public static class TestConfiguration extends CoreConfiguration implements Configuration {
+
+    @Override
+    protected void extend(Map<String, String> extProperties) {
+      for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+        var paramName = entry.getKey();
+        push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+      }
     }
+  }
 
-}
+  /**
+   * Define your handlers.
+   */
 
-@Component
-final class ConnectionEstablishedHandler extends AbstractHandler implements EventConnectionEstablishedResult {
+  @Component
+  public static class ConnectionEstablishedHandler extends AbstractHandler
+      implements EventConnectionEstablishedResult {
 
     @Override
     public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
-        if (result == ConnectionEstablishedResult.SUCCESS) {
-            var data = (ZeroObject) message.getData();
+      if (result == ConnectionEstablishedResult.SUCCESS) {
+        var data = (ZeroMap) message.getData();
 
-            api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-        }
+        api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+      }
     }
+  }
 
-}
-
-@Component
-final class PlayerLoggedinHandler extends AbstractHandler implements EventPlayerLoggedinResult {
+  @Component
+  public static class PlayerLoggedInHandler extends AbstractHandler implements EventPlayerLoggedinResult {
 
     @Override
-    public void handle(Player player, PlayerLoggedinResult result) {
-        if (result == PlayerLoggedinResult.SUCCESS) {
-            var data = object().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-                    String.format("Welcome to server: %s", player.getName()));
+    public void handle(Player player, PlayerLoggedInResult result) {
+      if (result == PlayerLoggedInResult.SUCCESS) {
+        var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+            String.format("Welcome to server: %s", player.getName()));
 
-            response().setContent(data.toBinary()).setRecipient(player).write();
-        }
+        response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+      }
     }
+  }
 
-}
-
-@Component
-final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-        implements EventReceivedMessageFromPlayer {
+  @Component
+  public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
+      implements EventReceivedMessageFromPlayer {
 
     @Override
     public void handle(Player player, ServerMessage message) {
-        var data = object().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-                player.getName(), ((ZeroObject) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+      var data =
+          map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+              player.getName(),
+              ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-        response().setContent(data.toBinary()).setRecipient(player).write();
+      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }
-
+  }
 }
 ```
 
