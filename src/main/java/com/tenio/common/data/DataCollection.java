@@ -1,3 +1,4 @@
+/*
 The MIT License
 
 Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
@@ -19,3 +20,26 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+
+package com.tenio.common.data;
+
+/**
+ * A basic collection interface for the self-definition map and array type.
+ */
+public interface DataCollection {
+
+  /**
+   * Serializes an object to its corresponding array of <code>bytes</code>.
+   *
+   * @return the object's array of binaries
+   */
+  byte[] toBinary();
+
+  /**
+   * Retrieves the number of elements in collection.
+   *
+   * @return the collection's size
+   */
+  int size();
+}

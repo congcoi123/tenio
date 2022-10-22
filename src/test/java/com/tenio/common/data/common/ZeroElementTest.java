@@ -1,3 +1,4 @@
+/*
 The MIT License
 
 Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
@@ -19,3 +20,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+
+package com.tenio.common.data.common;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.tenio.common.data.zero.ZeroType;
+import com.tenio.common.data.zero.utility.ZeroUtility;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Unit Test Cases For Zero Data")
+class ZeroElementTest {
+
+  @Test
+  @DisplayName("Creating a new instance should work")
+  void createNewInstanceShouldWork() {
+    var zeroElement = ZeroUtility.newZeroElement(ZeroType.NULL,
+        "Element");
+    assertEquals(ZeroType.NULL, zeroElement.getType());
+    assertEquals(zeroElement.getData(), "Element");
+    assertEquals("ZeroElement{type=NULL, data=Element}", zeroElement.toString());
+  }
+}

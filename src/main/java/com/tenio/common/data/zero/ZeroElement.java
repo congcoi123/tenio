@@ -1,3 +1,4 @@
+/*
 The MIT License
 
 Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
@@ -19,3 +20,42 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+
+package com.tenio.common.data.zero;
+
+import java.util.Collection;
+
+/**
+ * An element object contains a pair of type and data value.
+ *
+ * @see ZeroType
+ * @see Object
+ */
+public interface ZeroElement {
+
+  /**
+   * Retrieves the type of element.
+   *
+   * @return type of data in {@link ZeroType}
+   */
+  ZeroType getType();
+
+  /**
+   * Retrieves the data of element.
+   *
+   * @return an instance in wrapper class of primitive or array types
+   * @see Boolean
+   * @see Byte
+   * @see Short
+   * @see Integer
+   * @see Long
+   * @see Float
+   * @see Double
+   * @see String
+   * @see Collection
+   * @see ZeroArray
+   * @see ZeroMap
+   */
+  Object getData();
+}
