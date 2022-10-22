@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2021 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4;
 
-import com.tenio.common.data.ZeroMap;
-import com.tenio.common.data.utility.ZeroUtility;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.data.ServerMessage;
@@ -116,7 +117,7 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void sendLoginRequest() {
-    var data = ZeroUtility.newZeroMap();
+    var data = DataUtility.newZeroMap();
     data.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     tcp.send(ServerMessage.newInstance().setData(data));
 
@@ -126,7 +127,10 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   @Override
-  public void onReceivedTCP(ServerMessage message) {
+  public void onReceivedTCP(byte[] binaries) {
+    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
+    var message = ServerMessage.newInstance().setData(dat);
+
     if (LOGGER_DEBUG) {
       System.err.println("[RECV FROM SERVER TCP] -> " + message);
     }
@@ -143,7 +147,7 @@ public final class TestClientMovement extends AbstractLogger
 
           // now you can send request for UDP connection request
           var sendData =
-              ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+              DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
           var request = ServerMessage.newInstance().setData(sendData);
           udp.send(request);
 
@@ -208,7 +212,7 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void requestNeighbours() {
-    var data = ZeroUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
+    var data = DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
         ClientUtility.generateRandomString(10));
     var request = ServerMessage.newInstance().setData(data);
     tcp.send(request);
@@ -216,7 +220,7 @@ public final class TestClientMovement extends AbstractLogger
 
   @Override
   public void onReceivedUDP(byte[] binary) {
-    var data = ZeroUtility.binaryToMap(binary);
+    var data = DataUtility.binaryToCollection(DataType.ZERO, binary);
     var message = ServerMessage.newInstance().setData(data);
 
     if (LOGGER_DEBUG) {
