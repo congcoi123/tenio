@@ -18,3 +18,6 @@
 - Supported MsgPack
 - Refactoring the project's structure
 - Bugs fixed 
+
+## 0.4.0 2022-11-20 Feature release
+- Moved annotations management to the [tenio-core](https://github.com/congcoi123/tenio-core) module
