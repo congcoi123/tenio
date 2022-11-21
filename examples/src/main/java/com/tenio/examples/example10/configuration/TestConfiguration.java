@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example10.configuration;
 
-import com.tenio.common.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
+import com.tenio.core.bootstrap.annotation.Setting;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.examples.server.ExampleConfigurationType;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Create your own configuration.
  */
-@Component
+@Setting
 public final class TestConfiguration extends CoreConfiguration implements Configuration {
 
   @Override

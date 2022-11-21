@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4.handler;
 
-import com.tenio.common.bootstrap.annotation.AutowiredAcceptNull;
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;

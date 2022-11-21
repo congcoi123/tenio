@@ -1,5 +1,6 @@
 package com.tenio.core.bootstrap.event.handler;
 
+import com.tenio.core.event.handler.implement.MixinsEventHandler;
 import com.tenio.core.event.implement.EventManager;
 import org.junit.jupiter.api.Test;
 
@@ -24,4 +25,3 @@ class MixinsEventHandlerTest {
     mixinsEventHandler.initialize(EventManager.newInstance());
   }
 }
-

@@ -24,9 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XmlUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.configuration.setting.Setting;
 import com.tenio.core.network.define.RestMethod;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.define.data.HttpConfig;
@@ -84,7 +86,14 @@ public abstract class CoreConfiguration extends CommonConfiguration {
     for (int j = 0; j < attrServerProperties.getLength(); j++) {
       var dataNode = attrServerProperties.item(j);
       var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
-      push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
+      if (paramName.equals(CoreConfigurationType.SERVER_SETTING.getValue())) {
+        var path = dataNode.getTextContent();
+        var objectMapper = new ObjectMapper();
+        var setting = objectMapper.readValue(new File(path), Setting.class);
+        push(CoreConfigurationType.getByValue(paramName), setting);
+      } else {
+        push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
+      }
     }
 
     // Network Properties

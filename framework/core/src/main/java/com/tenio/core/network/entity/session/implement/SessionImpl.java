@@ -501,8 +501,10 @@ public final class SessionImpl implements Session {
   public void close(ConnectionDisconnectMode connectionDisconnectMode,
                     PlayerDisconnectMode playerDisconnectMode)
       throws IOException {
-    packetQueue.clear();
-    packetQueue = null;
+    if (Objects.nonNull(packetQueue)) {
+      packetQueue.clear();
+      packetQueue = null;
+    }
 
     getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
         connectionDisconnectMode,

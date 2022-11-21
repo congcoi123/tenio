@@ -1,5 +1,6 @@
 package com.tenio.core.bootstrap.event.handler;
 
+import com.tenio.core.event.handler.implement.PlayerEventHandler;
 import com.tenio.core.event.implement.EventManager;
 import org.junit.jupiter.api.Test;
 
@@ -24,4 +25,3 @@ class PlayerEventHandlerTest {
     playerEventHandler.initialize(EventManager.newInstance());
   }
 }
-

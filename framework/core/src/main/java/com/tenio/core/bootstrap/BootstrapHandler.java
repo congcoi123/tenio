@@ -24,10 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap;
 
-import com.tenio.common.bootstrap.annotation.Autowired;
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.configuration.ConfigurationHandler;
-import com.tenio.core.bootstrap.event.EventHandler;
+import com.tenio.core.command.CommandManager;
+import com.tenio.core.event.handler.EventHandler;
 
 /**
  * This class provides instances for the events handler and the configuration setups.
@@ -39,6 +40,9 @@ public final class BootstrapHandler {
   private EventHandler eventHandler;
 
   @Autowired
+  private CommandManager commandManager;
+
+  @Autowired
   private ConfigurationHandler configurationHandler;
 
   /**
@@ -48,6 +52,16 @@ public final class BootstrapHandler {
    */
   public EventHandler getEventHandler() {
     return eventHandler;
+  }
+
+  /**
+   * Retrieves a commands' manager.
+   *
+   * @return the {@link CommandManager} instance
+   * @since 0.4.0
+   */
+  public CommandManager getCommandManager() {
+    return commandManager;
   }
 
   /**

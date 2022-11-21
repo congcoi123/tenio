@@ -1,11 +1,11 @@
 package com.tenio.examples.example4.configuration;
 
-import com.tenio.common.bootstrap.annotation.Bean;
-import com.tenio.common.bootstrap.annotation.Configuration;
+import com.tenio.core.bootstrap.annotation.Bean;
+import com.tenio.core.bootstrap.annotation.BeanFactory;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.engine.heartbeat.HeartBeatManagerImpl;
 
-@Configuration
+@BeanFactory
 public class Example4Configuration {
 
   @Bean

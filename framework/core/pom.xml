@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.3.1</version>
+    <version>0.4.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,12 +39,14 @@
     </scm>
 
     <properties>
-        <io.github.congcoi123.tenio.common>0.3.0</io.github.congcoi123.tenio.common>
+        <io.github.congcoi123.tenio.common>0.4.0</io.github.congcoi123.tenio.common>
 
         <io.netty.version>4.1.75.Final</io.netty.version>
         <org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <org.json.version>20220320</org.json.version>
+        <com.fasterxml.jackson.core.version>2.11.3</com.fasterxml.jackson.core.version>
+        <org.jline.version>3.21.0</org.jline.version>
 
         <logging.log4j.version>2.17.2</logging.log4j.version>
 
@@ -109,6 +111,21 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${org.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>${org.jline.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline-terminal-jna</artifactId>
+            <version>${org.jline.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

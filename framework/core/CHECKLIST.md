@@ -9,7 +9,7 @@
 - [x] Makes sure the current branch is *develop* branch  
 - [x] All new methods should be annotated by the *@since* annotation  
 - [x] Changes version in *pom.xml* file  
-- [x] Updates the class *TradeMark.java* in the *tenio-common* module  
+- [x] Updates the class *TradeMark.java*  
 - [x] Updates new changes in the *CHANGELOG.md* file  
 - [x] Updates the *VERSION* file  
 - [x] Updates the *README.md* file  

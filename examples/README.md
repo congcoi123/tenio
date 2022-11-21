@@ -29,7 +29,7 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.3.0
+- tenio-core 0.4.0
 - tenio-engine 0.2.0
 ```
 
@@ -51,7 +51,8 @@ $ git clone https://github.com/congcoi123/tenio-examples.git
 ```
 
 ## Simple Implementation
-Establishes a simple server with only a single Java class.
+- Establishes a simple server with only a single Java class
+
 ```Java
 /**
  * This class shows how a simple server handle messages that came from a client.
@@ -66,7 +67,7 @@ public final class TestSimpleServer {
   /**
    * Create your own configurations.
    */
-  @Component
+  @Setting
   public static class TestConfiguration extends CoreConfiguration implements Configuration {
 
     @Override
@@ -82,7 +83,7 @@ public final class TestSimpleServer {
    * Define your handlers.
    */
 
-  @Component
+  @EventHandler
   public static class ConnectionEstablishedHandler extends AbstractHandler
       implements EventConnectionEstablishedResult {
 
@@ -96,8 +97,9 @@ public final class TestSimpleServer {
     }
   }
 
-  @Component
-  public static class PlayerLoggedInHandler extends AbstractHandler implements EventPlayerLoggedinResult {
+  @EventHandler
+  public static class PlayerLoggedInHandler extends AbstractHandler
+      implements EventPlayerLoggedinResult {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
@@ -110,7 +112,7 @@ public final class TestSimpleServer {
     }
   }
 
-  @Component
+  @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
       implements EventReceivedMessageFromPlayer {
 
@@ -126,6 +128,72 @@ public final class TestSimpleServer {
   }
 }
 ```
+
+- Supports self-defined commands to interact with the server conveniently
+1) Usage
+  
+```text
+2022-11-20 05:20:38,256 [main] INFO  com.tenio.core.server.ServerImpl - [SERVER][Example] Started
+$ help
+help - Shows all supporting commands
+	[<command>,<command>,<command>]
+info - Provides brief information about players and rooms on the server
+	player
+	room
+player - Logout the first player from the server
+	logout first
+server - Allows stopping or restarting the server
+	stop
+	restart
+unban - Allows removing banned Ip addresses from the ban list
+	[<address>,<command>,<command>]
+$ info player
+> There are 1 players > The first 10 entities > [Player{name='IkjvI', properties={}, session=Session{id=0, name='IkjvI', transportType=TCP, createdTime=1668918078524, lastReadTime=1668918078524, lastWriteTime=1668918078524, lastActivityTime=1668918078524, readBytes=75, writtenBytes=120, droppedPackets=0, inactivatedTime=0, datagramRemoteSocketAddress=null, clientAddress='127.0.0.1', clientPort=60659, serverPort=8032, serverAddress='127.0.0.1', maxIdleTimeInSecond=0, activated=true, connected=true, hasUdp=false, enabledKcp=false, hasKcp=false}, currentRoom=null, state=null, roleInRoom=SPECTATOR, lastLoginTime=1668918078589, lastJoinedRoomTime=1668918078588, playerSlotInCurrentRoom=-1, loggedIn=true, activated=true, hasSession=true}]
+$ 
+```
+
+2) Make sure to set the command usage flag in _**setting.json**_ file to be **enabled**
+
+```JSON
+{
+	"command": {
+		"enabled": true
+	},
+	"plugin": {
+		"enabled": false,
+		"path": "/plugin"
+	}
+}
+``` 
+
+3) Simple implementation
+```Java
+@Command(label = "player", usage = {
+    "logout first"
+}, description = "Logout the first player from the server")
+public class PlayerCommand extends AbstractCommandHandler {
+
+  @Override
+  public void execute(List<String> args) {
+    var action = args.get(0);
+    var param = args.get(1);
+
+    if (action.equals("logout") && param.equals("first")) {
+      var players = api().getReadonlyPlayersList();
+      if (players.isEmpty()) {
+        CommandUtility.INSTANCE.showConsoleMessage("Empty list of players.");
+        return;
+      }
+      var firstPlayer = players.get(0);
+      CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getName() + "} is " +
+          "going to logout.");
+      api().logout(firstPlayer);
+    } else {
+      CommandUtility.INSTANCE.showConsoleMessage("Invalid action.");
+    }
+  }
+}
+``` 
 
 ## Examples
 Please start the server before its corresponding client in each example package.
@@ -167,6 +235,12 @@ $ java TestServerLogin configuration.example1.xml
     |-- example9
     |   |-- TestClientKcpEcho
     |   |-- TestServerKcpEcho
+    |-- example10
+    |   |-- TestClientMsgPackEcho
+    |   |-- TestServerMsgPackEcho
+    |-- example11
+    |   |-- TestClientCommand
+    |   |-- TestServerCommand
 ```
 
 > Happy coding !

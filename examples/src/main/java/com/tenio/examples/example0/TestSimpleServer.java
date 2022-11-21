@@ -24,8 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.examples.example0;
 
-import com.tenio.common.bootstrap.annotation.Bootstrap;
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.bootstrap.annotation.Setting;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
@@ -56,7 +57,7 @@ public final class TestSimpleServer {
   /**
    * Create your own configurations.
    */
-  @Component
+  @Setting
   public static class TestConfiguration extends CoreConfiguration implements Configuration {
 
     @Override
@@ -72,7 +73,7 @@ public final class TestSimpleServer {
    * Define your handlers.
    */
 
-  @Component
+  @EventHandler
   public static class ConnectionEstablishedHandler extends AbstractHandler
       implements EventConnectionEstablishedResult {
 
@@ -86,8 +87,9 @@ public final class TestSimpleServer {
     }
   }
 
-  @Component
-  public static class PlayerLoggedInHandler extends AbstractHandler implements EventPlayerLoggedinResult {
+  @EventHandler
+  public static class PlayerLoggedInHandler extends AbstractHandler
+      implements EventPlayerLoggedinResult {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
@@ -100,7 +102,7 @@ public final class TestSimpleServer {
     }
   }
 
-  @Component
+  @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
       implements EventReceivedMessageFromPlayer {
 
