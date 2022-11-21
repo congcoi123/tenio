@@ -131,11 +131,10 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
     if (player.containsSession()) {
       player.getSession().get().close(ConnectionDisconnectMode.DEFAULT,
           PlayerDisconnectMode.DEFAULT);
-    } else {
-      getEventManager().emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
-      getPlayerManager().removePlayerByName(player.getName());
-      player.clean();
     }
+    getEventManager().emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
+    getPlayerManager().removePlayerByName(player.getName());
+    player.clean();
   }
 
   @Override

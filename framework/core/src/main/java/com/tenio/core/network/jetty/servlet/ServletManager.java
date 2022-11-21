@@ -50,7 +50,7 @@ public final class ServletManager extends BaseServlet {
   private static final long serialVersionUID = -1971993446960398293L;
 
   /**
-   * Event manager
+   * EventHandler manager
    */
   private final EventManager eventManager;
   /**
