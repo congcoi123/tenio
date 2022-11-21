@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 // @Suite
 @SuiteDisplayName("Test all unit test cases for tenio-common module")
 @SelectPackages({
-    "com.tenio.common.bootstrap",
     "com.tenio.common.configuration",
     "com.tenio.common.data",
     "com.tenio.common.pool",
