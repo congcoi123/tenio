@@ -66,9 +66,15 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   SERVER_VERSION_CODE("version-code"),
   /**
-   * TThis server version code in text type.
+   * This server version code in text type.
    */
   SERVER_VERSION_NAME("version-name"),
+  /**
+   * This server's core setting file's path.
+   *
+   * @since 0.4.0
+   */
+  SERVER_SETTING("setting"),
   /**
    * Class: Declares a class for packet encryption handling. The data in packet will be encrypted or
    * decrypted before sending or after receiving from clients side.

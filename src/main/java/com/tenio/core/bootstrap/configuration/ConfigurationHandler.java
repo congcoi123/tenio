@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap.configuration;
 
-import com.tenio.common.bootstrap.annotation.Autowired;
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 
 /**

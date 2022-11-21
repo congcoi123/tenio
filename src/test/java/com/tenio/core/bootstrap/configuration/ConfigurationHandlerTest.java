@@ -10,4 +10,3 @@ class ConfigurationHandlerTest {
     assertNull((new ConfigurationHandler()).getConfiguration());
   }
 }
-

@@ -32,3 +32,10 @@
 - Allowed showing server's uptime 
 - Refactoring the project's structure
 - Bugs fixed  
+
+## 0.4.0 2022-11-20 Feature release
+- Adapted annotations' management from the [tenio-common](https://github.com/congcoi123/tenio-common) module
+- Introduces more annotations
+- Supports self-defined commands
+- Refactoring the project's structure
+- Bugs fixed  

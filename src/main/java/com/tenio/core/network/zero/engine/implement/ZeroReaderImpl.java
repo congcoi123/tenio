@@ -157,9 +157,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
       // reads data from socket and write them to buffer
       int byteCount = -1;
       try {
-        byteCount = socketChannel.read(readerBuffer);
+        if (socketChannel.isConnected()) {
+          byteCount = socketChannel.read(readerBuffer);
+        }
       } catch (IOException e) {
-        error(e, "An exception was occured on channel: ", socketChannel.toString());
+        error(e, "An exception was occurred on channel: ", socketChannel.toString());
         getSocketIoHandler().sessionException(session, e);
       }
       // no left data is available, should close the connection

@@ -1,5 +1,6 @@
 package com.tenio.core.bootstrap.event.handler;
 
+import com.tenio.core.event.handler.implement.HttpEventHandler;
 import com.tenio.core.event.implement.EventManager;
 import org.junit.jupiter.api.Test;
 
@@ -20,4 +21,3 @@ class HttpEventHandlerTest {
     httpEventHandler.initialize(EventManager.newInstance());
   }
 }
-

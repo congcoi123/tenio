@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.bootstrap.event;
+package com.tenio.core.event.handler;
 
-import com.tenio.common.bootstrap.annotation.Autowired;
-import com.tenio.common.bootstrap.annotation.Component;
-import com.tenio.core.bootstrap.event.handler.ConnectionEventHandler;
-import com.tenio.core.bootstrap.event.handler.HttpEventHandler;
-import com.tenio.core.bootstrap.event.handler.MixinsEventHandler;
-import com.tenio.core.bootstrap.event.handler.PlayerEventHandler;
-import com.tenio.core.bootstrap.event.handler.RoomEventHandler;
+import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.event.handler.implement.ConnectionEventHandler;
+import com.tenio.core.event.handler.implement.HttpEventHandler;
+import com.tenio.core.event.handler.implement.MixinsEventHandler;
+import com.tenio.core.event.handler.implement.PlayerEventHandler;
+import com.tenio.core.event.handler.implement.RoomEventHandler;
 import com.tenio.core.event.implement.EventManager;
 
 /**
