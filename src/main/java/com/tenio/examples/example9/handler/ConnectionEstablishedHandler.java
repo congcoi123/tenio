@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;

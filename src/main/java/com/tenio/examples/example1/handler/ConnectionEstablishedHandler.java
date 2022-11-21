@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example1.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;

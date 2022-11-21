@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;

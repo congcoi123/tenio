@@ -5,7 +5,7 @@
 		<!-- The server name -->
 		<Property name="server-name">Example</Property>
 		<!-- The server id (module name) -->
-		<Property name="server-id">tenio-example-10</Property>
+		<Property name="server-id">tenio-example-11</Property>
 		<!-- The server address -->
 		<Property name="server-address">localhost</Property>
 		<!-- The current version code of your server in integer type (comparable) -->
@@ -39,7 +39,7 @@
 			<Property name="packet-compression-threshold-bytes">10240</Property>
 			<Property name="allow-change-session">false</Property>
 			<Property name="max-connections-per-ip">10</Property>
-			<Property name="enabled-kcp">true</Property>
+			<Property name="enabled-kcp">false</Property>
 		</Properties>
 		<Http>
 		</Http>
@@ -53,7 +53,7 @@
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
 			<Worker name="internal-processor">2</Worker>
-			<Worker name="udp-worker">1</Worker>
+			<Worker name="udp-worker">0</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 
@@ -72,7 +72,7 @@
 			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
 		<Properties>
-			<Property name="data-serialization">msgpack</Property>
+			<Property name="data-serialization">zero</Property>
 			<Property name="max-packet-queue-size">100</Property>
 			<Property name="max-request-queue-size">100</Property>
 			<!-- When the server get disconnection of one client, can be hold its 

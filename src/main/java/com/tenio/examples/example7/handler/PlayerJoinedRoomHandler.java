@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;

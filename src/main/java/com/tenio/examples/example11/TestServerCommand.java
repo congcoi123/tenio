@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example0;
+package com.tenio.examples.example11;
 
-import com.tenio.core.bootstrap.annotation.Bootstrap;
-import com.tenio.core.bootstrap.annotation.Setting;
-import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.bootstrap.annotation.Setting;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.data.ServerMessage;
@@ -48,10 +48,10 @@ import java.util.Map;
  * This class shows how a simple server handle messages that came from a client.
  */
 @Bootstrap
-public final class TestSimpleServer {
+public final class TestServerCommand {
 
   public static void main(String[] params) {
-    ApplicationLauncher.run(TestSimpleServer.class, params);
+    ApplicationLauncher.run(TestServerCommand.class, params);
   }
 
   /**

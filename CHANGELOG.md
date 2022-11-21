@@ -26,3 +26,9 @@
 - WebSocket handling issues fixed
 - Allowed showing server's uptime
 - Bugs fixed
+
+## 0.4.0 2022-11-20 Feature release
+- Introduces more annotations
+- Supports self-defined commands
+- Refactoring the project's structure
+- Bugs fixed  

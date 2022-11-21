@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;
