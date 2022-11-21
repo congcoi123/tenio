@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example8.handler;
 
-import com.tenio.common.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.data.common.CommonMap;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventHttpRequestHandle;

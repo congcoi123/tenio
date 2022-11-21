@@ -22,25 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.examples.example11.command;
 
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.common.data.msgpack.element.MsgPackMap;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
-import com.tenio.examples.server.SharedEventKey;
-import java.util.Optional;
+import com.tenio.core.bootstrap.annotation.Command;
+import com.tenio.core.command.AbstractCommandHandler;
+import com.tenio.core.utility.CommandUtility;
+import java.util.List;
 
-@Component
-public final class AttachConnectionRequestValidatedHandler extends AbstractHandler
-    implements EventAttachConnectionRequestValidation {
+@Command(label = "player", usage = {
+    "logout first"
+}, description = "Logout the first player from the server")
+public class PlayerCommand extends AbstractCommandHandler {
 
   @Override
-  public Optional<Player> handle(ServerMessage message) {
-    var data = (MsgPackMap) message.getData();
+  public void execute(List<String> args) {
+    var action = args.get(0);
+    var param = args.get(1);
 
-    return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+    if (action.equals("logout") && param.equals("first")) {
+      var players = api().getReadonlyPlayersList();
+      if (players.isEmpty()) {
+        CommandUtility.INSTANCE.showConsoleMessage("Empty list of players.");
+        return;
+      }
+      var firstPlayer = players.get(0);
+      CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getName() + "} is " +
+          "going to logout.");
+      api().logout(firstPlayer);
+    } else {
+      CommandUtility.INSTANCE.showConsoleMessage("Invalid action.");
+    }
   }
 }
