@@ -1,3 +1,0 @@
-## Node
-
-> Happy coding !
