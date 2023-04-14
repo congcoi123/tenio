@@ -44,7 +44,7 @@
         <io.netty.version>4.1.75.Final</io.netty.version>
         <org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
         <javax.servlet.version>2.5</javax.servlet.version>
-        <org.json.version>20220320</org.json.version>
+        <org.json.version>20230227</org.json.version>
         <com.fasterxml.jackson.core.version>2.11.3</com.fasterxml.jackson.core.version>
         <org.jline.version>3.21.0</org.jline.version>
 
