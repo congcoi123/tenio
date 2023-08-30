@@ -16,8 +16,8 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://dcbadge.vercel.app/api/server/MGCxEwUR">
     </a>
 </p>
 
@@ -45,7 +45,7 @@ Simple Movement Simulation
 
 ```Java
 /**
- * This class shows how a simple server handle messages that came from a client.
+ * This class shows how a simple server handles messages that came from a client.
  */
 @Bootstrap
 public final class TestSimpleServer {
@@ -200,9 +200,7 @@ The project is strongly based on the same name framework as you can be reference
 
 ## Requirements
 ```txt
-- Java 11
-- Java 8
-- Docker
+- Java 17
 ```
 
 ## License
