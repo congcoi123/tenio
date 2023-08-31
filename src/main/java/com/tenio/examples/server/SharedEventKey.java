@@ -26,16 +26,16 @@ package com.tenio.examples.server;
 
 public final class SharedEventKey {
 
-  public static final String KEY_PLAYER_LOGIN = "u";
-  public static final String KEY_ALLOW_TO_ATTACH = "a";
-  public static final String KEY_ALLOW_TO_ATTACH_PORT = "ap";
+  public static final String KEY_PLAYER_LOGIN = "pl";
+  public static final String KEY_ALLOW_TO_ACCESS_UDP_CHANNEL = "a";
   public static final String KEY_CLIENT_SERVER_ECHO = "e";
   public static final String KEY_INTEGER_ARRAY = "i";
-  public static final String KEY_PLAYER_POSITION = "p";
   public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
   public static final String KEY_PLAYER_GET_RESPONSE = "rr";
   public static final String KEY_COMMAND = "c";
-  public static final String KEY_DATA = "d";
+  public static final String KEY_DATA = "kd";
+  public static final String KEY_UDP_CONVEY_ID = "u";
+  public static final String KEY_UDP_MESSAGE_DATA = "d";
 
   private SharedEventKey() {
     throw new UnsupportedOperationException("This class does not support to create a new "

@@ -22,32 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example8.handler;
+package com.tenio.examples.example3;
 
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.common.data.common.CommonMap;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventHttpRequestHandle;
-import com.tenio.core.network.define.RestMethod;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.ApplicationLauncher;
 
-@Component
-public final class HttpRequestHandler extends AbstractHandler implements EventHttpRequestHandle {
+/**
+ * This class shows how a server handle messages that came from a client.
+ */
+@Bootstrap
+public final class TestServerAccessDatagramChannel {
 
-  @Override
-  public void handle(RestMethod method, HttpServletRequest request, HttpServletResponse response) {
-    var json = new JSONObject();
-    CommonMap.newInstance().add("status", "ok").add("message", "handler")
-        .forEach((key, value) -> {
-          json.put(key, value);
-        });
-    try {
-      response.getWriter().println(json);
-    } catch (IOException e) {
-      error(e, "handler");
-    }
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestServerAccessDatagramChannel.class, params);
   }
 }

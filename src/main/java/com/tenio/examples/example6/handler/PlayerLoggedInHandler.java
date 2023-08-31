@@ -24,26 +24,26 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.server.SharedEventKey;
 
-@Component
+@EventHandler
 public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult {
+    implements EventPlayerLoggedinResult<Player> {
 
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
-      var data = map()
+      var parcel = map()
           .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Welcome to server: %s", player.getName()))
           .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName());
 
-      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

@@ -24,11 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventFetchedCcuInfo;
 
-@Component
+@EventHandler
 public final class CcuInformationHandler extends AbstractHandler implements EventFetchedCcuInfo {
 
   @Override

@@ -22,39 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example8.handler;
+package com.tenio.examples.example9.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.common.data.common.CommonMap;
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.entity.Player;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventHttpRequestValidation;
-import com.tenio.core.network.define.RestMethod;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
+import com.tenio.examples.server.SharedEventKey;
+import java.util.Optional;
 
-@Component
-public final class HttpRequestValidatedHandler extends AbstractHandler
-    implements EventHttpRequestValidation {
+@EventHandler
+public final class AccessDatagramChannelRequestValidatedHandler extends AbstractHandler
+    implements EventAccessDatagramChannelRequestValidation {
 
   @Override
-  public HttpServletResponse handle(RestMethod method, HttpServletRequest request,
-                                    HttpServletResponse response) {
-    if (method.equals(RestMethod.DELETE)) {
-      var json = new JSONObject();
-      CommonMap.newInstance().add("status", "failed").add("message", "not supported")
-          .forEach((key, value) -> {
-            json.put(key, value);
-          });
-      try {
-        response.getWriter().println(json);
-      } catch (IOException e) {
-        error(e, "request");
-      }
+  public Optional<Player> handle(DataCollection message) {
+    var request = (ZeroMap) message;
 
-      return response;
-    }
-    return null;
+    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

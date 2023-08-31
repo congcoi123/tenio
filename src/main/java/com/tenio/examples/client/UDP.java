@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.utility.OsUtility;
-import com.tenio.core.entity.data.ServerMessage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -105,8 +105,8 @@ public final class UDP {
    *
    * @param message the desired message
    */
-  public void send(ServerMessage message) {
-    var pack = message.getData().toBinary();
+  public void send(DataCollection message) {
+    var pack = message.toBinary();
     var request = new DatagramPacket(pack, pack.length, inetAddress, port);
     try {
       datagramSocket.send(request);

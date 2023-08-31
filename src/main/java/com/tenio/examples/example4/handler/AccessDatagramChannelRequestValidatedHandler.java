@@ -22,25 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example4.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.examples.server.SharedEventKey;
 import java.util.Optional;
 
-@Component
-public final class AttachConnectionRequestValidatedHandler extends AbstractHandler
-    implements EventAttachConnectionRequestValidation {
+@EventHandler
+public final class AccessDatagramChannelRequestValidatedHandler extends AbstractHandler
+    implements EventAccessDatagramChannelRequestValidation {
 
   @Override
-  public Optional<Player> handle(ServerMessage message) {
-    var data = (ZeroMap) message.getData();
+  public Optional<Player> handle(DataCollection message) {
+    var request = (ZeroMap) message;
 
-    return api().getPlayerByName(data.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

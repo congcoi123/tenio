@@ -24,17 +24,17 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.utility.MathUtility;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.example7.constant.Example7Constant;
 
-@Component
+@EventHandler
 public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult {
+    implements EventPlayerLoggedinResult<Player> {
 
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {

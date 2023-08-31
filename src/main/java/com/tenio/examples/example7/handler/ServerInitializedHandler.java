@@ -24,14 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Component
+@EventHandler
 public final class ServerInitializedHandler extends AbstractHandler
     implements EventServerInitialization {
 

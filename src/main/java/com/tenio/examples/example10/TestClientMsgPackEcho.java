@@ -24,11 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.examples.example10;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.configuration.kcp.KcpConfiguration;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -77,12 +77,11 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
     networkWriterStatistic = NetworkWriterStatistic.newInstance();
 
     // send a login request
-    var data =
+    var request =
         DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    var message = ServerMessage.newInstance().setData(data);
-    tcp.send(message);
+    tcp.send(request);
 
-    System.out.println("Login Request -> " + message);
+    System.out.println("Login Request -> " + request);
   }
 
   /**
@@ -93,9 +92,8 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
   }
 
   @Override
-  public void sessionRead(Session session, byte[] binary) {
-    System.out.println("[KCP SESSION READ] " + DataUtility.binaryToCollection(DataType.MSG_PACK,
-        binary));
+  public void sessionRead(Session session, DataCollection message) {
+    System.out.println("[KCP SESSION READ] " + message);
   }
 
   @Override
@@ -111,6 +109,11 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
   @Override
   public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
     // do nothing
+  }
+
+  @Override
+  public DataType getDataType() {
+    return DataType.MSG_PACK;
   }
 
   @Override
@@ -130,18 +133,16 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
 
   @Override
   public void onReceivedTCP(byte[] binaries) {
-    var data = DataUtility.binaryToCollection(DataType.MSG_PACK, binaries);
-    var message = ServerMessage.newInstance().setData(data);
+    var parcel = (MsgPackMap) DataUtility.binaryToCollection(DataType.MSG_PACK, binaries);
 
-    System.err.println("[RECV FROM SERVER TCP] -> " + message);
-    var pack = ((MsgPackMap) message.getData()).getMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ATTACH);
+    System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
+    var pack = parcel.getMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
     switch (pack.getInteger(0)) {
-      case UdpEstablishedState.ALLOW_TO_ATTACH: {
+      case UdpEstablishedState.ALLOW_TO_ACCESS -> {
         // now you can send request for UDP connection request
-        data =
+        var request =
             DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-        var request = ServerMessage.newInstance().setData(data);
         // create a new UDP object and listen for this port
         udp = new UDP(pack.getInteger(1));
         udp.receive(this);
@@ -151,9 +152,7 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
             udp.getLocalAddress().getHostAddress() + ", " + udp.getLocalPort() + " Request a UDP " +
                 "connection -> " + request);
       }
-      break;
-
-      case UdpEstablishedState.ATTACHED: {
+      case UdpEstablishedState.ESTABLISHED -> {
         // the UDP connected successful, you now can send test requests
         System.out.println("Start the conversation ...");
 
@@ -161,9 +160,9 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
         kcpProcessing();
 
         for (int i = 1; i <= 100; i++) {
-          data = DataUtility.newMsgMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+          var request = DataUtility.newMsgMap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
-          ukcp.send(data.toBinary());
+          ukcp.send(request.toBinary());
 
           try {
             Thread.sleep(1000);
@@ -176,7 +175,6 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
         udp.close();
         tcp.close();
       }
-      break;
     }
   }
 

@@ -27,6 +27,7 @@
 
 	<Network>
 		<Sockets>
+			<Port name="http" type="http">9999</Port>
 		</Sockets>
 		<Properties>
 			<Property name="websocket-using-ssl">false</Property>
@@ -40,18 +41,6 @@
 			<Property name="max-connections-per-ip">10</Property>
 			<Property name="enabled-kcp">false</Property>
 		</Properties>
-		<Http>
-			<Port name="main" value="9999">
-				<Path name="get" desc="retrieve a value" version="1"
-					method="get">/retrieve/*</Path>
-				<Path name="add" desc="add a new value" version="1"
-					method="post">/add/*</Path>
-				<Path name="change" desc="change a current value" version="1"
-					method="put">/change/*</Path>
-				<Path name="delete" desc="delete a existing value" version="1"
-					method="delete">/delete/*</Path>
-			</Port>
-		</Http>
 	</Network>
 
 	<Configuration>
@@ -61,6 +50,7 @@
 			<Worker name="socket-writer">2</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
+			<Worker name="http-worker">8</Worker>
 			<Worker name="internal-processor">2</Worker>
 			<Worker name="udp-worker">0</Worker>
 		</Workers>
@@ -94,6 +84,7 @@
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				getting message from client -->
 			<Property name="max-player-idle-time">180</Property>		<!-- Unit: Seconds -->
+			<Property name="max-player-idle-time-never-deported">86400</Property>	<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

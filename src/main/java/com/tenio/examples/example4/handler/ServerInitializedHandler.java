@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4.handler;
 
-import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
-import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;
 import com.tenio.engine.heartbeat.HeartBeatManager;
@@ -38,7 +38,7 @@ import com.tenio.examples.server.SharedEventKey;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@EventHandler
 public final class ServerInitializedHandler extends AbstractHandler
     implements EventServerInitialization {
 
@@ -56,15 +56,16 @@ public final class ServerInitializedHandler extends AbstractHandler
       public void updateVehiclePosition(Vehicle vehicle) {
         var players = api().getReadonlyPlayersList();
 
-        var data = map();
+        var parcel = map();
         var array = new ArrayList<Integer>();
         array.add(vehicle.getIndex());
         array.add((int) vehicle.getPositionX());
         array.add((int) vehicle.getPositionY());
         array.add((int) vehicle.getRotation());
-        data.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
+        parcel.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
 
-        response().setRecipientPlayers(players).setContent(data.toBinary()).prioritizedUdp().write();
+        response().setRecipientPlayers(players).setContent(parcel.toBinary()).prioritizedUdp()
+            .write();
       }
 
       @Override
@@ -72,10 +73,10 @@ public final class ServerInitializedHandler extends AbstractHandler
                                             int currentFps) {
         var player = api().getPlayerByName(playerName);
         if (player.isPresent()) {
-          var data = map();
-          data.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
+          var parcel = map();
+          parcel.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
 
-          response().setRecipientPlayer(player.get()).setContent(data.toBinary()).write();
+          response().setRecipientPlayer(player.get()).setContent(parcel.toBinary()).write();
         }
       }
 
@@ -88,8 +89,10 @@ public final class ServerInitializedHandler extends AbstractHandler
     try {
       heartBeatManager.initialize(1);
       heartBeatManager.create("world", world);
-    } catch (Exception e) {
-      error(e, "world");
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception, "world");
+      }
     }
   }
 }
