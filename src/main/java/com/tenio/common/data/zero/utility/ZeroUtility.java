@@ -106,17 +106,12 @@ public final class ZeroUtility {
    * @return a new zero collection instance
    */
   public static DataCollection binaryToCollection(byte[] binary) {
-    switch (ZeroType.getByValue(binary[0])) {
-      case ZERO_MAP:
-        return binaryToMap(binary);
-
-      case ZERO_ARRAY:
-        return binaryToArray(binary);
-
-      default:
-        throw new UnsupportedOperationException(
-            String.format("Unsupported value: %s", ZeroType.getByValue(binary[0])));
-    }
+    return switch (ZeroType.getByValue(binary[0])) {
+      case ZERO_MAP -> binaryToMap(binary);
+      case ZERO_ARRAY -> binaryToArray(binary);
+      default -> throw new UnsupportedOperationException(
+          String.format("Unsupported value: %s", ZeroType.getByValue(binary[0])));
+    };
   }
 
   /**
@@ -231,6 +226,9 @@ public final class ZeroUtility {
   private static ZeroElement decodeElement(ByteBuffer buffer) throws RuntimeException {
     var headerByte = buffer.get();
     var type = ZeroType.getByValue(headerByte);
+    if (Objects.isNull(type)) {
+      return null;
+    }
 
     switch (type) {
       case NULL:
@@ -273,74 +271,32 @@ public final class ZeroUtility {
       case ZERO_MAP:
         buffer.position(buffer.position() - Byte.BYTES);
         return newZeroElement(ZeroType.ZERO_MAP, decodeZeroMap(buffer));
-      default:
-        return null;
     }
+    return null;
   }
 
   @SuppressWarnings("unchecked")
   private static ByteBuffer encodeElement(ByteBuffer buffer, ZeroType type, Object data) {
     switch (type) {
-      case NULL:
-        buffer = encodeNull(buffer);
-        break;
-      case BOOLEAN:
-        buffer = encodeBoolean(buffer, (Boolean) data);
-        break;
-      case BYTE:
-        buffer = encodeByte(buffer, (Byte) data);
-        break;
-      case SHORT:
-        buffer = encodeShort(buffer, (Short) data);
-        break;
-      case INTEGER:
-        buffer = encodeInteger(buffer, (Integer) data);
-        break;
-      case LONG:
-        buffer = encodeLong(buffer, (Long) data);
-        break;
-      case FLOAT:
-        buffer = encodeFloat(buffer, (Float) data);
-        break;
-      case DOUBLE:
-        buffer = encodeDouble(buffer, (Double) data);
-        break;
-      case STRING:
-        buffer = encodeString(buffer, (String) data);
-        break;
-      case BOOLEAN_ARRAY:
-        buffer = encodeBooleanArray(buffer, (Collection<Boolean>) data);
-        break;
-      case BYTE_ARRAY:
-        buffer = encodeByteArray(buffer, (byte[]) data);
-        break;
-      case SHORT_ARRAY:
-        buffer = encodeShortArray(buffer, (Collection<Short>) data);
-        break;
-      case INTEGER_ARRAY:
-        buffer = encodeIntegerArray(buffer, (Collection<Integer>) data);
-        break;
-      case LONG_ARRAY:
-        buffer = encodeLongArray(buffer, (Collection<Long>) data);
-        break;
-      case FLOAT_ARRAY:
-        buffer = encodeFloatArray(buffer, (Collection<Float>) data);
-        break;
-      case DOUBLE_ARRAY:
-        buffer = encodeDoubleArray(buffer, (Collection<Double>) data);
-        break;
-      case STRING_ARRAY:
-        buffer = encodeStringArray(buffer, (Collection<String>) data);
-        break;
-      case ZERO_ARRAY:
-        buffer = appendBinaryToBuffer(buffer, arrayToBinary((ZeroArray) data));
-        break;
-      case ZERO_MAP:
-        buffer = appendBinaryToBuffer(buffer, mapToBinary((ZeroMap) data));
-        break;
-      default:
-        throw new IllegalArgumentException(
-            String.format("Unsupported data type: %s", type));
+      case NULL -> buffer = encodeNull(buffer);
+      case BOOLEAN -> buffer = encodeBoolean(buffer, (Boolean) data);
+      case BYTE -> buffer = encodeByte(buffer, (Byte) data);
+      case SHORT -> buffer = encodeShort(buffer, (Short) data);
+      case INTEGER -> buffer = encodeInteger(buffer, (Integer) data);
+      case LONG -> buffer = encodeLong(buffer, (Long) data);
+      case FLOAT -> buffer = encodeFloat(buffer, (Float) data);
+      case DOUBLE -> buffer = encodeDouble(buffer, (Double) data);
+      case STRING -> buffer = encodeString(buffer, (String) data);
+      case BOOLEAN_ARRAY -> buffer = encodeBooleanArray(buffer, (Collection<Boolean>) data);
+      case BYTE_ARRAY -> buffer = encodeByteArray(buffer, (byte[]) data);
+      case SHORT_ARRAY -> buffer = encodeShortArray(buffer, (Collection<Short>) data);
+      case INTEGER_ARRAY -> buffer = encodeIntegerArray(buffer, (Collection<Integer>) data);
+      case LONG_ARRAY -> buffer = encodeLongArray(buffer, (Collection<Long>) data);
+      case FLOAT_ARRAY -> buffer = encodeFloatArray(buffer, (Collection<Float>) data);
+      case DOUBLE_ARRAY -> buffer = encodeDoubleArray(buffer, (Collection<Double>) data);
+      case STRING_ARRAY -> buffer = encodeStringArray(buffer, (Collection<String>) data);
+      case ZERO_ARRAY -> buffer = appendBinaryToBuffer(buffer, arrayToBinary((ZeroArray) data));
+      case ZERO_MAP -> buffer = appendBinaryToBuffer(buffer, mapToBinary((ZeroMap) data));
     }
 
     return buffer;
@@ -535,7 +491,8 @@ public final class ZeroUtility {
       throw new IllegalStateException(
           String.format("Invalid ZeroType. Expected: %s, value: %d, but found: %s, value: %d",
               ZeroType.ZERO_ARRAY, ZeroType.ZERO_ARRAY.getValue(),
-              ZeroType.getByValue(headerByte).toString(), headerByte));
+              Objects.nonNull(ZeroType.getByValue(headerByte)) ?
+                  ZeroType.getByValue(headerByte).toString() : "null", headerByte));
     }
 
     var arraySize = buffer.getShort();
@@ -709,7 +666,6 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeIntegerArray(ByteBuffer buffer, Collection<Integer> data) {
-
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Integer.BYTES * data.size());
     buf.put((byte) ZeroType.INTEGER_ARRAY.getValue());
     buf.putShort((short) data.size());

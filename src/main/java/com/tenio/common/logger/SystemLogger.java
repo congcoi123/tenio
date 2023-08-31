@@ -40,7 +40,7 @@ public abstract class SystemLogger extends AbstractLogger {
    * @param type the event's type
    * @param msg  the extra information for "type"
    */
-  public void debug(String type, Object... msg) {
+  public void debugEvent(String type, Object... msg) {
     if (!logger.isDebugEnabled()) {
       return;
     }
@@ -55,6 +55,27 @@ public abstract class SystemLogger extends AbstractLogger {
       builder.append(msg[msg.length - 1]);
     }
 
+    logger.debug(builder.toString());
+    stringPool.repay(builder);
+  }
+
+  /**
+   * Prints out debugging logs.
+   *
+   * @param type the debug title
+   * @param msg  the debug content
+   * @since 0.5.0
+   */
+  public void debug(String type, Object... msg) {
+    if (!logger.isDebugEnabled()) {
+      return;
+    }
+
+    var builder = stringPool.get();
+    builder.append("{").append(type).append("} ");
+    for (var m : msg) {
+      builder.append(m);
+    }
     logger.debug(builder.toString());
     stringPool.repay(builder);
   }
@@ -107,4 +128,11 @@ public abstract class SystemLogger extends AbstractLogger {
     stringPool.repay(builder);
   }
 
+  public boolean isTraceEnabled() {
+    return logger.isTraceEnabled();
+  }
+
+  public boolean isDebugEnabled() {
+    return logger.isDebugEnabled();
+  }
 }

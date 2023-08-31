@@ -26,6 +26,7 @@ package com.tenio.common.data.common;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Assertions;
@@ -49,14 +50,14 @@ class CommonArrayTest {
   @DisplayName("Allow fetching all inserted data from the array")
   void itShouldFetchAllInsertedData() {
     assertAll("itShouldFetchAllInsertedData",
-        () -> assertEquals(commonArray.getDouble(0), 100.0),
-        () -> assertEquals(commonArray.getFloat(1), 100.0F),
-        () -> assertEquals(commonArray.getLong(2), 100L),
-        () -> assertEquals(commonArray.getInt(3), 100),
+        () -> assertEquals(100.0, commonArray.getDouble(0)),
+        () -> assertEquals(100.0f, commonArray.getFloat(1)),
+        () -> assertEquals(100L, commonArray.getLong(2)),
+        () -> assertEquals(100, commonArray.getInt(3)),
         () -> assertTrue(commonArray.getBoolean(4)),
-        () -> assertEquals(commonArray.getString(5), "test"),
-        () -> assertEquals(commonArray.getCommonObjectArray(6), dummyArray),
-        () -> assertTrue(commonArray.getObject(7) instanceof CommonArray)
+        () -> assertEquals("test", commonArray.getString(5)),
+        () -> assertEquals(dummyArray, commonArray.getCommonObjectArray(6)),
+        () -> assertInstanceOf(CommonArray.class, commonArray.getObject(7))
     );
   }
 

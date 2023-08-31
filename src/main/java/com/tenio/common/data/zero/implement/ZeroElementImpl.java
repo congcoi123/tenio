@@ -26,26 +26,11 @@ package com.tenio.common.data.zero.implement;
 
 import com.tenio.common.data.zero.ZeroElement;
 import com.tenio.common.data.zero.ZeroType;
-import java.util.Objects;
 
 /**
  * This class holds a relationship between a self-definition data type and its value.
  */
-public final class ZeroElementImpl implements ZeroElement {
-
-  private final ZeroType type;
-  private final Object data;
-
-  /**
-   * Creates a new instance.
-   *
-   * @param type the {@link ZeroType}
-   * @param data the {@link Object} value
-   */
-  public ZeroElementImpl(ZeroType type, Object data) {
-    this.type = type;
-    this.data = data;
-  }
+public record ZeroElementImpl(ZeroType type, Object data) implements ZeroElement {
 
   @Override
   public ZeroType getType() {
@@ -55,23 +40,6 @@ public final class ZeroElementImpl implements ZeroElement {
   @Override
   public Object getData() {
     return data;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ZeroElementImpl zeroDataImpl = (ZeroElementImpl) o;
-    return type == zeroDataImpl.type && Objects.equals(data, zeroDataImpl.data);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type, data);
   }
 
   @Override

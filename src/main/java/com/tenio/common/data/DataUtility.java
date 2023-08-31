@@ -86,16 +86,9 @@ public final class DataUtility {
    * @return a new collection instance
    */
   public static DataCollection binaryToCollection(DataType type, byte[] binary) {
-    switch (type) {
-      case ZERO:
-        return ZeroUtility.binaryToCollection(binary);
-
-      case MSG_PACK:
-        return MsgPackUtility.deserialize(binary);
-
-      default:
-        throw new UnsupportedOperationException(String.format("Unsupported serialization type: " +
-            "%s", type));
-    }
+    return switch (type) {
+      case ZERO -> ZeroUtility.binaryToCollection(binary);
+      case MSG_PACK -> MsgPackUtility.deserialize(binary);
+    };
   }
 }

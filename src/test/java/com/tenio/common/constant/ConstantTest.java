@@ -22,24 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common;
+package com.tenio.common.constant;
 
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.SuiteDisplayName;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(JUnitPlatform.class)
-// @Suite
-@SuiteDisplayName("Test all unit test cases for tenio-common module")
-@SelectPackages({
-    "com.tenio.common.configuration",
-    "com.tenio.common.constant",
-    "com.tenio.common.data",
-    "com.tenio.common.pool",
-    "com.tenio.common.task",
-    "com.tenio.common.utility",
-    "com.tenio.common.worker"
-})
-class TenIOCommonTest {
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Unit Test Cases For Constant")
+class ConstantTest {
+
+  @Test
+  @DisplayName("Throw an exception when the class's instance is attempted creating")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = CommonConstant.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
+  }
 }

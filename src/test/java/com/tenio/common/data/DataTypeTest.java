@@ -22,24 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common;
+package com.tenio.common.data;
 
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.SuiteDisplayName;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(JUnitPlatform.class)
-// @Suite
-@SuiteDisplayName("Test all unit test cases for tenio-common module")
-@SelectPackages({
-    "com.tenio.common.configuration",
-    "com.tenio.common.constant",
-    "com.tenio.common.data",
-    "com.tenio.common.pool",
-    "com.tenio.common.task",
-    "com.tenio.common.utility",
-    "com.tenio.common.worker"
-})
-class TenIOCommonTest {
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+@DisplayName("Unit Test Cases For Data Type")
+class DataTypeTest {
+
+  @ParameterizedTest
+  @CsvSource({
+      "ZERO, zero",
+      "MSG_PACK, msgpack"
+  })
+  @DisplayName("Test All Enumerated Values")
+  void testAllEnumValues(String name, String value) {
+    DataType dataType = DataType.valueOf(name);
+    DataType dataTypeByValue = DataType.getByValue(value);
+    assertEquals(dataTypeByValue, dataType);
+    assertEquals(value, dataType.getValue());
+    assertEquals(value, dataType.toString());
+    assertEquals(name, dataType.name());
+  }
 }

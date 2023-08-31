@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.data.common;
+package com.tenio.common.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

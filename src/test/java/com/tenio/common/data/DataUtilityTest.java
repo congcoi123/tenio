@@ -22,25 +22,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.utility;
+package com.tenio.common.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.tenio.common.data.msgpack.MsgPackUtility;
+import com.tenio.common.data.msgpack.element.MsgPackArray;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.common.data.zero.utility.ZeroUtility;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Math Utility")
-class MathUtilityTest {
+@DisplayName("Unit Test Cases For Data Utility")
+class DataUtilityTest {
 
   @Test
   @DisplayName("Throw an exception when the class's instance is attempted creating")
   void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = MathUtility.class.getDeclaredConstructor();
+    var constructor = DataUtility.class.getDeclaredConstructor();
     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
     assertThrows(InvocationTargetException.class, () -> {
       constructor.setAccessible(true);
@@ -49,23 +55,18 @@ class MathUtilityTest {
   }
 
   @Test
-  void testDegreeToRadian() {
-    assertEquals(0.17453294f, MathUtility.degreeToRadian(10.0f));
-  }
+  @DisplayName("Provided creation methods should work properly")
+  void instancesCreationShouldWork() {
+    assertAll("instancesCreationShouldWork",
+        () -> assertInstanceOf(ZeroArray.class, DataUtility.newZeroArray()),
+        () -> assertInstanceOf(ZeroMap.class, DataUtility.newZeroMap()),
+        () -> assertInstanceOf(MsgPackArray.class, DataUtility.newMsgArray()),
+        () -> assertInstanceOf(MsgPackMap.class, DataUtility.newMsgMap()));
 
-  @Test
-  void testIsEqual() {
-    assertTrue(MathUtility.isEqual(10.0f, 10.0f));
-    assertFalse(MathUtility.isEqual(0.0f, 10.0f));
-  }
-
-  @Test
-  void testRandInt2() {
-    assertEquals(1, MathUtility.randInt(1, 1));
-  }
-
-  @Test
-  void testRandInRange() {
-    assertEquals(10.0f, MathUtility.randInRange(10.0f, 10.0f));
+    var zeroMapBinaries = ZeroUtility.mapToBinary(ZeroUtility.newZeroMap());
+    var msgPackBinaries = MsgPackUtility.serialize(MsgPackMap.newInstance().putBoolean("a", true));
+    assertInstanceOf(ZeroMap.class, DataUtility.binaryToCollection(DataType.ZERO, zeroMapBinaries));
+    assertInstanceOf(MsgPackMap.class, DataUtility.binaryToCollection(DataType.MSG_PACK,
+        msgPackBinaries));
   }
 }

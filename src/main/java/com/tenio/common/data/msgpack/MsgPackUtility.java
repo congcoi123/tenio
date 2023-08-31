@@ -45,6 +45,10 @@ import org.msgpack.type.Value;
  */
 public final class MsgPackUtility {
 
+  private MsgPackUtility() {
+    throw new UnsupportedOperationException("This class does not support creating a new instance");
+  }
+
   /**
    * Serialize an object to an array of bytes data.
    *
@@ -53,31 +57,6 @@ public final class MsgPackUtility {
    */
   public static byte[] serialize(MsgPackMap msgPackMap) {
     return MsgPackConverter.pack(msgPackMap);
-  }
-
-  /**
-   * Deserialize an array of bytes data to a {@link MsgPackMap} object.
-   *
-   * @param msgPackMap     the message container which is using in the system
-   * @param byteArrayInput the object for converting raw binaries' data to msgpack
-   *                       using one
-   * @param binaries       an array of bytes data
-   * @return an message object in {@link MsgPackMap} type
-   */
-  public static MsgPackMap deserialize(MsgPackMap msgPackMap, ByteArrayInputStream byteArrayInput,
-                                       byte[] binaries) {
-    var dstMap = MsgPackConverter.unpack(byteArrayInput, binaries);
-    if (dstMap == null || dstMap.isEmpty()) {
-      return null;
-    }
-    dstMap.forEach((key, value) -> {
-      try {
-        msgPackMap.put(key, MsgPackConverter.valueToObject(value));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
-    return msgPackMap;
   }
 
   /**
@@ -96,11 +75,29 @@ public final class MsgPackUtility {
     dstMap.forEach((key, value) -> {
       try {
         msgObject.put(key, MsgPackConverter.valueToObject(value));
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (IOException exception) {
+        exception.printStackTrace();
       }
     });
     return msgObject;
+  }
+
+  /**
+   * Retrieves new instance of the {@link MsgPackMap} class.
+   *
+   * @return an instance
+   */
+  public static MsgPackMap newMsgPackMap() {
+    return MsgPackMap.newInstance();
+  }
+
+  /**
+   * Retrieves new instance of the {@link MsgPackArray} class.
+   *
+   * @return an instance
+   */
+  public static MsgPackArray newMsgPackArray() {
+    return MsgPackArray.newInstance();
   }
 }
 
@@ -120,8 +117,8 @@ class MsgPackConverter {
   public static byte[] pack(Map<String, Object> map) {
     try {
       return PACKER.write(map);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
       return null;
     }
   }
@@ -139,8 +136,8 @@ class MsgPackConverter {
       byteArrayInput.reset(binaries);
       var unpacker = PACKER.createUnpacker(byteArrayInput);
       return unpacker.read(mapTmpl);
-    } catch (IOException | IllegalArgumentException e) {
-      e.printStackTrace();
+    } catch (IOException | IllegalArgumentException exception) {
+      exception.printStackTrace();
       return null;
     }
   }
@@ -172,8 +169,8 @@ class MsgPackConverter {
       arrayValue.forEach(element -> {
         try {
           array.add(valueToObject(element));
-        } catch (IOException e) {
-          e.printStackTrace();
+        } catch (IOException exception) {
+          exception.printStackTrace();
         }
       });
       return array;

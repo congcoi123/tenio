@@ -34,8 +34,7 @@ class DefaultTask implements Task {
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-      System.out.println("test task");
-    }, DELAY_SECOND, TimeUnit.SECONDS);
+    return Executors.newSingleThreadScheduledExecutor()
+        .schedule(() -> System.out.println("test task"), DELAY_SECOND, TimeUnit.SECONDS);
   }
 }

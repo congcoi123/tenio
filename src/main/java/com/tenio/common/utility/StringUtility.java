@@ -76,12 +76,34 @@ public final class StringUtility {
 
       // generate a random number between
       // 0 to AlphaNumericString variable length
-      int index = (int) (ALPHA_NUMERIC_STRING.length() * Math.random());
+      int index = MathUtility.randInt(0, ALPHA_NUMERIC_STRING.length() - 1);
 
       // add Character one by one in end of sb
       builder.append(ALPHA_NUMERIC_STRING.charAt(index));
     }
 
     return builder.toString();
+  }
+
+  /**
+   * *
+   * @param text
+   * @param trimBy
+   * @return
+   * @since 0.5.0
+   */
+  public static String trimStringByString(String text, String trimBy) {
+    int beginIndex = 0;
+    int endIndex = text.length();
+
+    while (text.substring(beginIndex, endIndex).startsWith(trimBy)) {
+      beginIndex += trimBy.length();
+    }
+
+    while (text.substring(beginIndex, endIndex).endsWith(trimBy)) {
+      endIndex -= trimBy.length();
+    }
+
+    return text.substring(beginIndex, endIndex);
   }
 }

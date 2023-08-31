@@ -25,7 +25,11 @@ THE SOFTWARE.
 package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -36,7 +40,35 @@ import org.junit.jupiter.api.condition.OS;
 class OsUtilityTest {
 
   @Test
-  @EnabledOnOs(OS.MAC)
+  @DisplayName("Throw an exception when the class's instance is attempted creating")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = OsUtility.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
+  }
+
+  @Test
+  @DisplayName("Test all system types should work")
+  void testAllSystemTypesShouldWork() {
+    System.setProperty("os.name", "mac");
+    assertEquals(OsUtility.OsType.MAC, OsUtility.getOperatingSystemType());
+    System.setProperty("os.name", "darwin");
+    assertEquals(OsUtility.OsType.MAC, OsUtility.getOperatingSystemType());
+    System.setProperty("os.name", "win");
+    assertEquals(OsUtility.OsType.WINDOWS, OsUtility.getOperatingSystemType());
+    System.setProperty("os.name", "nux");
+    assertEquals(OsUtility.OsType.LINUX, OsUtility.getOperatingSystemType());
+    System.setProperty("os.name", "other");
+    assertEquals(OsUtility.OsType.OTHER, OsUtility.getOperatingSystemType());
+
+    assertEquals("MAC", OsUtility.OsType.MAC.toString());
+  }
+
+  @Test
+  @EnabledIfSystemProperty(named = "os.name", matches = "mac")
   @DisplayName("Fetch operation system type should return MAC")
   void getOperatingSystemTypeMac() {
     assertEquals(OsUtility.OsType.MAC, OsUtility.getOperatingSystemType());

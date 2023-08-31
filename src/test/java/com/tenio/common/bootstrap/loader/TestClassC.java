@@ -22,24 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common;
+package com.tenio.common.bootstrap.loader;
 
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.SuiteDisplayName;
-import org.junit.runner.RunWith;
-
-@RunWith(JUnitPlatform.class)
-// @Suite
-@SuiteDisplayName("Test all unit test cases for tenio-common module")
-@SelectPackages({
-    "com.tenio.common.configuration",
-    "com.tenio.common.constant",
-    "com.tenio.common.data",
-    "com.tenio.common.pool",
-    "com.tenio.common.task",
-    "com.tenio.common.utility",
-    "com.tenio.common.worker"
-})
-class TenIOCommonTest {
+public class TestClassC {
 }
+
