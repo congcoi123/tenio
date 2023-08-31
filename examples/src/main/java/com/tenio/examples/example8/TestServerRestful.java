@@ -24,11 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.examples.example8;
 
-import com.tenio.core.bootstrap.annotation.Bootstrap;
 import com.tenio.core.ApplicationLauncher;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.network.jetty.controller.PingController;
 
 /**
  * This class demonstrate how to handle HTTP requests.
+ *
+ * @see PingController
  */
 @Bootstrap
 public final class TestServerRestful {

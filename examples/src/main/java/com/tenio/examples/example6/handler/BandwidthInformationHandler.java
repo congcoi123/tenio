@@ -24,11 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
 
-@Component
+@EventHandler
 public final class BandwidthInformationHandler extends AbstractHandler
     implements EventFetchedBandwidthInfo {
 

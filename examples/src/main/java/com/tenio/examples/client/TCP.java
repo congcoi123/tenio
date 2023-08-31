@@ -24,8 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.common.data.utility.ZeroUtility;
-import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
@@ -103,10 +102,10 @@ public final class TCP implements PacketDecoderResultListener {
    *
    * @param message the desired message
    */
-  public void send(ServerMessage message) {
+  public void send(DataCollection message) {
     // convert message object to bytes data
     var packet = PacketImpl.newInstance();
-    packet.setData(message.getData().toBinary());
+    packet.setData(message.toBinary());
     packet = binaryPacketEncoder.encode(packet);
     // attach the packet's length to packet's header
     var bytes = packet.getData();
@@ -155,8 +154,7 @@ public final class TCP implements PacketDecoderResultListener {
 
   @Override
   public void resultFrame(Session session, byte[] binary) {
-    var data = ZeroUtility.binaryToMap(binary);
-    socketListener.onReceivedTCP(ServerMessage.newInstance().setData(data));
+    socketListener.onReceivedTCP(binary);
   }
 
   @Override

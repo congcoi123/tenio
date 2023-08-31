@@ -51,7 +51,7 @@ public final class ClientUtility {
     var sb = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
       // 0-62 (exclusive), random returns 0-61
-      int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length());
+      int rndCharAt = RANDOM.nextInt(DATA_FOR_RANDOM_STRING.length() - 1);
       char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
 
       sb.append(rndChar);

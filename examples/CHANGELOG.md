@@ -32,3 +32,19 @@
 - Supports self-defined commands
 - Refactoring the project's structure
 - Bugs fixed  
+
+## 0.5.0 2023-08-30 Feature release
+- Upgraded to JDK 17
+- Upgraded dependencies
+- Allowed checking logging configuration before writing logs
+- configuration.xml file changed
+- Introduced new annotations: @RestController and @RestMapping to work with Restful, @ClientCommand
+- Added a new configuration value that allows limiting the player's IDLE time in case of non-deported state enabled
+- Methods changed/updated/enhanced in classes ServerApi, Injector, ServerEvent
+- Annotations enhanced: @Bean, @AutowiredQualifier
+- Set names for all necessary threads
+- Resolved the deadlock issue while writing packets
+- Player and Room are now opened for custom classes
+- Removed redundant constant, enum values
+- Fixed test cases' issues
+- Bugs fixed 

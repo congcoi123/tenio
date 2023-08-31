@@ -24,15 +24,17 @@ THE SOFTWARE.
 
 package com.tenio.examples.example11.command;
 
-import com.tenio.core.bootstrap.annotation.Command;
-import com.tenio.core.command.AbstractCommandHandler;
+import com.tenio.core.bootstrap.annotation.SystemCommand;
+import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.utility.CommandUtility;
 import java.util.List;
 
-@Command(label = "player", usage = {
+@SystemCommand(label = "player", usage = {
     "logout first"
 }, description = "Logout the first player from the server")
-public class PlayerCommand extends AbstractCommandHandler {
+public class PlayerCommand extends AbstractSystemCommandHandler {
 
   @Override
   public void execute(List<String> args) {
@@ -48,7 +50,7 @@ public class PlayerCommand extends AbstractCommandHandler {
       var firstPlayer = players.get(0);
       CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getName() + "} is " +
           "going to logout.");
-      api().logout(firstPlayer);
+      api().logout(firstPlayer, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
     } else {
       CommandUtility.INSTANCE.showConsoleMessage("Invalid action.");
     }

@@ -27,7 +27,6 @@ package com.tenio.examples.example6;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
@@ -50,7 +49,7 @@ public final class TestClientEchoStress implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
   private static final int NUMBER_CLIENTS = 1000;
-  private static final boolean ENABLED_DEBUG = false;
+  private static final boolean ENABLED_DEBUG = true;
   /**
    * List of TCP clients
    */
@@ -66,12 +65,12 @@ public final class TestClientEchoStress implements SocketListener {
       tcps.put(name, tcp);
 
       // send a login request
-      var data = DataUtility.newZeroMap();
-      data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-      tcp.send(ServerMessage.newInstance().setData(data));
+      var request = DataUtility.newZeroMap();
+      request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+      tcp.send(request);
 
       if (ENABLED_DEBUG) {
-        System.err.println("Login Request -> " + data);
+        System.err.println("Login Request -> " + request);
       }
     }
   }
@@ -85,11 +84,10 @@ public final class TestClientEchoStress implements SocketListener {
 
   @Override
   public void onReceivedTCP(byte[] binaries) {
-    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-    var message = ServerMessage.newInstance().setData(dat);
+    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binaries);
 
     if (ENABLED_DEBUG) {
-      System.out.println("[RECV FROM SERVER TCP] -> " + message);
+      System.out.println("[RECV FROM SERVER TCP] -> " + parcel);
     }
 
     try {
@@ -99,12 +97,11 @@ public final class TestClientEchoStress implements SocketListener {
     }
 
     var tcp =
-        tcps.get(((ZeroMap) message.getData()).getString(SharedEventKey.KEY_PLAYER_LOGIN));
+        tcps.get(((ZeroMap) parcel).getString(SharedEventKey.KEY_PLAYER_LOGIN));
 
     // make an echo message
-    var data = DataUtility.newZeroMap();
-    data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
-    var request = ServerMessage.newInstance().setData(data);
+    var request = DataUtility.newZeroMap();
+    request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     tcp.send(request);
   }
 }

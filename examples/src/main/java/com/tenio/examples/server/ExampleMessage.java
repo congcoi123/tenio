@@ -33,7 +33,7 @@ public final class ExampleMessage implements ExtraMessage {
   private final Map<String, Object> content;
 
   private ExampleMessage() {
-    content = new HashMap<String, Object>();
+    content = new HashMap<>();
   }
 
   public static ExampleMessage newInstance() {
