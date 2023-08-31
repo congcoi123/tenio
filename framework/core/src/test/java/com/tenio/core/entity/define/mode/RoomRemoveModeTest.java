@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class RoomRemoveModeTest {
   @Test
   void testValueOf() {
-    assertEquals("DEFAULT", RoomRemoveMode.valueOf("DEFAULT").toString());
+    assertEquals("WHEN_EMPTY", RoomRemoveMode.valueOf("WHEN_EMPTY").toString());
   }
 }
 

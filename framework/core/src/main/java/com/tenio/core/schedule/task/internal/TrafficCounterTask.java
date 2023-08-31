@@ -24,11 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.internal;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Collecting the traffic data like the amount of reader and writer binary.
  */
-public final class TrafficCounterTask extends AbstractTask {
+public final class TrafficCounterTask extends AbstractSystemTask {
 
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
@@ -45,27 +46,50 @@ public final class TrafficCounterTask extends AbstractTask {
     super(eventManager);
   }
 
+  /**
+   * Creates a new task instance.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link TrafficCounterTask}
+   */
   public static TrafficCounterTask newInstance(EventManager eventManager) {
     return new TrafficCounterTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-        () -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
-            networkReaderStatistic.getReadBytes(),
-            networkReaderStatistic.getReadPackets(),
-            networkReaderStatistic.getReadDroppedPackets(),
-            networkWriterStatistic.getWrittenBytes(), networkWriterStatistic.getWrittenPackets(),
-            networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
-            networkWriterStatistic.getWrittenDroppedPacketsByFull()), 0, interval,
-        TimeUnit.SECONDS);
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("traffic-counter-task-%d").build();
+    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+        () -> {
+          var worker = new Thread(() -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
+              networkReaderStatistic.getReadBytes(),
+              networkReaderStatistic.getReadPackets(),
+              networkReaderStatistic.getReadDroppedPackets(),
+              networkWriterStatistic.getWrittenBytes(), networkWriterStatistic.getWrittenPackets(),
+              networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
+              networkWriterStatistic.getWrittenDroppedPacketsByFull()));
+          worker.setDaemon(true);
+          worker.setName("traffic-counter-worker");
+          worker.start();
+        },
+        initialDelay, interval, TimeUnit.SECONDS);
   }
 
+  /**
+   * Sets the network reader statistic.
+   *
+   * @param networkReaderStatistic the {@link NetworkReaderStatistic} instance
+   */
   public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
     this.networkReaderStatistic = networkReaderStatistic;
   }
 
+  /**
+   * Sets the network writer statistic.
+   *
+   * @param networkWriterStatistic the {@link NetworkWriterStatistic} instance
+   */
   public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
     this.networkWriterStatistic = networkWriterStatistic;
   }

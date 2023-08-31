@@ -53,7 +53,13 @@ public enum PlayerDisconnectMode {
   /**
    * Disconnected by other reasons.
    */
-  UNKNOWN;
+  UNKNOWN,
+  /**
+   * Actually, the player will not get disconnected, it only changes its session
+   *
+   * @since 0.5.0
+   */
+  RECONNECTION;
 
   @Override
   public String toString() {

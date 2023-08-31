@@ -26,7 +26,6 @@ package com.tenio.core.entity;
 
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.room.PlayerRoleInRoom;
-import com.tenio.core.entity.implement.RoomImpl;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
@@ -36,7 +35,6 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.PlayerJoinedRoomException;
 import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
 import com.tenio.core.exception.SwitchedPlayerRoleInRoomException;
-import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +43,15 @@ import java.util.Optional;
  * The abstract room entity used on the server.
  */
 public interface Room {
+
+  /**
+   * The value indicates that a player has no slot position value in the room.
+   */
+  int NIL_SLOT = -1;
+  /**
+   * The value indicates that a player owns a default slot position value in the room.
+   */
+  int DEFAULT_SLOT = 0;
 
   /**
    * Retrieves the room's unique ID in the management list, on the server.
@@ -248,9 +255,9 @@ public interface Room {
   void setCapacity(int maxParticipants, int maxSpectators) throws IllegalArgumentException;
 
   /**
-   * Retrieves the current number of players in the room.
+   * Retrieves the current number of participants in the room.
    *
-   * @return the current number of players ({@code integer} value)
+   * @return the current number of participants ({@code integer} value)
    */
   int getParticipantCount();
 
@@ -277,15 +284,6 @@ public interface Room {
    * @see Optional
    */
   Optional<Player> getPlayerByName(String playerName);
-
-  /**
-   * Retrieves a player on the server by using its session (if present).
-   *
-   * @param session a {@link Session} associating to the player on the server
-   * @return a corresponding instance of optional {@link Player}
-   * @see Optional
-   */
-  Optional<Player> getPlayerBySession(Session session);
 
   /**
    * Retrieves an iterator for a player management list. This method should be used to prevent
@@ -325,6 +323,24 @@ public interface Room {
    */
   List<Player> getReadonlySpectatorsList();
 
+
+  /**
+   * Adds a player to the room.
+   *
+   * @param player      a joining {@link Player}
+   * @param password    the password value assigned for the room
+   * @param asSpectator sets to {@code true} if the player joins room as a "spectator",
+   *                    otherwise returns {@code false}
+   * @param targetSlot  when the player join the room as role of "participants", then it can
+   *                    occupy a slot position ({@code integer} value)
+   * @throws PlayerJoinedRoomException      any exception occurred when the player tries to join
+   *                                        the room
+   * @throws AddedDuplicatedPlayerException when the player has been already in the room, but it
+   *                                        is forced to join again
+   */
+  void addPlayer(Player player, String password, boolean asSpectator, int targetSlot)
+      throws PlayerJoinedRoomException, AddedDuplicatedPlayerException;
+
   /**
    * Adds a player to the room.
    *
@@ -338,8 +354,10 @@ public interface Room {
    * @throws AddedDuplicatedPlayerException when the player has been already in the room, but it
    *                                        is forced to join again
    */
-  void addPlayer(Player player, boolean asSpectator, int targetSlot)
-      throws PlayerJoinedRoomException, AddedDuplicatedPlayerException;
+  default void addPlayer(Player player, boolean asSpectator, int targetSlot)
+      throws PlayerJoinedRoomException, AddedDuplicatedPlayerException {
+    addPlayer(player, null, asSpectator, targetSlot);
+  }
 
   /**
    * Adds a player to the room without indicating any slot position.
@@ -354,7 +372,7 @@ public interface Room {
    */
   default void addPlayer(Player player, boolean asSpectator)
       throws PlayerJoinedRoomException, AddedDuplicatedPlayerException {
-    addPlayer(player, asSpectator, RoomImpl.DEFAULT_SLOT);
+    addPlayer(player, asSpectator, Room.DEFAULT_SLOT);
   }
 
   /**
@@ -406,10 +424,11 @@ public interface Room {
    *
    * @param player the changing {@link Player}
    * @throws SwitchedPlayerRoleInRoomException when the changing could not be done
-   * @see RoomImpl#DEFAULT_SLOT
+   * @see Room#DEFAULT_SLOT
    */
-  default void switchSpectatorToParticipant(Player player) throws SwitchedPlayerRoleInRoomException {
-    switchSpectatorToParticipant(player, RoomImpl.DEFAULT_SLOT);
+  default void switchSpectatorToParticipant(Player player)
+      throws SwitchedPlayerRoleInRoomException {
+    switchSpectatorToParticipant(player, Room.DEFAULT_SLOT);
   }
 
   /**

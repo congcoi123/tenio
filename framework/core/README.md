@@ -28,8 +28,8 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://img.shields.io/discord/1146091189456613407">
     </a>
 </p>
 
@@ -41,15 +41,13 @@ This module provides all the main features for the framework to operate. It cont
 
 ## All supported events
 ```txt
-EventAttachConnectionRequestValidation
-EventAttachedConnectionResult
+EventAccessDatagramChannelRequestValidation
+EventAccessDatagramChannelRequestValidationResult
 EventConnectionEstablishedResult
 EventDisconnectConnection
 EventDisconnectPlayer
 EventFetchedBandwidthInfo
 EventFetchedCcuInfo
-EventHttpRequestHandle
-EventHttpRequestValidation
 EventPlayerAfterLeftRoom
 EventPlayerBeforeLeaveRoom
 EventPlayerJoinedRoomResult
@@ -72,7 +70,7 @@ EventWriteMessageToConnection
 ```
 
 ## Requirements
-- Java 11
+- Java 17
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.

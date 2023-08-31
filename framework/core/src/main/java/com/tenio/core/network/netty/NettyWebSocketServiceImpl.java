@@ -25,10 +25,12 @@ THE SOFTWARE.
 package com.tenio.core.network.netty;
 
 import com.tenio.common.data.DataType;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.netty.websocket.NettyWsInitializer;
@@ -68,11 +70,11 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
       Runtime.getRuntime().availableProcessors() * 2;
 
   @GuardedBy("this")
-  private EventLoopGroup websocketAcceptors;
+  private EventLoopGroup webSocketAcceptors;
   @GuardedBy("this")
-  private EventLoopGroup websocketWorkers;
+  private EventLoopGroup webSocketWorkers;
   @GuardedBy("this")
-  private List<Channel> serverWebsockets;
+  private List<Channel> serverWebSockets;
 
   private int senderBufferSize;
   private int receiverBufferSize;
@@ -84,7 +86,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   private SessionManager sessionManager;
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
-  private SocketConfig socketConfig;
+  private SocketConfiguration socketConfiguration;
   private boolean usingSsl;
 
   private boolean initialized;
@@ -100,22 +102,29 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     initialized = false;
   }
 
+  /**
+   * Creates a new instance of web socket service.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link NettyWebSocketService}
+   */
   public static NettyWebSocketService newInstance(EventManager eventManager) {
     return new NettyWebSocketServiceImpl(eventManager);
   }
 
   private void attemptToStart() throws InterruptedException {
-
-    info("START SERVICE",
-        buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE",
+          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    }
 
     var defaultWebsocketThreadFactory =
         new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
-    websocketAcceptors =
+    webSocketAcceptors =
         new NioEventLoopGroup(producerWorkerSize, defaultWebsocketThreadFactory);
-    websocketWorkers = new NioEventLoopGroup(consumerWorkerSize, defaultWebsocketThreadFactory);
-    serverWebsockets = new ArrayList<>();
+    webSocketWorkers = new NioEventLoopGroup(consumerWorkerSize, defaultWebsocketThreadFactory);
+    serverWebSockets = new ArrayList<>();
 
     WebSocketSslContext sslContext = null;
     if (usingSsl) {
@@ -123,7 +132,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     }
 
     var bootstrap = new ServerBootstrap();
-    bootstrap.group(websocketAcceptors, websocketWorkers).channel(NioServerSocketChannel.class)
+    bootstrap.group(webSocketAcceptors, webSocketWorkers).channel(NioServerSocketChannel.class)
         .option(ChannelOption.SO_BACKLOG, 5)
         .childOption(ChannelOption.SO_SNDBUF, senderBufferSize)
         .childOption(ChannelOption.SO_RCVBUF, receiverBufferSize)
@@ -132,42 +141,47 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
             NettyWsInitializer.newInstance(eventManager, sessionManager, connectionFilter, dataType,
                 networkReaderStatistic, sslContext, usingSsl));
 
-    var channelFuture = bootstrap.bind(socketConfig.getPort()).sync()
+    var channelFuture = bootstrap.bind(socketConfiguration.port()).sync()
         .addListener(future -> {
           if (!future.isSuccess()) {
-            error(future.cause());
-            throw new IOException(String.valueOf(socketConfig.getPort()));
+            if (isErrorEnabled()) {
+              error(future.cause());
+            }
+            throw new IOException(String.valueOf(socketConfiguration.port()));
           }
         });
-    serverWebsockets.add(channelFuture.channel());
+    serverWebSockets.add(channelFuture.channel());
 
-    info("WEB SOCKET", buildgen("Started at port: ", socketConfig.getPort()));
+    if (isInfoEnabled()) {
+      info("WEB SOCKET", buildgen("Started at port: ", socketConfiguration.port()));
+    }
   }
 
   private synchronized void attemptToShutdown() {
-    for (var socket : serverWebsockets) {
+    for (var socket : serverWebSockets) {
       close(socket);
     }
-    serverWebsockets.clear();
+    serverWebSockets.clear();
 
-    if (Objects.nonNull(websocketAcceptors)) {
-      websocketAcceptors.shutdownGracefully();
+    if (Objects.nonNull(webSocketAcceptors)) {
+      webSocketAcceptors.shutdownGracefully();
     }
-    if (Objects.nonNull(websocketWorkers)) {
-      websocketWorkers.shutdownGracefully();
+    if (Objects.nonNull(webSocketWorkers)) {
+      webSocketWorkers.shutdownGracefully();
     }
 
-    info("STOPPED SERVICE",
-        buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    if (isInfoEnabled()) {
+      info("STOPPED SERVICE",
+          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    }
     cleanup();
-    info("DESTROYED SERVICE",
-        buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    if (isInfoEnabled()) {
+      info("DESTROYED SERVICE",
+          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    }
   }
 
   private void cleanup() {
-    serverWebsockets = null;
-    websocketAcceptors = null;
-    websocketWorkers = null;
   }
 
   /**
@@ -184,12 +198,16 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     try {
       channel.close().sync().addListener(future -> {
         if (!future.isSuccess()) {
-          error(future.cause());
+          if (isErrorEnabled()) {
+            error(future.cause());
+          }
         }
       });
       return true;
-    } catch (InterruptedException e) {
-      error(e);
+    } catch (InterruptedException exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
       return false;
     }
   }
@@ -281,8 +299,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   }
 
   @Override
-  public void setWebSocketConfig(SocketConfig socketConfig) {
-    this.socketConfig = socketConfig;
+  public void setWebSocketConfig(SocketConfiguration socketConfiguration) {
+    this.socketConfiguration = socketConfiguration;
   }
 
   @Override
@@ -295,12 +313,27 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     var iterator = packet.getRecipients().iterator();
     while (iterator.hasNext()) {
       var session = iterator.next();
-      session.getWebSocketChannel()
-          .writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(packet.getData())));
-
-      session.addWrittenBytes(packet.getOriginalSize());
-      networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());
-      networkWriterStatistic.updateWrittenPackets(1);
+      if (packet.isMarkedAsLast()) {
+        try {
+          session.close(ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
+        } catch (IOException exception) {
+          if (isErrorEnabled()) {
+            error(exception, session.toString());
+          }
+        }
+        return;
+      }
+      if (session.isActivated()) {
+        session.getWebSocketChannel()
+            .writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(packet.getData())));
+        session.addWrittenBytes(packet.getOriginalSize());
+        networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());
+        networkWriterStatistic.updateWrittenPackets(1);
+      } else {
+        if (isDebugEnabled()) {
+          debug("READ WEBSOCKET CHANNEL", "Session is inactivated: ", session.toString());
+        }
+      }
     }
   }
 }

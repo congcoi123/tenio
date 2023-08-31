@@ -24,17 +24,20 @@ THE SOFTWARE.
 
 package com.tenio.core.api;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
-import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerBanMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
-import com.tenio.core.entity.implement.RoomImpl;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
+import com.tenio.core.exception.AddedDuplicatedRoomException;
 import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
 import java.util.List;
@@ -65,11 +68,30 @@ public interface ServerApi {
   void login(String playerName, Session session);
 
   /**
-   * Removes a player from the management list and from the server as well.
+   * Allows creating an instance of a player on the server which could be a custom one.
    *
-   * @param player the current {@link Player} in the management list, on the server
+   * @param player a {@link Player} who must have a unique name on the server
+   * @see Session
+   * @see EventPlayerLoggedinResult
+   * @since 0.5.0
    */
-  void logout(Player player);
+  void login(Player player);
+
+  /**
+   * Removes a player from the management list and from the server as well. This is a silent
+   * logout, so please do not perform any responding to the client since it may not work as
+   * expected (each command runs in different threads, so it may not get synchronized. In case
+   * you want to send a message to the client before closing connect or logout the player, please
+   * use this method {@link Response#writeThenClose()}
+   *
+   * @param player                   the current {@link Player} in the management list, on the server
+   * @param connectionDisconnectMode {@link ConnectionDisconnectMode} session disconnected reason
+   * @param playerDisconnectMode     {@link PlayerDisconnectMode} player disconnected   reason
+   * @see Response
+   * @since 0.5.0
+   */
+  void logout(Player player, ConnectionDisconnectMode connectionDisconnectMode,
+              PlayerDisconnectMode playerDisconnectMode);
 
   /**
    * Removes a player manually from the server.
@@ -108,22 +130,35 @@ public interface ServerApi {
   /**
    * Creates a new room on the server without an owner.
    *
-   * @param setting all room {@link InitialRoomSetting} at the time its created
+   * @param roomSetting all room {@link InitialRoomSetting} at the time its created
    * @return a new instance of {@link Room} if available, otherwise {@code null}
    */
-  default Room createRoom(InitialRoomSetting setting) {
-    return createRoom(setting, null);
+  default Room createRoom(InitialRoomSetting roomSetting) {
+    return createRoom(roomSetting, null);
   }
 
   /**
    * Creates a new room on the server.
    *
-   * @param setting all room {@link InitialRoomSetting} at the time its created
-   * @param owner   a {@link Player} owner of this room, owner can also be declared by
-   *                {@code null} value
+   * @param roomSetting all room {@link InitialRoomSetting} at the time its created
+   * @param roomOwner   a {@link Player} owner of this room, owner can also be declared by
+   *                    {@code null} value
    * @return a new instance of {@link Room} if available, otherwise {@code null}
    */
-  Room createRoom(InitialRoomSetting setting, Player owner);
+  Room createRoom(InitialRoomSetting roomSetting, Player roomOwner);
+
+  /**
+   * Adds a new room to the server.
+   *
+   * @param room        an instance of {@link Room}
+   * @param roomSetting all settings created by a {@link InitialRoomSetting} builder
+   * @param roomOwner   a {@link Player} as the room's owner
+   * @return the room instance
+   * @throws AddedDuplicatedRoomException when a room is already available on the server, but it
+   *                                      is mentioned again
+   * @since 0.5.0
+   */
+  Room addRoom(Room room, InitialRoomSetting roomSetting, Player roomOwner);
 
   /**
    * Retrieves a player on the server by using its name.
@@ -135,18 +170,10 @@ public interface ServerApi {
   Optional<Player> getPlayerByName(String playerName);
 
   /**
-   * Retrieves a player on the server by using its session (if present).
-   *
-   * @param session a {@link Session} associating to the player on the server
-   * @return a corresponding instance of optional {@link Player}
-   * @see Optional
-   */
-  Optional<Player> getPlayerBySession(Session session);
-
-  /**
    * Fetches the current number of players activating on the server.
    *
    * @return the current number of players ({@code integer} value)
+   * @since 0.5.0
    */
   int getPlayerCount();
 
@@ -200,6 +227,13 @@ public interface ServerApi {
   List<Room> getReadonlyRoomsList();
 
   /**
+   * Fetches the current number of rooms on the server.
+   *
+   * @return the current number of rooms ({@code integer} value)
+   */
+  int getRoomCount();
+
+  /**
    * Allows a player to join a particular room.
    *
    * @param player       the joining {@link Player}
@@ -208,20 +242,32 @@ public interface ServerApi {
    *                     In case of free join, this value would be set to {@code null}
    * @param slotInRoom   the position of player located in the room ({@code integer} value)
    * @param asSpectator  sets by {@code true} if the player operating in the room as a
-   *                     spectator, otherwise returns {@code false}
+   *                     spectator, otherwise sets it {@code false}
    */
   void joinRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
 
   /**
-   * Allows a player to join a particular room as the role of "player" with the room's password is
-   * not present, and the player position in room is not considered.
+   * Allows a player to join a particular room.
+   *
+   * @param player       the joining {@link Player}
+   * @param room         the current {@link Room}
+   * @param roomPassword a {@link String} credential using for a player to join room.
+   *                     In case of free join, this value would be set to {@code null}
+   */
+  default void joinRoom(Player player, Room room, String roomPassword) {
+    joinRoom(player, room, roomPassword, Room.DEFAULT_SLOT, false);
+  }
+
+  /**
+   * Allows a player to join a particular room as the role of "participant" with the room's
+   * password is not present, and the player position in room is not considered.
    *
    * @param player the joining {@link Player}
    * @param room   the current {@link Room}
-   * @see RoomImpl#DEFAULT_SLOT
+   * @see Room#DEFAULT_SLOT
    */
   default void joinRoom(Player player, Room room) {
-    joinRoom(player, room, null, RoomImpl.DEFAULT_SLOT, false);
+    joinRoom(player, room, null, Room.DEFAULT_SLOT, false);
   }
 
   /**
@@ -269,10 +315,10 @@ public interface ServerApi {
    *
    * @param sender  the sender ({@link Player} instance)
    * @param room    all recipients in the same {@link Room}
-   * @param message the sending {@link ServerMessage}
+   * @param message the sending {@link DataCollection}
    * @throws UnsupportedOperationException the method is not supported at the moment
    */
-  default void sendPublicMessage(Player sender, Room room, ServerMessage message) {
+  default void sendPublicMessage(Player sender, Room room, DataCollection message) {
     throw new UnsupportedOperationException("Unsupported at the moment");
   }
 
@@ -281,10 +327,10 @@ public interface ServerApi {
    *
    * @param sender    the sender ({@link Player} instance)
    * @param recipient the receiver ({@link Player} instance)
-   * @param message   the sending {@link ServerMessage}
+   * @param message   the sending {@link DataCollection}
    * @throws UnsupportedOperationException the method is not supported at the moment
    */
-  default void sendPrivateMessage(Player sender, Player recipient, ServerMessage message) {
+  default void sendPrivateMessage(Player sender, Player recipient, DataCollection message) {
     throw new UnsupportedOperationException("Unsupported at the moment");
   }
 

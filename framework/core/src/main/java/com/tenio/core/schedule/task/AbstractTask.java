@@ -24,21 +24,18 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task;
 
-import com.tenio.common.logger.SystemLogger;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.task.Task;
-import com.tenio.core.event.implement.EventManager;
 
 /**
  * The abstract task.
+ *
+ * @since 0.5.0
  */
-public abstract class AbstractTask extends SystemLogger implements Task {
+public abstract class AbstractTask extends AbstractLogger implements Task {
 
   private static final int DEFAULT_INTERVAL_IN_SECONDS = 60;
 
-  /**
-   * The event manager.
-   */
-  protected EventManager eventManager;
   /**
    * The interval value.
    */
@@ -46,11 +43,8 @@ public abstract class AbstractTask extends SystemLogger implements Task {
 
   /**
    * Initialization.
-   *
-   * @param eventManager the event manager
    */
-  protected AbstractTask(EventManager eventManager) {
-    this.eventManager = eventManager;
+  protected AbstractTask() {
     interval = DEFAULT_INTERVAL_IN_SECONDS;
   }
 

@@ -26,22 +26,24 @@ package com.tenio.core.entity.implement;
 
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.PlayerState;
 import com.tenio.core.entity.Room;
+import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * An implemented class is for a player using on the server.
  */
-public final class PlayerImpl implements Player {
+public class PlayerImpl implements Player {
 
   private final String name;
   private final Map<String, Object> properties;
+  private Consumer<Field> updateConsumer;
   private volatile Session session;
   private volatile Room currentRoom;
   private volatile PlayerState state;
@@ -49,17 +51,34 @@ public final class PlayerImpl implements Player {
 
   private volatile long lastLoginTime;
   private volatile long lastJoinedRoomTime;
+  private volatile long lastReadTime;
+  private volatile long lastWriteTime;
+  private volatile long lastActivityTime;
+
+  private int maxIdleTimeInSecond;
+  private int maxIdleTimeNeverDeportedInSecond;
   private volatile int playerSlotInCurrentRoom;
 
   private volatile boolean loggedIn;
   private volatile boolean activated;
-  private volatile boolean hasSession;
+  private volatile boolean deportedFlag;
 
-  private PlayerImpl(String name) {
+  /**
+   * Constructor.
+   *
+   * @param name the player unique name
+   */
+  public PlayerImpl(String name) {
     this(name, null);
   }
 
-  private PlayerImpl(String name, Session session) {
+  /**
+   * Constructor.
+   *
+   * @param name    the player unique name
+   * @param session a session which associates to the player
+   */
+  public PlayerImpl(String name, Session session) {
     this.name = name;
     properties = new ConcurrentHashMap<>();
     lastLoginTime = 0L;
@@ -69,6 +88,10 @@ public final class PlayerImpl implements Player {
     setSession(session);
     setLoggedIn(false);
     setActivated(false);
+    setLastReadTime(now());
+    setLastWriteTime(now());
+    setLastActivityTime(now());
+    setNeverDeported(false);
   }
 
   /**
@@ -99,7 +122,7 @@ public final class PlayerImpl implements Player {
 
   @Override
   public boolean containsSession() {
-    return hasSession;
+    return Objects.nonNull(session);
   }
 
   @Override
@@ -115,6 +138,9 @@ public final class PlayerImpl implements Player {
   @Override
   public void setState(PlayerState state) {
     this.state = state;
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.STATE);
+    }
   }
 
   @Override
@@ -125,6 +151,9 @@ public final class PlayerImpl implements Player {
   @Override
   public void setActivated(boolean activated) {
     this.activated = activated;
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.ACTIVATION);
+    }
   }
 
   @Override
@@ -145,8 +174,91 @@ public final class PlayerImpl implements Player {
     return lastLoginTime;
   }
 
+  @Override
+  public long getLastActivityTime() {
+    return lastActivityTime;
+  }
+
+  @Override
+  public void setLastActivityTime(long timestamp) {
+    lastActivityTime = timestamp;
+  }
+
+  @Override
+  public long getLastReadTime() {
+    return lastReadTime;
+  }
+
+  @Override
+  public void setLastReadTime(long timestamp) {
+    lastReadTime = timestamp;
+    setLastActivityTime(lastReadTime);
+  }
+
+  @Override
+  public long getLastWriteTime() {
+    return lastWriteTime;
+  }
+
+  @Override
+  public void setLastWriteTime(long timestamp) {
+    lastWriteTime = timestamp;
+    setLastActivityTime(lastWriteTime);
+  }
+
+  @Override
+  public int getMaxIdleTimeInSeconds() {
+    return maxIdleTimeInSecond;
+  }
+
+  @Override
+  public void setMaxIdleTimeInSeconds(int seconds) {
+    maxIdleTimeInSecond = seconds;
+  }
+
+  @Override
+  public boolean isIdle() {
+    return isConnectionIdle(getMaxIdleTimeInSeconds());
+  }
+
+  @Override
+  public boolean isNeverDeported() {
+    return deportedFlag;
+  }
+
+  @Override
+  public void setNeverDeported(boolean flag) {
+    deportedFlag = flag;
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.DEPORTATION);
+    }
+  }
+
+  @Override
+  public int getMaxIdleTimeNeverDeportedInSeconds() {
+    return maxIdleTimeNeverDeportedInSecond;
+  }
+
+  @Override
+  public void setMaxIdleTimeNeverDeportedInSeconds(int seconds) {
+    maxIdleTimeNeverDeportedInSecond = seconds;
+  }
+
+  @Override
+  public boolean isIdleNeverDeported() {
+    return isNeverDeported() && isConnectionIdle(getMaxIdleTimeNeverDeportedInSeconds());
+  }
+
+  private boolean isConnectionIdle(int maxIdleTimeInSecond) {
+    if (maxIdleTimeInSecond > 0) {
+      long elapsedSinceLastActivity = now() - getLastActivityTime();
+      return elapsedSinceLastActivity / 1000L > (long) maxIdleTimeInSecond;
+    }
+    return false;
+  }
+
   private void setLastLoggedInTime() {
-    lastLoginTime = TimeUtility.currentTimeMillis();
+    lastLoginTime = now();
   }
 
   @Override
@@ -156,13 +268,16 @@ public final class PlayerImpl implements Player {
 
   @Override
   public void setSession(Session session) {
+    if (Objects.nonNull(session)) {
+      session.setName(name);
+      session.setAssociatedToPlayer(Session.AssociatedState.DONE);
+    }
     this.session = session;
-    hasSession = Objects.nonNull(this.session);
   }
 
   @Override
   public boolean isInRoom() {
-    return playerSlotInCurrentRoom > RoomImpl.NIL_SLOT;
+    return Objects.nonNull(currentRoom);
   }
 
   @Override
@@ -173,6 +288,9 @@ public final class PlayerImpl implements Player {
   @Override
   public void setRoleInRoom(PlayerRoleInRoom roleInRoom) {
     this.roleInRoom = roleInRoom;
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.ROLE_IN_ROOM);
+    }
   }
 
   @Override
@@ -184,9 +302,9 @@ public final class PlayerImpl implements Player {
   public void setCurrentRoom(Room room) {
     currentRoom = room;
     if (Objects.isNull(currentRoom)) {
-      playerSlotInCurrentRoom = RoomImpl.NIL_SLOT;
+      playerSlotInCurrentRoom = Room.NIL_SLOT;
     } else {
-      playerSlotInCurrentRoom = RoomImpl.DEFAULT_SLOT;
+      playerSlotInCurrentRoom = Room.DEFAULT_SLOT;
     }
     setLastJoinedRoomTime();
   }
@@ -197,7 +315,7 @@ public final class PlayerImpl implements Player {
   }
 
   private void setLastJoinedRoomTime() {
-    lastJoinedRoomTime = TimeUtility.currentTimeMillis();
+    lastJoinedRoomTime = now();
   }
 
   @Override
@@ -208,6 +326,9 @@ public final class PlayerImpl implements Player {
   @Override
   public void setPlayerSlotInCurrentRoom(int slot) {
     playerSlotInCurrentRoom = slot;
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.SLOT_IN_ROOM);
+    }
   }
 
   @Override
@@ -218,6 +339,9 @@ public final class PlayerImpl implements Player {
   @Override
   public void setProperty(String key, Object value) {
     properties.put(key, value);
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.PROPERTY);
+    }
   }
 
   @Override
@@ -228,11 +352,22 @@ public final class PlayerImpl implements Player {
   @Override
   public void removeProperty(String key) {
     properties.remove(key);
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.PROPERTY);
+    }
   }
 
   @Override
   public void clearProperties() {
     properties.clear();
+    if (Objects.nonNull(updateConsumer)) {
+      updateConsumer.accept(Field.PROPERTY);
+    }
+  }
+
+  @Override
+  public void onUpdateListener(Consumer<Field> updateConsumer) {
+    this.updateConsumer = updateConsumer;
   }
 
   @Override
@@ -243,12 +378,15 @@ public final class PlayerImpl implements Player {
     clearProperties();
   }
 
+  private long now() {
+    return TimeUtility.currentTimeMillis();
+  }
+
   @Override
   public boolean equals(Object object) {
-    if (!(object instanceof Player)) {
+    if (!(object instanceof Player player)) {
       return false;
     } else {
-      var player = (Player) object;
       return getName().equals(player.getName());
     }
   }
@@ -266,16 +404,21 @@ public final class PlayerImpl implements Player {
     return "Player{" +
         "name='" + name + '\'' +
         ", properties=" + properties +
-        ", session=" + session +
-        ", currentRoom=" + currentRoom +
+        ", currentRoom=" + (Objects.nonNull(currentRoom) ? currentRoom.getId() : "") +
         ", state=" + state +
         ", roleInRoom=" + roleInRoom +
         ", lastLoginTime=" + lastLoginTime +
         ", lastJoinedRoomTime=" + lastJoinedRoomTime +
+        ", lastReadTime=" + lastReadTime +
+        ", lastWriteTime=" + lastWriteTime +
+        ", lastActivityTime=" + lastActivityTime +
+        ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
+        ", maxIdleTimeNeverDeportedInSecond=" + maxIdleTimeNeverDeportedInSecond +
         ", playerSlotInCurrentRoom=" + playerSlotInCurrentRoom +
         ", loggedIn=" + loggedIn +
         ", activated=" + activated +
-        ", hasSession=" + hasSession +
+        ", deportedFlag=" + deportedFlag +
+        ", session=" + session +
         '}';
   }
 }

@@ -24,6 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.network.entity.session.Session;
@@ -54,6 +60,7 @@ import javassist.NotFoundException;
 public final class ZeroReaderImpl extends AbstractZeroEngine
     implements ZeroReader, ZeroReaderListener {
 
+  private DataType dataType;
   private ZeroAcceptorListener zeroAcceptorListener;
   private ZeroWriterListener zeroWriterListener;
   private Selector readableSelector;
@@ -64,6 +71,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
     setName("reader");
   }
 
+  /**
+   * Creates a new instance of reader engine.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link ZeroReader}
+   */
   public static ZeroReader newInstance(EventManager eventManager) {
     return new ZeroReaderImpl(eventManager);
   }
@@ -120,14 +133,22 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
           }
         }
       }
-    } catch (ClosedSelectorException e1) {
-      error(e1, "Selector is closed: ", e1.getMessage());
-    } catch (CancelledKeyException e2) {
-      error(e2, "Cancelled key: ", e2.getMessage());
-    } catch (IOException e3) {
-      error(e3, "I/O reading/selection error: ", e3.getMessage());
-    } catch (Exception e4) {
-      error(e4, "Generic reading/selection error: ", e4.getMessage());
+    } catch (ClosedSelectorException exception1) {
+      if (isErrorEnabled()) {
+        error(exception1, "Selector is closed: ", exception1.getMessage());
+      }
+    } catch (CancelledKeyException exception2) {
+      if (isErrorEnabled()) {
+        error(exception2, "Cancelled key: ", exception2.getMessage());
+      }
+    } catch (IOException exception3) {
+      if (isErrorEnabled()) {
+        error(exception3, "I/O reading/selection error: ", exception3.getMessage());
+      }
+    } catch (Exception exception4) {
+      if (isErrorEnabled()) {
+        error(exception4, "Generic reading/selection error: ", exception4.getMessage());
+      }
     }
   }
 
@@ -137,32 +158,49 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
     var session = getSessionManager().getSessionBySocket(socketChannel);
 
     if (Objects.isNull(session)) {
-      debug("READ CHANNEL", "Reader handle a null session with the socket channel: ",
-          socketChannel.toString());
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Reader handle a null session with the socket channel: ",
+            socketChannel.toString());
+      }
       return;
     }
 
-    // when a socket channel is writable, should make it highest priority
+    if (!session.isActivated()) {
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Session is inactivated: ", session.toString());
+      }
+      return;
+    }
+
+    // when a socket channel is writable, should make it the highest priority
     // manipulation
-    if (selectionKey.isWritable()) {
-      // should continue put this session for sending all left packets first
+    if (selectionKey.isValid() && selectionKey.isWritable()) {
+      // should continually put this session for sending all left packets first
       zeroWriterListener.continueWriteInterestOp(session);
       // now we should set it back to interest in OP_READ
       selectionKey.interestOps(SelectionKey.OP_READ);
     }
 
-    if (selectionKey.isReadable()) {
+    if (selectionKey.isValid() && selectionKey.isReadable()) {
       // prepares the buffer first
       readerBuffer.clear();
       // reads data from socket and write them to buffer
       int byteCount = -1;
       try {
+        // this isConnected() method can only work if the server side decides to close the socket
+        // there is no way to know if the connection is closed on the client side
         if (socketChannel.isConnected()) {
           byteCount = socketChannel.read(readerBuffer);
         }
-      } catch (IOException e) {
-        error(e, "An exception was occurred on channel: ", socketChannel.toString());
-        getSocketIoHandler().sessionException(session, e);
+      } catch (IOException exception) {
+        // so I guess we can ignore this kind of exception or wait until we have proper solutions
+        // this checking may not work with other languages (e.g: japanese)
+        if (!exception.getMessage().contains("Connection reset")) {
+          if (isErrorEnabled()) {
+            error(exception, "An exception was occurred on channel: ", socketChannel.toString());
+          }
+          getSocketIoHandler().sessionException(session, exception);
+        }
       }
       // no left data is available, should close the connection
       if (byteCount == -1) {
@@ -190,34 +228,40 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
         socketChannel.socket().shutdownInput();
         socketChannel.socket().shutdownOutput();
         socketChannel.close();
-      } catch (IOException e) {
-        error(e, "Error on closing socket channel: ", socketChannel.toString());
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Error on closing socket channel: ", socketChannel.toString());
+        }
       }
     }
   }
 
   private void readUpdData(DatagramChannel datagramChannel, SelectionKey selectionKey,
                            ByteBuffer readerBuffer) {
-
     Session session = null;
 
-    if (selectionKey.isReadable()) {
+    if (selectionKey.isValid() && selectionKey.isReadable()) {
       // prepares the buffer first
       readerBuffer.clear();
       // reads data from socket and write them to buffer
-      SocketAddress remoteAddress = null;
+      SocketAddress remoteAddress;
       try {
         remoteAddress = datagramChannel.receive(readerBuffer);
-      } catch (IOException e) {
-        error(e, "An exception was occurred on channel: ", datagramChannel.toString());
-        getDatagramIoHandler().channelException(datagramChannel, e);
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "An exception was occurred on channel: ", datagramChannel.toString());
+        }
+        getDatagramIoHandler().channelException(datagramChannel, exception);
+        return;
       }
 
       if (Objects.isNull(remoteAddress)) {
         var addressNotFoundException =
             new NotFoundException("Remove address for the datagram channel");
-        error(addressNotFoundException, "An exception was occurred on channel: ",
-            datagramChannel.toString());
+        if (isErrorEnabled()) {
+          error(addressNotFoundException, "An exception was occurred on channel: ",
+              datagramChannel.toString());
+        }
         getDatagramIoHandler().channelException(datagramChannel, addressNotFoundException);
         return;
       }
@@ -232,24 +276,53 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
       byte[] binary = new byte[readerBuffer.limit()];
       readerBuffer.get(binary);
 
+      // convert binary to dataCollection object
+      var dataCollection = DataUtility.binaryToCollection(dataType, binary);
+
       // retrieves session by its datagram channel, hence we are using only one
-      // datagram channel for all sessions, we use incoming request remote address to
+      // datagram channel for all sessions, we use incoming request convey ID to
       // distinguish them
-      session = getSessionManager().getSessionByDatagram(remoteAddress);
+      var udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
+      DataCollection message = null;
+      if (dataCollection instanceof ZeroMap zeroMap) {
+        if (zeroMap.containsKey(CoreConstant.DEFAULT_KEY_UDP_CONVEY_ID)) {
+          udpConvey = zeroMap.getInteger(CoreConstant.DEFAULT_KEY_UDP_CONVEY_ID);
+        }
+        if (zeroMap.containsKey(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA)) {
+          message = zeroMap.getDataCollection(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA);
+        }
+      } else if (dataCollection instanceof MsgPackMap msgPackMap) {
+        if (msgPackMap.contains(CoreConstant.DEFAULT_KEY_UDP_CONVEY_ID)) {
+          udpConvey = msgPackMap.getInteger(CoreConstant.DEFAULT_KEY_UDP_CONVEY_ID);
+        }
+        if (msgPackMap.containsKey(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA)) {
+          message = msgPackMap.getMsgPackMap(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA);
+        }
+      }
+
+      session = getSessionManager().getSessionByDatagram(udpConvey);
 
       if (Objects.isNull(session)) {
-        getDatagramIoHandler().channelRead(datagramChannel, remoteAddress, binary);
+        getDatagramIoHandler().channelRead(datagramChannel, remoteAddress, message);
       } else {
-        session.addReadBytes(byteCount);
-        if (session.containsKcp()) {
-          session.getUkcp().input(binary);
+        if (session.isActivated()) {
+          session.setDatagramRemoteSocketAddress(remoteAddress);
+          session.addReadBytes(byteCount);
+          if (session.containsKcp()) {
+            // At this time, UKCP knows who is its session
+            session.getUkcp().input(binary);
+          } else {
+            getDatagramIoHandler().sessionRead(session, message);
+          }
         } else {
-          getDatagramIoHandler().sessionRead(session, binary);
+          if (isDebugEnabled()) {
+            debug("READ UDP CHANNEL", "Session is inactivated: ", session.toString());
+          }
         }
       }
     }
 
-    if (selectionKey.isWritable() && Objects.nonNull(session)) {
+    if (selectionKey.isValid() && selectionKey.isWritable() && Objects.nonNull(session)) {
       // should continue put this session for sending all left packets first
       zeroWriterListener.continueWriteInterestOp(session);
       // now we should set it back to interest in OP_READ
@@ -266,6 +339,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   public SelectionKey acceptSocketChannel(SocketChannel socketChannel)
       throws ClosedChannelException {
     return socketChannel.register(readableSelector, SelectionKey.OP_READ);
+  }
+
+  @Override
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 
   @Override
@@ -311,7 +389,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
     while (true) {
       if (isActivated()) {
-        readableLoop(readerBuffer);
+        try {
+          readableLoop(readerBuffer);
+        } catch (Throwable cause) {
+          if (isErrorEnabled()) {
+            error(cause);
+          }
+        }
       }
     }
   }
@@ -321,13 +405,14 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
     try {
       Thread.sleep(500L);
       readableSelector.close();
-    } catch (IOException | InterruptedException e) {
-      error(e, "Exception while closing the selector");
+    } catch (IOException | InterruptedException exception) {
+      if (isErrorEnabled()) {
+        error(exception, "Exception while closing the selector");
+      }
     }
   }
 
   @Override
   public void onDestroyed() {
-    readableSelector = null;
   }
 }

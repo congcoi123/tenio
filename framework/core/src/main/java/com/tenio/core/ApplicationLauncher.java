@@ -27,9 +27,13 @@ package com.tenio.core;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.configuration.constant.Trademark;
+import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.server.ServerImpl;
+import java.util.Arrays;
 import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * The application will start from here.
@@ -66,14 +70,30 @@ public final class ApplicationLauncher extends SystemLogger {
    * @param params     the additional parameters
    */
   public void start(Class<?> entryClass, String[] params) {
+    // print out the framework's preface
+    if (isInfoEnabled()) {
+      var trademark =
+          String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
+      debug("HAPPY CODING", trademark);
+    }
+
+    // show system information
+    var systemInfo = new SystemInfo();
+    systemInfo.logSystemInfo();
+    systemInfo.logNetCardsInfo();
+    systemInfo.logDiskInfo();
+
     Bootstrapper bootstrap = null;
     if (Objects.nonNull(entryClass)) {
       bootstrap = Bootstrapper.newInstance();
       try {
         bootstrap.run(entryClass, CoreConstant.DEFAULT_BOOTSTRAP_PACKAGE,
-            CoreConstant.DEFAULT_EVENT_PACKAGE, CoreConstant.DEFAULT_COMMAND_PACKAGE);
-      } catch (Exception e) {
-        error(e, "The application started with exceptions occurred: ", e.getMessage());
+            CoreConstant.DEFAULT_EVENT_PACKAGE, CoreConstant.DEFAULT_COMMAND_PACKAGE,
+            CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE);
+      } catch (Exception exception) {
+        if (isErrorEnabled()) {
+          error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+        }
         System.exit(1);
       }
     }
@@ -82,11 +102,30 @@ public final class ApplicationLauncher extends SystemLogger {
     try {
       assert bootstrap != null;
       server.start(bootstrap.getBootstrapHandler(), params);
-    } catch (Exception e) {
-      error(e, "The application started with exceptions occurred: ", e.getMessage());
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception, "The application started with exceptions occurred: ",
+            exception.getMessage());
+      }
       server.shutdown();
       // exit with errors
       System.exit(1);
+    }
+
+    // Keep the main thread running
+    try {
+      var currentThread = Thread.currentThread();
+      currentThread.setName("tenio-main-thread");
+      currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+        if (isErrorEnabled()) {
+          error(cause, thread.getName());
+        }
+      });
+      currentThread.join();
+    } catch (InterruptedException exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
 
     // Suddenly shutdown

@@ -13,8 +13,11 @@
 package com.tenio.core.network.entity.kcp;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
+import java.util.Objects;
 
+/**
+ * KCP abstract class.
+ */
 public abstract class Kcp {
 
   //=====================================================================
@@ -78,6 +81,11 @@ public abstract class Kcp {
   private long nocwnd = 0;
   private long xmit = 0;
 
+  /**
+   * Constructor.
+   *
+   * @param conv the convey id value
+   */
   public Kcp(long conv) {
     this.conv = conv;
   }
@@ -149,11 +157,20 @@ public abstract class Kcp {
     return min(max(lower, middle), upper);
   }
 
+  /**
+   * The output method in high level.
+   *
+   * @param buffer received bytes data
+   * @param size   the number of received bytes
+   */
   protected abstract void Output(byte[] buffer, int size);
 
-  //---------------------------------------------------------------------
-  // user/upper level recv: returns size, returns below zero for EAGAIN
-  //---------------------------------------------------------------------
+  /**
+   * User/Upper level recv: returns size, returns below zero for EAGAIN.
+   *
+   * @param buffer received bytes data
+   * @return the number of received bytes
+   */
   public int Recv(byte[] buffer) {
 
     if (0 == nrcv_que.size()) {
@@ -244,9 +261,12 @@ public abstract class Kcp {
     return length;
   }
 
-  //---------------------------------------------------------------------
-  // user/upper level send, returns below zero for error
-  //---------------------------------------------------------------------
+  /**
+   * User/Upper level send, returns below zero for error.
+   *
+   * @param buffer sending bytes data
+   * @return the number of sent bytes
+   */
   public int Send(byte[] buffer) {
 
     if (0 == buffer.length) {
@@ -425,10 +445,12 @@ public abstract class Kcp {
     }
   }
 
-  // when you received a low level packet (eg. UDP packet), call it
-  //---------------------------------------------------------------------
-  // input data
-  //---------------------------------------------------------------------
+  /**
+   * When you received a low level packet (eg. UDP packet), call it.
+   *
+   * @param data received bytes data
+   * @return the number of received bytes data
+   */
   public int Input(byte[] data) {
 
     long s_una = snd_una;
@@ -583,8 +605,12 @@ public abstract class Kcp {
         offset = 0;
       }
       // ikcp_ack_get
-      seg.sn = acklist.get(i * 2 + 0);
-      seg.ts = acklist.get(i * 2 + 1);
+      if (Objects.nonNull(acklist.get(i * 2 + 0))) {
+        seg.sn = acklist.get(i * 2 + 0);
+      }
+      if (Objects.nonNull(acklist.get(i * 2 + 1))) {
+        seg.ts = acklist.get(i * 2 + 1);
+      }
       offset += seg.encode(buffer, offset);
     }
     acklist.clear();
@@ -760,11 +786,13 @@ public abstract class Kcp {
     }
   }
 
-  //---------------------------------------------------------------------
-  // update state (call it repeatedly, every 10ms-100ms), or you can ask
-  // ikcp_check when to call it again (without ikcp_input/_send calling).
-  // 'current' - current timestamp in millisec.
-  //---------------------------------------------------------------------
+  /**
+   * Update state (call it repeatedly, every 10ms-100ms), or you can ask
+   * ikcp_check when to call it again (without ikcp_input/_send calling).
+   * 'current' - current timestamp in millisec.
+   *
+   * @param current the current timestamp
+   */
   public void Update(long current) {
     this.current = current;
 
@@ -802,8 +830,20 @@ public abstract class Kcp {
   // schedule ikcp_update (eg. implementing an epoll-like mechanism,
   // or optimize ikcp_update when handling massive kcp connections)
   //---------------------------------------------------------------------
-  public long Check(long current) {
 
+  /**
+   * Determine when should you invoke ikcp_update:
+   * returns when you should invoke ikcp_update in millisec, if there
+   * is no ikcp_input/_send calling. you can call ikcp_update in that
+   * time, instead of call update repeatly.
+   * Important to reduce unnacessary ikcp_update invoking. use it to
+   * schedule ikcp_update (eg. implementing an epoll-like mechanism,
+   * or optimize ikcp_update when handling massive kcp connections)
+   *
+   * @param current the current timestamp
+   * @return timestamp value
+   */
+  public long Check(long current) {
     long ts_flush_ = ts_flush;
     long tm_flush = 0x7fffffff;
     long tm_packet = 0x7fffffff;
@@ -841,7 +881,13 @@ public abstract class Kcp {
     return current + minimal;
   }
 
-  // change MTU size, default is 1400
+  /**
+   * Change MTU size, default is 1400.
+   *
+   * @param mtu_ the new MTU value
+   * @return {@code 0} if the setup is done without issues, otherwise, returns {@code -1} or
+   * {@code -2} based on the context
+   */
   public int SetMtu(int mtu_) {
     if (mtu_ < 50 || mtu_ < IKCP_OVERHEAD) {
       return -1;
@@ -858,6 +904,12 @@ public abstract class Kcp {
     return 0;
   }
 
+  /**
+   * Sets the interval value.
+   *
+   * @param interval interval value
+   * @return the new interval value
+   */
   public int SetInterval(int interval) {
     if (interval > 5000) {
       interval = 5000;
@@ -868,11 +920,15 @@ public abstract class Kcp {
     return 0;
   }
 
-  // fastest: ikcp_nodelay(kcp, 1, 20, 2, 1)
-  // nodelay: 0:disable(default), 1:enable
-  // interval: internal update timer interval in millisec, default is 100ms
-  // resend: 0:disable fast resend(default), 1:enable fast resend
-  // nc: 0:normal congestion control(default), 1:disable congestion control
+  /**
+   * Sets no delay configuration: fastest: ikcp_nodelay(kcp, 1, 20, 2, 1).
+   *
+   * @param nodelay  0:disable(default), 1:enable
+   * @param interval internal update timer interval in millisec, default is 100ms
+   * @param resend   0:disable fast resend(default), 1:enable fast resend
+   * @param nc       0:normal congestion control(default), 1:disable congestion control
+   * @return 0 if the setup is done
+   */
   public int SetNoDelay(int nodelay, int interval, int resend, int nc) {
 
     if (nodelay >= 0) {
@@ -904,7 +960,13 @@ public abstract class Kcp {
     return 0;
   }
 
-  // set maximum window size: sndwnd=32, rcvwnd=32 by default
+  /**
+   * Set maximum window size: sndwnd=32, rcvwnd=32 by default.
+   *
+   * @param sndwnd sending window size
+   * @param rcvwnd receiving window size
+   * @return 0 if the setup is done
+   */
   public int SetWndSize(int sndwnd, int rcvwnd) {
     if (sndwnd > 0) {
       snd_wnd = sndwnd;
@@ -916,13 +978,18 @@ public abstract class Kcp {
     return 0;
   }
 
-  // get how many packet is waiting to be sent
+  /**
+   * Retrieves how many packet is waiting to be sent.
+   *
+   * @return the number of packet is waiting to be sent
+   */
   public int GetWaitSnd() {
     return nsnd_buf.size() + nsnd_que.size();
   }
 
   private class Segment {
 
+    private final byte[] data;
     private long conv = 0;
     private long cmd = 0;
     private long frg = 0;
@@ -934,7 +1001,6 @@ public abstract class Kcp {
     private long rto = 0;
     private long fastack = 0;
     private long xmit = 0;
-    private final byte[] data;
 
     private Segment(int size) {
       this.data = new byte[size];

@@ -55,7 +55,13 @@ public enum PlayerJoinedRoomResult {
    * The player fails to join room because it is in another room, it must leave its current room
    * before joining a new one. It should aso throw an exception.
    */
-  PLAYER_IS_IN_ANOTHER_ROOM;
+  PLAYER_IS_IN_ANOTHER_ROOM,
+  /**
+   * Invalid password was provided.
+   *
+   * @since 0.5.0
+   */
+  INVALID_CREDENTIALS;
 
   @Override
   public String toString() {

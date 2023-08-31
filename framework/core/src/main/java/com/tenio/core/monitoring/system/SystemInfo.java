@@ -40,6 +40,10 @@ public final class SystemInfo extends SystemLogger {
    * Logging the system information.
    */
   public void logSystemInfo() {
+    if (!isInfoEnabled()) {
+      return;
+    }
+
     var logger = buildgen("\n");
     var runtime = Runtime.getRuntime();
 
@@ -63,6 +67,10 @@ public final class SystemInfo extends SystemLogger {
    * Logging the net card information.
    */
   public void logNetCardsInfo() {
+    if (!isInfoEnabled()) {
+      return;
+    }
+
     var logger = buildgen("\n");
 
     try {
@@ -83,8 +91,10 @@ public final class SystemInfo extends SystemLogger {
 
       info("NETWORK INFORMATION", logger);
 
-    } catch (SocketException e) {
-      error(e, "Exception while discovering network cards");
+    } catch (SocketException exception) {
+      if (isErrorEnabled()) {
+        error(exception, "Exception while discovering network cards");
+      }
     }
   }
 
@@ -92,6 +102,10 @@ public final class SystemInfo extends SystemLogger {
    * Logging the disk information.
    */
   public void logDiskInfo() {
+    if (!isInfoEnabled()) {
+      return;
+    }
+
     var logger = buildgen("\n");
 
     /* Get a list of all file system roots on this system */

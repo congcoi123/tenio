@@ -30,8 +30,9 @@ import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.data.zero.utility.ZeroUtility;
-import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.api.ServerApi;
+import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.exception.UnsupportedDataTypeInUseException;
 import com.tenio.core.network.entity.protocol.Response;
@@ -42,7 +43,7 @@ import com.tenio.core.server.ServerImpl;
 /**
  * This class provides all the necessary APIs for a logic game handling.
  */
-public abstract class AbstractHandler extends AbstractLogger {
+public abstract class AbstractHandler extends SystemLogger {
 
   private final Server server = ServerImpl.getInstance();
 
@@ -51,8 +52,18 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link ServerApi}.
    */
-  public final ServerApi api() {
+  protected final ServerApi api() {
     return server.getApi();
+  }
+
+  /**
+   * Retrieves a management object of self-defined user commands.
+   *
+   * @return an instance of {@link ClientCommandManager}
+   * @since 0.5.0
+   */
+  protected final ClientCommandManager clientCommand() {
+    return server.getClientCommandManager();
   }
 
   /**
@@ -60,7 +71,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link Response}
    */
-  public final Response response() {
+  protected final Response response() {
     return ResponseImpl.newInstance();
   }
 
@@ -69,7 +80,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link ZeroArray}
    */
-  public final ZeroArray array() {
+  protected final ZeroArray array() {
     if (server.getDataType() != DataType.ZERO) {
       throw new UnsupportedDataTypeInUseException(server.getDataType());
     }
@@ -81,7 +92,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link ZeroMap}
    */
-  public final ZeroMap map() {
+  protected final ZeroMap map() {
     if (server.getDataType() != DataType.ZERO) {
       throw new UnsupportedDataTypeInUseException(server.getDataType());
     }
@@ -93,7 +104,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link MsgPackArray}
    */
-  public final MsgPackArray msgarray() {
+  protected final MsgPackArray msgarray() {
     if (server.getDataType() != DataType.MSG_PACK) {
       throw new UnsupportedDataTypeInUseException(server.getDataType());
     }
@@ -105,7 +116,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link MsgPackMap}
    */
-  public final MsgPackMap msgmap() {
+  protected final MsgPackMap msgmap() {
     if (server.getDataType() != DataType.MSG_PACK) {
       throw new UnsupportedDataTypeInUseException(server.getDataType());
     }
@@ -117,7 +128,7 @@ public abstract class AbstractHandler extends AbstractLogger {
    *
    * @return an instance of {@link InitialRoomSetting.Builder}
    */
-  public InitialRoomSetting.Builder roomSetting() {
+  protected InitialRoomSetting.Builder roomSetting() {
     return InitialRoomSetting.Builder.newInstance();
   }
 }

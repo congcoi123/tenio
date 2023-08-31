@@ -24,9 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.handler.DatagramIoHandler;
@@ -42,23 +41,25 @@ public final class DatagramIoHandlerImpl extends AbstractIoHandler implements Da
     super(eventManager);
   }
 
+  /**
+   * Retrieves a new instance of datagram handler.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link DatagramIoHandler}
+   */
   public static DatagramIoHandler newInstance(EventManager eventManager) {
     return new DatagramIoHandlerImpl(eventManager);
   }
 
   @Override
   public void channelRead(DatagramChannel datagramChannel, SocketAddress remoteAddress,
-                          byte[] binary) {
-    var data = DataUtility.binaryToCollection(dataType, binary);
-    var message = ServerMessage.newInstance().setData(data);
-    eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE, datagramChannel, remoteAddress,
-        message);
+                          DataCollection message) {
+    eventManager.emit(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME, datagramChannel,
+        remoteAddress, message);
   }
 
   @Override
-  public void sessionRead(Session session, byte[] binary) {
-    var data = DataUtility.binaryToCollection(dataType, binary);
-    var message = ServerMessage.newInstance().setData(data);
+  public void sessionRead(Session session, DataCollection message) {
     eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
   }
 

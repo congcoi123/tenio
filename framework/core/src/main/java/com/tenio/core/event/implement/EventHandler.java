@@ -42,6 +42,9 @@ public final class EventHandler<T> {
    */
   private final Map<ServerEvent, Emitter<T>> delegate;
 
+  /**
+   * Constructor.
+   */
   public EventHandler() {
     delegate = new HashMap<>();
   }

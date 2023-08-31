@@ -32,7 +32,7 @@ import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
  * Returns the result when a participant tries to change to be a spectator.
  */
 @FunctionalInterface
-public interface EventSwitchParticipantToSpectatorResult {
+public interface EventSwitchParticipantToSpectatorResult<P extends Player, R extends Room> {
 
   /**
    * When a participant tries to change to be a spectator in its room.
@@ -41,5 +41,5 @@ public interface EventSwitchParticipantToSpectatorResult {
    * @param room   the player's {@link Room}
    * @param result the result {@link SwitchedPlayerRoleInRoomResult} of processing
    */
-  void handle(Player player, Room room, SwitchedPlayerRoleInRoomResult result);
+  void handle(P player, R room, SwitchedPlayerRoleInRoomResult result);
 }

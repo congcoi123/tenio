@@ -15,7 +15,7 @@ class RoomImplTest {
     Room actualNewInstanceResult = RoomImpl.newInstance();
     assertFalse(actualNewInstanceResult.isActivated());
     assertEquals(0, actualNewInstanceResult.getSpectatorCount());
-    assertEquals(RoomRemoveMode.DEFAULT, actualNewInstanceResult.getRoomRemoveMode());
+    assertEquals(RoomRemoveMode.WHEN_EMPTY, actualNewInstanceResult.getRoomRemoveMode());
     assertNull(actualNewInstanceResult.getPlayerManager());
     assertEquals(0, actualNewInstanceResult.getParticipantCount());
     assertTrue(actualNewInstanceResult.getOwner().isEmpty());

@@ -29,7 +29,6 @@ import com.tenio.core.network.define.ResponsePriority;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -41,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
 
-  private static final AtomicLong ID_COUNTER = new AtomicLong();
+  private static final AtomicLong ID_COUNTER = new AtomicLong(1L);
 
   private final long id;
   private final long createdTime;
@@ -52,6 +51,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
   private int originalSize;
   private Collection<Session> recipients;
   private byte[] fragmentBuffer;
+  private boolean last;
 
   private PacketImpl() {
     id = ID_COUNTER.getAndIncrement();
@@ -59,8 +59,14 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
     transportType = TransportType.UNKNOWN;
     priority = ResponsePriority.NORMAL;
     encrypted = false;
+    last = false;
   }
 
+  /**
+   * Creates a new instance of packet.
+   *
+   * @return a new instance of {@link Packet}
+   */
   public static Packet newInstance() {
     return new PacketImpl();
   }
@@ -162,6 +168,16 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
   }
 
   @Override
+  public boolean isMarkedAsLast() {
+    return last;
+  }
+
+  @Override
+  public void setMarkedAsLast(boolean markedAsLast) {
+    this.last = markedAsLast;
+  }
+
+  @Override
   public boolean equals(Object object) {
     if (!(object instanceof Packet)) {
       return false;
@@ -205,6 +221,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
         ", recipients=" + recipients +
+        ", last=" + last +
         ", fragmentBuffer(bytes)=" + (Objects.nonNull(fragmentBuffer) ? fragmentBuffer.length : "null") +
         '}';
   }
@@ -218,6 +235,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
     packet.setEncrypted(encrypted);
     packet.setRecipients(recipients);
     packet.setTransportType(transportType);
+    packet.setMarkedAsLast(last);
     return packet;
   }
 }

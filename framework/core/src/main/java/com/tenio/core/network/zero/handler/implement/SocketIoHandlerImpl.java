@@ -26,7 +26,6 @@ package com.tenio.core.network.zero.handler.implement;
 
 import com.tenio.common.data.DataUtility;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
@@ -52,18 +51,32 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
     super(eventManager);
   }
 
+  /**
+   * Creates a new instance of the socket handler.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link SocketIoHandler}
+   */
   public static SocketIoHandler newInstance(EventManager eventManager) {
     return new SocketIoHandlerImpl(eventManager);
   }
 
   @Override
   public void resultFrame(Session session, byte[] binary) {
-    var data = DataUtility.binaryToCollection(dataType, binary);
-    var message = ServerMessage.newInstance().setData(data);
+    var message = DataUtility.binaryToCollection(dataType, binary);
 
-    if (!session.isConnected()) {
+    if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
+            " Rejected message: ",
+            message);
+      }
+      return;
+    }
+
+    if (session.isAssociatedToPlayer(Session.AssociatedState.NONE)) {
       eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
-    } else {
+    } else if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
       eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
     }
   }
@@ -81,7 +94,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   @Override
   public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
     var session = sessionManager.createSocketSession(socketChannel, selectionKey);
-    eventManager.emit(ServerEvent.SESSION_CREATED, session);
+    session.activate();
   }
 
   @Override
@@ -98,9 +111,11 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
 
     try {
       session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
-    } catch (IOException e) {
-      error(e, "Session closed with error: ", session.toString());
-      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, e);
+    } catch (IOException exception) {
+      if (isErrorEnabled()) {
+        error(exception, "Session closed with error: ", session.toString());
+      }
+      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
     }
   }
 

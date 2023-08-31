@@ -67,6 +67,6 @@ public interface EventFetchedBandwidthInfo {
    * @see PacketQueueFullException
    */
   void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
-              long writtenPackets,
-              long writtenDroppedPacketsByPolicy, long writtenDroppedPacketsByFull);
+              long writtenPackets, long writtenDroppedPacketsByPolicy,
+              long writtenDroppedPacketsByFull);
 }

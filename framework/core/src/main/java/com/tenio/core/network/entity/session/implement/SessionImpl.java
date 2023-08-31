@@ -30,10 +30,11 @@ import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.exception.EmptyUdpChannelsException;
 import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
-import com.tenio.core.network.entity.kcp.Ukcp;
+import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.PendingPacket;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
@@ -55,46 +56,47 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class SessionImpl implements Session {
 
-  private static final AtomicLong ID_COUNTER = new AtomicLong();
+  /**
+   * The maximum time that this session is allowed to be orphan.
+   */
+  private static final long ORPHAN_ALLOWANCE_TIME_IN_MILLISECONDS = 3000L;
+  private static final AtomicLong ID_COUNTER = new AtomicLong(1L);
 
   private final long id;
-
-  private String name;
-
+  private final AtomicLong readBytes;
+  private final AtomicLong readMessages;
+  private final AtomicLong writtenBytes;
+  private final AtomicLong droppedPackets;
+  private volatile String name;
   private SessionManager sessionManager;
   private SocketChannel socketChannel;
   private SelectionKey selectionKey;
   private DatagramChannel datagramChannel;
   private Ukcp ukcp;
   private Channel webSocketChannel;
-
+  private ConnectionFilter connectionFilter;
   private TransportType transportType;
   private PacketReadState packetReadState;
   private ProcessedPacket processedPacket;
   private PendingPacket pendingPacket;
   private PacketQueue packetQueue;
-
   private volatile long createdTime;
   private volatile long lastReadTime;
   private volatile long lastWriteTime;
   private volatile long lastActivityTime;
-
-  private final AtomicLong readBytes;
-  private final AtomicLong writtenBytes;
-  private final AtomicLong droppedPackets;
-
   private volatile long inactivatedTime;
 
   private volatile SocketAddress datagramRemoteSocketAddress;
   private volatile String clientAddress;
   private volatile int clientPort;
+  private volatile int udpConvey;
   private int serverPort;
   private String serverAddress;
 
   private int maxIdleTimeInSecond;
 
   private volatile boolean activated;
-  private volatile boolean connected;
+  private volatile AssociatedState associatedState;
   private volatile boolean hasUdp;
   private volatile boolean enabledKcp;
   private volatile boolean hasKcp;
@@ -104,14 +106,17 @@ public final class SessionImpl implements Session {
 
     transportType = TransportType.UNKNOWN;
     packetQueue = null;
+    connectionFilter = null;
 
     readBytes = new AtomicLong(0L);
+    readMessages = new AtomicLong(0L);
     writtenBytes = new AtomicLong(0L);
     droppedPackets = new AtomicLong(0L);
 
     inactivatedTime = 0L;
+    udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
     activated = false;
-    connected = false;
+    associatedState = AssociatedState.NONE;
     hasUdp = false;
     enabledKcp = false;
     hasKcp = false;
@@ -122,6 +127,11 @@ public final class SessionImpl implements Session {
     setLastActivityTime(now());
   }
 
+  /**
+   * Creates a new session instance.
+   *
+   * @return a new instance of {@link Session}
+   */
   public static Session newInstance() {
     return new SessionImpl();
   }
@@ -142,13 +152,19 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public boolean isConnected() {
-    return connected;
+  public boolean isAssociatedToPlayer(AssociatedState associatedState) {
+    return this.associatedState == associatedState;
   }
 
   @Override
-  public void setConnected(boolean connected) {
-    this.connected = connected;
+  public void setAssociatedToPlayer(AssociatedState associatedState) {
+    this.associatedState = associatedState;
+  }
+
+  @Override
+  public boolean isOrphan() {
+    return (!isAssociatedToPlayer(AssociatedState.DONE) &&
+        (now() - createdTime) >= ORPHAN_ALLOWANCE_TIME_IN_MILLISECONDS);
   }
 
   @Override
@@ -158,9 +174,6 @@ public final class SessionImpl implements Session {
 
   @Override
   public void setPacketQueue(PacketQueue packetQueue) {
-    if (Objects.nonNull(this.packetQueue)) {
-      throw new IllegalStateException("Unable to reassign the packet queue. Queue already exists");
-    }
     this.packetQueue = packetQueue;
   }
 
@@ -230,8 +243,8 @@ public final class SessionImpl implements Session {
 
       InetSocketAddress socketAddress =
           (InetSocketAddress) this.socketChannel.socket().getRemoteSocketAddress();
-      InetAddress remoteAdress = socketAddress.getAddress();
-      clientAddress = remoteAdress.getHostAddress();
+      InetAddress remoteAddress = socketAddress.getAddress();
+      clientAddress = remoteAddress.getHostAddress();
       clientPort = socketAddress.getPort();
     }
   }
@@ -279,15 +292,31 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void setDatagramChannel(DatagramChannel datagramChannel, SocketAddress remoteAddress) {
+  public void setDatagramChannel(DatagramChannel datagramChannel, int udpConvey) {
     this.datagramChannel = datagramChannel;
     if (Objects.isNull(this.datagramChannel)) {
-      datagramRemoteSocketAddress = null;
-      hasUdp = false;
+      this.datagramRemoteSocketAddress = null;
+      this.udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
+      this.hasUdp = false;
     } else {
-      datagramRemoteSocketAddress = remoteAddress;
-      hasUdp = true;
+      this.udpConvey = udpConvey;
+      this.hasUdp = true;
     }
+  }
+
+  @Override
+  public int getUdpConveyId() {
+    return udpConvey;
+  }
+
+  @Override
+  public SocketAddress getDatagramRemoteSocketAddress() {
+    return datagramRemoteSocketAddress;
+  }
+
+  @Override
+  public void setDatagramRemoteSocketAddress(SocketAddress datagramRemoteSocketAddress) {
+    this.datagramRemoteSocketAddress = datagramRemoteSocketAddress;
   }
 
   @Override
@@ -299,11 +328,6 @@ public final class SessionImpl implements Session {
   public void setUkcp(Ukcp ukcp) {
     this.ukcp = ukcp;
     hasKcp = Objects.nonNull(this.ukcp);
-  }
-
-  @Override
-  public SocketAddress getDatagramRemoteSocketAddress() {
-    return datagramRemoteSocketAddress;
   }
 
   @Override
@@ -337,7 +361,11 @@ public final class SessionImpl implements Session {
       clientAddress = remoteAddress.getHostAddress();
       clientPort = socketAddress.getPort();
     }
+  }
 
+  @Override
+  public void setConnectionFilter(ConnectionFilter connectionFilter) {
+    this.connectionFilter = connectionFilter;
   }
 
   @Override
@@ -403,6 +431,16 @@ public final class SessionImpl implements Session {
   }
 
   @Override
+  public long getReadMessages() {
+    return readMessages.get();
+  }
+
+  @Override
+  public void increaseReadMessages() {
+    readMessages.incrementAndGet();
+  }
+
+  @Override
   public long getDroppedPackets() {
     return droppedPackets.get();
   }
@@ -432,7 +470,6 @@ public final class SessionImpl implements Session {
       long elapsedSinceLastActivity = TimeUtility.currentTimeMillis() - getLastActivityTime();
       return elapsedSinceLastActivity / 1000L > (long) getMaxIdleTimeInSeconds();
     }
-
     return false;
   }
 
@@ -498,17 +535,25 @@ public final class SessionImpl implements Session {
   }
 
   @Override
+  public void remove() {
+    getSessionManager().removeSession(this);
+  }
+
+  @Override
   public void close(ConnectionDisconnectMode connectionDisconnectMode,
                     PlayerDisconnectMode playerDisconnectMode)
       throws IOException {
+    if (!isActivated()) {
+      return;
+    }
+    deactivate();
+
+    connectionFilter.removeAddress(clientAddress);
+
     if (Objects.nonNull(packetQueue)) {
       packetQueue.clear();
-      packetQueue = null;
+      setPacketQueue(null);
     }
-
-    getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
-        connectionDisconnectMode,
-        playerDisconnectMode);
 
     if (hasKcp) {
       ukcp.getKcpIoHandler().channelInactiveIn(this);
@@ -538,10 +583,8 @@ public final class SessionImpl implements Session {
         break;
     }
 
-    deactivate();
-    setConnected(false);
-
-    sessionManager.removeSession(this);
+    getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
+        connectionDisconnectMode, playerDisconnectMode);
   }
 
   private long now() {
@@ -550,10 +593,9 @@ public final class SessionImpl implements Session {
 
   @Override
   public boolean equals(Object object) {
-    if (!(object instanceof Session)) {
+    if (!(object instanceof Session session)) {
       return false;
     } else {
-      var session = (Session) object;
       return getId() == session.getId();
     }
   }
@@ -594,8 +636,9 @@ public final class SessionImpl implements Session {
         ", serverAddress='" + serverAddress + '\'' +
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
         ", activated=" + activated +
-        ", connected=" + connected +
+        ", associatedState=" + associatedState +
         ", hasUdp=" + hasUdp +
+        ", udpConvey=" + udpConvey +
         ", enabledKcp=" + enabledKcp +
         ", hasKcp=" + hasKcp +
         '}';

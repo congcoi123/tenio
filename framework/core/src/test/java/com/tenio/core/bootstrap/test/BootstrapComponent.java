@@ -29,7 +29,9 @@ import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.AutowiredQualifier;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.bean.TestBeanClass;
+import com.tenio.core.bootstrap.test.factory.TestBeanCommon;
 import com.tenio.core.bootstrap.test.impl.TestClassAlone;
+import com.tenio.core.bootstrap.test.impl.TestClassCCopy;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceA;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceB;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceC;
@@ -39,18 +41,37 @@ public class BootstrapComponent {
 
   @Autowired
   public TestInterfaceA a;
+
   /**
    * This declaration should not throw any exceptions while scanning packages
    */
   @AutowiredAcceptNull
   public TestInterfaceB b;
+
   @Autowired
   @AutowiredQualifier(
-      value = "TestClassCCopy"
+      clazz = TestClassCCopy.class
   )
   public TestInterfaceC c;
+
   @Autowired
   public TestClassAlone alone;
+
   @Autowired
   public TestBeanClass bean;
+
+  @Autowired
+  public TestBeanCommon beanCommon;
+
+  @Autowired
+  @AutowiredQualifier(
+      name = "commonA"
+  )
+  public TestBeanCommon beanCommonA;
+
+  @Autowired
+  @AutowiredQualifier(
+      name = "commonB"
+  )
+  public TestBeanCommon beanCommonB;
 }

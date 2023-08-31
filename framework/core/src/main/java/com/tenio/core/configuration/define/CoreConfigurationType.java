@@ -140,6 +140,12 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   WORKER_WEBSOCKET_CONSUMER("websocket-consumer"),
   /**
+   * The thread pool size configured for Jetty server.
+   *
+   * @since 0.5.0
+   */
+  WORKER_HTTP_WORKER("http-worker"),
+  /**
    * The number of threads using for handlers to manage internal processes on the server.
    */
   WORKER_INTERNAL_PROCESSOR("internal-processor"),
@@ -218,6 +224,14 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
   /**
+   * Sets the maximum time in seconds a player can be in IDLE state (Without sending or receiving
+   * packets) in case of never deported selection. Excesses this time then the player will be
+   * removed from the server.
+   *
+   * @since 0.5.0
+   */
+  PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED("max-player-idle-time-never-deported"),
+  /**
    * Determines whether the WebSocket connection could use SSL configuration.
    */
   NETWORK_PROP_WEBSOCKET_USING_SSL("websocket-using-ssl"),
@@ -251,27 +265,32 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   NETWORK_PROP_MAX_CONNECTIONS_PER_IP("max-connections-per-ip"),
   /**
-   * Allows a player can log in a different session then the new session will replace the old one.
-   */
-  NETWORK_PROP_ALLOW_CHANGE_SESSION("allow-change-session"),
-  /**
    * Allows using KCP transportation in UDP channels.
    *
    * @since 0.3.0
    */
   NETWORK_PROP_ENABLED_KCP("enabled-kcp"),
   /**
-   * The list of socket configurations in the server configuration.
+   * Socket in the server configuration.
+   *
+   * @since 0.5.0
    */
-  NETWORK_SOCKET_CONFIGS("socket-configs"),
+  NETWORK_SOCKET("socket-configuration"),
   /**
-   * The list of HTTP configurations in the server configuration.
+   * WebSocket in the server configuration.
+   *
+   * @since 0.5.0
    */
-  NETWORK_HTTP_CONFIGS("http-configs");
+  NETWORK_WEBSOCKET("websocket-configuration"),
+  /**
+   * HTTP in the server configuration.
+   *
+   * @since 0.5.0
+   */
+  NETWORK_HTTP("http-configuration");
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, CoreConfigurationType> lookup =
-      new HashMap<>();
+  private static final Map<String, CoreConfigurationType> lookup = new HashMap<>();
 
   static {
     for (var configurationType : CoreConfigurationType.values()) {

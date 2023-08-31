@@ -27,12 +27,10 @@ package com.tenio.core.network;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.define.data.PathConfig;
-import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
@@ -52,8 +50,9 @@ import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import javax.servlet.http.HttpServlet;
 
 /**
  * The implementation for network service.
@@ -63,13 +62,12 @@ import java.util.Objects;
 public final class NetworkServiceImpl extends AbstractManager implements NetworkService {
 
   private final SessionManager sessionManager;
-  private JettyHttpService httpService;
-  private NettyWebSocketService webSocketService;
-  private ZeroSocketService socketService;
+  private final JettyHttpService httpService;
+  private final NettyWebSocketService webSocketService;
+  private final ZeroSocketService socketService;
+  private final NetworkReaderStatistic networkReaderStatistic;
+  private final NetworkWriterStatistic networkWriterStatistic;
   private DataType dataType;
-  private NetworkReaderStatistic networkReaderStatistic;
-  private NetworkWriterStatistic networkWriterStatistic;
-
   private boolean initialized;
 
   private boolean httpServiceInitialized;
@@ -94,6 +92,12 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     socketService = ZeroSocketServiceImpl.newInstance(eventManager);
   }
 
+  /**
+   * Creates a new instance of the network service.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link NetworkService}
+   */
   public static NetworkService newInstance(EventManager eventManager) {
     return new NetworkServiceImpl(eventManager);
   }
@@ -148,12 +152,6 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   private void destroy() {
-    httpService = null;
-    webSocketService = null;
-    socketService = null;
-
-    networkReaderStatistic = null;
-    networkWriterStatistic = null;
   }
 
   @Override
@@ -172,17 +170,12 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void setHttpPort(int port) {
+  public void setHttpConfiguration(int threadPoolSize, int port,
+                                   Map<String, HttpServlet> servletMap) {
+    httpService.setThreadPoolSize(threadPoolSize);
     httpService.setPort(port);
-  }
-
-  @Override
-  public void setHttpPathConfigs(List<PathConfig> pathConfigs) {
-    if (Objects.isNull(pathConfigs)) {
-      return;
-    }
-    httpService.setPathConfigs(pathConfigs);
-    httpServiceInitialized = true;
+    httpService.setServletMap(servletMap);
+    httpServiceInitialized = (port != 0 && Objects.nonNull(servletMap));
   }
 
   @Override
@@ -196,6 +189,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
     webSocketService.setConnectionFilter(connectionFilter);
     socketService.setConnectionFilter(connectionFilter);
+    sessionManager.setConnectionFilter(connectionFilter);
   }
 
   @Override
@@ -269,17 +263,16 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void setSocketConfigs(List<SocketConfig> socketConfigs) {
-    if (containsSocketPort(socketConfigs)) {
+  public void setSocketConfiguration(SocketConfiguration socketConfiguration,
+                                     SocketConfiguration webSocketConfiguration) {
+    if (Objects.nonNull(socketConfiguration)) {
       socketServiceInitialized = true;
-      socketService.setSocketConfigs(socketConfigs);
+      socketService.setSocketConfig(socketConfiguration);
     }
 
-    if (containsWebSocketPort(socketConfigs)) {
+    if (Objects.nonNull(webSocketConfiguration)) {
       webSocketServiceInitialized = true;
-      webSocketService.setWebSocketConfig(socketConfigs.stream()
-          .filter(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET).findFirst()
-          .get());
+      webSocketService.setWebSocketConfig(webSocketConfiguration);
     }
   }
 
@@ -288,15 +281,9 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     sessionManager.setEnabledKcp(enabledKcp);
   }
 
-  private boolean containsSocketPort(List<SocketConfig> socketConfigs) {
-    return socketConfigs.stream()
-        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.TCP
-            || socketConfig.getType() == TransportType.UDP);
-  }
-
-  private boolean containsWebSocketPort(List<SocketConfig> socketConfigs) {
-    return socketConfigs.stream()
-        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.WEB_SOCKET);
+  @Override
+  public void setSessionMaxIdleTimeInSeconds(int seconds) {
+    sessionManager.setMaxIdleTimeInSeconds(seconds);
   }
 
   @Override
@@ -346,19 +333,21 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void write(Response response) {
-    var data = DataUtility.binaryToCollection(dataType, response.getContent());
-    var message = ServerMessage.newInstance().setData(data);
+  public void write(Response response, boolean markedAsLast) {
+    var message = DataUtility.binaryToCollection(dataType, response.getContent());
 
-    var playerIterator = response.getRecipientPlayers().iterator();
-    while (playerIterator.hasNext()) {
-      var player = playerIterator.next();
-      eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
+    var recipientPlayers = response.getRecipientPlayers();
+    if (Objects.nonNull(recipientPlayers) && !recipientPlayers.isEmpty()) {
+      var playerIterator = recipientPlayers.iterator();
+      while (playerIterator.hasNext()) {
+        var player = playerIterator.next();
+        eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
+      }
     }
 
-    var nonSessionPlayers = response.getNonSessionRecipientPlayers();
-    if (Objects.nonNull(nonSessionPlayers)) {
-      var nonSessionIterator = nonSessionPlayers.iterator();
+    var nonSessionRecipientPlayers = response.getNonSessionRecipientPlayers();
+    if (Objects.nonNull(nonSessionRecipientPlayers) && !nonSessionRecipientPlayers.isEmpty()) {
+      var nonSessionIterator = nonSessionRecipientPlayers.iterator();
       while (nonSessionIterator.hasNext()) {
         var player = nonSessionIterator.next();
         eventManager.emit(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, message);
@@ -366,16 +355,15 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var socketSessions = response.getRecipientSocketSessions();
-    var datagramSessions = response.getRecipientDatagramSessions();
-    var webSocketSessions = response.getRecipientWebSocketSessions();
-
     if (Objects.nonNull(socketSessions)) {
       var packet = createPacket(response, socketSessions, TransportType.TCP);
+      packet.setMarkedAsLast(markedAsLast);
       socketService.write(packet);
       socketSessions.forEach(
           session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 
+    var datagramSessions = response.getRecipientDatagramSessions();
     if (Objects.nonNull(datagramSessions)) {
       var packet = createPacket(response, datagramSessions, TransportType.UDP);
       socketService.write(packet);
@@ -383,8 +371,10 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
           session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 
+    var webSocketSessions = response.getRecipientWebSocketSessions();
     if (Objects.nonNull(webSocketSessions)) {
       var packet = createPacket(response, webSocketSessions, TransportType.WEB_SOCKET);
+      packet.setMarkedAsLast(markedAsLast);
       webSocketService.write(packet);
       webSocketSessions.forEach(
           session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));

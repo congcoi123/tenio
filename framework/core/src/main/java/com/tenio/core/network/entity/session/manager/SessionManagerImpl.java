@@ -32,14 +32,16 @@ import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
+import com.tenio.core.network.security.filter.ConnectionFilter;
 import io.netty.channel.Channel;
 import java.lang.reflect.InvocationTargetException;
-import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -59,11 +61,14 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   @GuardedBy("this")
   private final Map<Channel, Session> sessionByWebSockets;
   @GuardedBy("this")
-  private final Map<SocketAddress, Session> sessionByDatagrams;
+  private final Map<Integer, Session> sessionByDatagrams;
+  private List<Session> readonlySessionsList;
   private PacketQueuePolicy packetQueuePolicy;
+  private ConnectionFilter connectionFilter;
   private int packetQueueSize;
   private boolean enabledKcp;
   private volatile int sessionCount;
+  private int maxIdleTimeInSeconds;
 
   private SessionManagerImpl(EventManager eventManager) {
     super(eventManager);
@@ -72,12 +77,20 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     sessionBySockets = new HashMap<>();
     sessionByWebSockets = new HashMap<>();
     sessionByDatagrams = new HashMap<>();
+    readonlySessionsList = new ArrayList<>();
 
     sessionCount = 0;
     packetQueueSize = DEFAULT_PACKET_QUEUE_SIZE;
     packetQueuePolicy = null;
+    connectionFilter = null;
   }
 
+  /**
+   * Creates a new instance of the session manager.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link SessionManager}
+   */
   public static SessionManager newInstance(EventManager eventManager) {
     return new SessionManagerImpl(eventManager);
   }
@@ -96,11 +109,14 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     session.setSelectionKey(selectionKey);
     session.setSessionManager(this);
     session.setPacketQueue(createNewPacketQueue());
+    session.setConnectionFilter(connectionFilter);
     session.setEnabledKcp(enabledKcp);
+    session.setMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionBySockets.put(session.getSocketChannel(), session);
       sessionCount = sessionByIds.size();
+      readonlySessionsList = List.copyOf(sessionByIds.values());
     }
     return session;
   }
@@ -119,7 +135,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
-  public void addDatagramForSession(DatagramChannel datagramChannel, SocketAddress remoteAddress,
+  public void addDatagramForSession(DatagramChannel datagramChannel, int udpConvey,
                                     Session session) {
     if (!session.isTcp()) {
       throw new IllegalArgumentException(
@@ -127,16 +143,21 @@ public final class SessionManagerImpl extends AbstractManager implements Session
               session));
     }
     synchronized (sessionByDatagrams) {
-      session.setDatagramChannel(datagramChannel, remoteAddress);
-      sessionByDatagrams.put(session.getDatagramRemoteSocketAddress(), session);
+      session.setDatagramChannel(datagramChannel, udpConvey);
+      sessionByDatagrams.put(udpConvey, session);
     }
   }
 
   @Override
-  public Session getSessionByDatagram(SocketAddress remoteAddress) {
+  public Session getSessionByDatagram(int udpConvey) {
     synchronized (sessionByDatagrams) {
-      return sessionByDatagrams.get(remoteAddress);
+      return sessionByDatagrams.get(udpConvey);
     }
+  }
+
+  @Override
+  public void setConnectionFilter(ConnectionFilter connectionFilter) {
+    this.connectionFilter = connectionFilter;
   }
 
   @Override
@@ -145,10 +166,13 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     session.setWebSocketChannel(webSocketChannel);
     session.setSessionManager(this);
     session.setPacketQueue(createNewPacketQueue());
+    session.setConnectionFilter(connectionFilter);
+    session.setMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionByWebSockets.put(webSocketChannel, session);
       sessionCount = sessionByIds.size();
+      readonlySessionsList = List.copyOf(sessionByIds.values());
     }
     return session;
   }
@@ -191,24 +215,26 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   public void removeSession(Session session) {
     synchronized (this) {
       switch (session.getTransportType()) {
-        case TCP:
+        case TCP -> {
           if (session.containsUdp()) {
-            sessionByDatagrams.remove(session.getDatagramRemoteSocketAddress());
-            session.setDatagramChannel(null, null);
+            sessionByDatagrams.remove(session.getUdpConveyId());
+            session.setDatagramChannel(null, Session.EMPTY_DATAGRAM_CONVEY_ID);
           }
           sessionBySockets.remove(session.getSocketChannel());
-          break;
-
-        case WEB_SOCKET:
-          sessionByWebSockets.remove(session.getWebSocketChannel());
-          break;
-
-        default:
-          break;
+        }
+        case WEB_SOCKET -> sessionByWebSockets.remove(session.getWebSocketChannel());
+        default -> {
+        }
       }
       sessionByIds.remove(session.getId());
       sessionCount = sessionByIds.size();
+      readonlySessionsList = List.copyOf(sessionByIds.values());
     }
+  }
+
+  @Override
+  public List<Session> getReadonlySessionsList() {
+    return readonlySessionsList;
   }
 
   @Override
@@ -224,5 +250,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   @Override
   public void setEnabledKcp(boolean enabledKcp) {
     this.enabledKcp = enabledKcp;
+  }
+
+  @Override
+  public void setMaxIdleTimeInSeconds(int seconds) {
+    maxIdleTimeInSeconds = seconds;
   }
 }
