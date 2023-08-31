@@ -28,11 +28,11 @@ import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -68,6 +68,16 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
     logger = new PrivateLogger();
   }
 
+  /**
+   * Creates a new instance of the websocket handler.
+   *
+   * @param eventManager           the instance of {@link EventManager}
+   * @param sessionManager         the instance of {@link SessionManager}
+   * @param connectionFilter       the instance of {@link ConnectionFilter}
+   * @param dataType               the {@link DataType}
+   * @param networkReaderStatistic the instance of {@link NetworkReaderStatistic}
+   * @return a new instance of {@link NettyWsHandler}
+   */
   public static NettyWsHandler newInstance(EventManager eventManager, SessionManager sessionManager,
                                            ConnectionFilter connectionFilter, DataType dataType,
                                            NetworkReaderStatistic networkReaderStatistic) {
@@ -84,9 +94,11 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
 
     try {
       session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
-    } catch (IOException e) {
-      logger.error(e, "Session: ", session.toString());
-      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, e);
+    } catch (IOException exception) {
+      if (logger.isErrorEnabled()) {
+        logger.error(exception, "Session: ", session.toString());
+      }
+      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
     }
   }
 
@@ -107,26 +119,42 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
           var address = ctx.channel().remoteAddress().toString();
           connectionFilter.validateAndAddAddress(address);
         } catch (RefusedConnectionAddressException exception) {
-          logger.error(exception, "Refused connection with address: ", exception.getMessage());
+          if (logger.isErrorEnabled()) {
+            logger.error(exception, "Refused connection with address: ", exception.getMessage());
+          }
           // handle refused connection, it should send to the client the reason before closing connection
           eventManager.emit(ServerEvent.WEBSOCKET_CONNECTION_REFUSED, ctx.channel(), exception);
           ctx.channel().close();
         }
 
         session = sessionManager.createWebSocketSession(ctx.channel());
-        eventManager.emit(ServerEvent.SESSION_CREATED, session);
+        session.activate();
+      }
+
+      if (!session.isActivated()) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("READ WEBSOCKET CHANNEL", "Session is inactivated: ", session.toString());
+        }
+        return;
+      }
+
+      if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("READ WEBSOCKET CHANNEL", "Session is associating to a player, rejects " +
+              "message: ", session.toString());
+        }
+        return;
       }
 
       session.addReadBytes(binary.length);
       networkReaderStatistic.updateReadBytes(binary.length);
       networkReaderStatistic.updateReadPackets(1);
 
-      var data = DataUtility.binaryToCollection(dataType, binary);
-      var message = ServerMessage.newInstance().setData(data);
+      var message = DataUtility.binaryToCollection(dataType, binary);
 
-      if (!session.isConnected()) {
+      if (session.isAssociatedToPlayer(Session.AssociatedState.NONE)) {
         eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
-      } else {
+      } else if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
         eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
       }
     }
@@ -136,10 +164,14 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     var session = sessionManager.getSessionByWebSocket(ctx.channel());
     if (Objects.nonNull(session)) {
-      logger.error(cause, "Session: ", session.toString());
+      if (logger.isErrorEnabled()) {
+        logger.error(cause, "Session: ", session.toString());
+      }
       eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, cause);
     } else {
-      logger.error(cause, "Exception was occurred on channel: %s", ctx.channel().toString());
+      if (logger.isErrorEnabled()) {
+        logger.error(cause, "Exception was occurred on channel: %s", ctx.channel().toString());
+      }
     }
   }
 }

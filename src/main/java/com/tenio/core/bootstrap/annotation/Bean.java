@@ -45,4 +45,12 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface Bean {
+
+  /**
+   * Supports the bean's name.
+   *
+   * @return the unique bean's name
+   * @since 0.5.0
+   */
+  String value() default "";
 }

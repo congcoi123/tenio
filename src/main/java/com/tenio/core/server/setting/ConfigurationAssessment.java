@@ -31,17 +31,11 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ConfigurationException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
-import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
-import com.tenio.core.handler.event.EventAttachedConnectionResult;
-import com.tenio.core.handler.event.EventHttpRequestHandle;
-import com.tenio.core.handler.event.EventHttpRequestValidation;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.handler.event.EventPlayerReconnectedResult;
-import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.define.data.HttpConfig;
-import com.tenio.core.network.define.data.SocketConfig;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -57,6 +51,13 @@ public final class ConfigurationAssessment {
     this.configuration = configuration;
   }
 
+  /**
+   * Retrieves a new instance of configuration assessment.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @param configuration and instance of {@link Configuration}
+   * @return a new instance of {@link ConfigurationAssessment}
+   */
   public static ConfigurationAssessment newInstance(EventManager eventManager,
                                                     Configuration configuration) {
     return new ConfigurationAssessment(eventManager, configuration);
@@ -71,9 +72,8 @@ public final class ConfigurationAssessment {
   public void assess() throws NotDefinedSubscribersException, ConfigurationException {
     checkDataSerialization();
     checkSubscriberReconnection();
-    checkSubscriberConnectionAttach();
+    checkSubscriberRequestAccessingDatagramChannelHandler();
     checkDefinedMainSocketConnection();
-    checkSubscriberHttpHandler();
   }
 
   private void checkDataSerialization() {
@@ -95,12 +95,14 @@ public final class ConfigurationAssessment {
     }
   }
 
-  private void checkSubscriberConnectionAttach() throws NotDefinedSubscribersException {
+  private void checkSubscriberRequestAccessingDatagramChannelHandler()
+      throws NotDefinedSubscribersException {
     if (containsTcpSocketConfig() && containsUdpSocketConfig()) {
-      if (!eventManager.hasSubscriber(ServerEvent.ATTACH_CONNECTION_REQUEST_VALIDATION)
-          || !eventManager.hasSubscriber(ServerEvent.ATTACHED_CONNECTION_RESULT)) {
-        throw new NotDefinedSubscribersException(EventAttachConnectionRequestValidation.class,
-            EventAttachedConnectionResult.class);
+      if (!eventManager.hasSubscriber(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION)
+          || !eventManager.hasSubscriber(
+          ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT)) {
+        throw new NotDefinedSubscribersException(EventAccessDatagramChannelRequestValidation.class,
+            EventAccessDatagramChannelRequestValidationResult.class);
       }
     }
   }
@@ -111,32 +113,13 @@ public final class ConfigurationAssessment {
     }
   }
 
-  private void checkSubscriberHttpHandler() throws NotDefinedSubscribersException {
-    if (containsHttpPathConfigs()
-        && (!eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_VALIDATION)
-        || !eventManager.hasSubscriber(ServerEvent.HTTP_REQUEST_HANDLE))) {
-      throw new NotDefinedSubscribersException(EventHttpRequestValidation.class,
-          EventHttpRequestHandle.class);
-    }
-  }
-
   @SuppressWarnings("unchecked")
   private boolean containsTcpSocketConfig() {
-    var socketConfigs =
-        (List<SocketConfig>) configuration.get(CoreConfigurationType.NETWORK_SOCKET_CONFIGS);
-    return socketConfigs.stream()
-        .anyMatch(socketConfig -> socketConfig.getType() == TransportType.TCP);
+    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_SOCKET));
   }
 
   @SuppressWarnings("unchecked")
   private boolean containsUdpSocketConfig() {
     return configuration.getInt(CoreConfigurationType.WORKER_UDP_WORKER) > 0;
-  }
-
-  @SuppressWarnings("unchecked")
-  private boolean containsHttpPathConfigs() {
-    var httpConfigs =
-        (List<HttpConfig>) configuration.get(CoreConfigurationType.NETWORK_HTTP_CONFIGS);
-    return !httpConfigs.isEmpty();
   }
 }

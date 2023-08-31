@@ -51,24 +51,24 @@ public interface PlayerManager extends Manager {
   /**
    * Creates a new player without session and adds it in to the management list.
    *
-   * @param name a unique player's name ({@link String} value) on the server
+   * @param playerName a unique player's name ({@link String} value) on the server
    * @return a new instance of {@link Player}
    * @throws AddedDuplicatedPlayerException when a same player is already available in the
    *                                        management list, but it is mentioned again
    */
-  Player createPlayer(String name) throws AddedDuplicatedPlayerException;
+  Player createPlayer(String playerName) throws AddedDuplicatedPlayerException;
 
   /**
    * Creates a new player with session and adds it in to the management list.
    *
-   * @param name    a unique player's name ({@link String} value) on the server
+   * @param playerName    a unique player's name ({@link String} value) on the server
    * @param session a {@link Session} associated with the player
    * @return a new instance of {@link Player}
    * @throws AddedDuplicatedPlayerException when a same player is already available in the
    *                                        management list, but it is mentioned again
    * @throws NullPointerException           when the attaching session could not be found
    */
-  Player createPlayerWithSession(String name, Session session)
+  Player createPlayerWithSession(String playerName, Session session)
       throws AddedDuplicatedPlayerException, NullPointerException;
 
   /**
@@ -78,14 +78,6 @@ public interface PlayerManager extends Manager {
    * @return an instance of {@link Player} if present, otherwise {@code null}
    */
   Player getPlayerByName(String playerName);
-
-  /**
-   * Retrieves a player by using its session.
-   *
-   * @param session the {@link Session} associated with a player on the server
-   * @return an instance of {@link Player} if present, otherwise {@code null}
-   */
-  Player getPlayerBySession(Session session);
 
   /**
    * Retrieves an iterator for a player management list. This method should be used to prevent
@@ -106,24 +98,6 @@ public interface PlayerManager extends Manager {
   List<Player> getReadonlyPlayersList();
 
   /**
-   * Retrieves an iterator for sessions in a player management list. This method should be
-   * used to prevent the "escape references" issue.
-   *
-   * @return an iterator of {@link Session} in the player management list
-   * @see Iterator
-   */
-  Iterator<Session> getSessionIterator();
-
-  /**
-   * Retrieves a read-only list of sessions in a player management list. This method should be
-   * used to prevent the "escape references" issue.
-   *
-   * @return a list of {@link Session}s in the player management list
-   * @see List
-   */
-  List<Session> getReadonlySessionsList();
-
-  /**
    * Removes a player from the management list.
    *
    * @param playerName the player's name ({@link String} value)
@@ -133,29 +107,12 @@ public interface PlayerManager extends Manager {
   void removePlayerByName(String playerName) throws RemovedNonExistentPlayerFromRoomException;
 
   /**
-   * Removes a player from the management list.
-   *
-   * @param session the {@link Session} associated to a player
-   * @throws RemovedNonExistentPlayerFromRoomException when the player is not present in the
-   *                                                   management list
-   */
-  void removePlayerBySession(Session session) throws RemovedNonExistentPlayerFromRoomException;
-
-  /**
    * Determines whether the management list contains a player by checking its name.
    *
    * @param playerName the player's name ({@link String} value)
    * @return {@code true} if the player is available, otherwise returns {@code false}
    */
   boolean containsPlayerName(String playerName);
-
-  /**
-   * Determines whether the management list contains a player by checking its session.
-   *
-   * @param session the {@link Session} associated to a player
-   * @return {@code true} if the player is available, otherwise returns {@code false}
-   */
-  boolean containsPlayerSession(Session session);
 
   /**
    * Retrieves a room of the management list.
@@ -178,6 +135,43 @@ public interface PlayerManager extends Manager {
    * @return the current number ({@code integer} value) of players in the list
    */
   int getPlayerCount();
+
+  /**
+   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @return the maximum time in seconds ({@code integer} value) which allows the player to
+   * get in IDLE state
+   */
+  int getMaxIdleTimeInSeconds();
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   */
+  void setMaxIdleTimeInSeconds(int seconds);
+
+  /**
+   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data) in case of never deported selection.
+   *
+   * @return the maximum time in seconds ({@code integer} value) which allows the player to
+   * get in IDLE state
+   * @since 0.5.0
+   */
+  int getMaxIdleTimeNeverDeportedInSeconds();
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data) in case of never deported selection.
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   */
+  void setMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * Removes all players from the list.

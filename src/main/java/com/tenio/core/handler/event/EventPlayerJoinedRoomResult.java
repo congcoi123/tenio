@@ -32,7 +32,7 @@ import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
  * When a player tried to join a room.
  */
 @FunctionalInterface
-public interface EventPlayerJoinedRoomResult {
+public interface EventPlayerJoinedRoomResult<P extends Player, R extends Room> {
 
   /**
    * When a player tried to join a room.
@@ -43,5 +43,5 @@ public interface EventPlayerJoinedRoomResult {
    *               considered as it joined the room when the result equals to success
    * @see PlayerJoinedRoomResult#SUCCESS
    */
-  void handle(Player player, Room room, PlayerJoinedRoomResult result);
+  void handle(P player, R room, PlayerJoinedRoomResult result);
 }

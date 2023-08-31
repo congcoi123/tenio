@@ -45,6 +45,11 @@ public class UdpChannelManager implements Manager {
     currentIndex = -1;
   }
 
+  /**
+   * Creates a new UDP channel manager instance.
+   *
+   * @return a new instance of {@link UdpChannelManager}
+   */
   public static UdpChannelManager newInstance() {
     return new UdpChannelManager();
   }

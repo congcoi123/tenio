@@ -100,10 +100,11 @@ public final class RoomEventHandler {
     eventPlayerAfterLeftRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, params -> {
           var player = (Player) params[0];
-          var room = (Room) params[1];
-          var result = (PlayerLeftRoomResult) (params[2]);
+          var room = (Optional<Room>) params[1];
+          var mode = (PlayerLeaveRoomMode) (params[2]);
+          var result = (PlayerLeftRoomResult) (params[3]);
 
-          event.handle(player, room, result);
+          event.handle(player, room, mode, result);
 
           return null;
         }));
@@ -111,7 +112,7 @@ public final class RoomEventHandler {
     eventPlayerBeforeLeaveRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, params -> {
           var player = (Player) params[0];
-          var room = (Room) params[1];
+          var room = (Optional<Room>) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
 
           event.handle(player, room, mode);
@@ -132,7 +133,7 @@ public final class RoomEventHandler {
 
     eventRoomCreatedResultOp.ifPresent(event -> eventManager.on(ServerEvent.ROOM_CREATED_RESULT,
         params -> {
-          var room = (Room) params[0];
+          var room = (Optional<Room>) params[0];
           var setting = (InitialRoomSetting) params[1];
           var result = (RoomCreatedResult) params[2];
 

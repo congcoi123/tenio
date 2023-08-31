@@ -28,8 +28,8 @@ import com.tenio.common.utility.OsUtility;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.exception.ServiceRuntimeException;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.define.data.SocketConfig;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
@@ -64,7 +64,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private String serverAddress;
   private int amountUdpWorkers;
   private boolean enabledKcp;
-  private List<SocketConfig> socketConfigs;
+  private SocketConfiguration socketConfiguration;
 
   private ZeroAcceptorImpl(EventManager eventManager) {
     super(eventManager);
@@ -75,11 +75,17 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     setName("acceptor");
   }
 
+  /**
+   * Creates a new instance of acceptor engine.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link ZeroAcceptor}
+   */
   public static ZeroAcceptor newInstance(EventManager eventManager) {
     return new ZeroAcceptorImpl(eventManager);
   }
 
-  private void initializeSockets() throws ServiceRuntimeException {
+  private void initializeSocketChannel() throws ServiceRuntimeException {
     // opens a selector to handle server socket, udp datagram and accept all incoming client socket
     try {
       acceptableSelector = Selector.open();
@@ -88,17 +94,16 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     }
 
     // each socket configuration constructs a server socket or an udp datagram
-    for (var socketConfig : socketConfigs) {
-      bindSocket(socketConfig);
-    }
+    bindSocketChannel(socketConfiguration);
   }
 
-  private void bindSocket(SocketConfig socketConfig) throws ServiceRuntimeException {
-    if (socketConfig.getType() == TransportType.TCP) {
-      bindTcpSocket(socketConfig.getPort());
+  private void bindSocketChannel(SocketConfiguration socketConfiguration)
+      throws ServiceRuntimeException {
+    if (socketConfiguration.type() == TransportType.TCP) {
+      bindTcpSocket(socketConfiguration.port());
     }
     if (amountUdpWorkers > 0) {
-      bindUdpSocket();
+      bindUdpChannel();
     }
   }
 
@@ -112,8 +117,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
         serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
       }
       serverSocketChannel.socket().bind(new InetSocketAddress(serverAddress, port));
-      info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
-          serverSocketChannel.socket().getLocalPort()));
+      if (isInfoEnabled()) {
+        info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
+            serverSocketChannel.socket().getLocalPort()));
+      }
       // only server socket should interest in this key OP_ACCEPT
       serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
       synchronized (boundSockets) {
@@ -124,7 +131,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     }
   }
 
-  private void bindUdpSocket() throws ServiceRuntimeException {
+  private void bindUdpChannel() throws ServiceRuntimeException {
     try {
       synchronized (boundSockets) {
         for (int i = 0; i < amountUdpWorkers; i++) {
@@ -143,19 +150,25 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
           zeroReaderListener.acceptDatagramChannel(datagramChannel);
           int boundPort = datagramChannel.socket().getLocalPort();
           ServerImpl.getInstance().getUdpChannelManager().appendUdpPort(boundPort);
-          info(enabledKcp ? "UDP CHANNEL (KCP)" : "UDP CHANNEL",
-              buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
+          if (isInfoEnabled()) {
+            info(enabledKcp ? "UDP CHANNEL (KCP)" : "UDP CHANNEL",
+                buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
+          }
           boundSockets.add(datagramChannel);
         }
       }
-    } catch (IOException e) {
-      throw new ServiceRuntimeException(e.getMessage());
+    } catch (IOException exception) {
+      throw new ServiceRuntimeException(exception.getMessage());
     }
   }
 
   private void acceptableLoop() throws IOException {
     // blocks until at least one channel is ready for the events you registered for
-    acceptableSelector.select();
+    int countReadyKeys = acceptableSelector.selectNow();
+
+    if (countReadyKeys == 0) {
+      return;
+    }
 
     synchronized (acceptableSelector) {
       // retrieves a set of selected keys
@@ -185,8 +198,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
               }
             }
 
-          } catch (IOException e) {
-            error(e);
+          } catch (IOException exception) {
+            if (isErrorEnabled()) {
+              error(exception);
+            }
           }
         }
       }
@@ -212,9 +227,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
             socketChannel.socket().shutdownOutput();
             socketChannel.close();
           }
-        } catch (IOException e) {
-          getSocketIoHandler().channelException(socketChannel, e);
-          error(e);
+        } catch (IOException exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
+          getSocketIoHandler().channelException(socketChannel, exception);
         }
       }
     }
@@ -231,8 +248,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
         try {
           socketChannel.close();
-        } catch (IOException e) {
-          error(e);
+        } catch (IOException exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
     }
@@ -242,13 +261,14 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     try {
       Thread.sleep(500L);
       acceptableSelector.close();
-    } catch (IOException | InterruptedException e) {
-      error(e);
+    } catch (IOException | InterruptedException exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
   }
 
   private void cleanup() {
-    acceptableSelector = null;
   }
 
   @Override
@@ -269,12 +289,16 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
         socketIterator.remove();
 
         if (Objects.isNull(socketChannel)) {
-          debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
+          if (isDebugEnabled()) {
+            debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
+          }
         } else {
           var socket = socketChannel.socket();
 
           if (Objects.isNull(socket)) {
-            debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
+            if (isDebugEnabled()) {
+              debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
+            }
           } else {
             var inetAddress = socket.getInetAddress();
             if (Objects.nonNull(inetAddress)) {
@@ -285,30 +309,35 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
                 SelectionKey selectionKey = zeroReaderListener.acceptSocketChannel(socketChannel);
 
                 getSocketIoHandler().channelActive(socketChannel, selectionKey);
-              } catch (RefusedConnectionAddressException e1) {
-                getSocketIoHandler().channelException(socketChannel, e1);
-                error(e1, "Refused connection with address: ", e1.getMessage());
+              } catch (RefusedConnectionAddressException exception1) {
+                if (isErrorEnabled()) {
+                  error(exception1, "Refused connection with address: ", exception1.getMessage());
+                }
+                getSocketIoHandler().channelException(socketChannel, exception1);
 
                 try {
                   getSocketIoHandler().channelInactive(socketChannel);
                   socketChannel.socket().shutdownInput();
                   socketChannel.socket().shutdownOutput();
                   socketChannel.close();
-                } catch (IOException e2) {
-                  getSocketIoHandler().channelException(socketChannel, e2);
-                  error(e2,
-                      "Additional problem with refused connection. "
-                          + "Was not able to shut down the channel: ",
-                      e2.getMessage());
+                } catch (IOException exception2) {
+                  if (isErrorEnabled()) {
+                    error(exception2,
+                        "Additional problem with refused connection. "
+                            + "Was not able to shut down the channel: ",
+                        exception2.getMessage());
+                  }
+                  getSocketIoHandler().channelException(socketChannel, exception2);
                 }
-              } catch (IOException e3) {
-                getSocketIoHandler().channelException(socketChannel, e3);
+              } catch (IOException exception3) {
                 var logger = buildgen("Failed accepting connection: ");
                 if (Objects.nonNull(socketChannel.socket())) {
                   logger.append(socketChannel.socket().getInetAddress().getHostAddress());
                 }
-
-                error(e3, logger);
+                if (isErrorEnabled()) {
+                  error(exception3, logger);
+                }
+                getSocketIoHandler().channelException(socketChannel, exception3);
               }
             }
           }
@@ -338,8 +367,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   }
 
   @Override
-  public void setSocketConfigs(List<SocketConfig> socketConfigs) {
-    this.socketConfigs = socketConfigs;
+  public void setSocketConfig(SocketConfiguration socketConfiguration) {
+    this.socketConfiguration = socketConfiguration;
   }
 
   @Override
@@ -349,7 +378,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onInitialized() {
-    initializeSockets();
+    initializeSocketChannel();
   }
 
   @Override
@@ -363,8 +392,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
       if (isActivated()) {
         try {
           acceptableLoop();
-        } catch (IOException e) {
-          error(e, e.getMessage());
+        } catch (Throwable cause) {
+          if (isErrorEnabled()) {
+            error(cause);
+          }
         }
       }
     }

@@ -24,15 +24,13 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.define;
 
-import com.tenio.core.handler.event.EventAttachConnectionRequestValidation;
-import com.tenio.core.handler.event.EventAttachedConnectionResult;
+import com.tenio.core.bootstrap.annotation.Asynchronous;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
+import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.handler.event.EventDisconnectConnection;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
 import com.tenio.core.handler.event.EventFetchedCcuInfo;
-import com.tenio.core.handler.event.EventHttpRequestHandle;
-import com.tenio.core.handler.event.EventHttpRequestValidation;
 import com.tenio.core.handler.event.EventPlayerAfterLeftRoom;
 import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
@@ -52,6 +50,7 @@ import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
 import com.tenio.core.handler.event.EventSystemMonitoring;
 import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
+import com.tenio.core.network.zero.engine.implement.ZeroReaderImpl;
 
 /**
  * All supported events could be emitted on the server.
@@ -73,12 +72,9 @@ public enum ServerEvent {
    */
   WEBSOCKET_CONNECTION_REFUSED,
   /**
-   * When a new session created in the management list.
-   */
-  SESSION_CREATED,
-  /**
    * When a new session requests to connect to the server.
    */
+  @Asynchronous
   SESSION_REQUEST_CONNECTION,
   /**
    * When there is any issue occurs to a session.
@@ -86,24 +82,31 @@ public enum ServerEvent {
   SESSION_OCCURRED_EXCEPTION,
   /**
    * When a session is going to disconnect to the server.
-   *
-   * @see EventDisconnectConnection
    */
   SESSION_WILL_BE_CLOSED,
   /**
    * When a message from client side sent to a session.
    */
+  @Asynchronous
   SESSION_READ_MESSAGE,
   /**
    * When a message sent to a session.
    *
    * @see EventWriteMessageToConnection
    */
+  @Asynchronous
   SESSION_WRITE_MESSAGE,
   /**
-   * When a message sent to the sever from client side via datagram channel.
+   * When a message sent to the sever from client side via datagram channel at the first time,
+   * this event is triggered. The system will check if the client's datagram channel was already
+   * registered or not to decide which event should be emitted.
+   * The implementation can be found in {@link ZeroReaderImpl#getDatagramIoHandler()}, and it has
+   * {@code channelRead} or {@code sessionRead} for separated purposes.
+   *
+   * @see ZeroReaderImpl
    */
-  DATAGRAM_CHANNEL_READ_MESSAGE,
+  @Asynchronous
+  DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME,
   /**
    * When the server finished initialization and is ready.
    *
@@ -195,23 +198,17 @@ public enum ServerEvent {
    */
   DISCONNECT_PLAYER,
   /**
-   * When a connection is going to disconnect from the server.
+   * When the server validates a UDP channel accessing request from a player.
    *
-   * @see EventDisconnectConnection
+   * @see EventAccessDatagramChannelRequestValidation
    */
-  DISCONNECT_CONNECTION,
+  ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION,
   /**
-   * When the server validates a UDP attaching request from a player.
+   * When the server responds a UDP channel accessing request from a player.
    *
-   * @see EventAttachConnectionRequestValidation
+   * @see EventAccessDatagramChannelRequestValidationResult
    */
-  ATTACH_CONNECTION_REQUEST_VALIDATION,
-  /**
-   * When the server responds a UDP attaching request from a player.
-   *
-   * @see EventAttachedConnectionResult
-   */
-  ATTACHED_CONNECTION_RESULT,
+  ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
   /**
    * When the server provides information regarding CCU.
    *
@@ -230,18 +227,6 @@ public enum ServerEvent {
    * @see EventSystemMonitoring
    */
   SYSTEM_MONITORING,
-  /**
-   * When the server validates an HTTP request from a player.
-   *
-   * @see EventHttpRequestValidation
-   */
-  HTTP_REQUEST_VALIDATION,
-  /**
-   * When the server handles an HTTP request from a player.
-   *
-   * @see EventHttpRequestHandle
-   */
-  HTTP_REQUEST_HANDLE,
   /**
    * When there is any exception occurs on the server.
    *

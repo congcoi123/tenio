@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
@@ -41,7 +41,7 @@ public interface EventConnectionEstablishedResult {
    *
    * @param session when the first request from client side passes the filter process and get on
    *                the server, then an instance of {@link Session} is created.
-   * @param message the {@link ServerMessage} sent by client side. The information it carries is
+   * @param message the {@link DataCollection} sent by client side. The information it carries is
    *                used to decide the following actions. In case the connection does not fulfill
    *                any condition, then the session should be closed manually, otherwise, let the
    *                client login the server and becomes a player.
@@ -53,5 +53,5 @@ public interface EventConnectionEstablishedResult {
    * @see Response#setRecipientSession(Session)
    * @see Session#close()
    */
-  void handle(Session session, ServerMessage message, ConnectionEstablishedResult result);
+  void handle(Session session, DataCollection message, ConnectionEstablishedResult result);
 }

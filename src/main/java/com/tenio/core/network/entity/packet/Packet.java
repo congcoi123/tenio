@@ -180,6 +180,23 @@ public interface Packet {
   boolean isFragmented();
 
   /**
+   * Determines whether the packet is the last one or not. In case this is the last sent packet,
+   * it will close the connection.
+   *
+   * @return {@code true} if the packet is the last sent one, otherwise returns {@code false}
+   * @since 0.5.0
+   */
+  boolean isMarkedAsLast();
+
+  /**
+   * Marks this packet as the last one. After sending it, the session will be closed.
+   *
+   * @param markedAsLast determines if the packet is the last one or not
+   * @since 0.5.0
+   */
+  void setMarkedAsLast(boolean markedAsLast);
+
+  /**
    * Retrieves the Packet's clone instance.
    *
    * @return the {@link Packet}'s clone instance

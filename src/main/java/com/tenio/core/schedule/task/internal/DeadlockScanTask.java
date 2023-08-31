@@ -24,9 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.internal;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -39,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  * To detect deadlock in period time. You can configure this time in your own
  * configurations, see {@link CoreConfiguration}
  */
-public final class DeadlockScanTask extends AbstractTask {
+public final class DeadlockScanTask extends AbstractSystemTask {
 
   private final ThreadMXBean threadMxBean;
 
@@ -49,17 +50,35 @@ public final class DeadlockScanTask extends AbstractTask {
     threadMxBean = ManagementFactory.getThreadMXBean();
   }
 
+  /**
+   * Creates a new task instance.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link DeadlockScanTask}
+   */
   public static DeadlockScanTask newInstance(EventManager eventManager) {
     return new DeadlockScanTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-        this::checkForDeadlockedThreads, 0, interval, TimeUnit.SECONDS);
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("deadlock-scan-task-%d").build();
+    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+        () -> {
+          var worker = new Thread(this::checkForDeadlockedThreads);
+          worker.setDaemon(true);
+          worker.setName("deadlock-scan-worker");
+          worker.start();
+        },
+        initialDelay, interval, TimeUnit.SECONDS);
   }
 
   private void checkForDeadlockedThreads() {
+    if (!isInfoEnabled()) {
+      return;
+    }
+
     long[] threadIds = findDeadlockedThreads();
 
     if (Objects.nonNull(threadIds) && threadIds.length > 0) {
@@ -82,8 +101,10 @@ public final class DeadlockScanTask extends AbstractTask {
 
         try {
           threads[i] = findMatchingThread(threadInfo);
-        } catch (IllegalStateException e) {
-          error(e);
+        } catch (IllegalStateException exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
 

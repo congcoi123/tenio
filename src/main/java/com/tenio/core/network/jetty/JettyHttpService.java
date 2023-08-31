@@ -24,26 +24,20 @@ THE SOFTWARE.
 
 package com.tenio.core.network.jetty;
 
-import com.tenio.core.configuration.constant.CoreConstant;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.exception.DuplicatedUriAndMethodException;
-import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.manager.AbstractManager;
-import com.tenio.core.network.define.RestMethod;
-import com.tenio.core.network.define.data.PathConfig;
-import com.tenio.core.network.jetty.servlet.PingServlet;
-import com.tenio.core.network.jetty.servlet.ServletManager;
 import com.tenio.core.service.Service;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
  * This class provides methods for creating HTTP service.
@@ -52,14 +46,16 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
   private Server server;
   private ExecutorService executorService;
+  private int threadPoolSize;
   private int port;
-  private List<PathConfig> pathConfigs;
-  private boolean initialized;
+  private Map<String, HttpServlet> servletMap;
+  private volatile boolean initialized;
+  private boolean stopping;
 
   private JettyHttpService(EventManager eventManager) {
     super(eventManager);
-
     initialized = false;
+    stopping = false;
   }
 
   /**
@@ -72,45 +68,22 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     return new JettyHttpService(eventManager);
   }
 
-  private void setup() throws DuplicatedUriAndMethodException {
-    // Collect the same URI path for one servlet
-    Map<String, List<PathConfig>> servlets = new HashMap<>();
-    for (var path : pathConfigs) {
-      if (!servlets.containsKey(path.getUri())) {
-        var servlet = new ArrayList<PathConfig>();
-        servlet.add(path);
-        servlets.put(path.getUri(), servlet);
-      } else {
-        servlets.get(path.getUri()).add(path);
-      }
-    }
-
-    for (var entry : servlets.entrySet()) {
-      if (isUriHasDuplicatedMethod(RestMethod.POST, entry.getValue())) {
-        throw new DuplicatedUriAndMethodException(RestMethod.POST, entry.getValue());
-      }
-      if (isUriHasDuplicatedMethod(RestMethod.PUT, entry.getValue())) {
-        throw new DuplicatedUriAndMethodException(RestMethod.PUT, entry.getValue());
-      }
-      if (isUriHasDuplicatedMethod(RestMethod.GET, entry.getValue())) {
-        throw new DuplicatedUriAndMethodException(RestMethod.GET, entry.getValue());
-      }
-      if (isUriHasDuplicatedMethod(RestMethod.DELETE, entry.getValue())) {
-        throw new DuplicatedUriAndMethodException(RestMethod.DELETE, entry.getValue());
-      }
-    }
-
+  private void setup() {
     // Create a Jetty server
-    server = new Server(port);
+    var threadPool = new QueuedThreadPool(threadPoolSize, 8);
+    threadPool.setName(getName());
+    threadPool.setDaemon(true);
+    server = new Server(threadPool);
+    var connector = new ServerConnector(server);
+    connector.setPort(port);
+    server.addConnector(connector);
 
-    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+    var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     context.setContextPath("/");
 
     // Configuration
-    context.addServlet(new ServletHolder(new PingServlet()), CoreConstant.PING_PATH);
-    servlets.forEach(
-        (uri, list) -> context.addServlet(new ServletHolder(new ServletManager(eventManager, list)),
-            uri));
+    servletMap.forEach(
+        (uri, servlet) -> context.addServlet(new ServletHolder(servlet), "/" + uri));
 
     server.setHandler(context);
   }
@@ -118,31 +91,25 @@ public final class JettyHttpService extends AbstractManager implements Service, 
   @Override
   public void run() {
     try {
-      info("START SERVICE", buildgen(getName(), " (", 1, ")"));
-
-      info("Http Info",
-          buildgen("Started at port: ", port, ", Configuration: ", pathConfigs.toString()));
+      if (isInfoEnabled()) {
+        info("START SERVICE", buildgen(getName(), " (", 1, ")"));
+        info("Http Info",
+            buildgen("Started at port: ", port, ", Endpoints: ", servletMap.keySet().toString()));
+      }
 
       server.start();
       server.join();
-    } catch (Exception e) {
-      error(e);
+    } catch (Throwable cause) {
+      if (isErrorEnabled()) {
+        error(cause);
+      }
     }
   }
 
-  private boolean isUriHasDuplicatedMethod(RestMethod method, List<PathConfig> pathConfigs) {
-    return
-        pathConfigs.stream().filter(pathConfig -> pathConfig.getMethod().equals(method))
-            .count() > 1;
-  }
 
   @Override
   public void initialize() {
-    try {
-      setup();
-    } catch (DuplicatedUriAndMethodException e) {
-      throw new ServiceRuntimeException(e.getMessage());
-    }
+    setup();
     initialized = true;
   }
 
@@ -152,15 +119,19 @@ public final class JettyHttpService extends AbstractManager implements Service, 
       return;
     }
 
-    executorService = Executors.newSingleThreadExecutor();
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("jetty-http-management-%d").build();
+    executorService = Executors.newSingleThreadExecutor(threadFactory);
     executorService.execute(this);
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
         try {
           shutdown();
-        } catch (Exception e) {
-          error(e);
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
     }));
@@ -172,21 +143,24 @@ public final class JettyHttpService extends AbstractManager implements Service, 
       return;
     }
 
+    if (stopping) {
+      return;
+    }
+
+    stopping = true;
+
     try {
       server.stop();
       executorService.shutdownNow();
 
-      info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
-      destroy();
-      info("DESTROYED SERVICE", buildgen(getName(), " (", 1, ")"));
-    } catch (Exception e) {
-      error(e);
+      if (isInfoEnabled()) {
+        info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
+      }
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
-  }
-
-  private void destroy() {
-    server = null;
-    executorService = null;
   }
 
   @Override
@@ -196,7 +170,7 @@ public final class JettyHttpService extends AbstractManager implements Service, 
 
   @Override
   public String getName() {
-    return "jetty-http";
+    return "jetty-http-worker";
   }
 
   @Override
@@ -204,11 +178,30 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Sets the thread pool size.
+   *
+   * @param threadPoolSize thread pool size value
+   */
+  public void setThreadPoolSize(int threadPoolSize) {
+    this.threadPoolSize = threadPoolSize;
+  }
+
+  /**
+   * Sets the port number.
+   *
+   * @param port the port number
+   */
   public void setPort(int port) {
     this.port = port;
   }
 
-  public void setPathConfigs(List<PathConfig> pathConfigs) {
-    this.pathConfigs = pathConfigs;
+  /**
+   * Sets the servlet configuration.
+   *
+   * @param servletMap a {@link Map} of the servlet configuration map
+   */
+  public void setServletMap(Map<String, HttpServlet> servletMap) {
+    this.servletMap = servletMap;
   }
 }

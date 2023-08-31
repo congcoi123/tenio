@@ -34,9 +34,9 @@ public enum PlayerLoggedInResult {
    */
   SUCCESS,
   /**
-   * The player fails to log in the server cause its session can not be found.
+   * The player fails to log in the server because of any exception.
    */
-  SESSION_NOT_FOUND,
+  EXCEPTION,
   /**
    * The player fails to log in the server because it is already in. It should throw an exception.
    */

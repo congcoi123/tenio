@@ -31,7 +31,7 @@ import com.tenio.core.entity.define.result.PlayerLoggedInResult;
  * Returns the result when a player tried to log in the server.
  */
 @FunctionalInterface
-public interface EventPlayerLoggedinResult {
+public interface EventPlayerLoggedinResult<P extends Player> {
 
   /**
    * When a player tried to log in the server.
@@ -41,5 +41,5 @@ public interface EventPlayerLoggedinResult {
    *               considered as it joined the server when the result equals to success
    * @see PlayerLoggedInResult#SUCCESS
    */
-  void handle(Player player, PlayerLoggedInResult result);
+  void handle(P player, PlayerLoggedInResult result);
 }

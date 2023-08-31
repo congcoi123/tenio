@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.netty;
 
 import com.tenio.common.data.DataType;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -109,9 +109,9 @@ public interface NettyWebSocketService extends Service {
   /**
    * Declares a socket configurations for the WebSocket.
    *
-   * @param socketConfig a instance of {@link SocketConfig}
+   * @param socketConfiguration a instance of {@link SocketConfiguration}
    */
-  void setWebSocketConfig(SocketConfig socketConfig);
+  void setWebSocketConfig(SocketConfiguration socketConfiguration);
 
   /**
    * Determines whether the WebSocket is able to use the SSL.

@@ -74,8 +74,8 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
           data = processedPacket.getData();
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception exception) {
+      exception.printStackTrace();
       readState = PacketReadState.WAIT_NEW_PACKET;
     }
 
@@ -228,7 +228,7 @@ public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
       }
 
       // now the packet data is completely collected, we can do some kind of
-      // uncompression or decryption
+      // decompression or decryption
       // check if data needs to be uncompressed
       if (pendingPacket.getPacketHeader().isCompressed()) {
         byte[] compressedData = dataBuffer.array();

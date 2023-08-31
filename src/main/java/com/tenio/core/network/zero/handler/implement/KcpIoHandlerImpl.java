@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.handler.KcpIoHandler;
@@ -42,15 +42,18 @@ public final class KcpIoHandlerImpl extends AbstractIoHandler implements KcpIoHa
     super(eventManager);
   }
 
+  /**
+   * Creates a new instance of KCP handler.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link KcpIoHandler}
+   */
   public static KcpIoHandlerImpl newInstance(EventManager eventManager) {
     return new KcpIoHandlerImpl(eventManager);
   }
 
   @Override
-  public void sessionRead(Session session, byte[] binary) {
-    var data = DataUtility.binaryToCollection(dataType, binary);
-    var message = ServerMessage.newInstance().setData(data);
-
+  public void sessionRead(Session session, DataCollection message) {
     eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
   }
 
@@ -60,12 +63,21 @@ public final class KcpIoHandlerImpl extends AbstractIoHandler implements KcpIoHa
   }
 
   @Override
+  public DataType getDataType() {
+    return dataType;
+  }
+
+  @Override
   public void channelActiveIn(Session session) {
-    debug("KCP CHANNEL", "Activated", session.getUkcp());
+    if (isDebugEnabled()) {
+      debug("KCP CHANNEL", "Activated ", session.getUkcp());
+    }
   }
 
   @Override
   public void channelInactiveIn(Session session) {
-    debug("KCP CHANNEL", "Inactivated", session.getUkcp());
+    if (isDebugEnabled()) {
+      debug("KCP CHANNEL", "Inactivated ", session.getUkcp());
+    }
   }
 }

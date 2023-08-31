@@ -27,21 +27,24 @@ package com.tenio.core.handler.event;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
+import java.util.Optional;
 
 /**
  * The event occurs before a player leave its current room.
  */
 @FunctionalInterface
-public interface EventPlayerBeforeLeaveRoom {
+public interface EventPlayerBeforeLeaveRoom<P extends Player, R extends Room> {
 
   /**
    * When a player is going to leave its current room.
    *
-   * @param player the leaving {@link Player}
-   * @param room   the {@link Room} which the player is going to leave out
-   * @param mode   the leaving {@link PlayerLeaveRoomMode} applied for the player when it leaves
-   *               the room
+   * @param player       the leaving {@link Player}
+   * @param optionalRoom the {@link Room} which the player is going to leave out, this object can be
+   *                     {@code null} due to auto removing processes
+   * @param mode         the leaving {@link PlayerLeaveRoomMode} applied for the player when it leaves
+   *                     the room
    * @see EventPlayerAfterLeftRoom
+   * @see Optional
    */
-  void handle(Player player, Room room, PlayerLeaveRoomMode mode);
+  void handle(P player, Optional<R> optionalRoom, PlayerLeaveRoomMode mode);
 }

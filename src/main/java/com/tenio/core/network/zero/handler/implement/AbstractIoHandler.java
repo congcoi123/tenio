@@ -48,6 +48,11 @@ public abstract class AbstractIoHandler extends AbstractManager {
    */
   protected DataType dataType;
 
+  /**
+   * Constructor.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   */
   protected AbstractIoHandler(EventManager eventManager) {
     super(eventManager);
   }

@@ -33,7 +33,7 @@ import com.tenio.core.network.entity.session.Session;
  * Returns the result when a player tried to reconnect to the server.
  */
 @FunctionalInterface
-public interface EventPlayerReconnectedResult {
+public interface EventPlayerReconnectedResult<P extends Player> {
 
   /**
    * When a player tried to reconnect to the server. The situation happens if the player gets in
@@ -48,5 +48,5 @@ public interface EventPlayerReconnectedResult {
    * @see CoreConfigurationType#PROP_MAX_PLAYER_IDLE_TIME
    * @see EventPlayerReconnectRequestHandle
    */
-  void handle(Player player, Session session, PlayerReconnectedResult result);
+  void handle(P player, Session session, PlayerReconnectedResult result);
 }

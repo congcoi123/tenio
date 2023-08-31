@@ -27,7 +27,7 @@ package com.tenio.core.network.zero;
 import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -48,7 +48,6 @@ import com.tenio.core.network.zero.handler.DatagramIoHandler;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
 import com.tenio.core.network.zero.handler.implement.DatagramIoHandlerImpl;
 import com.tenio.core.network.zero.handler.implement.SocketIoHandlerImpl;
-import java.util.List;
 
 /**
  * The implementation for the socket service manager.
@@ -57,12 +56,12 @@ import java.util.List;
  */
 public final class ZeroSocketServiceImpl extends AbstractManager implements ZeroSocketService {
 
-  private ZeroAcceptor acceptorEngine;
-  private ZeroReader readerEngine;
-  private ZeroWriter writerEngine;
+  private final ZeroAcceptor acceptorEngine;
+  private final ZeroReader readerEngine;
+  private final ZeroWriter writerEngine;
 
-  private DatagramIoHandler datagramIoHandler;
-  private SocketIoHandler socketIoHandler;
+  private final DatagramIoHandler datagramIoHandler;
+  private final SocketIoHandler socketIoHandler;
 
   private boolean initialized;
 
@@ -79,6 +78,12 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
     initialized = false;
   }
 
+  /**
+   * Creates a new instance of the socket service.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link ZeroSocketService}
+   */
   public static ZeroSocketService newInstance(EventManager eventManager) {
     return new ZeroSocketServiceImpl(eventManager);
   }
@@ -139,12 +144,6 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   }
 
   private void destroy() {
-    datagramIoHandler = null;
-    socketIoHandler = null;
-
-    acceptorEngine = null;
-    readerEngine = null;
-    writerEngine = null;
   }
 
   @Override
@@ -236,8 +235,8 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   }
 
   @Override
-  public void setSocketConfigs(List<SocketConfig> socketConfigs) {
-    acceptorEngine.setSocketConfigs(socketConfigs);
+  public void setSocketConfig(SocketConfiguration socketConfiguration) {
+    acceptorEngine.setSocketConfig(socketConfiguration);
   }
 
   @Override
@@ -254,6 +253,7 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   public void setDataType(DataType dataType) {
     datagramIoHandler.setDataType(dataType);
     socketIoHandler.setDataType(dataType);
+    readerEngine.setDataType(dataType);
   }
 
   @Override

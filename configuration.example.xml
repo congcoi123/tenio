@@ -29,6 +29,7 @@
 		<Sockets>
 			<Port name="socket" type="tcp">8032</Port>
 			<Port name="websocket" type="websocket">8033</Port>
+			<Port name="http" type="http">9999</Port>
 		</Sockets>
 		<Properties>
 			<Property name="websocket-using-ssl">false</Property>
@@ -42,18 +43,6 @@
 			<Property name="max-connections-per-ip">10</Property>
 			<Property name="enabled-kcp">false</Property>
 		</Properties>
-		<Http>
-			<Port name="main" value="9999">
-				<Path name="get" desc="retrieve a value" version="1"
-					method="get">/retrieve/*</Path>
-				<Path name="add" desc="add a new value" version="1"
-					method="post">/add/*</Path>
-				<Path name="change" desc="change a current value" version="1"
-					method="put">/change/*</Path>
-				<Path name="delete" desc="delete a existing value" version="1"
-					method="delete">/delete/*</Path>
-			</Port>
-		</Http>
 	</Network>
 
 	<Configuration>
@@ -63,22 +52,24 @@
 			<Worker name="socket-writer">2</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
+			<!-- The minimum number of threads to keep alive in the thread pool is 8 -->
+			<Worker name="http-worker">8</Worker>
 			<Worker name="internal-processor">2</Worker>
 			<Worker name="udp-worker">3</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 
 				room -->
-			<Task name="removed-room-scan-interval">30</Task>	<!-- Unit: Seconds -->
+			<Task name="removed-room-scan-interval">30</Task>		<!-- Unit: Seconds -->
 			<!-- The period checking player time out in seconds -->
 			<Task name="disconnected-player-scan-interval">45</Task>		<!-- Unit: Seconds -->
 			<!-- The period checking CCU in seconds -->
-			<Task name="ccu-scan-interval">60</Task>			<!-- Unit: Seconds -->
+			<Task name="ccu-scan-interval">60</Task>				<!-- Unit: Seconds -->
 			<!-- Schedule detecting deadlocked threads -->
 			<Task name="deadlock-scan-interval">60</Task>			<!-- Unit: Seconds -->
 			<!-- The delay between two computations of performances for channels or 
 				0 if no statics are to be computed -->
-			<Task name="traffic-counter-interval">60</Task>	<!-- Unit: Seconds -->
+			<Task name="traffic-counter-interval">60</Task>			<!-- Unit: Seconds -->
 			<!-- The period monitoring system -->
 			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
@@ -96,8 +87,13 @@
 			<!-- The maximum number of rooms which game can handle -->
 			<Property name="max-number-rooms">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 
-				getting message from client -->
-			<Property name="max-player-idle-time">180</Property>		<!-- Unit: Seconds -->
+				 getting message from client.
+				 Set it to -1 to ignore the checking -->
+			<Property name="max-player-idle-time">180</Property>					<!-- Unit: Seconds -->
+			<!-- The max IDLE time in seconds which server can wait from the last
+				 getting message from client (in case the player enables the never deported flag).
+				 Set it to -1 to ignore the checking -->
+			<Property name="max-player-idle-time-never-deported">86400</Property>	<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

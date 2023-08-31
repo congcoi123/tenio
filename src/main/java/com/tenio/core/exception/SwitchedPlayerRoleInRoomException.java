@@ -25,14 +25,19 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
+import java.io.Serial;
 
 /**
  * When a participant tries to change its role to be a spectator and vice versa.
  */
 public final class SwitchedPlayerRoleInRoomException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 8858056991799548907L;
 
+  /**
+   * The result of a player switching role in his room.
+   */
   private final SwitchedPlayerRoleInRoomResult result;
 
   /**

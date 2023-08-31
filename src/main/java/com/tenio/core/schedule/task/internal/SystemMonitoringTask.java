@@ -24,11 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.internal;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.monitoring.system.SystemMonitoring;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * To retrieve the current system information in period time. You can configure
  * this time in your own configurations, see {@link CoreConfiguration}
  */
-public final class SystemMonitoringTask extends AbstractTask {
+public final class SystemMonitoringTask extends AbstractSystemTask {
 
   private final SystemMonitoring systemMonitoring;
 
@@ -47,16 +48,32 @@ public final class SystemMonitoringTask extends AbstractTask {
     systemMonitoring = SystemMonitoring.newInstance();
   }
 
+  /**
+   * Creates a new task instance.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link SystemMonitoringTask}
+   */
   public static SystemMonitoringTask newInstance(EventManager eventManager) {
     return new SystemMonitoringTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-        () -> eventManager.emit(ServerEvent.SYSTEM_MONITORING, systemMonitoring.getCpuUsage(),
-            systemMonitoring.getTotalMemory(), systemMonitoring.getUsedMemory(),
-            systemMonitoring.getFreeMemory(),
-            systemMonitoring.countRunningThreads()), 0, interval, TimeUnit.SECONDS);
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("system-monitoring-task-%d")
+            .build();
+    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+        () -> {
+          var worker = new Thread(
+              () -> eventManager.emit(ServerEvent.SYSTEM_MONITORING, systemMonitoring.getCpuUsage(),
+                  systemMonitoring.getTotalMemory(), systemMonitoring.getUsedMemory(),
+                  systemMonitoring.getFreeMemory(),
+                  systemMonitoring.countRunningThreads()));
+          worker.setDaemon(true);
+          worker.setName("system-monitoring-worker");
+          worker.start();
+        },
+        initialDelay, interval, TimeUnit.SECONDS);
   }
 }

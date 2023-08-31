@@ -54,8 +54,8 @@ class EventManagerTest {
     var player = PlayerImpl.newInstance("kong");
     try {
       playerManager.addPlayer(player);
-    } catch (AddedDuplicatedPlayerException e) {
-      e.printStackTrace();
+    } catch (AddedDuplicatedPlayerException exception) {
+      exception.printStackTrace();
     }
 
     // Handle events

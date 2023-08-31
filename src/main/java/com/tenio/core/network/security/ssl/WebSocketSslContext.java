@@ -69,11 +69,15 @@ public final class WebSocketSslContext extends SystemLogger {
 
         serverContext = SSLContext.getInstance(DEFAULT_PROTOCOL);
         serverContext.init(keyManagerFactory.getKeyManagers(), null, null);
-      } catch (Exception e) {
-        error(e);
+      } catch (Exception exception) {
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
-    } catch (Exception e) {
-      error(e);
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
   }
 

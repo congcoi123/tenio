@@ -31,10 +31,9 @@ import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.api.implement.ServerApiImpl;
 import com.tenio.core.bootstrap.BootstrapHandler;
-import com.tenio.core.command.CommandManager;
-import com.tenio.core.utility.CommandUtility;
+import com.tenio.core.command.client.ClientCommandManager;
+import com.tenio.core.command.system.SystemCommandManager;
 import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.configuration.constant.Trademark;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.configuration.setting.Setting;
@@ -43,11 +42,9 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.network.NetworkService;
 import com.tenio.core.network.NetworkServiceImpl;
-import com.tenio.core.network.define.data.HttpConfig;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -61,13 +58,13 @@ import com.tenio.core.schedule.ScheduleServiceImpl;
 import com.tenio.core.server.service.InternalProcessorService;
 import com.tenio.core.server.service.InternalProcessorServiceImpl;
 import com.tenio.core.server.setting.ConfigurationAssessment;
+import com.tenio.core.utility.CommandUtility;
 import java.io.IOError;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.concurrent.ThreadSafe;
-import org.apache.logging.log4j.util.Strings;
+import javax.servlet.http.HttpServlet;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
@@ -91,6 +88,8 @@ public final class ServerImpl extends SystemLogger implements Server {
   private final ScheduleService scheduleService;
   private final NetworkService networkService;
   private final ServerApi serverApi;
+  private ClientCommandManager clientCommandManager;
+  private Configuration configuration;
   private DataType dataType;
   private long startedTime;
   private String serverName;
@@ -101,13 +100,9 @@ public final class ServerImpl extends SystemLogger implements Server {
     playerManager = PlayerManagerImpl.newInstance(eventManager);
     udpChannelManager = UdpChannelManager.newInstance();
     networkService = NetworkServiceImpl.newInstance(eventManager);
-    internalProcessorService = InternalProcessorServiceImpl.newInstance(eventManager);
-    scheduleService = ScheduleServiceImpl.newInstance(eventManager);
     serverApi = ServerApiImpl.newInstance(this);
-
-    // print out the framework's preface
-    var trademark = String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
-    info("HAPPY CODING", trademark);
+    internalProcessorService = InternalProcessorServiceImpl.newInstance(eventManager, serverApi);
+    scheduleService = ScheduleServiceImpl.newInstance(eventManager);
   } // prevent creation manually
 
   /**
@@ -138,17 +133,20 @@ public final class ServerImpl extends SystemLogger implements Server {
     var configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
     configuration.load(file);
 
+    // Put the current configurations to the logger
+    if (isInfoEnabled()) {
+      info("CONFIGURATION", configuration.toString());
+    }
+
+    this.configuration = configuration;
+
     dataType =
         DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION));
     serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
-    // show system information
-    var systemInfo = new SystemInfo();
-    systemInfo.logSystemInfo();
-    systemInfo.logNetCardsInfo();
-    systemInfo.logDiskInfo();
-
-    info("SERVER", serverName, "Starting ...");
+    if (isInfoEnabled()) {
+      info("SERVER", serverName, "Starting ...");
+    }
 
     // subscribing for processes and handlers
     internalProcessorService.subscribe();
@@ -161,24 +159,28 @@ public final class ServerImpl extends SystemLogger implements Server {
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assessment.assess();
 
-    // Put the current configurations to the logger
-    info("CONFIGURATION", configuration.toString());
-
-    setupNetworkService(configuration);
+    setupClientCommands(bootstrapHandler.getClientCommandManager());
+    setupEntitiesManagementService(configuration);
+    setupNetworkService(configuration, bootstrapHandler.getServletMap());
     setupInternalProcessorService(configuration);
     setupScheduleService(configuration);
 
     initializeServices();
     startServices();
 
+    // it should wait for a while to let everything settles down
+    Thread.sleep(1000);
+
+    if (isInfoEnabled()) {
+      info("SERVER", serverName, "Started");
+    }
+
     // emit "server started" event
     eventManager.emit(ServerEvent.SERVER_INITIALIZATION, serverName, configuration);
 
-    info("SERVER", serverName, "Started");
-
     if (((Setting) configuration.get(CoreConfigurationType.SERVER_SETTING)).getCommand()
         .isEnabled()) {
-      startConsole(bootstrapHandler.getCommandManager());
+      startConsole(bootstrapHandler.getSystemCommandManager());
     }
   }
 
@@ -192,6 +194,16 @@ public final class ServerImpl extends SystemLogger implements Server {
     networkService.start();
     internalProcessorService.start();
     scheduleService.start();
+  }
+
+  private void setupClientCommands(ClientCommandManager clientCommandManager) {
+    this.clientCommandManager = clientCommandManager;
+  }
+
+  private void setupEntitiesManagementService(Configuration configuration) {
+    playerManager.setMaxIdleTimeInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
+    playerManager.setMaxIdleTimeNeverDeportedInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED));
+    roomManager.setMaxRooms(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_ROOMS));
   }
 
   private void setupScheduleService(Configuration configuration) {
@@ -221,7 +233,7 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   @SuppressWarnings("unchecked")
-  private void setupNetworkService(Configuration configuration)
+  private void setupNetworkService(Configuration configuration, Map<String, HttpServlet> servletMap)
       throws ClassNotFoundException, InstantiationException, IllegalAccessException,
       IllegalArgumentException,
       InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -232,10 +244,13 @@ public final class ServerImpl extends SystemLogger implements Server {
         (Class<? extends ConnectionFilter>) connectionFilterClazz,
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_MAX_CONNECTIONS_PER_IP));
 
-    final var httpConfig =
-        (List<HttpConfig>) configuration.get(CoreConfigurationType.NETWORK_HTTP_CONFIGS);
-    networkService.setHttpPort(!httpConfig.isEmpty() ? httpConfig.get(0).getPort() : 0);
-    networkService.setHttpPathConfigs(!httpConfig.isEmpty() ? httpConfig.get(0).getPaths() : null);
+    var httpConfiguration = configuration.get(CoreConfigurationType.NETWORK_HTTP);
+    networkService.setHttpConfiguration(
+        Objects.nonNull(httpConfiguration) ?
+            configuration.getInt(CoreConfigurationType.WORKER_HTTP_WORKER) : 0,
+        Objects.nonNull(httpConfiguration) ?
+            ((SocketConfiguration) httpConfiguration).port() : 0,
+        Objects.nonNull(httpConfiguration) ? servletMap : null);
 
     networkService.setSocketAcceptorServerAddress(
         configuration.getString(CoreConfigurationType.SERVER_ADDRESS));
@@ -250,8 +265,13 @@ public final class ServerImpl extends SystemLogger implements Server {
     networkService.setSocketAcceptorWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_ACCEPTOR));
 
-    networkService.setSocketConfigs(
-        (List<SocketConfig>) configuration.get(CoreConfigurationType.NETWORK_SOCKET_CONFIGS));
+
+    networkService.setSocketConfiguration(
+        (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_SOCKET)) ?
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_SOCKET) : null),
+        (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET)) ?
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) :
+            null));
 
     networkService.setSocketReaderBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
@@ -290,6 +310,8 @@ public final class ServerImpl extends SystemLogger implements Server {
 
     networkService.setSessionEnabledKcp(
         configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_ENABLED_KCP));
+    networkService.setSessionMaxIdleTimeInSeconds(
+        configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
 
     final var binaryPacketCompressorClazz = Class
         .forName(configuration.getString(CoreConfigurationType.CLASS_PACKET_COMPRESSOR).strip());
@@ -328,32 +350,33 @@ public final class ServerImpl extends SystemLogger implements Server {
         DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION)));
     internalProcessorService
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
+    internalProcessorService.setSessionManager(networkService.getSessionManager());
     internalProcessorService.setPlayerManager(playerManager);
     internalProcessorService
         .setMaxRequestQueueSize(
             configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
     internalProcessorService
         .setThreadPoolSize(configuration.getInt(CoreConfigurationType.WORKER_INTERNAL_PROCESSOR));
+    internalProcessorService.setEnabledUdp(configuration.getInt(CoreConfigurationType.WORKER_UDP_WORKER) > 0);
     internalProcessorService.setEnabledKcp(
-        configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_ENABLED_KCP
-        ));
+        configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_ENABLED_KCP));
     internalProcessorService.setKeepPlayerOnDisconnection(
-        !configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_ALLOW_CHANGE_SESSION));
+        configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION));
 
     internalProcessorService.setNetworkReaderStatistic(networkService.getNetworkReaderStatistic());
     internalProcessorService.setNetworkWriterStatistic(networkService.getNetworkWriterStatistic());
   }
 
-  private void startConsole(CommandManager commandManager) {
+  private void startConsole(SystemCommandManager systemCommandManager) {
     Terminal terminal = null;
     try {
       terminal = TerminalBuilder.builder().jna(true).build();
     } catch (Exception e) {
       try {
-        // fallback to a dumb jline terminal
+        // fallback to a dumb jLine terminal
         terminal = TerminalBuilder.builder().dumb(true).build();
-      } catch (Exception ignored) {
-        // when dumb is true, build() never throws
+      } catch (Exception exception) {
+        // when dumb is true, build() never throws, ignore it
       }
     }
     var consoleLineReader = LineReaderBuilder.builder().terminal(terminal).build();
@@ -381,7 +404,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 
       isLastInterrupted = false;
       try {
-        commandManager.invoke(input);
+        systemCommandManager.invoke(input);
       } catch (Exception exception) {
         CommandUtility.INSTANCE.showConsoleMessage("Exception > " + exception.getMessage());
       }
@@ -390,11 +413,17 @@ public final class ServerImpl extends SystemLogger implements Server {
 
   @Override
   public void shutdown() {
-    info("SERVER", serverName, "Stopping ...");
+    if (isInfoEnabled()) {
+      info("SERVER", serverName, "Stopping ...");
+    }
     // emit "server shutdown" event
     eventManager.emit(ServerEvent.SERVER_TEARDOWN, serverName);
     shutdownServices();
-    info("SERVER", serverName, "Stopped");
+    if (isInfoEnabled()) {
+      info("SERVER", serverName, "Stopped");
+    }
+    // real stop
+    Runtime.getRuntime().halt(0);
   }
 
   private void shutdownServices() {
@@ -406,6 +435,11 @@ public final class ServerImpl extends SystemLogger implements Server {
   @Override
   public ServerApi getApi() {
     return serverApi;
+  }
+
+  @Override
+  public ClientCommandManager getClientCommandManager() {
+    return clientCommandManager;
   }
 
   @Override
@@ -429,6 +463,11 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   @Override
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+
+  @Override
   public DataType getDataType() {
     return dataType;
   }
@@ -444,7 +483,7 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   @Override
-  public void write(Response response) {
-    networkService.write(response);
+  public void write(Response response, boolean markedAsLast) {
+    networkService.write(response, markedAsLast);
   }
 }

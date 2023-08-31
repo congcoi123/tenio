@@ -30,17 +30,9 @@ package com.tenio.core.entity.define.mode;
 public enum RoomRemoveMode {
 
   /**
-   * Condition: Room is removed in purpose.
-   */
-  DEFAULT,
-  /**
    * Condition: Room is empty.
    */
   WHEN_EMPTY,
-  /**
-   * Condition: Room is empty and its creator is gone.
-   */
-  WHEN_EMPTY_AND_CREATOR_IS_GONE,
   /**
    * Condition: Room is never removed.
    */

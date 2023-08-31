@@ -26,7 +26,9 @@ package com.tenio.core.entity;
 
 import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.schedule.task.internal.AutoDisconnectPlayerTask;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * An abstract player entity used on the server.
@@ -103,6 +105,123 @@ public interface Player {
    * @return a {@code long} milliseconds value
    */
   long getLastLoggedInTime();
+
+  /**
+   * Retrieves the last activity time of player.
+   *
+   * @return the last activity time in milliseconds ({@code long} value)
+   */
+  long getLastActivityTime();
+
+  /**
+   * Sets the last activity time for the player.
+   *
+   * @param timestamp the last activity time in milliseconds ({@code long} value)
+   */
+  void setLastActivityTime(long timestamp);
+
+  /**
+   * Retrieves the last time when the player receives the last byte of data.
+   *
+   * @return the last reading new data time in milliseconds ({@code long} value)
+   */
+  long getLastReadTime();
+
+  /**
+   * Sets the last time when the player receives the last byte of data.
+   *
+   * @param timestamp the last reading new data time in milliseconds ({@code long} value)
+   */
+  void setLastReadTime(long timestamp);
+
+  /**
+   * Retrieves the last time when player sends the last byte of data.
+   *
+   * @return the last writing data time in milliseconds ({@code long} value)
+   */
+  long getLastWriteTime();
+
+  /**
+   * Sets the last time when the player sends the last byte of data.
+   *
+   * @param timestamp the last writing data time in milliseconds ({@code long} value)
+   */
+  void setLastWriteTime(long timestamp);
+
+  /**
+   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @return the maximum time in seconds ({@code integer} value) which allows the player to
+   * get in IDLE state
+   */
+  int getMaxIdleTimeInSeconds();
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   */
+  void setMaxIdleTimeInSeconds(int seconds);
+
+  /**
+   * Determines whether the player got in IDLE state (Do not perform any action, such as reading
+   * or writing data).
+   *
+   * @return {@code true} if the player got in IDLE state, otherwise returns {@code false}
+   */
+  boolean isIdle();
+
+  /**
+   * Ensures that the {@link Player} is never deported from the server even it gets timeout.
+   *
+   * @return {@code true} if the player is never considered to be deported, otherwise returns
+   * {@code false}
+   * @see AutoDisconnectPlayerTask
+   * @since 0.5.0
+   */
+  boolean isNeverDeported();
+
+  /**
+   * Allows making a {@link Player} not to be deported from the server.
+   *
+   * @param flag sets it {@code true} to make the player not to be deported
+   * @see AutoDisconnectPlayerTask
+   * @since 0.5.0
+   */
+  void setNeverDeported(boolean flag);
+
+  /**
+   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data) in case of never deported selection.
+   *
+   * @return the maximum time in seconds ({@code integer} value) which allows the player to
+   * get in IDLE state
+   * @since 0.5.0
+   */
+  int getMaxIdleTimeNeverDeportedInSeconds();
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data) in case of never deported selection.
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   * @since 0.5.0
+   */
+  void setMaxIdleTimeNeverDeportedInSeconds(int seconds);
+
+  /**
+   * Determines whether the player got in IDLE state (Do not perform any action, such as reading
+   * or writing data) in case of never deported selection.
+   *
+   * @return {@code true} if the player got in IDLE state, otherwise returns {@code false}
+   * @see AutoDisconnectPlayerTask
+   * @since 0.5.0
+   */
+  boolean isIdleNeverDeported();
 
   /**
    * Retrieves the player's session.
@@ -213,7 +332,49 @@ public interface Player {
   void clearProperties();
 
   /**
+   * Observes all changes on the player.
+   *
+   * @param updateConsumer action when there is any change on player in {@link Field}
+   * @since 0.5.0
+   */
+  void onUpdateListener(Consumer<Field> updateConsumer);
+
+  /**
    * Wipes out all the player's information.
    */
   void clean();
+
+  /**
+   * All the support fields that can be triggered as events.
+   *
+   * @see Player#onUpdateListener(Consumer)
+   */
+  enum Field {
+    /**
+     * The player state.
+     */
+    STATE,
+    /**
+     * The player activation status.
+     */
+    ACTIVATION,
+    /**
+     * The player deportation status.
+     */
+    DEPORTATION,
+    /**
+     * The player role in his room.
+     *
+     * @see PlayerRoleInRoom
+     */
+    ROLE_IN_ROOM,
+    /**
+     * The player slot position in his room.
+     */
+    SLOT_IN_ROOM,
+    /**
+     * The player map of properties.
+     */
+    PROPERTY
+  }
 }

@@ -56,9 +56,21 @@ public enum ConnectionDisconnectMode {
    */
   BAN,
   /**
+   * When the connection is orphan and is cleaned up by schedule tasks.
+   *
+   * @since 0.5.0
+   */
+  ORPHAN,
+  /**
    * Disconnected by other reasons.
    */
-  UNKNOWN;
+  UNKNOWN,
+  /**
+   * There is another session will connect to the player, so this session must be closed.
+   *
+   * @since 0.5.0
+   */
+  RECONNECTION;
 
   @Override
   public String toString() {

@@ -24,10 +24,18 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.internal;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
+import com.tenio.core.server.ServerImpl;
+import java.util.Iterator;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * For a player which is in IDLE mode, that means for a long time without
@@ -35,19 +43,66 @@ import java.util.concurrent.ScheduledFuture;
  * will scan those IDLE players in period time and force them to log out. Those
  * players got a "timeout" error.
  */
-public final class AutoDisconnectPlayerTask extends AbstractTask {
+public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
+
+  private PlayerManager playerManager;
 
   private AutoDisconnectPlayerTask(EventManager eventManager) {
     super(eventManager);
   }
 
+  /**
+   * Creates a new task instance.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link AutoDisconnectPlayerTask}
+   */
   public static AutoDisconnectPlayerTask newInstance(EventManager eventManager) {
     return new AutoDisconnectPlayerTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    return null;
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-task-%d")
+            .build();
+    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+        () -> {
+          if (isDebugEnabled()) {
+            debug("AUTO DISCONNECT PLAYER",
+                "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
+          }
+          var worker = new Thread(() -> {
+            Iterator<Player> iterator = playerManager.getReadonlyPlayersList().listIterator();
+            while (iterator.hasNext()) {
+              Player player = iterator.next();
+              if (player.isNeverDeported()) {
+                if (player.isIdleNeverDeported()) {
+                  if (isDebugEnabled()) {
+                    debug("AUTO DISCONNECT PLAYER",
+                        player.getName(),
+                        " (never deported) is going to be forced to remove by the " +
+                            "cleaning task");
+                  }
+                  ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
+                      PlayerDisconnectMode.IDLE);
+                }
+              } else {
+                if (player.isIdle()) {
+                  if (isDebugEnabled()) {
+                    debug("AUTO DISCONNECT PLAYER",
+                        player.getName(), " is going to be forced to remove by the cleaning task");
+                  }
+                  ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
+                      PlayerDisconnectMode.IDLE);
+                }
+              }
+            }
+          });
+          worker.setDaemon(true);
+          worker.setName("auto-disconnect-player-worker");
+          worker.start();
+        }, initialDelay, interval, TimeUnit.SECONDS);
   }
 
   /**
@@ -56,5 +111,6 @@ public final class AutoDisconnectPlayerTask extends AbstractTask {
    * @param playerManager the player manager
    */
   public void setPlayerManager(PlayerManager playerManager) {
+    this.playerManager = playerManager;
   }
 }

@@ -24,32 +24,43 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap.injector;
 
-import com.tenio.core.bootstrap.annotation.BeanFactory;
-import com.tenio.core.bootstrap.annotation.Setting;
-import com.tenio.core.exception.IllegalDefinedAccessControlException;
-import com.tenio.core.exception.IllegalReturnTypeException;
-import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
-import com.tenio.core.exception.NoImplementedClassFoundException;
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.ClassLoaderUtility;
+import com.tenio.common.utility.StringUtility;
 import com.tenio.core.bootstrap.annotation.Autowired;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.AutowiredQualifier;
 import com.tenio.core.bootstrap.annotation.Bean;
+import com.tenio.core.bootstrap.annotation.BeanFactory;
+import com.tenio.core.bootstrap.annotation.ClientCommand;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.bootstrap.annotation.RestController;
+import com.tenio.core.bootstrap.annotation.RestMapping;
+import com.tenio.core.bootstrap.annotation.Setting;
+import com.tenio.core.bootstrap.annotation.SystemCommand;
+import com.tenio.core.command.client.AbstractClientCommandHandler;
+import com.tenio.core.command.client.ClientCommandManager;
+import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.command.system.SystemCommandManager;
+import com.tenio.core.exception.DuplicatedBeanCreationException;
+import com.tenio.core.exception.IllegalDefinedAccessControlException;
+import com.tenio.core.exception.IllegalReturnTypeException;
+import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
+import com.tenio.core.exception.NoImplementedClassFoundException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+import javax.servlet.http.HttpServlet;
 import org.reflections.Reflections;
 
 /**
@@ -58,7 +69,7 @@ import org.reflections.Reflections;
  * @see ClassLoaderUtility
  */
 @ThreadSafe
-public final class Injector {
+public final class Injector extends SystemLogger {
 
   private static final Injector instance = new Injector();
 
@@ -67,7 +78,6 @@ public final class Injector {
    *
    * <p>This map is protected by the class instance to ensure thread-safe.
    */
-  @GuardedBy("this")
   private final Map<Class<?>, Class<?>> classesMap;
   /**
    * A map has keys are {@link #classesMap}'s key implemented classes and the value are keys'
@@ -75,16 +85,36 @@ public final class Injector {
    *
    * <p>This map is protected by the class instance to ensure thread-safe.
    */
-  @GuardedBy("this")
-  private final Map<Class<?>, Object> classBeansMap;
+  private final Map<BeanClass, Object> classBeansMap;
+  /**
+   * A set of classes that are created by {@link Bean} and {@link BeanFactory} annotations.
+   * This map is protected by the class instance to ensure thread-safe.
+   */
+  private final Set<Class<?>> manualClassesSet;
+  /**
+   * A map is using to initialize restful servlets.
+   */
+  private final Map<String, HttpServlet> servletBeansMap;
+  /**
+   * The object manages all supported system commands.
+   */
+  private final SystemCommandManager systemCommandManager;
+  /**
+   * The object manages all self-defined user commands.
+   */
+  private final ClientCommandManager clientCommandManager;
 
   private Injector() {
     if (Objects.nonNull(instance)) {
       throw new ExceptionInInitializerError("Could not re-create the class instance");
     }
 
-    classesMap = new HashMap<>();
-    classBeansMap = new HashMap<>();
+    classesMap = new ConcurrentHashMap<>();
+    manualClassesSet = ConcurrentHashMap.newKeySet();
+    classBeansMap = new ConcurrentHashMap<>();
+    servletBeansMap = new ConcurrentHashMap<>();
+    systemCommandManager = new SystemCommandManager();
+    clientCommandManager = new ClientCommandManager();
   }
 
   /**
@@ -103,23 +133,24 @@ public final class Injector {
    *                   class' packages
    * @param packages   a list of packages' names. It allows to define the scanning packages by
    *                   their names
-   * @throws InstantiationException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws ClassNotFoundException    it is caused by
-   *                                   {@link #getImplementedClass(Class, String, String)}
-   * @throws IllegalArgumentException  it is related to the illegal argument exception
-   * @throws InvocationTargetException it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoSuchMethodException     it is caused by
-   *                                   {@link Class#getDeclaredConstructor(Class[])}
-   * @throws SecurityException         it is related to the security exception
+   * @throws InstantiationException          it is caused by
+   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws IllegalAccessException          it is caused by
+   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws ClassNotFoundException          it is caused by
+   *                                         {@link #getImplementedClass(Class, String, Class)}
+   * @throws IllegalArgumentException        it is related to the illegal argument exception
+   * @throws InvocationTargetException       it is caused by
+   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws NoSuchMethodException           it is caused by
+   *                                         {@link Class#getDeclaredConstructor(Class[])}
+   * @throws SecurityException               it is related to the security exception
+   * @throws DuplicatedBeanCreationException when a same bean was created more than one time
    */
   public void scanPackages(Class<?> entryClass, String... packages)
       throws InstantiationException, IllegalAccessException, ClassNotFoundException,
       IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
-      SecurityException {
+      SecurityException, DuplicatedBeanCreationException {
 
     // clean first
     reset();
@@ -146,7 +177,8 @@ public final class Injector {
       reflections.merge(reflectionPackage);
     }
 
-    // the implemented class is defined with the "Component" annotation declared inside it
+    // Step 1: We collect classes
+    // The implemented class is defined with the "Component" annotation declared inside it
     // in case you need more annotations with the same effect with this one, you should put them
     // in here
     var listAnnotations = new Class[] {
@@ -154,33 +186,12 @@ public final class Injector {
         EventHandler.class,
         Setting.class
     };
-    var implementedClasses = new HashSet<Class<?>>();
+    var implementedComponentClasses = new HashSet<Class<?>>();
     Arrays.stream(listAnnotations).forEach(
-        annotation -> implementedClasses.addAll(reflections.getTypesAnnotatedWith(annotation)));
-
-    // retrieves all classes those are declared by the @Bean annotation
-    var configurationClasses = reflections.getTypesAnnotatedWith(BeanFactory.class);
-    for (var configurationClass : configurationClasses) {
-      for (var method : configurationClass.getMethods()) {
-        if (method.isAnnotationPresent(Bean.class)) {
-          if (Modifier.isPublic(method.getModifiers())) {
-            var clazz = method.getReturnType();
-            if (clazz.isPrimitive()) {
-              throw new IllegalReturnTypeException();
-            } else if (clazz.equals(Void.TYPE)) {
-              throw new IllegalReturnTypeException();
-            } else {
-              implementedClasses.add(clazz);
-            }
-          } else {
-            throw new IllegalDefinedAccessControlException();
-          }
-        }
-      }
-    }
-
+        annotation -> implementedComponentClasses.addAll(
+            reflections.getTypesAnnotatedWith(annotation)));
     // scans all interfaces with their implemented classes
-    for (var implementedClass : implementedClasses) {
+    for (var implementedClass : implementedComponentClasses) {
       var classInterfaces = implementedClass.getInterfaces();
       // in case the class has not implemented any interfaces, it still can be created, so put
       // the class into the map
@@ -196,20 +207,59 @@ public final class Injector {
       }
     }
 
+    // Retrieves all classes those are declared by the @Bean annotation
+    var implementedBeanClasses = new HashSet<Class<?>>();
+    var beanFactoryClasses = reflections.getTypesAnnotatedWith(BeanFactory.class);
+    for (var configurationClass : beanFactoryClasses) {
+      for (var method : configurationClass.getMethods()) {
+        if (method.isAnnotationPresent(Bean.class)) {
+          if (Modifier.isPublic(method.getModifiers())) {
+            var clazz = method.getReturnType();
+            if (clazz.isPrimitive()) {
+              throw new IllegalReturnTypeException();
+            } else if (clazz.equals(Void.TYPE)) {
+              throw new IllegalReturnTypeException();
+            } else {
+              manualClassesSet.add(clazz);
+              implementedBeanClasses.add(clazz);
+            }
+          } else {
+            throw new IllegalDefinedAccessControlException();
+          }
+        }
+      }
+    }
+    // append all classes
+    for (var implementedClass : implementedBeanClasses) {
+      classesMap.put(implementedClass, implementedClass);
+    }
+
+    // Add all classes annotated by @RestController
+    var implementedRestClasses =
+        new HashSet<>(reflections.getTypesAnnotatedWith(RestController.class));
+    // append all classes
+    for (var implementedClass : implementedRestClasses) {
+      classesMap.put(implementedClass, implementedClass);
+    }
+
+    // Step 2: We create instances
     // create beans (class instances) based on annotations
     for (var clazz : classes) {
       // in case you need to create a bean with another annotation, put it in here
       // but notices to put it in "implementedClasses" first
+      // create beans automatically
       if (isClassAnnotated(clazz, listAnnotations)) {
+        var beanClass = new BeanClass(clazz, "");
+        if (classBeansMap.containsKey(beanClass)) {
+          throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+        }
         var bean = clazz.getDeclaredConstructor().newInstance();
-        classBeansMap.put(clazz, bean);
-        // recursively create field instance for this class instance
-        autowire(clazz, bean);
-      }
+        classBeansMap.put(beanClass, bean);
 
-      // fetches all bean instances and save them to classes map
-      if (clazz.isAnnotationPresent(BeanFactory.class)) {
-        var configurationBean = clazz.getDeclaredConstructor().newInstance();
+        // create beans manually
+      } else if (clazz.isAnnotationPresent(BeanFactory.class)) {
+        // fetches all bean instances and save them to classes map
+        var beanFactoryInstance = clazz.getDeclaredConstructor().newInstance();
         for (var method : clazz.getMethods()) {
           if (method.isAnnotationPresent(Bean.class)) {
             if (Modifier.isPublic(method.getModifiers())) {
@@ -219,18 +269,132 @@ public final class Injector {
               } else if (methodClazz.equals(Void.TYPE)) {
                 throw new IllegalReturnTypeException();
               } else {
-                var bean = method.invoke(configurationBean);
-                classBeansMap.put(methodClazz, bean);
-                // recursively create field instance for this class instance
-                autowire(methodClazz, bean);
+                var beanClass =
+                    new BeanClass(methodClazz, method.getAnnotation(Bean.class).value());
+                if (classBeansMap.containsKey(beanClass)) {
+                  throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+                }
+                var bean = method.invoke(beanFactoryInstance);
+                classBeansMap.put(beanClass, bean);
               }
             } else {
               throw new IllegalDefinedAccessControlException();
             }
           }
         }
+      } else if (clazz.isAnnotationPresent(RestController.class)) {
+        // fetches all bean instances and save them to rest controller map
+        var restControllerInstance = clazz.getDeclaredConstructor().newInstance();
+        var beanClass =
+            new BeanClass(clazz, clazz.getAnnotation(RestController.class).value());
+        if (classBeansMap.containsKey(beanClass)) {
+          throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+        }
+        classBeansMap.put(beanClass, restControllerInstance);
+        for (var method : clazz.getMethods()) {
+          if (method.isAnnotationPresent(RestMapping.class)) {
+            if (Modifier.isPublic(method.getModifiers())) {
+              var methodClazz = method.getReturnType();
+              if (!methodClazz.equals(HttpServlet.class)) {
+                throw new IllegalReturnTypeException();
+              } else {
+                String uri = String.join("/", StringUtility.trimStringByString(
+                        clazz.getAnnotation(RestController.class).value(), "/"),
+                    StringUtility.trimStringByString(
+                        method.getAnnotation(RestMapping.class).value(), "/"));
+                uri = StringUtility.trimStringByString(uri, "/");
+
+                beanClass = new BeanClass(methodClazz, uri);
+                if (servletBeansMap.containsKey(uri)) {
+                  throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+                }
+                var bean = method.invoke(restControllerInstance);
+                servletBeansMap.put(uri, (HttpServlet) bean);
+              }
+            } else {
+              throw new IllegalDefinedAccessControlException();
+            }
+          }
+        }
+      } else if (clazz.isAnnotationPresent(SystemCommand.class)) {
+        try {
+          var systemCommandAnnotation = clazz.getAnnotation(SystemCommand.class);
+          var systemCommandInstance = clazz.getDeclaredConstructor().newInstance();
+          if (systemCommandInstance instanceof AbstractSystemCommandHandler handler) {
+            // manages by the class bean system
+            var beanClass =
+                new BeanClass(clazz, String.valueOf(systemCommandAnnotation.label()));
+            if (classBeansMap.containsKey(beanClass)) {
+              throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+            }
+            classBeansMap.put(beanClass, systemCommandInstance);
+            // add to its own management system
+            handler.setCommandManager(systemCommandManager);
+            systemCommandManager.registerCommand(systemCommandAnnotation.label(), handler);
+          } else {
+            if (isErrorEnabled()) {
+              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
+                  "AbstractSystemCommandHandler"));
+            }
+          }
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          }
+        }
+      } else if (clazz.isAnnotationPresent(ClientCommand.class)) {
+        try {
+          var clientCommandAnnotation = clazz.getAnnotation(ClientCommand.class);
+          var clientCommandInstance = clazz.getDeclaredConstructor().newInstance();
+          if (clientCommandInstance instanceof AbstractClientCommandHandler handler) {
+            // manages by the class bean system
+            var beanClass =
+                new BeanClass(clazz, String.valueOf(clientCommandAnnotation.value()));
+            if (classBeansMap.containsKey(beanClass)) {
+              throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+            }
+            classBeansMap.put(beanClass, clientCommandInstance);
+            // add to its own management system
+            handler.setCommandManager(clientCommandManager);
+            clientCommandManager.registerCommand(clientCommandAnnotation.value(), handler);
+          } else {
+            if (isErrorEnabled()) {
+              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
+                  "AbstractClientCommandHandler"));
+            }
+          }
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          }
+        }
       }
     }
+
+    // Step 3: Make mapping between classes and their instances
+    // recursively create field instance for this class instance
+    classBeansMap.forEach((clazz, bean) -> {
+      try {
+        autowire(clazz, bean);
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | DuplicatedBeanCreationException exception) {
+        if (isErrorEnabled()) {
+          String exceptionDetails =
+              "Initialize class: " + clazz.clazz().getName() + "\n" + getStackTrace(exception);
+          error(exceptionDetails);
+        }
+      }
+    });
+  }
+
+  private String getStackTrace(Exception exception) {
+    StringBuilder stringBuilder = new StringBuilder();
+    StackTraceElement[] stackTraceElements = exception.getStackTrace();
+    stringBuilder.append(exception.getClass().getName()).append(": ").append(exception.getMessage())
+        .append("\n");
+    for (StackTraceElement stackTraceElement : stackTraceElements) {
+      stringBuilder.append("\t at ").append(stackTraceElement.toString()).append("\n");
+    }
+    return stringBuilder.toString();
   }
 
   /**
@@ -245,8 +409,36 @@ public final class Injector {
     var optional = classesMap.entrySet().stream()
         .filter(entry -> entry.getValue() == clazz).findFirst();
 
-    return optional.map(classClassEntry -> (T) classBeansMap.get(classClassEntry.getKey()))
+    return optional.map(
+            classClassEntry -> (T) classBeansMap.get(new BeanClass(classClassEntry.getKey(), "")))
         .orElse(null);
+  }
+
+  /**
+   * Retrieves servlet beans.
+   *
+   * @return a {@link Map} of servlet beans
+   */
+  public Map<String, HttpServlet> getServletBeansMap() {
+    return servletBeansMap;
+  }
+
+  /**
+   * Retrieves the system command manager.
+   *
+   * @return an instance of {@link SystemCommandManager}
+   */
+  public SystemCommandManager getSystemCommandManager() {
+    return systemCommandManager;
+  }
+
+  /**
+   * Retrieves the client command manager.
+   *
+   * @return an instance of {@link ClientCommandManager}
+   */
+  public ClientCommandManager getClientCommandManager() {
+    return clientCommandManager;
   }
 
   /**
@@ -254,12 +446,13 @@ public final class Injector {
    *
    * @param classInterface the interface using to create a new bean
    * @param fieldName      the name of class's field that holds a reference of a bean in a class
-   * @param qualifier      this value aims to differentiate which implemented class should be
+   * @param nameQualifier  this value aims to differentiate which implemented class should be
    *                       used to create the bean (instance)
-   * @param <T>            the type of implemented class
+   * @param classQualifier this value aims to differentiate which implemented class should be
+   *                       used to create the bean (instance)
    * @return a bean object, an instance of the implemented class
    * @throws ClassNotFoundException                        it is caused by
-   *                                                       {@link #getImplementedClass(Class, String, String)}
+   *                                                       {@link #getImplementedClass(Class, String, Class)}
    * @throws NoSuchMethodException                         it is caused by
    *                                                       Class#getDeclaredConstructor(Class[])
    * @throws InvocationTargetException                     it is caused by
@@ -274,28 +467,32 @@ public final class Injector {
    *                                                       there are more than 1 {@link Component} annotation associated with classes that implement
    *                                                       a same interface
    *                                                       Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws DuplicatedBeanCreationException               when a same bean was created more than one time*
    */
-  private <T> Object getBeanInstanceForInjector(Class<T> classInterface, String fieldName,
-                                                String qualifier)
+  private Object getBeanInstanceForInjector(Class<?> classInterface, String fieldName,
+                                            String nameQualifier, Class<?> classQualifier)
       throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
       InstantiationException, IllegalAccessException, NoImplementedClassFoundException,
-      MultipleImplementedClassForInterfaceException {
+      MultipleImplementedClassForInterfaceException, DuplicatedBeanCreationException {
 
-    var implementedClass = getImplementedClass(classInterface, fieldName, qualifier);
+    // check classes annotated by @Component and fields annotated by @Autowired
+    var implementedClass = getImplementedClass(classInterface, fieldName, classQualifier);
 
-    synchronized (classBeansMap) {
-      if (classBeansMap.containsKey(implementedClass)) {
-        return classBeansMap.get(implementedClass);
-      }
-
-      if (Objects.nonNull(implementedClass)) {
-        var bean = implementedClass.getDeclaredConstructor().newInstance();
-        classBeansMap.put(implementedClass, bean);
-        return bean;
-      }
-
-      return null;
+    var beanClass = new BeanClass(implementedClass, nameQualifier);
+    if (classBeansMap.containsKey(beanClass)) {
+      return classBeansMap.get(beanClass);
     }
+
+    if (Objects.nonNull(implementedClass) && !manualClassesSet.contains(beanClass)) {
+      if (classBeansMap.containsKey(beanClass)) {
+        throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
+      }
+      var bean = implementedClass.getDeclaredConstructor().newInstance();
+      classBeansMap.put(beanClass, bean);
+      return bean;
+    }
+
+    return null;
   }
 
   private boolean isClassAnnotated(Class<?> clazz, Class<?>[] annotations) {
@@ -308,7 +505,7 @@ public final class Injector {
   }
 
   private Class<?> getImplementedClass(Class<?> classInterface, String fieldName,
-                                       String qualifier) throws ClassNotFoundException {
+                                       Class<?> classQualifier) throws ClassNotFoundException {
     var implementedClasses = classesMap.entrySet().stream()
         .filter(entry -> entry.getValue() == classInterface).collect(Collectors.toSet());
 
@@ -322,54 +519,67 @@ public final class Injector {
       // multiple implemented class from the interface, need to be selected by
       // "qualifier" value
       final var findBy =
-          (Objects.isNull(qualifier) || qualifier.trim().length() == 0) ? fieldName : qualifier;
+          (Objects.isNull(classQualifier)) ? fieldName : classQualifier;
       var optional = implementedClasses.stream()
-          .filter(entry -> entry.getKey().getSimpleName().equalsIgnoreCase(findBy)).findAny();
+          .filter(entry -> entry.getKey().equals(findBy)).findAny();
       // in case of could not find an appropriately single instance, so throw an exception
       return optional.map(Entry::getKey)
-          .orElseThrow(() -> new MultipleImplementedClassForInterfaceException(classInterface));
+          .orElseThrow(
+              () -> new MultipleImplementedClassForInterfaceException(classInterface));
     }
   }
 
   /**
    * Assigns bean (instance) values to its corresponding fields in a class.
    *
-   * @param clazz the target class that holds declared bean fields
-   * @param bean  the bean (instance) associated with the declared field
-   * @throws IllegalArgumentException  it is related to the illegal argument exception
-   * @throws SecurityException         it is related to the security exception
-   * @throws NoSuchMethodException     it is caused by Class#getDeclaredConstructor(Class[])
-   * @throws InvocationTargetException it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws InstantiationException    it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException    it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws InstantiationException    it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
+   * @param beanClass the target class that holds declared bean fields
+   * @param bean      the bean (instance) associated with the declared field
+   * @throws IllegalArgumentException        it is related to the illegal argument exception
+   * @throws SecurityException               it is related to the security exception
+   * @throws NoSuchMethodException           it is caused by Class#getDeclaredConstructor(Class[])
+   * @throws InvocationTargetException       it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws InstantiationException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws IllegalAccessException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws InstantiationException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
+   * @throws DuplicatedBeanCreationException when a same bean was created more than one time
    */
-  private void autowire(Class<?> clazz, Object bean)
+  private void autowire(BeanClass beanClass, Object bean)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,
       InvocationTargetException,
-      NoSuchMethodException, SecurityException, ClassNotFoundException {
-    var fields = findFields(clazz);
+      NoSuchMethodException, SecurityException, ClassNotFoundException,
+      DuplicatedBeanCreationException {
+    var fields = findFields(beanClass.clazz());
     for (var field : fields) {
-      var qualifier = field.isAnnotationPresent(AutowiredQualifier.class)
-          ? field.getAnnotation(AutowiredQualifier.class).value()
-          : null;
+      Class<?> classQualifier = null;
+      String nameQualifier = "";
+
+      if (field.isAnnotationPresent(AutowiredQualifier.class)) {
+        var classDefault = field.getAnnotation(AutowiredQualifier.class).clazz();
+        if (!classDefault.equals(AutowiredQualifier.DEFAULT.class)) {
+          classQualifier = classDefault;
+        }
+        nameQualifier = field.getAnnotation(AutowiredQualifier.class).name();
+      }
+
       if (field.isAnnotationPresent(AutowiredAcceptNull.class)) {
         try {
           var fieldInstance =
-              getBeanInstanceForInjector(field.getType(), field.getName(), qualifier);
+              getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
+                  classQualifier);
           if (Objects.nonNull(fieldInstance)) {
             field.set(bean, fieldInstance);
-            autowire(fieldInstance.getClass(), fieldInstance);
+            autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
           }
         } catch (NoImplementedClassFoundException e) {
           // do nothing
         }
       } else if (field.isAnnotationPresent(Autowired.class)) {
         var fieldInstance =
-            getBeanInstanceForInjector(field.getType(), field.getName(), qualifier);
+            getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
+                classQualifier);
         if (Objects.nonNull(fieldInstance)) {
           field.set(bean, fieldInstance);
-          autowire(fieldInstance.getClass(), fieldInstance);
+          autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
         }
       }
     }
@@ -404,9 +614,12 @@ public final class Injector {
    * Clear all references and beans created by the injector.
    */
   private void reset() {
-    synchronized (this) {
-      classesMap.clear();
-      classBeansMap.clear();
-    }
+    classesMap.clear();
+    classBeansMap.clear();
+    manualClassesSet.clear();
+    servletBeansMap.clear();
+    systemCommandManager.clear();
+    clientCommandManager.clear();
   }
 }
+

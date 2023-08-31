@@ -30,7 +30,6 @@ import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.server.ServerImpl;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +62,11 @@ public final class ResponseImpl implements Response {
     isEncrypted = false;
   }
 
+  /**
+   * Creates a new response instance.
+   *
+   * @return a new instance of {@link Response}
+   */
   public static Response newInstance() {
     return new ResponseImpl();
   }
@@ -167,30 +171,31 @@ public final class ResponseImpl implements Response {
 
   @Override
   public void write() {
-    if (Objects.isNull(players) || players.isEmpty()) {
-      return;
-    }
-
-    construct();
-    ServerImpl.getInstance().write(this);
+    constructRecipientPlayers();
+    ServerImpl.getInstance().write(this, false);
   }
 
   @Override
   public void writeInDelay(long delayInMilliseconds) {
+    try {
+      TimeUnit.MILLISECONDS.sleep(delayInMilliseconds);
+      write();
+    } catch (InterruptedException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  @Override
+  public void writeThenClose() {
+    constructRecipientPlayers();
+    ServerImpl.getInstance().write(this, true);
+  }
+
+  private void constructRecipientPlayers() {
     if (Objects.isNull(players) || players.isEmpty()) {
       return;
     }
 
-    construct();
-    try {
-      TimeUnit.MILLISECONDS.sleep(delayInMilliseconds);
-      ServerImpl.getInstance().write(this);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void construct() {
     // if UDP is set to the highest priority in use but the session type is WebSocket, then use the
     // WebSocket channel instead
     players.forEach(player -> {

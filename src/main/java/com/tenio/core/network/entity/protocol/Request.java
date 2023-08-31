@@ -24,10 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.protocol;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.controller.RequestComparator;
 import com.tenio.core.network.define.RequestPriority;
-import com.tenio.core.network.entity.session.Session;
+import java.net.SocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A request created by the server when it received a message from a client.
@@ -35,28 +37,16 @@ import com.tenio.core.network.entity.session.Session;
 public interface Request {
 
   /**
+   * The request counter to provide unique id for every single request.
+   */
+  AtomicLong ID_COUNTER = new AtomicLong(1L);
+
+  /**
    * Retrieves the unique ID of request.
    *
    * @return the unique {@code long} ID of request
    */
   long getId();
-
-  /**
-   * Retrieves additional information of the request.
-   *
-   * @param key the {@link String} value key used to fetch information
-   * @return the corresponding {@link Object} value if available, otherwise {@code null}
-   */
-  Object getAttribute(String key);
-
-  /**
-   * Puts additional information for the request.
-   *
-   * @param key   the {@link String} value key used to fetch information
-   * @param value the {@link Object} value
-   * @return the pointer of request
-   */
-  Request setAttribute(String key, Object value);
 
   /**
    * Retrieves the server event associating to the request.
@@ -76,17 +66,49 @@ public interface Request {
   /**
    * Retrieves the sender of request.
    *
-   * @return a {@link Session} that plays as a sender of the request
+   * @return a {@link Object} that plays as a sender of the request
    */
-  Session getSender();
+  Object getSender();
 
   /**
    * Sets the sender of request.
    *
-   * @param session a {@link Session} that plays as a sender of the request
+   * @param sender a {@link Object} that plays as a sender of the request
    * @return the pointer of request
    */
-  Request setSender(Session session);
+  Request setSender(Object sender);
+
+  /**
+   * Retrieves the remote address associating to the client side whenever the server receives
+   * message from him.
+   *
+   * @return the remote address associating to the client side
+   */
+  SocketAddress getRemoteSocketAddress();
+
+  /**
+   * Sets the remote address associating to the client side whenever the server receives
+   * message from him.
+   *
+   * @param remoteSocketAddress remote address associating to the client side
+   * @return the request instance
+   */
+  Request setRemoteSocketAddress(SocketAddress remoteSocketAddress);
+
+  /**
+   * Retrieves the request message.
+   *
+   * @return an instance of {@link DataCollection}
+   */
+  DataCollection getMessage();
+
+  /**
+   * Sets the request message.
+   *
+   * @param message an instance of {@link DataCollection}
+   * @return the {@link Request} itself
+   */
+  Request setMessage(DataCollection message);
 
   /**
    * Retrieves the priority of request.
