@@ -11,3 +11,8 @@
 ## 0.2.0 2022-04-20 Feature release
 - Fulfilled java-docs for all classes
 - Optimization
+
+## 0.5.0 2023-08-30 Feature release
+- Upgraded to JDK 17
+- Upgraded dependencies
+- Allowed checking logging configuration before writing logs
