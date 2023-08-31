@@ -25,14 +25,19 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
+import java.io.Serial;
 
 /**
  * Something went wrong when a player tries to join a room.
  */
 public final class PlayerJoinedRoomException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 3173662815856707842L;
 
+  /**
+   * The player-join-room result.
+   */
   private final PlayerJoinedRoomResult result;
 
   /**

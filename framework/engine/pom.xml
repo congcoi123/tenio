@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-engine</artifactId>
-    <version>0.2.0</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,35 +39,37 @@
     </scm>
 
     <properties>
+        <io.github.congcoi123.tenio.common>0.5.0</io.github.congcoi123.tenio.common>
+
         <google.guava.version>31.1-jre</google.guava.version>
-        <logging.log4j.version>2.17.2</logging.log4j.version>
+        <logging.log4j.version>2.20.0</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <org.junit.jupiter.version>5.8.2</org.junit.jupiter.version>
-        <org.junit.platform.version>1.8.2</org.junit.platform.version>
-        <org.mockito.core.version>4.4.0</org.mockito.core.version>
+        <org.junit.jupiter.version>5.9.2</org.junit.jupiter.version>
+        <org.junit.platform.version>1.9.2</org.junit.platform.version>
+        <org.mockito.core.version>5.2.0</org.mockito.core.version>
 
         <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
-        <jdk.release>11</jdk.release>
+        <jdk.release>17</jdk.release>
         <jdk.vendor>oracle</jdk.vendor>
 
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
         <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
 
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tenio-common</artifactId>
-            <version>${project.version}</version>
+            <version>${io.github.congcoi123.tenio.common}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -131,6 +133,12 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${org.mockito.core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven.javadoc.plugin.version}</version>
+            <type>maven-plugin</type>
         </dependency>
     </dependencies>
 
@@ -217,18 +225,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.plugin.version}</version>
-                <!-- for java 8 compatible -->
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
+                        <phase>compile</phase>
                         <goals>
                             <goal>jar</goal>
+                            <goal>javadoc</goal>
                         </goals>
                     </execution>
                 </executions>
-                <!-- for java 11 compatible -->
                 <configuration>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                    <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
             </plugin>
             <!-- Sign artifacts for uploading to maven central -->

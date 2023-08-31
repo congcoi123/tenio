@@ -24,19 +24,29 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataType;
 import com.tenio.core.network.entity.session.Session;
 
 /**
  * The KCP channel behaviours.
+ *
  * @since 0.3.0
  */
 public interface KcpIoHandler extends BaseIoHandler {
 
   /**
-   * Set the data serialization type.
+   * Retrieves the data serialization type.
+   *
+   * @return the {@link DataType} value
+   */
+  DataType getDataType();
+
+  /**
+   * Sets the data serialization type.
    *
    * @param dataType the {@link DataType} value
+   * @since 0.5.0
    */
   void setDataType(DataType dataType);
 
@@ -46,6 +56,16 @@ public interface KcpIoHandler extends BaseIoHandler {
    * @param session the target {@link Session} which is using KCP transport
    */
   void channelActiveIn(Session session);
+
+  /**
+   * When a new message comes from a session then this method is invoked.
+   *
+   * @param session the {@link Session} using to communicate to client side
+   * @param message an instance of {@link DataCollection} sent from client side, it can be in
+   *                different formats base on {@link DataType} value defined in {@code
+   *                configuration.xml}
+   */
+  void sessionRead(Session session, DataCollection message);
 
   /**
    * When a new KCP channel is removed from a session.

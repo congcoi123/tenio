@@ -26,6 +26,7 @@ package com.tenio.common.data.msgpack.element;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.MsgPackUtility;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import java.util.Map;
 public final class MsgPackMap extends HashMap<String, Object>
     implements DataCollection, Serializable {
 
+  @Serial
   private static final long serialVersionUID = 6697372748701824069L;
 
   /**
@@ -52,6 +54,16 @@ public final class MsgPackMap extends HashMap<String, Object>
    */
   public static MsgPackMap newInstance() {
     return new MsgPackMap();
+  }
+
+  /**
+   * Determines whether the data can be fetched by its key in the map.
+   *
+   * @param key the {@link String} key needs to be checked
+   * @return <code>true</code> if a value is available, otherwise <code>false</code>
+   */
+  public boolean contains(String key) {
+    return containsKey(key);
   }
 
   /**
@@ -105,16 +117,6 @@ public final class MsgPackMap extends HashMap<String, Object>
   }
 
   /**
-   * Determines whether the data can be fetched by its key in the map.
-   *
-   * @param key the {@link String} key needs to be checked
-   * @return <code>true</code> if a value is available, otherwise <code>false</code>
-   */
-  public boolean contains(String key) {
-    return containsKey(key);
-  }
-
-  /**
    * Adds new data into the map with its key.
    *
    * @param key   the {@link String} key of data
@@ -122,6 +124,28 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putMsgPackArray(String key, MsgPackArray value) {
+    put(key, value);
+    return this;
+  }
+
+  /**
+   * Retrieves value in the map by its key.
+   *
+   * @param key the {@link String} key in the map
+   * @return the value converted in {@link MsgPackMap} type fetched by its key in the map
+   */
+  public MsgPackMap getMsgPackMap(String key) {
+    return (MsgPackMap) get(key);
+  }
+
+  /**
+   * Adds new data into the map with its key.
+   *
+   * @param key   the {@link String} key of data
+   * @param value the {@link MsgPackMap} value needs to be inserted
+   * @return the pointer of this instance
+   */
+  public MsgPackMap putMsgPackMap(String key, MsgPackMap value) {
     put(key, value);
     return this;
   }

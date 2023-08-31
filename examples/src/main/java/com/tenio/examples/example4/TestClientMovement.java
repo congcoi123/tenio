@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
@@ -60,6 +60,8 @@ public final class TestClientMovement extends AbstractLogger
   private final TCP tcp;
   private final String playerName;
   private final LocalCounter localCounter;
+  private UDP udp;
+  private int udpConvey;
   private volatile long sentTimestamp;
 
   public TestClientMovement(String playerName) {
@@ -117,49 +119,57 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void sendLoginRequest() {
-    var data = DataUtility.newZeroMap();
-    data.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    tcp.send(ServerMessage.newInstance().setData(data));
+    var request = DataUtility.newZeroMap();
+    request.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+    tcp.send(request);
 
     if (LOGGER_DEBUG) {
-      System.err.println("Login Request -> " + data);
+      System.err.println("Login Request -> " + request);
     }
   }
 
   @Override
   public void onReceivedTCP(byte[] binaries) {
-    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-    var message = ServerMessage.newInstance().setData(dat);
+    var parcel = (ZeroMap) DataUtility.binaryToCollection(DataType.ZERO, binaries);
 
     if (LOGGER_DEBUG) {
-      System.err.println("[RECV FROM SERVER TCP] -> " + message);
+      System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
     }
 
-    var data = (ZeroMap) message.getData();
-    if (data.containsKey(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
-      switch (data.getByte(SharedEventKey.KEY_ALLOW_TO_ATTACH)) {
-        case UdpEstablishedState.ALLOW_TO_ATTACH: {
+    if (parcel.containsKey(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL)) {
+      var accessingPhaseData = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
+      switch (accessingPhaseData.getByte(0)) {
+        case UdpEstablishedState.ALLOW_TO_ACCESS -> {
           // create a new UDP object and listen for this port
-          var udp = new UDP(data.getInteger(SharedEventKey.KEY_ALLOW_TO_ATTACH_PORT));
+          udp = new UDP(accessingPhaseData.getInteger(1));
           udp.receive(this);
           System.out.println(playerName + " connected to UDP port: " +
-              data.getInteger(SharedEventKey.KEY_ALLOW_TO_ATTACH_PORT));
+              accessingPhaseData.getInteger(1));
 
           // now you can send request for UDP connection request
-          var sendData =
-              DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-          var request = ServerMessage.newInstance().setData(sendData);
+          var udpMessageData = DataUtility.newZeroMap();
+          udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+          var request =
+              DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
+                  udpMessageData);
           udp.send(request);
 
           if (LOGGER_DEBUG) {
             System.out.println(playerName + " requests a UDP connection -> " + request);
           }
         }
-        break;
-
-        case UdpEstablishedState.ATTACHED: {
+        case UdpEstablishedState.ESTABLISHED -> {
+          udpConvey = accessingPhaseData.getInteger(1);
+          var udpMessageData = DataUtility.newZeroMap();
+          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.ESTABLISHED);
+          var request = DataUtility.newZeroMap();
+          request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
+          request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
+          udp.send(request);
+        }
+        case UdpEstablishedState.COMMUNICATING -> {
           // the UDP connected successful, you now can send test requests
-          System.out.println(playerName + " started the conversation -> " + message);
+          System.out.println(playerName + " started the conversation -> " + parcel);
 
           // packets counting
           Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -187,11 +197,9 @@ public final class TestClientMovement extends AbstractLogger
               }, Example4Constant.SEND_MEASUREMENT_REQUEST_INTERVAL,
               Example4Constant.SEND_MEASUREMENT_REQUEST_INTERVAL, TimeUnit.SECONDS);
         }
-        break;
-
       }
-    } else if (data.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
-      int fps = data.getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
+    } else if (parcel.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
+      int fps = parcel.getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
       long receivedTimestamp = TimeUtility.currentTimeMillis();
       long latency = receivedTimestamp - sentTimestamp;
 
@@ -200,7 +208,6 @@ public final class TestClientMovement extends AbstractLogger
 
       info("LATENCY", buildgen("Player ", playerName, " -> ", latency, " ms | fps -> ", fps));
     }
-
   }
 
   private void logLostPacket(double lostPacket) {
@@ -212,26 +219,29 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void requestNeighbours() {
-    var data = DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
+    var udpMessageData = DataUtility.newZeroMap();
+    udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.COMMUNICATING);
+    udpMessageData.putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
         ClientUtility.generateRandomString(10));
-    var request = ServerMessage.newInstance().setData(data);
-    tcp.send(request);
+    var request = DataUtility.newZeroMap();
+    request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
+    request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
+    udp.send(request);
   }
 
   @Override
   public void onReceivedUDP(byte[] binary) {
-    var data = DataUtility.binaryToCollection(DataType.ZERO, binary);
-    var message = ServerMessage.newInstance().setData(data);
+    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binary);
 
     if (LOGGER_DEBUG) {
-      System.err.println("[RECV FROM SERVER UDP] -> " + message);
+      System.err.println("[RECV FROM SERVER UDP] -> " + parcel);
     }
 
-    counting(message);
+    counting(parcel);
   }
 
-  private void counting(ServerMessage message) {
+  private void counting(DataCollection message) {
     localCounter.addCountUdpPacketsOneMinute();
-    localCounter.addCountReceivedPacketSizeOneMinute((message.getData().toBinary().length));
+    localCounter.addCountReceivedPacketSizeOneMinute((message.toBinary().length));
   }
 }

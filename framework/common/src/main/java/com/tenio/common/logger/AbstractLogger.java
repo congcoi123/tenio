@@ -214,6 +214,26 @@ public abstract class AbstractLogger {
   }
 
   /**
+   * Only use for errors/issues detection in the server system. Be careful when using
+   * it yourself. You are warned!
+   *
+   * @param info the information
+   */
+  public void error(Object... info) {
+    if (!logger.isErrorEnabled()) {
+      return;
+    }
+    var builder = stringPool.get();
+    builder.append("\n=========== BEGIN ERROR INFORMATION ===========\n");
+    for (var e : info) {
+      builder.append(e);
+    }
+    builder.append("\n============ END ERROR INFORMATION ============\n");
+    logger.error(builder.toString());
+    stringPool.repay(builder);
+  }
+
+  /**
    * Only use for EXCEPTION detection in the server system. Be careful when using
    * it yourself. You are warned!
    *
@@ -276,5 +296,13 @@ public abstract class AbstractLogger {
       builder.append(object);
     }
     return builder;
+  }
+
+  public boolean isErrorEnabled() {
+    return logger.isErrorEnabled();
+  }
+
+  public boolean isInfoEnabled() {
+    return logger.isInfoEnabled();
   }
 }

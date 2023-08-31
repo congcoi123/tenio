@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.handler;
 
 import com.tenio.common.data.DataType;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -40,6 +41,15 @@ public interface SocketIoHandler extends BaseIoHandler {
    * @param dataType the {@link DataType} value
    */
   void setDataType(DataType dataType);
+
+
+  /**
+   * When a new message comes from a session then this method is invoked.
+   *
+   * @param session the {@link Session} using to communicate to client side
+   * @param binary  an array of {@code byte} data sent by client side
+   */
+  void sessionRead(Session session, byte[] binary);
 
   /**
    * When the first connection signal sent from client side to the server via socket (TCP) channel

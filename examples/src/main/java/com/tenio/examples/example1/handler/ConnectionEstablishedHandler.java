@@ -24,25 +24,25 @@ THE SOFTWARE.
 
 package com.tenio.examples.example1.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
-import com.tenio.core.entity.data.ServerMessage;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.examples.server.SharedEventKey;
 
-@Component
+@EventHandler
 public final class ConnectionEstablishedHandler extends AbstractHandler
     implements EventConnectionEstablishedResult {
 
   @Override
-  public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+  public void handle(Session session, DataCollection message, ConnectionEstablishedResult result) {
     if (result == ConnectionEstablishedResult.SUCCESS) {
-      var data = (MsgPackMap) message.getData();
+      var request = (MsgPackMap) message;
 
-      api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+      api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
     }
   }
 }

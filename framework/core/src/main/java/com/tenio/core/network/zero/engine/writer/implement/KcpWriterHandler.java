@@ -82,8 +82,10 @@ public class KcpWriterHandler extends SystemLogger implements KcpWriter<Datagram
     byteBuffer.clear();
     // buffer size is not enough, need to be allocated more bytes
     if (byteBuffer.capacity() < size) {
-      debug("KCP CHANNEL SEND", "Allocate new buffer from ", byteBuffer.capacity(), " to ",
-          size, " bytes");
+      if (isDebugEnabled()) {
+        debug("KCP CHANNEL SEND", "Allocate new buffer from ", byteBuffer.capacity(), " to ",
+            size, " bytes");
+      }
       byteBuffer = ByteBuffer.allocate(size);
     }
     byteBuffer.put(binaries, 0, size);

@@ -24,11 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.event.handler.implement;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
@@ -102,11 +103,9 @@ public final class PlayerEventHandler {
     eventPlayerReconnectRequestHandleOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE, params -> {
           var session = (Session) params[0];
-          var message = (ServerMessage) params[1];
+          var message = (DataCollection) params[1];
 
-          event.handle(session, message);
-
-          return null;
+          return event.handle(session, message);
         }));
 
     eventPlayerReconnectedResultOp.ifPresent(
@@ -123,7 +122,8 @@ public final class PlayerEventHandler {
     eventReceivedMessageFromPlayerOp.ifPresent(
         event -> eventManager.on(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
           var player = (Player) params[0];
-          var message = (ServerMessage) params[1];
+          var message = (DataCollection) params[1];
+          player.setLastReadTime(TimeUtility.currentTimeMillis());
 
           event.handle(player, message);
 
@@ -133,7 +133,8 @@ public final class PlayerEventHandler {
     eventSendMessageToPlayerOp.ifPresent(
         event -> eventManager.on(ServerEvent.SEND_MESSAGE_TO_PLAYER, params -> {
           var player = (Player) params[0];
-          var message = (ServerMessage) params[1];
+          var message = (DataCollection) params[1];
+          player.setLastWriteTime(TimeUtility.currentTimeMillis());
 
           event.handle(player, message);
 

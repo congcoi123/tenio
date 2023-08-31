@@ -47,21 +47,28 @@ import javax.annotation.concurrent.GuardedBy;
 public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
   @GuardedBy("this")
-  private final Map<String, Player> playerByNames;
-  @GuardedBy("this")
-  private final Map<Session, Player> playerBySessions;
+  private final Map<String, Player> players;
 
-  private Room ownerRoom;
+  private List<Player> readonlyPlayersList;
+  private volatile Room ownerRoom;
   private volatile int playerCount;
+  private int maxIdleTimeInSecond;
+  private int maxIdleTimeNeverDeportedInSecond;
 
   private PlayerManagerImpl(EventManager eventManager) {
     super(eventManager);
-    playerByNames = new HashMap<>();
-    playerBySessions = new HashMap<>();
+    players = new HashMap<>();
+    readonlyPlayersList = new ArrayList<>();
     ownerRoom = null;
     playerCount = 0;
   }
 
+  /**
+   * Creates a new instance of the player manager.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link PlayerManager}
+   */
   public static PlayerManager newInstance(EventManager eventManager) {
     return new PlayerManagerImpl(eventManager);
   }
@@ -73,123 +80,88 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
     }
 
     synchronized (this) {
-      playerByNames.put(player.getName(), player);
-      if (player.containsSession()) {
-        playerBySessions.put(player.getSession().get(), player);
-      }
-      playerCount = playerByNames.size();
+      players.put(player.getName(), player);
+      playerCount = players.size();
+      readonlyPlayersList = List.copyOf(players.values());
     }
   }
 
   @Override
-  public Player createPlayer(String name) {
-    var newPlayer = PlayerImpl.newInstance(name);
-    newPlayer.setActivated(true);
-    newPlayer.setLoggedIn(true);
+  public Player createPlayer(String playerName) {
+    var player = PlayerImpl.newInstance(playerName);
+    player.setActivated(true);
+    player.setLoggedIn(true);
+    player.setMaxIdleTimeInSeconds(maxIdleTimeInSecond);
+    player.setMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    addPlayer(player);
 
-    addPlayer(newPlayer);
-
-    return newPlayer;
+    return player;
   }
 
   @Override
-  public Player createPlayerWithSession(String name, Session session) {
+  public Player createPlayerWithSession(String playerName, Session session) {
     if (Objects.isNull(session)) {
       throw new NullPointerException("Unable to assign a null session for the player");
     }
 
-    var newPlayer = PlayerImpl.newInstance(name, session);
-    newPlayer.setActivated(true);
-    newPlayer.setLoggedIn(true);
+    var player = PlayerImpl.newInstance(playerName, session);
+    player.setActivated(true);
+    player.setLoggedIn(true);
+    player.setMaxIdleTimeInSeconds(maxIdleTimeInSecond);
+    player.setMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    addPlayer(player);
 
-    addPlayer(newPlayer);
-
-    return newPlayer;
+    return player;
   }
 
   @Override
   public Player getPlayerByName(String playerName) {
-    synchronized (playerByNames) {
-      return playerByNames.get(playerName);
-    }
-  }
-
-  @Override
-  public Player getPlayerBySession(Session session) {
-    synchronized (playerBySessions) {
-      return playerBySessions.get(session);
+    synchronized (players) {
+      return players.get(playerName);
     }
   }
 
   @Override
   public Iterator<Player> getPlayerIterator() {
     synchronized (this) {
-      return playerByNames.values().iterator();
+      return players.values().iterator();
     }
   }
 
   @Override
   public List<Player> getReadonlyPlayersList() {
-    synchronized (this) {
-      return List.copyOf(playerByNames.values());
-    }
-  }
-
-  @Override
-  public Iterator<Session> getSessionIterator() {
-    synchronized (this) {
-      return playerBySessions.keySet().iterator();
-    }
-  }
-
-  @Override
-  public List<Session> getReadonlySessionsList() {
-    synchronized (this) {
-      return List.copyOf(playerBySessions.keySet());
-    }
+    return readonlyPlayersList;
   }
 
   @Override
   public void removePlayerByName(String playerName) {
-    var player = getPlayerByName(playerName);
-    if (Objects.isNull(player)) {
+    if (!containsPlayerName(playerName)) {
       throw new RemovedNonExistentPlayerFromRoomException(playerName, ownerRoom);
     }
 
-    removePlayer(player);
-  }
-
-  @Override
-  public void removePlayerBySession(Session session) {
-    var player = getPlayerBySession(session);
-    if (Objects.isNull(player)) {
-      throw new RemovedNonExistentPlayerFromRoomException(session.toString(), ownerRoom);
-    }
-
-    removePlayer(player);
+    removePlayer(playerName);
   }
 
   private void removePlayer(Player player) {
     synchronized (this) {
-      playerByNames.remove(player.getName());
-      if (player.containsSession()) {
-        playerBySessions.remove(player.getSession().get());
-      }
-      playerCount = playerByNames.size();
+      players.remove(player.getName());
+      playerCount = players.size();
+      readonlyPlayersList = List.copyOf(players.values());
+    }
+  }
+
+  private void removePlayer(String playerName) {
+    synchronized (this) {
+      players.remove(playerName);
+      playerCount = players.size();
+      readonlyPlayersList = List.copyOf(players.values());
     }
   }
 
   @Override
   public boolean containsPlayerName(String playerName) {
-    synchronized (playerByNames) {
-      return playerByNames.containsKey(playerName);
-    }
-  }
-
-  @Override
-  public boolean containsPlayerSession(Session session) {
-    synchronized (playerBySessions) {
-      return playerBySessions.containsKey(session);
+    synchronized (this) {
+      return players.containsKey(playerName);
     }
   }
 
@@ -209,9 +181,29 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
+  public int getMaxIdleTimeInSeconds() {
+    return maxIdleTimeInSecond;
+  }
+
+  @Override
+  public void setMaxIdleTimeInSeconds(int seconds) {
+    maxIdleTimeInSecond = seconds;
+  }
+
+  @Override
+  public int getMaxIdleTimeNeverDeportedInSeconds() {
+    return maxIdleTimeNeverDeportedInSecond;
+  }
+
+  @Override
+  public void setMaxIdleTimeNeverDeportedInSeconds(int seconds) {
+    maxIdleTimeNeverDeportedInSecond = seconds;
+  }
+
+  @Override
   public void clear() {
     synchronized (this) {
-      var iterator = new ArrayList<>(playerByNames.values()).iterator();
+      var iterator = new ArrayList<>(players.values()).iterator();
       while (iterator.hasNext()) {
         var player = iterator.next();
         removePlayer(player);

@@ -33,9 +33,9 @@ import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
+import com.tenio.core.network.zero.engine.writer.WriterHandler;
 import com.tenio.core.network.zero.engine.writer.implement.DatagramWriterHandler;
 import com.tenio.core.network.zero.engine.writer.implement.SocketWriterHandler;
-import com.tenio.core.network.zero.engine.writer.WriterHandler;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -48,7 +48,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class ZeroWriterImpl extends AbstractZeroEngine
     implements ZeroWriter, ZeroWriterListener {
 
-  private BlockingQueue<Session> sessionTicketsQueue;
+  private final BlockingQueue<Session> sessionTicketsQueue;
   private NetworkWriterStatistic networkWriterStatistic;
   private BinaryPacketEncoder binaryPacketEncoder;
 
@@ -58,6 +58,12 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
     setName("writer");
   }
 
+  /**
+   * Creates a new instance of the socket writer.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link ZeroWriter}
+   */
   public static ZeroWriter newInstance(EventManager eventManager) {
     return new ZeroWriterImpl(eventManager);
   }
@@ -85,48 +91,47 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
     try {
       var session = sessionTicketsQueue.take();
       processSessionQueue(session, socketWriterHandler, datagramWriterHandler);
-    } catch (InterruptedException e) {
-      error(e, "Interruption occurred when process a session and its packet");
+    } catch (Throwable cause) {
+      if (isErrorEnabled()) {
+        error(cause, "Interruption occurred when process a session and its packet");
+      }
     }
   }
 
   private void processSessionQueue(Session session, WriterHandler socketWriterHandler,
                                    WriterHandler datagramWriterHandler) {
-
-    // ignore the null session
+    // ignore a null or inactivated session
     if (Objects.isNull(session)) {
       return;
     }
 
     // now we can iterate packets from queue to proceed
     var packetQueue = session.getPacketQueue();
-    synchronized (packetQueue) {
-      // ignore the empty queue
-      if (packetQueue.isEmpty()) {
-        return;
-      }
+    // ignore the empty queue
+    if (Objects.isNull(packetQueue) || packetQueue.isEmpty()) {
+      return;
+    }
 
-      // when the session is in-activated, just ignore its packets
-      if (!session.isActivated()) {
+    // when the session is in-activated, just ignore its packets
+    if (!session.isActivated()) {
+      packetQueue.take();
+      return;
+    }
+
+    var packet = packetQueue.peek();
+    // ignore the null packet and remove it from queue
+    if (Objects.isNull(packet)) {
+      if (!packetQueue.isEmpty()) {
         packetQueue.take();
-        return;
       }
 
-      var packet = packetQueue.peek();
-      // ignore the null packet and remove it from queue
-      if (Objects.isNull(packet)) {
-        if (!packetQueue.isEmpty()) {
-          packetQueue.take();
-        }
+      return;
+    }
 
-        return;
-      }
-
-      if (packet.isTcp()) {
-        socketWriterHandler.send(packetQueue, session, packet);
-      } else if (packet.isUdp()) {
-        datagramWriterHandler.send(packetQueue, session, packet);
-      }
+    if (packet.isTcp()) {
+      socketWriterHandler.send(packetQueue, session, packet);
+    } else if (packet.isUdp()) {
+      datagramWriterHandler.send(packetQueue, session, packet);
     }
   }
 
@@ -242,6 +247,5 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
   @Override
   public void onDestroyed() {
-    sessionTicketsQueue = null;
   }
 }

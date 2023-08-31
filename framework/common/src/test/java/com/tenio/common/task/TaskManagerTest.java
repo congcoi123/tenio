@@ -40,7 +40,7 @@ class TaskManagerTest {
     var taskManager = TaskManagerImpl.newInstance();
     taskManager.create("test-task", new DefaultTask().run());
 
-    assertEquals(taskManager.getRemainTime("test-task"), DefaultTask.DELAY_SECOND - 1);
+    assertEquals(DefaultTask.DELAY_SECOND - 1, taskManager.getRemainTime("test-task"));
   }
 
   @Test
@@ -50,7 +50,7 @@ class TaskManagerTest {
     taskManager.create("test-task", new DefaultTask().run());
     taskManager.kill("test-task");
 
-    assertEquals(taskManager.getRemainTime("test-task"), -1);
+    assertEquals(-1, taskManager.getRemainTime("test-task"));
   }
 
   @Test

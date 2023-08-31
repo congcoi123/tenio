@@ -24,10 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.server;
 
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.DataType;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.bootstrap.BootstrapHandler;
 import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
@@ -66,6 +68,14 @@ public interface Server {
   ServerApi getApi();
 
   /**
+   * Retrieves a management object of self-defined user commands.
+   *
+   * @return an instance of {@link ClientCommandManager}
+   * @since 0.5.0
+   */
+  ClientCommandManager getClientCommandManager();
+
+  /**
    * Retrieves a event manager object which manages all events supporting on the server.
    *
    * @return an instance of {@link EventManager}
@@ -94,6 +104,14 @@ public interface Server {
   UdpChannelManager getUdpChannelManager();
 
   /**
+   * Retrieves the current server's configuration.
+   *
+   * @return the current {@link Configuration} of server
+   * @since 0.4.0
+   */
+  Configuration getConfiguration();
+
+  /**
    * Retrieves the data serialization type.
    *
    * @return the {@link DataType} value
@@ -118,6 +136,7 @@ public interface Server {
    * Writes down data to socket/channel to send them to client sides.
    *
    * @param response an instance of {@link Response} using to carry conveying information
+   * @param markedAsLast marks as this writing is the last one
    */
-  void write(Response response);
+  void write(Response response, boolean markedAsLast);
 }

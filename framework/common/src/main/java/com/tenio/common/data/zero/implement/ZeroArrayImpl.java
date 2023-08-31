@@ -62,9 +62,22 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   @Override
   public boolean contains(Object data) {
+    if (Objects.isNull(data)) {
+      return array.stream().anyMatch(element -> Objects.isNull(element.getData()));
+    }
     var match =
-        array.stream().filter(element -> element.getData().equals(data)).findFirst();
+        array.stream()
+            .filter(element -> Objects.nonNull(element.getData()) && element.getData().equals(data))
+            .findFirst();
     return match.orElse(null) != null;
+  }
+
+  @Override
+  public boolean containsValueAt(int index) {
+    if (index < 0 || index >= size()) {
+      return false;
+    }
+    return Objects.nonNull(array.get(index));
   }
 
   /**
@@ -184,6 +197,12 @@ public final class ZeroArrayImpl implements ZeroArray {
   }
 
   @Override
+  public ZeroArray setByte(int index, byte data) {
+    array.set(index, ZeroUtility.newZeroElement(ZeroType.BYTE, data));
+    return this;
+  }
+
+  @Override
   public ZeroArray addShort(short data) {
     return addElement(ZeroType.SHORT, data);
   }
@@ -196,6 +215,12 @@ public final class ZeroArrayImpl implements ZeroArray {
   @Override
   public ZeroArray addLong(long data) {
     return addElement(ZeroType.LONG, data);
+  }
+
+  @Override
+  public ZeroArray setLong(int index, long data) {
+    array.set(index, ZeroUtility.newZeroElement(ZeroType.LONG, data));
+    return this;
   }
 
   @Override
@@ -347,7 +372,8 @@ public final class ZeroArrayImpl implements ZeroArray {
       } else if (zeroElement.getType() == ZeroType.BYTE_ARRAY) {
         toString = String.format("byte[%d]", ((byte[]) zeroElement.getData()).length);
       } else {
-        toString = zeroElement.getData().toString();
+        toString = Objects.nonNull(zeroElement.getData()) ? zeroElement.getData().toString() :
+            "null";
       }
     }
 

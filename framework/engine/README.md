@@ -28,8 +28,8 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://img.shields.io/discord/1146091189456613407">
     </a>
 </p>
 
@@ -40,7 +40,7 @@ based server specifically designed for multiplayer games, which supports UDP, TC
 This module provides the necessary mechanisms to build a game. It also supports some kind of pattern such as ECS, FSM, and integrates a simple physic 2D library. You can even observe the running entities on the server side by using the debugger window.
 
 ## Requirements
-- Java 11
+- Java 17
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.

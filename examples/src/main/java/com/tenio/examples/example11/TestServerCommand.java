@@ -25,14 +25,14 @@ THE SOFTWARE.
 package com.tenio.examples.example11;
 
 import com.tenio.common.configuration.Configuration;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
 import com.tenio.core.bootstrap.annotation.Bootstrap;
-import com.tenio.core.bootstrap.annotation.Setting;
 import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.bootstrap.annotation.Setting;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
@@ -78,9 +78,10 @@ public final class TestServerCommand {
       implements EventConnectionEstablishedResult {
 
     @Override
-    public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+    public void handle(Session session, DataCollection message,
+                       ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
-        var data = (ZeroMap) message.getData();
+        var data = (ZeroMap) message;
 
         api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
@@ -89,7 +90,7 @@ public final class TestServerCommand {
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult {
+      implements EventPlayerLoggedinResult<Player> {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
@@ -104,14 +105,14 @@ public final class TestServerCommand {
 
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer {
+      implements EventReceivedMessageFromPlayer<Player> {
 
     @Override
-    public void handle(Player player, ServerMessage message) {
+    public void handle(Player player, DataCollection message) {
       var data =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getName(),
-              ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
       response().setContent(data.toBinary()).setRecipientPlayer(player).write();
     }

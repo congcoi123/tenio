@@ -28,8 +28,8 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://img.shields.io/discord/1146091189456613407">
     </a>
 </p>
 
@@ -41,7 +41,7 @@ This module provides common methods, classes for other modules to use. It suppor
 mechanism and supplies the self-defined serialized and deserialized processes for transferring data through the network.
 
 ## Requirements
-- Java 11
+- Java 17
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.

@@ -30,6 +30,9 @@ package com.tenio.core.utility;
  * @since 0.4.0
  */
 public enum CommandUtility {
+  /**
+   * Singleton instance.
+   */
   INSTANCE;
 
   /**

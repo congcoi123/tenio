@@ -42,6 +42,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class PlayerAndRoomTest {
 
@@ -129,6 +130,7 @@ class PlayerAndRoomTest {
   public void createDuplicatedRoomShouldCauseException() {
     assertThrows(AddedDuplicatedRoomException.class, () -> {
       var room = RoomImpl.newInstance();
+      room.setPlayerManager(Mockito.mock(PlayerManager.class));
       roomManager.addRoom(room);
       roomManager.addRoom(room);
     });

@@ -26,16 +26,26 @@ package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Unit Test Cases For Math Utility")
 class MathUtilityTest {
 
   @Test
-  void testIsNaN() {
-    assertFalse(MathUtility.<Object>isNaN("Val"));
-    assertTrue(MathUtility.<Object>isNaN(null));
+  @DisplayName("Throw an exception when the class's instance is attempted creating")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = MathUtility.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
   }
 
   @Test
@@ -50,248 +60,12 @@ class MathUtilityTest {
   }
 
   @Test
-  void testSetSeed() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by setSeed(long)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.setSeed(42L);
-  }
-
-  @Test
-  void testRandInt() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInt(int, int)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInt(2, 3);
-  }
-
-  @Test
   void testRandInt2() {
     assertEquals(1, MathUtility.randInt(1, 1));
   }
 
   @Test
-  void testRandInt3() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInt(int, int)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInt(0, 3);
-  }
-
-  @Test
-  void testRandInt4() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInt(int, int)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInt(1, 3);
-  }
-
-  @Test
-  void testRandFloat() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randFloat()
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randFloat();
-  }
-
-  @Test
   void testRandInRange() {
     assertEquals(10.0f, MathUtility.randInRange(10.0f, 10.0f));
-  }
-
-  @Test
-  void testRandInRange2() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInRange(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInRange(0.0f, 10.0f);
-  }
-
-  @Test
-  void testRandInRange3() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInRange(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInRange(0.5f, 10.0f);
-  }
-
-  @Test
-  void testRandInRange4() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randInRange(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randInRange(-0.5f, 10.0f);
-  }
-
-  @Test
-  void testRandBool() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randBool()
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randBool();
-  }
-
-  @Test
-  void testRandomClamped() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randomClamped()
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randomClamped();
-  }
-
-  @Test
-  void testRandGaussian() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randGaussian()
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randGaussian();
-  }
-
-  @Test
-  void testRandGaussian2() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randGaussian(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randGaussian(10.0f, 10.0f);
-  }
-
-  @Test
-  void testRandGaussian3() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randGaussian(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randGaussian(2.0f, 10.0f);
-  }
-
-  @Test
-  void testRandGaussian4() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randGaussian(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randGaussian(1.0f, 10.0f);
-  }
-
-  @Test
-  void testRandGaussian5() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by randGaussian(float, float)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    MathUtility.randGaussian(0.0f, 10.0f);
-  }
-
-  @Test
-  void testClamp() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by clamp(Number, Number, Number)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    Integer arg = Integer.valueOf(1);
-    Integer minVal = Integer.valueOf(1);
-    MathUtility.<Number>clamp(arg, minVal, Integer.valueOf(1));
-  }
-
-  @Test
-  void testClamp2() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by clamp(Number, Number, Number)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    Integer arg = Integer.valueOf(0);
-    Integer minVal = Integer.valueOf(1);
-    MathUtility.<Number>clamp(arg, minVal, Integer.valueOf(1));
-  }
-
-  @Test
-  void testClamp3() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by clamp(Number, Number, Number)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    Integer arg = Integer.valueOf(3);
-    Integer minVal = Integer.valueOf(1);
-    MathUtility.<Number>clamp(arg, minVal, Integer.valueOf(1));
-  }
-
-  @Test
-  void testClamp4() {
-    // TODO: This test is incomplete.
-    //   Reason: R004 No meaningful assertions found.
-    //   Diffblue Cover was unable to create an assertion.
-    //   Make sure that fields modified by clamp(Number, Number, Number)
-    //   have package-private, protected, or public getters.
-    //   See https://diff.blue/R004 to resolve this issue.
-
-    Integer arg = Integer.valueOf(-1);
-    Integer minVal = Integer.valueOf(1);
-    MathUtility.<Number>clamp(arg, minVal, Integer.valueOf(1));
   }
 }

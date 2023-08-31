@@ -24,10 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine;
 
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
-import java.util.List;
 
 /**
  * The engine supports working with new coming socket connections.
@@ -71,10 +70,9 @@ public interface ZeroAcceptor extends ZeroEngine {
   void setEnabledKcp(boolean enabledKcp);
 
   /**
-   * Declares a list of socket configurations for the network.
+   * Declares socket (TCP) configurations for the network.
    *
-   * @param socketConfigs a list of {@link SocketConfig}
-   * @see List
+   * @param socketConfiguration an instance of {@link SocketConfiguration}
    */
-  void setSocketConfigs(List<SocketConfig> socketConfigs);
+  void setSocketConfig(SocketConfiguration socketConfiguration);
 }

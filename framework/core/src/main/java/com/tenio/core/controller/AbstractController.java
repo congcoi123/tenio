@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.controller;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RequestQueueFullException;
@@ -56,6 +57,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
   private int maxQueueSize;
 
   private boolean initialized;
+  private boolean stopping;
   private volatile boolean activated;
 
   /**
@@ -69,6 +71,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
     maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
     executorSize = DEFAULT_NUMBER_WORKERS;
     activated = false;
+    stopping = false;
     initialized = false;
     id = new AtomicInteger();
   }
@@ -77,12 +80,15 @@ public abstract class AbstractController extends AbstractManager implements Cont
     var requestComparator = RequestComparator.newInstance();
     requestQueue = new PriorityBlockingQueue<>(maxQueueSize, requestComparator);
 
-    executorService = Executors.newFixedThreadPool(executorSize);
+    var threadFactory = new ThreadFactoryBuilder().setDaemon(true).build();
+    executorService = Executors.newFixedThreadPool(executorSize, threadFactory);
     for (int i = 0; i < executorSize; i++) {
       try {
         Thread.sleep(100L);
-      } catch (InterruptedException e) {
-        error(e);
+      } catch (InterruptedException exception) {
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
       executorService.execute(this);
     }
@@ -91,18 +97,26 @@ public abstract class AbstractController extends AbstractManager implements Cont
       if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
         try {
           attemptToShutdown();
-        } catch (Exception e) {
-          error(e);
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
     }));
   }
 
   private void attemptToShutdown() {
+    if (stopping) {
+      return;
+    }
+
+    stopping = true;
     activated = false;
 
-    info("STOPPING SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
-
+    if (isInfoEnabled()) {
+      info("STOPPING SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    }
     executorService.shutdown();
 
     try {
@@ -119,35 +133,47 @@ public abstract class AbstractController extends AbstractManager implements Cont
   @Override
   public void run() {
     setThreadName();
+    processing();
+  }
 
+  private void processing() {
     while (true) {
       if (activated) {
         try {
           var request = requestQueue.take();
           processRequest(request);
-        } catch (Throwable e) {
-          error(e);
+        } catch (Throwable cause) {
+          if (isErrorEnabled()) {
+            error(cause);
+          }
         }
       }
     }
   }
 
   private void destroy() {
-    executorService = null;
     requestQueue.clear();
-    requestQueue = null;
     onDestroyed();
   }
 
   private void setThreadName() {
-    Thread.currentThread()
-        .setName(StringUtility.strgen("controller-", getName(), "-", id.incrementAndGet()));
+    Thread currentThread = Thread.currentThread();
+    currentThread.setName(StringUtility.strgen("controller-", getName(), "-", id.incrementAndGet()));
+    currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+      if (isErrorEnabled()) {
+        error(cause, thread.getName());
+      }
+    });
   }
 
   private void destroyController() {
-    info("STOPPING SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("STOPPING SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    }
     destroy();
-    info("DESTROYED SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("DESTROYED SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override
@@ -159,7 +185,9 @@ public abstract class AbstractController extends AbstractManager implements Cont
   @Override
   public void start() {
     activated = true;
-    info("START SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE", buildgen("controller-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override
@@ -189,7 +217,9 @@ public abstract class AbstractController extends AbstractManager implements Cont
   public void enqueueRequest(Request request) {
     if (requestQueue.size() >= maxQueueSize) {
       var exception = new RequestQueueFullException(requestQueue.size());
-      error(exception, exception.getMessage());
+      if (isErrorEnabled()) {
+        error(exception, exception.getMessage());
+      }
       throw exception;
     }
     requestQueue.add(request);

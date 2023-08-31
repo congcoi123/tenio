@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
@@ -33,9 +33,9 @@ import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
 import com.tenio.examples.example7.constant.Example7Constant;
 import com.tenio.examples.server.SharedEventKey;
 
-@Component
+@EventHandler
 public final class PlayerJoinedRoomHandler extends AbstractHandler
-    implements EventPlayerJoinedRoomResult {
+    implements EventPlayerJoinedRoomResult<Player, Room> {
 
   @Override
   public void handle(Player player, Room room, PlayerJoinedRoomResult result) {
@@ -43,21 +43,22 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
       var players = room.getReadonlyPlayersList();
       var iterator = players.iterator();
 
-      var pack = array();
-      if (iterator.hasNext()) {
+      var pack = msgarray();
+      while (iterator.hasNext()) {
         var rplayer = iterator.next();
 
-        var parray = array();
+        var parray = msgarray();
         parray.addString(rplayer.getName());
         parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_X));
         parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_Y));
 
-        pack.addZeroArray(parray);
+        pack.addMsgPackArray(parray);
       }
 
-      var message = object().putZeroArray(SharedEventKey.KEY_PLAYER_POSITION, pack);
+      var parcel = msgmap().putString(SharedEventKey.KEY_COMMAND, "i")
+          .putMsgPackArray(SharedEventKey.KEY_DATA, pack);
 
-      response().setRecipientPlayers(players).setContent(message.toBinary()).write();
+      response().setRecipientPlayers(players).setContent(parcel.toBinary()).write();
     }
   }
 }

@@ -24,7 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.kcp;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.kcp.KcpProfile;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
@@ -43,7 +48,7 @@ public class Ukcp extends Kcp {
   private final KcpIoHandler kcpIoHandler;
   private final KcpWriter<?> kcpWriter;
   private final NetworkWriterStatistic networkWriterStatistic;
-  private byte[] buffer;
+  private final byte[] buffer;
 
   /**
    * Constructs a new KCP channel.
@@ -111,7 +116,20 @@ public class Ukcp extends Kcp {
   public void receive() {
     int receive = Recv(buffer);
     if (receive > 0) {
-      kcpIoHandler.sessionRead(session, buffer);
+      // convert binary to dataCollection object
+      var dataCollection = DataUtility.binaryToCollection(kcpIoHandler.getDataType(), buffer);
+
+      DataCollection message = null;
+      if (dataCollection instanceof ZeroMap zeroMap) {
+        if (zeroMap.containsKey(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA)) {
+          message = zeroMap.getDataCollection(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA);
+        }
+      } else if (dataCollection instanceof MsgPackMap msgPackMap) {
+        if (msgPackMap.containsKey(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA)) {
+          message = msgPackMap.getMsgPackMap(CoreConstant.DEFAULT_KEY_UDP_MESSAGE_DATA);
+        }
+      }
+      kcpIoHandler.sessionRead(session, message);
     }
   }
 

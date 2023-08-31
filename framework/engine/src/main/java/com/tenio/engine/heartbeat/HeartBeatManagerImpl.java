@@ -68,13 +68,17 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
   @Override
   public void initialize(final int maxHeartbeat) throws Exception {
     executorService = Executors.newFixedThreadPool(maxHeartbeat);
-    info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
+    if (isInfoEnabled()) {
+      info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
+    }
   }
 
   @Override
   public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
     try {
-      info("CREATE HEART BEAT", buildgen("id: ", id));
+      if (isInfoEnabled()) {
+        info("CREATE HEART BEAT", buildgen("id: ", id));
+      }
       // Add the listener
       var listener = new TreeSet<HeartbeatMessage>();
       heartbeat.setMessageListener(listener);
@@ -82,8 +86,10 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       // Start the heart-beat
       var future = executorService.submit(heartbeat);
       threadsManager.put(id, future);
-    } catch (Exception e) {
-      error(e, "id: ", id);
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception, "id: ", id);
+      }
     }
   }
 
@@ -102,14 +108,18 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       future.cancel(true);
       threadsManager.remove(id);
 
-      info("DISPOSE HEART BEAT", buildgen(id));
+      if (isInfoEnabled()) {
+        info("DISPOSE HEART BEAT", buildgen(id));
+      }
 
       // Remove the listener
       messagesManager.get(id).clear();
       messagesManager.remove(id);
 
-    } catch (Exception e) {
-      error(e, "id: ", id);
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception, "id: ", id);
+      }
     }
   }
 

@@ -43,9 +43,14 @@ public final class PacketQueueImpl implements PacketQueue {
   private volatile int size;
 
   private PacketQueueImpl() {
-    queue = new TreeSet<Packet>();
+    queue = new TreeSet<>();
   }
 
+  /**
+   * Creates a new instance of a packet queue.
+   *
+   * @return a new instance of {@link PacketQueue}
+   */
   public static PacketQueueImpl newInstance() {
     return new PacketQueueImpl();
   }

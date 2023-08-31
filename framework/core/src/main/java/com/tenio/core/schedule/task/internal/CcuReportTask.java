@@ -24,11 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.internal;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * To retrieve the CCU in period time. You can configure this time in your own
  * configurations, see {@link CoreConfiguration}
  */
-public final class CcuReportTask extends AbstractTask {
+public final class CcuReportTask extends AbstractSystemTask {
 
   private PlayerManager playerManager;
 
@@ -45,17 +46,36 @@ public final class CcuReportTask extends AbstractTask {
     super(eventManager);
   }
 
+  /**
+   * Creates a new task instance.
+   *
+   * @param eventManager an instance of {@link EventManager}
+   * @return a new instance of {@link CcuReportTask}
+   */
   public static CcuReportTask newInstance(EventManager eventManager) {
     return new CcuReportTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-        () -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount()), 0,
-        interval, TimeUnit.SECONDS);
+    var threadFactory =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ccu-report-task-%d").build();
+    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+        () -> {
+          var worker = new Thread(() -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO,
+              playerManager.getPlayerCount()));
+          worker.setDaemon(true);
+          worker.setName("ccu-report-worker");
+          worker.start();
+        },
+        initialDelay, interval, TimeUnit.SECONDS);
   }
 
+  /**
+   * Sets the player manager instance.
+   *
+   * @param playerManager an instance of {@link PlayerManager}
+   */
   public void setPlayerManager(PlayerManager playerManager) {
     this.playerManager = playerManager;
   }

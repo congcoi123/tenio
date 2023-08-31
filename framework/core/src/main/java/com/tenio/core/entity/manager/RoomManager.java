@@ -33,7 +33,6 @@ import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.manager.Manager;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * All supported APIs for the room management.
@@ -62,6 +61,19 @@ public interface RoomManager extends Manager {
    *                                      is mentioned again
    */
   void addRoom(Room room) throws AddedDuplicatedRoomException;
+
+  /**
+   * Adds a new room to the server.
+   *
+   * @param room        an instance of {@link Room}
+   * @param roomSetting all settings created by a {@link InitialRoomSetting} builder
+   * @param player      a {@link Player} as the room's owner
+   * @throws AddedDuplicatedRoomException when a room is already available on the server, but it
+   *                                      is mentioned again
+   * @since 0.5.0
+   */
+  void addRoomWithOwner(Room room, InitialRoomSetting roomSetting, Player player)
+      throws AddedDuplicatedRoomException;
 
   /**
    * Creates a new room without an owner and adds it to the server.
@@ -169,11 +181,11 @@ public interface RoomManager extends Manager {
   /**
    * Updates a room's capacity.
    *
-   * @param room          the updating {@link Room}
-   * @param maxParticipants    the maximum number of participants allows in the room
-   *                           ({@code integer} value)
-   * @param maxSpectators the maximum number of spectators allows in the room
-   *                      ({@code integer} value)
+   * @param room            the updating {@link Room}
+   * @param maxParticipants the maximum number of participants allows in the room
+   *                        ({@code integer} value)
+   * @param maxSpectators   the maximum number of spectators allows in the room
+   *                        ({@code integer} value)
    * @throws IllegalArgumentException when invalid value is set
    */
   void changeRoomCapacity(Room room, int maxParticipants, int maxSpectators)

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.common.utility.StringUtility;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ServiceRuntimeException;
@@ -58,6 +59,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   private SessionManager sessionManager;
 
   private volatile boolean activated;
+  private boolean stopping;
 
   /**
    * Initialization.
@@ -70,16 +72,20 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     executorSize = DEFAULT_NUMBER_WORKERS;
     bufferSize = DEFAULT_BUFFER_SIZE;
     activated = false;
+    stopping = false;
     id = new AtomicInteger();
   }
 
   private void initializeWorkers() {
-    executorService = Executors.newFixedThreadPool(executorSize);
+    var threadFactory = new ThreadFactoryBuilder().setDaemon(true).build();
+    executorService = Executors.newFixedThreadPool(executorSize, threadFactory);
     for (int i = 0; i < executorSize; i++) {
       try {
         Thread.sleep(100L);
-      } catch (InterruptedException e) {
-        error(e);
+      } catch (InterruptedException exception) {
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
       executorService.execute(this);
     }
@@ -88,14 +94,21 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
       if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
         try {
           halting();
-        } catch (Exception e) {
-          error(e);
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
     }));
   }
 
   private void halting() throws ServiceRuntimeException {
+    if (stopping) {
+      return;
+    }
+
+    stopping = true;
     activated = false;
 
     onShutdown();
@@ -114,9 +127,13 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   }
 
   private void destroyEngine() {
-    info("STOPPED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("STOPPED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
     onDestroyed();
-    info("DESTROYED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("DESTROYED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override
@@ -126,8 +143,13 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   }
 
   private void setThreadName() {
-    Thread.currentThread()
-        .setName(StringUtility.strgen("zero-", getName(), "-", id.incrementAndGet()));
+    Thread currentThread = Thread.currentThread();
+    currentThread.setName(StringUtility.strgen("zero-", getName(), "-", id.incrementAndGet()));
+    currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+      if (isErrorEnabled()) {
+        error(cause, thread.getName());
+      }
+    });
   }
 
   @Override
@@ -190,7 +212,9 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   public void start() {
     onStarted();
     activated = true;
-    info("START SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override

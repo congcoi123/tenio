@@ -24,20 +24,20 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
 
 /**
  * When the server receives a message from a player.
  */
 @FunctionalInterface
-public interface EventReceivedMessageFromPlayer {
+public interface EventReceivedMessageFromPlayer<P extends Player> {
 
   /**
    * When the server receives a message from a player.
    *
    * @param player  the {@link Player} which is sending a message to the server
-   * @param message the receiving {@link ServerMessage}
+   * @param message the receiving {@link DataCollection}
    */
-  void handle(Player player, ServerMessage message);
+  void handle(P player, DataCollection message);
 }

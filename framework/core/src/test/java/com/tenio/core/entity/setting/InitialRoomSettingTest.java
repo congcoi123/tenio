@@ -18,7 +18,7 @@ class InitialRoomSettingTest {
     InitialRoomSetting actualBuildResult = InitialRoomSetting.Builder.newInstance().build();
     assertEquals(0, actualBuildResult.getMaxParticipants());
     assertFalse(actualBuildResult.isActivated());
-    assertEquals(RoomRemoveMode.DEFAULT, actualBuildResult.getRoomRemoveMode());
+    assertEquals(RoomRemoveMode.WHEN_EMPTY, actualBuildResult.getRoomRemoveMode());
     assertTrue(actualBuildResult
         .getRoomPlayerSlotGeneratedStrategy() instanceof com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy);
     assertTrue(actualBuildResult
@@ -50,7 +50,7 @@ class InitialRoomSettingTest {
     actualNewInstanceResult.setMaxSpectators(3);
     actualNewInstanceResult.setName("Name");
     actualNewInstanceResult.setPassword("iloveyou");
-    actualNewInstanceResult.setRoomRemoveMode(RoomRemoveMode.DEFAULT);
+    actualNewInstanceResult.setRoomRemoveMode(RoomRemoveMode.WHEN_EMPTY);
   }
 
   @Test

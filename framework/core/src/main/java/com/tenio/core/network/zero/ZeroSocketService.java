@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero;
 
 import com.tenio.common.data.DataType;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -35,7 +35,6 @@ import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 /**
  * All APIs designed for working with sockets (TCP/UDP).
@@ -145,12 +144,11 @@ public interface ZeroSocketService extends Service {
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
   /**
-   * Declares a list of socket configurations for the network.
+   * Declares socket (TCP) configuration for the network.
    *
-   * @param socketConfigs a list of {@link SocketConfig}
-   * @see List
+   * @param socketConfiguration an instance of {@link SocketConfiguration}
    */
-  void setSocketConfigs(List<SocketConfig> socketConfigs);
+  void setSocketConfig(SocketConfiguration socketConfiguration);
 
   /**
    * Sets an instance of packet encoder to encode packets for sending to clients side via the

@@ -31,7 +31,7 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
  * When a player is disconnected.
  */
 @FunctionalInterface
-public interface EventDisconnectPlayer {
+public interface EventDisconnectPlayer<P extends Player> {
 
   /**
    * When a player is disconnected from the server, and it is also removed from the management list.
@@ -40,5 +40,5 @@ public interface EventDisconnectPlayer {
    * @param mode   the corresponding {@link PlayerDisconnectMode} which shows the reason for
    *               disconnection
    */
-  void handle(Player player, PlayerDisconnectMode mode);
+  void handle(P player, PlayerDisconnectMode mode);
 }

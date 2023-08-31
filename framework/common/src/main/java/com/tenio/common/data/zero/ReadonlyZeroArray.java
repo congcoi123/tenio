@@ -41,6 +41,15 @@ public interface ReadonlyZeroArray extends DataCollection {
   boolean contains(Object element);
 
   /**
+   * Determines whether a value is present at the index or not.
+   *
+   * @param index the array's index
+   * @return <code>true</code> if the value is existed, otherwise <code>false</code>
+   * @since 0.5.0
+   */
+  boolean containsValueAt(int index);
+
+  /**
    * Retrieves the data of element at index in the array.
    *
    * @param index the <code>integer</code> index needs to be checked

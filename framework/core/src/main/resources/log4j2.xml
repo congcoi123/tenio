@@ -56,6 +56,12 @@
 			<AppenderRef ref="error-log"/>
 		</Logger>
 
+		<Logger name="org.hibernate" level="warn" additivity="false">
+			<AppenderRef ref="${target}"/>
+		</Logger>
+
+		<Logger name="org.reflections" level="OFF"/>
+
 		<Root level="${level}">
 			<AppenderRef ref="console-log"/>
 			<AppenderRef ref="all-log"/>

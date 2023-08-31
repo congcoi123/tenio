@@ -174,4 +174,12 @@ public interface Response {
    * @param delayInMilliseconds allows delaying in the number of milliseconds
    */
   void writeInDelay(long delayInMilliseconds);
+
+  /**
+   * Writes down the content data to sessions for sending to client sides then disconnect them
+   * (close sessions).
+   *
+   * @since 0.5.0
+   */
+  void writeThenClose();
 }

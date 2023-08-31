@@ -24,9 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.schedule.task.kcp;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
-import com.tenio.core.schedule.task.AbstractTask;
+import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -34,9 +35,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This task takes responsibility to update every KCP channel frequently.
+ *
  * @since 0.3.0
  */
-public final class KcpUpdateTask extends AbstractTask {
+public final class KcpUpdateTask extends AbstractSystemTask {
 
   private SessionManager sessionManager;
 
@@ -44,15 +46,25 @@ public final class KcpUpdateTask extends AbstractTask {
     super(eventManager);
   }
 
+  /**
+   * Creates a new instance of KCP updater.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link KcpUpdateTask}
+   */
   public static KcpUpdateTask newInstance(EventManager eventManager) {
     return new KcpUpdateTask(eventManager);
   }
 
   @Override
   public ScheduledFuture<?> run() {
-    ExecutorService workers = Executors.newFixedThreadPool(Runtime.getRuntime()
-        .availableProcessors() * 2);
-    return Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+    var threadFactoryTask =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("kcp-update-task-%d").build();
+    int executorSize = Runtime.getRuntime().availableProcessors() * 2;
+    var threadFactoryWorker =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("kcp-update-worker-%d").build();
+    ExecutorService workers = Executors.newFixedThreadPool(executorSize, threadFactoryWorker);
+    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
           var iterator = sessionManager.getSessionIterator();
           while (iterator.hasNext()) {

@@ -64,6 +64,16 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
     this.networkReaderStatistic = networkReaderStatistic;
   }
 
+  /**
+   * Creates a new instance of the websocket hand shaker.
+   *
+   * @param eventManager           the instance of {@link EventManager}
+   * @param sessionManager         the instance of {@link SessionManager}
+   * @param connectionFilter       the instance of {@link ConnectionFilter}
+   * @param dataType               the {@link DataType}
+   * @param networkReaderStatistic the instance of {@link NetworkReaderStatistic}
+   * @return a new instance of {@link NettyWsHandShake}
+   */
   public static NettyWsHandShake newInstance(EventManager eventManager,
                                              SessionManager sessionManager,
                                              ConnectionFilter connectionFilter,

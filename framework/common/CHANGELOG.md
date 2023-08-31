@@ -21,3 +21,12 @@
 
 ## 0.4.0 2022-11-20 Feature release
 - Moved annotations management to the [tenio-core](https://github.com/congcoi123/tenio-core) module
+
+## 0.5.0 2023-08-30 Feature release
+- Upgraded to JDK 17
+- Upgraded dependencies
+- Allowed checking logging configuration before writing logs
+- Added some utility methods to work with custom data types
+- Changed some methods' names
+- Fixed test cases' issues
+- Bugs fixed 

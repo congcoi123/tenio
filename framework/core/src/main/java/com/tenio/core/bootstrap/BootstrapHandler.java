@@ -27,8 +27,11 @@ package com.tenio.core.bootstrap;
 import com.tenio.core.bootstrap.annotation.Autowired;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.configuration.ConfigurationHandler;
-import com.tenio.core.command.CommandManager;
+import com.tenio.core.command.client.ClientCommandManager;
+import com.tenio.core.command.system.SystemCommandManager;
 import com.tenio.core.event.handler.EventHandler;
+import java.util.Map;
+import javax.servlet.http.HttpServlet;
 
 /**
  * This class provides instances for the events handler and the configuration setups.
@@ -40,10 +43,15 @@ public final class BootstrapHandler {
   private EventHandler eventHandler;
 
   @Autowired
-  private CommandManager commandManager;
+  private SystemCommandManager systemCommandManager;
+
+  @Autowired
+  private ClientCommandManager clientCommandManager;
 
   @Autowired
   private ConfigurationHandler configurationHandler;
+
+  private Map<String, HttpServlet> servletMap;
 
   /**
    * Retrieves an events handler.
@@ -55,13 +63,23 @@ public final class BootstrapHandler {
   }
 
   /**
-   * Retrieves a commands' manager.
+   * Retrieves a system commands' manager.
    *
-   * @return the {@link CommandManager} instance
+   * @return the {@link SystemCommandManager} instance
    * @since 0.4.0
    */
-  public CommandManager getCommandManager() {
-    return commandManager;
+  public SystemCommandManager getSystemCommandManager() {
+    return systemCommandManager;
+  }
+
+  /**
+   * Retrieves a client commands' manager.
+   *
+   * @return the {@link ClientCommandManager} instance
+   * @since 0.5.0
+   */
+  public ClientCommandManager getClientCommandManager() {
+    return clientCommandManager;
   }
 
   /**
@@ -71,5 +89,41 @@ public final class BootstrapHandler {
    */
   public ConfigurationHandler getConfigurationHandler() {
     return configurationHandler;
+  }
+
+  /**
+   * Retrieves servlet configuration.
+   *
+   * @return a {@link Map} of servlet configuration
+   */
+  public Map<String, HttpServlet> getServletMap() {
+    return servletMap;
+  }
+
+  /**
+   * Sets servlet configuration.
+   *
+   * @param servletMap a {@link Map} of servlet configurations
+   */
+  public void setServletMap(Map<String, HttpServlet> servletMap) {
+    this.servletMap = servletMap;
+  }
+
+  /**
+   * Sets the system command manager.
+   *
+   * @param systemCommandManager an instance of {@link SystemCommandManager}
+   */
+  public void setSystemCommandManager(SystemCommandManager systemCommandManager) {
+    this.systemCommandManager = systemCommandManager;
+  }
+
+  /**
+   * Sets the client command manager.
+   *
+   * @param clientCommandManager an instance of {@link ClientCommandManager}
+   */
+  public void setClientCommandManager(ClientCommandManager clientCommandManager) {
+    this.clientCommandManager = clientCommandManager;
   }
 }

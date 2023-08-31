@@ -3,14 +3,12 @@ package com.tenio.engine.fsm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.tenio.engine.exception.DuplicatedEntityException;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import org.junit.jupiter.api.Test;
 
@@ -21,15 +19,6 @@ class EntityManagerTest {
     AbstractEntity abstractEntity = mock(AbstractEntity.class);
     when(abstractEntity.getId()).thenReturn("42");
     entityManager.register(abstractEntity);
-    verify(abstractEntity, atLeast(1)).getId();
-  }
-
-  @Test
-  void testRegister2() {
-    EntityManager entityManager = new EntityManager();
-    AbstractEntity abstractEntity = mock(AbstractEntity.class);
-    when(abstractEntity.getId()).thenThrow(new DuplicatedEntityException());
-    assertThrows(DuplicatedEntityException.class, () -> entityManager.register(abstractEntity));
     verify(abstractEntity, atLeast(1)).getId();
   }
 

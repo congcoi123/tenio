@@ -16,8 +16,8 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://img.shields.io/discord/1146091189456613407">
     </a>
 </p>
 
@@ -29,12 +29,12 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.4.0
-- tenio-engine 0.2.0
+- tenio-core 0.5.0
+- tenio-engine 0.5.0
 ```
 
 ## Requirements
-- Java 11
+- Java 17
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
@@ -88,42 +88,43 @@ public final class TestSimpleServer {
       implements EventConnectionEstablishedResult {
 
     @Override
-    public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+    public void handle(Session session, DataCollection message,
+                       ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
-        var data = (ZeroMap) message.getData();
+        var request = (ZeroMap) message;
 
-        api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
     }
   }
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult {
+      implements EventPlayerLoggedinResult<Player> {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
       if (result == PlayerLoggedInResult.SUCCESS) {
-        var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
             String.format("Welcome to server: %s", player.getName()));
 
-        response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
       }
     }
   }
 
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer {
+      implements EventReceivedMessageFromPlayer<Player> {
 
     @Override
-    public void handle(Player player, ServerMessage message) {
-      var data =
+    public void handle(Player player, DataCollection message) {
+      var parcel =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getName(),
-              ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }
@@ -216,8 +217,8 @@ $ java TestServerLogin configuration.example1.xml
     |-- example2
     |   |-- (*)TestFsmMechanism
     |-- example3
-    |   |-- TestClientAttach
-    |   |-- TestServerAttach
+    |   |-- TestClientAccessDatagramChannel
+    |   |-- TestServerAccessDatagramChannel
     |-- example4
     |   |-- TestClientMovement
     |   |-- TestServerMovement

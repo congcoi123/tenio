@@ -25,8 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network;
 
 import com.tenio.common.data.DataType;
-import com.tenio.core.network.define.data.PathConfig;
-import com.tenio.core.network.define.data.SocketConfig;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
@@ -41,8 +40,8 @@ import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServlet;
 
 /**
  * All designed APIs for the network services.
@@ -50,19 +49,14 @@ import java.util.List;
 public interface NetworkService extends Service {
 
   /**
-   * Assigns a port number for the HTTP service.
-   *
-   * @param port the number ({@code integer} value) for the HTTP service
-   */
-  void setHttpPort(int port);
-
-  /**
    * Declares a collection of path configurations for the HTTP service.
    *
-   * @param pathConfigs a collection of {@link PathConfig}
-   * @see Collection
+   * @param threadPoolSize the number of workers in HTTP service
+   * @param port           the port number for the HTTP service
+   * @param servletMap     a collection of {@link HttpServlet}
+   * @see Map
    */
-  void setHttpPathConfigs(List<PathConfig> pathConfigs);
+  void setHttpConfiguration(int threadPoolSize, int port, Map<String, HttpServlet> servletMap);
 
   /**
    * Sets an implementation class for the connection filter.
@@ -197,12 +191,13 @@ public interface NetworkService extends Service {
   void setSocketWriterBufferSize(int bufferSize);
 
   /**
-   * Declares a list of socket configurations for the network.
+   * Declares socket configurations for the network.
    *
-   * @param socketConfigs a list of {@link SocketConfig}
-   * @see List
+   * @param socketConfiguration    a {@link SocketConfiguration} instance for TCP
+   * @param webSocketConfiguration a {@link SocketConfiguration} instance for WebSocket
    */
-  void setSocketConfigs(List<SocketConfig> socketConfigs);
+  void setSocketConfiguration(SocketConfiguration socketConfiguration,
+                              SocketConfiguration webSocketConfiguration);
 
   /**
    * Determines if UDP channels can use KCP transportation for communication.
@@ -210,6 +205,15 @@ public interface NetworkService extends Service {
    * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
    */
   void setSessionEnabledKcp(boolean enabledKcp);
+
+  /**
+   * Sets the maximum time in seconds which allows the session to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                session to get in IDLE state
+   */
+  void setSessionMaxIdleTimeInSeconds(int seconds);
 
   /**
    * Sets a packet queue policy class for the network.
@@ -292,7 +296,8 @@ public interface NetworkService extends Service {
   /**
    * Writes down (binaries) data to socket/channel in order to send them to clients side.
    *
-   * @param response an instance of {@link Response} using to carry conveying information
+   * @param response     an instance of {@link Response} using to carry conveying information
+   * @param markedAsLast marks as this writing is the last one
    */
-  void write(Response response);
+  void write(Response response, boolean markedAsLast);
 }

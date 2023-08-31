@@ -33,6 +33,7 @@ import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.schedule.task.internal.AutoCleanOrphanSessionTask;
 import com.tenio.core.schedule.task.internal.AutoDisconnectPlayerTask;
 import com.tenio.core.schedule.task.internal.AutoRemoveRoomTask;
 import com.tenio.core.schedule.task.internal.CcuReportTask;
@@ -48,24 +49,24 @@ import com.tenio.core.schedule.task.kcp.KcpUpdateTask;
  */
 public final class ScheduleServiceImpl extends AbstractManager implements ScheduleService {
 
+  private final AutoDisconnectPlayerTask autoDisconnectPlayerTask;
+  private final AutoCleanOrphanSessionTask autoCleanOrphanSessionTask;
+  private final AutoRemoveRoomTask autoRemoveRoomTask;
+  private final CcuReportTask ccuReportTask;
+  private final DeadlockScanTask deadlockScanTask;
+  private final SystemMonitoringTask systemMonitoringTask;
+  private final TrafficCounterTask trafficCounterTask;
+  private final KcpUpdateTask kcpUpdateTask;
   private TaskManager taskManager;
-
-  private AutoDisconnectPlayerTask autoDisconnectPlayerTask;
-  private AutoRemoveRoomTask autoRemoveRoomTask;
-  private CcuReportTask ccuReportTask;
-  private DeadlockScanTask deadlockScanTask;
-  private SystemMonitoringTask systemMonitoringTask;
-  private TrafficCounterTask trafficCounterTask;
-
-  private KcpUpdateTask kcpUpdateTask;
-
   private boolean enabledKcp;
   private boolean initialized;
+  private boolean stopping;
 
   private ScheduleServiceImpl(EventManager eventManager) {
     super(eventManager);
 
     autoDisconnectPlayerTask = AutoDisconnectPlayerTask.newInstance(this.eventManager);
+    autoCleanOrphanSessionTask = AutoCleanOrphanSessionTask.newInstance(this.eventManager);
     autoRemoveRoomTask = AutoRemoveRoomTask.newInstance(this.eventManager);
     ccuReportTask = CcuReportTask.newInstance(this.eventManager);
     deadlockScanTask = DeadlockScanTask.newInstance(this.eventManager);
@@ -75,8 +76,15 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
     kcpUpdateTask = KcpUpdateTask.newInstance(this.eventManager);
 
     initialized = false;
+    stopping = false;
   }
 
+  /**
+   * Retrieves a new instance of schedule service.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link ScheduleService}
+   */
   public static ScheduleService newInstance(EventManager eventManager) {
     return new ScheduleServiceImpl(eventManager);
   }
@@ -93,10 +101,13 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
   @Override
   public void start() {
-    info("START SERVICE", buildgen(getName(), " (", 1, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE", buildgen(getName(), " (", 1, ")"));
+    }
 
-    // taskManager.create("auto-disconnect-player", autoDisconnectPlayerTask.run());
-    // taskManager.create("auto-remove-room", autoRemoveRoomTask.run());
+    taskManager.create("auto-disconnect-player", autoDisconnectPlayerTask.run());
+    taskManager.create("auto-clean-orphan-session", autoCleanOrphanSessionTask.run());
+    taskManager.create("auto-remove-room", autoRemoveRoomTask.run());
     taskManager.create("ccu-report", ccuReportTask.run());
     taskManager.create("dead-lock", deadlockScanTask.run());
     taskManager.create("system-monitoring", systemMonitoringTask.run());
@@ -112,25 +123,19 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
     if (!initialized) {
       return;
     }
+    if (stopping) {
+      return;
+    }
+    stopping = true;
     attemptToShutdown();
   }
 
   private void attemptToShutdown() {
     taskManager.clear();
 
-    info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
-    cleanup();
-    info("DESTROYED SERVICE", buildgen(getName(), " (", 1, ")"));
-  }
-
-  private void cleanup() {
-    autoDisconnectPlayerTask = null;
-    autoRemoveRoomTask = null;
-    ccuReportTask = null;
-    deadlockScanTask = null;
-    systemMonitoringTask = null;
-    trafficCounterTask = null;
-    kcpUpdateTask = null;
+    if (isInfoEnabled()) {
+      info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
+    }
   }
 
   @Override
@@ -156,6 +161,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   @Override
   public void setDisconnectedPlayerScanInterval(int interval) {
     autoDisconnectPlayerTask.setInterval(interval);
+    autoCleanOrphanSessionTask.setInterval(interval);
   }
 
   @Override
@@ -180,6 +186,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
   @Override
   public void setSessionManager(SessionManager sessionManager) {
+    autoCleanOrphanSessionTask.setSessionManager(sessionManager);
     kcpUpdateTask.setSessionManager(sessionManager);
   }
 

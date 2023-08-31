@@ -88,9 +88,11 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public void setComponent(int index, Component component) {
     if (hasComponent(index)) {
-      var e = new DuplicatedComponentException();
-      error(e, "index: ", index);
-      throw e;
+      var exception = new DuplicatedComponentException();
+      if (isErrorEnabled()) {
+        error(exception, "index: ", index);
+      }
+      throw exception;
     }
 
     components[index] = component;
@@ -99,9 +101,11 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public void removeComponent(int index) {
     if (!hasComponent(index)) {
-      var e = new ComponentIsNotExistedException();
-      error(e, "index: ", index);
-      throw e;
+      var exception = new ComponentIsNotExistedException();
+      if (isErrorEnabled()) {
+        error(exception, "index: ", index);
+      }
+      throw exception;
     }
 
     replaceComponentInternal(index, null);

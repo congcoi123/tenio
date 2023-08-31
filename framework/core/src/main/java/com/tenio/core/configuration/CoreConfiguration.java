@@ -29,15 +29,10 @@ import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XmlUtility;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.setting.Setting;
-import com.tenio.core.network.define.RestMethod;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.define.data.HttpConfig;
-import com.tenio.core.network.define.data.PathConfig;
-import com.tenio.core.network.define.data.SocketConfig;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -48,24 +43,6 @@ import org.w3c.dom.Node;
  * configuration values.
  */
 public abstract class CoreConfiguration extends CommonConfiguration {
-
-  /**
-   * All ports in sockets zone.
-   */
-  private final List<SocketConfig> socketConfigs;
-
-  /**
-   * All ports in HTTPs zone.
-   */
-  private final List<HttpConfig> httpConfigs;
-
-  /**
-   * The constructor.
-   */
-  public CoreConfiguration() {
-    socketConfigs = new ArrayList<>();
-    httpConfigs = new ArrayList<>();
-  }
 
   /**
    * Reads file content and converts it to configuration values.
@@ -108,36 +85,20 @@ public abstract class CoreConfiguration extends CommonConfiguration {
     var attrNetworkSockets = XmlUtility.getNodeList(root, "//Server/Network/Sockets/Port");
     for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
       var dataNode = attrNetworkSockets.item(j);
-      var port = new SocketConfig(dataNode.getAttributes().getNamedItem("name").getTextContent(),
-          TransportType.getByValue(dataNode.getAttributes().getNamedItem("type").getTextContent()),
-          Integer.parseInt(dataNode.getTextContent()));
+      var socketConfiguration =
+          new SocketConfiguration(dataNode.getAttributes().getNamedItem("name").getTextContent(),
+              TransportType.getByValue(
+                  dataNode.getAttributes().getNamedItem("type").getTextContent()),
+              Integer.parseInt(dataNode.getTextContent()));
 
-      socketConfigs.add(port);
-    }
-    push(CoreConfigurationType.NETWORK_SOCKET_CONFIGS, socketConfigs);
-    // Network HTTPs
-    var attrNetworkHttps = XmlUtility.getNodeList(root, "//Server/Network/Http/Port");
-    for (int i = 0; i < attrNetworkHttps.getLength(); i++) {
-      var portNode = attrNetworkHttps.item(i);
-      var port = new HttpConfig(portNode.getAttributes().getNamedItem("name").getTextContent(),
-          Integer.parseInt(portNode.getAttributes().getNamedItem("value").getTextContent()));
-
-      var attrHttpPaths = XmlUtility.getNodeList(attrNetworkHttps.item(i), "//Path");
-      for (int j = 0; j < attrHttpPaths.getLength(); j++) {
-        var pathNode = attrHttpPaths.item(j);
-        var path = new PathConfig(pathNode.getAttributes().getNamedItem("name").getTextContent(),
-            RestMethod.getByValue(
-                pathNode.getAttributes().getNamedItem("method").getTextContent()),
-            pathNode.getTextContent(),
-            pathNode.getAttributes().getNamedItem("desc").getTextContent(),
-            Integer.parseInt(pathNode.getAttributes().getNamedItem("version").getTextContent()));
-
-        port.addPath(path);
+      if (socketConfiguration.type() == TransportType.TCP) {
+        push(CoreConfigurationType.NETWORK_SOCKET, socketConfiguration);
+      } else if (socketConfiguration.type() == TransportType.WEB_SOCKET) {
+        push(CoreConfigurationType.NETWORK_WEBSOCKET, socketConfiguration);
+      } else if (socketConfiguration.type() == TransportType.HTTP) {
+        push(CoreConfigurationType.NETWORK_HTTP, socketConfiguration);
       }
-
-      httpConfigs.add(port);
     }
-    push(CoreConfigurationType.NETWORK_HTTP_CONFIGS, httpConfigs);
 
     // Implemented Classes
     var attrImplementedClasses = XmlUtility.getNodeList(root, "//Server/Implements/Class");

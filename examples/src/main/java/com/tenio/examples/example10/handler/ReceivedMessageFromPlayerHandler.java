@@ -24,25 +24,25 @@ THE SOFTWARE.
 
 package com.tenio.examples.example10.handler;
 
-import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.examples.server.SharedEventKey;
 
-@Component
+@EventHandler
 public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer {
+    implements EventReceivedMessageFromPlayer<Player> {
 
   @Override
-  public void handle(Player player, ServerMessage message) {
-    var data =
+  public void handle(Player player, DataCollection message) {
+    var parcel =
         msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
             player.getName(),
-            ((MsgPackMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+            ((MsgPackMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-    response().setContent(data.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
+    response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedUdp().write();
   }
 }

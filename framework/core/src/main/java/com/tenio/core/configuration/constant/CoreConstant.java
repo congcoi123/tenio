@@ -24,7 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.constant;
 
+import com.tenio.common.data.zero.ZeroArray;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.network.zero.engine.implement.ZeroReaderImpl;
 
 /**
  * This class holds constant values for the module.
@@ -43,11 +46,6 @@ public final class CoreConstant {
    * The HTTP response with content type in text.
    */
   public static final String CONTENT_TYPE_TEXT = "text/html";
-  /**
-   * The default URI path when the HTTP service was started (To confirm if the service
-   * was started or not).
-   */
-  public static final String PING_PATH = "/ping";
   /**
    * The server's default configuration file name.
    */
@@ -68,6 +66,27 @@ public final class CoreConstant {
    * The default commands package.
    */
   public static final String DEFAULT_COMMAND_PACKAGE = "com.tenio.core.command";
+  /**
+   * The default restful controllers package.
+   */
+  public static final String DEFAULT_REST_CONTROLLER_PACKAGE = "com.tenio.core.network.jetty" +
+      ".controller";
+  /**
+   * The default key value which carries the convey ID. This is for the first connection to UDP
+   * channel on the server side from the client.
+   *
+   * @see ZeroReaderImpl
+   */
+  public static final String DEFAULT_KEY_UDP_CONVEY_ID = "u";
+  /**
+   * The default data value which carries message (array, map). This is for the first connection to
+   * UDP channel on the server side from the client.
+   *
+   * @see ZeroReaderImpl
+   * @see ZeroArray
+   * @see ZeroMap
+   */
+  public static final String DEFAULT_KEY_UDP_MESSAGE_DATA = "d";
 
   private CoreConstant() {
     throw new UnsupportedOperationException("This class does not support to create a new instance");

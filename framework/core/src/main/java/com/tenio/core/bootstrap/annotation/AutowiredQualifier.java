@@ -44,10 +44,22 @@ import java.lang.annotation.Target;
 public @interface AutowiredQualifier {
 
   /**
-   * Declares the name should be used to distinguish implementations, otherwise, it will use the
-   * implementation class name.
+   * Declares the name should be used to distinguish implementations.
    *
    * @return the qualifier name for an implementation
    */
-  String value() default "";
+  String name() default "";
+
+  /**
+   * Declares the name should be used to distinguish implementations.
+   *
+   * @return the qualifier name for an implementation
+   */
+  Class<?> clazz() default DEFAULT.class;
+
+  /**
+   * Dummy default class
+   */
+  final class DEFAULT {
+  }
 }

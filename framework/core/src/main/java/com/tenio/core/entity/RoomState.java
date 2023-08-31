@@ -24,8 +24,22 @@ THE SOFTWARE.
 
 package com.tenio.core.entity;
 
+import com.tenio.core.schedule.task.internal.AutoRemoveRoomTask;
+
 /**
  * Definitions for room states. All customized states must be implemented this interface.
  */
 public interface RoomState {
+
+  /**
+   * Determines whether the room state is in IDLE, this will be used in auto removing room
+   * mechanism.
+   *
+   * @return {@code true} if the current room state is IDLE, otherwise returns {@code false}
+   * @see AutoRemoveRoomTask
+   * @since 0.5.0
+   */
+  default boolean isIdle() {
+    return false;
+  };
 }

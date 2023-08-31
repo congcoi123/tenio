@@ -16,10 +16,11 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://gitter.im/ten-io/community?source=orgpage">
-        <img src="https://badges.gitter.im/Join%20Chat.svg">
+    <a href="https://discord.gg/MGCxEwUR">
+        <img src="https://img.shields.io/discord/1146091189456613407">
     </a>
 </p>
+
 
 # TenIO [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=TenIO%20is%20a%20java%20NIO%20based%20server%20specifically%20designed%20for%20multiplayer%20games.%0D%0A&url=https://github.com/congcoi123/tenio%0D%0A&hashtags=tenio,java,gameserver,multiplayer,nio,netty,jetty,msgpack,cocos2dx,unity,libgdx,phaserjs%0D%0A&via=congcoi123)
 `TenIO` is an open-source project to create multiplayer online games that includes a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games, which supports UDP, TCP, Websocket, HTTP transports, and available simple client projects for quick development.
@@ -33,8 +34,8 @@
 - Have simple existing game clients for rapid development
 
 ## Showcases
-| [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
-| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [<img src="assets/game-box-online-logo.png" width="100px;"/><br /><sub><b>Game Box Online</b></sub>](https://www.youtube.com/watch?v=yLo2TRYd7Yw)<br />        | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## First Glimpse
 Simple Movement Simulation  
@@ -78,42 +79,43 @@ public final class TestSimpleServer {
       implements EventConnectionEstablishedResult {
 
     @Override
-    public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+    public void handle(Session session, DataCollection message,
+                       ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
-        var data = (ZeroMap) message.getData();
+        var request = (ZeroMap) message;
 
-        api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
     }
   }
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult {
+      implements EventPlayerLoggedinResult<Player> {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
       if (result == PlayerLoggedInResult.SUCCESS) {
-        var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
             String.format("Welcome to server: %s", player.getName()));
 
-        response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
       }
     }
   }
 
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer {
+      implements EventReceivedMessageFromPlayer<Player> {
 
     @Override
-    public void handle(Player player, ServerMessage message) {
-      var data =
+    public void handle(Player player, DataCollection message) {
+      var parcel =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getName(),
-              ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }
@@ -200,9 +202,7 @@ The project is strongly based on the same name framework as you can be reference
 
 ## Requirements
 ```txt
-- Java 11
-- Java 8
-- Docker
+- Java 17
 ```
 
 ## License

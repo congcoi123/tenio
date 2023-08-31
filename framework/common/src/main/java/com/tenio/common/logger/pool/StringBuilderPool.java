@@ -104,8 +104,10 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
       used[i] = false;
     }
 
-    infoWithoutPool(strgen("Increased the number of elements by ",
-        CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
+    if (logger.isInfoEnabled()) {
+      infoWithoutPool(strgen("Increased the number of elements by ",
+          CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
+    }
 
     // and allocate the last old element
     used[oldPool.length - 1] = true;
@@ -125,9 +127,11 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
       }
     }
     if (!flagFound) {
-      var e = new NullElementPoolException(element.toString());
-      errorWithoutPool(e);
-      throw e;
+      var exception = new NullElementPoolException(element.toString());
+      if (logger.isErrorEnabled()) {
+        errorWithoutPool(exception);
+      }
+      throw exception;
     }
   }
 
@@ -165,9 +169,6 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * @param msg the message content
    */
   private void infoWithoutPool(String msg) {
-    if (!logger.isInfoEnabled()) {
-      return;
-    }
     logger.info("[STRINGBUILDER POOL] " + msg);
   }
 
@@ -178,9 +179,6 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * @param cause the throwable
    */
   private void errorWithoutPool(Throwable cause) {
-    if (!logger.isErrorEnabled()) {
-      return;
-    }
     logger.error(Throwables.getStackTraceAsString(cause));
   }
 

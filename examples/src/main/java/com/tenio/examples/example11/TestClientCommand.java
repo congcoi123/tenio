@@ -26,7 +26,6 @@ package com.tenio.examples.example11;
 
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
-import com.tenio.core.entity.data.ServerMessage;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
@@ -51,11 +50,11 @@ public final class TestClientCommand implements SocketListener {
     String name = ClientUtility.generateRandomString(5);
 
     // send a login request
-    var data = DataUtility.newZeroMap();
-    data.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-    tcp.send(ServerMessage.newInstance().setData(data));
+    var request = DataUtility.newZeroMap();
+    request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+    tcp.send(request);
 
-    System.err.println("Login Request -> " + data);
+    System.err.println("Login Request -> " + request);
   }
 
   /**
@@ -67,20 +66,18 @@ public final class TestClientCommand implements SocketListener {
 
   @Override
   public void onReceivedTCP(byte[] binaries) {
-    var dat = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-    var message = ServerMessage.newInstance().setData(dat);
+    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binaries);
 
-    System.out.println("[RECV FROM SERVER TCP] -> " + message.getData().toString());
+    System.out.println("[RECV FROM SERVER TCP] -> " + parcel.toString());
 
     try {
       Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    } catch (InterruptedException exception) {
+      exception.printStackTrace();
     }
 
-    var data = DataUtility.newZeroMap();
-    data.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
-    var request = ServerMessage.newInstance().setData(data);
+    var request = DataUtility.newZeroMap();
+    request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     tcp.send(request);
 
     System.err.println("[SENT TO SERVER] -> " + request);
