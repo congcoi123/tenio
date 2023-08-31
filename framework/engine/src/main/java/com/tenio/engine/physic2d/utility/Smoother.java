@@ -61,8 +61,8 @@ public class Smoother<T extends Number> {
     T sum = null;
     try {
       sum = (T) zeroValue.getClass().getConstructor(Float.TYPE).newInstance(0);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception exception) {
+      exception.printStackTrace();
       System.exit(1);
     }
 
