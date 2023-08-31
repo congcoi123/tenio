@@ -34,7 +34,7 @@
 - Have simple existing game clients for rapid development
 
 ## Showcases
-| [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
+| [<img src="assets/game-box-online-logo.png" width="100px;"/><br /><sub><b>Game Box Online</b></sub>](https://www.youtube.com/watch?v=yLo2TRYd7Yw)<br />        | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## First Glimpse
@@ -46,7 +46,7 @@ Simple Movement Simulation
 
 ```Java
 /**
- * This class shows how a simple server handles messages that came from a client.
+ * This class shows how a simple server handle messages that came from a client.
  */
 @Bootstrap
 public final class TestSimpleServer {
@@ -79,42 +79,43 @@ public final class TestSimpleServer {
       implements EventConnectionEstablishedResult {
 
     @Override
-    public void handle(Session session, ServerMessage message, ConnectionEstablishedResult result) {
+    public void handle(Session session, DataCollection message,
+                       ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
-        var data = (ZeroMap) message.getData();
+        var request = (ZeroMap) message;
 
-        api().login(data.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
     }
   }
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult {
+      implements EventPlayerLoggedinResult<Player> {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
       if (result == PlayerLoggedInResult.SUCCESS) {
-        var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
             String.format("Welcome to server: %s", player.getName()));
 
-        response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
       }
     }
   }
 
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer {
+      implements EventReceivedMessageFromPlayer<Player> {
 
     @Override
-    public void handle(Player player, ServerMessage message) {
-      var data =
+    public void handle(Player player, DataCollection message) {
+      var parcel =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getName(),
-              ((ZeroMap) message.getData()).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-      response().setContent(data.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }
