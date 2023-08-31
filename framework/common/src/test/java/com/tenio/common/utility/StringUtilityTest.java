@@ -25,22 +25,23 @@ THE SOFTWARE.
 package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-@DisplayName("Unit Test Cases For Math Utility")
-class MathUtilityTest {
+@DisplayName("Unit Test Cases For String Utility")
+class StringUtilityTest {
 
   @Test
   @DisplayName("Throw an exception when the class's instance is attempted creating")
   void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = MathUtility.class.getDeclaredConstructor();
+    var constructor = StringUtility.class.getDeclaredConstructor();
     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
     assertThrows(InvocationTargetException.class, () -> {
       constructor.setAccessible(true);
@@ -49,23 +50,25 @@ class MathUtilityTest {
   }
 
   @Test
-  void testDegreeToRadian() {
-    assertEquals(0.17453294f, MathUtility.degreeToRadian(10.0f));
+  @DisplayName("It should return expected joined string")
+  void itShouldReturnExpectedJoinedString() {
+    var string = StringUtility.strgen("this", "is", "the", 9, "th", "test");
+    assertEquals("thisisthe9thtest", string);
   }
 
   @Test
-  void testIsEqual() {
-    assertTrue(MathUtility.isEqual(10.0f, 10.0f));
-    assertFalse(MathUtility.isEqual(0.0f, 10.0f));
-  }
+  @DisplayName("It should return random values")
+  void itShouldReturnRandomValues() {
+    var expectedUuid = UUID.randomUUID();
+    var mockUuid = Mockito.mockStatic(UUID.class);
+    mockUuid.when(UUID::randomUUID).thenReturn(expectedUuid);
+    assertEquals(expectedUuid.toString(), StringUtility.getRandomUuid());
 
-  @Test
-  void testRandInt2() {
-    assertEquals(1, MathUtility.randInt(1, 1));
-  }
-
-  @Test
-  void testRandInRange() {
-    assertEquals(10.0f, MathUtility.randInRange(10.0f, 10.0f));
+    var expectedRandom = 0;
+    var ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
+    var mockRandom = Mockito.mockStatic(MathUtility.class);
+    mockRandom.when(() -> MathUtility.randInt(0, ALPHA_NUMERIC_STRING.length()))
+        .thenReturn(expectedRandom);
+    assertEquals("AAAAA", StringUtility.getRandomTextByLength(5));
   }
 }

@@ -71,20 +71,26 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
         if (!tasks.get(id).isDone() || !tasks.get(id).isCancelled()) {
           throw new RunningScheduledTaskException();
         }
-      } catch (RunningScheduledTaskException e) {
-        error(e, "task id: ", id);
+      } catch (RunningScheduledTaskException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "task id: ", id);
+        }
         return;
       }
     }
 
     tasks.put(id, task);
-    info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+    if (isInfoEnabled()) {
+      info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+    }
   }
 
   @Override
   public void kill(String id) {
     if (tasks.containsKey(id)) {
-      info("KILLED TASK", id);
+      if (isInfoEnabled()) {
+        info("KILLED TASK", id);
+      }
       tasks.remove(id);
       var task = tasks.get(id);
       if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
@@ -96,7 +102,9 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   @Override
   public void clear() {
     tasks.forEach((id, task) -> {
-      info("KILLED TASK", id);
+      if (isInfoEnabled()) {
+        info("KILLED TASK", id);
+      }
       if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
         task.cancel(true);
       }

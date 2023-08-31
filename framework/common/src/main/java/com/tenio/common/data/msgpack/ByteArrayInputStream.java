@@ -18,6 +18,7 @@ package com.tenio.common.data.msgpack;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -25,6 +26,7 @@ import java.io.Serializable;
  */
 public final class ByteArrayInputStream extends InputStream implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -5334077014767018880L;
 
   private int offset;

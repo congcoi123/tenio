@@ -26,9 +26,12 @@ package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.custom.StringArrayConverter;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +40,17 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayName("Unit Test Cases For Byte Utility")
 class ByteUtilityTest {
+
+  @Test
+  @DisplayName("Throw an exception when the class's instance is attempted creating")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = ByteUtility.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
+  }
 
   @ParameterizedTest
   @CsvSource({
@@ -53,8 +67,8 @@ class ByteUtilityTest {
   }
 
   @Test
-  void testBytesToInt() throws UnsupportedEncodingException {
-    assertEquals(1094795585, ByteUtility.bytesToInt("AAAAAAAA".getBytes("UTF-8")));
+  void testBytesToInt() {
+    assertEquals(1094795585, ByteUtility.bytesToInt("AAAAAAAA" .getBytes(StandardCharsets.UTF_8)));
   }
 
   @Test
@@ -66,14 +80,15 @@ class ByteUtilityTest {
   }
 
   @Test
-  void testBytesToShort() throws UnsupportedEncodingException {
-    assertEquals((short) 16705, ByteUtility.bytesToShort("AAAAAAAA".getBytes("UTF-8")));
+  void testBytesToShort() {
+    assertEquals((short) 16705,
+        ByteUtility.bytesToShort("AAAAAAAA" .getBytes(StandardCharsets.UTF_8)));
   }
 
   @Test
-  void testResizeBytesArray() throws UnsupportedEncodingException {
+  void testResizeBytesArray() {
     byte[] actualResizeBytesArrayResult =
-        ByteUtility.resizeBytesArray("AAAAAAAA".getBytes("UTF-8"), 1, 3);
+        ByteUtility.resizeBytesArray("AAAAAAAA" .getBytes(StandardCharsets.UTF_8), 1, 3);
     assertEquals(3, actualResizeBytesArrayResult.length);
     assertEquals('A', actualResizeBytesArrayResult[0]);
     assertEquals('A', actualResizeBytesArrayResult[1]);
@@ -81,8 +96,8 @@ class ByteUtilityTest {
   }
 
   @Test
-  void testResizeBytesArray2() throws UnsupportedEncodingException {
+  void testResizeBytesArray2() {
     assertThrows(NegativeArraySizeException.class,
-        () -> ByteUtility.resizeBytesArray("AAAAAAAA".getBytes("UTF-8"), 1, -1));
+        () -> ByteUtility.resizeBytesArray("AAAAAAAA" .getBytes(StandardCharsets.UTF_8), 1, -1));
   }
 }

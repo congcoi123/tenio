@@ -49,11 +49,11 @@ class ConfigurationTest {
   void shouldRetrieveImportedData() {
     assertAll("shouldRetrieveImportedData",
         () -> assertTrue(configuration.getBoolean(DefaultConfigurationType.BOOLEAN)),
-        () -> assertEquals(configuration.getFloat(DefaultConfigurationType.FLOAT), 100F),
-        () -> assertEquals(configuration.getInt(DefaultConfigurationType.INTEGER), 99),
-        () -> assertEquals(configuration.getString(DefaultConfigurationType.STRING), "test"),
-        () -> assertEquals(configuration.get(DefaultConfigurationType.OBJECT),
-            configuration.dummyObject)
+        () -> assertEquals(100F, configuration.getFloat(DefaultConfigurationType.FLOAT)),
+        () -> assertEquals(99, configuration.getInt(DefaultConfigurationType.INTEGER)),
+        () -> assertEquals("test", configuration.getString(DefaultConfigurationType.STRING)),
+        () -> assertEquals(configuration.dummyObject,
+            configuration.get(DefaultConfigurationType.OBJECT))
     );
   }
 
@@ -69,6 +69,6 @@ class ConfigurationTest {
   @DisplayName("To be able to clear all configuration data")
   void clearAllConfigurationsShouldWork() {
     configuration.clear();
-    assertEquals(configuration.toString(), "{}");
+    assertEquals("{}", configuration.toString());
   }
 }

@@ -37,8 +37,7 @@ enum DefaultConfigurationType implements ConfigurationType {
   NULL_DEFINED("NULL_DEFINED");
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, DefaultConfigurationType> lookup =
-      new HashMap<String, DefaultConfigurationType>();
+  private static final Map<String, DefaultConfigurationType> lookup = new HashMap<>();
 
   static {
     for (var configurationType : DefaultConfigurationType.values()) {

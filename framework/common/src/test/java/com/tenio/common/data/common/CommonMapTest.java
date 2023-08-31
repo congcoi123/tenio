@@ -52,16 +52,15 @@ class CommonMapTest {
   @DisplayName("Allow fetching all inserted data")
   void itShouldFetchAllInsertedData() {
     assertAll("itShouldFetchAllInsertedData",
-        () -> assertEquals(commonMap.getDouble("double"), 100.0),
-        () -> assertEquals(commonMap.getFloat("float"), 100.0F),
-        () -> assertEquals(commonMap.getLong("long"), 100L),
-        () -> assertEquals(commonMap.getInt("integer"), 100),
-        () -> assertEquals(commonMap.getString("string"), "test"),
+        () -> assertEquals(100.0, commonMap.getDouble("double")),
+        () -> assertEquals(100.0f, commonMap.getFloat("float")),
+        () -> assertEquals(100L, commonMap.getLong("long")),
+        () -> assertEquals(100, commonMap.getInt("integer")),
+        () -> assertEquals("test", commonMap.getString("string")),
         () -> assertTrue(commonMap.getBoolean("boolean")),
-        () -> assertEquals(commonMap.getCommonObject("common object"), dummyMap),
-        () -> assertEquals(commonMap.getCommonObjectArray("common object array"),
-            dummyArray),
-        () -> assertEquals(commonMap.getObject("object"), dummyMap));
+        () -> assertEquals(dummyMap, commonMap.getCommonObject("common object")),
+        () -> assertEquals(dummyArray, commonMap.getCommonObjectArray("common object array")),
+        () -> assertEquals(dummyMap, commonMap.getObject("object")));
   }
 
   @Test

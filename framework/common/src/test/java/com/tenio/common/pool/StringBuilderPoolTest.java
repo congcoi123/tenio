@@ -24,13 +24,13 @@ THE SOFTWARE.
 
 package com.tenio.common.pool;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.pool.StringBuilderPool;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class StringBuilderPoolTest {
   @DisplayName("To be able to get a builder instance from pool")
   void getBuilderFromPoolShouldWork() {
     var builder = StringBuilderPool.getInstance().get();
-    assertTrue(builder instanceof StringBuilder);
+    assertNotNull(builder);
   }
 
   @Test
@@ -59,7 +59,7 @@ class StringBuilderPoolTest {
     pool.repay(builder);
     var sizeAfter = pool.getAvailableSlot();
 
-    assertTrue(sizeBefore == sizeAfter);
+    assertEquals(sizeBefore, sizeAfter);
   }
 
   @Test
@@ -72,8 +72,8 @@ class StringBuilderPoolTest {
       pool.get();
     }
     var sizeAfter = pool.getAvailableSlot();
-
-    assertTrue(sizeAfter == (sizeBefore - takenNumber));
+    var sizeExpected = sizeBefore - takenNumber;
+    assertEquals(sizeExpected, sizeAfter);
   }
 
   @Test
@@ -87,9 +87,10 @@ class StringBuilderPoolTest {
     }
     var sizeAfter = pool.getPoolSize();
     var sizeExpected =
-        CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL;
+        CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL +
+            CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL;
 
-    assertTrue(sizeAfter == sizeExpected);
+    assertEquals(sizeExpected, sizeAfter);
   }
 
   @Test
@@ -102,7 +103,7 @@ class StringBuilderPoolTest {
     }
     pool.cleanup();
 
-    assertTrue(pool.getAvailableSlot() == pool.getPoolSize());
+    assertEquals(pool.getAvailableSlot(), pool.getPoolSize());
   }
 
   @Test

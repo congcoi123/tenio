@@ -101,9 +101,11 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
     }
 
     if (configuration.containsKey(key)) {
-      info("CONFIGURATION",
-          buildgen("Configuration key [", key, "] attempted to replace the old value ",
-              configuration.get(key), " by the new one ", value));
+      if (isInfoEnabled()) {
+        info("CONFIGURATION",
+            buildgen("Configuration key [", key, "] attempted to replace the old value ",
+                configuration.get(key), " by the new one ", value));
+      }
       return;
     }
 

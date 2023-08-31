@@ -130,6 +130,15 @@ public interface ReadonlyZeroMap extends DataCollection {
   String getString(String key);
 
   /**
+   * Retrieves the data of element by its key in the generic data collection type.
+   *
+   * @param key the {@link String} key needs to be checked
+   * @return the value held fetched by its key in {@link DataCollection} type
+   * @since 0.5.0
+   */
+  DataCollection getDataCollection(String key);
+
+  /**
    * Retrieves the data of element by its key in the map.
    *
    * @param key the {@link String} key needs to be checked

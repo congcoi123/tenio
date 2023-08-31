@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.common.data.msgpack.element;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.List;
  */
 public final class MsgPackArray extends ArrayList<Object> implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -2718756636745901607L;
 
   /**

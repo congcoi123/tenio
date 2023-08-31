@@ -25,16 +25,33 @@ THE SOFTWARE.
 package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import javax.imageio.metadata.IIOMetadataNode;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+@DisplayName("Unit Test Cases For XML Utility")
 class XmlUtilityTest {
+
+  @Test
+  @DisplayName("Throw an exception when the class's instance is attempted creating")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = XmlUtility.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
+  }
 
   @Test
   void testGetNodeValue() throws DOMException {
