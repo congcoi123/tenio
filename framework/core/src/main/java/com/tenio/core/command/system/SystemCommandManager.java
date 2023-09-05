@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.command.system;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.bootstrap.annotation.SystemCommand;
@@ -36,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -50,6 +53,13 @@ public final class SystemCommandManager extends SystemLogger {
   private final Map<String, AbstractSystemCommandHandler> commands = new TreeMap<>();
   @GuardedBy("this")
   private final Map<String, SystemCommand> annotations = new TreeMap<>();
+  private final ExecutorService executors;
+
+  public SystemCommandManager() {
+    var threadFactoryWorker =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("system-command-worker-%d").build();
+    executors = Executors.newCachedThreadPool(threadFactoryWorker);
+  }
 
   /**
    * Registers a command handler.
@@ -166,7 +176,7 @@ public final class SystemCommandManager extends SystemLogger {
     // invokes execute method for handler
     Runnable runnable = () -> handler.execute(args);
     if (annotation.isBackgroundRunning()) {
-      new Thread(runnable).start();
+      executors.execute(runnable);
       CommandUtility.INSTANCE.showConsoleMessage("The process is running in background.");
     } else {
       runnable.run();

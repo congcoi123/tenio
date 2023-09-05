@@ -17,7 +17,7 @@
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
     <a href="https://discord.gg/MGCxEwUR">
-        <img src="https://img.shields.io/discord/1146091189456613407">
+        <img src="https://img.shields.io/discord/1146091189456613407?logo=discord&logoColor=white">
     </a>
 </p>
 
@@ -29,7 +29,7 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.5.0
+- tenio-core 0.5.1
 - tenio-engine 0.5.0
 ```
 

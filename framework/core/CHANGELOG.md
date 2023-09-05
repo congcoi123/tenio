@@ -55,3 +55,7 @@
 - Removed redundant constant, enum values
 - Fixed test cases' issues
 - Bugs fixed 
+
+## 0.5.1 2023-09-03 Feature release
+- Fixed bugs that stops the main thread 
+- It allows removing optional schedule tasks (CcuReportTask, DeadlockScanTask, SystemMonitoringTask, TrafficCounterTask)

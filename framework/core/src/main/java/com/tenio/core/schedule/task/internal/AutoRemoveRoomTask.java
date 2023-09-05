@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,16 +61,19 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
 
   @Override
   public ScheduledFuture<?> run() {
-    var threadFactory =
+    var threadFactoryTask =
         new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-remove-room-task-%d")
             .build();
-    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
+    var threadFactoryWorker =
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-remove-room-worker-%d").build();
+    var executors = Executors.newCachedThreadPool(threadFactoryWorker);
+    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
             debug("AUTO REMOVE ROOM",
                 "Checking empty rooms in ", roomManager.getRoomCount(), " entities");
           }
-          var worker = new Thread(() -> {
+          executors.execute(() -> {
             Iterator<Room> iterator = roomManager.getReadonlyRoomsList().listIterator();
             while (iterator.hasNext()) {
               Room room = iterator.next();
@@ -85,9 +88,6 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
               }
             }
           });
-          worker.setDaemon(true);
-          worker.setName("auto-remove-room-worker");
-          worker.start();
         }, initialDelay, interval, TimeUnit.SECONDS);
   }
 
