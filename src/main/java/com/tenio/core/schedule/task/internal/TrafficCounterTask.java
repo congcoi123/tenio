@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,21 +58,16 @@ public final class TrafficCounterTask extends AbstractSystemTask {
 
   @Override
   public ScheduledFuture<?> run() {
-    var threadFactory =
+    var threadFactoryTask =
         new ThreadFactoryBuilder().setDaemon(true).setNameFormat("traffic-counter-task-%d").build();
-    return Executors.newSingleThreadScheduledExecutor(threadFactory).scheduleAtFixedRate(
-        () -> {
-          var worker = new Thread(() -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
-              networkReaderStatistic.getReadBytes(),
-              networkReaderStatistic.getReadPackets(),
-              networkReaderStatistic.getReadDroppedPackets(),
-              networkWriterStatistic.getWrittenBytes(), networkWriterStatistic.getWrittenPackets(),
-              networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
-              networkWriterStatistic.getWrittenDroppedPacketsByFull()));
-          worker.setDaemon(true);
-          worker.setName("traffic-counter-worker");
-          worker.start();
-        },
+    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+        () -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
+            networkReaderStatistic.getReadBytes(),
+            networkReaderStatistic.getReadPackets(),
+            networkReaderStatistic.getReadDroppedPackets(),
+            networkWriterStatistic.getWrittenBytes(), networkWriterStatistic.getWrittenPackets(),
+            networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
+            networkWriterStatistic.getWrittenDroppedPacketsByFull()),
         initialDelay, interval, TimeUnit.SECONDS);
   }
 
