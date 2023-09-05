@@ -17,7 +17,7 @@
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
     <a href="https://discord.gg/MGCxEwUR">
-        <img src="https://img.shields.io/discord/1146091189456613407">
+        <img src="https://img.shields.io/discord/1146091189456613407?logo=discord&logoColor=white">
     </a>
 </p>
 
@@ -34,7 +34,7 @@
 - Have simple existing game clients for rapid development
 
 ## Showcases
-| [<img src="assets/game-box-online-logo.png" width="100px;"/><br /><sub><b>Game Box Online</b></sub>](https://www.youtube.com/watch?v=yLo2TRYd7Yw)<br />        | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Retro Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
+| [<img src="assets/game-box-online-logo.png" width="100px;"/><br /><sub><b>Game Box Online</b></sub>](https://www.youtube.com/watch?v=yLo2TRYd7Yw)<br />        | [<img src="assets/gold-miner-online-logo.png" width="100px;"/><br /><sub><b>Gold Miner Online</b></sub>](https://www.youtube.com/watch?v=BBv5IQFHLjc)<br />        | [<img src="assets/retro-brick-online-logo.png" width="100px;"/><br /><sub><b>Brick Game Online</b></sub>](https://www.youtube.com/watch?v=nojkJMAfG6Y)<br /> |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 ## First Glimpse
