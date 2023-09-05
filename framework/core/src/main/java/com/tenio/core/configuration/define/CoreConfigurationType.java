@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2022 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -169,20 +169,31 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   INTERVAL_DISCONNECTED_PLAYER_SCAN("disconnected-player-scan-interval"),
   /**
-   * Sets an interval to frequently check the concurrent users activating on the server.
+   * Sets an interval to frequently check the concurrent users activating on the server. Disable
+   * this feature by setting the value to {@code 0}.
+   *
+   * @since 0.5.1
    */
   INTERVAL_CCU_SCAN("ccu-scan-interval"),
   /**
-   * Sets an interval to frequently check whether a deadlock occurred.
+   * Sets an interval to frequently check whether a deadlock occurred.Disable
+   * this feature by setting the value to {@code 0}.
+   *
+   * @since 0.5.1
    */
   INTERVAL_DEADLOCK_SCAN("deadlock-scan-interval"),
   /**
    * Sets an interval to frequently report the current read and written number of packets on the
-   * server.
+   * server. Disable this feature by setting the value to {@code 0}.
+   *
+   * @since 0.5.1
    */
   INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
   /**
-   * Sets an interval to frequently monitoring the server information.
+   * Sets an interval to frequently monitoring the server information. Disable
+   * this feature by setting the value to {@code 0}.
+   *
+   * @since 0.5.1
    */
   INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
   /**
