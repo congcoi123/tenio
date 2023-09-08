@@ -16,7 +16,7 @@
     <a href="CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
     </a>
-    <a href="https://discord.gg/MGCxEwUR">
+    <a href="https://discord.gg/ybkNU87Psy">
         <img src="https://img.shields.io/discord/1146091189456613407?logo=discord&logoColor=white">
     </a>
 </p>
