@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.api;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
@@ -341,6 +342,22 @@ public interface ServerApi {
    * @since 0.3.0
    */
   int getCurrentAvailableUdpPort();
+
+  /**
+   * Retrieves the current available KCP port.
+   *
+   * @return an {@code integer} value of KCP port if available, otherwise returns {@link CoreConstant#NULL_PORT_VALUE}
+   * @since 0.6.0
+   */
+  int getCurrentAvailableKcpPort();
+
+  /**
+   * Retrieves the current available KCP Convey Id.
+   *
+   * @return an {@code integer} value of a KCP Convey Id
+   * @since 0.6.0
+   */
+  int getCurrentKcpConveyId();
 
   /**
    * Retrieves the time when server starts in milliseconds.

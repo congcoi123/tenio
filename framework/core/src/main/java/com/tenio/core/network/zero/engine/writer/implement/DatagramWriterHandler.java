@@ -52,53 +52,50 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
     // the datagram channel will send data by packet, so no fragment using here
     byte[] sendingData = packet.getData();
 
-    if (session.containsKcp()) {
-      session.getUkcp().send(sendingData);
-    } else {
-      // retrieve the datagram channel instance from session
-      var datagramChannel = session.getDatagramChannel();
+    // retrieve the datagram channel instance from session
+    var datagramChannel = session.getDatagramChannel();
 
-      // the InetSocketAddress should be saved and updated when the datagram channel receive
-      // messages from the client
-      var remoteSocketAddress = session.getDatagramRemoteSocketAddress();
+    // the InetSocketAddress should be saved and updated when the datagram channel receive
+    // messages from the client
+    var remoteSocketAddress = session.getDatagramRemoteSocketAddress();
 
-      // the datagram need to be declared first, something went wrong here, need to
-      // log the exception content
-      if (Objects.isNull(datagramChannel)) {
-        if (isErrorEnabled()) {
-          error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-              ", no DatagramChannel was set");
+    // the datagram need to be declared first, something went wrong here, need to
+    // log the exception content
+    if (Objects.isNull(datagramChannel)) {
+      if (isErrorEnabled()) {
+        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+            ", no DatagramChannel was set");
+      }
+      return;
+    } else if (Objects.isNull(remoteSocketAddress)) {
+      if (isErrorEnabled()) {
+        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+            ", no InetSocketAddress was set");
+      }
+      return;
+    }
+
+    // clear the buffer first
+    getBuffer().clear();
+
+    // send data to the client
+    try {
+      // buffer size is not enough, need to be allocated more bytes
+      if (getBuffer().capacity() < sendingData.length) {
+        if (isDebugEnabled()) {
+          debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(),
+              " to ", sendingData.length, " bytes");
         }
-        return;
-      } else if (Objects.isNull(remoteSocketAddress)) {
-        if (isErrorEnabled()) {
-          error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-              ", no InetSocketAddress was set");
-        }
-        return;
+        allocateBuffer(sendingData.length);
       }
 
-      // clear the buffer first
-      getBuffer().clear();
+      // put data to buffer
+      getBuffer().put(sendingData);
 
-      // send data to the client
-      try {
-        // buffer size is not enough, need to be allocated more bytes
-        if (getBuffer().capacity() < sendingData.length) {
-          if (isDebugEnabled()) {
-            debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(),
-                " to ", sendingData.length, " bytes");
-          }
-          allocateBuffer(sendingData.length);
-        }
+      // ready to send
+      getBuffer().flip();
 
-        // put data to buffer
-        getBuffer().put(sendingData);
-
-        // ready to send
-        getBuffer().flip();
-
-        int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
+      int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
 
         /*
         if (writtenBytes == 0) {
@@ -108,16 +105,15 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
         }
         */
 
-        // update statistic data
-        getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
-        getNetworkWriterStatistic().updateWrittenPackets(1);
+      // update statistic data
+      getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
+      getNetworkWriterStatistic().updateWrittenPackets(1);
 
-        // update statistic data for session
-        session.addWrittenBytes(writtenBytes);
-      } catch (IOException exception) {
-        if (isErrorEnabled()) {
-          error(exception, "Error occurred in writing on session: ", session.toString());
-        }
+      // update statistic data for session
+      session.addWrittenBytes(writtenBytes);
+    } catch (IOException exception) {
+      if (isErrorEnabled()) {
+        error(exception, "Error occurred in writing on session: ", session.toString());
       }
     }
 

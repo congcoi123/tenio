@@ -141,7 +141,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
             NettyWsInitializer.newInstance(eventManager, sessionManager, connectionFilter, dataType,
                 networkReaderStatistic, sslContext, usingSsl));
 
-    var channelFuture = bootstrap.bind(socketConfiguration.port()).sync()
+    var channelFuture = bootstrap.bind(Integer.parseInt(socketConfiguration.port())).sync()
         .addListener(future -> {
           if (!future.isSuccess()) {
             if (isErrorEnabled()) {
@@ -188,11 +188,10 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
    * Close a channel, see {@link Channel}.
    *
    * @param channel the closed channel
-   * @return {@code true} if the channel is closed without any exceptions
    */
-  private boolean close(Channel channel) {
+  private void close(Channel channel) {
     if (Objects.isNull(channel)) {
-      return false;
+      return;
     }
 
     try {
@@ -203,12 +202,10 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
           }
         }
       });
-      return true;
     } catch (InterruptedException exception) {
       if (isErrorEnabled()) {
         error(exception);
       }
-      return false;
     }
   }
 
@@ -299,7 +296,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   }
 
   @Override
-  public void setWebSocketConfig(SocketConfiguration socketConfiguration) {
+  public void setWebSocketConfiguration(SocketConfiguration socketConfiguration) {
     this.socketConfiguration = socketConfiguration;
   }
 

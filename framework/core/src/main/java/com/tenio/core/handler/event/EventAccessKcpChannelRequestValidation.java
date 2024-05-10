@@ -22,25 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example9.handler;
+package com.tenio.core.handler.event;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
-import com.tenio.examples.server.SharedEventKey;
 import java.util.Optional;
 
-@EventHandler
-public final class AccessDatagramChannelRequestValidatedHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidation {
+/**
+ * When a player attempts to connect to a KCP channel to send and receive messages.
+ */
+@FunctionalInterface
+public interface EventAccessKcpChannelRequestValidation {
 
-  @Override
-  public Optional<Player> handle(DataCollection message) {
-    var request = (ZeroMap) message;
-
-    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
-  }
+  /**
+   * When a player attempts to connect to a KCP channel to send and receive messages.
+   *
+   * @param message an instance of {@link DataCollection} sent by client to identify its
+   *                corresponding player on the server
+   * @return an optional of {@link Player} is present if it qualifies identified conditions,
+   * otherwise is empty
+   * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION
+   * @see EventAccessKcpChannelRequestValidationResult
+   * @see Optional
+   */
+  Optional<Player> handle(DataCollection message);
 }

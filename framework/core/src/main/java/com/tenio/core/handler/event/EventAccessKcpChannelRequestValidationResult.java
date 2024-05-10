@@ -22,29 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example9.handler;
+package com.tenio.core.handler.event;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
 import java.util.Optional;
 
-@EventHandler
-public final class AccessDatagramChannelRequestValidationResultHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidationResult<Player> {
+/**
+ * When the server responds to the request from client side which requires using the KCP channel.
+ */
+@FunctionalInterface
+public interface EventAccessKcpChannelRequestValidationResult<P extends Player> {
 
-  @Override
-  public void handle(Optional<Player> player, int udpConv, int kcpConv,
-                     AccessDatagramChannelResult result) {
-    if (result == AccessDatagramChannelResult.SUCCESS) {
-      var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          array().addByte(UdpEstablishedState.ESTABLISHED).addInteger(udpConv).addInteger(kcpConv));
-
-      response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
-    }
-  }
+  /**
+   * When the server responds to the request from client side which requires using the KCP channel.
+   *
+   * @param player the optional of {@link Player} which requires using UDP channel
+   * @param result the responded {@link AccessDatagramChannelResult} from the server, if the result
+   *               equals to {@link AccessDatagramChannelResult#PLAYER_NOT_FOUND} then the returned
+   *               player is empty, otherwise it is present
+   * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT
+   * @see EventAccessKcpChannelRequestValidation
+   * @see Optional
+   */
+  void handle(Optional<P> player, AccessDatagramChannelResult result);
 }

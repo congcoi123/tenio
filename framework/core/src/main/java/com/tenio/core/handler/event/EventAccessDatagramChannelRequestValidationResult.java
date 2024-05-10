@@ -42,7 +42,6 @@ public interface EventAccessDatagramChannelRequestValidationResult<P extends Pla
    * @param player  the optional of {@link Player} which requires using UDP channel
    * @param udpConv the UDP convey ID created when it is successfully accessed to the UDP channel
    *                , otherwise it can be left as {@link Session#EMPTY_DATAGRAM_CONVEY_ID}
-   * @param kcpConv the KCP convey ID when it is using, otherwise the value is always {@link Session#EMPTY_DATAGRAM_CONVEY_ID}
    * @param result  the responded {@link AccessDatagramChannelResult} from the server, if the result
    *                equals to {@link AccessDatagramChannelResult#PLAYER_NOT_FOUND} then the returned
    *                player is empty, otherwise it is present
@@ -50,5 +49,5 @@ public interface EventAccessDatagramChannelRequestValidationResult<P extends Pla
    * @see EventAccessDatagramChannelRequestValidation
    * @see Optional
    */
-  void handle(Optional<P> player, int udpConv, int kcpConv, AccessDatagramChannelResult result);
+  void handle(Optional<P> player, int udpConv, AccessDatagramChannelResult result);
 }

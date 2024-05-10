@@ -55,7 +55,7 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   private final ConnectionFilter connectionFilter;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final DataType dataType;
-  private final PrivateLogger logger;
+  private final NettyWsHandlerPrivateLogger logger;
 
   private NettyWsHandler(EventManager eventManager, SessionManager sessionManager,
                          ConnectionFilter connectionFilter, DataType dataType,
@@ -65,7 +65,7 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
     this.connectionFilter = connectionFilter;
     this.dataType = dataType;
     this.networkReaderStatistic = networkReaderStatistic;
-    logger = new PrivateLogger();
+    logger = new NettyWsHandlerPrivateLogger();
   }
 
   /**
@@ -176,5 +176,5 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   }
 }
 
-class PrivateLogger extends SystemLogger {
+class NettyWsHandlerPrivateLogger extends SystemLogger {
 }

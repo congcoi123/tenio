@@ -46,19 +46,23 @@ public final class ResponseImpl implements Response {
   private Collection<Player> nonSessionPlayers;
   private Collection<Session> socketSessions;
   private Collection<Session> datagramSessions;
+  private Collection<Session> kcpSessions;
   private Collection<Session> webSocketSessions;
   private ResponsePriority priority;
   private boolean isPrioritizedUdp;
+  private boolean isPrioritizedKcp;
   private boolean isEncrypted;
 
   private ResponseImpl() {
     players = null;
     socketSessions = null;
     datagramSessions = null;
+    kcpSessions = null;
     webSocketSessions = null;
     nonSessionPlayers = null;
     priority = ResponsePriority.NORMAL;
     isPrioritizedUdp = false;
+    isPrioritizedKcp = false;
     isEncrypted = false;
   }
 
@@ -104,6 +108,11 @@ public final class ResponseImpl implements Response {
   }
 
   @Override
+  public Collection<Session> getRecipientKcpSessions() {
+    return kcpSessions;
+  }
+
+  @Override
   public Collection<Session> getRecipientWebSocketSessions() {
     return webSocketSessions;
   }
@@ -144,6 +153,12 @@ public final class ResponseImpl implements Response {
   @Override
   public Response prioritizedUdp() {
     isPrioritizedUdp = true;
+    return this;
+  }
+
+  @Override
+  public Response prioritizedKcp() {
+    isPrioritizedKcp = true;
     return this;
   }
 
@@ -214,17 +229,24 @@ public final class ResponseImpl implements Response {
   private void checksAndAddsSession(Session session) {
     if (session.isTcp()) {
       // when the session contains a UDP connection and the response requires it, add its session
-      // to the list
+      // to the list: UDP > KCP > Socket
       if (isPrioritizedUdp && session.containsUdp()) {
         if (Objects.isNull(datagramSessions)) {
           datagramSessions = new ArrayList<>();
         }
         datagramSessions.add(session);
       } else {
-        if (Objects.isNull(socketSessions)) {
-          socketSessions = new ArrayList<>();
+        if (isPrioritizedKcp && session.containsKcp()) {
+          if (Objects.isNull(kcpSessions)) {
+            kcpSessions = new ArrayList<>();
+          }
+          kcpSessions.add(session);
+        } else {
+          if (Objects.isNull(socketSessions)) {
+            socketSessions = new ArrayList<>();
+          }
+          socketSessions.add(session);
         }
-        socketSessions.add(session);
       }
     } else if (session.isWebSocket()) {
       if (Objects.isNull(webSocketSessions)) {
@@ -242,6 +264,7 @@ public final class ResponseImpl implements Response {
         ", nonSessionPlayers=" + nonSessionPlayers +
         ", socketSessions=" + socketSessions +
         ", datagramSessions=" + datagramSessions +
+        ", kcpSessions=" + kcpSessions +
         ", webSocketSessions=" + webSocketSessions +
         ", priority=" + priority +
         ", isPrioritizedUdp=" + isPrioritizedUdp +

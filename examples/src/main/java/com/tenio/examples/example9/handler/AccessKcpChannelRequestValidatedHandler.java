@@ -22,20 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.configuration.kcp;
+package com.tenio.examples.example9.handler;
 
-/**
- * All related configuration when the server uses KCP transportation.
- * @since 0.3.0
- */
-public final class KcpConfiguration {
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.zero.ZeroMap;
+import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.entity.Player;
+import com.tenio.core.handler.AbstractHandler;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
+import com.tenio.examples.server.SharedEventKey;
+import java.util.Optional;
 
-  /**
-   * The current profile setting.
-   */
-  public static KcpProfile PROFILE = KcpProfile.BOOSTER_MODE;
+@EventHandler
+public final class AccessKcpChannelRequestValidatedHandler extends AbstractHandler
+    implements EventAccessKcpChannelRequestValidation {
 
-  private KcpConfiguration() {
-    throw new UnsupportedOperationException();
+  @Override
+  public Optional<Player> handle(DataCollection message) {
+    var request = (ZeroMap) message;
+
+    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

@@ -28,30 +28,35 @@ import com.tenio.core.exception.EmptyUdpChannelsException;
 import com.tenio.core.manager.Manager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This class takes responsibility to provide an available UDP channel port when required.
+ * This class takes responsibility to provide an available UDP channel port, KCP convey id, ... when required.
  */
-public class UdpChannelManager implements Manager {
+public class DatagramChannelManager implements Manager {
 
+  private final AtomicInteger udpConveyIdGenerator;
+  private final AtomicInteger kcpConveyIdGenerator;
   @GuardedBy("this")
   private final List<Integer> udpPorts;
   @GuardedBy("this")
-  private int currentIndex;
+  private int currentUdpPortIndex;
 
-  private UdpChannelManager() {
+  private DatagramChannelManager() {
+    udpConveyIdGenerator = new AtomicInteger(0);
+    kcpConveyIdGenerator = new AtomicInteger(0);
     udpPorts = new ArrayList<>();
-    currentIndex = -1;
+    currentUdpPortIndex = -1;
   }
 
   /**
    * Creates a new UDP channel manager instance.
    *
-   * @return a new instance of {@link UdpChannelManager}
+   * @return a new instance of {@link DatagramChannelManager}
    */
-  public static UdpChannelManager newInstance() {
-    return new UdpChannelManager();
+  public static DatagramChannelManager newInstance() {
+    return new DatagramChannelManager();
   }
 
   /**
@@ -73,10 +78,30 @@ public class UdpChannelManager implements Manager {
     if (size == 0) {
       throw new EmptyUdpChannelsException();
     }
-    currentIndex++;
-    if (currentIndex >= size) {
-      currentIndex = 0;
+    currentUdpPortIndex++;
+    if (currentUdpPortIndex >= size) {
+      currentUdpPortIndex = 0;
     }
-    return udpPorts.get(currentIndex);
+    return udpPorts.get(currentUdpPortIndex);
+  }
+
+  /**
+   * Retrieves the current available UDP Convey Id.
+   *
+   * @return an {@code integer} value of a UDP Convey Id
+   * @since 0.6.0
+   */
+  public int getCurrentUdpConveyId() {
+    return udpConveyIdGenerator.getAndIncrement();
+  }
+
+  /**
+   * Retrieves the current available KCP Convey Id.
+   *
+   * @return an {@code integer} value of a KCP Convey Id
+   * @since 0.6.0
+   */
+  public int getCurrentKcpConveyId() {
+    return kcpConveyIdGenerator.getAndIncrement();
   }
 }

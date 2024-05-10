@@ -87,6 +87,10 @@ public final class CoreConstant {
    * @see ZeroMap
    */
   public static final String DEFAULT_KEY_UDP_MESSAGE_DATA = "d";
+  /**
+   * When the required port is unavailable but the client still inquiries it.
+   */
+  public static final int NULL_PORT_VALUE = -1;
 
   private CoreConstant() {
     throw new UnsupportedOperationException("This class does not support to create a new instance");

@@ -22,26 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example4.handler;
+package com.tenio.examples.example9.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.examples.server.DatagramEstablishedState;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.DatagramEstablishedState;
 import java.util.Optional;
 
 @EventHandler
-public final class AccessDatagramChannelValidationResultHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidationResult<Player> {
+public final class AccessKcpChannelRequestValidationResultHandler extends AbstractHandler
+    implements EventAccessKcpChannelRequestValidationResult<Player> {
 
   @Override
-  public void handle(Optional<Player> player, int udpConv, AccessDatagramChannelResult result) {
+  public void handle(Optional<Player> player, AccessDatagramChannelResult result) {
     if (result == AccessDatagramChannelResult.SUCCESS) {
-      var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          array().addByte(DatagramEstablishedState.ESTABLISHED).addInteger(udpConv));
+      var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
+          array().addByte(DatagramEstablishedState.COMMUNICATING));
 
       response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
     }
