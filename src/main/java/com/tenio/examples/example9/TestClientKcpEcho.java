@@ -24,49 +24,42 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9;
 
-import com.tenio.common.data.DataCollection;
+import com.backblaze.erasure.FecAdapt;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.configuration.kcp.KcpConfiguration;
-import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.entity.session.manager.SessionManager;
-import com.tenio.core.network.statistic.NetworkReaderStatistic;
-import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.network.zero.handler.KcpIoHandler;
 import com.tenio.examples.client.ClientUtility;
-import com.tenio.examples.client.DatagramListener;
-import com.tenio.examples.client.KcpWriterHandler;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
-import com.tenio.examples.client.UDP;
+import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import java.net.InetSocketAddress;
+import java.util.Objects;
+import kcp.ChannelConfig;
+import kcp.KcpClient;
+import kcp.KcpListener;
+import kcp.Ukcp;
 
 /**
  * This class shows how a client communicates with the server:<br>
  * 1. Create connections.<br>
  * 2. Send a login request.<br>
- * 3. Receive a response for login success and send a UDP connection
+ * 3. Receive a response for login success and send a KCP connection
  * request.<br>
- * 4. Receive a response for allowed UDP connection.<br>
- * 5. Send messages via UDP connection and get these echoes from the server.<br>
+ * 4. Receive a response for allowed KCP connection.<br>
+ * 5. Send messages via KCP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientKcpEcho implements SocketListener, DatagramListener, KcpIoHandler {
+public final class TestClientKcpEcho implements SocketListener, KcpListener {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
-  private final Session session;
   private final String playerName;
-  private final NetworkWriterStatistic networkWriterStatistic;
-  private UDP udp;
-  private int udpConvey;
-  private int kcpConvey;
+  private Ukcp ukcp;
 
   public TestClientKcpEcho() {
     playerName = ClientUtility.generateRandomString(5);
@@ -74,10 +67,8 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
     // create a new TCP object and listen for this port
     tcp = new TCP(SOCKET_PORT);
     tcp.receive(this);
-    session = tcp.getSession();
+    Session session = tcp.getSession();
     session.setName(playerName);
-
-    networkWriterStatistic = NetworkWriterStatistic.newInstance();
 
     // send a login request
     var request =
@@ -95,93 +86,44 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
   }
 
   @Override
-  public void sessionRead(Session session, DataCollection message) {
-    System.out.println("[KCP SESSION READ] " + message);
-  }
-
-  @Override
-  public void sessionException(Session session, Exception exception) {
-    System.out.println("[KCP EXCEPTION] " + exception.getMessage());
-  }
-
-  @Override
-  public void setSessionManager(SessionManager sessionManager) {
-    // do nothing
-  }
-
-  @Override
-  public void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic) {
-    // do nothing
-  }
-
-  @Override
-  public DataType getDataType() {
-    return DataType.ZERO;
-  }
-
-  @Override
-  public void setDataType(DataType dataType) {
-    // do nothing
-  }
-
-  @Override
-  public void channelActiveIn(Session session) {
-    System.out.println("[KCP ACTIVATED] " + session.toString());
-  }
-
-  @Override
-  public void channelInactiveIn(Session session) {
-    System.out.println("[KCP INACTIVATED] " + session.toString());
-  }
-
-  @Override
   public void onReceivedTCP(byte[] binaries) {
     var parcel = (ZeroMap) DataUtility.binaryToCollection(DataType.ZERO, binaries);
 
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
-    ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
+    ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL);
 
     switch (udpParcel.getByte(0)) {
-      case UdpEstablishedState.ALLOW_TO_ACCESS -> {
-        // now you can send request for UDP connection request
-        // now you can send request for UDP connection request
-        var udpMessageData = DataUtility.newZeroMap();
-        udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-        var request =
-            DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
-                udpMessageData);
-        // create a new UDP object and listen for this port
-        udp = new UDP(udpParcel.getInteger(1));
-        udp.receive(this);
-        udp.send(request);
+      case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
+        ChannelConfig channelConfig = new ChannelConfig();
+        channelConfig.nodelay(true, 40, 2, true);
+        channelConfig.setSndwnd(512);
+        channelConfig.setRcvwnd(512);
+        channelConfig.setMtu(512);
+        channelConfig.setAckNoDelay(true);
+        channelConfig.setConv(55);
+        channelConfig.setFecAdapt(new FecAdapt(3, 1));
+        channelConfig.setCrc32Check(true);
+        KcpClient kcpClient = new KcpClient();
+        kcpClient.init(channelConfig);
 
-        System.out.println(
-            udp.getLocalAddress().getHostAddress() + ", " + udp.getLocalPort() + " Request a UDP " +
-                "connection -> " + request);
+        kcpClient.connect(new InetSocketAddress("localhost", 20003), channelConfig, this);
       }
-      case UdpEstablishedState.ESTABLISHED -> {
-        udpConvey = udpParcel.getInteger(1);
-        kcpConvey = udpParcel.getInteger(2);
-        var udpMessageData = DataUtility.newZeroMap();
-        udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.ESTABLISHED);
-        var request = DataUtility.newZeroMap();
-        request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
-        request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
-        udp.send(request);
-      }
-      case UdpEstablishedState.COMMUNICATING -> {
-        // the UDP connected successful, you now can send test requests
+      case DatagramEstablishedState.COMMUNICATING -> {
+        // the KCP connected successful, you now can send test requests
         System.out.println("Start the conversation ...");
 
-        var ukcp = initializeKcp(kcpConvey);
-        kcpProcessing();
+        if (Objects.isNull(ukcp)) {
+          System.err.println("[ERROR] No KCP instance found!");
+          return;
+        }
 
         for (int i = 1; i <= 100; i++) {
           var request = DataUtility.newZeroMap();
-          request.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.COMMUNICATING);
-          request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-              String.format("Hello from client %d", i));
-          ukcp.send(request.toBinary());
+          request.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING);
+          request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Hello from client %d", i));
+          ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinary());
+          ukcp.write(byteBuf);
+          byteBuf.release();
 
           try {
             Thread.sleep(1000);
@@ -190,36 +132,43 @@ public final class TestClientKcpEcho implements SocketListener, DatagramListener
           }
         }
 
-        session.setUkcp(null);
-        udp.close();
+        ukcp.close();
         tcp.close();
       }
     }
   }
 
-  private Ukcp initializeKcp(int conv) {
-    var kcpWriter = new KcpWriterHandler(udp.getDatagramSocket(),
-        udp.getLocalAddress(), udp.getRemotePort());
-    var ukcp =
-        new Ukcp(conv, KcpConfiguration.PROFILE, session, this, kcpWriter, networkWriterStatistic);
-    ukcp.getKcpIoHandler().channelActiveIn(session);
+  @Override
+  public void onConnected(Ukcp ukcp) {
+    this.ukcp = ukcp;
+    System.out.println("[KCP ESTABLISHED] " + this.ukcp);
 
-    return ukcp;
-  }
+    // now you can send request via the KCP channel
+    var request = DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+    ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinary());
+    ukcp.write(byteBuf);
+    byteBuf.release();
 
-  private void kcpProcessing() {
-    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-        () -> {
-          if (session.containsKcp()) {
-            var ukcp = session.getUkcp();
-            ukcp.update();
-            ukcp.receive();
-          }
-        }, 0, 10, TimeUnit.MILLISECONDS);
+    System.out.println("Request a KCP connection -> " + request);
   }
 
   @Override
-  public void onReceivedUDP(byte[] binary) {
-    session.getUkcp().input(binary);
+  public void handleReceive(ByteBuf byteBuf, Ukcp ukcp) {
+    var binary = new byte[byteBuf.readableBytes()];
+    byteBuf.getBytes(byteBuf.readerIndex(), binary);
+
+    var message = DataUtility.binaryToCollection(DataType.ZERO, binary);
+
+    System.out.println("[KCP RECEIVE] " + message);
+  }
+
+  @Override
+  public void handleException(Throwable throwable, Ukcp ukcp) {
+    // Do nothing
+  }
+
+  @Override
+  public void handleClose(Ukcp ukcp) {
+    // Do nothing
   }
 }

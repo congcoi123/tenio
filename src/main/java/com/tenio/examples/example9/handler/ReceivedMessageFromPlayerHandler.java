@@ -31,7 +31,7 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
+import com.tenio.examples.server.DatagramEstablishedState;
 
 @EventHandler
 public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
@@ -42,20 +42,13 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     var request = (ZeroMap) message;
     byte command = request.getByte(SharedEventKey.KEY_COMMAND);
     switch (command) {
-      case UdpEstablishedState.ESTABLISHED -> {
-        var parcel = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-            array().addByte(UdpEstablishedState.COMMUNICATING));
-
-        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-      }
-      case UdpEstablishedState.COMMUNICATING -> {
+      case DatagramEstablishedState.COMMUNICATING -> {
         var parcel =
             map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
                 player.getName(),
                 ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-        response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedUdp()
-            .write();
+        response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedKcp().write();
       }
     }
   }

@@ -33,8 +33,8 @@ import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
 import com.tenio.examples.client.UDP;
+import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
 
 /**
  * This class shows how a client communicates with the server:<br>
@@ -84,7 +84,7 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
     ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
     switch (udpParcel.getByte(0)) {
-      case UdpEstablishedState.ALLOW_TO_ACCESS -> {
+      case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
         // now you can send request for UDP connection request
         var udpMessageData = DataUtility.newZeroMap();
         udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
@@ -98,22 +98,22 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
 
         System.out.println("Request a UDP connection -> " + request);
       }
-      case UdpEstablishedState.ESTABLISHED -> {
+      case DatagramEstablishedState.ESTABLISHED -> {
         udpConvey = udpParcel.getInteger(1);
         var udpMessageData = DataUtility.newZeroMap();
-        udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.ESTABLISHED);
+        udpMessageData.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.ESTABLISHED);
         var request = DataUtility.newZeroMap();
         request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
         request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
         udp.send(request);
       }
-      case UdpEstablishedState.COMMUNICATING -> {
+      case DatagramEstablishedState.COMMUNICATING -> {
         // the UDP connected successful, you now can send test requests
         System.out.println("Start the conversation ...");
 
         for (int i = 1; i <= 100; i++) {
           var udpMessageData = DataUtility.newZeroMap();
-          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.COMMUNICATING);
+          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING);
           udpMessageData.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
               String.format("Hello from client %d", i));
           var request = DataUtility.newZeroMap();
