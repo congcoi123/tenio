@@ -87,14 +87,17 @@ public abstract class CoreConfiguration extends CommonConfiguration {
       var dataNode = attrNetworkSockets.item(j);
       var socketConfiguration =
           new SocketConfiguration(dataNode.getAttributes().getNamedItem("name").getTextContent(),
-              TransportType.getByValue(
-                  dataNode.getAttributes().getNamedItem("type").getTextContent()),
-              Integer.parseInt(dataNode.getTextContent()));
+              TransportType.getByValue(dataNode.getAttributes().getNamedItem("type").getTextContent()),
+              dataNode.getTextContent());
 
       if (socketConfiguration.type() == TransportType.TCP) {
-        push(CoreConfigurationType.NETWORK_SOCKET, socketConfiguration);
+        push(CoreConfigurationType.NETWORK_TCP, socketConfiguration);
       } else if (socketConfiguration.type() == TransportType.WEB_SOCKET) {
         push(CoreConfigurationType.NETWORK_WEBSOCKET, socketConfiguration);
+      } else if (socketConfiguration.type() == TransportType.KCP) {
+        push(CoreConfigurationType.NETWORK_KCP, socketConfiguration);
+      } else if (socketConfiguration.type() == TransportType.UDP) {
+        push(CoreConfigurationType.NETWORK_UDP, socketConfiguration);
       } else if (socketConfiguration.type() == TransportType.HTTP) {
         push(CoreConfigurationType.NETWORK_HTTP, socketConfiguration);
       }

@@ -124,11 +124,4 @@ public interface ScheduleService extends Service {
    * @param networkWriterStatistic an instance of {@link NetworkWriterStatistic}
    */
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
-
-  /**
-   * Determines if UDP channels can use KCP transportation for communication.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setEnabledKcp(boolean enabledKcp);
 }

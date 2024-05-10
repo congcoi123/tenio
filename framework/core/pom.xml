@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -41,12 +41,13 @@
     <properties>
         <io.github.congcoi123.tenio.common>0.5.0</io.github.congcoi123.tenio.common>
 
-        <io.netty.version>4.1.90.Final</io.netty.version>
+        <io.netty.version>4.1.104.Final</io.netty.version>
         <org.eclipse.jetty.version>9.4.38.v20210224</org.eclipse.jetty.version>
+        <kcp-base.version>1.6.1</kcp-base.version>
         <javax.servlet.version>2.5</javax.servlet.version>
-        <org.json.version>20230227</org.json.version>
+        <org.json.version>20240303</org.json.version>
         <com.fasterxml.jackson.core.version>2.15.1</com.fasterxml.jackson.core.version>
-        <org.jline.version>3.23.0</org.jline.version>
+        <org.jline.version>3.25.1</org.jline.version>
 
         <logging.log4j.version>2.20.0</logging.log4j.version>
 
@@ -62,7 +63,7 @@
 
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
         <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
@@ -101,6 +102,11 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
             <version>${org.eclipse.jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.l42111996</groupId>
+            <artifactId>kcp-base</artifactId>
+            <version>${kcp-base.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

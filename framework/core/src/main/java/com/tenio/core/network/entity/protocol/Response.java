@@ -92,6 +92,14 @@ public interface Response {
   Collection<Session> getRecipientDatagramSessions();
 
   /**
+   * Retrieves a collection of recipient socket sessions which receives packets by kcp channel.
+   *
+   * @return a collection of recipient {@link Session}s which receives packets by kcp channel
+   * @see Collection
+   */
+  Collection<Session> getRecipientKcpSessions();
+
+  /**
    * Retrieves a collection of recipient WebSocket sessions.
    *
    * @return a collection of recipient WebSocket {@link Session}s
@@ -131,6 +139,14 @@ public interface Response {
    * @return the pointer of response
    */
   Response prioritizedUdp();
+
+  /**
+   * Sets the higher priority for sending packets via the Kcp channel. In case the session in
+   * use is WebSocket, then this setting should be ignored.
+   *
+   * @return the pointer of response
+   */
+  Response prioritizedKcp();
 
   /**
    * Allows the sending content to be encrypted.

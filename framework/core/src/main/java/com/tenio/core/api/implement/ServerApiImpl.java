@@ -24,8 +24,11 @@ THE SOFTWARE.
 
 package com.tenio.core.api.implement;
 
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.api.ServerApi;
+import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
@@ -45,6 +48,7 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.exception.PlayerJoinedRoomException;
 import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.server.Server;
 import java.io.IOException;
@@ -314,6 +318,20 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   @Override
   public int getCurrentAvailableUdpPort() {
     return server.getUdpChannelManager().getCurrentAvailableUdpPort();
+  }
+
+  @Override
+  public int getCurrentAvailableKcpPort() {
+    Configuration configuration = server.getConfiguration();
+    if (Objects.isNull(configuration.get(CoreConfigurationType.NETWORK_KCP))) {
+      return CoreConstant.NULL_PORT_VALUE;
+    }
+    return Integer.parseInt(((SocketConfiguration) (configuration.get(CoreConfigurationType.NETWORK_KCP))).port());
+  }
+
+  @Override
+  public int getCurrentKcpConveyId() {
+    return server.getUdpChannelManager().getCurrentKcpConveyId();
   }
 
   @Override

@@ -22,59 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.netty;
+package com.tenio.core.network.kcp;
 
 import com.tenio.common.data.DataType;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.manager.SessionManager;
-import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.service.Service;
-import java.nio.ByteBuffer;
 
 /**
- * The websockets handler is provided by the <a href="https://netty.io">Netty</a> library.
+ * The websockets handler is provided by the <a href="https://github.com/l42111996/java-Kcp">KCP</a> library.
  */
-public interface NettyWebSocketService extends Service {
-
-  /**
-   * Sets size of {@link ByteBuffer} using for the WebSocket to write binaries data down.
-   *
-   * @param bufferSize the size of {@link ByteBuffer} ({@code integer} value) for writing
-   *                   binaries data
-   */
-  void setSenderBufferSize(int bufferSize);
-
-  /**
-   * Sets size of {@link ByteBuffer} using for the WebSocket to read binaries data from.
-   *
-   * @param bufferSize the size of {@link ByteBuffer} ({@code integer} value) for reading
-   *                   binaries data
-   */
-  void setReceiverBufferSize(int bufferSize);
-
-  /**
-   * Sets the number of producer workers for the WebSocket.
-   *
-   * @param workerSize the number ({@code integer} value) of producer workers for the WebSocket
-   */
-  void setProducerWorkerSize(int workerSize);
-
-  /**
-   * Sets the number of consumer workers for the WebSocket.
-   *
-   * @param workerSize the number ({@code integer} value) of consumer workers for the WebSocket
-   */
-  void setConsumerWorkerSize(int workerSize);
-
-  /**
-   * Sets an instance for the connection filter.
-   *
-   * @param connectionFilter an instance of {@link ConnectionFilter}
-   */
-  void setConnectionFilter(ConnectionFilter connectionFilter);
+public interface KcpService extends Service {
 
   /**
    * Set the data serialization type.
@@ -111,14 +72,7 @@ public interface NettyWebSocketService extends Service {
    *
    * @param socketConfiguration a instance of {@link SocketConfiguration}
    */
-  void setWebSocketConfiguration(SocketConfiguration socketConfiguration);
-
-  /**
-   * Determines whether the WebSocket is able to use the SSL.
-   *
-   * @param usingSsl sets to {@code true} in case of using SSL, otherwise returns {@code false}
-   */
-  void setUsingSsl(boolean usingSsl);
+  void setKcpSocketConfiguration(SocketConfiguration socketConfiguration);
 
   /**
    * Writes down (binaries) data to socket/channel in order to send them to client side.

@@ -49,13 +49,6 @@ public interface ZeroSocketService extends Service {
   void setAcceptorServerAddress(String serverAddress);
 
   /**
-   * Declares the number of Udp channel will be opened on the server.
-   *
-   * @param amountUdpWorkers the number of opening Udp channels
-   */
-  void setAcceptorAmountUdpWorkers(int amountUdpWorkers);
-
-  /**
    * Sets size of {@link ByteBuffer} using for an acceptor worker to read/write binaries data
    * from/down.
    *
@@ -71,13 +64,6 @@ public interface ZeroSocketService extends Service {
    * @param workerSize the number of acceptor workers for the socket ({@code integer} value)
    */
   void setAcceptorWorkerSize(int workerSize);
-
-  /**
-   * Determines if UDP channels can use KCP transportation for communication.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setAcceptorEnabledKcp(boolean enabledKcp);
 
   /**
    * Sets size of {@link ByteBuffer} using for a reader worker to read/write binaries data
@@ -144,11 +130,13 @@ public interface ZeroSocketService extends Service {
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
   /**
-   * Declares socket (TCP) configuration for the network.
+   * Declares sockets (TCP, UDP) configuration for the network.
    *
-   * @param socketConfiguration an instance of {@link SocketConfiguration}
+   * @param tcpSocketConfiguration an instance of {@link SocketConfiguration} for TCP
+   * @param udpSocketConfiguration an instance of {@link SocketConfiguration} for UDP
    */
-  void setSocketConfig(SocketConfiguration socketConfiguration);
+  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
+                              SocketConfiguration udpSocketConfiguration);
 
   /**
    * Sets an instance of packet encoder to encode packets for sending to clients side via the

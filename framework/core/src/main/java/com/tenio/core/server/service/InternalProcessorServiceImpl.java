@@ -29,7 +29,6 @@ import com.tenio.common.data.DataType;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.configuration.kcp.KcpConfiguration;
 import com.tenio.core.controller.AbstractController;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
@@ -40,7 +39,6 @@ import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.protocol.Request;
 import com.tenio.core.network.entity.protocol.implement.DatagramRequestImpl;
 import com.tenio.core.network.entity.protocol.implement.SessionRequestImpl;
@@ -48,15 +46,12 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.network.zero.engine.writer.implement.KcpWriterHandler;
-import com.tenio.core.network.zero.handler.KcpIoHandler;
-import com.tenio.core.network.zero.handler.implement.KcpIoHandlerImpl;
+import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The implementation for the processor service.
@@ -67,46 +62,36 @@ public final class InternalProcessorServiceImpl extends AbstractController
     implements InternalProcessorService {
 
   private final ServerApi serverApi;
-  private NetworkWriterStatistic networkWriterStatistic;
-  private DataType dataType;
+  private final DatagramChannelManager datagramChannelManager;
   private SessionManager sessionManager;
   private PlayerManager playerManager;
-  private KcpIoHandler kcpIoHandler;
-  private AtomicInteger udpConvId;
-  private AtomicInteger kcpConvId;
-  private boolean enabledUdp;
-  private boolean enabledKcp;
   private int maxNumberPlayers;
   private boolean keepPlayerOnDisconnection;
 
-  private InternalProcessorServiceImpl(EventManager eventManager, ServerApi serverApi) {
+  private InternalProcessorServiceImpl(EventManager eventManager, ServerApi serverApi,
+                                       DatagramChannelManager datagramChannelManager) {
     super(eventManager);
     this.serverApi = serverApi;
+    this.datagramChannelManager = datagramChannelManager;
   }
 
   /**
    * Retrieves a new instance of internal processor.
    *
-   * @param eventManager an instance of {@link EventManager}
-   * @param serverApi    an instance of {@link ServerApi}
+   * @param eventManager           an instance of {@link EventManager}
+   * @param serverApi              an instance of {@link ServerApi}
+   * @param datagramChannelManager an instance of {@link DatagramChannelManager}
    * @return a new instance of {@link InternalProcessorService}
    */
   public static InternalProcessorServiceImpl newInstance(EventManager eventManager,
-                                                         ServerApi serverApi) {
-    return new InternalProcessorServiceImpl(eventManager, serverApi);
+                                                         ServerApi serverApi,
+                                                         DatagramChannelManager datagramChannelManager) {
+    return new InternalProcessorServiceImpl(eventManager, serverApi, datagramChannelManager);
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    if (enabledUdp) {
-      udpConvId = new AtomicInteger(0);
-      if (enabledKcp) {
-        kcpIoHandler = KcpIoHandlerImpl.newInstance(eventManager);
-        kcpIoHandler.setDataType(dataType);
-        kcpConvId = new AtomicInteger(0);
-      }
-    }
   }
 
   @Override
@@ -163,7 +148,6 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
   @Override
   public void setDataType(DataType dataType) {
-    this.dataType = dataType;
   }
 
   @Override
@@ -171,8 +155,8 @@ public final class InternalProcessorServiceImpl extends AbstractController
     switch (request.getEvent()) {
       case SESSION_REQUEST_CONNECTION -> processSessionRequestsConnection(request);
       case SESSION_READ_MESSAGE -> processSessionReadMessage(request);
-      case DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME -> processDatagramChannelReadMessageForTheFirstTime(
-          request);
+      case DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME ->
+          processDatagramChannelReadMessageForTheFirstTime(request);
       default -> {
         // do nothing
       }
@@ -347,59 +331,37 @@ public final class InternalProcessorServiceImpl extends AbstractController
     if (optionalPlayer.isEmpty()) {
       eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
           optionalPlayer,
-          Session.EMPTY_DATAGRAM_CONVEY_ID, Session.EMPTY_DATAGRAM_CONVEY_ID,
+          Session.EMPTY_DATAGRAM_CONVEY_ID,
           AccessDatagramChannelResult.PLAYER_NOT_FOUND);
     } else {
       Player player = (Player) optionalPlayer.get();
       if (!player.containsSession() || player.getSession().isEmpty()) {
         eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
             optionalPlayer,
-            Session.EMPTY_DATAGRAM_CONVEY_ID, Session.EMPTY_DATAGRAM_CONVEY_ID,
+            Session.EMPTY_DATAGRAM_CONVEY_ID,
             AccessDatagramChannelResult.SESSION_NOT_FOUND);
       } else {
         Session session = player.getSession().get();
         if (!session.isTcp()) {
           eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
               optionalPlayer,
-              Session.EMPTY_DATAGRAM_CONVEY_ID, Session.EMPTY_DATAGRAM_CONVEY_ID,
+              Session.EMPTY_DATAGRAM_CONVEY_ID,
               AccessDatagramChannelResult.INVALID_SESSION_PROTOCOL);
         } else {
-          var udpConvey = udpConvId.getAndIncrement();
+          var udpConvey = datagramChannelManager.getCurrentUdpConveyId();
           var datagramChannel = (DatagramChannel) request.getSender();
 
           var sessionInstance = ((Player) optionalPlayer.get()).getSession().get();
           sessionInstance.setDatagramRemoteSocketAddress(request.getRemoteSocketAddress());
           sessionManager.addDatagramForSession(datagramChannel, udpConvey, sessionInstance);
 
-          if (enabledKcp) {
-            if (sessionInstance.containsKcp()) {
-              // TODO: reconnect
-
-            } else {
-              // initialize a KCP connection
-              initializeKcp(sessionInstance, Optional.of(player), udpConvey);
-            }
-          } else {
-            eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-                optionalPlayer,
-                udpConvey,
-                Session.EMPTY_DATAGRAM_CONVEY_ID, AccessDatagramChannelResult.SUCCESS);
-          }
+          eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
+              optionalPlayer,
+              udpConvey,
+              AccessDatagramChannelResult.SUCCESS);
         }
       }
     }
-  }
-
-  private void initializeKcp(Session session, Optional<Player> optionalPlayer, int udpConvey) {
-    var kcpWriter = new KcpWriterHandler(session.getDatagramChannel(),
-        session.getDatagramRemoteSocketAddress());
-    var kcpConv = kcpConvId.getAndIncrement();
-    var ukcp = new Ukcp(kcpConv, KcpConfiguration.PROFILE, session, kcpIoHandler, kcpWriter,
-        networkWriterStatistic);
-    ukcp.getKcpIoHandler().channelActiveIn(session);
-
-    eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT, optionalPlayer,
-        udpConvey, kcpConv, AccessDatagramChannelResult.SUCCESS);
   }
 
   private long now() {
@@ -422,16 +384,6 @@ public final class InternalProcessorServiceImpl extends AbstractController
   }
 
   @Override
-  public void setEnabledUdp(boolean enabledUdp) {
-    this.enabledUdp = enabledUdp;
-  }
-
-  @Override
-  public void setEnabledKcp(boolean enabledKcp) {
-    this.enabledKcp = enabledKcp;
-  }
-
-  @Override
   public void setSessionManager(SessionManager sessionManager) {
     this.sessionManager = sessionManager;
   }
@@ -448,7 +400,6 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
   @Override
   public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
-    this.networkWriterStatistic = networkWriterStatistic;
   }
 
   @Override
