@@ -24,23 +24,26 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9.handler;
 
-import com.tenio.common.data.DataCollection;
-import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.DatagramEstablishedState;
 import java.util.Optional;
 
 @EventHandler
-public final class AccessDatagramChannelRequestValidatedHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidation {
+public final class AccessKcpChannelRequestValidationResultHandler extends AbstractHandler
+    implements EventAccessKcpChannelRequestValidationResult<Player> {
 
   @Override
-  public Optional<Player> handle(DataCollection message) {
-    var request = (ZeroMap) message;
+  public void handle(Optional<Player> player, AccessDatagramChannelResult result) {
+    if (result == AccessDatagramChannelResult.SUCCESS) {
+      var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
+          array().addByte(DatagramEstablishedState.COMMUNICATING));
 
-    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+      response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
+    }
   }
 }

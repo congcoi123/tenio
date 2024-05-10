@@ -33,9 +33,9 @@ import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.engine.heartbeat.HeartBeatManager;
 import com.tenio.examples.example4.constant.ServerEventKey;
+import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.ExampleMessage;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
 
 @EventHandler
 public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
@@ -49,13 +49,13 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     var request = (ZeroMap) message;
     byte command = request.getByte(SharedEventKey.KEY_COMMAND);
     switch (command) {
-      case UdpEstablishedState.ESTABLISHED -> {
+      case DatagramEstablishedState.ESTABLISHED -> {
         var parcel = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-            array().addByte(UdpEstablishedState.COMMUNICATING));
+            array().addByte(DatagramEstablishedState.COMMUNICATING));
 
         response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
       }
-      case UdpEstablishedState.COMMUNICATING -> {
+      case DatagramEstablishedState.COMMUNICATING -> {
         if (request.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
           var parcel = ExampleMessage.newInstance();
           parcel.putContent(ServerEventKey.KEY_PLAYER_NAME, player.getName());

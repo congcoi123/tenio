@@ -30,7 +30,7 @@ import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventPlayerLoggedinResult;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
+import com.tenio.examples.server.DatagramEstablishedState;
 
 @EventHandler
 public final class PlayerLoggedInHandler extends AbstractHandler
@@ -40,9 +40,8 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
       var parcel =
-          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              array().addByte(UdpEstablishedState.ALLOW_TO_ACCESS)
-                  .addInteger(api().getCurrentAvailableUdpPort()));
+          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
+              array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS));
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }

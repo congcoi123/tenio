@@ -38,8 +38,8 @@ import com.tenio.examples.client.UDP;
 import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.statistic.LocalCounter;
 import com.tenio.examples.example4.statistic.NetworkStatistic;
+import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -139,7 +139,7 @@ public final class TestClientMovement extends AbstractLogger
     if (parcel.containsKey(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL)) {
       var accessingPhaseData = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
       switch (accessingPhaseData.getByte(0)) {
-        case UdpEstablishedState.ALLOW_TO_ACCESS -> {
+        case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
           // create a new UDP object and listen for this port
           udp = new UDP(accessingPhaseData.getInteger(1));
           udp.receive(this);
@@ -158,16 +158,16 @@ public final class TestClientMovement extends AbstractLogger
             System.out.println(playerName + " requests a UDP connection -> " + request);
           }
         }
-        case UdpEstablishedState.ESTABLISHED -> {
+        case DatagramEstablishedState.ESTABLISHED -> {
           udpConvey = accessingPhaseData.getInteger(1);
           var udpMessageData = DataUtility.newZeroMap();
-          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.ESTABLISHED);
+          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.ESTABLISHED);
           var request = DataUtility.newZeroMap();
           request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
           request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
           udp.send(request);
         }
-        case UdpEstablishedState.COMMUNICATING -> {
+        case DatagramEstablishedState.COMMUNICATING -> {
           // the UDP connected successful, you now can send test requests
           System.out.println(playerName + " started the conversation -> " + parcel);
 
@@ -220,7 +220,7 @@ public final class TestClientMovement extends AbstractLogger
 
   private void requestNeighbours() {
     var udpMessageData = DataUtility.newZeroMap();
-    udpMessageData.putByte(SharedEventKey.KEY_COMMAND, UdpEstablishedState.COMMUNICATING);
+    udpMessageData.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING);
     udpMessageData.putString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS,
         ClientUtility.generateRandomString(10));
     var request = DataUtility.newZeroMap();

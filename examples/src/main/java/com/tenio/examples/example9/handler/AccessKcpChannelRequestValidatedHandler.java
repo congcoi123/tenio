@@ -24,27 +24,23 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9.handler;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.UdpEstablishedState;
 import java.util.Optional;
 
 @EventHandler
-public final class AccessDatagramChannelRequestValidationResultHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidationResult<Player> {
+public final class AccessKcpChannelRequestValidatedHandler extends AbstractHandler
+    implements EventAccessKcpChannelRequestValidation {
 
   @Override
-  public void handle(Optional<Player> player, int udpConv, int kcpConv,
-                     AccessDatagramChannelResult result) {
-    if (result == AccessDatagramChannelResult.SUCCESS) {
-      var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          array().addByte(UdpEstablishedState.ESTABLISHED).addInteger(udpConv).addInteger(kcpConv));
+  public Optional<Player> handle(DataCollection message) {
+    var request = (ZeroMap) message;
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
-    }
+    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }
