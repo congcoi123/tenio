@@ -97,11 +97,11 @@ public interface Server {
   RoomManager getRoomManager();
 
   /**
-   * Retrieves an Udp channel manager object which allows managing Udp related information.
+   * Retrieves a data channel manager object which allows managing Udp, Kcp related information.
    *
    * @return an instance of {@link DatagramChannelManager}
    */
-  DatagramChannelManager getUdpChannelManager();
+  DatagramChannelManager getDatagramChannelManager();
 
   /**
    * Retrieves the current server's configuration.

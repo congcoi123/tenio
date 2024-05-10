@@ -153,7 +153,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
           // acceptable selector. Just leave it to the reader selector later
           zeroReaderListener.acceptDatagramChannel(datagramChannel);
           int boundPort = datagramChannel.socket().getLocalPort();
-          ServerImpl.getInstance().getUdpChannelManager().appendUdpPort(boundPort);
+          ServerImpl.getInstance().getDatagramChannelManager().appendUdpPort(boundPort);
           if (isInfoEnabled()) {
             info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
           }

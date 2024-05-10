@@ -341,7 +341,7 @@ class ServerApiTest {
   void getterMethodsShouldReturnExpectedResults() {
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
-    Mockito.when(server.getUdpChannelManager()).thenReturn(datagramChannelManager);
+    Mockito.when(server.getDatagramChannelManager()).thenReturn(datagramChannelManager);
 
     var playerName = "test";
     var player = Mockito.mock(Player.class);

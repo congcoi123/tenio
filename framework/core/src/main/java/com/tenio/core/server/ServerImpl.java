@@ -451,7 +451,7 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   @Override
-  public DatagramChannelManager getUdpChannelManager() {
+  public DatagramChannelManager getDatagramChannelManager() {
     return datagramChannelManager;
   }
 

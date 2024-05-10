@@ -317,7 +317,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
   @Override
   public int getCurrentAvailableUdpPort() {
-    return server.getUdpChannelManager().getCurrentAvailableUdpPort();
+    return server.getDatagramChannelManager().getCurrentAvailableUdpPort();
   }
 
   @Override
@@ -331,7 +331,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
   @Override
   public int getCurrentKcpConveyId() {
-    return server.getUdpChannelManager().getCurrentKcpConveyId();
+    return server.getDatagramChannelManager().getCurrentKcpConveyId();
   }
 
   @Override
