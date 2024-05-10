@@ -208,6 +208,12 @@ public final class ZeroArrayImpl implements ZeroArray {
   }
 
   @Override
+  public ZeroArray setShort(int index, short data) {
+    array.set(index, ZeroUtility.newZeroElement(ZeroType.SHORT, data));
+    return this;
+  }
+
+  @Override
   public ZeroArray addInteger(int data) {
     return addElement(ZeroType.INTEGER, data);
   }
