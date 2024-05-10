@@ -29,5 +29,5 @@ import com.tenio.core.network.define.TransportType;
 /**
  * A configuration for a socket.
  */
-public record SocketConfiguration(String name, TransportType type, int port) {
+public record SocketConfiguration(String name, TransportType type, String port) {
 }

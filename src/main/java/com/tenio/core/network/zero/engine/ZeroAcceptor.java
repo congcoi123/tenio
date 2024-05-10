@@ -56,23 +56,11 @@ public interface ZeroAcceptor extends ZeroEngine {
   void setServerAddress(String serverAddress);
 
   /**
-   * Declares the number of Udp channel will be opened on the server.
+   * Declares sockets (TCP, UDP) configurations for the network.
    *
-   * @param amountUdpWorkers the number of opening Udp channels
+   * @param tcpSocketConfiguration an instance of {@link SocketConfiguration} for TCP
+   * @param udpSocketConfiguration an instance of {@link SocketConfiguration} for UDP
    */
-  void setAmountUdpWorkers(int amountUdpWorkers);
-
-  /**
-   * Determines if UDP channels can use KCP transportation for communication.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setEnabledKcp(boolean enabledKcp);
-
-  /**
-   * Declares socket (TCP) configurations for the network.
-   *
-   * @param socketConfiguration an instance of {@link SocketConfiguration}
-   */
-  void setSocketConfig(SocketConfiguration socketConfiguration);
+  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
+                              SocketConfiguration udpSocketConfiguration);
 }

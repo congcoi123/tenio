@@ -24,30 +24,27 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
-import com.tenio.core.network.entity.session.Session;
 import java.util.Optional;
 
 /**
- * When the server responds to the request from client side which requires using the UDP channel.
+ * When a player attempts to connect to a KCP channel to send and receive messages.
  */
 @FunctionalInterface
-public interface EventAccessDatagramChannelRequestValidationResult<P extends Player> {
+public interface EventAccessKcpChannelRequestValidation {
 
   /**
-   * When the server responds to the request from client side which requires using the UDP channel.
+   * When a player attempts to connect to a KCP channel to send and receive messages.
    *
-   * @param player  the optional of {@link Player} which requires using UDP channel
-   * @param udpConv the UDP convey ID created when it is successfully accessed to the UDP channel
-   *                , otherwise it can be left as {@link Session#EMPTY_DATAGRAM_CONVEY_ID}
-   * @param result  the responded {@link AccessDatagramChannelResult} from the server, if the result
-   *                equals to {@link AccessDatagramChannelResult#PLAYER_NOT_FOUND} then the returned
-   *                player is empty, otherwise it is present
-   * @see ServerEvent#ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT
-   * @see EventAccessDatagramChannelRequestValidation
+   * @param message an instance of {@link DataCollection} sent by client to identify its
+   *                corresponding player on the server
+   * @return an optional of {@link Player} is present if it qualifies identified conditions,
+   * otherwise is empty
+   * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION
+   * @see EventAccessKcpChannelRequestValidationResult
    * @see Optional
    */
-  void handle(Optional<P> player, int udpConv, AccessDatagramChannelResult result);
+  Optional<Player> handle(DataCollection message);
 }

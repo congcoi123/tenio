@@ -33,6 +33,8 @@ import com.tenio.core.exception.ConfigurationException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
+import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import java.util.Arrays;
@@ -73,6 +75,7 @@ public final class ConfigurationAssessment {
     checkDataSerialization();
     checkSubscriberReconnection();
     checkSubscriberRequestAccessingDatagramChannelHandler();
+    checkSubscriberRequestAccessingKcpChannelHandler();
     checkDefinedMainSocketConnection();
   }
 
@@ -97,7 +100,7 @@ public final class ConfigurationAssessment {
 
   private void checkSubscriberRequestAccessingDatagramChannelHandler()
       throws NotDefinedSubscribersException {
-    if (containsTcpSocketConfig() && containsUdpSocketConfig()) {
+    if (containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
       if (!eventManager.hasSubscriber(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION)
           || !eventManager.hasSubscriber(
           ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT)) {
@@ -107,19 +110,33 @@ public final class ConfigurationAssessment {
     }
   }
 
+  private void checkSubscriberRequestAccessingKcpChannelHandler()
+      throws NotDefinedSubscribersException {
+    if (containsTcpSocketConfiguration() && containsKcpSocketConfiguration()) {
+      if (!eventManager.hasSubscriber(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION)
+          || !eventManager.hasSubscriber(
+          ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT)) {
+        throw new NotDefinedSubscribersException(EventAccessKcpChannelRequestValidation.class,
+            EventAccessKcpChannelRequestValidationResult.class);
+      }
+    }
+  }
+
   private void checkDefinedMainSocketConnection() throws ConfigurationException {
-    if (!containsTcpSocketConfig() && containsUdpSocketConfig()) {
+    if (!containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
       throw new ConfigurationException("TCP connection was not defined");
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private boolean containsTcpSocketConfig() {
-    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_SOCKET));
+  private boolean containsTcpSocketConfiguration() {
+    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_TCP));
   }
 
-  @SuppressWarnings("unchecked")
-  private boolean containsUdpSocketConfig() {
-    return configuration.getInt(CoreConfigurationType.WORKER_UDP_WORKER) > 0;
+  private boolean containsUdpSocketConfiguration() {
+    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_UDP));
+  }
+
+  private boolean containsKcpSocketConfiguration() {
+    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_KCP));
   }
 }

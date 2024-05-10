@@ -39,6 +39,8 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.entity.session.manager.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttpService;
+import com.tenio.core.network.kcp.KcpService;
+import com.tenio.core.network.kcp.KcpServiceImpl;
 import com.tenio.core.network.netty.NettyWebSocketService;
 import com.tenio.core.network.netty.NettyWebSocketServiceImpl;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -64,6 +66,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   private final SessionManager sessionManager;
   private final JettyHttpService httpService;
   private final NettyWebSocketService webSocketService;
+  private final KcpService kcpChannelService;
   private final ZeroSocketService socketService;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final NetworkWriterStatistic networkWriterStatistic;
@@ -73,6 +76,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   private boolean httpServiceInitialized;
   private boolean webSocketServiceInitialized;
   private boolean socketServiceInitialized;
+  private boolean kcpChannelServiceInitialized;
 
   private NetworkServiceImpl(EventManager eventManager) {
     super(eventManager);
@@ -82,6 +86,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     httpServiceInitialized = false;
     webSocketServiceInitialized = false;
     socketServiceInitialized = false;
+    kcpChannelServiceInitialized = false;
 
     sessionManager = SessionManagerImpl.newInstance(eventManager);
     networkReaderStatistic = NetworkReaderStatistic.newInstance();
@@ -90,6 +95,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     httpService = JettyHttpService.newInstance(eventManager);
     webSocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
     socketService = ZeroSocketServiceImpl.newInstance(eventManager);
+    kcpChannelService = KcpServiceImpl.newInstance(eventManager);
   }
 
   /**
@@ -117,6 +123,10 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     socketService.setNetworkReaderStatistic(networkReaderStatistic);
     socketService.setNetworkWriterStatistic(networkWriterStatistic);
 
+    kcpChannelService.setSessionManager(sessionManager);
+    kcpChannelService.setNetworkReaderStatistic(networkReaderStatistic);
+    kcpChannelService.setNetworkWriterStatistic(networkWriterStatistic);
+
     if (httpServiceInitialized) {
       httpService.initialize();
     }
@@ -126,6 +136,9 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     if (socketServiceInitialized) {
       socketService.initialize();
     }
+    if (kcpChannelServiceInitialized) {
+      kcpChannelService.initialize();
+    }
   }
 
   @Override
@@ -133,6 +146,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     httpService.start();
     webSocketService.start();
     socketService.start();
+    kcpChannelService.start();
   }
 
   @Override
@@ -147,6 +161,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     httpService.shutdown();
     webSocketService.shutdown();
     socketService.shutdown();
+    kcpChannelService.shutdown();
 
     destroy();
   }
@@ -223,18 +238,8 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void setSocketAcceptorAmountUdpWorkers(int amountUdpWorkers) {
-    socketService.setAcceptorAmountUdpWorkers(amountUdpWorkers);
-  }
-
-  @Override
   public void setSocketAcceptorWorkers(int workerSize) {
     socketService.setAcceptorWorkerSize(workerSize);
-  }
-
-  @Override
-  public void setSocketAcceptorEnabledKcp(boolean enabledKcp) {
-    socketService.setAcceptorEnabledKcp(enabledKcp);
   }
 
   @Override
@@ -263,22 +268,24 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void setSocketConfiguration(SocketConfiguration socketConfiguration,
-                                     SocketConfiguration webSocketConfiguration) {
-    if (Objects.nonNull(socketConfiguration)) {
+  public void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
+                                     SocketConfiguration udpSocketConfiguration,
+                                     SocketConfiguration webSocketConfiguration,
+                                     SocketConfiguration kcpSocketConfiguration) {
+    if (Objects.nonNull(tcpSocketConfiguration)) {
       socketServiceInitialized = true;
-      socketService.setSocketConfig(socketConfiguration);
+      socketService.setSocketConfiguration(tcpSocketConfiguration, udpSocketConfiguration);
     }
 
     if (Objects.nonNull(webSocketConfiguration)) {
       webSocketServiceInitialized = true;
-      webSocketService.setWebSocketConfig(webSocketConfiguration);
+      webSocketService.setWebSocketConfiguration(webSocketConfiguration);
     }
-  }
 
-  @Override
-  public void setSessionEnabledKcp(boolean enabledKcp) {
-    sessionManager.setEnabledKcp(enabledKcp);
+    if (Objects.nonNull(kcpSocketConfiguration)) {
+      kcpChannelServiceInitialized = true;
+      kcpChannelService.setKcpSocketConfiguration(kcpSocketConfiguration);
+    }
   }
 
   @Override
@@ -315,6 +322,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
     socketService.setDataType(dataType);
     webSocketService.setDataType(dataType);
+    kcpChannelService.setDataType(dataType);
   }
 
   @Override
@@ -368,6 +376,14 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
       var packet = createPacket(response, datagramSessions, TransportType.UDP);
       socketService.write(packet);
       datagramSessions.forEach(
+          session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
+    }
+
+    var kcpSessions = response.getRecipientKcpSessions();
+    if (Objects.nonNull(kcpSessions)) {
+      var packet = createPacket(response, kcpSessions, TransportType.KCP);
+      kcpChannelService.write(packet);
+      kcpSessions.forEach(
           session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 

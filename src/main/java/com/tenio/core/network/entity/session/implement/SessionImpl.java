@@ -28,9 +28,7 @@ import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
-import com.tenio.core.exception.EmptyUdpChannelsException;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -48,6 +46,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import kcp.Ukcp;
 
 /**
  * The implementation for session.
@@ -72,7 +71,7 @@ public final class SessionImpl implements Session {
   private SocketChannel socketChannel;
   private SelectionKey selectionKey;
   private DatagramChannel datagramChannel;
-  private Ukcp ukcp;
+  private Ukcp kcpChannel;
   private Channel webSocketChannel;
   private ConnectionFilter connectionFilter;
   private TransportType transportType;
@@ -98,7 +97,6 @@ public final class SessionImpl implements Session {
   private volatile boolean activated;
   private volatile AssociatedState associatedState;
   private volatile boolean hasUdp;
-  private volatile boolean enabledKcp;
   private volatile boolean hasKcp;
 
   private SessionImpl() {
@@ -118,7 +116,6 @@ public final class SessionImpl implements Session {
     activated = false;
     associatedState = AssociatedState.NONE;
     hasUdp = false;
-    enabledKcp = false;
     hasKcp = false;
 
     setCreatedTime(now());
@@ -190,19 +187,6 @@ public final class SessionImpl implements Session {
   @Override
   public boolean containsUdp() {
     return hasUdp;
-  }
-
-  @Override
-  public boolean isEnabledKcp() {
-    if (!containsUdp()) {
-      throw new EmptyUdpChannelsException();
-    }
-    return enabledKcp;
-  }
-
-  @Override
-  public void setEnabledKcp(boolean enabledKcp) {
-    this.enabledKcp = enabledKcp;
   }
 
   @Override
@@ -310,6 +294,21 @@ public final class SessionImpl implements Session {
   }
 
   @Override
+  public Ukcp getKcpChannel() {
+    return kcpChannel;
+  }
+
+  @Override
+  public void setKcpChannel(Ukcp kcpChannel) {
+    if (Objects.nonNull(this.kcpChannel) && this.kcpChannel.isActive()) {
+      this.kcpChannel.close();
+    }
+
+    this.kcpChannel = kcpChannel;
+    this.hasKcp = Objects.nonNull(kcpChannel);
+  }
+
+  @Override
   public SocketAddress getDatagramRemoteSocketAddress() {
     return datagramRemoteSocketAddress;
   }
@@ -317,17 +316,6 @@ public final class SessionImpl implements Session {
   @Override
   public void setDatagramRemoteSocketAddress(SocketAddress datagramRemoteSocketAddress) {
     this.datagramRemoteSocketAddress = datagramRemoteSocketAddress;
-  }
-
-  @Override
-  public Ukcp getUkcp() {
-    return ukcp;
-  }
-
-  @Override
-  public void setUkcp(Ukcp ukcp) {
-    this.ukcp = ukcp;
-    hasKcp = Objects.nonNull(this.ukcp);
   }
 
   @Override
@@ -555,11 +543,6 @@ public final class SessionImpl implements Session {
       setPacketQueue(null);
     }
 
-    if (hasKcp) {
-      ukcp.getKcpIoHandler().channelInactiveIn(this);
-      setUkcp(null);
-    }
-
     switch (transportType) {
       case TCP:
         if (Objects.nonNull(socketChannel)) {
@@ -602,7 +585,7 @@ public final class SessionImpl implements Session {
 
   /**
    * It is generally necessary to override the <b>hashCode</b> method whenever
-   * equals method is overridden, so as to maintain the general contract for the
+   * equals method is overridden, to maintain the general contract for the
    * hashCode method, which states that equal objects must have equal hash codes.
    *
    * @see <a href="https://imgur.com/x6rEAZE">Formula</a>
@@ -639,8 +622,8 @@ public final class SessionImpl implements Session {
         ", associatedState=" + associatedState +
         ", hasUdp=" + hasUdp +
         ", udpConvey=" + udpConvey +
-        ", enabledKcp=" + enabledKcp +
         ", hasKcp=" + hasKcp +
+        ", kcpChannel=" + kcpChannel +
         '}';
   }
 }

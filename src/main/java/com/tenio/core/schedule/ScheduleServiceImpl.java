@@ -40,7 +40,6 @@ import com.tenio.core.schedule.task.internal.CcuReportTask;
 import com.tenio.core.schedule.task.internal.DeadlockScanTask;
 import com.tenio.core.schedule.task.internal.SystemMonitoringTask;
 import com.tenio.core.schedule.task.internal.TrafficCounterTask;
-import com.tenio.core.schedule.task.kcp.KcpUpdateTask;
 
 /**
  * The implementation for the schedule service.
@@ -56,13 +55,11 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   private final DeadlockScanTask deadlockScanTask;
   private final SystemMonitoringTask systemMonitoringTask;
   private final TrafficCounterTask trafficCounterTask;
-  private final KcpUpdateTask kcpUpdateTask;
   private TaskManager taskManager;
   private boolean enableCcuReportTask;
   private boolean enableDeadLockScanTask;
   private boolean enableSystemMonitoringTask;
   private boolean enableTrafficCounterTask;
-  private boolean enabledKcp;
   private boolean initialized;
   private boolean stopping;
 
@@ -76,8 +73,6 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
     deadlockScanTask = DeadlockScanTask.newInstance(this.eventManager);
     systemMonitoringTask = SystemMonitoringTask.newInstance(this.eventManager);
     trafficCounterTask = TrafficCounterTask.newInstance(this.eventManager);
-
-    kcpUpdateTask = KcpUpdateTask.newInstance(this.eventManager);
 
     initialized = false;
     stopping = false;
@@ -123,9 +118,6 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
     }
     if (enableTrafficCounterTask) {
       taskManager.create("traffic-counter", trafficCounterTask.run());
-    }
-    if (enabledKcp) {
-      taskManager.create("kcp-update", kcpUpdateTask.run());
     }
   }
 
@@ -202,7 +194,6 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   @Override
   public void setSessionManager(SessionManager sessionManager) {
     autoCleanOrphanSessionTask.setSessionManager(sessionManager);
-    kcpUpdateTask.setSessionManager(sessionManager);
   }
 
   @Override
@@ -224,10 +215,5 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   @Override
   public void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic) {
     trafficCounterTask.setNetworkWriterStatistic(networkWriterStatistic);
-  }
-
-  @Override
-  public void setEnabledKcp(boolean enabledKcp) {
-    this.enabledKcp = enabledKcp;
   }
 }

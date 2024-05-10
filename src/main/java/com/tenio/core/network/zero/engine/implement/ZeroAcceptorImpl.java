@@ -62,9 +62,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private ConnectionFilter connectionFilter;
   private ZeroReaderListener zeroReaderListener;
   private String serverAddress;
-  private int amountUdpWorkers;
-  private boolean enabledKcp;
-  private SocketConfiguration socketConfiguration;
+  private SocketConfiguration tcpSocketConfiguration;
+  private SocketConfiguration udpSocketConfiguration;
 
   private ZeroAcceptorImpl(EventManager eventManager) {
     super(eventManager);
@@ -94,16 +93,16 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     }
 
     // each socket configuration constructs a server socket or an udp datagram
-    bindSocketChannel(socketConfiguration);
+    bindSocketChannel(tcpSocketConfiguration, udpSocketConfiguration);
   }
 
-  private void bindSocketChannel(SocketConfiguration socketConfiguration)
+  private void bindSocketChannel(SocketConfiguration tcpSocketConfiguration, SocketConfiguration udpSocketConfiguration)
       throws ServiceRuntimeException {
-    if (socketConfiguration.type() == TransportType.TCP) {
-      bindTcpSocket(socketConfiguration.port());
+    if (tcpSocketConfiguration.type() == TransportType.TCP) {
+      bindTcpSocket(Integer.parseInt(tcpSocketConfiguration.port()));
     }
-    if (amountUdpWorkers > 0) {
-      bindUdpChannel();
+    if (Objects.nonNull(udpSocketConfiguration) && udpSocketConfiguration.type() == TransportType.UDP) {
+      bindUdpChannel(udpSocketConfiguration.port());
     }
   }
 
@@ -131,10 +130,15 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     }
   }
 
-  private void bindUdpChannel() throws ServiceRuntimeException {
+  private void bindUdpChannel(String ports) throws ServiceRuntimeException {
+    String[] portStrings = ports.trim().split(",");
+    List<Integer> portValues = new ArrayList<>();
+    for (String portString : portStrings) {
+      portValues.add(Integer.parseInt(portString.trim()));
+    }
     try {
       synchronized (boundSockets) {
-        for (int i = 0; i < amountUdpWorkers; i++) {
+        for (int portValue : portValues) {
           var datagramChannel = DatagramChannel.open();
           datagramChannel.configureBlocking(false);
           if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
@@ -143,7 +147,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
             datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
           }
           datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
-          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, 0));
+          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, portValue));
           // udp datagram is a connectionless protocol, we don't need to create
           // bi-direction connection, that why it's not necessary to register it to
           // acceptable selector. Just leave it to the reader selector later
@@ -151,8 +155,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
           int boundPort = datagramChannel.socket().getLocalPort();
           ServerImpl.getInstance().getUdpChannelManager().appendUdpPort(boundPort);
           if (isInfoEnabled()) {
-            info(enabledKcp ? "UDP CHANNEL (KCP)" : "UDP CHANNEL",
-                buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
+            info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
           }
           boundSockets.add(datagramChannel);
         }
@@ -357,18 +360,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   }
 
   @Override
-  public void setAmountUdpWorkers(int amountUdpWorkers) {
-    this.amountUdpWorkers = amountUdpWorkers;
-  }
-
-  @Override
-  public void setEnabledKcp(boolean enabledKcp) {
-    this.enabledKcp = enabledKcp;
-  }
-
-  @Override
-  public void setSocketConfig(SocketConfiguration socketConfiguration) {
-    this.socketConfiguration = socketConfiguration;
+  public void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
+                                     SocketConfiguration udpSocketConfiguration) {
+    this.tcpSocketConfiguration = tcpSocketConfiguration;
+    this.udpSocketConfiguration = udpSocketConfiguration;
   }
 
   @Override

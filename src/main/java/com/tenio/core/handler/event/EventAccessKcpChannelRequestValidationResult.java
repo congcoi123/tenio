@@ -22,20 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.configuration.kcp;
+package com.tenio.core.handler.event;
+
+import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
+import java.util.Optional;
 
 /**
- * All related configuration when the server uses KCP transportation.
- * @since 0.3.0
+ * When the server responds to the request from client side which requires using the KCP channel.
  */
-public final class KcpConfiguration {
+@FunctionalInterface
+public interface EventAccessKcpChannelRequestValidationResult<P extends Player> {
 
   /**
-   * The current profile setting.
+   * When the server responds to the request from client side which requires using the KCP channel.
+   *
+   * @param player the optional of {@link Player} which requires using UDP channel
+   * @param result the responded {@link AccessDatagramChannelResult} from the server, if the result
+   *               equals to {@link AccessDatagramChannelResult#PLAYER_NOT_FOUND} then the returned
+   *               player is empty, otherwise it is present
+   * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT
+   * @see EventAccessKcpChannelRequestValidation
+   * @see Optional
    */
-  public static KcpProfile PROFILE = KcpProfile.BOOSTER_MODE;
-
-  private KcpConfiguration() {
-    throw new UnsupportedOperationException();
-  }
+  void handle(Optional<P> player, AccessDatagramChannelResult result);
 }

@@ -28,7 +28,6 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.kcp.Ukcp;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -42,6 +41,7 @@ import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import kcp.Ukcp;
 
 /**
  * When a connection connected to the server, it is managed by a corresponding session.
@@ -153,26 +153,12 @@ public interface Session {
   boolean containsUdp();
 
   /**
-   * Determines if the client and server can use KCP for communication. This can be used when the
-   * UDP channel is enabled on the session.
+   * Determines whether the session is able to use the server KCP channel for communication. This
+   * only applies for the TCP session.
    *
-   * @return {@code true} if KCP transportation mechanism is applied and UDP channel is using for
-   * conveying, otherwise returns {@code false}
-   */
-  boolean isEnabledKcp();
-
-  /**
-   * Allows using the KCP transportation via UDP channels.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setEnabledKcp(boolean enabledKcp);
-
-  /**
-   * Determines if the session has a KCP instance for communication.
-   *
-   * @return {@code true} if the UDP channel is able to use the KCP for communication, otherwise
-   * returns {@code false}
+   * @return {@code true} if the TCP session is able to use the server KCP channel for
+   * communication, otherwise returns {@code false}. In case of WebSocket session, always returns
+   * {@code false}
    */
   boolean containsKcp();
 
@@ -264,6 +250,21 @@ public interface Session {
   int getUdpConveyId();
 
   /**
+   * Retrieves a KCP channel that the session is able to use.
+   *
+   * @return a {@link Ukcp} which is using for communication via KCP channel
+   */
+  Ukcp getKcpChannel();
+
+  /**
+   * Declares a KCP channel that the session is able to use.
+   *
+   * @param kcpChannel a {@link Ukcp} which is using for communication via KCP
+   *                   channel (there will be some channels opened on the server side)
+   */
+  void setKcpChannel(Ukcp kcpChannel);
+
+  /**
    * Retrieves the remote address associating to the client side whenever the server receives
    * message from him.
    *
@@ -278,20 +279,6 @@ public interface Session {
    * @param datagramRemoteSocketAddress remote address associating to the client side
    */
   void setDatagramRemoteSocketAddress(SocketAddress datagramRemoteSocketAddress);
-
-  /**
-   * Retrieves a KCP wrapper object that the session is able to use.
-   *
-   * @return a {@link Ukcp} instance
-   */
-  Ukcp getUkcp();
-
-  /**
-   * Declares a KCP wrapper object that the session is able to use.
-   *
-   * @param ukcp a {@link Ukcp} instance
-   */
-  void setUkcp(Ukcp ukcp);
 
   /**
    * Retrieves a WebSocket channel which is using for communication between the server and

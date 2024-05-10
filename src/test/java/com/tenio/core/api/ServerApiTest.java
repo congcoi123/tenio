@@ -46,12 +46,10 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.exception.PlayerJoinedRoomException;
-import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
-import com.tenio.core.network.zero.engine.manager.UdpChannelManager;
+import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import com.tenio.core.server.Server;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -79,7 +77,7 @@ class ServerApiTest {
   RoomManager roomManager;
 
   @Mock
-  UdpChannelManager udpChannelManager;
+  DatagramChannelManager datagramChannelManager;
 
   @Mock
   EventManager eventManager;
@@ -343,7 +341,7 @@ class ServerApiTest {
   void getterMethodsShouldReturnExpectedResults() {
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
-    Mockito.when(server.getUdpChannelManager()).thenReturn(udpChannelManager);
+    Mockito.when(server.getUdpChannelManager()).thenReturn(datagramChannelManager);
 
     var playerName = "test";
     var player = Mockito.mock(Player.class);
@@ -383,7 +381,7 @@ class ServerApiTest {
     Assertions.assertEquals(roomList, serverApi.getReadonlyRoomsList());
 
     // getCurrentAvailableUdpPort()
-    Mockito.when(udpChannelManager.getCurrentAvailableUdpPort()).thenReturn(8048);
+    Mockito.when(datagramChannelManager.getCurrentAvailableUdpPort()).thenReturn(8048);
     Assertions.assertEquals(8048, serverApi.getCurrentAvailableUdpPort());
 
     // getStartedTime

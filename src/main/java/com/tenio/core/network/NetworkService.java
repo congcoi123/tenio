@@ -126,26 +126,12 @@ public interface NetworkService extends Service {
   void setSocketAcceptorServerAddress(String serverAddress);
 
   /**
-   * Declares the number of Udp channel will be opened on the server.
-   *
-   * @param amountUdpWorkers the number of opening Udp channels
-   */
-  void setSocketAcceptorAmountUdpWorkers(int amountUdpWorkers);
-
-  /**
    * Sets the number of acceptor workers for the socket (TCP) which are using to accept new coming
    * clients.
    *
    * @param workerSize the number of acceptor workers for the socket ({@code integer} value)
    */
   void setSocketAcceptorWorkers(int workerSize);
-
-  /**
-   * Determines if UDP channels can use KCP transportation for communication.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setSocketAcceptorEnabledKcp(boolean enabledKcp);
 
   /**
    * Sets the number of reader workers for the socket (TCP) which are using to read coming packets
@@ -193,18 +179,15 @@ public interface NetworkService extends Service {
   /**
    * Declares socket configurations for the network.
    *
-   * @param socketConfiguration    a {@link SocketConfiguration} instance for TCP
+   * @param tcpSocketConfiguration a {@link SocketConfiguration} instance for TCP
+   * @param udpSocketConfiguration a {@link SocketConfiguration} instance for UDP
    * @param webSocketConfiguration a {@link SocketConfiguration} instance for WebSocket
+   * @param kcpSocketConfiguration a {@link SocketConfiguration} instance for KCP
    */
-  void setSocketConfiguration(SocketConfiguration socketConfiguration,
-                              SocketConfiguration webSocketConfiguration);
-
-  /**
-   * Determines if UDP channels can use KCP transportation for communication.
-   *
-   * @param enabledKcp sets it {@code true} if enabled, otherwise sets it {code false}
-   */
-  void setSessionEnabledKcp(boolean enabledKcp);
+  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
+                              SocketConfiguration udpSocketConfiguration,
+                              SocketConfiguration webSocketConfiguration,
+                              SocketConfiguration kcpSocketConfiguration);
 
   /**
    * Sets the maximum time in seconds which allows the session to get in IDLE state (Do not

@@ -56,7 +56,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
     // this channel can be deactivated by some reasons, no need to throw an
     // exception here
-    if (Objects.isNull(channel)) {
+    if (Objects.isNull(channel) || !channel.isConnected()) {
       if (isDebugEnabled()) {
         debug("SOCKET CHANNEL SEND", "Skipping this packet, found null socket for session ",
             session);

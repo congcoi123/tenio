@@ -87,8 +87,7 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
   public void channelRead(@Nonnull ChannelHandlerContext ctx, @Nonnull Object raw) {
 
     // check the request for handshake
-    if (raw instanceof HttpRequest) {
-      var httpRequest = (HttpRequest) raw;
+    if (raw instanceof HttpRequest httpRequest) {
       var headers = httpRequest.headers();
 
       if (headers.get("Connection").equalsIgnoreCase("Upgrade")
