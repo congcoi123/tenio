@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-common</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,16 +39,16 @@
     </scm>
 
     <properties>
-        <google.guava.version>33.1.0-jre</google.guava.version>
-        <org.msgpack.version>0.6.12</org.msgpack.version>
+        <google.guava.version>33.3.1-jre</google.guava.version>
+        <org.msgpack.version>0.9.8</org.msgpack.version>
         <logging.log4j.version>2.20.0</logging.log4j.version>
         <org.reflections.version>0.10.2</org.reflections.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <org.junit.jupiter.version>5.9.2</org.junit.jupiter.version>
-        <org.junit.platform.version>1.9.2</org.junit.platform.version>
-        <org.mockito.core.version>5.2.0</org.mockito.core.version>
+        <org.junit.jupiter.version>5.11.2</org.junit.jupiter.version>
+        <org.junit.platform.version>1.11.2</org.junit.platform.version>
+        <org.mockito.core.version>5.14.1</org.mockito.core.version>
 
         <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
         <jdk.release>17</jdk.release>
@@ -56,7 +56,7 @@
 
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
         <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.10.1</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
@@ -73,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.msgpack</groupId>
-            <artifactId>msgpack</artifactId>
+            <artifactId>msgpack-core</artifactId>
             <version>${org.msgpack.version}</version>
         </dependency>
         <dependency>

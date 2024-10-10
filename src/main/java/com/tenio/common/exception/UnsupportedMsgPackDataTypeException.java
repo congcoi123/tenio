@@ -24,16 +24,21 @@ THE SOFTWARE.
 
 package com.tenio.common.exception;
 
-import com.tenio.common.task.TaskManager;
+import com.tenio.common.data.msgpack.MsgPackUtility;
 import java.io.Serial;
 
 /**
- * This exception would be thrown when you try to start a running task.
+ * This exception would be thrown when you try to use an unsupported data type with MsgPack.
  *
- * @see TaskManager
+ * @see MsgPackUtility
  */
-public final class RunningScheduledTaskException extends RuntimeException {
+public final class UnsupportedMsgPackDataTypeException extends RuntimeException {
 
   @Serial
-  private static final long serialVersionUID = 6549514020356397713L;
+  private static final long serialVersionUID = -814968367492853470L;
+
+  public UnsupportedMsgPackDataTypeException() {
+    super("The data type is not supported. Please check out this available list: null, boolean, byte, short, int, " +
+        "float, long, double, String, boolean[], byte[], short[], int[], float[], long[], double[], String[].");
+  }
 }

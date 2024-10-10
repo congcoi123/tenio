@@ -24,16 +24,20 @@ THE SOFTWARE.
 
 package com.tenio.common.exception;
 
-import com.tenio.common.task.TaskManager;
+import com.tenio.common.data.msgpack.MsgPackUtility;
 import java.io.Serial;
 
 /**
- * This exception would be thrown when you try to start a running task.
+ * This exception would be thrown when there is something wrong with MsgPack's operations.
  *
- * @see TaskManager
+ * @see MsgPackUtility
  */
-public final class RunningScheduledTaskException extends RuntimeException {
+public final class MsgPackOperationException extends RuntimeException {
 
   @Serial
-  private static final long serialVersionUID = 6549514020356397713L;
+  private static final long serialVersionUID = -4038782519959446592L;
+
+  public MsgPackOperationException(Exception exception) {
+    super(exception);
+  }
 }

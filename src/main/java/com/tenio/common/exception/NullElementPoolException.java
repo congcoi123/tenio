@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.exception;
 
 import com.tenio.common.pool.ElementPool;
+import java.io.Serial;
 
 /**
  * This exception would be thrown when you try to repay a null element.
@@ -33,6 +34,7 @@ import com.tenio.common.pool.ElementPool;
  */
 public final class NullElementPoolException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 1702807220957046354L;
 
   /**
