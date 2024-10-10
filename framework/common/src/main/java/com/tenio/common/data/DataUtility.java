@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.common.data;
 
 import com.tenio.common.data.msgpack.MsgPackUtility;
-import com.tenio.common.data.msgpack.element.MsgPackArray;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
@@ -58,15 +57,6 @@ public final class DataUtility {
    */
   public static ZeroMap newZeroMap() {
     return new ZeroMapImpl();
-  }
-
-  /**
-   * Creates a new instance of {@link MsgPackArray} class.
-   *
-   * @return new instance of msgpack array
-   */
-  public static MsgPackArray newMsgArray() {
-    return MsgPackArray.newInstance();
   }
 
   /**

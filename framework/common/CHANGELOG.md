@@ -30,3 +30,8 @@
 - Changed some methods' names
 - Fixed test cases' issues
 - Bugs fixed 
+
+## 0.6.0 2024-10-09 Feature release
+- Upgraded dependencies
+- Reworked MsgPack data (Removed MsgPackArray and added new array types)
+- Bugs fixed 
