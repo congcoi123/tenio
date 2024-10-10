@@ -30,8 +30,8 @@ import com.tenio.core.bootstrap.configuration.ConfigurationHandler;
 import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.command.system.SystemCommandManager;
 import com.tenio.core.event.handler.EventHandler;
+import jakarta.servlet.http.HttpServlet;
 import java.util.Map;
-import javax.servlet.http.HttpServlet;
 
 /**
  * This class provides instances for the events handler and the configuration setups.

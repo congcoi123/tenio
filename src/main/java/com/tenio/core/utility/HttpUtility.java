@@ -27,11 +27,11 @@ package com.tenio.core.utility;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.constant.CoreConstant;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 

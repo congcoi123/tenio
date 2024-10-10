@@ -167,7 +167,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   private void acceptableLoop() throws IOException {
     // blocks until at least one channel is ready for the events you registered for
-    int countReadyKeys = acceptableSelector.selectNow();
+    int countReadyKeys = acceptableSelector.select(1);
 
     if (countReadyKeys == 0) {
       return;

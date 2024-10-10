@@ -46,8 +46,10 @@ import com.tenio.core.command.system.SystemCommandManager;
 import com.tenio.core.exception.DuplicatedBeanCreationException;
 import com.tenio.core.exception.IllegalDefinedAccessControlException;
 import com.tenio.core.exception.IllegalReturnTypeException;
+import com.tenio.core.exception.InvalidRestMappingClassException;
 import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
 import com.tenio.core.exception.NoImplementedClassFoundException;
+import jakarta.servlet.http.HttpServlet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -60,7 +62,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.servlet.http.HttpServlet;
 import org.reflections.Reflections;
 
 /**
@@ -296,7 +297,7 @@ public final class Injector extends SystemLogger {
             if (Modifier.isPublic(method.getModifiers())) {
               var methodClazz = method.getReturnType();
               if (!methodClazz.equals(HttpServlet.class)) {
-                throw new IllegalReturnTypeException();
+                throw new InvalidRestMappingClassException();
               } else {
                 String uri = String.join("/", StringUtility.trimStringByString(
                         clazz.getAnnotation(RestController.class).value(), "/"),

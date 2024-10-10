@@ -29,7 +29,7 @@ package com.tenio.core.configuration.constant;
  */
 public final class Trademark {
 
-  private static final String VERSION = "0.5.1";
+  private static final String VERSION = "0.6.0";
 
   /**
    * The trademark content.
@@ -60,7 +60,7 @@ public final class Trademark {
       "**                                                    **",
       "**                                                    **",
       "**                       TenIO                        **",
-      "**            Copyright (c) 2016-2023, Kong           **",
+      "**            Copyright (c) 2016-2024, Kong           **",
       "**                 All rights reserved                **",
       "**                       (v" + VERSION + ")                     **",
       "**                                                    **",
