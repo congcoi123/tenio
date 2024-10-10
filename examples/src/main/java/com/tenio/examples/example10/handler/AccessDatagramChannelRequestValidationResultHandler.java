@@ -40,8 +40,8 @@ public final class AccessDatagramChannelRequestValidationResultHandler extends A
   @Override
   public void handle(Optional<Player> player, int udpConv, AccessDatagramChannelResult result) {
     if (result == AccessDatagramChannelResult.SUCCESS) {
-      var parcel = msgmap().putMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          msgarray().addInteger(DatagramEstablishedState.ESTABLISHED));
+      var parcel = msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
+          new int[] { DatagramEstablishedState.ESTABLISHED });
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player.get()).write();
     }

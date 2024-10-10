@@ -22,28 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.core.exception;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
-import com.tenio.examples.server.DatagramEstablishedState;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.core.bootstrap.annotation.RestMapping;
+import jakarta.servlet.http.HttpServlet;
+import java.io.Serial;
 
-@EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult<Player> {
+/**
+ * When the mapping class does not return an instance of HttpServlet.
+ *
+ * @see RestMapping
+ * @see HttpServlet
+ */
+public final class InvalidRestMappingClassException extends RuntimeException {
 
-  @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      var parcel =
-          msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getCurrentAvailableUdpPort() });
+  @Serial
+  private static final long serialVersionUID = -7249766208940595231L;
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+  public InvalidRestMappingClassException() {
+    super("Invalid RestMapping class, it should return an instance of jakarta.servlet.http.HttpServlet.");
   }
 }

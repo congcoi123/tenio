@@ -34,7 +34,10 @@ public final class SharedEventKey {
   public static final String KEY_PLAYER_REQUEST_NEIGHBOURS = "r";
   public static final String KEY_PLAYER_GET_RESPONSE = "rr";
   public static final String KEY_COMMAND = "c";
+  public static final String KEY_USER = "ku";
   public static final String KEY_DATA = "kd";
+  public static final String KEY_DATA_1 = "kd1";
+  public static final String KEY_DATA_2 = "kd2";
   public static final String KEY_UDP_CONVEY_ID = "u";
   public static final String KEY_UDP_MESSAGE_DATA = "d";
 

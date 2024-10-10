@@ -36,7 +36,6 @@ import java.net.URL;
 public final class TestClientRestful {
 
   public TestClientRestful() {
-    System.out.println(executeRequest("http://localhost:9999/ping", "param=test", "GET"));
     System.err.println(executeRequest("http://localhost:9999/ping/another", "param=test", "POST"));
   }
 

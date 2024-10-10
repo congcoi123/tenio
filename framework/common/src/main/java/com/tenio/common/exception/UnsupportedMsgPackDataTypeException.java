@@ -22,28 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.common.exception;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
-import com.tenio.examples.server.DatagramEstablishedState;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.common.data.msgpack.MsgPackUtility;
+import java.io.Serial;
 
-@EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult<Player> {
+/**
+ * This exception would be thrown when you try to use an unsupported data type with MsgPack.
+ *
+ * @see MsgPackUtility
+ */
+public final class UnsupportedMsgPackDataTypeException extends RuntimeException {
 
-  @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      var parcel =
-          msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getCurrentAvailableUdpPort() });
+  @Serial
+  private static final long serialVersionUID = -814968367492853470L;
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+  public UnsupportedMsgPackDataTypeException() {
+    super("The data type is not supported. Please check out this available list: null, boolean, byte, short, int, " +
+        "float, long, double, String, boolean[], byte[], short[], int[], float[], long[], double[], String[].");
   }
 }

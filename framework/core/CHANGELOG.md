@@ -59,3 +59,8 @@
 ## 0.5.1 2023-09-03 Feature release
 - Fixed bugs that stops the main thread 
 - It allows removing optional schedule tasks (CcuReportTask, DeadlockScanTask, SystemMonitoringTask, TrafficCounterTask)
+
+## 0.6.0 2024-10-09 Feature release
+- Upgraded dependencies
+- Fixed issues related to the "100% CPU"
+- Reworked on Restful

@@ -22,28 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.common.exception;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
-import com.tenio.examples.server.DatagramEstablishedState;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.common.data.msgpack.MsgPackUtility;
+import java.io.Serial;
 
-@EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult<Player> {
+/**
+ * This exception would be thrown when there is something wrong with MsgPack's operations.
+ *
+ * @see MsgPackUtility
+ */
+public final class MsgPackOperationException extends RuntimeException {
 
-  @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      var parcel =
-          msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getCurrentAvailableUdpPort() });
+  @Serial
+  private static final long serialVersionUID = -4038782519959446592L;
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+  public MsgPackOperationException(Exception exception) {
+    super(exception);
   }
 }

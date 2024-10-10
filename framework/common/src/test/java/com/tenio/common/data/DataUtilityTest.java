@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.data.msgpack.MsgPackUtility;
-import com.tenio.common.data.msgpack.element.MsgPackArray;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
@@ -60,7 +59,6 @@ class DataUtilityTest {
     assertAll("instancesCreationShouldWork",
         () -> assertInstanceOf(ZeroArray.class, DataUtility.newZeroArray()),
         () -> assertInstanceOf(ZeroMap.class, DataUtility.newZeroMap()),
-        () -> assertInstanceOf(MsgPackArray.class, DataUtility.newMsgArray()),
         () -> assertInstanceOf(MsgPackMap.class, DataUtility.newMsgMap()));
 
     var zeroMapBinaries = ZeroUtility.mapToBinary(ZeroUtility.newZeroMap());

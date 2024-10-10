@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.exception;
 
 import com.tenio.common.task.TaskManager;
+import java.io.Serial;
 
 /**
  * This exception would be thrown when you try to start a running task.
@@ -33,5 +34,6 @@ import com.tenio.common.task.TaskManager;
  */
 public final class RunningScheduledTaskException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 6549514020356397713L;
 }

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9;
 
-import com.backblaze.erasure.FecAdapt;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroArray;
@@ -101,7 +100,6 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
         channelConfig.setMtu(512);
         channelConfig.setAckNoDelay(true);
         channelConfig.setConv(55);
-        channelConfig.setFecAdapt(new FecAdapt(3, 1));
         channelConfig.setCrc32Check(true);
         KcpClient kcpClient = new KcpClient();
         kcpClient.init(channelConfig);

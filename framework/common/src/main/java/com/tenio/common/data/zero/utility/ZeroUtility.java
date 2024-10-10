@@ -230,49 +230,33 @@ public final class ZeroUtility {
       return null;
     }
 
-    switch (type) {
-      case NULL:
-        return decodeNull();
-      case BOOLEAN:
-        return decodeBoolean(buffer);
-      case BYTE:
-        return decodeByte(buffer);
-      case SHORT:
-        return decodeShort(buffer);
-      case INTEGER:
-        return decodeInteger(buffer);
-      case FLOAT:
-        return decodeFloat(buffer);
-      case LONG:
-        return decodeLong(buffer);
-      case DOUBLE:
-        return decodeDouble(buffer);
-      case STRING:
-        return decodeString(buffer);
-      case BOOLEAN_ARRAY:
-        return decodeBooleanArray(buffer);
-      case BYTE_ARRAY:
-        return decodeByteArray(buffer);
-      case SHORT_ARRAY:
-        return decodeShortArray(buffer);
-      case INTEGER_ARRAY:
-        return decodeIntegerArray(buffer);
-      case FLOAT_ARRAY:
-        return decodeFloatArray(buffer);
-      case LONG_ARRAY:
-        return decodeLongArray(buffer);
-      case DOUBLE_ARRAY:
-        return decodeDoubleArray(buffer);
-      case STRING_ARRAY:
-        return decodeStringArray(buffer);
-      case ZERO_ARRAY:
+    return switch (type) {
+      case NULL -> decodeNull();
+      case BOOLEAN -> decodeBoolean(buffer);
+      case BYTE -> decodeByte(buffer);
+      case SHORT -> decodeShort(buffer);
+      case INTEGER -> decodeInteger(buffer);
+      case FLOAT -> decodeFloat(buffer);
+      case LONG -> decodeLong(buffer);
+      case DOUBLE -> decodeDouble(buffer);
+      case STRING -> decodeString(buffer);
+      case BOOLEAN_ARRAY -> decodeBooleanArray(buffer);
+      case BYTE_ARRAY -> decodeByteArray(buffer);
+      case SHORT_ARRAY -> decodeShortArray(buffer);
+      case INTEGER_ARRAY -> decodeIntegerArray(buffer);
+      case FLOAT_ARRAY -> decodeFloatArray(buffer);
+      case LONG_ARRAY -> decodeLongArray(buffer);
+      case DOUBLE_ARRAY -> decodeDoubleArray(buffer);
+      case STRING_ARRAY -> decodeStringArray(buffer);
+      case ZERO_ARRAY -> {
         buffer.position(buffer.position() - Byte.BYTES);
-        return newZeroElement(ZeroType.ZERO_ARRAY, decodeZeroArray(buffer));
-      case ZERO_MAP:
+        yield newZeroElement(ZeroType.ZERO_ARRAY, decodeZeroArray(buffer));
+      }
+      case ZERO_MAP -> {
         buffer.position(buffer.position() - Byte.BYTES);
-        return newZeroElement(ZeroType.ZERO_MAP, decodeZeroMap(buffer));
-    }
-    return null;
+        yield newZeroElement(ZeroType.ZERO_MAP, decodeZeroMap(buffer));
+      }
+    };
   }
 
   @SuppressWarnings("unchecked")

@@ -39,8 +39,8 @@
 		<jdk.vendor>oracle</jdk.vendor>
 
 		<io.github.congcoi123.tenio.core.version>0.6.0</io.github.congcoi123.tenio.core.version>
-		<io.github.congcoi123.tenio.engine.version>0.5.0</io.github.congcoi123.tenio.engine.version>
-		<org.apache.commons.version>3.12.0</org.apache.commons.version>
+		<io.github.congcoi123.tenio.engine.version>0.6.0</io.github.congcoi123.tenio.engine.version>
+		<org.apache.commons.version>3.17.0</org.apache.commons.version>
 
 		<maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
 		<maven.compiler.target>17</maven.compiler.target>

@@ -31,8 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.data.msgpack.MsgPackUtility;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -53,62 +55,31 @@ class MsgPackUtilityTest {
   @Test
   @DisplayName("Checking whether binaries data is a collection should work")
   void itShouldReturnCorrectDataCollection() {
-    var msgpackMap = MsgPackUtility.newMsgPackMap().putBoolean("a", true).putMsgPackArray("b",
-        MsgPackUtility.newMsgPackArray().addBoolean(true));
+    var msgpackArray = new boolean[] { true, false, true };
+    var msgpackMap = MsgPackUtility.newMsgPackMap().putBoolean("a", true).putBooleanArray("b", msgpackArray);
     var checkMsgPackMap = MsgPackUtility.deserialize(msgpackMap.toBinary());
 
     assert checkMsgPackMap != null;
-    assertEquals(msgpackMap.toString(), checkMsgPackMap.toString());
+    assertEquals(msgpackMap.getBoolean("a"), checkMsgPackMap.getBoolean("a"));
+    assertEquals(Arrays.toString(msgpackMap.getBooleanArray("b")), Arrays.toString(checkMsgPackMap.getBooleanArray("b")));
   }
 
   @Test
   @DisplayName("Allow adding and fetching data to/from MsgPackArray")
   void addedDataInArrayShouldMatch() {
-    var origin = MsgPackUtility.newMsgPackArray();
-    origin.addBoolean(true).addInteger(1000).addFloat(101.1f).addString("msgpack")
-        .addBoolean(false).addMsgPackArray(MsgPackUtility.newMsgPackArray().addBoolean(true));
-    var carry = MsgPackUtility.newMsgPackMap().putMsgPackArray("k", origin);
+    var origin = new int[] { 10, 20, 30, 40, 50 };
+    var carry = MsgPackUtility.newMsgPackMap().putIntegerArray("k", origin);
     var binary = carry.toBinary();
     var newOne = MsgPackUtility.deserialize(binary);
 
     assert newOne != null;
     assertAll("addedDataInArrayShouldMatch",
-        () -> assertTrue(newOne.getMsgPackArray("k").getBoolean(0)),
-        () -> assertEquals(1000, newOne.getMsgPackArray("k").getInteger(1)),
-        () -> assertEquals(101.1f, newOne.getMsgPackArray("k").getFloat(2)),
-        () -> assertEquals("msgpack", newOne.getMsgPackArray("k").getString(3)),
-        () -> assertFalse(newOne.getMsgPackArray("k").getBoolean(4)),
-        () -> assertEquals(MsgPackUtility.newMsgPackArray().addBoolean(true).toString(),
-            newOne.getMsgPackArray("k").getMsgPackArray(5).toString())
+        () -> assertEquals(10, newOne.getIntegerArray("k")[0]),
+        () -> assertEquals(20, newOne.getIntegerArray("k")[1]),
+        () -> assertEquals(30, newOne.getIntegerArray("k")[2]),
+        () -> assertEquals(40, newOne.getIntegerArray("k")[3]),
+        () -> assertEquals(50, newOne.getIntegerArray("k")[4])
     );
-
-    var readonlyArray = origin.getReadonlyList();
-    assertAll("readonlyDataInArrayShouldMatch",
-        () -> assertTrue((boolean) readonlyArray.get(0)),
-        () -> assertEquals(1000, (int) readonlyArray.get(1)),
-        () -> assertEquals(101.1f, (float) readonlyArray.get(2)),
-        () -> assertEquals("msgpack", readonlyArray.get(3)),
-        () -> assertFalse((boolean) readonlyArray.get(4)),
-        () -> assertEquals(MsgPackUtility.newMsgPackArray().addBoolean(true).toString(),
-            readonlyArray.get(5).toString())
-    );
-  }
-
-  @Test
-  @DisplayName("Allow adding and fetching MsgPackArray data to/from MsgPackArray")
-  void zeroMapInArrayShouldMatch() {
-    var origin = MsgPackUtility.newMsgPackArray();
-    var msgPackArray = MsgPackUtility.newMsgPackArray();
-    msgPackArray.addBoolean(true)
-        .addInteger(100)
-        .addString("msgpack");
-    origin.addMsgPackArray(msgPackArray);
-    var carry = MsgPackUtility.newMsgPackMap().putMsgPackArray("k", origin);
-    var binary = carry.toBinary();
-    var newOne = MsgPackUtility.deserialize(binary);
-
-    assert newOne != null;
-    assertEquals(newOne.getMsgPackArray("k").toString(), carry.getMsgPackArray("k").toString());
   }
 
   @Test
@@ -119,8 +90,7 @@ class MsgPackUtilityTest {
         .putInteger("i", 1000)
         .putFloat("f", 101.1f)
         .putString("s", "msgpack")
-        .putMsgPackArray("ma", MsgPackUtility.newMsgPackArray().addBoolean(true))
-        .putMsgPackMap("mm", MsgPackUtility.newMsgPackMap().putBoolean("b", true));
+        .putMsgPackMap("map", MsgPackMap.newInstance().putBoolean("mapb", true));
     var binary = origin.toBinary();
     var newOne = MsgPackUtility.deserialize(binary);
 
@@ -131,10 +101,8 @@ class MsgPackUtilityTest {
         () -> assertEquals(1000, newOne.getInteger("i")),
         () -> assertEquals(101.1f, newOne.getFloat("f")),
         () -> assertEquals("msgpack", newOne.getString("s")),
-        () -> assertEquals(MsgPackUtility.newMsgPackArray().addBoolean(true).toString(),
-            newOne.getMsgPackArray("ma").toString()),
-        () -> assertEquals(MsgPackUtility.newMsgPackMap().putBoolean("b", true).toString(),
-            newOne.getMsgPackMap("mm").toString())
+        () -> assertEquals(origin.getMsgPackMap("map").getBoolean("mapb"), newOne.getMsgPackMap("map").getBoolean(
+            "mapb"))
     );
 
     var readonlyMap = origin.getReadonlyMap();
@@ -142,11 +110,7 @@ class MsgPackUtilityTest {
         () -> assertTrue((boolean) readonlyMap.get("b")),
         () -> assertEquals(1000, (int) readonlyMap.get("i")),
         () -> assertEquals(101.1f, (float) readonlyMap.get("f")),
-        () -> assertEquals("msgpack", readonlyMap.get("s")),
-        () -> assertEquals(MsgPackUtility.newMsgPackArray().addBoolean(true).toString(),
-            newOne.get("ma").toString()),
-        () -> assertEquals(MsgPackUtility.newMsgPackMap().putBoolean("b", true).toString(),
-            newOne.get("mm").toString())
+        () -> assertEquals("msgpack", readonlyMap.get("s"))
     );
   }
 }

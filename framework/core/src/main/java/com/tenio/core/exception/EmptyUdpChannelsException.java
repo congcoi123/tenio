@@ -28,7 +28,7 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
 
 /**
  * When an available Udp channel port is requested, but the list is empty. It might be caused by
- * {@link CoreConfigurationType#WORKER_UDP_WORKER} equals to {@code 0}, or there was some
+ * the size of {@link CoreConfigurationType#NETWORK_UDP} equals to {@code 0}, or there was some
  * exception occurred while establishing Udp channels.
  *
  * @since 0.3.0
