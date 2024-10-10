@@ -16,3 +16,6 @@
 - Upgraded to JDK 17
 - Upgraded dependencies
 - Allowed checking logging configuration before writing logs
+
+## 0.6.0 2024-10-09 Feature release
+- Upgraded dependencies
