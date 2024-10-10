@@ -28,7 +28,6 @@ import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
@@ -50,22 +49,16 @@ import com.tenio.examples.server.SharedEventKey;
 public final class TestClientMsgPackEcho implements SocketListener, DatagramListener {
 
   private static final int SOCKET_PORT = 8032;
-  private final TCP tcp;
-  private final Session session;
   private final String playerName;
-  private final NetworkWriterStatistic networkWriterStatistic;
-  private UDP udp;
 
   public TestClientMsgPackEcho() {
     playerName = ClientUtility.generateRandomString(5);
 
     // create a new TCP object and listen for this port
-    tcp = new TCP(SOCKET_PORT);
+    TCP tcp = new TCP(SOCKET_PORT);
     tcp.receive(this);
-    session = tcp.getSession();
+    Session session = tcp.getSession();
     session.setName(playerName);
-
-    networkWriterStatistic = NetworkWriterStatistic.newInstance();
 
     // send a login request
     var request =
@@ -87,15 +80,15 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
     var parcel = (MsgPackMap) DataUtility.binaryToCollection(DataType.MSG_PACK, binaries);
 
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
-    var pack = parcel.getMsgPackArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
+    var pack = parcel.getIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
-    switch (pack.getInteger(0)) {
+    switch (pack[0]) {
       case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
         // now you can send request for UDP connection request
         var request =
             DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
         // create a new UDP object and listen for this port
-        udp = new UDP(pack.getInteger(1));
+        UDP udp = new UDP(pack[1]);
         udp.receive(this);
         udp.send(request);
 

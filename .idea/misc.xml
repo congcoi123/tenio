@@ -13,6 +13,15 @@
         <option value="$PROJECT_DIR$/../../Archives/java-Kcp/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/../../Archives/java-Kcp/kcp-base/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Archives/java-Kcp/kcp-example/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Archives/java-Kcp/kcp-fec/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Archives/java-Kcp/kcp-lockStepSynchronization/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Archives/java-Kcp/pom.xml" />
+      </set>
+    </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="openjdk17" project-jdk-type="JavaSDK" />

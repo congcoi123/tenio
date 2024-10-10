@@ -48,3 +48,9 @@
 - Removed redundant constant, enum values
 - Fixed test cases' issues
 - Bugs fixed 
+
+## 0.6.0 2024-10-09 Feature release
+- Upgraded dependencies
+- Enhanced performances and addressed the issue related to "100% CPU"
+- Reworked on MsgPack classes and methods
+- Bugs fixed
