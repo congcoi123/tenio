@@ -28,15 +28,16 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.service.Service;
+import jakarta.servlet.http.HttpServlet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.servlet.http.HttpServlet;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
@@ -78,14 +79,15 @@ public final class JettyHttpService extends AbstractManager implements Service, 
     connector.setPort(port);
     server.addConnector(connector);
 
-    var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-    context.setContextPath("/");
+    ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
+    server.setHandler(contextHandlerCollection);
+
+    ServletContextHandler apiHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+    apiHandler.setContextPath("/");
+    contextHandlerCollection.addHandler(apiHandler);
 
     // Configuration
-    servletMap.forEach(
-        (uri, servlet) -> context.addServlet(new ServletHolder(servlet), "/" + uri));
-
-    server.setHandler(context);
+    servletMap.forEach((uri, servlet) -> apiHandler.addServlet(new ServletHolder(servlet), "/" + uri));
   }
 
   @Override

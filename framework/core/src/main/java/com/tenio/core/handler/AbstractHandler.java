@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.handler;
 
 import com.tenio.common.data.DataType;
-import com.tenio.common.data.msgpack.element.MsgPackArray;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
@@ -97,18 +96,6 @@ public abstract class AbstractHandler extends SystemLogger {
       throw new UnsupportedDataTypeInUseException(server.getDataType());
     }
     return ZeroUtility.newZeroMap();
-  }
-
-  /**
-   * Retrieves a msgpack array instance when the {@link DataType} in use is {@link DataType#MSG_PACK}.
-   *
-   * @return an instance of {@link MsgPackArray}
-   */
-  protected final MsgPackArray msgarray() {
-    if (server.getDataType() != DataType.MSG_PACK) {
-      throw new UnsupportedDataTypeInUseException(server.getDataType());
-    }
-    return MsgPackArray.newInstance();
   }
 
   /**

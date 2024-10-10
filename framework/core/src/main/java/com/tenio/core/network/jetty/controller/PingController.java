@@ -29,12 +29,12 @@ import com.tenio.core.bootstrap.annotation.RestController;
 import com.tenio.core.bootstrap.annotation.RestMapping;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.network.jetty.response.ApiResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serial;
 import java.util.Map;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * The default servlet to let client checks if the HTTP server is available or not.

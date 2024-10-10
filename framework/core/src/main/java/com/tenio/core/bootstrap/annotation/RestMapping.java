@@ -39,8 +39,8 @@ import java.lang.annotation.Target;
  * @see PingController
  * @since 0.5.0
  */
-@Target({METHOD})
 @Retention(RUNTIME)
+@Target(METHOD)
 @Documented
 public @interface RestMapping {
 

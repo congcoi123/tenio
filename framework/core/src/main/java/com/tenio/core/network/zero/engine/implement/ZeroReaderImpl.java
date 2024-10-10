@@ -101,7 +101,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
     try {
       // blocks until at least one channel is ready for the events you registered for
-      int countReadyKeys = readableSelector.selectNow();
+      int countReadyKeys = readableSelector.select(1);
 
       if (countReadyKeys == 0) {
         return;

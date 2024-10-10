@@ -24,24 +24,22 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
+import com.tenio.core.bootstrap.annotation.RestMapping;
+import jakarta.servlet.http.HttpServlet;
+import java.io.Serial;
 
 /**
- * When an available Udp channel port is requested, but the list is empty. It might be caused by
- * the size of {@link CoreConfigurationType#NETWORK_UDP} equals to {@code 0}, or there was some
- * exception occurred while establishing Udp channels.
+ * When the mapping class does not return an instance of HttpServlet.
  *
- * @since 0.3.0
+ * @see RestMapping
+ * @see HttpServlet
  */
-public final class EmptyUdpChannelsException extends RuntimeException {
+public final class InvalidRestMappingClassException extends RuntimeException {
 
-  private static final long serialVersionUID = 6979513728417343122L;
+  @Serial
+  private static final long serialVersionUID = -7249766208940595231L;
 
-  /**
-   * Initialization.
-   */
-  public EmptyUdpChannelsException() {
-    super("The list is empty, please check in configuration.xml file if value of udp-channel is " +
-        "greater than 0, or make sure there is no exception while establishing udp channels");
+  public InvalidRestMappingClassException() {
+    super("Invalid RestMapping class, it should return an instance of jakarta.servlet.http.HttpServlet.");
   }
 }
