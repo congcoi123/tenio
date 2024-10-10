@@ -43,20 +43,25 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
       var players = room.getReadonlyPlayersList();
       var iterator = players.iterator();
 
-      var pack = msgarray();
+      var users = new String[players.size()];
+      var positionXs = new int[players.size()];
+      var positionYs = new int[players.size()];
+      int index = 0;
       while (iterator.hasNext()) {
         var rplayer = iterator.next();
 
-        var parray = msgarray();
-        parray.addString(rplayer.getName());
-        parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_X));
-        parray.addInteger((int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_Y));
+        users[index] = rplayer.getName();
+        positionXs[index] = (int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_X);
+        positionYs[index] = (int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_Y);
 
-        pack.addMsgPackArray(parray);
+        index++;
       }
 
-      var parcel = msgmap().putString(SharedEventKey.KEY_COMMAND, "i")
-          .putMsgPackArray(SharedEventKey.KEY_DATA, pack);
+      var parcel = msgmap()
+          .putString(SharedEventKey.KEY_COMMAND, "i")
+          .putStringArray(SharedEventKey.KEY_USER, users)
+          .putIntegerArray(SharedEventKey.KEY_DATA_1, positionXs)
+          .putIntegerArray(SharedEventKey.KEY_DATA_2, positionYs);
 
       response().setRecipientPlayers(players).setContent(parcel.toBinary()).write();
     }
