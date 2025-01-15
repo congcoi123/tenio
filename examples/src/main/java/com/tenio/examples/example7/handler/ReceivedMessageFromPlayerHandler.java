@@ -49,7 +49,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
 
     var parcel = msgmap()
         .putString(SharedEventKey.KEY_COMMAND, "m")
-        .putString(SharedEventKey.KEY_USER, player.getName())
+        .putString(SharedEventKey.KEY_USER, player.getIdentity())
         .putIntegerArray(SharedEventKey.KEY_DATA, new int[] { positions[0], positions[1] });
 
     response().setRecipientPlayers(players).setContent(parcel.toBinary()).write();

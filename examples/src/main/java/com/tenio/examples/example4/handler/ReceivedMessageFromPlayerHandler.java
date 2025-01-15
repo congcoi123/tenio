@@ -58,7 +58,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
       case DatagramEstablishedState.COMMUNICATING -> {
         if (request.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
           var parcel = ExampleMessage.newInstance();
-          parcel.putContent(ServerEventKey.KEY_PLAYER_NAME, player.getName());
+          parcel.putContent(ServerEventKey.KEY_PLAYER_NAME, player.getIdentity());
           parcel.putContent(ServerEventKey.KEY_PLAYER_REQUEST,
               request.getString(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS));
 

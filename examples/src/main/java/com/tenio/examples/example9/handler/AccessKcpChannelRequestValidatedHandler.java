@@ -41,6 +41,6 @@ public final class AccessKcpChannelRequestValidatedHandler extends AbstractHandl
   public Optional<Player> handle(DataCollection message) {
     var request = (ZeroMap) message;
 
-    return api().getPlayerByName(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+    return api().getPlayerByIdentity(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

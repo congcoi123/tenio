@@ -48,7 +48,7 @@ public class PlayerCommand extends AbstractSystemCommandHandler {
         return;
       }
       var firstPlayer = players.get(0);
-      CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getName() + "} is " +
+      CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getIdentity() + "} is " +
           "going to logout.");
       api().logout(firstPlayer, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
     } else {

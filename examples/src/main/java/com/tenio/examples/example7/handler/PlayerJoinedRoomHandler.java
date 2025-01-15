@@ -50,7 +50,7 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
       while (iterator.hasNext()) {
         var rplayer = iterator.next();
 
-        users[index] = rplayer.getName();
+        users[index] = rplayer.getIdentity();
         positionXs[index] = (int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_X);
         positionYs[index] = (int) rplayer.getProperty(Example7Constant.PLAYER_POSITION_Y);
 
