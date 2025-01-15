@@ -119,9 +119,7 @@ final class HeartbeatMessage implements Comparable {
    */
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 89 * hash + id.hashCode();
-    return hash;
+    return id.hashCode();
   }
 
   @Override
