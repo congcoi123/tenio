@@ -61,6 +61,12 @@ public class KcpServiceImpl extends AbstractManager implements KcpService {
     initialized = false;
   }
 
+  /**
+   * Constructor.
+   *
+   * @param eventManager {@link EventManager} object
+   * @return an instance of {@link KcpService}
+   */
   public static KcpService newInstance(EventManager eventManager) {
     return new KcpServiceImpl(eventManager);
   }

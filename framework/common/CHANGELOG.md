@@ -35,3 +35,8 @@
 - Upgraded dependencies
 - Reworked MsgPack data (Removed MsgPackArray and added new array types)
 - Bugs fixed 
+
+## 0.6.1 2025-01-15 Bugfix release
+- Upgraded dependencies
+- Reworked on ZeroData classes to make them work with lower Java versions
+- Bugs fixed 

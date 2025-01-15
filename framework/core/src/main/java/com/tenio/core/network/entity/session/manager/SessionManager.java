@@ -49,6 +49,11 @@ import kcp.Ukcp;
 public interface SessionManager extends Manager {
 
   /**
+   * Default size value of packet queue.
+   */
+  int DEFAULT_PACKET_QUEUE_SIZE = 100;
+
+  /**
    * Retrieves an iterator for a session management list. This method should be used to prevent
    * the "escape references" issue.
    *
@@ -152,16 +157,7 @@ public interface SessionManager extends Manager {
    *
    * @param connectionFilter an instance of {@link ConnectionFilter}
    */
-  void setConnectionFilter(ConnectionFilter connectionFilter);
-
-  /**
-   * Emits an event on the server.
-   *
-   * @param event  the valid {@link ServerEvent} is using on the server
-   * @param params a list of {@link Object} parameters
-   * @see EventManager
-   */
-  void emitEvent(ServerEvent event, Object... params);
+  void configureConnectionFilter(ConnectionFilter connectionFilter);
 
   /**
    * Sets a packet queue policy class for the session manager.
@@ -181,7 +177,7 @@ public interface SessionManager extends Manager {
    * @see PacketQueue
    * @see DefaultPacketQueuePolicy
    */
-  void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
+  void configurePacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,
       InvocationTargetException,
       NoSuchMethodException, SecurityException;
@@ -193,7 +189,7 @@ public interface SessionManager extends Manager {
    * @see PacketQueue
    * @see PacketQueuePolicy
    */
-  void setPacketQueueSize(int queueSize);
+  void configurePacketQueueSize(int queueSize);
 
   /**
    * Removes a session from its manager, this method should not be invoked directly. Calls
@@ -227,5 +223,14 @@ public interface SessionManager extends Manager {
    * @param seconds the maximum time in seconds ({@code integer} value) which allows the
    *                session to get in IDLE state
    */
-  void setMaxIdleTimeInSeconds(int seconds);
+  void configureMaxIdleTimeInSeconds(int seconds);
+
+  /**
+   * Emits an event on the server.
+   *
+   * @param event  the valid {@link ServerEvent} is using on the server
+   * @param params a list of {@link Object} parameters
+   * @see EventManager
+   */
+  void emitEvent(ServerEvent event, Object... params);
 }

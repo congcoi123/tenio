@@ -45,7 +45,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
       case DatagramEstablishedState.COMMUNICATING -> {
         var parcel =
             map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-                player.getName(),
+                player.getIdentity(),
                 ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
         response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedKcp().write();

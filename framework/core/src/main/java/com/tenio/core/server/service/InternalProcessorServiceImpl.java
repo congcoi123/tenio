@@ -163,16 +163,14 @@ public final class InternalProcessorServiceImpl extends AbstractController
     }
   }
 
-  private synchronized void processSessionRequestsConnection(Request request) {
+  private void processSessionRequestsConnection(Request request) {
     // Check if it's a reconnection request first
     var session = (Session) request.getSender();
+
     // We only consider the fresh session
-    if (!session.isAssociatedToPlayer(Session.AssociatedState.NONE)) {
+    if (!session.transitionAssociatedState(Session.AssociatedState.NONE, Session.AssociatedState.DOING)) {
       return;
     }
-
-    // Processing
-    session.setAssociatedToPlayer(Session.AssociatedState.DOING);
 
     var message = request.getMessage();
 
@@ -228,7 +226,6 @@ public final class InternalProcessorServiceImpl extends AbstractController
         player.setSession(session);
         player.setLastReadTime(now());
         player.setLastWriteTime(now());
-        player.setLastActivityTime(now());
         eventManager.emit(ServerEvent.PLAYER_RECONNECTED_RESULT, player, session,
             PlayerReconnectedResult.SUCCESS);
       } else {
@@ -256,13 +253,12 @@ public final class InternalProcessorServiceImpl extends AbstractController
       eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_RESULT, session, message,
           ConnectionEstablishedResult.SUCCESS);
     }
-
   }
 
-  private synchronized void processSessionWillBeClosed(Session session,
+  private void processSessionWillBeClosed(Session session,
                                                        PlayerDisconnectMode playerDisconnectMode) {
     if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
-      var player = playerManager.getPlayerByName(session.getName());
+      var player = playerManager.getPlayerByIdentity(session.getName());
       // the player maybe existed
       if (Objects.nonNull(player)) {
         // player should leave room (if applicable) first
@@ -274,7 +270,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
         // When it gets disconnected from client side, the server may not recognise it. In this
         // case, the player is remained on the server side
         if (!keepPlayerOnDisconnection) {
-          playerManager.removePlayerByName(player.getName());
+          playerManager.removePlayerByIdentity(player.getIdentity());
           player.clean();
         }
       } else {
@@ -295,7 +291,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
     var session = (Session) request.getSender();
 
     if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
-      var player = playerManager.getPlayerByName(session.getName());
+      var player = playerManager.getPlayerByIdentity(session.getName());
       if (Objects.isNull(player)) {
         var illegalValueException = new IllegalArgumentException(
             String.format("Unable to find player for the session: %s", session));
@@ -310,7 +306,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
     }
   }
 
-  private synchronized void processDatagramChannelReadMessageForTheFirstTime(Request request) {
+  private void processDatagramChannelReadMessageForTheFirstTime(Request request) {
     var message = request.getMessage();
 
     // verify the datagram channel accessing request

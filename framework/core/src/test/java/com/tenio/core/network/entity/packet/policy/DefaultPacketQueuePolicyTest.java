@@ -1,6 +1,5 @@
 package com.tenio.core.network.entity.packet.policy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -14,7 +13,6 @@ class DefaultPacketQueuePolicyTest {
     DefaultPacketQueuePolicy defaultPacketQueuePolicy = new DefaultPacketQueuePolicy();
     PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
     defaultPacketQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class));
-    assertEquals(0, newInstanceResult.getMaxSize());
     assertTrue(newInstanceResult.isEmpty());
   }
 
@@ -23,8 +21,6 @@ class DefaultPacketQueuePolicyTest {
     DefaultPacketQueuePolicy defaultPacketQueuePolicy = new DefaultPacketQueuePolicy();
     PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
     defaultPacketQueuePolicy.applyPolicy(newInstanceResult, null);
-    assertEquals(0, newInstanceResult.getMaxSize());
     assertTrue(newInstanceResult.isEmpty());
   }
 }
-

@@ -34,6 +34,10 @@ public enum PlayerLeaveRoomMode {
    */
   DEFAULT,
   /**
+   * When a player changes its current room.
+   */
+  CHANGE_ROOM,
+  /**
    * When a player falls in IDLE state then is removed from the server.
    */
   IDLE,

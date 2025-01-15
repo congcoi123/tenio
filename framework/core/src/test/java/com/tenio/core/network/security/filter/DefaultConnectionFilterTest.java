@@ -7,12 +7,6 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 import org.junit.jupiter.api.Test;
 
 class DefaultConnectionFilterTest {
-  @Test
-  void testConstructor() {
-    DefaultConnectionFilter actualDefaultConnectionFilter = new DefaultConnectionFilter();
-    actualDefaultConnectionFilter.setMaxConnectionsPerIp(3);
-    assertEquals(3, actualDefaultConnectionFilter.getMaxConnectionsPerIp());
-  }
 
   @Test
   void testAddBannedAddress() {
@@ -52,12 +46,4 @@ class DefaultConnectionFilterTest {
     assertThrows(RefusedConnectionAddressException.class,
         () -> defaultConnectionFilter.validateAndAddAddress("42 Main St"));
   }
-
-  @Test
-  void testRemoveAddress() {
-    DefaultConnectionFilter defaultConnectionFilter = new DefaultConnectionFilter();
-    defaultConnectionFilter.removeAddress("42 Main St");
-    assertEquals(10, defaultConnectionFilter.getMaxConnectionsPerIp());
-  }
 }
-

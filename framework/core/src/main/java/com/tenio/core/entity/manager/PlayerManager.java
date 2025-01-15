@@ -25,9 +25,8 @@ THE SOFTWARE.
 package com.tenio.core.entity.manager;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
-import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
+import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
@@ -72,12 +71,20 @@ public interface PlayerManager extends Manager {
       throws AddedDuplicatedPlayerException, NullPointerException;
 
   /**
+   * Configures basic info when a player is initially created, or before it is added into
+   * the management list.
+   *
+   * @param player the target player
+   */
+  void configureInitialPlayer(Player player);
+
+  /**
    * Retrieves a player by using its name.
    *
-   * @param playerName a unique {@link String} name of player on the server
+   * @param playerIdentity a unique {@link String} name of player on the server
    * @return an instance of {@link Player} if present, otherwise {@code null}
    */
-  Player getPlayerByName(String playerName);
+  Player getPlayerByIdentity(String playerIdentity);
 
   /**
    * Retrieves an iterator for a player management list. This method should be used to prevent
@@ -100,34 +107,19 @@ public interface PlayerManager extends Manager {
   /**
    * Removes a player from the management list.
    *
-   * @param playerName the player's name ({@link String} value)
-   * @throws RemovedNonExistentPlayerFromRoomException when the player is not present in the
+   * @param playerIdentity the player's name ({@link String} value)
+   * @throws RemovedNonExistentPlayerException when the player is not present in the
    *                                                   management list
    */
-  void removePlayerByName(String playerName) throws RemovedNonExistentPlayerFromRoomException;
+  void removePlayerByIdentity(String playerIdentity) throws RemovedNonExistentPlayerException;
 
   /**
    * Determines whether the management list contains a player by checking its name.
    *
-   * @param playerName the player's name ({@link String} value)
+   * @param playerIdentity the player's name ({@link String} value)
    * @return {@code true} if the player is available, otherwise returns {@code false}
    */
-  boolean containsPlayerName(String playerName);
-
-  /**
-   * Retrieves a room of the management list.
-   *
-   * @return an instance of {@link Room} if present, otherwise {@code null}
-   */
-  Room getOwnerRoom();
-
-  /**
-   * Adds the management list to a room.
-   *
-   * @param room an instance of {@link Room}, this value can be {@code null}. In that case,
-   *             the management list does not belong to any room
-   */
-  void setOwnerRoom(Room room);
+  boolean containsPlayerIdentity(String playerIdentity);
 
   /**
    * Retrieves the current number of players in the management list.
@@ -137,32 +129,13 @@ public interface PlayerManager extends Manager {
   int getPlayerCount();
 
   /**
-   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data).
-   *
-   * @return the maximum time in seconds ({@code integer} value) which allows the player to
-   * get in IDLE state
-   */
-  int getMaxIdleTimeInSeconds();
-
-  /**
    * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
    * perform any action, such as reading or writing data).
    *
    * @param seconds the maximum time in seconds ({@code integer} value) which allows the
    *                player to get in IDLE state
    */
-  void setMaxIdleTimeInSeconds(int seconds);
-
-  /**
-   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data) in case of never deported selection.
-   *
-   * @return the maximum time in seconds ({@code integer} value) which allows the player to
-   * get in IDLE state
-   * @since 0.5.0
-   */
-  int getMaxIdleTimeNeverDeportedInSeconds();
+  void configureMaxIdleTimeInSeconds(int seconds);
 
   /**
    * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
@@ -171,7 +144,7 @@ public interface PlayerManager extends Manager {
    * @param seconds the maximum time in seconds ({@code integer} value) which allows the
    *                player to get in IDLE state
    */
-  void setMaxIdleTimeNeverDeportedInSeconds(int seconds);
+  void configureMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * Removes all players from the list.

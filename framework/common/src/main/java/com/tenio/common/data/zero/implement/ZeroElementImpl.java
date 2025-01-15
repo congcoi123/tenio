@@ -30,7 +30,17 @@ import com.tenio.common.data.zero.ZeroType;
 /**
  * This class holds a relationship between a self-definition data type and its value.
  */
-public record ZeroElementImpl(ZeroType type, Object data) implements ZeroElement {
+public class ZeroElementImpl implements ZeroElement {
+
+  private static final long serialVersionUID = -3839072498152322959L;
+
+  private final ZeroType type;
+  private final Object data;
+
+  public ZeroElementImpl(ZeroType type, Object data) {
+    this.type = type;
+    this.data = data;
+  }
 
   @Override
   public ZeroType getType() {

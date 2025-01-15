@@ -39,7 +39,7 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
       var request = msgmap().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-          String.format("Welcome to server: %s", player.getName()));
+          String.format("Welcome to server: %s", player.getIdentity()));
 
       response().setContent(request.toBinary()).setRecipientPlayer(player).write();
     }

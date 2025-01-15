@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.entity.implement.PlayerImpl;
+import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.event.implement.EventManager;
@@ -51,7 +51,7 @@ class EventManagerTest {
     playerManager = PlayerManagerImpl.newInstance(eventManager);
 
     // Create new player
-    var player = PlayerImpl.newInstance("kong");
+    var player = DefaultPlayer.newInstance("kong");
     try {
       playerManager.addPlayer(player);
     } catch (AddedDuplicatedPlayerException exception) {

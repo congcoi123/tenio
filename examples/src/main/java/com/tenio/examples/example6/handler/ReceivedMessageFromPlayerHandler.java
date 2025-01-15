@@ -41,9 +41,9 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
 
   @Override
   public void handle(Player player, DataCollection message) {
-    var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName())
+    var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getIdentity())
         .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-            String.format("Echo(%s): %s", player.getName(),
+            String.format("Echo(%s): %s", player.getIdentity(),
                 ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)))
         .putIntegerArray(SharedEventKey.KEY_INTEGER_ARRAY, getSortRandomNumberArray());
 

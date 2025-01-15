@@ -45,7 +45,8 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import kcp.Ukcp;
 
 /**
@@ -55,73 +56,51 @@ import kcp.Ukcp;
  */
 public final class SessionImpl implements Session {
 
-  /**
-   * The maximum time that this session is allowed to be orphan.
-   */
-  private static final long ORPHAN_ALLOWANCE_TIME_IN_MILLISECONDS = 3000L;
-  private static final AtomicLong ID_COUNTER = new AtomicLong(1L);
-
   private final long id;
-  private final AtomicLong readBytes;
-  private final AtomicLong readMessages;
-  private final AtomicLong writtenBytes;
-  private final AtomicLong droppedPackets;
+  private final long createdTime;
+  private final AtomicBoolean atomicActivated;
+  private final AtomicReference<AssociatedState> atomicAssociatedState;
+  private volatile boolean activated;
+  private volatile AssociatedState associatedState;
   private volatile String name;
+
   private SessionManager sessionManager;
   private SocketChannel socketChannel;
   private SelectionKey selectionKey;
   private DatagramChannel datagramChannel;
-  private Ukcp kcpChannel;
   private Channel webSocketChannel;
   private ConnectionFilter connectionFilter;
-  private TransportType transportType;
-  private PacketReadState packetReadState;
-  private ProcessedPacket processedPacket;
-  private PendingPacket pendingPacket;
-  private PacketQueue packetQueue;
-  private volatile long createdTime;
-  private volatile long lastReadTime;
-  private volatile long lastWriteTime;
-  private volatile long lastActivityTime;
-  private volatile long inactivatedTime;
 
+  private PacketQueue packetQueue;
+  private ProcessedPacket processedPacket;
+  private volatile PendingPacket pendingPacket;
+  private volatile PacketReadState packetReadState;
+
+  private volatile Ukcp kcpChannel;
+  private volatile TransportType transportType;
   private volatile SocketAddress datagramRemoteSocketAddress;
   private volatile String clientAddress;
   private volatile int clientPort;
   private volatile int udpConvey;
-  private int serverPort;
-  private String serverAddress;
 
-  private int maxIdleTimeInSecond;
-
-  private volatile boolean activated;
-  private volatile AssociatedState associatedState;
+  private volatile long inactivatedTime;
+  private volatile long lastActivityTime;
   private volatile boolean hasUdp;
   private volatile boolean hasKcp;
 
+  private int maxIdleTimeInSecond;
+
   private SessionImpl() {
     id = ID_COUNTER.getAndIncrement();
-
     transportType = TransportType.UNKNOWN;
-    packetQueue = null;
-    connectionFilter = null;
-
-    readBytes = new AtomicLong(0L);
-    readMessages = new AtomicLong(0L);
-    writtenBytes = new AtomicLong(0L);
-    droppedPackets = new AtomicLong(0L);
-
-    inactivatedTime = 0L;
     udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
-    activated = false;
-    associatedState = AssociatedState.NONE;
-    hasUdp = false;
-    hasKcp = false;
-
-    setCreatedTime(now());
-    setLastReadTime(now());
-    setLastWriteTime(now());
-    setLastActivityTime(now());
+    atomicAssociatedState = new AtomicReference<>();
+    atomicActivated = new AtomicBoolean();
+    setAssociatedState(AssociatedState.NONE);
+    long currentTime = now();
+    createdTime = currentTime;
+    setLastReadTime(currentTime);
+    setLastWriteTime(currentTime);
   }
 
   /**
@@ -131,6 +110,17 @@ public final class SessionImpl implements Session {
    */
   public static Session newInstance() {
     return new SessionImpl();
+  }
+
+  /**
+   * Special instance which is built for TCP.
+   *
+   * @return a new instance of {@link Session}
+   */
+  public static Session newInstanceForTcp() {
+    SessionImpl session = new SessionImpl();
+    session.createPacketSocketHandler();
+    return session;
   }
 
   @Override
@@ -155,7 +145,22 @@ public final class SessionImpl implements Session {
 
   @Override
   public void setAssociatedToPlayer(AssociatedState associatedState) {
-    this.associatedState = associatedState;
+    if (this.associatedState != associatedState) {
+      synchronized (this) {
+        if (this.associatedState != associatedState) {
+          setAssociatedState(associatedState);
+        }
+      }
+    }
+  }
+
+  @Override
+  public boolean transitionAssociatedState(AssociatedState expectedState, AssociatedState newState) {
+    if (atomicAssociatedState.compareAndSet(expectedState, newState)) {
+      associatedState = newState;
+      return true;
+    }
+    return false;
   }
 
   @Override
@@ -165,12 +170,12 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public PacketQueue getPacketQueue() {
+  public PacketQueue fetchPacketQueue() {
     return packetQueue;
   }
 
   @Override
-  public void setPacketQueue(PacketQueue packetQueue) {
+  public void configurePacketQueue(PacketQueue packetQueue) {
     this.packetQueue = packetQueue;
   }
 
@@ -181,7 +186,7 @@ public final class SessionImpl implements Session {
 
   @Override
   public boolean isTcp() {
-    return transportType == TransportType.TCP;
+    return getTransportType() == TransportType.TCP;
   }
 
   @Override
@@ -196,20 +201,20 @@ public final class SessionImpl implements Session {
 
   @Override
   public boolean isWebSocket() {
-    return transportType == TransportType.WEB_SOCKET;
+    return getTransportType() == TransportType.WEB_SOCKET;
   }
 
   @Override
-  public SocketChannel getSocketChannel() {
+  public SocketChannel fetchSocketChannel() {
     return socketChannel;
   }
 
   @Override
-  public void setSocketChannel(SocketChannel socketChannel) {
-    if (transportType != TransportType.UNKNOWN) {
+  public void configureSocketChannel(SocketChannel socketChannel) {
+    if (getTransportType() != TransportType.UNKNOWN) {
       throw new IllegalCallerException(
           String.format("Unable to add another connection type, the current connection is: %s",
-              transportType.toString()));
+              getTransportType().toString()));
     }
 
     if (Objects.isNull(socketChannel)) {
@@ -219,11 +224,7 @@ public final class SessionImpl implements Session {
     if (Objects.nonNull(socketChannel.socket()) && !socketChannel.socket().isClosed()) {
       transportType = TransportType.TCP;
       createPacketSocketHandler();
-
       this.socketChannel = socketChannel;
-
-      serverAddress = this.socketChannel.socket().getLocalAddress().getHostAddress();
-      serverPort = this.socketChannel.socket().getLocalPort();
 
       InetSocketAddress socketAddress =
           (InetSocketAddress) this.socketChannel.socket().getRemoteSocketAddress();
@@ -234,19 +235,12 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void createPacketSocketHandler() {
-    packetReadState = PacketReadState.WAIT_NEW_PACKET;
-    processedPacket = ProcessedPacket.newInstance();
-    pendingPacket = PendingPacket.newInstance();
-  }
-
-  @Override
-  public SelectionKey getSelectionKey() {
+  public SelectionKey fetchSelectionKey() {
     return selectionKey;
   }
 
   @Override
-  public void setSelectionKey(SelectionKey selectionKey) {
+  public void configureSelectionKey(SelectionKey selectionKey) {
     this.selectionKey = selectionKey;
   }
 
@@ -271,20 +265,20 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public DatagramChannel getDatagramChannel() {
+  public DatagramChannel fetchDatagramChannel() {
     return datagramChannel;
   }
 
   @Override
-  public void setDatagramChannel(DatagramChannel datagramChannel, int udpConvey) {
+  public void configureDatagramChannel(DatagramChannel datagramChannel, int udpConvey) {
     this.datagramChannel = datagramChannel;
     if (Objects.isNull(this.datagramChannel)) {
-      this.datagramRemoteSocketAddress = null;
+      datagramRemoteSocketAddress = null;
       this.udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
-      this.hasUdp = false;
+      hasUdp = false;
     } else {
       this.udpConvey = udpConvey;
-      this.hasUdp = true;
+      hasUdp = true;
     }
   }
 
@@ -305,7 +299,7 @@ public final class SessionImpl implements Session {
     }
 
     this.kcpChannel = kcpChannel;
-    this.hasKcp = Objects.nonNull(kcpChannel);
+    hasKcp = Objects.nonNull(kcpChannel);
   }
 
   @Override
@@ -319,12 +313,12 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public Channel getWebSocketChannel() {
+  public Channel fetchWebSocketChannel() {
     return webSocketChannel;
   }
 
   @Override
-  public void setWebSocketChannel(Channel webSocketChannel) {
+  public void configureWebSocketChannel(Channel webSocketChannel) {
     if (transportType != TransportType.UNKNOWN) {
       throw new IllegalCallerException(
           String.format("Unable to add another connection type, the current connection is: %s",
@@ -339,11 +333,6 @@ public final class SessionImpl implements Session {
       transportType = TransportType.WEB_SOCKET;
       this.webSocketChannel = webSocketChannel;
 
-      var serverSocketAddress = (InetSocketAddress) this.webSocketChannel.localAddress();
-      var serverAddress = serverSocketAddress.getAddress();
-      this.serverAddress = serverAddress.getHostAddress();
-      serverPort = serverSocketAddress.getPort();
-
       var socketAddress = (InetSocketAddress) this.webSocketChannel.remoteAddress();
       var remoteAddress = socketAddress.getAddress();
       clientAddress = remoteAddress.getHostAddress();
@@ -352,7 +341,7 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void setConnectionFilter(ConnectionFilter connectionFilter) {
+  public void configureConnectionFilter(ConnectionFilter connectionFilter) {
     this.connectionFilter = connectionFilter;
   }
 
@@ -362,89 +351,74 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void setCreatedTime(long timestamp) {
-    createdTime = timestamp;
-  }
-
-  @Override
   public long getLastActivityTime() {
     return lastActivityTime;
   }
 
   @Override
-  public void setLastActivityTime(long timestamp) {
-    lastActivityTime = timestamp;
-  }
-
-  @Override
   public long getLastReadTime() {
-    return lastReadTime;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void setLastReadTime(long timestamp) {
-    lastReadTime = timestamp;
-    setLastActivityTime(lastReadTime);
+    // Reversed
+    setLastActivityTime(timestamp);
   }
 
   @Override
   public long getLastWriteTime() {
-    return lastWriteTime;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void setLastWriteTime(long timestamp) {
-    lastWriteTime = timestamp;
-    setLastActivityTime(lastWriteTime);
+    // Reversed
+    setLastActivityTime(timestamp);
   }
 
   @Override
   public long getReadBytes() {
-    return readBytes.get();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void addReadBytes(long bytes) {
-    readBytes.addAndGet(bytes);
+    // Reserved
   }
 
   @Override
   public long getWrittenBytes() {
-    return writtenBytes.get();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void addWrittenBytes(long bytes) {
-    writtenBytes.addAndGet(bytes);
+    // Reserved
   }
 
   @Override
   public long getReadMessages() {
-    return readMessages.get();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void increaseReadMessages() {
-    readMessages.incrementAndGet();
+    // Reserved
   }
 
   @Override
   public long getDroppedPackets() {
-    return droppedPackets.get();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void addDroppedPackets(int packets) {
-    droppedPackets.addAndGet(packets);
+    // Reserved
   }
 
   @Override
-  public int getMaxIdleTimeInSeconds() {
-    return maxIdleTimeInSecond;
-  }
-
-  @Override
-  public void setMaxIdleTimeInSeconds(int seconds) {
+  public void configureMaxIdleTimeInSeconds(int seconds) {
     maxIdleTimeInSecond = seconds;
   }
 
@@ -454,11 +428,7 @@ public final class SessionImpl implements Session {
   }
 
   private boolean isConnectionIdle() {
-    if (getMaxIdleTimeInSeconds() > 0) {
-      long elapsedSinceLastActivity = TimeUtility.currentTimeMillis() - getLastActivityTime();
-      return elapsedSinceLastActivity / 1000L > (long) getMaxIdleTimeInSeconds();
-    }
-    return false;
+    return (maxIdleTimeInSecond > 0) && ((now() - getLastActivityTime()) / 1000L > maxIdleTimeInSecond);
   }
 
   @Override
@@ -467,19 +437,14 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void activate() {
+  public synchronized void activate() {
     activated = true;
-  }
-
-  @Override
-  public void deactivate() {
-    activated = false;
-    inactivatedTime = TimeUtility.currentTimeMillis();
+    atomicActivated.set(true);
   }
 
   @Override
   public long getInactivatedTime() {
-    return inactivatedTime;
+    return now() - inactivatedTime;
   }
 
   @Override
@@ -498,49 +463,29 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public String getServerAddress() {
-    return serverAddress;
-  }
-
-  @Override
-  public int getServerPort() {
-    return serverPort;
-  }
-
-  @Override
-  public String getFullServerIpAddress() {
-    return String.format("%s:%d", serverAddress, serverPort);
-  }
-
-  @Override
-  public SessionManager getSessionManager() {
-    return sessionManager;
-  }
-
-  @Override
-  public void setSessionManager(SessionManager sessionManager) {
+  public void configureSessionManager(SessionManager sessionManager) {
     this.sessionManager = sessionManager;
   }
 
   @Override
   public void remove() {
-    getSessionManager().removeSession(this);
+    sessionManager.removeSession(this);
   }
 
   @Override
   public void close(ConnectionDisconnectMode connectionDisconnectMode,
-                    PlayerDisconnectMode playerDisconnectMode)
-      throws IOException {
-    if (!isActivated()) {
+                    PlayerDisconnectMode playerDisconnectMode) throws IOException {
+    if (atomicActivated.compareAndSet(true, false)) {
+      activated = false;
+      inactivatedTime = now();
+    } else {
       return;
     }
-    deactivate();
 
     connectionFilter.removeAddress(clientAddress);
 
     if (Objects.nonNull(packetQueue)) {
       packetQueue.clear();
-      setPacketQueue(null);
     }
 
     switch (transportType) {
@@ -566,8 +511,23 @@ public final class SessionImpl implements Session {
         break;
     }
 
-    getSessionManager().emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
+    sessionManager.emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
         connectionDisconnectMode, playerDisconnectMode);
+  }
+
+  private void setLastActivityTime(long timestamp) {
+    lastActivityTime = timestamp;
+  }
+
+  private void setAssociatedState(AssociatedState associatedState) {
+    this.associatedState = associatedState;
+    atomicAssociatedState.set(associatedState);
+  }
+
+  private void createPacketSocketHandler() {
+    packetReadState = PacketReadState.WAIT_NEW_PACKET;
+    processedPacket = ProcessedPacket.newInstance();
+    pendingPacket = PendingPacket.newInstance();
   }
 
   private long now() {
@@ -592,38 +552,26 @@ public final class SessionImpl implements Session {
    */
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (id ^ (id >>> 32));
-    return result;
+    return Long.hashCode(id);
   }
 
   @Override
   public String toString() {
     return "Session{" +
         "id=" + id +
+        ", createdTime=" + createdTime +
         ", name='" + name + '\'' +
         ", transportType=" + transportType +
-        ", createdTime=" + createdTime +
-        ", lastReadTime=" + lastReadTime +
-        ", lastWriteTime=" + lastWriteTime +
-        ", lastActivityTime=" + lastActivityTime +
-        ", readBytes=" + readBytes +
-        ", writtenBytes=" + writtenBytes +
-        ", droppedPackets=" + droppedPackets +
-        ", inactivatedTime=" + inactivatedTime +
-        ", datagramRemoteSocketAddress=" + datagramRemoteSocketAddress +
         ", clientAddress='" + clientAddress + '\'' +
         ", clientPort=" + clientPort +
-        ", serverPort=" + serverPort +
-        ", serverAddress='" + serverAddress + '\'' +
-        ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
-        ", activated=" + activated +
-        ", associatedState=" + associatedState +
-        ", hasUdp=" + hasUdp +
         ", udpConvey=" + udpConvey +
+        ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
+        ", inactivatedTime=" + inactivatedTime +
+        ", lastActivityTime=" + lastActivityTime +
+        ", activated=" + activated +
+        ", hasUdp=" + hasUdp +
         ", hasKcp=" + hasKcp +
-        ", kcpChannel=" + kcpChannel +
+        ", associatedState=" + associatedState +
         '}';
   }
 }

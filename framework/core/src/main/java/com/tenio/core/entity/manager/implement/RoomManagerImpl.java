@@ -27,13 +27,14 @@ package com.tenio.core.entity.manager.implement;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
-import com.tenio.core.entity.implement.RoomImpl;
+import com.tenio.core.entity.implement.DefaultRoom;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
 import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.manager.AbstractManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,26 +42,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * An implemented class is for room management.
  */
 public final class RoomManagerImpl extends AbstractManager implements RoomManager {
 
-  private static final int DEFAULT_MAX_ROOMS = 100;
-
-  @GuardedBy("this")
   private final Map<Long, Room> rooms;
-  private List<Room> readonlyRoomsList;
+  private volatile List<Room> readOnlyRoomsList;
   private volatile int roomCount;
   private int maxRooms;
 
   private RoomManagerImpl(EventManager eventManager) {
     super(eventManager);
     rooms = new HashMap<>();
-    readonlyRoomsList = new ArrayList<>();
-    roomCount = 0;
+    readOnlyRoomsList = new ArrayList<>();
     maxRooms = DEFAULT_MAX_ROOMS;
   }
 
@@ -75,24 +71,14 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public int getMaxRooms() {
-    return maxRooms;
-  }
-
-  @Override
-  public void setMaxRooms(int maxRooms) {
-    this.maxRooms = maxRooms;
-  }
-
-  @Override
   public void addRoom(Room room) {
     if (containsRoomId(room.getId())) {
       throw new AddedDuplicatedRoomException(room);
     }
     synchronized (this) {
       rooms.put(room.getId(), room);
-      roomCount = rooms.size();
-      readonlyRoomsList = List.copyOf(rooms.values());
+      readOnlyRoomsList = rooms.values().stream().toList();
+      roomCount = readOnlyRoomsList.size();
     }
   }
 
@@ -100,22 +86,21 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   public void addRoomWithOwner(Room room, InitialRoomSetting roomSetting, Player player)
       throws AddedDuplicatedRoomException {
     int roomCount = getRoomCount();
-    if (roomCount >= getMaxRooms()) {
+    if (roomCount >= maxRooms) {
       throw new CreatedRoomException(
           String.format("Unable to create new room, reached limited the maximum room number: %d",
-              roomCount),
-          RoomCreatedResult.REACHED_MAX_ROOMS);
+              roomCount), RoomCreatedResult.REACHED_MAX_ROOMS);
     }
 
-    room.setPlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
-    room.setRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
+    room.configurePlayerManager(PlayerManagerImpl.newInstance(eventManager));
+    room.configurePlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
+    room.configureRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
     room.setRoomRemoveMode(roomSetting.getRoomRemoveMode());
     room.setName(roomSetting.getName());
     room.setPassword(roomSetting.getPassword());
     room.setActivated(roomSetting.isActivated());
     room.setCapacity(roomSetting.getMaxParticipants(), roomSetting.getMaxSpectators());
     room.setOwner(player);
-    room.setPlayerManager(PlayerManagerImpl.newInstance(eventManager));
     if (Objects.nonNull(roomSetting.getProperties())) {
       roomSetting.getProperties().forEach(room::setProperty);
     }
@@ -126,22 +111,22 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   @Override
   public Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player) {
     int roomCount = getRoomCount();
-    if (roomCount >= getMaxRooms()) {
+    if (roomCount >= maxRooms) {
       throw new CreatedRoomException(
           String.format("Unable to create new room, reached limited the maximum room number: %d",
               roomCount), RoomCreatedResult.REACHED_MAX_ROOMS);
     }
 
-    var room = RoomImpl.newInstance();
-    room.setPlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
-    room.setRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
+    Room room = DefaultRoom.newInstance();
+    room.configurePlayerManager(PlayerManagerImpl.newInstance(eventManager));
+    room.configurePlayerSlotGeneratedStrategy(roomSetting.getRoomPlayerSlotGeneratedStrategy());
+    room.configureRoomCredentialValidatedStrategy(roomSetting.getRoomCredentialValidatedStrategy());
     room.setRoomRemoveMode(roomSetting.getRoomRemoveMode());
     room.setName(roomSetting.getName());
     room.setPassword(roomSetting.getPassword());
     room.setActivated(roomSetting.isActivated());
     room.setCapacity(roomSetting.getMaxParticipants(), roomSetting.getMaxSpectators());
     room.setOwner(player);
-    room.setPlayerManager(PlayerManagerImpl.newInstance(eventManager));
     if (Objects.nonNull(roomSetting.getProperties())) {
       roomSetting.getProperties().forEach(room::setProperty);
     }
@@ -152,52 +137,42 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public boolean containsRoomId(long roomId) {
-    synchronized (this) {
-      return rooms.containsKey(roomId);
-    }
+  public synchronized boolean containsRoomId(long roomId) {
+    return rooms.containsKey(roomId);
   }
 
   @Override
   public boolean containsRoomName(String roomName) {
-    synchronized (this) {
-      return rooms.values().stream().anyMatch(room -> room.getName().equals(roomName));
-    }
+    return readOnlyRoomsList.stream().anyMatch(room -> room.getName().equals(roomName));
   }
 
   @Override
-  public Room getRoomById(long roomId) {
-    synchronized (this) {
-      return rooms.get(roomId);
-    }
+  public synchronized Room getRoomById(long roomId) {
+    return rooms.get(roomId);
   }
 
   @Override
   public List<Room> getReadonlyRoomsListByName(String roomName) {
-    synchronized (this) {
-      return rooms.values().stream().filter(room -> room.getName().equals(roomName))
-          .collect(Collectors.toList());
-    }
+    return readOnlyRoomsList.stream().filter(room -> room.getName().equals(roomName))
+        .collect(Collectors.toList());
   }
 
   @Override
-  public Iterator<Room> getRoomIterator() {
-    synchronized (this) {
-      return rooms.values().iterator();
-    }
+  public synchronized Iterator<Room> getRoomIterator() {
+    return rooms.values().iterator();
   }
 
   @Override
   public List<Room> getReadonlyRoomsList() {
-    return readonlyRoomsList;
+    return readOnlyRoomsList;
   }
 
   @Override
   public void removeRoomById(long roomId) {
     synchronized (this) {
       rooms.remove(roomId);
-      roomCount = rooms.size();
-      readonlyRoomsList = List.copyOf(rooms.values());
+      readOnlyRoomsList = rooms.values().stream().toList();
+      roomCount = readOnlyRoomsList.size();
     }
   }
 
@@ -232,5 +207,10 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   @Override
   public int getRoomCount() {
     return roomCount;
+  }
+
+  @Override
+  public void configureMaxRooms(int maxRooms) {
+    this.maxRooms = maxRooms;
   }
 }

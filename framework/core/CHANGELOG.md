@@ -64,3 +64,7 @@
 - Upgraded dependencies
 - Fixed issues related to the "100% CPU"
 - Reworked on Restful
+
+## 0.6.1 2025-01-15 Bugfix release
+- Upgraded dependencies
+- Fixed several issues related to concurrency

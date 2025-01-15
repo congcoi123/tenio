@@ -29,6 +29,7 @@ import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The smallest unit to hold and transfer data from the server to clients.
@@ -37,6 +38,11 @@ import java.util.Collection;
  * @see PacketQueuePolicy
  */
 public interface Packet {
+
+  /**
+   * IDs generator.
+   */
+  AtomicLong ID_COUNTER = new AtomicLong(1L);
 
   /**
    * Retrieves the unique ID of packet.

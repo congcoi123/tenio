@@ -52,13 +52,13 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
   @Override
   public void send(PacketQueue packetQueue, Session session, Packet packet) {
-    var channel = session.getSocketChannel();
+    var channel = session.fetchSocketChannel();
 
     // this channel can be deactivated by some reasons, no need to throw an
     // exception here
     if (Objects.isNull(channel) || !channel.isConnected()) {
       if (isDebugEnabled()) {
-        debug("SOCKET CHANNEL SEND", "Skipping this packet, found null socket for session ",
+        debug("SOCKET CHANNEL SEND", "Skipping this packet, found null/closed socket for session ",
             session);
       }
       return;
@@ -139,7 +139,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
       // want to know when the socket can write, which should be noticed on isWritable() method
       // when that event occurs, try to re-add the session to the tickets queue
-      var selectionKey = session.getSelectionKey();
+      var selectionKey = session.fetchSelectionKey();
       if (Objects.nonNull(selectionKey) && selectionKey.isValid()) {
         selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
       } else {

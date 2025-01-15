@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.common.data.zero;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Collection;
  * @see ZeroType
  * @see Object
  */
-public interface ZeroElement {
+public interface ZeroElement extends Serializable {
 
   /**
    * Retrieves the type of element.

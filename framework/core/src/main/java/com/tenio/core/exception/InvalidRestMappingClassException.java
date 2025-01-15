@@ -39,6 +39,9 @@ public final class InvalidRestMappingClassException extends RuntimeException {
   @Serial
   private static final long serialVersionUID = -7249766208940595231L;
 
+  /**
+   * Constructor.
+   */
   public InvalidRestMappingClassException() {
     super("Invalid RestMapping class, it should return an instance of jakarta.servlet.http.HttpServlet.");
   }

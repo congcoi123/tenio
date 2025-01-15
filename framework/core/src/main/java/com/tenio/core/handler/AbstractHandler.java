@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.handler;
 
+import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.DataType;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroArray;
@@ -45,6 +46,15 @@ import com.tenio.core.server.ServerImpl;
 public abstract class AbstractHandler extends SystemLogger {
 
   private final Server server = ServerImpl.getInstance();
+
+  /**
+   * Retrieves the server's configuration.
+   *
+   * @return the {@link Configuration}
+   */
+  protected final Configuration configuration() {
+    return server.getConfiguration();
+  }
 
   /**
    * Retrieves the server supported API responsible object.

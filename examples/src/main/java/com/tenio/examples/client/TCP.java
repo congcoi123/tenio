@@ -74,8 +74,7 @@ public final class TCP implements PacketDecoderResultListener {
       dataInputStream = new DataInputStream(socket.getInputStream());
       byteArrayOutputStream = new ByteArrayOutputStream();
 
-      session = SessionImpl.newInstance();
-      session.createPacketSocketHandler();
+      session = SessionImpl.newInstanceForTcp();
 
       var binaryCompressor = new DefaultBinaryPacketCompressor();
       var binaryEncryptor = new DefaultBinaryPacketEncryptor();
@@ -88,8 +87,8 @@ public final class TCP implements PacketDecoderResultListener {
       binaryPacketDecoder.setCompressor(binaryCompressor);
       binaryPacketDecoder.setEncryptor(binaryEncryptor);
       binaryPacketDecoder.setResultListener(this);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -112,8 +111,8 @@ public final class TCP implements PacketDecoderResultListener {
     try {
       dataOutputStream.write(bytes);
       dataOutputStream.flush();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -134,8 +133,8 @@ public final class TCP implements PacketDecoderResultListener {
           byteArrayOutputStream.write(binary, 0, readBytes);
           binaryPacketDecoder.decode(session, byteArrayOutputStream.toByteArray());
         }
-      } catch (IOException | RuntimeException e) {
-        e.printStackTrace();
+      } catch (IOException | RuntimeException exception) {
+        exception.printStackTrace();
       }
     });
   }
@@ -147,8 +146,8 @@ public final class TCP implements PacketDecoderResultListener {
     try {
       socket.close();
       future.cancel(true);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 

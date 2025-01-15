@@ -14,12 +14,7 @@ class SessionImplTest {
     Session actualNewInstanceResult = SessionImpl.newInstance();
     assertFalse(actualNewInstanceResult.isAssociatedToPlayer(Session.AssociatedState.DONE));
     assertFalse(actualNewInstanceResult.isActivated());
-    assertEquals(0L, actualNewInstanceResult.getWrittenBytes());
     assertEquals(TransportType.UNKNOWN, actualNewInstanceResult.getTransportType());
-    assertEquals(0L, actualNewInstanceResult.getReadBytes());
-    assertNull(actualNewInstanceResult.getPacketQueue());
-    assertEquals(0L, actualNewInstanceResult.getInactivatedTime());
-    assertEquals(0L, actualNewInstanceResult.getDroppedPackets());
+    assertNull(actualNewInstanceResult.fetchPacketQueue());
   }
 }
-

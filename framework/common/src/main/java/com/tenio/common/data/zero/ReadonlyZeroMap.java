@@ -25,13 +25,14 @@ THE SOFTWARE.
 package com.tenio.common.data.zero;
 
 import com.tenio.common.data.DataCollection;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * This class holds data by pairs of key and value, works like a map in read-only mode.
  */
-public interface ReadonlyZeroMap extends DataCollection {
+public interface ReadonlyZeroMap extends DataCollection, Serializable {
 
   /**
    * Determines whether a value in the map is {@link ZeroType#NULL} type.
