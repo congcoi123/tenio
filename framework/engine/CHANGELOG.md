@@ -19,3 +19,6 @@
 
 ## 0.6.0 2024-10-09 Feature release
 - Upgraded dependencies
+
+## 0.6.1 2025-01-15 Bugfix release
+- Addressed minor issues
