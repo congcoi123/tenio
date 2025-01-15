@@ -43,54 +43,41 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An implemented class is for a room using in the server.
  */
-public class RoomImpl implements Room {
-
-  private static final AtomicLong ID_COUNTER = new AtomicLong(1L);
+public class DefaultRoom implements Room {
 
   private final long id;
-  private final Lock switchRoleLock;
   private final Map<String, Object> properties;
-  private String name;
-  private String password;
-  private List<Player> participants;
-  private int maxParticipants;
-  private List<Player> spectators;
-  private int maxSpectators;
-  private volatile int participantCount;
-  private volatile int spectatorCount;
+  private final AtomicReference<RoomState> state;
+
+  private volatile String name;
+  private volatile String password;
   private volatile Player owner;
+  private volatile List<Player> participants;
+  private volatile int maxParticipants;
+  private volatile List<Player> spectators;
+  private volatile int maxSpectators;
+  private volatile RoomRemoveMode roomRemoveMode;
+  private volatile boolean activated;
+
   private PlayerManager playerManager;
-  private RoomRemoveMode roomRemoveMode;
   private RoomCredentialValidatedStrategy roomCredentialValidatedStrategy;
   private RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy;
-  private RoomState state;
-
-  private volatile boolean activated;
 
   /**
    * Constructor.
    */
-  public RoomImpl() {
+  public DefaultRoom() {
     id = ID_COUNTER.getAndIncrement();
-    maxParticipants = 0;
-    maxSpectators = 0;
-    spectators = new ArrayList<>();
-    spectatorCount = 0;
-    participants = new ArrayList<>();
-    participantCount = 0;
-    owner = null;
-    playerManager = null;
-    switchRoleLock = new ReentrantLock();
     properties = new ConcurrentHashMap<>();
-    activated = false;
+    state = new AtomicReference<>();
+    spectators = new ArrayList<>();
+    participants = new ArrayList<>();
+    setState(null);
     setRoomRemoveMode(RoomRemoveMode.WHEN_EMPTY);
   }
 
@@ -100,7 +87,7 @@ public class RoomImpl implements Room {
    * @return a new instance
    */
   public static Room newInstance() {
-    return new RoomImpl();
+    return new DefaultRoom();
   }
 
   @Override
@@ -131,38 +118,28 @@ public class RoomImpl implements Room {
   }
 
   @Override
+  public boolean isState(RoomState state) {
+    return getState() == state;
+  }
+
+  @Override
   public RoomState getState() {
-    return state;
+    return state.get();
   }
 
   @Override
   public void setState(RoomState state) {
-    this.state = state;
+    this.state.set(state);
+  }
+
+  @Override
+  public boolean transitionState(RoomState expectedState, RoomState newState) {
+    return state.compareAndSet(expectedState, newState);
   }
 
   @Override
   public boolean isPublic() {
     return Objects.isNull(password);
-  }
-
-  @Override
-  public int getMaxParticipants() {
-    return maxParticipants;
-  }
-
-  @Override
-  public void setMaxParticipants(int maxParticipants) {
-    this.maxParticipants = maxParticipants;
-  }
-
-  @Override
-  public int getMaxSpectators() {
-    return maxSpectators;
-  }
-
-  @Override
-  public void setMaxSpectators(int maxSpectators) {
-    this.maxSpectators = maxSpectators;
   }
 
   @Override
@@ -173,16 +150,6 @@ public class RoomImpl implements Room {
   @Override
   public void setOwner(Player owner) {
     this.owner = owner;
-  }
-
-  @Override
-  public PlayerManager getPlayerManager() {
-    return playerManager;
-  }
-
-  @Override
-  public void setPlayerManager(PlayerManager playerManager) {
-    this.playerManager = playerManager;
   }
 
   @Override
@@ -231,34 +198,28 @@ public class RoomImpl implements Room {
   }
 
   @Override
-  public int getCapacity() {
-    return maxParticipants + maxSpectators;
-  }
-
-  @Override
-  public void setCapacity(int maxParticipants, int maxSpectators) {
-    this.maxParticipants = maxParticipants;
-    this.maxSpectators = maxSpectators;
+  public int getPlayerCount() {
+    return playerManager.getPlayerCount();
   }
 
   @Override
   public int getParticipantCount() {
-    return participantCount;
+    return getReadonlyParticipantsList().size();
   }
 
   @Override
   public int getSpectatorCount() {
-    return spectatorCount;
+    return getReadonlySpectatorsList().size();
   }
 
   @Override
-  public boolean containsPlayerName(String playerName) {
-    return playerManager.containsPlayerName(playerName);
+  public boolean containsPlayerIdentity(String playerIdentity) {
+    return playerManager.containsPlayerIdentity(playerIdentity);
   }
 
   @Override
-  public Optional<Player> getPlayerByName(String playerName) {
-    return Optional.ofNullable(playerManager.getPlayerByName(playerName));
+  public Optional<Player> getPlayerByIdentity(String playerIdentity) {
+    return Optional.ofNullable(playerManager.getPlayerByIdentity(playerIdentity));
   }
 
   @Override
@@ -285,9 +246,7 @@ public class RoomImpl implements Room {
   public void addPlayer(Player player, String password, boolean asSpectator, int targetSlot) {
     if (Objects.nonNull(this.password) && !this.password.equals(password)) {
       throw new PlayerJoinedRoomException(
-          String.format(
-              "Unable to add player: %s to room due to invalid password provided",
-              player.getName()),
+          String.format("Unable to add player: %s to room due to invalid password provided", player.getIdentity()),
           PlayerJoinedRoomResult.INVALID_CREDENTIALS);
     }
 
@@ -300,10 +259,8 @@ public class RoomImpl implements Room {
 
     if (!validated) {
       throw new PlayerJoinedRoomException(
-          String.format(
-              "Unable to add player: %s to room, room is full with maximum participants: %d, "
-                  + "spectators: %d",
-              player.getName(), getMaxParticipants(), getMaxSpectators()),
+          String.format("Unable to add player: %s to room, room is full with maximum participants: %d, spectators: %d",
+              player.getIdentity(), getMaxParticipants(), getMaxSpectators()),
           PlayerJoinedRoomResult.ROOM_IS_FULL);
     }
 
@@ -320,31 +277,17 @@ public class RoomImpl implements Room {
     if (asSpectator) {
       player.setPlayerSlotInCurrentRoom(NIL_SLOT);
     } else {
-      if (targetSlot == DEFAULT_SLOT) {
-        player.setPlayerSlotInCurrentRoom(
-            roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
-      } else {
-        try {
-          roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
-          player.setPlayerSlotInCurrentRoom(targetSlot);
-        } catch (IllegalArgumentException exception) {
-          player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
-          throw new PlayerJoinedRoomException(String
-              .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
-                  player.getName()),
-              PlayerJoinedRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
-        }
-      }
+      allocateSlotToPlayer(player, targetSlot);
     }
   }
 
   @Override
   public void removePlayer(Player player) {
     roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
-    playerManager.removePlayerByName(player.getName());
+    playerManager.removePlayerByIdentity(player.getIdentity());
     player.setCurrentRoom(null);
     getOwner().ifPresent(owner -> {
-      if (owner.getName().equals(player.getName())) {
+      if (owner.getIdentity().equals(player.getIdentity())) {
         setOwner(null);
       }
     });
@@ -354,76 +297,81 @@ public class RoomImpl implements Room {
 
   @Override
   public void switchParticipantToSpectator(Player player) {
-    if (!containsPlayerName(player.getName())) {
+    if (!containsPlayerIdentity(player.getIdentity())) {
       throw new SwitchedPlayerRoleInRoomException(
-          String.format("Player %s was not in room", player.getName()),
+          String.format("Player %s was not in room", player.getIdentity()),
           SwitchedPlayerRoleInRoomResult.PLAYER_WAS_NOT_IN_ROOM);
     }
 
-    switchRoleLock.lock();
-    try {
-      if (getSpectatorCount() >= getMaxSpectators()) {
-        throw new SwitchedPlayerRoleInRoomException("All spectator slots were already taken",
-            SwitchedPlayerRoleInRoomResult.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
-      }
-
-      roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
-      player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
-      player.setRoleInRoom(PlayerRoleInRoom.SPECTATOR);
-
-      classifyPlayersByRoles();
-    } finally {
-      switchRoleLock.unlock();
+    if (getSpectatorCount() >= getMaxSpectators()) {
+      throw new SwitchedPlayerRoleInRoomException("All spectator slots were already taken",
+          SwitchedPlayerRoleInRoomResult.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
     }
+
+    roomPlayerSlotGeneratedStrategy.freeSlotWhenPlayerLeft(player.getPlayerSlotInCurrentRoom());
+    player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
+    player.setRoleInRoom(PlayerRoleInRoom.SPECTATOR);
+
+    classifyPlayersByRoles();
   }
 
   @Override
   public void switchSpectatorToParticipant(Player player, int targetSlot) {
-    if (!containsPlayerName(player.getName())) {
+    if (!containsPlayerIdentity(player.getIdentity())) {
       throw new SwitchedPlayerRoleInRoomException(
-          String.format("Player %s was not in room", player.getName()),
+          String.format("Player %s was not in room", player.getIdentity()),
           SwitchedPlayerRoleInRoomResult.PLAYER_WAS_NOT_IN_ROOM);
     }
 
-    switchRoleLock.lock();
-    try {
-      if (getParticipantCount() >= getMaxParticipants()) {
-        throw new SwitchedPlayerRoleInRoomException("All participant slots were already taken",
-            SwitchedPlayerRoleInRoomResult.SWITCH_NO_PARTICIPANT_SLOTS_AVAILABLE);
-      }
-
-      if (targetSlot == DEFAULT_SLOT) {
-        player.setPlayerSlotInCurrentRoom(
-            roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
-        player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
-      } else {
-        try {
-          roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
-          player.setPlayerSlotInCurrentRoom(targetSlot);
-          player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
-        } catch (IllegalArgumentException e) {
-          throw new SwitchedPlayerRoleInRoomException(String
-              .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
-                  player.getName()),
-              SwitchedPlayerRoleInRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
-        }
-      }
-
-      classifyPlayersByRoles();
-    } finally {
-      switchRoleLock.unlock();
+    if (getParticipantCount() >= getMaxParticipants()) {
+      throw new SwitchedPlayerRoleInRoomException("All participant slots were already taken",
+          SwitchedPlayerRoleInRoomResult.SWITCH_NO_PARTICIPANT_SLOTS_AVAILABLE);
     }
+
+    if (targetSlot == DEFAULT_SLOT) {
+      player.setPlayerSlotInCurrentRoom(
+          roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
+      player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
+    } else {
+      try {
+        roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
+        player.setPlayerSlotInCurrentRoom(targetSlot);
+        player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
+      } catch (IllegalArgumentException e) {
+        throw new SwitchedPlayerRoleInRoomException(String
+            .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
+                player.getIdentity()),
+            SwitchedPlayerRoleInRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
+      }
+    }
+
+    classifyPlayersByRoles();
   }
 
-  private void classifyPlayersByRoles() {
+  private synchronized void classifyPlayersByRoles() {
     participants = getReadonlyPlayersList().stream()
         .filter(player -> player.getRoleInRoom() == PlayerRoleInRoom.PARTICIPANT)
-        .collect(Collectors.toList());
+        .toList();
     spectators = getReadonlyPlayersList().stream()
         .filter(player -> player.getRoleInRoom() == PlayerRoleInRoom.SPECTATOR)
-        .collect(Collectors.toList());
-    participantCount = participants.size();
-    spectatorCount = spectators.size();
+        .toList();
+  }
+
+  private void allocateSlotToPlayer(Player player, int targetSlot) {
+    if (targetSlot == DEFAULT_SLOT) {
+      player.setPlayerSlotInCurrentRoom(
+          roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
+    } else {
+      try {
+        roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
+        player.setPlayerSlotInCurrentRoom(targetSlot);
+      } catch (IllegalArgumentException exception) {
+        player.setPlayerSlotInCurrentRoom(DEFAULT_SLOT);
+        throw new PlayerJoinedRoomException(String
+            .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
+                player.getIdentity()), PlayerJoinedRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
+      }
+    }
   }
 
   @Override
@@ -437,63 +385,78 @@ public class RoomImpl implements Room {
   }
 
   @Override
-  public boolean equals(Object object) {
-    if (!(object instanceof Room room)) {
-      return false;
-    } else {
-      return getId() == room.getId();
-    }
+  public int getMaxParticipants() {
+    return maxParticipants;
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (id ^ (id >>> 32));
-    return result;
+  public void setMaxParticipants(int maxParticipants) {
+    this.maxParticipants = maxParticipants;
   }
 
   @Override
-  public String toString() {
-    return "Room{" +
-        "id=" + id +
-        ", properties=" + properties +
-        ", name='" + name + '\'' +
-        ", password='" + password + '\'' +
-        ", owner=" + (Objects.nonNull(owner) ? owner.getName() : "") +
-        ", roomRemoveMode=" + roomRemoveMode +
-        ", state=" + state +
-        ", activated=" + activated +
-        ", maxParticipants=" + maxParticipants +
-        ", maxSpectators=" + maxSpectators +
-        ", playerCount=" + playerManager.getPlayerCount() +
-        ", participantCount=" + participantCount +
-        ", spectatorCount=" + spectatorCount +
-        ", participants=" +
-        participants.stream().map(Player::getName).collect(Collectors.toList()) +
-        ", spectators=" + spectators.stream().map(Player::getName).collect(Collectors.toList()) +
-        '}';
+  public int getMaxSpectators() {
+    return maxSpectators;
   }
 
   @Override
-  public RoomPlayerSlotGeneratedStrategy getPlayerSlotGeneratedStrategy() {
-    return roomPlayerSlotGeneratedStrategy;
+  public void setMaxSpectators(int maxSpectators) {
+    this.maxSpectators = maxSpectators;
   }
 
   @Override
-  public void setPlayerSlotGeneratedStrategy(
+  public int getCapacity() {
+    return maxParticipants + maxSpectators;
+  }
+
+  @Override
+  public void setCapacity(int maxParticipants, int maxSpectators) {
+    this.maxParticipants = maxParticipants;
+    this.maxSpectators = maxSpectators;
+  }
+
+  @Override
+  public void configurePlayerManager(PlayerManager playerManager) {
+    this.playerManager = playerManager;
+  }
+
+  @Override
+  public void configurePlayerSlotGeneratedStrategy(
       RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
     this.roomPlayerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
   }
 
   @Override
-  public RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy() {
-    return roomCredentialValidatedStrategy;
+  public void configureRoomCredentialValidatedStrategy(
+      RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
+    this.roomCredentialValidatedStrategy = roomCredentialValidatedStrategy;
+  }
+  
+  @Override
+  public boolean equals(Object object) {
+    return (object instanceof Room room) && (room.getId() == id);
   }
 
   @Override
-  public void setRoomCredentialValidatedStrategy(
-      RoomCredentialValidatedStrategy roomCredentialValidatedStrategy) {
-    this.roomCredentialValidatedStrategy = roomCredentialValidatedStrategy;
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "DefaultRoom{" +
+        "id=" + id +
+        ", properties=" + properties +
+        ", owner=" + owner +
+        ", state=" + state.get() +
+        ", name='" + name + '\'' +
+        ", password='" + password + '\'' +
+        ", participants=" + participants +
+        ", maxParticipants=" + maxParticipants +
+        ", spectators=" + spectators +
+        ", maxSpectators=" + maxSpectators +
+        ", roomRemoveMode=" + roomRemoveMode +
+        ", activated=" + activated +
+        '}';
   }
 }

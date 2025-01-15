@@ -32,6 +32,11 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 public interface ConnectionFilter {
 
   /**
+   * Default maximum number of connections per ip.
+   */
+  int DEFAULT_MAX_CONNECTIONS_PER_IP = 10;
+
+  /**
    * Appends an IP address into the banned list.
    *
    * @param addressIp a {@link String} IP address appended into the banned list
@@ -68,17 +73,10 @@ public interface ConnectionFilter {
   void removeAddress(String addressIp);
 
   /**
-   * Retrieves the maximum number of connection allowed in a particular IP address.
-   *
-   * @return the maximum number of connection allowed in a particular IP address
-   */
-  int getMaxConnectionsPerIp();
-
-  /**
    * Sets the maximum number of connection allowed in a particular IP address.
    *
    * @param maxConnections the maximum number of connection ({@code integer} value) allowed
    *                       in a particular IP address
    */
-  void setMaxConnectionsPerIp(int maxConnections);
+  void configureMaxConnectionsPerIp(int maxConnections);
 }

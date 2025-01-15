@@ -11,9 +11,8 @@ class PacketQueueImplTest {
   @Test
   void testNewInstance() {
     PacketQueueImpl actualNewInstanceResult = PacketQueueImpl.newInstance();
-    actualNewInstanceResult.setMaxSize(3);
-    actualNewInstanceResult.setPacketQueuePolicy(mock(PacketQueuePolicy.class));
-    assertEquals(3, actualNewInstanceResult.getMaxSize());
+    actualNewInstanceResult.configureMaxSize(3);
+    actualNewInstanceResult.configurePacketQueuePolicy(mock(PacketQueuePolicy.class));
     assertEquals(0, actualNewInstanceResult.getSize());
   }
 
@@ -25,7 +24,7 @@ class PacketQueueImplTest {
   @Test
   void testGetPercentageUsed2() {
     PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
-    newInstanceResult.setMaxSize(3);
+    newInstanceResult.configureMaxSize(3);
     assertEquals(0.0f, newInstanceResult.getPercentageUsed());
   }
 
@@ -37,4 +36,3 @@ class PacketQueueImplTest {
     assertTrue(newInstanceResult.isEmpty());
   }
 }
-

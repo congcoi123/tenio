@@ -51,13 +51,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * The implementation for the Netty's websockets services.
  */
-@ThreadSafe
 public final class NettyWebSocketServiceImpl extends AbstractManager
     implements NettyWebSocketService {
 
@@ -69,11 +66,8 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   private static final int DEFAULT_CONSUMER_WORKER_SIZE =
       Runtime.getRuntime().availableProcessors() * 2;
 
-  @GuardedBy("this")
   private EventLoopGroup webSocketAcceptors;
-  @GuardedBy("this")
   private EventLoopGroup webSocketWorkers;
-  @GuardedBy("this")
   private List<Channel> serverWebSockets;
 
   private int senderBufferSize;
@@ -157,7 +151,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     }
   }
 
-  private synchronized void attemptToShutdown() {
+  private void attemptToShutdown() {
     for (var socket : serverWebSockets) {
       close(socket);
     }
@@ -321,7 +315,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
         return;
       }
       if (session.isActivated()) {
-        session.getWebSocketChannel()
+        session.fetchWebSocketChannel()
             .writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(packet.getData())));
         session.addWrittenBytes(packet.getOriginalSize());
         networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());

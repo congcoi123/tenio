@@ -26,23 +26,17 @@ package com.tenio.core.monitoring.system;
 
 import com.sun.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * For showing the system information.
  *
  * @see <a href="https://i.stack.imgur.com/GjuwM.png">Explained Image</a>
  */
-@ThreadSafe
 public final class SystemMonitoring {
 
-  @GuardedBy("this")
   private final OperatingSystemMXBean operatingSystemMxBean;
-  @GuardedBy("this")
-  private long lastSystemTime;
-  @GuardedBy("this")
-  private long lastProcessCpuTime;
+  private volatile long lastSystemTime;
+  private volatile long lastProcessCpuTime;
 
   /**
    * Initialization.
@@ -67,7 +61,7 @@ public final class SystemMonitoring {
    *
    * @return the CPU usage in percentage ({@code double} value)
    */
-  public synchronized double getCpuUsage() {
+  public double getCpuUsage() {
     if (lastSystemTime == 0L) {
       updateBaselineCounters();
       return 0.0D;

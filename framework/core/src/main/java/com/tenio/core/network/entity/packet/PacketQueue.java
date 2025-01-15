@@ -73,18 +73,11 @@ public interface PacketQueue {
   int getSize();
 
   /**
-   * Retrieves the maximum allowed size of queue.
-   *
-   * @return the maximum {@code integer} allowed size of queue
-   */
-  int getMaxSize();
-
-  /**
    * Sets the maximum allowed size of queue.
    *
    * @param maxSize the maximum {@code integer} allowed size of queue
    */
-  void setMaxSize(int maxSize);
+  void configureMaxSize(int maxSize);
 
   /**
    * Sets a set of rules for managing packets in queue.
@@ -93,7 +86,7 @@ public interface PacketQueue {
    *                          packets in the queue
    * @see DefaultPacketQueuePolicy
    */
-  void setPacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
+  void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
 
   /**
    * Retrieves the current usage of queue.

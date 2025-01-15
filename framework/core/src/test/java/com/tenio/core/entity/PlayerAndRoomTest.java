@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.core.configuration.Configuration;
-import com.tenio.core.entity.implement.PlayerImpl;
-import com.tenio.core.entity.implement.RoomImpl;
+import com.tenio.core.entity.implement.DefaultPlayer;
+import com.tenio.core.entity.implement.DefaultRoom;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
@@ -74,9 +74,9 @@ class PlayerAndRoomTest {
 
   @Test
   public void addNewPlayerShouldReturnSuccess() {
-    var player = PlayerImpl.newInstance(testPlayerName);
+    var player = DefaultPlayer.newInstance(testPlayerName);
     playerManager.addPlayer(player);
-    var result = playerManager.getPlayerByName(testPlayerName);
+    var result = playerManager.getPlayerByIdentity(testPlayerName);
 
     assertEquals(player, result);
   }
@@ -84,7 +84,7 @@ class PlayerAndRoomTest {
   @Test
   public void addDuplicatedPlayerShouldCauseException() {
     assertThrows(AddedDuplicatedPlayerException.class, () -> {
-      var player = PlayerImpl.newInstance(testPlayerName);
+      var player = DefaultPlayer.newInstance(testPlayerName);
       playerManager.addPlayer(player);
       playerManager.addPlayer(player);
     });
@@ -92,16 +92,16 @@ class PlayerAndRoomTest {
 
   @Test
   public void checkContainPlayerShouldReturnSuccess() {
-    var player = PlayerImpl.newInstance(testPlayerName);
+    var player = DefaultPlayer.newInstance(testPlayerName);
     playerManager.addPlayer(player);
 
-    assertTrue(playerManager.containsPlayerName(testPlayerName));
+    assertTrue(playerManager.containsPlayerIdentity(testPlayerName));
   }
 
   @Test
   public void countPlayersShouldReturnTrueValue() {
     for (int i = 0; i < 10; i++) {
-      var player = PlayerImpl.newInstance(testPlayerName + i);
+      var player = DefaultPlayer.newInstance(testPlayerName + i);
       playerManager.addPlayer(player);
     }
 
@@ -110,9 +110,9 @@ class PlayerAndRoomTest {
 
   @Test
   public void removePlayerShouldReturnSuccess() {
-    var player = PlayerImpl.newInstance(testPlayerName);
+    var player = DefaultPlayer.newInstance(testPlayerName);
     playerManager.addPlayer(player);
-    playerManager.removePlayerByName(testPlayerName);
+    playerManager.removePlayerByIdentity(testPlayerName);
 
     assertEquals(0, playerManager.getPlayerCount());
   }
@@ -120,7 +120,7 @@ class PlayerAndRoomTest {
   @Test
   @Disabled
   public void createNewRoomShouldReturnSuccess() {
-    var room = RoomImpl.newInstance();
+    var room = DefaultRoom.newInstance();
     roomManager.addRoom(room);
 
     assertTrue(roomManager.containsRoomId(0));
@@ -129,8 +129,8 @@ class PlayerAndRoomTest {
   @Test
   public void createDuplicatedRoomShouldCauseException() {
     assertThrows(AddedDuplicatedRoomException.class, () -> {
-      var room = RoomImpl.newInstance();
-      room.setPlayerManager(Mockito.mock(PlayerManager.class));
+      var room = DefaultRoom.newInstance();
+      room.configurePlayerManager(Mockito.mock(PlayerManager.class));
       roomManager.addRoom(room);
       roomManager.addRoom(room);
     });

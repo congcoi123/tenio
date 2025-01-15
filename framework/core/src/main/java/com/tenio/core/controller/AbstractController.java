@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -56,8 +57,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
   private int maxQueueSize;
 
-  private boolean initialized;
-  private boolean stopping;
+  private final AtomicBoolean stopping;
+  private volatile boolean initialized;
   private volatile boolean activated;
 
   /**
@@ -67,13 +68,10 @@ public abstract class AbstractController extends AbstractManager implements Cont
    */
   protected AbstractController(EventManager eventManager) {
     super(eventManager);
-
+    id = new AtomicInteger();
+    stopping = new AtomicBoolean(false);
     maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
     executorSize = DEFAULT_NUMBER_WORKERS;
-    activated = false;
-    stopping = false;
-    initialized = false;
-    id = new AtomicInteger();
   }
 
   private void initializeWorkers() {
@@ -107,11 +105,10 @@ public abstract class AbstractController extends AbstractManager implements Cont
   }
 
   private void attemptToShutdown() {
-    if (stopping) {
+    if (!stopping.compareAndSet(false, true)) {
       return;
     }
 
-    stopping = true;
     activated = false;
 
     if (isInfoEnabled()) {
@@ -247,8 +244,8 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
   @Override
   public float getPercentageUsedRequestQueue() {
-    return maxQueueSize == 0 ? 0.0f :
-        (float) (requestQueue.size() * 100) / (float) maxQueueSize;
+    return (maxQueueSize == 0) ? 0.0f :
+        ((float) (requestQueue.size() * 100) / (float) maxQueueSize);
   }
 
   /**

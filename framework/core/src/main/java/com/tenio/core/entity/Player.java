@@ -36,11 +36,11 @@ import java.util.function.Consumer;
 public interface Player {
 
   /**
-   * Retrieves the player's name which should be unique in the management list and on the server.
+   * Retrieves the player's identity which should be unique in the management list and on the server.
    *
-   * @return the {@link String} player's name
+   * @return the {@link String} player's identity
    */
-  String getName();
+  String getIdentity();
 
   /**
    * Determines whether the player contains a session.
@@ -70,6 +70,16 @@ public interface Player {
    * @param state a new value of {@link PlayerState} set to the player
    */
   void setState(PlayerState state);
+
+  /**
+   * Updates state in thread-safe.
+   *
+   * @param expectedState the current expected state
+   * @param newState      new state
+   * @return {@code true} if the update is successful, otherwise returns {@code false}
+   * @since 0.6.1
+   */
+  boolean transitionState(PlayerState expectedState, PlayerState newState);
 
   /**
    * Determines whether the player is activated.
@@ -114,13 +124,6 @@ public interface Player {
   long getLastActivityTime();
 
   /**
-   * Sets the last activity time for the player.
-   *
-   * @param timestamp the last activity time in milliseconds ({@code long} value)
-   */
-  void setLastActivityTime(long timestamp);
-
-  /**
    * Retrieves the last time when the player receives the last byte of data.
    *
    * @return the last reading new data time in milliseconds ({@code long} value)
@@ -149,24 +152,6 @@ public interface Player {
   void setLastWriteTime(long timestamp);
 
   /**
-   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data).
-   *
-   * @return the maximum time in seconds ({@code integer} value) which allows the player to
-   * get in IDLE state
-   */
-  int getMaxIdleTimeInSeconds();
-
-  /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data).
-   *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
-   */
-  void setMaxIdleTimeInSeconds(int seconds);
-
-  /**
    * Determines whether the player got in IDLE state (Do not perform any action, such as reading
    * or writing data).
    *
@@ -192,26 +177,6 @@ public interface Player {
    * @since 0.5.0
    */
   void setNeverDeported(boolean flag);
-
-  /**
-   * Retrieves the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data) in case of never deported selection.
-   *
-   * @return the maximum time in seconds ({@code integer} value) which allows the player to
-   * get in IDLE state
-   * @since 0.5.0
-   */
-  int getMaxIdleTimeNeverDeportedInSeconds();
-
-  /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data) in case of never deported selection.
-   *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
-   * @since 0.5.0
-   */
-  void setMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * Determines whether the player got in IDLE state (Do not perform any action, such as reading
@@ -258,6 +223,16 @@ public interface Player {
    * @param roleInRoom the {@link PlayerRoleInRoom}
    */
   void setRoleInRoom(PlayerRoleInRoom roleInRoom);
+
+  /**
+   * Updates role in thread-safe.
+   *
+   * @param expectedRole the current expected role
+   * @param newRole      new role
+   * @return {@code true} if the update is successful, otherwise returns {@code false}
+   * @since 0.6.1
+   */
+  boolean transitionRole(PlayerRoleInRoom expectedRole, PlayerRoleInRoom newRole);
 
   /**
    * Retrieves the current room which the player is in.
@@ -343,6 +318,25 @@ public interface Player {
    * Wipes out all the player's information.
    */
   void clean();
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data).
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   */
+  void configureMaxIdleTimeInSeconds(int seconds);
+
+  /**
+   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
+   * perform any action, such as reading or writing data) in case of never deported selection.
+   *
+   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
+   *                player to get in IDLE state
+   * @since 0.5.0
+   */
+  void configureMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * All the support fields that can be triggered as events.

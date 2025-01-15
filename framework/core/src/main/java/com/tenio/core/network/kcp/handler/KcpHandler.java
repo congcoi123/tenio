@@ -54,6 +54,14 @@ public class KcpHandler implements KcpListener {
   private final NetworkReaderStatistic networkReaderStatistic;
   private final KcpHandlerPrivateLogger logger;
 
+  /**
+   * Constructor.
+   *
+   * @param eventManager           {@link EventManager} instance
+   * @param sessionManager         {@link SessionManager} instance
+   * @param dataType               {@link DataType}
+   * @param networkReaderStatistic {@link NetworkReaderStatistic} instance
+   */
   public KcpHandler(EventManager eventManager, SessionManager sessionManager,
                     DataType dataType, NetworkReaderStatistic networkReaderStatistic) {
     this.eventManager = eventManager;
@@ -124,7 +132,8 @@ public class KcpHandler implements KcpListener {
     // verify the kcp channel accessing request
     Object checkingPlayer = null;
     try {
-      checkingPlayer = eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION, message);
+      checkingPlayer =
+          eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION, message);
     } catch (Exception exception) {
       ukcp.close();
       if (logger.isErrorEnabled()) {

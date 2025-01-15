@@ -28,6 +28,7 @@ import com.tenio.core.exception.PacketQueueFullException;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+
 import java.util.TreeSet;
 
 /**
@@ -38,11 +39,17 @@ import java.util.TreeSet;
 public final class PacketQueueImpl implements PacketQueue {
 
   private final TreeSet<Packet> queue;
+  private volatile int size;
   private PacketQueuePolicy packetQueuePolicy;
   private int maxSize;
-  private volatile int size;
 
+  /**
+   * Constructor.
+   *
+   * @see PacketImpl#compareTo(Packet)
+   */
   private PacketQueueImpl() {
+    // Provide a comparator
     queue = new TreeSet<>();
   }
 
@@ -62,7 +69,6 @@ public final class PacketQueueImpl implements PacketQueue {
         return queue.last();
       }
     }
-
     return null;
   }
 
@@ -70,13 +76,11 @@ public final class PacketQueueImpl implements PacketQueue {
   public Packet take() {
     synchronized (queue) {
       if (!isEmpty()) {
-        var packet = queue.last();
-        queue.remove(packet);
+        Packet packet = queue.pollLast();
         size = queue.size();
         return packet;
       }
     }
-
     return null;
   }
 
@@ -96,23 +100,18 @@ public final class PacketQueueImpl implements PacketQueue {
   }
 
   @Override
-  public int getMaxSize() {
-    return maxSize;
-  }
-
-  @Override
-  public void setMaxSize(int maxSize) {
+  public void configureMaxSize(int maxSize) {
     this.maxSize = maxSize;
   }
 
   @Override
-  public void setPacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
+  public void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
     this.packetQueuePolicy = packetQueuePolicy;
   }
 
   @Override
   public float getPercentageUsed() {
-    return maxSize == 0 ? 0.0f : (float) (size * 100) / (float) maxSize;
+    return maxSize == 0 ? 0.0f : (((float) size * 100) / maxSize);
   }
 
   @Override
@@ -120,6 +119,7 @@ public final class PacketQueueImpl implements PacketQueue {
     if (isFull()) {
       throw new PacketQueueFullException(queue.size());
     }
+
     packetQueuePolicy.applyPolicy(this, packet);
     synchronized (queue) {
       queue.add(packet);
