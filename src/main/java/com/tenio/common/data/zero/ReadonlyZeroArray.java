@@ -25,12 +25,13 @@ THE SOFTWARE.
 package com.tenio.common.data.zero;
 
 import com.tenio.common.data.DataCollection;
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * This class holds sequence elements in read-only mode.
  */
-public interface ReadonlyZeroArray extends DataCollection {
+public interface ReadonlyZeroArray extends DataCollection, Serializable {
 
   /**
    * Determines whether a value is available in array.

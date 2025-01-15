@@ -128,7 +128,7 @@ public enum ZeroType {
   private static final Map<Integer, ZeroType> lookup = new HashMap<>();
 
   static {
-    for (var type : ZeroType.values()) {
+    for (ZeroType type : ZeroType.values()) {
       lookup.put(type.getValue(), type);
     }
   }

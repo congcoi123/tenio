@@ -33,17 +33,18 @@ import com.tenio.common.data.zero.ZeroType;
 import com.tenio.common.data.zero.utility.ZeroUtility;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
 
 /**
  * An implementation for the zero object.
  */
 public final class ZeroMapImpl implements ZeroMap {
+
+  private static final long serialVersionUID = -9209290648545740755L;
 
   private final Map<String, ZeroElement> map;
 
@@ -65,8 +66,8 @@ public final class ZeroMapImpl implements ZeroMap {
 
   @Override
   public boolean isNull(String key) {
-    var element = getZeroElement(key);
-    return Objects.nonNull(element) && element.getType() == ZeroType.NULL;
+    ZeroElement element = getZeroElement(key);
+    return (element != null) && element.getType() == ZeroType.NULL;
   }
 
   @Override
@@ -86,7 +87,7 @@ public final class ZeroMapImpl implements ZeroMap {
 
   @Override
   public Set<String> getReadonlyKeys() {
-    return Set.copyOf(map.keySet());
+    return new HashSet<>(map.keySet());
   }
 
   @Override
@@ -103,75 +104,74 @@ public final class ZeroMapImpl implements ZeroMap {
    * @see Iterator
    */
   @Override
-  @Nonnull
   public Iterator<Entry<String, ZeroElement>> iterator() {
     return map.entrySet().iterator();
   }
 
   @Override
   public Boolean getBoolean(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Boolean) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Boolean) element.getData();
   }
 
   @Override
   public Byte getByte(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Byte) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Byte) element.getData();
   }
 
   @Override
   public Short getShort(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Short) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Short) element.getData();
   }
 
   @Override
   public Integer getInteger(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Integer) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Integer) element.getData();
   }
 
   @Override
   public Long getLong(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Long) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Long) element.getData();
   }
 
   @Override
   public Float getFloat(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Float) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Float) element.getData();
   }
 
   @Override
   public Double getDouble(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Double) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Double) element.getData();
   }
 
   @Override
   public String getString(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (String) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (String) element.getData();
   }
 
   @Override
   public DataCollection getDataCollection(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (DataCollection) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (DataCollection) element.getData();
   }
 
   @Override
   public ZeroArray getZeroArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (ZeroArray) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (ZeroArray) element.getData();
   }
 
   @Override
   public ZeroMap getZeroMap(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (ZeroMap) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (ZeroMap) element.getData();
   }
 
   @Override
@@ -243,56 +243,56 @@ public final class ZeroMapImpl implements ZeroMap {
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Boolean> getBooleanArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Boolean>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Boolean>) element.getData();
   }
 
   @Override
   public byte[] getByteArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (byte[]) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (byte[]) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Short> getShortArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Short>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Short>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Integer> getIntegerArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Integer>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Integer>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Long> getLongArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Long>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Long>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Float> getFloatArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Float>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Float>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Double> getDoubleArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<Double>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<Double>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<String> getStringArray(String key) {
-    var element = getZeroElement(key);
-    return Objects.isNull(element) ? null : (Collection<String>) element.getData();
+    ZeroElement element = getZeroElement(key);
+    return element == null ? null : (Collection<String>) element.getData();
   }
 
   @Override
@@ -337,17 +337,18 @@ public final class ZeroMapImpl implements ZeroMap {
 
   @Override
   public ReadonlyZeroMap getReadonlyZeroMap() {
-    return new ZeroMapImpl(Map.copyOf(map));
+    return new ZeroMapImpl(new HashMap<>(map));
   }
 
+  @SuppressWarnings("DefaultLocale")
   @Override
   public String toString() {
-    var builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     builder.append("ZeroMap{");
 
-    for (var iteratorKey = getKeys().iterator(); iteratorKey.hasNext(); builder.append(';')) {
-      var key = iteratorKey.next();
-      var zeroElement = getZeroElement(key);
+    for (Iterator<String> iteratorKey = getKeys().iterator(); iteratorKey.hasNext(); builder.append(';')) {
+      String key = iteratorKey.next();
+      ZeroElement zeroElement = getZeroElement(key);
       builder.append(" (").append(zeroElement.getType().toString().toLowerCase()).append(") ")
           .append(key)
           .append(": ");
@@ -358,8 +359,7 @@ public final class ZeroMapImpl implements ZeroMap {
       } else if (zeroElement.getType() == ZeroType.BYTE_ARRAY) {
         builder.append(String.format("byte[%d]", ((byte[]) zeroElement.getData()).length));
       } else {
-        builder.append(Objects.nonNull(zeroElement.getData()) ? zeroElement.getData().toString()
-            : "null");
+        builder.append((zeroElement.getData() != null) ? zeroElement.getData().toString() : "null");
       }
     }
 

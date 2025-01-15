@@ -34,13 +34,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 
 /**
  * An implementation for the zero array.
  */
 public final class ZeroArrayImpl implements ZeroArray {
+
+  private static final long serialVersionUID = 2372647354857285192L;
 
   private final List<ZeroElement> array;
 
@@ -62,14 +62,20 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   @Override
   public boolean contains(Object data) {
-    if (Objects.isNull(data)) {
-      return array.stream().anyMatch(element -> Objects.isNull(element.getData()));
+    if (data == null) {
+      for (ZeroElement element : array) {
+        if (element.getData() == null) {
+          return true;
+        }
+      }
+    } else {
+      for (ZeroElement element : array) {
+        if (element.getData() != null && element.getData().equals(data)) {
+          return true;
+        }
+      }
     }
-    var match =
-        array.stream()
-            .filter(element -> Objects.nonNull(element.getData()) && element.getData().equals(data))
-            .findFirst();
-    return match.orElse(null) != null;
+    return false;
   }
 
   @Override
@@ -77,7 +83,7 @@ public final class ZeroArrayImpl implements ZeroArray {
     if (index < 0 || index >= size()) {
       return false;
     }
-    return Objects.nonNull(array.get(index));
+    return array.get(index) != null;
   }
 
   /**
@@ -89,15 +95,14 @@ public final class ZeroArrayImpl implements ZeroArray {
    * @see Iterator
    */
   @Override
-  @Nonnull
   public Iterator<ZeroElement> iterator() {
     return array.iterator();
   }
 
   @Override
   public Object getDataForElementAt(int index) {
-    var element = getZeroElement(index);
-    return Objects.nonNull(element) ? element.getData() : null;
+    ZeroElement element = getZeroElement(index);
+    return (element != null) ? element.getData() : null;
   }
 
   @Override
@@ -112,68 +117,68 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   @Override
   public boolean isNull(int index) {
-    var element = getZeroElement(index);
-    return Objects.nonNull(element) && element.getType() == ZeroType.NULL;
+    ZeroElement element = getZeroElement(index);
+    return (element != null) && element.getType() == ZeroType.NULL;
   }
 
   @Override
   public Boolean getBoolean(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Boolean) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Boolean) element.getData();
   }
 
   @Override
   public Byte getByte(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Byte) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Byte) element.getData();
   }
 
   @Override
   public Short getShort(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Short) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Short) element.getData();
   }
 
   @Override
   public Integer getInteger(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Integer) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Integer) element.getData();
   }
 
   @Override
   public Long getLong(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Long) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Long) element.getData();
   }
 
   @Override
   public Float getFloat(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Float) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Float) element.getData();
   }
 
   @Override
   public Double getDouble(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Double) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Double) element.getData();
   }
 
   @Override
   public String getString(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (String) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (String) element.getData();
   }
 
   @Override
   public ZeroArray getZeroArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (ZeroArray) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (ZeroArray) element.getData();
   }
 
   @Override
   public ZeroMap getZeroMap(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (ZeroMap) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (ZeroMap) element.getData();
   }
 
   @Override
@@ -263,56 +268,56 @@ public final class ZeroArrayImpl implements ZeroArray {
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Boolean> getBooleanArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Boolean>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Boolean>) element.getData();
   }
 
   @Override
   public byte[] getByteArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (byte[]) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (byte[]) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Short> getShortArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Short>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Short>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Integer> getIntegerArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Integer>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Integer>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Long> getLongArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Long>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Long>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Float> getFloatArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Float>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Float>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<Double> getDoubleArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<Double>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<Double>) element.getData();
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Collection<String> getStringArray(int index) {
-    var element = getZeroElement(index);
-    return Objects.isNull(element) ? null : (Collection<String>) element.getData();
+    ZeroElement element = getZeroElement(index);
+    return element == null ? null : (Collection<String>) element.getData();
   }
 
   @Override
@@ -357,17 +362,18 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   @Override
   public ReadonlyZeroArray getReadonlyZeroArray() {
-    return new ZeroArrayImpl(List.copyOf(array));
+    return new ZeroArrayImpl(new ArrayList<>(array));
   }
 
+  @SuppressWarnings("DefaultLocale")
   @Override
   public String toString() {
-    var builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     builder.append("ZeroArray{");
 
     Object toString;
     ZeroElement zeroElement;
-    for (var iterator = iterator(); iterator.hasNext(); builder.append(" (")
+    for (Iterator<ZeroElement> iterator = iterator(); iterator.hasNext(); builder.append(" (")
         .append(zeroElement.getType().toString().toLowerCase()).append(") ").append(toString)
         .append(';')) {
       zeroElement = iterator.next();
@@ -378,7 +384,7 @@ public final class ZeroArrayImpl implements ZeroArray {
       } else if (zeroElement.getType() == ZeroType.BYTE_ARRAY) {
         toString = String.format("byte[%d]", ((byte[]) zeroElement.getData()).length);
       } else {
-        toString = Objects.nonNull(zeroElement.getData()) ? zeroElement.getData().toString() :
+        toString = (zeroElement.getData() != null) ? zeroElement.getData().toString() :
             "null";
       }
     }
