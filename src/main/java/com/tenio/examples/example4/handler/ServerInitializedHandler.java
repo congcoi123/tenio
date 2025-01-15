@@ -71,7 +71,7 @@ public final class ServerInitializedHandler extends AbstractHandler
       @Override
       public void responseVehicleNeighbours(String playerName, List<Vehicle> neighbours,
                                             int currentFps) {
-        var player = api().getPlayerByName(playerName);
+        var player = api().getPlayerByIdentity(playerName);
         if (player.isPresent()) {
           var parcel = map();
           parcel.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);

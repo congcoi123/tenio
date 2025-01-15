@@ -40,7 +40,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
   public void handle(Player player, DataCollection message) {
     var parcel =
         msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-            player.getName(),
+            player.getIdentity(),
             ((MsgPackMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
     response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();

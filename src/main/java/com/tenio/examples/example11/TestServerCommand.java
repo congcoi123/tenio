@@ -96,7 +96,7 @@ public final class TestServerCommand {
     public void handle(Player player, PlayerLoggedInResult result) {
       if (result == PlayerLoggedInResult.SUCCESS) {
         var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-            String.format("Welcome to server: %s", player.getName()));
+            String.format("Welcome to server: %s", player.getIdentity()));
 
         response().setContent(data.toBinary()).setRecipientPlayer(player).write();
       }
@@ -111,7 +111,7 @@ public final class TestServerCommand {
     public void handle(Player player, DataCollection message) {
       var data =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-              player.getName(),
+              player.getIdentity(),
               ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
       response().setContent(data.toBinary()).setRecipientPlayer(player).write();

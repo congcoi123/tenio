@@ -40,8 +40,8 @@ public final class PlayerLoggedInHandler extends AbstractHandler
     if (result == PlayerLoggedInResult.SUCCESS) {
       var parcel = map()
           .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-              String.format("Welcome to server: %s", player.getName()))
-          .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getName());
+              String.format("Welcome to server: %s", player.getIdentity()))
+          .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getIdentity());
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
