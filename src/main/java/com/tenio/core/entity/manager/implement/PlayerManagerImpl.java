@@ -25,32 +25,28 @@ THE SOFTWARE.
 package com.tenio.core.entity.manager.implement;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
-import com.tenio.core.entity.implement.PlayerImpl;
+import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
-import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
+import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entity.session.Session;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * An implemented class is for player management.
  */
 public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
-  @GuardedBy("this")
   private final Map<String, Player> players;
-
-  private List<Player> readonlyPlayersList;
-  private volatile Room ownerRoom;
+  private volatile List<Player> readOnlyPlayersList;
   private volatile int playerCount;
   private int maxIdleTimeInSecond;
   private int maxIdleTimeNeverDeportedInSecond;
@@ -58,9 +54,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   private PlayerManagerImpl(EventManager eventManager) {
     super(eventManager);
     players = new HashMap<>();
-    readonlyPlayersList = new ArrayList<>();
-    ownerRoom = null;
-    playerCount = 0;
+    readOnlyPlayersList = new ArrayList<>();
   }
 
   /**
@@ -75,26 +69,22 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
   @Override
   public void addPlayer(Player player) {
-    if (containsPlayerName(player.getName())) {
-      throw new AddedDuplicatedPlayerException(player, ownerRoom);
+    if (containsPlayerIdentity(player.getIdentity())) {
+      throw new AddedDuplicatedPlayerException(player);
     }
 
     synchronized (this) {
-      players.put(player.getName(), player);
-      playerCount = players.size();
-      readonlyPlayersList = List.copyOf(players.values());
+      players.put(player.getIdentity(), player);
+      readOnlyPlayersList = players.values().stream().toList();
+      playerCount = readOnlyPlayersList.size();
     }
   }
 
   @Override
   public Player createPlayer(String playerName) {
-    var player = PlayerImpl.newInstance(playerName);
-    player.setActivated(true);
-    player.setLoggedIn(true);
-    player.setMaxIdleTimeInSeconds(maxIdleTimeInSecond);
-    player.setMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    Player player = DefaultPlayer.newInstance(playerName);
+    configureInitialPlayer(player);
     addPlayer(player);
-
     return player;
   }
 
@@ -104,75 +94,55 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
       throw new NullPointerException("Unable to assign a null session for the player");
     }
 
-    var player = PlayerImpl.newInstance(playerName, session);
-    player.setActivated(true);
-    player.setLoggedIn(true);
-    player.setMaxIdleTimeInSeconds(maxIdleTimeInSecond);
-    player.setMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    Player player = DefaultPlayer.newInstance(playerName, session);
+    configureInitialPlayer(player);
     addPlayer(player);
-
     return player;
   }
 
   @Override
-  public Player getPlayerByName(String playerName) {
-    synchronized (players) {
-      return players.get(playerName);
+  public void configureInitialPlayer(Player player) {
+    if (Objects.isNull(player)) {
+      throw new NullPointerException("Unable to process an unavailable player");
     }
+
+    player.configureMaxIdleTimeInSeconds(maxIdleTimeInSecond);
+    player.configureMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    player.setActivated(true);
+    player.setLoggedIn(true);
   }
 
   @Override
-  public Iterator<Player> getPlayerIterator() {
-    synchronized (this) {
-      return players.values().iterator();
-    }
+  public synchronized Player getPlayerByIdentity(String playerIdentity) {
+    return players.get(playerIdentity);
+  }
+
+  @Override
+  public synchronized Iterator<Player> getPlayerIterator() {
+    return players.values().iterator();
   }
 
   @Override
   public List<Player> getReadonlyPlayersList() {
-    return readonlyPlayersList;
+    return readOnlyPlayersList;
   }
 
   @Override
-  public void removePlayerByName(String playerName) {
-    if (!containsPlayerName(playerName)) {
-      throw new RemovedNonExistentPlayerFromRoomException(playerName, ownerRoom);
+  public void removePlayerByIdentity(String playerIdentity) {
+    if (!containsPlayerIdentity(playerIdentity)) {
+      throw new RemovedNonExistentPlayerException(playerIdentity);
     }
 
-    removePlayer(playerName);
-  }
-
-  private void removePlayer(Player player) {
     synchronized (this) {
-      players.remove(player.getName());
-      playerCount = players.size();
-      readonlyPlayersList = List.copyOf(players.values());
-    }
-  }
-
-  private void removePlayer(String playerName) {
-    synchronized (this) {
-      players.remove(playerName);
-      playerCount = players.size();
-      readonlyPlayersList = List.copyOf(players.values());
+      players.remove(playerIdentity);
+      readOnlyPlayersList = players.values().stream().toList();
+      playerCount = readOnlyPlayersList.size();
     }
   }
 
   @Override
-  public boolean containsPlayerName(String playerName) {
-    synchronized (this) {
-      return players.containsKey(playerName);
-    }
-  }
-
-  @Override
-  public Room getOwnerRoom() {
-    return ownerRoom;
-  }
-
-  @Override
-  public void setOwnerRoom(Room room) {
-    ownerRoom = room;
+  public synchronized boolean containsPlayerIdentity(String playerIdentity) {
+    return players.containsKey(playerIdentity);
   }
 
   @Override
@@ -181,33 +151,19 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public int getMaxIdleTimeInSeconds() {
-    return maxIdleTimeInSecond;
-  }
-
-  @Override
-  public void setMaxIdleTimeInSeconds(int seconds) {
+  public void configureMaxIdleTimeInSeconds(int seconds) {
     maxIdleTimeInSecond = seconds;
   }
 
   @Override
-  public int getMaxIdleTimeNeverDeportedInSeconds() {
-    return maxIdleTimeNeverDeportedInSecond;
-  }
-
-  @Override
-  public void setMaxIdleTimeNeverDeportedInSeconds(int seconds) {
+  public void configureMaxIdleTimeNeverDeportedInSeconds(int seconds) {
     maxIdleTimeNeverDeportedInSecond = seconds;
   }
 
   @Override
-  public void clear() {
-    synchronized (this) {
-      var iterator = new ArrayList<>(players.values()).iterator();
-      while (iterator.hasNext()) {
-        var player = iterator.next();
-        removePlayer(player);
-      }
-    }
+  public synchronized void clear() {
+    players.clear();
+    readOnlyPlayersList = new ArrayList<>();
+    playerCount = 0;
   }
 }

@@ -68,8 +68,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
     if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
       if (isDebugEnabled()) {
         debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
-            " Rejected message: ",
-            message);
+            " Rejected message: ", message);
       }
       return;
     }

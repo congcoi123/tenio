@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -58,8 +59,8 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   private DatagramIoHandler datagramIoHandler;
   private SessionManager sessionManager;
 
+  private final AtomicBoolean stopping;
   private volatile boolean activated;
-  private boolean stopping;
 
   /**
    * Initialization.
@@ -68,12 +69,10 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
    */
   protected AbstractZeroEngine(EventManager eventManager) {
     super(eventManager);
-
+    id = new AtomicInteger();
+    stopping = new AtomicBoolean(false);
     executorSize = DEFAULT_NUMBER_WORKERS;
     bufferSize = DEFAULT_BUFFER_SIZE;
-    activated = false;
-    stopping = false;
-    id = new AtomicInteger();
   }
 
   private void initializeWorkers() {
@@ -104,11 +103,10 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   }
 
   private void halting() throws ServiceRuntimeException {
-    if (stopping) {
+    if (!stopping.compareAndSet(false, true)) {
       return;
     }
 
-    stopping = true;
     activated = false;
 
     onShutdown();

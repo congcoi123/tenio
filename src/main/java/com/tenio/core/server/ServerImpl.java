@@ -201,9 +201,9 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   private void setupEntitiesManagementService(Configuration configuration) {
-    playerManager.setMaxIdleTimeInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
-    playerManager.setMaxIdleTimeNeverDeportedInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED));
-    roomManager.setMaxRooms(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_ROOMS));
+    playerManager.configureMaxIdleTimeInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
+    playerManager.configureMaxIdleTimeNeverDeportedInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED));
+    roomManager.configureMaxRooms(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_ROOMS));
   }
 
   private void setupScheduleService(Configuration configuration) {

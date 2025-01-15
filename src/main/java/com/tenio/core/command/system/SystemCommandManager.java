@@ -55,6 +55,9 @@ public final class SystemCommandManager extends SystemLogger {
   private final Map<String, SystemCommand> annotations = new TreeMap<>();
   private final ExecutorService executors;
 
+  /**
+   * Constructor.
+   */
   public SystemCommandManager() {
     var threadFactoryWorker =
         new ThreadFactoryBuilder().setDaemon(true).setNameFormat("system-command-worker-%d").build();

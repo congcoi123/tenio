@@ -122,8 +122,7 @@ public interface ServerApi {
    *                          value should be set to {@code 0}
    * @throws UnsupportedOperationException this method is not supported at the moment
    */
-  default void banPlayer(Player player, String message, PlayerBanMode banMode,
-                         int durationInMinutes,
+  default void banPlayer(Player player, String message, PlayerBanMode banMode, int durationInMinutes,
                          int delayInSeconds) {
     throw new UnsupportedOperationException("Unsupported at the moment");
   }
@@ -164,11 +163,11 @@ public interface ServerApi {
   /**
    * Retrieves a player on the server by using its name.
    *
-   * @param playerName a unique {@link String} value for player's name on the server
+   * @param identity a unique {@link String} value for player's name on the server
    * @return a corresponding instance of optional {@link Player}
    * @see Optional
    */
-  Optional<Player> getPlayerByName(String playerName);
+  Optional<Player> getPlayerByIdentity(String identity);
 
   /**
    * Fetches the current number of players activating on the server.
@@ -269,6 +268,47 @@ public interface ServerApi {
    */
   default void joinRoom(Player player, Room room) {
     joinRoom(player, room, null, Room.DEFAULT_SLOT, false);
+  }
+
+  /**
+   * Allows a player to change his current room if it is already in one.
+   *
+   * @param player       the joining {@link Player}
+   * @param room         the current {@link Room}
+   * @param roomPassword a {@link String} credential using for a player to join room.
+   *                     In case of free join, this value would be set to {@code null}
+   * @param slotInRoom   the position of player located in the room ({@code integer} value)
+   * @param asSpectator  sets by {@code true} if the player operating in the room as a
+   *                     spectator, otherwise sets it {@code false}
+   * @since 0.6.1
+   */
+  void changeRoom(Player player, Room room, String roomPassword, int slotInRoom, boolean asSpectator);
+
+  /**
+   * Allows a player to change his current room if it is already in one.
+   *
+   * @param player       the joining {@link Player}
+   * @param room         the current {@link Room}
+   * @param roomPassword a {@link String} credential using for a player to join room.
+   *                     In case of free join, this value would be set to {@code null}
+   * @since 0.6.1
+   */
+  default void changeRoom(Player player, Room room, String roomPassword) {
+    changeRoom(player, room, roomPassword, Room.DEFAULT_SLOT, false);
+  }
+
+  /**
+   * Allows a player to change his current room if it is already in one, as the role of
+   * "participant" with the room's password is not present, and the player position in room is
+   * not considered.
+   *
+   * @param player the joining {@link Player}
+   * @param room   the current {@link Room}
+   * @see Room#DEFAULT_SLOT
+   * @since 0.6.1
+   */
+  default void changeRoom(Player player, Room room) {
+    changeRoom(player, room, null, Room.DEFAULT_SLOT, false);
   }
 
   /**

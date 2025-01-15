@@ -29,20 +29,24 @@ import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy;
-import com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.PlayerJoinedRoomException;
-import com.tenio.core.exception.RemovedNonExistentPlayerFromRoomException;
+import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.exception.SwitchedPlayerRoleInRoomException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The abstract room entity used on the server.
  */
 public interface Room {
+
+  /**
+   * IDs generator.
+   */
+  AtomicLong ID_COUNTER = new AtomicLong(1L);
 
   /**
    * The value indicates that a player has no slot position value in the room.
@@ -93,6 +97,14 @@ public interface Room {
   void setPassword(String password) throws IllegalArgumentException;
 
   /**
+   * Determines whether the room is in a particular state.
+   *
+   * @param state a {@link RoomState} is in judgment
+   * @return {@code true} if the room in that state, otherwise returns {@code false}
+   */
+  boolean isState(RoomState state);
+
+  /**
    * Retrieves the current room's state.
    *
    * @return the current {@link RoomState}
@@ -107,42 +119,22 @@ public interface Room {
   void setState(RoomState state);
 
   /**
+   * Updates state in thread-safe.
+   *
+   * @param expectedState the current expected state
+   * @param newState      new state
+   * @return {@code true} if the update is successful, otherwise returns {@code false}
+   * @since 0.6.1
+   */
+  boolean transitionState(RoomState expectedState, RoomState newState);
+
+  /**
    * Determines whether the room is public which means it does not contain any credential and
    * allowed to freely get in.
    *
    * @return {@code true} if the room is public, otherwise returns {@code false}
    */
   boolean isPublic();
-
-  /**
-   * Retrieves the maximum number of participants allowing in the room.
-   *
-   * @return the maximum number of participants ({@code integer} value)
-   */
-  int getMaxParticipants();
-
-  /**
-   * Sets the maximum number of participants allowing in the room.
-   *
-   * @param maxParticipants the maximum number of participants ({@code integer} value)
-   * @throws IllegalArgumentException when an invalid value is used
-   */
-  void setMaxParticipants(int maxParticipants) throws IllegalArgumentException;
-
-  /**
-   * Retrieves the maximum number of spectators allowing in the room.
-   *
-   * @return the maximum number of spectators ({@code integer} value)
-   */
-  int getMaxSpectators();
-
-  /**
-   * Sets the maximum number of spectators allowing in the room.
-   *
-   * @param maxSpectators the maximum number of spectators ({@code integer} value)
-   * @throws IllegalArgumentException when an invalid value is used
-   */
-  void setMaxSpectators(int maxSpectators) throws IllegalArgumentException;
 
   /**
    * Retrieves the room's owner.
@@ -158,20 +150,6 @@ public interface Room {
    * @param owner a {@link Player} is set to be the room's owner
    */
   void setOwner(Player owner);
-
-  /**
-   * Retrieves a player manager for the room.
-   *
-   * @return a {@link PlayerManager} instance
-   */
-  PlayerManager getPlayerManager();
-
-  /**
-   * Sets a new player manager for the room.
-   *
-   * @param playerManager a {@link PlayerManager} instance
-   */
-  void setPlayerManager(PlayerManager playerManager);
 
   /**
    * Determines whether the room is activated.
@@ -239,20 +217,11 @@ public interface Room {
   void clearProperties();
 
   /**
-   * Retrieves the total number of entities allowed to be in the room (participants and spectators).
+   * Retrieves the current number of players (participants + spectators) in the room.
    *
-   * @return the total number of entities ({@code integer} value)
+   * @return the current number of players ({@code integer} value)
    */
-  int getCapacity();
-
-  /**
-   * Sets the limitation values for participants and spectators.
-   *
-   * @param maxParticipants the maximum number of participants ({@code integer} value)
-   * @param maxSpectators   the maximum number of spectators ({@code integer} value)
-   * @throws IllegalArgumentException when an invalid value is used
-   */
-  void setCapacity(int maxParticipants, int maxSpectators) throws IllegalArgumentException;
+  int getPlayerCount();
 
   /**
    * Retrieves the current number of participants in the room.
@@ -271,19 +240,19 @@ public interface Room {
   /**
    * Determines whether a player is present in the room.
    *
-   * @param playerName a unique {@link String} player name in the room's player management list
+   * @param playerIdentity a unique {@link String} player name in the room's player management list
    * @return {@code true} when a player can be found, otherwise returns {@code false}
    */
-  boolean containsPlayerName(String playerName);
+  boolean containsPlayerIdentity(String playerIdentity);
 
   /**
    * Retrieves a player by using its name.
    *
-   * @param playerName a unique {@link String} name of player on the server
+   * @param playerIdentity a unique {@link String} name of player on the server
    * @return an instance of optional {@link Player}
    * @see Optional
    */
-  Optional<Player> getPlayerByName(String playerName);
+  Optional<Player> getPlayerByIdentity(String playerIdentity);
 
   /**
    * Retrieves an iterator for a player management list. This method should be used to prevent
@@ -322,7 +291,6 @@ public interface Room {
    * @see PlayerRoleInRoom#SPECTATOR
    */
   List<Player> getReadonlySpectatorsList();
-
 
   /**
    * Adds a player to the room.
@@ -394,10 +362,10 @@ public interface Room {
    * Removes a player from its current room.
    *
    * @param player the leaving {@link Player}
-   * @throws RemovedNonExistentPlayerFromRoomException when the player has already left the room,
+   * @throws RemovedNonExistentPlayerException when the player has already left the room,
    *                                                   but it is mentioned again
    */
-  void removePlayer(Player player) throws RemovedNonExistentPlayerFromRoomException;
+  void removePlayer(Player player) throws RemovedNonExistentPlayerException;
 
   /**
    * Changes a player's role from "participant" to "spectator" in the room.
@@ -447,13 +415,57 @@ public interface Room {
   boolean isFull();
 
   /**
-   * Retrieves a strategy to generate slot positions in the room.
+   * Retrieves the maximum number of participants allowing in the room.
    *
-   * @return an implementation of {@link RoomPlayerSlotGeneratedStrategy}, in case this value is
-   * {@code null}, then the default implementation will be used
-   * @see DefaultRoomPlayerSlotGeneratedStrategy
+   * @return the maximum number of participants ({@code integer} value)
    */
-  RoomPlayerSlotGeneratedStrategy getPlayerSlotGeneratedStrategy();
+  int getMaxParticipants();
+
+  /**
+   * Sets the maximum number of participants allowing in the room.
+   *
+   * @param maxParticipants the maximum number of participants ({@code integer} value)
+   * @throws IllegalArgumentException when an invalid value is used
+   */
+  void setMaxParticipants(int maxParticipants) throws IllegalArgumentException;
+
+  /**
+   * Retrieves the maximum number of spectators allowing in the room.
+   *
+   * @return the maximum number of spectators ({@code integer} value)
+   */
+  int getMaxSpectators();
+
+  /**
+   * Sets the maximum number of spectators allowing in the room.
+   *
+   * @param maxSpectators the maximum number of spectators ({@code integer} value)
+   * @throws IllegalArgumentException when an invalid value is used
+   */
+  void setMaxSpectators(int maxSpectators) throws IllegalArgumentException;
+
+  /**
+   * Retrieves the total number of entities allowed to be in the room (participants and spectators).
+   *
+   * @return the total number of entities ({@code integer} value)
+   */
+  int getCapacity();
+
+  /**
+   * Sets the limitation values for participants and spectators.
+   *
+   * @param maxParticipants the maximum number of participants ({@code integer} value)
+   * @param maxSpectators   the maximum number of spectators ({@code integer} value)
+   * @throws IllegalArgumentException when an invalid value is used
+   */
+  void setCapacity(int maxParticipants, int maxSpectators) throws IllegalArgumentException;
+
+  /**
+   * Sets a new player manager for the room.
+   *
+   * @param playerManager a {@link PlayerManager} instance
+   */
+  void configurePlayerManager(PlayerManager playerManager);
 
   /**
    * Sets a strategy to generate slot positions in the room.
@@ -461,17 +473,8 @@ public interface Room {
    * @param roomPlayerSlotGeneratedStrategy an implementation of
    *                                        {@link RoomPlayerSlotGeneratedStrategy}
    */
-  void setPlayerSlotGeneratedStrategy(
+  void configurePlayerSlotGeneratedStrategy(
       RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy);
-
-  /**
-   * Retrieves a strategy to validate credentials used to allow players get in the room.
-   *
-   * @return an implementation of {@link RoomCredentialValidatedStrategy}, in case this value is
-   * {@code null}, then the default implementation will be used
-   * @see DefaultRoomCredentialValidatedStrategy
-   */
-  RoomCredentialValidatedStrategy getRoomCredentialValidatedStrategy();
 
   /**
    * Sets a strategy to validate credentials used to allow players get in the room.
@@ -479,7 +482,7 @@ public interface Room {
    * @param roomCredentialValidatedStrategy an implementation of
    *                                        {@link RoomCredentialValidatedStrategy}
    */
-  void setRoomCredentialValidatedStrategy(
+  void configureRoomCredentialValidatedStrategy(
       RoomCredentialValidatedStrategy roomCredentialValidatedStrategy);
 
   /**

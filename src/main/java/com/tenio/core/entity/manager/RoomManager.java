@@ -40,18 +40,9 @@ import java.util.List;
 public interface RoomManager extends Manager {
 
   /**
-   * Retrieves the maximum number of rooms on the server.
-   *
-   * @return the maximum number of room on the server ({@code integer} value)
+   * Default maximum number of rooms.
    */
-  int getMaxRooms();
-
-  /**
-   * Sets the maximum number of room on the server.
-   *
-   * @param maxRooms the maximum number of rooms ({@code integer} value)
-   */
-  void setMaxRooms(int maxRooms);
+  int DEFAULT_MAX_ROOMS = 100;
 
   /**
    * Adds a new room to the server.
@@ -197,6 +188,13 @@ public interface RoomManager extends Manager {
    * @return the current number of rooms ({@code integer} value)
    */
   int getRoomCount();
+
+  /**
+   * Sets the maximum number of room on the server.
+   *
+   * @param maxRooms the maximum number of rooms ({@code integer} value)
+   */
+  void configureMaxRooms(int maxRooms);
 
   /**
    * Removes all rooms from the management list.

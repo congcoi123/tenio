@@ -31,8 +31,13 @@ import kcp.ChannelConfig;
  */
 public final class KcpConfiguration {
 
-  public static final int DEFAULT_TIME_OUT_IN_MILLISECONDS = 3_600_000; // 1 hour
+  private static final int DEFAULT_TIME_OUT_IN_MILLISECONDS = 3_600_000; // 1 hour
 
+  /**
+   * Turbo Mode configuration.
+   *
+   * @return {@link ChannelConfig} object for Turbo Mode
+   */
   public static ChannelConfig inTurboMode() {
     ChannelConfig channelConfig = new ChannelConfig();
     channelConfig.setTimeoutMillis(KcpConfiguration.DEFAULT_TIME_OUT_IN_MILLISECONDS);
@@ -47,6 +52,11 @@ public final class KcpConfiguration {
     return channelConfig;
   }
 
+  /**
+   * Normal Mode configuration.
+   *
+   * @return {@link ChannelConfig} object for Normal Mode
+   */
   public static ChannelConfig inNormalMode() {
     ChannelConfig channelConfig = new ChannelConfig();
     channelConfig.setTimeoutMillis(KcpConfiguration.DEFAULT_TIME_OUT_IN_MILLISECONDS);

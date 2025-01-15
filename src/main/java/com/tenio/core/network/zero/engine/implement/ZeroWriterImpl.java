@@ -106,7 +106,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
     }
 
     // now we can iterate packets from queue to proceed
-    var packetQueue = session.getPacketQueue();
+    var packetQueue = session.fetchPacketQueue();
     // ignore the empty queue
     if (Objects.isNull(packetQueue) || packetQueue.isEmpty()) {
       return;
@@ -169,29 +169,27 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
     }
 
     // loops through the packet queue and handles its packets
-    var packetQueue = session.getPacketQueue();
+    var packetQueue = session.fetchPacketQueue();
     if (Objects.nonNull(packetQueue)) {
-      synchronized (packetQueue) {
-        try {
-          // get the current state first
-          boolean isEmpty = packetQueue.isEmpty();
-          // now can put new item into the queue
-          packetQueue.put(packet);
+      try {
+        // get the current state first
+        boolean isEmpty = packetQueue.isEmpty();
+        // now can put new item into the queue
+        packetQueue.put(packet);
 
-          // only need when the packet queue is empty or the session was not in the
-          // tickets queue
-          if (isEmpty || !sessionTicketsQueue.contains(session)) {
-            sessionTicketsQueue.add(session);
-          }
-
-          packet.setRecipients(null);
-        } catch (PacketQueuePolicyViolationException e) {
-          session.addDroppedPackets(1);
-          networkWriterStatistic.updateWrittenDroppedPacketsByPolicy(1);
-        } catch (PacketQueueFullException e) {
-          session.addDroppedPackets(1);
-          networkWriterStatistic.updateWrittenDroppedPacketsByFull(1);
+        // only need when the packet queue is empty or the session was not in the
+        // tickets queue
+        if (isEmpty || !sessionTicketsQueue.contains(session)) {
+          sessionTicketsQueue.add(session);
         }
+
+        packet.setRecipients(null);
+      } catch (PacketQueuePolicyViolationException exception) {
+        session.addDroppedPackets(1);
+        networkWriterStatistic.updateWrittenDroppedPacketsByPolicy(1);
+      } catch (PacketQueueFullException exception) {
+        session.addDroppedPackets(1);
+        networkWriterStatistic.updateWrittenDroppedPacketsByFull(1);
       }
     }
   }
