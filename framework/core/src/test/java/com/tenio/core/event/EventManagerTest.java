@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.event;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,6 +34,7 @@ import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +79,7 @@ class EventManagerTest {
 
   @Test
   public void hasTEventSubscribeShouldReturnTrue() {
-    assertTrue(eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
+    Assertions.assertTrue(eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
   }
 
   @Test
@@ -92,6 +91,6 @@ class EventManagerTest {
   public void clearAllTEventShouldReturnZero() {
     eventManager.clear();
 
-    assertFalse(eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
+    Assertions.assertFalse(eventManager.hasSubscriber(ServerEvent.FETCHED_CCU_INFO));
   }
 }

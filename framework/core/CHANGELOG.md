@@ -68,3 +68,7 @@
 ## 0.6.1 2025-01-15 Bugfix release
 - Upgraded dependencies
 - Fixed several issues related to concurrency
+
+## 0.6.2 2025-05-11 Feature release
+- Fixed several issues related to concurrency
+- Allowed dynamically declaring behaviors for packets processing with annotations

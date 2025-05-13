@@ -28,7 +28,7 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.network.entity.session.Session;
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * When the server responds to the request from client side which requires using the UDP channel.
@@ -39,7 +39,7 @@ public interface EventAccessDatagramChannelRequestValidationResult<P extends Pla
   /**
    * When the server responds to the request from client side which requires using the UDP channel.
    *
-   * @param player  the optional of {@link Player} which requires using UDP channel
+   * @param player  the instance of {@link Player} (nullable) which requires using UDP channel
    * @param udpConv the UDP convey ID created when it is successfully accessed to the UDP channel
    *                , otherwise it can be left as {@link Session#EMPTY_DATAGRAM_CONVEY_ID}
    * @param result  the responded {@link AccessDatagramChannelResult} from the server, if the result
@@ -47,7 +47,6 @@ public interface EventAccessDatagramChannelRequestValidationResult<P extends Pla
    *                player is empty, otherwise it is present
    * @see ServerEvent#ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT
    * @see EventAccessDatagramChannelRequestValidation
-   * @see Optional
    */
-  void handle(Optional<P> player, int udpConv, AccessDatagramChannelResult result);
+  void handle(@Nullable P player, int udpConv, AccessDatagramChannelResult result);
 }

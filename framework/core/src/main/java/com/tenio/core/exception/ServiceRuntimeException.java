@@ -24,11 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import java.io.Serial;
+
 /**
  * Something went wrong with a running service.
  */
 public final class ServiceRuntimeException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 998770370227398281L;
 
   /**

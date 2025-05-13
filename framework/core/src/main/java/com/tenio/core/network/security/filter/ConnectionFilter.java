@@ -53,7 +53,7 @@ public interface ConnectionFilter {
   /**
    * Retrieves all banned IP addresses.
    *
-   * @return a list of {@link String} banned IP addresses
+   * @return an array of {@link String} banned IP addresses
    */
   String[] getBannedAddresses();
 

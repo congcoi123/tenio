@@ -29,7 +29,7 @@ package com.tenio.core.network.zero.codec.encryption;
  *
  * @see BinaryPacketEncryptor
  */
-public final class DefaultBinaryPacketEncryptor implements BinaryPacketEncryptor {
+public class DefaultBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
   @Override
   public byte[] decrypt(byte[] binary) {

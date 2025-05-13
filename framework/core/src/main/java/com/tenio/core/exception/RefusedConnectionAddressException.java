@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import java.io.Serial;
 
 /**
  * When a refused connection try to connect to the server.
  */
 public final class RefusedConnectionAddressException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -1063120976899708365L;
 
   /**

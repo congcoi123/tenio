@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.bootstrap.annotation.Component;
+import java.io.Serial;
 
 /**
  * This exception should be thrown when there is no {@link Component} annotation associated class
@@ -32,6 +33,7 @@ import com.tenio.core.bootstrap.annotation.Component;
  */
 public final class NoImplementedClassFoundException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -2836756456705984458L;
 
   /**

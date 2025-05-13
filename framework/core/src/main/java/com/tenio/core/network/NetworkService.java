@@ -39,7 +39,6 @@ import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.service.Service;
 import jakarta.servlet.http.HttpServlet;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
@@ -59,27 +58,11 @@ public interface NetworkService extends Service {
   void setHttpConfiguration(int threadPoolSize, int port, Map<String, HttpServlet> servletMap);
 
   /**
-   * Sets an implementation class for the connection filter.
+   * Sets a connection filter.
    *
-   * @param clazz               an implementation class of {@link ConnectionFilter}
-   * @param maxConnectionsPerIp an {@code integer} value, the maximum number of connections
-   *                            allowed in a same IP address
-   * @throws InstantiationException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalArgumentException  it is related to the illegal argument exception
-   * @throws InvocationTargetException it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoSuchMethodException     it is caused by
-   *                                   {@link Class#getDeclaredConstructor(Class[])}
-   * @throws SecurityException         it is related to the security exception
    * @see DefaultConnectionFilter
    */
-  void setConnectionFilterClass(Class<? extends ConnectionFilter> clazz, int maxConnectionsPerIp)
-      throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException,
-      NoSuchMethodException, SecurityException;
+  void setConnectionFilterClass(ConnectionFilter connectionFilter, int maxConnectionsPerIp);
 
   /**
    * Sets the number of consumer workers for the WebSocket.
@@ -199,27 +182,12 @@ public interface NetworkService extends Service {
   void setSessionMaxIdleTimeInSeconds(int seconds);
 
   /**
-   * Sets a packet queue policy class for the network.
+   * Sets an instance of packet queue policy the network.
    *
-   * @param clazz the implementation class of {@link PacketQueuePolicy} used to apply rules for
-   *              the packet queue
-   * @throws InstantiationException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalArgumentException  it is related to the illegal argument exception
-   * @throws InvocationTargetException it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoSuchMethodException     it is caused by
-   *                                   {@link Class#getDeclaredConstructor(Class[])}
-   * @throws SecurityException         it is related to the security exception
    * @see PacketQueue
    * @see DefaultPacketQueuePolicy
    */
-  void setPacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
-      throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException,
-      NoSuchMethodException, SecurityException;
+  void setPacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
 
   /**
    * Sets the packet queue size.

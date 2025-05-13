@@ -134,8 +134,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
     });
 
     eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME, params -> {
-      var request =
-          DatagramRequestImpl.newInstance()
+      var request = DatagramRequestImpl.newInstance()
               .setEvent(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME);
       request.setSender(params[0]);
       request.setRemoteSocketAddress((SocketAddress) params[1]);
@@ -181,9 +180,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
       reconnectedObject = eventManager.emit(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE,
           session, message);
     } catch (Exception exception) {
-      if (isErrorEnabled()) {
-        error(exception, request);
-      }
+      error(exception, request);
     }
 
     // check reconnected case
@@ -204,9 +201,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
               currentSession.close(ConnectionDisconnectMode.RECONNECTION,
                   PlayerDisconnectMode.RECONNECTION);
             } catch (IOException exception) {
-              if (isErrorEnabled()) {
-                error(exception, "Error while closing old session: ", currentSession);
-              }
+              error(exception, "Error while closing old session: ", currentSession);
             }
           }
         }
@@ -245,9 +240,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
         session.close(ConnectionDisconnectMode.REACHED_MAX_CONNECTION,
             PlayerDisconnectMode.CONNECTION_LOST);
       } catch (IOException exception) {
-        if (isErrorEnabled()) {
-          error(exception, "Session closed with error: ", session.toString());
-        }
+        error(exception, "Session closed with error: ", session.toString());
       }
     } else {
       eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_RESULT, session, message,
@@ -274,10 +267,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
           player.clean();
         }
       } else {
-        if (isDebugEnabled()) {
-          debug("SESSION WILL BE REMOVED", "The player ", session.getName(), " should be " +
-              "presented, but it was not");
-        }
+        debug("SESSION WILL BE REMOVED", "The player ", session.getName(), " should be presented, but it was not");
       }
     }
     session.setName(null);
@@ -295,9 +285,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
       if (Objects.isNull(player)) {
         var illegalValueException = new IllegalArgumentException(
             String.format("Unable to find player for the session: %s", session));
-        if (isErrorEnabled()) {
-          error(illegalValueException);
-        }
+        error(illegalValueException);
         eventManager.emit(ServerEvent.SERVER_EXCEPTION, illegalValueException);
         return;
       }
@@ -315,9 +303,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
       checkingPlayer = eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION,
           message);
     } catch (Exception exception) {
-      if (isErrorEnabled()) {
-        error(exception, request);
-      }
+      error(exception, request);
     }
 
     if (!(checkingPlayer instanceof Optional<?> optionalPlayer)) {
@@ -326,33 +312,32 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
     if (optionalPlayer.isEmpty()) {
       eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-          optionalPlayer,
+          null,
           Session.EMPTY_DATAGRAM_CONVEY_ID,
           AccessDatagramChannelResult.PLAYER_NOT_FOUND);
     } else {
       Player player = (Player) optionalPlayer.get();
       if (!player.containsSession() || player.getSession().isEmpty()) {
         eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-            optionalPlayer,
+            player,
             Session.EMPTY_DATAGRAM_CONVEY_ID,
             AccessDatagramChannelResult.SESSION_NOT_FOUND);
       } else {
         Session session = player.getSession().get();
         if (!session.isTcp()) {
           eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-              optionalPlayer,
+              player,
               Session.EMPTY_DATAGRAM_CONVEY_ID,
               AccessDatagramChannelResult.INVALID_SESSION_PROTOCOL);
         } else {
           var udpConvey = datagramChannelManager.getCurrentUdpConveyId();
           var datagramChannel = (DatagramChannel) request.getSender();
 
-          var sessionInstance = ((Player) optionalPlayer.get()).getSession().get();
-          sessionInstance.setDatagramRemoteSocketAddress(request.getRemoteSocketAddress());
-          sessionManager.addDatagramForSession(datagramChannel, udpConvey, sessionInstance);
+          session.setDatagramRemoteSocketAddress(request.getRemoteSocketAddress());
+          sessionManager.addDatagramForSession(datagramChannel, udpConvey, session);
 
           eventManager.emit(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-              optionalPlayer,
+              player,
               udpConvey,
               AccessDatagramChannelResult.SUCCESS);
         }

@@ -26,6 +26,7 @@ package com.tenio.core.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.network.define.TransportType;
@@ -49,7 +50,7 @@ class ConfigurationTest {
         () -> assertEquals("String", configuration.getString(TestConfigurationType.CUSTOM_VALUE_1)),
         () -> assertEquals(1, configuration.getInt(TestConfigurationType.CUSTOM_VALUE_2)),
         () -> assertEquals(1.5, configuration.getFloat(TestConfigurationType.CUSTOM_VALUE_3)),
-        () -> assertEquals(true, configuration.getBoolean(TestConfigurationType.CUSTOM_VALUE_4)));
+        () -> assertTrue(configuration.getBoolean(TestConfigurationType.CUSTOM_VALUE_4)));
   }
 
   @Test

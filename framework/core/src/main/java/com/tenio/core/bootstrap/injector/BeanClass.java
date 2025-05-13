@@ -29,5 +29,5 @@ package com.tenio.core.bootstrap.injector;
  *
  * @since 0.5.0
  */
-record BeanClass(Class<?> clazz, String name) {
+public record BeanClass(Class<?> clazz, String name) {
 }

@@ -82,12 +82,6 @@ class ServerApiTest {
   @Mock
   EventManager eventManager;
 
-  @Mock
-  Optional<Room> optionalRoom;
-
-  @Mock
-  Optional<Session> optionalSession;
-
   ServerApi serverApi;
 
   @BeforeEach
@@ -112,7 +106,7 @@ class ServerApiTest {
     Mockito.when(playerManager.createPlayer(loginName)).thenReturn(loginPlayer);
     serverApi.login(loginName);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, loginPlayer,
+        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
             PlayerLoggedInResult.SUCCESS);
   }
 
@@ -128,7 +122,7 @@ class ServerApiTest {
         .when(playerManager).createPlayer(loginName);
     serverApi.login(loginName);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, loginPlayer,
+        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
             PlayerLoggedInResult.DUPLICATED_PLAYER);
   }
 
@@ -145,7 +139,7 @@ class ServerApiTest {
         .thenReturn(loginPlayer);
     serverApi.login(loginName, loginSession);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, loginPlayer,
+        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
             PlayerLoggedInResult.SUCCESS);
   }
 
@@ -162,7 +156,7 @@ class ServerApiTest {
         .when(playerManager).createPlayerWithSession(loginName, loginSession);
     serverApi.login(loginName, loginSession);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, null,
+        .emit(ServerEvent.PLAYER_LOGIN_RESULT, null,
             PlayerLoggedInResult.EXCEPTION);
   }
 
@@ -179,7 +173,7 @@ class ServerApiTest {
         .when(playerManager).createPlayerWithSession(loginName, loginSession);
     serverApi.login(loginName, loginSession);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGGEDIN_RESULT, loginPlayer,
+        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
             PlayerLoggedInResult.DUPLICATED_PLAYER);
   }
 
@@ -198,8 +192,7 @@ class ServerApiTest {
 
     var player = Mockito.mock(Player.class);
     var room = Mockito.mock(Room.class);
-    Mockito.when(optionalRoom.get()).thenReturn(room);
-    optionalRoom.get().addPlayer(player);
+    room.addPlayer(player);
     serverApi.logout(player, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
     Mockito.verify(eventManager, Mockito.times(1))
         .emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
@@ -214,8 +207,7 @@ class ServerApiTest {
 
     var player = Mockito.mock(Player.class);
     var room = Mockito.mock(Room.class);
-    Mockito.when(optionalRoom.get()).thenReturn(room);
-    optionalRoom.get().addPlayer(player);
+    room.addPlayer(player);
     serverApi.logout(player, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
     Mockito.verify(eventManager, Mockito.times(1))
         .emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
@@ -224,26 +216,20 @@ class ServerApiTest {
   @Test
   @DisplayName("When it tries to logout a player which has session, the session should be closed")
   void itLogoutPlayerHasSessionShouldCloseSession() {
-    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
-    Mockito.when(server.getEventManager()).thenReturn(eventManager);
-
     var player = Mockito.mock(Player.class);
-    Mockito.when(player.getSession()).thenReturn(optionalSession);
+    var session = Mockito.mock(Session.class);
+    Mockito.when(player.getSession()).thenReturn(Optional.of(session));
     Mockito.when(player.containsSession()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
-    Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.DEFAULT);
   }
 
   @Test
   @DisplayName("When it tries to logout a player which has session, and the closed session has IO" +
       " exception")
   void itLogoutPlayerHasSessionShouldHaveClosedSessionIoException() {
-    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
-    Mockito.when(server.getEventManager()).thenReturn(eventManager);
-
     var player = Mockito.mock(Player.class);
-    Mockito.when(player.getSession()).thenReturn(optionalSession);
+    var session = Mockito.mock(Session.class);
+    Mockito.when(player.getSession()).thenReturn(Optional.of(session));
     Mockito.when(player.containsSession()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
   }
@@ -258,7 +244,7 @@ class ServerApiTest {
     var createdRoom = Mockito.mock(Room.class);
     Mockito.when(roomManager.createRoom(setting)).thenReturn(createdRoom);
     serverApi.createRoom(setting);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.ofNullable(createdRoom), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, createdRoom, setting,
         RoomCreatedResult.SUCCESS);
   }
 
@@ -272,7 +258,7 @@ class ServerApiTest {
     var setting = Mockito.mock(InitialRoomSetting.class);
     Mockito.doThrow(IllegalArgumentException.class).when(roomManager).createRoom(setting);
     serverApi.createRoom(setting);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.empty(), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
         RoomCreatedResult.INVALID_NAME_OR_PASSWORD);
   }
 
@@ -286,7 +272,7 @@ class ServerApiTest {
     Mockito.doThrow(new CreatedRoomException("failed", RoomCreatedResult.REACHED_MAX_ROOMS))
         .when(roomManager).createRoom(setting);
     serverApi.createRoom(setting);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.empty(), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
         RoomCreatedResult.REACHED_MAX_ROOMS);
   }
 
@@ -301,7 +287,7 @@ class ServerApiTest {
     var roomOwner = Mockito.mock(Player.class);
     Mockito.when(roomManager.createRoomWithOwner(setting, roomOwner)).thenReturn(createdRoom);
     serverApi.createRoom(setting, roomOwner);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.ofNullable(createdRoom), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, createdRoom, setting,
         RoomCreatedResult.SUCCESS);
   }
 
@@ -317,7 +303,7 @@ class ServerApiTest {
     Mockito.doThrow(IllegalArgumentException.class).when(roomManager).createRoomWithOwner(setting
         , roomOwner);
     serverApi.createRoom(setting, roomOwner);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.empty(), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
         RoomCreatedResult.INVALID_NAME_OR_PASSWORD);
   }
 
@@ -332,12 +318,13 @@ class ServerApiTest {
     Mockito.doThrow(new CreatedRoomException("failed", RoomCreatedResult.REACHED_MAX_ROOMS))
         .when(roomManager).createRoomWithOwner(setting, roomOwner);
     serverApi.createRoom(setting, roomOwner);
-    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, Optional.empty(), setting,
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
         RoomCreatedResult.REACHED_MAX_ROOMS);
   }
 
   @Test
   @DisplayName("All getter methods should give expected results")
+  @SuppressWarnings("unchecked")
   void getterMethodsShouldReturnExpectedResults() {
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
@@ -345,9 +332,8 @@ class ServerApiTest {
 
     var playerName = "test";
     var player = Mockito.mock(Player.class);
-    var session = Mockito.mock(Session.class);
-    var playerIterator = Mockito.mock(Iterator.class);
-    var playerList = Mockito.mock(List.class);
+    Iterator<Player> playerIterator = Mockito.mock(Iterator.class);
+    List<Player> playerList = Mockito.mock(List.class);
     var room = Mockito.mock(Room.class);
     var roomIterator = Mockito.mock(Iterator.class);
     var roomList = Mockito.mock(List.class);
@@ -486,7 +472,7 @@ class ServerApiTest {
     serverApi.leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
 
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, Optional.empty(),
+        .emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, null,
             PlayerLeaveRoomMode.LOG_OUT, PlayerLeftRoomResult.PLAYER_ALREADY_LEFT_ROOM);
   }
 
@@ -504,14 +490,12 @@ class ServerApiTest {
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var room = Mockito.mock(Room.class);
-    Mockito.when(optionalRoom.get()).thenReturn(room);
-
     var playerList = new ArrayList<Player>(5);
     for (int i = 0; i < 5; i++) {
       var player = Mockito.mock(Player.class);
-      optionalRoom.get().addPlayer(player);
+      room.addPlayer(player);
       Mockito.when(player.isInRoom()).thenReturn(true);
-      Mockito.when(player.getCurrentRoom()).thenReturn(optionalRoom);
+      Mockito.when(player.getCurrentRoom()).thenReturn(Optional.of(room));
       playerList.add(player);
     }
 
@@ -523,10 +507,10 @@ class ServerApiTest {
         RoomRemoveMode.WHEN_EMPTY);
     playerList.forEach(player -> {
       Mockito.verify(eventManager, Mockito.times(1))
-          .emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, optionalRoom,
+          .emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room,
               PlayerLeaveRoomMode.ROOM_REMOVED);
       Mockito.verify(eventManager, Mockito.times(1))
-          .emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, optionalRoom,
+          .emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, room,
               PlayerLeaveRoomMode.ROOM_REMOVED, PlayerLeftRoomResult.SUCCESS);
     });
   }

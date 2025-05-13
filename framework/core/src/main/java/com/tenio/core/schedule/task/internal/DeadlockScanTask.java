@@ -96,9 +96,7 @@ public final class DeadlockScanTask extends AbstractSystemTask {
         try {
           threads[i] = findMatchingThread(threadInfo);
         } catch (IllegalStateException exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
+          error(exception);
         }
       }
 

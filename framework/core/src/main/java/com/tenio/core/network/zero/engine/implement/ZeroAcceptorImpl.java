@@ -116,10 +116,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
         serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
       }
       serverSocketChannel.socket().bind(new InetSocketAddress(serverAddress, port));
-      if (isInfoEnabled()) {
-        info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
-            serverSocketChannel.socket().getLocalPort()));
-      }
+      info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
+          serverSocketChannel.socket().getLocalPort()));
       // only server socket should interest in this key OP_ACCEPT
       serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
       synchronized (boundSockets) {
@@ -154,9 +152,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
           zeroReaderListener.acceptDatagramChannel(datagramChannel);
           int boundPort = datagramChannel.socket().getLocalPort();
           ServerImpl.getInstance().getDatagramChannelManager().appendUdpPort(boundPort);
-          if (isInfoEnabled()) {
-            info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
-          }
+          info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
           boundSockets.add(datagramChannel);
         }
       }
@@ -202,9 +198,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
             }
 
           } catch (IOException exception) {
-            if (isErrorEnabled()) {
-              error(exception);
-            }
+            error(exception);
           }
         }
       }
@@ -231,9 +225,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
             socketChannel.close();
           }
         } catch (IOException exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
+          error(exception);
           getSocketIoHandler().channelException(socketChannel, exception);
         }
       }
@@ -252,9 +244,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
         try {
           socketChannel.close();
         } catch (IOException exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
+          error(exception);
         }
       }
     }
@@ -265,13 +255,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
       Thread.sleep(500L);
       acceptableSelector.close();
     } catch (IOException | InterruptedException exception) {
-      if (isErrorEnabled()) {
-        error(exception);
-      }
+      error(exception);
     }
-  }
-
-  private void cleanup() {
   }
 
   @Override
@@ -292,16 +277,12 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
         socketIterator.remove();
 
         if (Objects.isNull(socketChannel)) {
-          if (isDebugEnabled()) {
-            debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
-          }
+          debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
         } else {
           var socket = socketChannel.socket();
 
           if (Objects.isNull(socket)) {
-            if (isDebugEnabled()) {
-              debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
-            }
+            debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
           } else {
             var inetAddress = socket.getInetAddress();
             if (Objects.nonNull(inetAddress)) {
@@ -313,9 +294,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
                 getSocketIoHandler().channelActive(socketChannel, selectionKey);
               } catch (RefusedConnectionAddressException exception1) {
-                if (isErrorEnabled()) {
-                  error(exception1, "Refused connection with address: ", exception1.getMessage());
-                }
+                error(exception1, "Refused connection with address: ", exception1.getMessage());
                 getSocketIoHandler().channelException(socketChannel, exception1);
 
                 try {
@@ -324,12 +303,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
                   socketChannel.socket().shutdownOutput();
                   socketChannel.close();
                 } catch (IOException exception2) {
-                  if (isErrorEnabled()) {
-                    error(exception2,
-                        "Additional problem with refused connection. "
-                            + "Was not able to shut down the channel: ",
-                        exception2.getMessage());
-                  }
+                  error(exception2,
+                      "Additional problem with refused connection. "
+                      , "Was not able to shut down the channel: ",
+                      exception2.getMessage());
                   getSocketIoHandler().channelException(socketChannel, exception2);
                 }
               } catch (IOException exception3) {
@@ -337,9 +314,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
                 if (Objects.nonNull(socketChannel.socket())) {
                   logger.append(socketChannel.socket().getInetAddress().getHostAddress());
                 }
-                if (isErrorEnabled()) {
-                  error(exception3, logger);
-                }
+                error(exception3, logger);
                 getSocketIoHandler().channelException(socketChannel, exception3);
               }
             }
@@ -383,14 +358,12 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onRunning() {
-    while (true) {
+    while (!Thread.currentThread().isInterrupted()) {
       if (isActivated()) {
         try {
           acceptableLoop();
         } catch (Throwable cause) {
-          if (isErrorEnabled()) {
-            error(cause);
-          }
+          error(cause);
         }
       }
     }
@@ -405,6 +378,6 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onDestroyed() {
-    cleanup();
+    // do nothing
   }
 }

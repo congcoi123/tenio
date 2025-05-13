@@ -27,7 +27,7 @@ package com.tenio.core.handler.event;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.setting.InitialRoomSetting;
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * Returns the result when the server attempts to create a new room.
@@ -38,13 +38,12 @@ public interface EventRoomCreatedResult<R extends Room> {
   /**
    * Retrieves the result when the server attempts to create a new room.
    *
-   * @param room    a new creating optional {@link Room}, this value can be empty
+   * @param room    a new created {@link Room}, this value can be null
    * @param setting all settings in {@link InitialRoomSetting} needs for the room creation
    * @param result  the creation result presented by {@link RoomCreatedResult}. A
    *                new room is considered as it is created and is added to the management list
    *                when the result equals to success
    * @see RoomCreatedResult#SUCCESS
-   * @see Optional
    */
-  void handle(Optional<R> room, InitialRoomSetting setting, RoomCreatedResult result);
+  void handle(@Nullable R room, InitialRoomSetting setting, RoomCreatedResult result);
 }

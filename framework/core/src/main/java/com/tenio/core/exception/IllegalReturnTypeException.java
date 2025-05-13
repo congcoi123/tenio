@@ -26,6 +26,7 @@ package com.tenio.core.exception;
 
 import com.tenio.core.bootstrap.annotation.Bean;
 import com.tenio.core.bootstrap.injector.Injector;
+import java.io.Serial;
 
 /**
  * The method annotated by {@link Bean} annotation but returns <b>primitive</b> or
@@ -36,5 +37,6 @@ import com.tenio.core.bootstrap.injector.Injector;
  */
 public final class IllegalReturnTypeException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 4084969089509262613L;
 }

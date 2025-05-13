@@ -34,7 +34,7 @@ import com.tenio.core.network.entity.packet.PacketQueue;
  *
  * @see PacketQueuePolicy
  */
-public final class DefaultPacketQueuePolicy implements PacketQueuePolicy {
+public class DefaultPacketQueuePolicy implements PacketQueuePolicy {
 
   private static final float THREE_QUARTERS_FULL = 75.0f;
   private static final float NINETY_PERCENT_FULL = 90.0f;

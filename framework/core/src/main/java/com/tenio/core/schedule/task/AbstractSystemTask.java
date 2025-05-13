@@ -39,15 +39,15 @@ public abstract class AbstractSystemTask extends SystemLogger implements Task {
   /**
    * The event manager.
    */
-  protected EventManager eventManager;
+  protected final EventManager eventManager;
+  /**
+   * The initial delay time. The task should wait a little until the system becomes stable.
+   */
+  protected final int initialDelay;
   /**
    * The interval value.
    */
   protected int interval;
-  /**
-   * The initial delay time. The task should wait a little until the system becomes stable.
-   */
-  protected int initialDelay;
 
   /**
    * Initialization.
@@ -56,8 +56,8 @@ public abstract class AbstractSystemTask extends SystemLogger implements Task {
    */
   protected AbstractSystemTask(EventManager eventManager) {
     this.eventManager = eventManager;
-    interval = DEFAULT_INTERVAL_IN_SECONDS;
     initialDelay = DEFAULT_INITIAL_DELAY_IN_SECONDS;
+    interval = DEFAULT_INTERVAL_IN_SECONDS;
   }
 
   /**

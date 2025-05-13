@@ -57,10 +57,8 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
     // this channel can be deactivated by some reasons, no need to throw an
     // exception here
     if (Objects.isNull(channel) || !channel.isConnected()) {
-      if (isDebugEnabled()) {
-        debug("SOCKET CHANNEL SEND", "Skipping this packet, found null/closed socket for session ",
-            session);
-      }
+      debug("SOCKET CHANNEL SEND", "Skipping this packet, found null/closed socket for session ",
+          session);
       return;
     }
 
@@ -72,10 +70,8 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
     // buffer size is not enough, need to be allocated more bytes
     if (getBuffer().capacity() < sendingData.length) {
-      if (isDebugEnabled()) {
-        debug("SOCKET CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
-            sendingData.length, " bytes");
-      }
+      debug("SOCKET CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(), " to ",
+          sendingData.length, " bytes");
       allocateBuffer(sendingData.length);
     }
 
@@ -91,14 +87,6 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
     // but it's up to the channel, so it's possible to get left unsent bytes
     try {
       int realWrittenBytes = channel.write(getBuffer());
-
-      /*
-      if (realWrittenBytes == 0) {
-        if (isErrorEnabled()) {
-          error("{SOCKET CHANNEL SEND} ", "Socket writes 0 byte in session: ", session);
-        }
-      }
-      */
 
       // update statistic data
       getNetworkWriterStatistic().updateWrittenBytes(realWrittenBytes);
@@ -143,15 +131,11 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       if (Objects.nonNull(selectionKey) && selectionKey.isValid()) {
         selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
       } else {
-        if (isErrorEnabled()) {
-          error("{SOCKET CHANNEL SEND} ", "Something went wrong with OP_WRITE key for session: ",
-              session);
-        }
+        error("{SOCKET CHANNEL SEND} ", "Something went wrong with OP_WRITE key for session: ",
+            session);
       }
     } catch (IOException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Error occurred in writing on session: ", session.toString());
-      }
+      error(exception, "Error occurred in writing on session: ", session.toString());
     }
   }
 }
