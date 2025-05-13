@@ -51,10 +51,8 @@ public final class WorkerPool extends SystemLogger {
     runnableWorkerPools = new ArrayList<>();
     isStopped = false;
 
-    if (isInfoEnabled()) {
-      info("CREATED NEW WORKERS",
-          buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
-    }
+    info("CREATED NEW WORKERS",
+        buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
 
     for (int i = 0; i < noOfThreads; i++) {
       runnableWorkerPools.add(new WorkerPoolRunnable(name, i, taskQueue));
@@ -78,9 +76,8 @@ public final class WorkerPool extends SystemLogger {
       throw new IllegalStateException("WorkersPool is stopped");
     }
 
-    if (isTraceEnabled()) {
-      trace("EXECUTED A TASK", debugText);
-    }
+    trace("EXECUTED A TASK", debugText);
+
     taskQueue.offer(task);
   }
 
@@ -98,13 +95,12 @@ public final class WorkerPool extends SystemLogger {
    * Waits until all tasks are finished.
    */
   public synchronized void waitUntilAllTasksFinished() {
-    while (taskQueue.size() > 0) {
+    while (!taskQueue.isEmpty()) {
       try {
         Thread.sleep(1);
       } catch (InterruptedException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
+        Thread.currentThread().interrupt();
+        error(exception);
       }
     }
   }

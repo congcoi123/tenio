@@ -40,7 +40,7 @@ class ZeroElementTest {
     var zeroElement = ZeroUtility.newZeroElement(ZeroType.NULL,
         "Element");
     assertEquals(ZeroType.NULL, zeroElement.getType());
-    assertEquals(zeroElement.getData(), "Element");
+    assertEquals("Element", zeroElement.getData());
     assertEquals("ZeroElement{type=NULL, data=Element}", zeroElement.toString());
   }
 }

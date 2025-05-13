@@ -66,50 +66,43 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
 
   @Override
   public void create(String id, ScheduledFuture<?> task) {
-    if (tasks.containsKey(id)) {
-      try {
-        if (!tasks.get(id).isDone() || !tasks.get(id).isCancelled()) {
-          throw new RunningScheduledTaskException();
-        }
-      } catch (RunningScheduledTaskException exception) {
-        if (isErrorEnabled()) {
-          error(exception, "task id: ", id);
-        }
-        return;
+    tasks.compute(id, (key, existingTask) -> {
+      if (existingTask != null && (!existingTask.isDone() || !existingTask.isCancelled())) {
+        error(new RunningScheduledTaskException(), "task id: ", id);
+        return existingTask; // Keep the old task
       }
-    }
-
-    tasks.put(id, task);
-    if (isInfoEnabled()) {
       info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
-    }
+      return task;
+    });
   }
 
   @Override
   public void kill(String id) {
-    if (tasks.containsKey(id)) {
-      if (isInfoEnabled()) {
-        info("KILLED TASK", id);
-      }
-      tasks.remove(id);
-      var task = tasks.get(id);
-      if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
+    var task = tasks.remove(id);  // Atomically remove and get the task
+    if (task != null) {
+      if (!task.isDone() && !task.isCancelled()) {
         task.cancel(true);
       }
+      info("KILLED TASK", id);
     }
   }
 
   @Override
   public void clear() {
-    tasks.forEach((id, task) -> {
-      if (isInfoEnabled()) {
-        info("KILLED TASK", id);
-      }
-      if (Objects.nonNull(task) && (!task.isDone() || !task.isCancelled())) {
+    var iterator = tasks.entrySet().iterator();
+    while (iterator.hasNext()) {
+      var entry = iterator.next();
+      var id = entry.getKey();
+      var task = entry.getValue();
+
+      info("KILLED TASK", id);
+
+      if (task != null && (!task.isDone() || !task.isCancelled())) {
         task.cancel(true);
       }
-    });
-    tasks.clear();
+
+      iterator.remove(); // Safe removal while iterating
+    }
   }
 
   @Override

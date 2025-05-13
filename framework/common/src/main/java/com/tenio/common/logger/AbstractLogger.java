@@ -59,7 +59,7 @@ public abstract class AbstractLogger {
    * @param msg   the message content
    */
   public void info(StringBuilder where, StringBuilder tag, StringBuilder msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(where);
       stringPool.repay(tag);
       stringPool.repay(msg);
@@ -83,7 +83,7 @@ public abstract class AbstractLogger {
    * @param msg   the message content
    */
   public void info(StringBuilder where, String tag, StringBuilder msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(where);
       stringPool.repay(msg);
       return;
@@ -105,7 +105,7 @@ public abstract class AbstractLogger {
    * @param msg   the message content
    */
   public void info(StringBuilder where, StringBuilder tag, Object msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(where);
       stringPool.repay(tag);
       return;
@@ -127,7 +127,7 @@ public abstract class AbstractLogger {
    * @param msg   the message content
    */
   public void info(String where, String tag, StringBuilder msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(msg);
       return;
     }
@@ -147,7 +147,7 @@ public abstract class AbstractLogger {
    * @param msg   the message content
    */
   public void info(String where, String tag, Object msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       return;
     }
     var builder = stringPool.get();
@@ -164,7 +164,7 @@ public abstract class AbstractLogger {
    * @param msg the message content
    */
   public void info(StringBuilder tag, StringBuilder msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(tag);
       stringPool.repay(msg);
       return;
@@ -185,7 +185,7 @@ public abstract class AbstractLogger {
    * @param msg the message content
    */
   public void info(String tag, StringBuilder msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       stringPool.repay(msg);
       return;
     }
@@ -204,7 +204,7 @@ public abstract class AbstractLogger {
    * @param msg the message content
    */
   public void info(String tag, Object msg) {
-    if (!logger.isInfoEnabled()) {
+    if (!isInfoEnabled()) {
       return;
     }
     var builder = stringPool.get();
@@ -220,7 +220,7 @@ public abstract class AbstractLogger {
    * @param info the information
    */
   public void error(Object... info) {
-    if (!logger.isErrorEnabled()) {
+    if (!isErrorEnabled()) {
       return;
     }
     var builder = stringPool.get();
@@ -241,7 +241,7 @@ public abstract class AbstractLogger {
    * @param extra the extra information
    */
   public void error(Throwable cause, Object... extra) {
-    if (!logger.isErrorEnabled()) {
+    if (!isErrorEnabled()) {
       return;
     }
     var builder = stringPool.get();
@@ -268,12 +268,12 @@ public abstract class AbstractLogger {
    * @param msg   the extra information
    */
   public void error(Throwable cause, StringBuilder msg) {
-    if (!logger.isErrorEnabled()) {
+    if (!isErrorEnabled()) {
       return;
     }
     var builder = stringPool.get();
     builder.append(Throwables.getStackTraceAsString(cause));
-    if (msg.length() > 0) {
+    if (!msg.isEmpty()) {
       builder.append("\n=========== BEGIN ERROR INFORMATION ===========\n");
       builder.append(msg);
       builder.append("\n============ END ERROR INFORMATION ============\n");
@@ -304,5 +304,13 @@ public abstract class AbstractLogger {
 
   public boolean isInfoEnabled() {
     return logger.isInfoEnabled();
+  }
+
+  public boolean isDebugEnabled() {
+    return logger.isDebugEnabled();
+  }
+
+  public boolean isTraceEnabled() {
+    return logger.isTraceEnabled();
   }
 }
