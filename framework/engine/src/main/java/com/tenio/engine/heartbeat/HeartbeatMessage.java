@@ -36,7 +36,7 @@ import java.util.UUID;
 final class HeartbeatMessage implements Comparable {
 
   /**
-   * These messages will be stored in a priority queue. Therefore the operator
+   * These messages will be stored in a priority queue. Therefore, the operator
    * needs to be overloaded so that the PQ can sort the messages by time priority.
    * Note how the times must be smaller than SmallestDelay apart before two
    * messages are considered unique.
@@ -114,7 +114,7 @@ final class HeartbeatMessage implements Comparable {
 
   /**
    * It is generally necessary to override the <b>hashCode</b> method whenever
-   * equals method is overridden, so as to maintain the general contract for the
+   * equals method is overridden, to maintain the general contract for the
    * hashCode method, which states that equal objects must have equal hash codes.
    */
   @Override

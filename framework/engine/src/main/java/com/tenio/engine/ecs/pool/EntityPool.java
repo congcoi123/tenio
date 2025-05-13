@@ -69,9 +69,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
         used[i] = false;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
+        error(exception);
       }
     }
   }
@@ -104,18 +102,14 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
         used[i] = false;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
+        error(exception);
       }
     }
 
-    if (isInfoEnabled()) {
-      info("COMPONENT POOL", buildgen("Increase the number of elements by ",
-          CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
-    }
+    info("COMPONENT POOL", buildgen("Increase the number of elements by ",
+        CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
 
-    // and allocate the last old ELement
+    // and allocate the last old element
     used[oldPool.length - 1] = true;
     return pool[oldPool.length - 1];
   }
@@ -133,9 +127,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
     }
     if (!flagFound) {
       var exception = new NullElementPoolException(element.toString());
-      if (isErrorEnabled()) {
-        error(exception);
-      }
+      error(exception);
       throw exception;
     }
   }

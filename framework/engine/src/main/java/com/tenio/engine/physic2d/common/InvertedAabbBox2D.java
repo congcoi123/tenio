@@ -53,8 +53,7 @@ public class InvertedAabbBox2D implements Renderable {
   }
 
   public static InvertedAabbBox2D valueOf(float left, float top, float right, float bottom) {
-    var invert = new InvertedAabbBox2D(left, top, right, bottom);
-    return invert;
+    return new InvertedAabbBox2D(left, top, right, bottom);
   }
 
   /**
