@@ -42,7 +42,7 @@ public abstract class Component<T> {
   }
 
   /**
-   * This method is called every frames.
+   * This method is called every frame.
    *
    * @param deltaTime the time between two consecutive frames
    */

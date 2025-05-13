@@ -129,8 +129,8 @@ class FsmComponentTest {
     State<Object> state1 = (State<Object>) mock(State.class);
     doNothing().when(state1).enter((Object) any());
     fsmComponent.changeState(state1);
-    verify(state).exit((Object) any());
-    verify(state1).enter((Object) any());
+    verify(state).exit(any());
+    verify(state1).enter(any());
     assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
         fsmComponent.getNameOfCurrentState());
   }
@@ -148,8 +148,8 @@ class FsmComponentTest {
     fsmComponent.setPreviousState(state1);
     fsmComponent.setCurrentState(state);
     fsmComponent.revertToPreviousState();
-    verify(state1).enter((Object) any());
-    verify(state).exit((Object) any());
+    verify(state1).enter(any());
+    verify(state).exit(any());
     assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
         fsmComponent.getNameOfCurrentState());
   }
@@ -166,7 +166,7 @@ class FsmComponentTest {
   @Disabled
   void testGetNameOfCurrentState() {
     FsmComponent<Object> fsmComponent =
-        new FsmComponent<Object>(new MessageDispatcher(new EntityManager()), "Entity");
+        new FsmComponent<>(new MessageDispatcher(new EntityManager()), "Entity");
     fsmComponent.setCurrentState((State<Object>) mock(State.class));
     assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
         fsmComponent.getNameOfCurrentState());

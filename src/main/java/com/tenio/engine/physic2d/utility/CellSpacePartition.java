@@ -94,7 +94,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
     int idx = (int) (numCellsX * position.x / spaceWidth)
         + ((int) ((numCellsY) * position.y / spaceHeight) * numCellsX);
 
-    // if the entity's position is equal to vector2d(m_dSpaceWidth, m_dSpaceHeight)
+    // if the entity's position is equal to Vector2D(m_dSpaceWidth, m_dSpaceHeight)
     // then the index will overshoot. We need to check for this and adjust
     if (idx > cells.size() - 1) {
       idx = cells.size() - 1;
@@ -145,7 +145,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * region. If they are added to neighbor list
    * <br>
    * this method stores a target's neighbors in the neighbor vector. After you
-   * have called this method use the begin, next and end methods to iterate
+   * have called this method use the beginning, next and end methods to iterate
    * through the vector.
    *
    * @param targetPos   see {@link Vector2}

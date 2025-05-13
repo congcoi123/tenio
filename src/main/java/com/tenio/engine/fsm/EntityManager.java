@@ -52,9 +52,7 @@ public final class EntityManager extends SystemLogger {
       }
     } catch (DuplicatedEntityException exception) {
       // fire an event
-      if (isErrorEnabled()) {
-        error(exception, "entity id: ", entity.getId());
-      }
+      error(exception, "entity id: ", entity.getId());
       return;
     }
 
@@ -87,7 +85,7 @@ public final class EntityManager extends SystemLogger {
   /**
    * Retrieves the list of entities.
    *
-   * @return the list of entities in this manager
+   * @return a map of entities in this manager
    */
   public Map<String, AbstractEntity> gets() {
     return entities;

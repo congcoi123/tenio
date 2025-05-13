@@ -22,3 +22,7 @@
 
 ## 0.6.1 2025-01-15 Bugfix release
 - Addressed minor issues
+
+## 0.6.2 2025-05-11 Feature release
+- Upgraded dependencies
+- Bugs fixed 

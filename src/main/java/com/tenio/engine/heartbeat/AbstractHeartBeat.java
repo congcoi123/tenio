@@ -316,7 +316,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger
         // This stops the application from consuming all your CPU. It makes this
         // slightly less
         // accurate, but is worth it.
-        // You can remove this line and it will still work (better), your CPU just
+        // You can remove this line, and it will still work (better), your CPU just
         // climbs on certain OSes.
         // FYI on some OS's this can cause pretty bad shuttering. Scroll down and have a
         // look at different peoples' solutions to this.
