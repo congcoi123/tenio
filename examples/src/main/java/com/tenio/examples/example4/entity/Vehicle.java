@@ -12,7 +12,9 @@ import com.tenio.examples.example4.configuration.ParamLoader;
 import com.tenio.examples.example4.world.World;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Definition of a simple vehicle that uses steering behaviors.
@@ -29,7 +31,7 @@ public final class Vehicle extends MoveableEntity implements Renderable {
   private final SmootherVector<Vector2> headingSmoother;
   private final Vector2 smoothedHeading = Vector2.newInstance();
   // buffer for the vehicle shape
-  private final List<Vector2> shape = new ArrayList<Vector2>();
+  private final List<Vector2> shape = new ArrayList<>();
   // this vector represents the average of the vehicle's heading
   // vector smoothed over the last few frames
   private float smoothedHeadingX;
@@ -62,7 +64,7 @@ public final class Vehicle extends MoveableEntity implements Renderable {
 
     // set up the smoother
     headingSmoother =
-        new SmootherVector<Vector2>(ParamLoader.getInstance().NUM_SAMPLES_FOR_SMOOTHING,
+        new SmootherVector<>(ParamLoader.getInstance().NUM_SAMPLES_FOR_SMOOTHING,
             Vector2.newInstance());
   }
 
@@ -76,9 +78,7 @@ public final class Vehicle extends MoveableEntity implements Renderable {
         Vector2.valueOf(-1.0f, -0.6f)};
 
     // set up the vertex buffers and calculate the bounding radius
-    for (int vtx = 0; vtx < numVehicleVerts; ++vtx) {
-      shape.add(vehicle[vtx]);
-    }
+    shape.addAll(Arrays.asList(vehicle).subList(0, numVehicleVerts));
   }
 
   public SteeringBehavior getBehavior() {
@@ -125,8 +125,8 @@ public final class Vehicle extends MoveableEntity implements Renderable {
     int result = 0;
 
     var chars = question.toCharArray();
-    for (int i = 0; i < chars.length; i++) {
-      result += chars[i];
+    for (char aChar : chars) {
+      result += aChar;
     }
 
     return result;
@@ -172,12 +172,12 @@ public final class Vehicle extends MoveableEntity implements Renderable {
     var position = velocity.mul(delta).add(getPosition());
     setPosition(position);
 
-    // update the heading if the vehicle has a non zero velocity
+    // update the heading if the vehicle has a non-zero velocity
     if (getVelocity().getLengthSqr() > 0.00000001) {
       setHeading(getVelocity().normalize());
     }
 
-    // treat the screen as a endless screen
+    // treat the screen as an endless screen
     var around =
         Transformation.wrapAround(getPosition(), world.getClientX(), world.getClientY());
     setPosition(around);
@@ -196,7 +196,7 @@ public final class Vehicle extends MoveableEntity implements Renderable {
   public void render(Paint paint) {
     // render neighboring vehicles in different colors if requested
     if (world.isRenderNeighbors()) {
-      if (getId() == "dragon") {
+      if (Objects.equals(getId(), "dragon")) {
         paint.setPenColor(Color.RED);
       } else if (isTagged()) {
         paint.setPenColor(Color.GREEN);

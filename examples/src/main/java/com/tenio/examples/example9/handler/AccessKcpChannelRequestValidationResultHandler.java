@@ -31,19 +31,18 @@ import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.DatagramEstablishedState;
-import java.util.Optional;
 
 @EventHandler
 public final class AccessKcpChannelRequestValidationResultHandler extends AbstractHandler
     implements EventAccessKcpChannelRequestValidationResult<Player> {
 
   @Override
-  public void handle(Optional<Player> player, AccessDatagramChannelResult result) {
+  public void handle(Player player, AccessDatagramChannelResult result) {
     if (result == AccessDatagramChannelResult.SUCCESS) {
       var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
           array().addByte(DatagramEstablishedState.COMMUNICATING));
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
+      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

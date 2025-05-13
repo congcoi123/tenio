@@ -81,7 +81,7 @@ public final class Miner extends BaseEntity {
     numberThirst = 0;
     numberFatigue = 0;
 
-    state = new FsmComponent<Miner>(dispatcher, this);
+    state = new FsmComponent<>(dispatcher, this);
     state.setCurrentState(GoHomeAndSleepTilRested.getInstance());
   }
 

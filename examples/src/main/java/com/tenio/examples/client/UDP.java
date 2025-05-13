@@ -118,7 +118,7 @@ public final class UDP {
   /**
    * Listen for messages that came from the server.
    *
-   * @param listener
+   * @param listener instance of {@link DatagramListener}
    */
   public void receive(DatagramListener listener) {
     var executorService = Executors.newSingleThreadExecutor();

@@ -41,15 +41,13 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
   public void handle(Player player, DataCollection message) {
     var request = (ZeroMap) message;
     byte command = request.getByte(SharedEventKey.KEY_COMMAND);
-    switch (command) {
-      case DatagramEstablishedState.COMMUNICATING -> {
-        var parcel =
-            map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-                player.getIdentity(),
-                ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+    if (command == DatagramEstablishedState.COMMUNICATING) {
+      var parcel =
+          map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+              player.getIdentity(),
+              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 
-        response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedKcp().write();
-      }
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).prioritizedKcp().write();
     }
   }
 }

@@ -17,6 +17,7 @@ import com.tenio.examples.example4.entity.Wall;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is used to encapsulate steering behaviors for a vehicle.
@@ -79,8 +80,6 @@ public final class SteeringBehavior implements Renderable {
    * left to apply and then applies that amount of the force to add.
    */
   private final Vector2 vAccumulateForce = Vector2.newInstance();
-  // how far the agent can 'see'
-  private final float agentViewDistance;
   // the steering force created by the combined effect of all
   // the selected behaviors
   private Vector2 steeringForce = Vector2.newInstance();
@@ -98,7 +97,7 @@ public final class SteeringBehavior implements Renderable {
   // what type of method is used to sum any active behavior
   private SummingMethod summingMethod;
   // a vertex buffer rqd for drawing the detection box
-  private List<Vector2> detectBox = new ArrayList<Vector2>(4);
+  private List<Vector2> detectBox = new ArrayList<>(4);
 
   public SteeringBehavior(Vehicle agent) {
 
@@ -111,9 +110,8 @@ public final class SteeringBehavior implements Renderable {
     weightObstacleAvoidance = paramLoader.OBSTACLE_AVOIDANCE_WEIGHT;
     weightWander = paramLoader.WANDER_WEIGHT;
     weightWallAvoidance = paramLoader.WALL_AVOIDANCE_WEIGHT;
-    agentViewDistance = paramLoader.VIEW_DISTANCE;
     wallDetectionSensorLength = paramLoader.WALL_DETECTION_FEELER_LENGTH;
-    sensors = new ArrayList<Vector2>(3);
+    sensors = new ArrayList<>(3);
     deceleration = Deceleration.NORMAL;
     targetAgent1 = null;
     targetAgent2 = null;
@@ -241,7 +239,7 @@ public final class SteeringBehavior implements Renderable {
 
     if (dist > 0) {
       // because Deceleration is enumerated as an integer, this value is required
-      // to provide fine tweaking of the deceleration..
+      // to provide fine tweaking of the deceleration.
       final float decelerationTweaker = 0.3f;
 
       // calculate the speed required to reach the target given the desired
@@ -297,7 +295,7 @@ public final class SteeringBehavior implements Renderable {
     // Not necessary to include the check for facing direction this time
     var toPursuer = pursuer.getPosition().sub(vehicle.getPosition());
 
-    // uncomment the following two lines to have Evade only consider pursuers
+    // uncomment the following two lines to have Evaded only consider pursuers
     // within a 'threat range'
     final float threatRange = 100;
     if (toPursuer.getLengthSqr() > threatRange * threatRange) {
@@ -463,11 +461,11 @@ public final class SteeringBehavior implements Renderable {
     var closestPoint = Vector2.newInstance().zero(); // holds the closest intersection point
 
     // examine each feeler in turn
-    for (int flr = 0; flr < sensors.size(); ++flr) {
+    for (Vector2 sensor : sensors) {
       // run through each wall checking for any intersection points
       for (int w = 0; w < walls.size(); ++w) {
         distToThisIP =
-            Geometry.getDistanceTwoSegmentIntersect(vehicle.getPosition(), sensors.get(flr),
+            Geometry.getDistanceTwoSegmentIntersect(vehicle.getPosition(), sensor,
                 walls.get(w).getFrom(), walls.get(w).getTo());
         if (distToThisIP != -1) {
           // is this the closest found so far? If so keep a record
@@ -477,7 +475,7 @@ public final class SteeringBehavior implements Renderable {
             closestWall = w;
 
             closestPoint =
-                Geometry.getPointTwoSegmentIntersect(vehicle.getPosition(), sensors.get(flr),
+                Geometry.getPointTwoSegmentIntersect(vehicle.getPosition(), sensor,
                     walls.get(w).getFrom(), walls.get(w).getTo());
           }
         }
@@ -488,7 +486,7 @@ public final class SteeringBehavior implements Renderable {
       if (closestWall >= 0) {
         // calculate by what distance the projected position of the agent
         // will overshoot the wall
-        var overShoot = sensors.get(flr).sub(closestPoint);
+        var overShoot = sensor.sub(closestPoint);
 
         // create a force in the direction of the wall normal, with a
         // magnitude of the overshoot
@@ -508,14 +506,14 @@ public final class SteeringBehavior implements Renderable {
   private Vector2 doSeparation(List<Vehicle> neighbors) {
     var steeringForce = Vector2.newInstance().zero();
 
-    for (int a = 0; a < neighbors.size(); ++a) {
+    for (Vehicle neighbor : neighbors) {
       // make sure this agent isn't included in the calculations and that
       // the agent being examined is close enough. ***also make sure it doesn't
       // include to evade target ***
-      if ((neighbors.get(a) != vehicle) && neighbors.get(a).isTagged()
-          && (neighbors.get(a) != targetAgent1)) {
+      if ((neighbor != vehicle) && neighbor.isTagged()
+          && (neighbor != targetAgent1)) {
         var toAgent =
-            Vector2.newInstance().set(vehicle.getPosition()).sub(neighbors.get(a).getPosition());
+            Vector2.newInstance().set(vehicle.getPosition()).sub(neighbor.getPosition());
 
         // scale the force inversely proportional to the agents distance
         // from its neighbor.
@@ -538,13 +536,13 @@ public final class SteeringBehavior implements Renderable {
     int neighborCount = 0;
 
     // iterate through all the tagged vehicles and sum their heading vectors
-    for (int a = 0; a < neighbors.size(); ++a) {
+    for (Vehicle neighbor : neighbors) {
       // make sure *this* agent isn't included in the calculations and that
       // the agent being examined is close enough ***also make sure it doesn't
       // include any evade target ***
-      if ((neighbors.get(a) != vehicle) && neighbors.get(a).isTagged()
-          && (neighbors.get(a) != targetAgent1)) {
-        averageHeading.add(neighbors.get(a).getHeading());
+      if ((neighbor != vehicle) && neighbor.isTagged()
+          && (neighbor != targetAgent1)) {
+        averageHeading.add(neighbor.getHeading());
 
         ++neighborCount;
       }
@@ -572,13 +570,13 @@ public final class SteeringBehavior implements Renderable {
     int neighborCount = 0;
 
     // iterate through the neighbors and sum up all the position vectors
-    for (int a = 0; a < neighbors.size(); ++a) {
+    for (Vehicle neighbor : neighbors) {
       // make sure *this* agent isn't included in the calculations and that
       // the agent being examined is close enough ***also make sure it doesn't
       // include the evade target ***
-      if ((neighbors.get(a) != vehicle) && neighbors.get(a).isTagged()
-          && (neighbors.get(a) != targetAgent1)) {
-        centerOfMass.add(neighbors.get(a).getPosition());
+      if ((neighbor != vehicle) && neighbor.isTagged()
+          && (neighbor != targetAgent1)) {
+        centerOfMass.add(neighbor.getPosition());
 
         ++neighborCount;
       }
@@ -757,7 +755,7 @@ public final class SteeringBehavior implements Renderable {
       return doEvade(hunter);
     }
 
-    // else use Arrive on the hiding spot
+    // else use Arrive at the hiding spot
     return doArrive(bestHidingSpot, Deceleration.FAST);
   }
 
@@ -842,13 +840,13 @@ public final class SteeringBehavior implements Renderable {
       vehicle.setMaxSpeed(0.0f);
     }
 
-    if (vehicle.getId() == "dragon") {
+    if (Objects.equals(vehicle.getId(), "dragon")) {
       paint.drawTextAtPosition(5, nextSlot, "MaxForce(Ins/Del):");
       paint.drawTextAtPosition(160, nextSlot,
           String.valueOf(vehicle.getMaxForce() / paramLoader.STEERING_FORCE_TWEAKER));
       nextSlot += slotSize;
     }
-    if (vehicle.getId() == "dragon") {
+    if (Objects.equals(vehicle.getId(), "dragon")) {
       paint.drawTextAtPosition(5, nextSlot, "MaxSpeed(Home/End):");
       paint.drawTextAtPosition(160, nextSlot, String.valueOf(vehicle.getMaxSpeed()));
       nextSlot += slotSize;
@@ -866,17 +864,17 @@ public final class SteeringBehavior implements Renderable {
     // render wander stuff if relevant
     if (isBehavior(Behavior.WANDER) && vehicle.getWorld().isRenderWanderCircle()) {
 
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Jitter(F/V): ");
         paint.drawTextAtPosition(160, nextSlot, String.valueOf(wanderJitter));
         nextSlot += slotSize;
       }
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Distance(G/B): ");
         paint.drawTextAtPosition(160, nextSlot, String.valueOf(wanderDistance));
         nextSlot += slotSize;
       }
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Radius(H/N): ");
         paint.drawTextAtPosition(160, nextSlot, String.valueOf(wanderRadius));
         nextSlot += slotSize;
@@ -946,7 +944,7 @@ public final class SteeringBehavior implements Renderable {
           // if the local position has a negative x value then it must lay
           // behind the agent. (in which case it can be ignored)
           if (localPos.x >= 0) {
-            // if the distance from the x axis to the object's position is less
+            // if the distance from the x-axis to the object's position is less
             // than its radius + half the width of the detection box then there
             // is a potential intersection.
             if (Math.abs(localPos.y) < (curOb.getBoundingRadius() + vehicle.getBoundingRadius())) {
@@ -961,8 +959,8 @@ public final class SteeringBehavior implements Renderable {
     // render the wall avoidance feelers
     if (isBehavior(Behavior.WALL_AVOIDANCE) && vehicle.getWorld().isRenderSensors()) {
       paint.setPenColor(Color.ORANGE);
-      for (int flr = 0; flr < sensors.size(); ++flr) {
-        paint.drawLine(vehicle.getPosition(), sensors.get(flr));
+      for (Vector2 sensor : sensors) {
+        paint.drawLine(vehicle.getPosition(), sensor);
       }
     }
 
@@ -972,7 +970,7 @@ public final class SteeringBehavior implements Renderable {
     }
 
     if (isBehavior(Behavior.SEPARATION)) {
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Separation(S/X):");
         paint.drawTextAtPosition(160, nextSlot,
             String.valueOf(weightSeparation / paramLoader.STEERING_FORCE_TWEAKER));
@@ -981,7 +979,7 @@ public final class SteeringBehavior implements Renderable {
     }
 
     if (isBehavior(Behavior.ALIGNMENT)) {
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Alignment(A/Z):");
         paint.drawTextAtPosition(160, nextSlot,
             String.valueOf(weightAlignment / paramLoader.STEERING_FORCE_TWEAKER));
@@ -990,7 +988,7 @@ public final class SteeringBehavior implements Renderable {
     }
 
     if (isBehavior(Behavior.COHESION)) {
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "Cohesion(D/C):");
         paint.drawTextAtPosition(160, nextSlot,
             String.valueOf(weightCohesion / paramLoader.STEERING_FORCE_TWEAKER));
@@ -1000,7 +998,7 @@ public final class SteeringBehavior implements Renderable {
 
     if (isBehavior(Behavior.FOLLOW_PATH)) {
       float sd = (float) Math.sqrt(waypointSeekDistanceSqr);
-      if (vehicle.getId() == "dragon") {
+      if (Objects.equals(vehicle.getId(), "dragon")) {
         paint.drawTextAtPosition(5, nextSlot, "SeekDistance(D/C):");
         paint.drawTextAtPosition(160, nextSlot, String.valueOf(sd));
         nextSlot += slotSize;

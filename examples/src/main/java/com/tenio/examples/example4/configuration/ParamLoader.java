@@ -2,8 +2,6 @@ package com.tenio.examples.example4.configuration;
 
 import com.tenio.common.utility.MathUtility;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Objects;
 
 /**
  * Class to configuration.
