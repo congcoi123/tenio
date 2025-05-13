@@ -28,12 +28,12 @@ import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
 public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoggedinResult<Player> {
+    implements EventPlayerLoginResult<Player> {
 
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {

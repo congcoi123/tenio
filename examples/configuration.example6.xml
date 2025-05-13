@@ -16,15 +16,6 @@
 		<Property name="setting">setting.json</Property>
 	</Properties>
 
-	<Implements>
-		<Class name="packet-encryptor">com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncryptor</Class>
-		<Class name="packet-compressor">com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor</Class>
-		<Class name="packet-encoder">com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder</Class>
-		<Class name="packet-decoder">com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder</Class>
-		<Class name="connection-filter">com.tenio.core.network.security.filter.DefaultConnectionFilter</Class>
-		<Class name="packet-queue-policy">com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy</Class>
-	</Implements>
-
 	<Network>
 		<Sockets>
 			<Port name="tcp" type="tcp">8032</Port>

@@ -22,21 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.exception;
+package com.tenio.core.handler.event;
 
-
-import com.tenio.core.bootstrap.annotation.Bean;
-import com.tenio.core.bootstrap.injector.Injector;
-import java.io.Serial;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 
 /**
- * The method annotated by {@link Bean} annotation but is not defined as <code>public</code> access.
- *
- * @see Injector
- * @see Bean
+ * Returns the result when a player tried to log in the server.
  */
-public final class IllegalDefinedAccessControlException extends RuntimeException {
+@FunctionalInterface
+public interface EventPlayerLoginResult<P extends Player> {
 
-  @Serial
-  private static final long serialVersionUID = -3263083948979983L;
+  /**
+   * When a player tried to log in the server.
+   *
+   * @param player the joining {@link Player}
+   * @param result the joining result presented by {@link PlayerLoggedInResult}. A player is
+   *               considered as it joined the server when the result equals to success
+   * @see PlayerLoggedInResult#SUCCESS
+   */
+  void handle(P player, PlayerLoggedInResult result);
 }

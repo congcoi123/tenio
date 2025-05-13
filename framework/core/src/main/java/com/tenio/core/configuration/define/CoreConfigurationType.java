@@ -31,11 +31,6 @@ import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.exception.PacketQueueFullException;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.security.filter.ConnectionFilter;
-import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,49 +70,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    * @since 0.4.0
    */
   SERVER_SETTING("setting"),
-  /**
-   * Class: Declares a class for packet encryption handling. The data in packet will be encrypted or
-   * decrypted before sending or after receiving from clients side.
-   *
-   * @see BinaryPacketEncryptor
-   */
-  CLASS_PACKET_ENCRYPTOR("packet-encryptor"),
-  /**
-   * Class: Declares a class for packet compression handling. The data in packet will be compressed
-   * or uncompressed before sending or after receiving from clients side.
-   *
-   * @see BinaryPacketCompressor
-   */
-  CLASS_PACKET_COMPRESSOR("packet-compressor"),
-  /**
-   * Class: Declares a class for packet encoder handling. The data in packet will be encoded before
-   * sending to clients side.
-   *
-   * @see BinaryPacketEncoder
-   */
-  CLASS_PACKET_ENCODER("packet-encoder"),
-  /**
-   * Class: Declares a class for packet decoded handling. The data in packet will be decoded after
-   * receiving from clients side.
-   *
-   * @see BinaryPacketDecoder
-   */
-  CLASS_PACKET_DECODER("packet-decoder"),
-  /**
-   * Class: Declares conditions for connection filter handling. A coming connection will be
-   * applied some rules to check whether it can join the server or not.
-   *
-   * @see ConnectionFilter
-   */
-  CLASS_CONNECTION_FILTER("connection-filter"),
-  /**
-   * Class: Declares a set of rules for a packet queue handling. The packet will be appended
-   * to a queue for handing later. Therefore, in some cases, some packets need to be dropped
-   * based on their priority or the queue size issues.
-   *
-   * @see PacketQueuePolicy
-   */
-  CLASS_PACKET_QUEUE_POLICY("packet-queue-policy"),
   /**
    * The number of threads using for handlers to accept new incoming client socket on the server.
    */

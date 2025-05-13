@@ -48,7 +48,7 @@ public final class ByteUtility {
    * Converts an array of binaries to an integer value.
    *
    * @param bytes an array of binaries
-   * @return a integer number
+   * @return an integer number
    */
   public static int bytesToInt(byte[] bytes) {
     return ((bytes[0] & 0xFF) << 24) | ((bytes[1] & 0xFF) << 16) | ((bytes[2] & 0xFF) << 8)

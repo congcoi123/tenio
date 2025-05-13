@@ -43,6 +43,7 @@ import com.tenio.core.command.client.AbstractClientCommandHandler;
 import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.command.system.AbstractSystemCommandHandler;
 import com.tenio.core.command.system.SystemCommandManager;
+import com.tenio.core.entity.Player;
 import com.tenio.core.exception.DuplicatedBeanCreationException;
 import com.tenio.core.exception.IllegalDefinedAccessControlException;
 import com.tenio.core.exception.IllegalReturnTypeException;
@@ -50,16 +51,17 @@ import com.tenio.core.exception.InvalidRestMappingClassException;
 import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
 import com.tenio.core.exception.NoImplementedClassFoundException;
 import jakarta.servlet.http.HttpServlet;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.ThreadSafe;
 import org.reflections.Reflections;
@@ -75,7 +77,7 @@ public final class Injector extends SystemLogger {
   private static final Injector instance = new Injector();
 
   /**
-   * A map contains keys are interfaces and values hold keys' implemented classes.
+   * A map contains values are interfaces and keys are implemented classes.
    *
    * <p>This map is protected by the class instance to ensure thread-safe.
    */
@@ -110,10 +112,10 @@ public final class Injector extends SystemLogger {
       throw new ExceptionInInitializerError("Could not re-create the class instance");
     }
 
-    classesMap = new ConcurrentHashMap<>();
-    manualClassesSet = ConcurrentHashMap.newKeySet();
-    classBeansMap = new ConcurrentHashMap<>();
-    servletBeansMap = new ConcurrentHashMap<>();
+    classesMap = new HashMap<>();
+    manualClassesSet = new HashSet<>();
+    classBeansMap = new HashMap<>();
+    servletBeansMap = new HashMap<>();
     systemCommandManager = new SystemCommandManager();
     clientCommandManager = new ClientCommandManager();
   }
@@ -148,6 +150,7 @@ public final class Injector extends SystemLogger {
    * @throws SecurityException               it is related to the security exception
    * @throws DuplicatedBeanCreationException when a same bean was created more than one time
    */
+  @SuppressWarnings("unchecked")
   public void scanPackages(Class<?> entryClass, String... packages)
       throws InstantiationException, IllegalAccessException, ClassNotFoundException,
       IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
@@ -333,21 +336,17 @@ public final class Injector extends SystemLogger {
             handler.setCommandManager(systemCommandManager);
             systemCommandManager.registerCommand(systemCommandAnnotation.label(), handler);
           } else {
-            if (isErrorEnabled()) {
-              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
-                  "AbstractSystemCommandHandler"));
-            }
+            error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
+                "AbstractSystemCommandHandler"));
           }
         } catch (Exception exception) {
-          if (isErrorEnabled()) {
-            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
-          }
+          error(exception, "Failed to register command handler for ", clazz.getSimpleName());
         }
       } else if (clazz.isAnnotationPresent(ClientCommand.class)) {
         try {
           var clientCommandAnnotation = clazz.getAnnotation(ClientCommand.class);
           var clientCommandInstance = clazz.getDeclaredConstructor().newInstance();
-          if (clientCommandInstance instanceof AbstractClientCommandHandler handler) {
+          if (clientCommandInstance instanceof AbstractClientCommandHandler<?> handler) {
             // manages by the class bean system
             var beanClass =
                 new BeanClass(clazz, String.valueOf(clientCommandAnnotation.value()));
@@ -357,17 +356,14 @@ public final class Injector extends SystemLogger {
             classBeansMap.put(beanClass, clientCommandInstance);
             // add to its own management system
             handler.setCommandManager(clientCommandManager);
-            clientCommandManager.registerCommand(clientCommandAnnotation.value(), handler);
+            clientCommandManager.registerCommand(clientCommandAnnotation.value(),
+                (AbstractClientCommandHandler<Player>) handler);
           } else {
-            if (isErrorEnabled()) {
-              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
-                  "AbstractClientCommandHandler"));
-            }
+            error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
+                "AbstractClientCommandHandler"));
           }
         } catch (Exception exception) {
-          if (isErrorEnabled()) {
-            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
-          }
+          error(exception, "Failed to register command handler for ", clazz.getSimpleName());
         }
       }
     }
@@ -378,11 +374,7 @@ public final class Injector extends SystemLogger {
       try {
         autowire(clazz, bean);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | DuplicatedBeanCreationException exception) {
-        if (isErrorEnabled()) {
-          String exceptionDetails =
-              "Initialize class: " + clazz.clazz().getName() + "\n" + getStackTrace(exception);
-          error(exceptionDetails);
-        }
+        error("Initialize class: ", clazz.clazz().getName(), "\n", getStackTrace(exception));
       }
     });
   }
@@ -413,6 +405,24 @@ public final class Injector extends SystemLogger {
     return optional.map(
             classClassEntry -> (T) classBeansMap.get(new BeanClass(classClassEntry.getKey(), "")))
         .orElse(null);
+  }
+
+  /**
+   * Retrieves a map contains values are interfaces and keys are implemented classes.
+   *
+   * @return a {@link Map} of classes
+   */
+  public Map<Class<?>, Class<?>> getClassesMap() {
+    return classesMap;
+  }
+
+  /**
+   * Retrieves all beans.
+   *
+   * @return a {@link Map} of generated beans
+   */
+  public Map<BeanClass, Object> getClassBeansMap() {
+    return classBeansMap;
   }
 
   /**
@@ -484,7 +494,7 @@ public final class Injector extends SystemLogger {
       return classBeansMap.get(beanClass);
     }
 
-    if (Objects.nonNull(implementedClass) && !manualClassesSet.contains(beanClass)) {
+    if (Objects.nonNull(implementedClass) && !manualClassesSet.contains(beanClass.getClass())) {
       if (classBeansMap.containsKey(beanClass)) {
         throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
       }
@@ -496,8 +506,8 @@ public final class Injector extends SystemLogger {
     return null;
   }
 
-  private boolean isClassAnnotated(Class<?> clazz, Class<?>[] annotations) {
-    for (Class annotation : annotations) {
+  private boolean isClassAnnotated(Class<?> clazz, Class<? extends Annotation>[] annotations) {
+    for (Class<? extends Annotation> annotation : annotations) {
       if (clazz.isAnnotationPresent(annotation)) {
         return true;
       }

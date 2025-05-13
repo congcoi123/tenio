@@ -37,7 +37,7 @@ import java.util.Objects;
  *
  * @see Packet
  */
-public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
+public final class PacketImpl implements Packet, Comparable<Packet> {
 
   private final long id;
   private final long createdTime;
@@ -213,8 +213,7 @@ public final class PacketImpl implements Packet, Comparable<Packet>, Cloneable {
         '}';
   }
 
-  @Override
-  public Packet clone() {
+  public Packet deepCopy() {
     var packet = PacketImpl.newInstance();
     packet.setData(data);
     packet.setFragmentBuffer(fragmentBuffer);

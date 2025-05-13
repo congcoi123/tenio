@@ -124,7 +124,7 @@ class EcsContextTest {
   }
 
   @Test
-  public void removeAllEntitiesShouldReturnSucess() {
+  public void removeAllEntitiesShouldReturnSuccess() {
     gameContext.destroyAllEntities();
 
     assertEquals(0, gameContext.getEntitiesCount());

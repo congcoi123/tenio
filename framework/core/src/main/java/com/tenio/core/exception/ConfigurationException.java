@@ -24,11 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import java.io.Serial;
+
 /**
  * When something went wrong with the server configuration file.
  */
 public final class ConfigurationException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -713303423920650936L;
 
   /**

@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.engine.ecs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.tenio.engine.ecs.basis.implement.ContextInfo;
@@ -34,6 +32,7 @@ import com.tenio.engine.ecs.model.GameContext;
 import com.tenio.engine.ecs.model.system.TestSystem;
 import com.tenio.engine.ecs.system.implement.Systems;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,16 +60,16 @@ class EcsSystemTest {
   }
 
   @Test
-  public void allTestSytemMethodsShouldBeRun() {
+  public void allTestSystemMethodsShouldBeRun() {
     systems.initialize();
     systems.execute(1);
     systems.render(null);
     systems.tearDown();
 
-    assertAll("runTestSystemMethods", () -> assertTrue(testSystem.isInitialized()),
-        () -> assertTrue(testSystem.isExecuted()),
-        () -> assertTrue(testSystem.isRendered()),
-        () -> assertTrue(testSystem.isTearDown()));
+    assertAll("runTestSystemMethods", () -> Assertions.assertTrue(testSystem.isInitialized()),
+        () -> Assertions.assertTrue(testSystem.isExecuted()),
+        () -> Assertions.assertTrue(testSystem.isRendered()),
+        () -> Assertions.assertTrue(testSystem.isTearDown()));
   }
 
   @Test
@@ -83,9 +82,9 @@ class EcsSystemTest {
     systems.render(null);
     systems.tearDown();
 
-    assertAll("pauseSystem", () -> assertTrue(testSystem.isInitialized()),
-        () -> assertFalse(testSystem.isExecuted()),
-        () -> assertFalse(testSystem.isRendered()),
-        () -> assertTrue(testSystem.isTearDown()));
+    assertAll("pauseSystem", () -> Assertions.assertTrue(testSystem.isInitialized()),
+        () -> Assertions.assertFalse(testSystem.isExecuted()),
+        () -> Assertions.assertFalse(testSystem.isRendered()),
+        () -> Assertions.assertTrue(testSystem.isTearDown()));
   }
 }

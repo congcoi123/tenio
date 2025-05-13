@@ -27,7 +27,7 @@ package com.tenio.core.handler.event;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * When the server responds to the request from client side which requires using the KCP channel.
@@ -38,13 +38,12 @@ public interface EventAccessKcpChannelRequestValidationResult<P extends Player> 
   /**
    * When the server responds to the request from client side which requires using the KCP channel.
    *
-   * @param player the optional of {@link Player} which requires using UDP channel
+   * @param player the instance of {@link Player} (nullable) which requires using UDP channel
    * @param result the responded {@link AccessDatagramChannelResult} from the server, if the result
    *               equals to {@link AccessDatagramChannelResult#PLAYER_NOT_FOUND} then the returned
    *               player is empty, otherwise it is present
    * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT
    * @see EventAccessKcpChannelRequestValidation
-   * @see Optional
    */
-  void handle(Optional<P> player, AccessDatagramChannelResult result);
+  void handle(@Nullable P player, AccessDatagramChannelResult result);
 }

@@ -42,7 +42,6 @@ import java.util.Map;
 import kcp.Ukcp;
 
 import javax.annotation.concurrent.GuardedBy;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -204,10 +203,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
-  public void configurePacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
-      throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException, NoSuchMethodException, SecurityException {
-    packetQueuePolicy = clazz.getDeclaredConstructor().newInstance();
+  public void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
+    this.packetQueuePolicy = packetQueuePolicy;
   }
 
   @Override

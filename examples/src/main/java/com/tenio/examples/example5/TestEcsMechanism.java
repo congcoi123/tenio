@@ -31,7 +31,7 @@ import com.tenio.examples.example5.ecs.ECS;
 public final class TestEcsMechanism {
 
   public static void main(String[] args) throws Exception {
-    // Create a ECS
+    // Create an ECS
     var ecs = new ECS(Example5Constant.DESIGN_WIDTH, Example5Constant.DESIGN_HEIGHT);
     // Enable debugger window
     ecs.debug("[TenIO] Server Debugger : ECS");

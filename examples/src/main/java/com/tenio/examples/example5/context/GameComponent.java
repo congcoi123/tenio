@@ -31,10 +31,10 @@ import com.tenio.examples.example5.component.View;
 
 public final class GameComponent {
 
-  public static byte ANIMATION = 0;
-  public static byte MOTION = 1;
-  public static byte POSITION = 3;
-  public static byte VIEW = 4;
+  public static final byte ANIMATION = 0;
+  public static final byte MOTION = 1;
+  public static final byte POSITION = 3;
+  public static final byte VIEW = 4;
 
   private static final int numberComponents = 5;
   private static final String[] componentNames = {"Animation", "Motion", null, "Position", "View"};

@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.controller.AbstractController;
+import java.io.Serial;
 
 /**
  * When the coming requests queue is full.
  */
 public final class RequestQueueFullException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 6981972099759381035L;
 
   /**

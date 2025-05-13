@@ -66,10 +66,8 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
     var message = DataUtility.binaryToCollection(dataType, binary);
 
     if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
-      if (isDebugEnabled()) {
-        debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
-            " Rejected message: ", message);
-      }
+      debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
+          " Rejected message: ", message);
       return;
     }
 
@@ -111,9 +109,7 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
     try {
       session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
     } catch (IOException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Session closed with error: ", session.toString());
-      }
+      error(exception, "Session closed with error: ", session.toString());
       eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
     }
   }

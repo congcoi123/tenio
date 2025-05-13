@@ -207,5 +207,5 @@ public interface Packet {
    *
    * @return the {@link Packet}'s clone instance
    */
-  Packet clone();
+  Packet deepCopy();
 }

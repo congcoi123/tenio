@@ -169,7 +169,7 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * @param msg the message content
    */
   private void infoWithoutPool(String msg) {
-    logger.info("[STRINGBUILDER POOL] " + msg);
+    logger.info("[STRING BUILDER POOL] {}", msg);
   }
 
   /**

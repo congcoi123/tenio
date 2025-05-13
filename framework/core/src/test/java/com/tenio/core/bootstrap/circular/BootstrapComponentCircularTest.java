@@ -22,24 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.handler.event;
+package com.tenio.core.bootstrap.circular;
 
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
- * Returns the result when a player tried to log in the server.
+ * This case should be checked in the future.
  */
-@FunctionalInterface
-public interface EventPlayerLoggedinResult<P extends Player> {
+class BootstrapComponentCircularTest {
 
-  /**
-   * When a player tried to log in the server.
-   *
-   * @param player the joining {@link Player}
-   * @param result the joining result presented by {@link PlayerLoggedInResult}. A player is
-   *               considered as it joined the server when the result equals to success
-   * @see PlayerLoggedInResult#SUCCESS
-   */
-  void handle(P player, PlayerLoggedInResult result);
+  @Test
+  @Disabled("Disabled until finding the solution")
+  void createCircularDependenciesShouldThrowError() {
+  }
 }

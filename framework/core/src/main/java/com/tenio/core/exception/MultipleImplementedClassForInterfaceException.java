@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.bootstrap.annotation.Component;
+import java.io.Serial;
 
 /**
  * This exception would be thrown when there are more than 1 {@link Component} annotation
@@ -32,6 +33,7 @@ import com.tenio.core.bootstrap.annotation.Component;
  */
 public final class MultipleImplementedClassForInterfaceException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 9186053637398483773L;
 
   /**

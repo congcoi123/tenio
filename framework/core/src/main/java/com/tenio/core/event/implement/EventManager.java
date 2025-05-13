@@ -70,13 +70,9 @@ public final class EventManager extends SystemLogger {
    */
   public Object emit(ServerEvent event, Object... params) {
     if (isEventForTracing(event)) {
-      if (isTraceEnabled()) {
-        trace(event.toString(), params);
-      }
+      trace(event.toString(), params);
     } else {
-      if (isDebugEnabled()) {
-        debugEvent(event.toString(), params);
-      }
+      debugEvent(event.toString(), params);
     }
     return eventProducer.emit(event, params);
   }
@@ -89,9 +85,7 @@ public final class EventManager extends SystemLogger {
    */
   public void on(ServerEvent event, Subscriber subscriber) {
     if (hasSubscriber(event)) {
-      if (isInfoEnabled()) {
-        info("SERVER EVENT WARNING", "Duplicated", event);
-      }
+      info("SERVER EVENT WARNING", "Duplicated", event);
     }
 
     eventSubscribers.add(EventSubscriber.newInstance(event, subscriber));
@@ -112,9 +106,7 @@ public final class EventManager extends SystemLogger {
       eventProducer.getEventHandler().subscribe(eventSubscriber.getEvent(),
           eventSubscriber.getSubscriber()::dispatch);
     });
-    if (isInfoEnabled()) {
-      info("SERVER EVENT SUBSCRIBERS", "Subscribers", events.toString());
-    }
+    info("SERVER EVENT SUBSCRIBERS", "Subscribers", events.toString());
   }
 
   /**

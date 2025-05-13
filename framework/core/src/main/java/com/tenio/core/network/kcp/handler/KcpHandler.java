@@ -73,9 +73,7 @@ public class KcpHandler implements KcpListener {
 
   @Override
   public void onConnected(Ukcp ukcp) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("KCP CHANNEL CONNECTED", ukcp);
-    }
+    logger.debug("KCP CHANNEL CONNECTED", ukcp);
   }
 
   @Override
@@ -95,9 +93,7 @@ public class KcpHandler implements KcpListener {
         networkReaderStatistic.updateReadPackets(1);
         eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
       } else {
-        if (logger.isDebugEnabled()) {
-          logger.debug("READ KCP CHANNEL", "Session is inactivated: ", session.toString());
-        }
+        logger.debug("READ KCP CHANNEL", "Session is inactivated: ", session.toString());
       }
     }
   }
@@ -106,22 +102,16 @@ public class KcpHandler implements KcpListener {
   public void handleException(Throwable cause, Ukcp ukcp) {
     var session = sessionManager.getSessionByKcp(ukcp);
     if (Objects.nonNull(session)) {
-      if (logger.isErrorEnabled()) {
-        logger.error(cause, "Session: ", session.toString());
-      }
+      logger.error(cause, "Session: ", session.toString());
       eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, cause);
     } else {
-      if (logger.isErrorEnabled()) {
-        logger.error(cause, "Exception was occurred on channel: %s", ukcp.toString());
-      }
+      logger.error(cause, "Exception was occurred on channel: ", ukcp.toString());
     }
   }
 
   @Override
   public void handleClose(Ukcp ukcp) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("KCP CHANNEL CLOSED", ukcp);
-    }
+    logger.debug("KCP CHANNEL CLOSED", ukcp);
     var session = sessionManager.getSessionByKcp(ukcp);
     if (Objects.nonNull(session) && session.containsKcp()) {
       session.setKcpChannel(null);
@@ -136,9 +126,7 @@ public class KcpHandler implements KcpListener {
           eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION, message);
     } catch (Exception exception) {
       ukcp.close();
-      if (logger.isErrorEnabled()) {
-        logger.error(exception, message);
-      }
+      logger.error(exception, message);
     }
 
     if (!(checkingPlayer instanceof Optional<?> optionalPlayer)) {
@@ -149,28 +137,27 @@ public class KcpHandler implements KcpListener {
     if (optionalPlayer.isEmpty()) {
       ukcp.close();
       eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT,
-          optionalPlayer,
+          null,
           AccessDatagramChannelResult.PLAYER_NOT_FOUND);
     } else {
       Player player = (Player) optionalPlayer.get();
       if (!player.containsSession() || player.getSession().isEmpty()) {
         ukcp.close();
         eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT,
-            optionalPlayer,
+            player,
             AccessDatagramChannelResult.SESSION_NOT_FOUND);
       } else {
         Session session = player.getSession().get();
         if (!session.isTcp()) {
           ukcp.close();
           eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT,
-              optionalPlayer,
+              player,
               AccessDatagramChannelResult.INVALID_SESSION_PROTOCOL);
         } else {
-          var sessionInstance = ((Player) optionalPlayer.get()).getSession().get();
-          sessionManager.addKcpForSession(ukcp, sessionInstance);
+          sessionManager.addKcpForSession(ukcp, session);
 
           eventManager.emit(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT,
-              optionalPlayer,
+              player,
               AccessDatagramChannelResult.SUCCESS);
         }
       }

@@ -22,21 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.exception;
+package com.tenio.examples.example1.configuration.codec;
 
+import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.exception.PacketCompressorException;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor;
 
-import com.tenio.core.bootstrap.annotation.Bean;
-import com.tenio.core.bootstrap.injector.Injector;
-import java.io.Serial;
+@Component
+public class CustomBinaryPacketCompressor extends DefaultBinaryPacketCompressor implements BinaryPacketCompressor {
+  @Override
+  public byte[] compress(byte[] binary) throws PacketCompressorException {
+    return binary;
+  }
 
-/**
- * The method annotated by {@link Bean} annotation but is not defined as <code>public</code> access.
- *
- * @see Injector
- * @see Bean
- */
-public final class IllegalDefinedAccessControlException extends RuntimeException {
-
-  @Serial
-  private static final long serialVersionUID = -3263083948979983L;
+  @Override
+  public byte[] uncompress(byte[] binary) throws PacketCompressorException {
+    return binary;
+  }
 }

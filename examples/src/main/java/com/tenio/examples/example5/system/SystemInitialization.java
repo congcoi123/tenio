@@ -39,10 +39,10 @@ public final class SystemInitialization extends AbstractSystem<GameEntity> imple
 
   @Override
   public void initialize() {
-    var entity = (GameEntity) getContext().createEntity();
+    var entity = getContext().createEntity();
     entity.setAnimation(true);
     entity.setMotion(true);
     entity.setView(true);
-    entity.setPosition(Example5Constant.DESIGN_WIDTH / 2, Example5Constant.DESIGN_HEIGHT / 2);
+    entity.setPosition((float) Example5Constant.DESIGN_WIDTH / 2, (float) Example5Constant.DESIGN_HEIGHT / 2);
   }
 }

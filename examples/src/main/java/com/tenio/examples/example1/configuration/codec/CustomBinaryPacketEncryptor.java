@@ -22,18 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.bootstrap.circular;
+package com.tenio.examples.example1.configuration.codec;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.exception.PacketEncryptorException;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircular {
+@Component
+public class CustomBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
-  @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  @Override
+  public byte[] encrypt(byte[] binary) throws PacketEncryptorException {
+    return binary;
+  }
+
+  @Override
+  public byte[] decrypt(byte[] binary) throws PacketEncryptorException {
+    return binary;
   }
 }

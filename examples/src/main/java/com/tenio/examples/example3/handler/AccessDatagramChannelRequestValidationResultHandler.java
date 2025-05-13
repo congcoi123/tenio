@@ -31,19 +31,18 @@ import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
 import com.tenio.examples.server.SharedEventKey;
 import com.tenio.examples.server.DatagramEstablishedState;
-import java.util.Optional;
 
 @EventHandler
 public final class AccessDatagramChannelRequestValidationResultHandler extends AbstractHandler
     implements EventAccessDatagramChannelRequestValidationResult<Player> {
 
   @Override
-  public void handle(Optional<Player> player, int udpConv, AccessDatagramChannelResult result) {
+  public void handle(Player player, int udpConv, AccessDatagramChannelResult result) {
     if (result == AccessDatagramChannelResult.SUCCESS) {
       var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
           array().addByte(DatagramEstablishedState.ESTABLISHED).addInteger(udpConv));
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player.get()).write();
+      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

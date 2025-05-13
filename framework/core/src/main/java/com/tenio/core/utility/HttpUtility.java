@@ -94,18 +94,14 @@ public enum HttpUtility {
         }
       } catch (IOException exception) {
         // swallow silently -- can't get body, won't
-        if (logger.isErrorEnabled()) {
-          logger.error(exception);
-        }
+        logger.error(exception);
       } finally {
         if (Objects.nonNull(bufferedReader)) {
           try {
             bufferedReader.close();
           } catch (IOException exception) {
             // swallow silently -- can't get body, won't
-            if (logger.isErrorEnabled()) {
-              logger.error(exception);
-            }
+            logger.error(exception);
           }
         }
       }
@@ -136,18 +132,14 @@ public enum HttpUtility {
         }
       } catch (IOException exception) {
         // swallow silently -- can't get body, won't
-        if (logger.isErrorEnabled()) {
-          logger.error(exception);
-        }
+        logger.error(exception);
       } finally {
         if (Objects.nonNull(bufferedReader)) {
           try {
             bufferedReader.close();
           } catch (IOException exception) {
             // swallow silently -- can't get body, won't
-            if (logger.isErrorEnabled()) {
-              logger.error(exception);
-            }
+            logger.error(exception);
           }
         }
       }
@@ -169,9 +161,7 @@ public enum HttpUtility {
     try {
       response.getWriter().println(payload);
     } catch (IOException exception) {
-      if (logger.isErrorEnabled()) {
-        logger.error(exception);
-      }
+      logger.error(exception);
     }
   }
 }

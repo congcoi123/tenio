@@ -323,9 +323,7 @@ public final class InitialRoomSetting {
       } catch (InstantiationException | IllegalAccessException
           | InvocationTargetException | NoSuchMethodException
           | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
+        error(exception);
       }
       return object;
     }

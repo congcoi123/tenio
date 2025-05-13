@@ -54,3 +54,8 @@
 - Enhanced performances and addressed the issue related to "100% CPU"
 - Reworked on MsgPack classes and methods
 - Bugs fixed
+
+## 0.6.2 2025-05-11 Feature release
+- Upgraded dependencies
+- Declared behaviors for packets processing with annotations
+- Bugs fixed

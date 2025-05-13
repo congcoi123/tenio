@@ -36,17 +36,11 @@ public enum MessageType {
   }
 
   public static String msgToStr(int type) {
-    switch (type) {
-      case 0:
-        return "HiHoneyImHome";
-
-      case 1:
-        return "StewReady";
-
-      default:
-        return "Not recognized!";
-
-    }
+    return switch (type) {
+      case 0 -> "HiHoneyImHome";
+      case 1 -> "StewReady";
+      default -> "Not recognized!";
+    };
   }
 
   public int get() {

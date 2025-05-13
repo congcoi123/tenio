@@ -27,6 +27,7 @@ package com.tenio.core.exception;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import java.io.Serial;
 
 /**
  * When the packet queue, which is using to send packet from the server to clients side, has
@@ -34,6 +35,7 @@ import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
  */
 public final class PacketQueuePolicyViolationException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -1620230030870946508L;
 
   /**

@@ -44,6 +44,7 @@ import com.tenio.core.handler.event.EventRoomCreatedResult;
 import com.tenio.core.handler.event.EventRoomWillBeRemoved;
 import com.tenio.core.handler.event.EventSwitchParticipantToSpectatorResult;
 import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,25 +54,25 @@ import java.util.Optional;
 public final class RoomEventHandler {
 
   @AutowiredAcceptNull
-  private EventPlayerAfterLeftRoom eventPlayerAfterLeftRoom;
+  private EventPlayerAfterLeftRoom<Player, Room> eventPlayerAfterLeftRoom;
 
   @AutowiredAcceptNull
-  private EventPlayerBeforeLeaveRoom eventPlayerBeforeLeaveRoom;
+  private EventPlayerBeforeLeaveRoom<Player, Room> eventPlayerBeforeLeaveRoom;
 
   @AutowiredAcceptNull
-  private EventPlayerJoinedRoomResult eventPlayerJoinedRoomResult;
+  private EventPlayerJoinedRoomResult<Player, Room> eventPlayerJoinedRoomResult;
 
   @AutowiredAcceptNull
-  private EventRoomCreatedResult eventRoomCreatedResult;
+  private EventRoomCreatedResult<Room> eventRoomCreatedResult;
 
   @AutowiredAcceptNull
-  private EventRoomWillBeRemoved eventRoomWillBeRemoved;
+  private EventRoomWillBeRemoved<Room> eventRoomWillBeRemoved;
 
   @AutowiredAcceptNull
-  private EventSwitchParticipantToSpectatorResult eventSwitchParticipantToSpectatorResult;
+  private EventSwitchParticipantToSpectatorResult<Player, Room> eventSwitchParticipantToSpectatorResult;
 
   @AutowiredAcceptNull
-  private EventSwitchSpectatorToParticipantResult eventSwitchSpectatorToParticipantResult;
+  private EventSwitchSpectatorToParticipantResult<Player, Room> eventSwitchSpectatorToParticipantResult;
 
   /**
    * Initialization.
@@ -80,17 +81,12 @@ public final class RoomEventHandler {
    */
   public void initialize(EventManager eventManager) {
 
-    final var eventPlayerAfterLeftRoomOp =
-        Optional.ofNullable(eventPlayerAfterLeftRoom);
-    final var eventPlayerBeforeLeaveRoomOp =
-        Optional.ofNullable(eventPlayerBeforeLeaveRoom);
-    final var eventPlayerJoinedRoomResultOp =
-        Optional.ofNullable(eventPlayerJoinedRoomResult);
+    final var eventPlayerAfterLeftRoomOp = Optional.ofNullable(eventPlayerAfterLeftRoom);
+    final var eventPlayerBeforeLeaveRoomOp = Optional.ofNullable(eventPlayerBeforeLeaveRoom);
+    final var eventPlayerJoinedRoomResultOp = Optional.ofNullable(eventPlayerJoinedRoomResult);
 
-    final var eventRoomCreatedResultOp =
-        Optional.ofNullable(eventRoomCreatedResult);
-    final var eventRoomWillBeRemovedOp =
-        Optional.ofNullable(eventRoomWillBeRemoved);
+    final var eventRoomCreatedResultOp = Optional.ofNullable(eventRoomCreatedResult);
+    final var eventRoomWillBeRemovedOp = Optional.ofNullable(eventRoomWillBeRemoved);
 
     final var eventSwitchParticipantToSpectatorResultOp =
         Optional.ofNullable(eventSwitchParticipantToSpectatorResult);
@@ -100,7 +96,7 @@ public final class RoomEventHandler {
     eventPlayerAfterLeftRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, params -> {
           var player = (Player) params[0];
-          var room = (Optional<Room>) params[1];
+          var room = Objects.isNull(params[1]) ? null : (Room) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
           var result = (PlayerLeftRoomResult) (params[3]);
 
@@ -112,7 +108,7 @@ public final class RoomEventHandler {
     eventPlayerBeforeLeaveRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, params -> {
           var player = (Player) params[0];
-          var room = (Optional<Room>) params[1];
+          var room = Objects.isNull(params[1]) ? null : (Room) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
 
           event.handle(player, room, mode);
@@ -133,7 +129,7 @@ public final class RoomEventHandler {
 
     eventRoomCreatedResultOp.ifPresent(event -> eventManager.on(ServerEvent.ROOM_CREATED_RESULT,
         params -> {
-          var room = (Optional<Room>) params[0];
+          var room = Objects.isNull(params[0]) ? null : (Room) params[0];
           var setting = (InitialRoomSetting) params[1];
           var result = (RoomCreatedResult) params[2];
 

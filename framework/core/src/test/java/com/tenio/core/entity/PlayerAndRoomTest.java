@@ -52,7 +52,6 @@ class PlayerAndRoomTest {
   private RoomManager roomManager;
 
   private String testPlayerName;
-  private String testRoomId;
 
   @BeforeEach
   public void initialize() throws Exception {
@@ -63,7 +62,6 @@ class PlayerAndRoomTest {
     playerManager = PlayerManagerImpl.newInstance(eventManager);
     roomManager = RoomManagerImpl.newInstance(eventManager);
     testPlayerName = "kong";
-    testRoomId = "test-room-id";
   }
 
   @AfterEach

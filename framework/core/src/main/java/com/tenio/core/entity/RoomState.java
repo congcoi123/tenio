@@ -41,5 +41,5 @@ public interface RoomState {
    */
   default boolean isIdle() {
     return false;
-  };
+  }
 }

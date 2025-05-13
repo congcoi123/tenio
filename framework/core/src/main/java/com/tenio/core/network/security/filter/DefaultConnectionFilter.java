@@ -37,7 +37,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * The default implementation for the connection filter.
  */
 @ThreadSafe
-public final class DefaultConnectionFilter implements ConnectionFilter {
+public class DefaultConnectionFilter implements ConnectionFilter {
 
   private final Set<String> bannedAddresses;
   private final Map<String, AtomicInteger> addressMap;

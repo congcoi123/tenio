@@ -45,7 +45,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import kcp.Ukcp;
 
@@ -58,11 +57,10 @@ public final class SessionImpl implements Session {
 
   private final long id;
   private final long createdTime;
-  private final AtomicBoolean atomicActivated;
   private final AtomicReference<AssociatedState> atomicAssociatedState;
-  private volatile boolean activated;
   private volatile AssociatedState associatedState;
   private volatile String name;
+  private volatile boolean activated;
 
   private SessionManager sessionManager;
   private SocketChannel socketChannel;
@@ -95,7 +93,6 @@ public final class SessionImpl implements Session {
     transportType = TransportType.UNKNOWN;
     udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
     atomicAssociatedState = new AtomicReference<>();
-    atomicActivated = new AtomicBoolean();
     setAssociatedState(AssociatedState.NONE);
     long currentTime = now();
     createdTime = currentTime;
@@ -439,7 +436,6 @@ public final class SessionImpl implements Session {
   @Override
   public synchronized void activate() {
     activated = true;
-    atomicActivated.set(true);
   }
 
   @Override
@@ -475,12 +471,14 @@ public final class SessionImpl implements Session {
   @Override
   public void close(ConnectionDisconnectMode connectionDisconnectMode,
                     PlayerDisconnectMode playerDisconnectMode) throws IOException {
-    if (atomicActivated.compareAndSet(true, false)) {
+    synchronized (this) {
+      if (!activated) {
+        return;
+      }
       activated = false;
-      inactivatedTime = now();
-    } else {
-      return;
     }
+    
+    inactivatedTime = now();
 
     connectionFilter.removeAddress(clientAddress);
 

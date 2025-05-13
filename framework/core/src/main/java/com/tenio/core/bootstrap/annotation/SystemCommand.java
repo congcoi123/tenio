@@ -57,7 +57,7 @@ public @interface SystemCommand {
   /**
    * Retrieves a list of usage for the command.
    *
-   * @return a list of {@link String} instructions that the command is supporting
+   * @return an array of {@link String} instructions that the command is supporting
    */
   String[] usage() default {""};
 

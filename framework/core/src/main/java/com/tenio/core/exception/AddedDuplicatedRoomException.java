@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.entity.Room;
+import java.io.Serial;
 
 /**
  * When a room which existed on the server is added again.
  */
 public final class AddedDuplicatedRoomException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -5330961754908231570L;
 
   /**
