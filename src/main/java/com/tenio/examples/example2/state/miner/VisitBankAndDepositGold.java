@@ -72,7 +72,7 @@ public final class VisitBankAndDepositGold extends State<Miner> {
         miner.getNumberMoneyInBank());
     System.out.println("\n" + miner.getMood());
 
-    // wealthy enough to have a well earned rest?
+    // wealthy enough to have a well-earned rest?
     if (miner.getNumberMoneyInBank() >= Miner.COMFORT_LEVEL) {
       miner.setMood(
           miner.getName() + ": " + "WooHoo! Rich enough for now. Back home to mah li'lle lady");

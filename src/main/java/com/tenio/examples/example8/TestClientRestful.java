@@ -31,7 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * This class shows how to send a HTTP requests to server.
+ * This class shows how to send an HTTP requests to server.
  */
 public final class TestClientRestful {
 

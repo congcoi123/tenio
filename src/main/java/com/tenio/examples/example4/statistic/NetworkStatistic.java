@@ -34,9 +34,9 @@ public final class NetworkStatistic {
   private final List<Double> lostPacketRecorder;
 
   private NetworkStatistic() {
-    latencyRecorder = new ArrayList<Long>();
-    fpsRecorder = new ArrayList<Integer>();
-    lostPacketRecorder = new ArrayList<Double>();
+    latencyRecorder = new ArrayList<>();
+    fpsRecorder = new ArrayList<>();
+    lostPacketRecorder = new ArrayList<>();
   }
 
   public static NetworkStatistic newInstance() {
@@ -47,12 +47,11 @@ public final class NetworkStatistic {
     synchronized (latencyRecorder) {
       long average = 0;
       int size = latencyRecorder.size();
-      for (int i = 0; i < size; i++) {
-        average += latencyRecorder.get(i).longValue();
+      for (Long aLong : latencyRecorder) {
+        average += aLong;
       }
-      double result = (double) average / (double) size;
 
-      return result;
+      return (double) average / (double) size;
     }
   }
 
@@ -72,12 +71,11 @@ public final class NetworkStatistic {
     synchronized (fpsRecorder) {
       int average = 0;
       int size = fpsRecorder.size();
-      for (int i = 0; i < size; i++) {
-        average += fpsRecorder.get(i).intValue();
+      for (Integer integer : fpsRecorder) {
+        average += integer;
       }
-      double result = (double) average / (double) size;
 
-      return result;
+      return (double) average / (double) size;
     }
   }
 
@@ -97,12 +95,11 @@ public final class NetworkStatistic {
     synchronized (lostPacketRecorder) {
       double average = 0;
       int size = lostPacketRecorder.size();
-      for (int i = 0; i < size; i++) {
-        average += lostPacketRecorder.get(i).doubleValue();
+      for (Double aDouble : lostPacketRecorder) {
+        average += aDouble;
       }
-      double result = average / (double) size;
 
-      return result;
+      return average / (double) size;
     }
   }
 

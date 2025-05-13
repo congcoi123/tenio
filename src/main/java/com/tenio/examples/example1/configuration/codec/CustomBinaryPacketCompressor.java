@@ -22,27 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.examples.example1.configuration.codec;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.examples.server.DatagramEstablishedState;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.exception.PacketCompressorException;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor;
 
-@EventHandler
-public final class AccessDatagramChannelRequestValidationResultHandler extends AbstractHandler
-    implements EventAccessDatagramChannelRequestValidationResult<Player> {
+@Component
+public class CustomBinaryPacketCompressor extends DefaultBinaryPacketCompressor implements BinaryPacketCompressor {
+  @Override
+  public byte[] compress(byte[] binary) throws PacketCompressorException {
+    return binary;
+  }
 
   @Override
-  public void handle(Player player, int udpConv, AccessDatagramChannelResult result) {
-    if (result == AccessDatagramChannelResult.SUCCESS) {
-      var parcel = msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          new int[] { DatagramEstablishedState.ESTABLISHED });
-
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+  public byte[] uncompress(byte[] binary) throws PacketCompressorException {
+    return binary;
   }
 }

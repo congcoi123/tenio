@@ -44,7 +44,7 @@ public final class Wife extends BaseEntity {
   public Wife(MessageDispatcher dispatcher, EntityName name) {
     super(name);
     location = Location.SHACK;
-    state = new FsmComponent<Wife>(dispatcher, this);
+    state = new FsmComponent<>(dispatcher, this);
     state.setCurrentState(DoHouseWork.getInstance());
     state.setGlobalState(WifesGlobalState.getInstance());
   }

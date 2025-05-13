@@ -40,16 +40,11 @@ public enum EntityName {
   }
 
   public static String getName(String name) {
-    switch (name) {
-      case "miner":
-        return "Miner Bob";
-
-      case "wife":
-        return "Wife Elsa";
-
-      default:
-        return "No name";
-    }
+    return switch (name) {
+      case "miner" -> "Miner Bob";
+      case "wife" -> "Wife Elsa";
+      default -> "No name";
+    };
   }
 
   public String get() {

@@ -36,18 +36,18 @@ public final class World extends AbstractHeartBeat {
 
   private final InvertedAabbBox2D aabb = InvertedAabbBox2D.newInstance();
   // container containing any walls in the environment
-  private final List<Wall> walls = new ArrayList<Wall>();
+  private final List<Wall> walls = new ArrayList<>();
   private final ParamLoader paramLoader = ParamLoader.getInstance();
   // a container of all the moving entities
-  private final List<Vehicle> vehicles = new ArrayList<Vehicle>(paramLoader.NUM_AGENTS);
+  private final List<Vehicle> vehicles = new ArrayList<>(paramLoader.NUM_AGENTS);
   // any obstacles
   private final List<BaseGameEntity> obstacles =
-      new ArrayList<BaseGameEntity>(paramLoader.NUM_OBSTACLES);
+      new ArrayList<>(paramLoader.NUM_OBSTACLES);
   private final CellSpacePartition<Vehicle> cellSpace;
   // local copy of client window dimensions
   private final int clientX;
   private final int clientY;
-  // flags to turn aids and obstacles etc on/off
+  // flags to turn aids and obstacles etc. on/off
   private final boolean enableShowWalls;
   private final boolean enableShowObstacles;
   private final boolean enableShowPath;
@@ -56,7 +56,7 @@ public final class World extends AbstractHeartBeat {
   private final boolean enableShowSensors;
   private final boolean enableShowSteeringForce;
   private final boolean enableShowCellSpaceInfo;
-  private final Smoother<Float> frameRateSmoother = new Smoother<Float>(SAMPLE_RATE, .0f);
+  private final Smoother<Float> frameRateSmoother = new Smoother<>(SAMPLE_RATE, .0f);
   private final WorkerPool workerPool;
   // any path we may create for the vehicles to follow
   private Path path;
@@ -78,7 +78,7 @@ public final class World extends AbstractHeartBeat {
     clientX = cx;
     clientY = cy;
     pause = false;
-    crosshair = Vector2.valueOf(getClientX() / 2, getClientX() / 2);
+    crosshair = Vector2.valueOf((float) getClientX() / 2, (float) getClientX() / 2);
     enableShowWalls = false;
     enableShowObstacles = false;
     enableShowPath = false;
@@ -95,7 +95,7 @@ public final class World extends AbstractHeartBeat {
     workerPool = new WorkerPool("world", 150, 300);
 
     // set up the spatial subdivision class
-    cellSpace = new CellSpacePartition<Vehicle>((float) cx, (float) cy, paramLoader.NUM_CELLS_X,
+    cellSpace = new CellSpacePartition<>((float) cx, (float) cy, paramLoader.NUM_CELLS_X,
         paramLoader.NUM_CELLS_Y, paramLoader.NUM_AGENTS);
 
     float border = 30;
@@ -103,8 +103,8 @@ public final class World extends AbstractHeartBeat {
 
     for (int a = 0; a < paramLoader.NUM_AGENTS; ++a) {
       // determine a random starting position
-      var SpawnPos = Vector2.valueOf(cx / 2 + MathUtility.randomClamped() * cx / 2,
-          cy / 2 + MathUtility.randomClamped() * cy / 2);
+      var SpawnPos = Vector2.valueOf((float) cx / 2 + MathUtility.randomClamped() * cx / 2,
+          (float) cy / 2 + MathUtility.randomClamped() * cy / 2);
 
       var pVehicle = new Vehicle(this, SpawnPos, // initial position
           MathUtility.randFloat() * MathUtility.TWO_PI, // start rotation
@@ -188,7 +188,7 @@ public final class World extends AbstractHeartBeat {
   }
 
   /**
-   * The user can set the position of the crosshair by right clicking the mouse.
+   * The user can set the position of the crosshair by right-clicking the mouse.
    * This method makes sure the click is not inside any enabled Obstacles and sets
    * the position appropriately.
    */
@@ -333,11 +333,9 @@ public final class World extends AbstractHeartBeat {
 
         if (!EntitiesRelationship.isOverlapped(ob, obstacles,
             minGapBetweenObstacles)) {
-          // its not overlapped so we can add it
+          // it's not overlapped so we can add it
           obstacles.add(ob);
           overlapped = false;
-        } else {
-          ob = null;
         }
       }
     }
@@ -351,17 +349,16 @@ public final class World extends AbstractHeartBeat {
 
     // render any walls
     paint.setPenColor(Color.BLACK);
-    for (int w = 0; w < walls.size(); ++w) {
-      walls.get(w).enableRenderNormal(true);
-      walls.get(w).render(paint); // true flag shows normals
+    for (Wall wall : walls) {
+      wall.enableRenderNormal(true);
+      wall.render(paint); // true flag shows normals
     }
 
     // render any obstacles
     paint.setPenColor(Color.BLACK);
 
-    for (int ob = 0; ob < obstacles.size(); ++ob) {
-      paint.drawCircle(obstacles.get(ob).getPosition(), obstacles.get(ob).getBoundingRadius());
-      System.err.println(obstacles.get(ob).getPosition().toString());
+    for (BaseGameEntity obstacle : obstacles) {
+      paint.drawCircle(obstacle.getPosition(), obstacle.getBoundingRadius());
     }
 
     // render the agents
@@ -448,12 +445,10 @@ public final class World extends AbstractHeartBeat {
 
         try {
           workerPool.execute(() -> {
-            List<Vehicle> vehicles = new ArrayList<Vehicle>();
+            List<Vehicle> vehicles;
 
             synchronized (this.vehicles) {
-              this.vehicles.forEach(vehicle -> {
-                vehicles.add(vehicle);
-              });
+              vehicles = new ArrayList<>(this.vehicles);
             }
 
             // update the vehicles
@@ -474,8 +469,8 @@ public final class World extends AbstractHeartBeat {
 
     fps = frameRateSmoother.update(delta);
 
-    for (int i = 0; i < vehicles.size(); ++i) {
-      vehicles.get(i).update(delta);
+    for (Vehicle vehicle : vehicles) {
+      vehicle.update(delta);
     }
   }
 
@@ -497,28 +492,21 @@ public final class World extends AbstractHeartBeat {
 
   @Override
   protected void onAction1() {
-    vehicles.forEach(vehicle -> {
-      vehicle.getBehavior().setSummingMethod(SummingMethod.PRIORITIZED);
-    });
+    vehicles.forEach(vehicle -> vehicle.getBehavior().setSummingMethod(SummingMethod.PRIORITIZED));
   }
 
   @Override
   protected void onAction2() {
-    vehicles.forEach(vehicle -> {
-      vehicle.getBehavior().setSummingMethod(SummingMethod.WEIGHTED_AVERAGE);
-    });
+    vehicles.forEach(vehicle -> vehicle.getBehavior().setSummingMethod(SummingMethod.WEIGHTED_AVERAGE));
   }
 
   @Override
   protected void onAction3() {
-    vehicles.forEach(vehicle -> {
-      vehicle.getBehavior().setSummingMethod(SummingMethod.DITHERED);
-    });
+    vehicles.forEach(vehicle -> vehicle.getBehavior().setSummingMethod(SummingMethod.DITHERED));
   }
 
   @Override
   protected void onMessage(ExtraMessage message) {
-    // System.out.println("World._onMessage(): " + message.getContent().toString());
     if (worldListener == null) {
       return;
     }
@@ -527,13 +515,8 @@ public final class World extends AbstractHeartBeat {
     var id = Integer.parseInt(name);
     try {
       workerPool.execute(() -> {
-        int entityId = id;
-        if (id > paramLoader.NUM_AGENTS - 1) {
-          entityId = paramLoader.NUM_AGENTS - 1;
-        }
-
+        int entityId = Math.min(id, paramLoader.NUM_AGENTS - 1);
         List<Vehicle> neighbours = getNeighboursOf(entityId);
-
         worldListener.responseVehicleNeighbours(name, neighbours, getFps());
       }, name);
     } catch (Exception e) {
@@ -543,13 +526,11 @@ public final class World extends AbstractHeartBeat {
 
   private List<Vehicle> getNeighboursOf(final int index) {
 
-    List<Vehicle> vehicles = new ArrayList<Vehicle>();
-    List<Vehicle> neighbours = new ArrayList<Vehicle>();
+    List<Vehicle> vehicles;
+    List<Vehicle> neighbours = new ArrayList<>();
 
     synchronized (this.vehicles) {
-      this.vehicles.forEach(vehicle -> {
-        vehicles.add(vehicle);
-      });
+      vehicles = new ArrayList<>(this.vehicles);
     }
 
     vehicles.forEach(vehicle -> {

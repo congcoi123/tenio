@@ -1,12 +1,9 @@
 package com.tenio.examples.example4.configuration;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.regex.Pattern;
 
 /**
@@ -15,7 +12,7 @@ import java.util.regex.Pattern;
 public abstract class FileLoaderBase {
 
   private BufferedReader file;
-  private String line = "";
+  private String line;
   private boolean flagGoodFile;
 
   public FileLoaderBase(String filename) {
@@ -53,7 +50,7 @@ public abstract class FileLoaderBase {
 
   private String getNextParameter() throws IOException {
     // this will be the string that holds the next parameter
-    String line = null;
+    String line;
 
     line = file.readLine();
 
@@ -61,7 +58,7 @@ public abstract class FileLoaderBase {
 
     // if the line is of zero length, get the next line from
     // the file
-    if (line.length() == 0) {
+    if (line.isEmpty()) {
       return getNextParameter();
     }
 
@@ -71,7 +68,7 @@ public abstract class FileLoaderBase {
 
   private String getNextToken() throws IOException {
     // strip the line of any commenting
-    while (line.equals("")) {
+    while (line.isEmpty()) {
       line = file.readLine();
       line = removeCommentingFromLine(line);
     }
@@ -111,49 +108,49 @@ public abstract class FileLoaderBase {
   // relevant type
   public double getNextParameterDouble() throws IOException {
     if (flagGoodFile) {
-      return Double.valueOf(getNextParameter());
+      return Double.parseDouble(getNextParameter());
     }
     throw new RuntimeException("bad file");
   }
 
   public float getNextParameterFloat() throws IOException {
     if (flagGoodFile) {
-      return Float.valueOf(getNextParameter());
+      return Float.parseFloat(getNextParameter());
     }
     throw new RuntimeException("bad file");
   }
 
   public int getNextParameterInt() throws IOException {
     if (flagGoodFile) {
-      return Integer.valueOf(getNextParameter());
+      return Integer.parseInt(getNextParameter());
     }
     throw new RuntimeException("bad file");
   }
 
   public boolean getNextParameterBool() throws IOException {
     if (flagGoodFile) {
-      return 0 != Integer.valueOf(getNextParameter());
+      return 0 != Integer.parseInt(getNextParameter());
     }
     throw new RuntimeException("bad file");
   }
 
   public double getNextTokenAsDouble() throws IOException {
     if (flagGoodFile) {
-      return Double.valueOf(getNextToken());
+      return Double.parseDouble(getNextToken());
     }
     throw new RuntimeException("bad file");
   }
 
   public float getNextTokenAsFloat() throws IOException {
     if (flagGoodFile) {
-      return Float.valueOf(getNextToken());
+      return Float.parseFloat(getNextToken());
     }
     throw new RuntimeException("bad file");
   }
 
   public int getNextTokenAsInt() throws IOException {
     if (flagGoodFile) {
-      return Integer.valueOf(getNextToken());
+      return Integer.parseInt(getNextToken());
     }
     throw new RuntimeException("bad file");
   }

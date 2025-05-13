@@ -37,7 +37,7 @@ import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.examples.server.ExampleConfigurationType;
@@ -90,7 +90,7 @@ public final class TestServerCommand {
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult<Player> {
+      implements EventPlayerLoginResult<Player> {
 
     @Override
     public void handle(Player player, PlayerLoggedInResult result) {
