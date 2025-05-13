@@ -61,21 +61,19 @@ public final class Bootstrapper extends SystemLogger {
    *
    * @param entryClass a {@link Class} in the root package
    * @param packages   the scanning {@link String} package names
-   * @return {@code true} if successful, otherwise {@code false}
    * @throws Exception when any exceptions occurred
    */
-  public boolean run(Class<?> entryClass, String... packages) throws Exception {
+  public void run(Class<?> entryClass, String... packages) throws Exception {
     boolean hasExtApplicationAnnotation = entryClass.isAnnotationPresent(Bootstrap.class);
 
     if (hasExtApplicationAnnotation) {
       start(entryClass, packages);
       bootstrapHandler = injector.getBean(BootstrapHandler.class);
+      bootstrapHandler.createReversedClassesMap(injector.getClassesMap());
+      bootstrapHandler.setClassBeansMap(injector.getClassBeansMap());
       bootstrapHandler.setServletMap(injector.getServletBeansMap());
       bootstrapHandler.setSystemCommandManager(injector.getSystemCommandManager());
       bootstrapHandler.setClientCommandManager(injector.getClientCommandManager());
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -85,9 +83,7 @@ public final class Bootstrapper extends SystemLogger {
         injector.scanPackages(entryClass, packages);
       }
     } catch (Exception exception) {
-      if (isErrorEnabled()) {
-        error(exception);
-      }
+      error(exception);
     }
   }
 

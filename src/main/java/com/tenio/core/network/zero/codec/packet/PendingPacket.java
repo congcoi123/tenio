@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.codec.packet;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 /**
  * Holds a pending packet for the next steps.

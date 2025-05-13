@@ -124,6 +124,13 @@ public interface Player {
   long getLastActivityTime();
 
   /**
+   * Retrieves the duration from the last activity.
+   *
+   * @return the duration from the last activity in seconds
+   */
+  long getInactiveTimeInSeconds();
+
+  /**
    * Retrieves the last time when the player receives the last byte of data.
    *
    * @return the last reading new data time in milliseconds ({@code long} value)

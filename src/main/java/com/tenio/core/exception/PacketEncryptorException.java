@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
+import java.io.Serial;
 
 /**
  * When something went wrong with the packet encryption processes.
  */
 public final class PacketEncryptorException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -4260223574425695248L;
 
   /**

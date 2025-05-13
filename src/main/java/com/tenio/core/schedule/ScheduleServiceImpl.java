@@ -100,9 +100,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
 
   @Override
   public void start() {
-    if (isInfoEnabled()) {
-      info("START SERVICE", buildgen(getName(), " (", 1, ")"));
-    }
+    info("START SERVICE", buildgen(getName(), " (", 1, ")"));
 
     taskManager.create("auto-disconnect-player", autoDisconnectPlayerTask.run());
     taskManager.create("auto-clean-orphan-session", autoCleanOrphanSessionTask.run());
@@ -136,9 +134,7 @@ public final class ScheduleServiceImpl extends AbstractManager implements Schedu
   private void attemptToShutdown() {
     taskManager.clear();
 
-    if (isInfoEnabled()) {
-      info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
-    }
+    info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
   }
 
   @Override

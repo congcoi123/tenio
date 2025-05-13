@@ -92,9 +92,7 @@ public final class SystemInfo extends SystemLogger {
       info("NETWORK INFORMATION", logger);
 
     } catch (SocketException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Exception while discovering network cards");
-      }
+      error(exception, "Exception while discovering network cards");
     }
   }
 

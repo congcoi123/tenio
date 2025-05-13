@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.entity.packet.PacketQueue;
+import java.io.Serial;
 
 /**
  * When the packet queue, which is using to send packet from the server to clients side, is full.
  */
 public final class PacketQueueFullException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -2526342485508899328L;
 
   /**

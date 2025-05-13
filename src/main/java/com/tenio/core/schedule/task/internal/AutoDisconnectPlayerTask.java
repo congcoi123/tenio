@@ -72,31 +72,24 @@ public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
     var executors = Executors.newCachedThreadPool(threadFactoryWorker);
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
-          if (isDebugEnabled()) {
-            debug("AUTO DISCONNECT PLAYER",
-                "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
-          }
+          debug("AUTO DISCONNECT PLAYER",
+              "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
           executors.execute(() -> {
             Iterator<Player> iterator = playerManager.getReadonlyPlayersList().listIterator();
             while (iterator.hasNext()) {
               Player player = iterator.next();
               if (player.isNeverDeported()) {
                 if (player.isIdleNeverDeported()) {
-                  if (isDebugEnabled()) {
-                    debug("AUTO DISCONNECT PLAYER",
-                        player.getIdentity(),
-                        " (never deported) is going to be forced to remove by the " +
-                            "cleaning task");
-                  }
+                  debug("AUTO DISCONNECT PLAYER",
+                      player.getIdentity(),
+                      " (never deported) is going to be forced to remove by the cleaning task");
                   ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
                       PlayerDisconnectMode.IDLE);
                 }
               } else {
                 if (player.isIdle()) {
-                  if (isDebugEnabled()) {
-                    debug("AUTO DISCONNECT PLAYER",
-                        player.getIdentity(), " is going to be forced to remove by the cleaning task");
-                  }
+                  debug("AUTO DISCONNECT PLAYER",
+                      player.getIdentity(), " is going to be forced to remove by the cleaning task");
                   ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
                       PlayerDisconnectMode.IDLE);
                 }

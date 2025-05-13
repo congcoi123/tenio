@@ -46,6 +46,7 @@ import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import io.netty.channel.Channel;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -70,13 +71,13 @@ public final class ConnectionEventHandler {
   private EventAccessDatagramChannelRequestValidation eventAccessDatagramChannelRequestValidation;
 
   @AutowiredAcceptNull
-  private EventAccessDatagramChannelRequestValidationResult eventAccessDatagramChannelRequestValidationResult;
+  private EventAccessDatagramChannelRequestValidationResult<Player> eventAccessDatagramChannelRequestValidationResult;
 
   @AutowiredAcceptNull
   private EventAccessKcpChannelRequestValidation eventAccessKcpChannelRequestValidation;
 
   @AutowiredAcceptNull
-  private EventAccessKcpChannelRequestValidationResult eventAccessKcpChannelRequestValidationResult;
+  private EventAccessKcpChannelRequestValidationResult<Player> eventAccessKcpChannelRequestValidationResult;
 
   /**
    * Initialization.
@@ -155,7 +156,7 @@ public final class ConnectionEventHandler {
 
     eventAccessDatagramChannelRequestValidationResultOp.ifPresent(
         event -> eventManager.on(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT, params -> {
-          var player = (Optional<Player>) params[0];
+          var player = Objects.isNull(params[0]) ? null : (Player) params[0];
           var udpConv = (int) params[1];
           var result = (AccessDatagramChannelResult) params[2];
 
@@ -173,7 +174,7 @@ public final class ConnectionEventHandler {
 
     eventAccessKcpChannelRequestValidationResultOp.ifPresent(
         event -> eventManager.on(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT, params -> {
-          var player = (Optional<Player>) params[0];
+          var player = Objects.isNull(params[0]) ? null : (Player) params[0];
           var result = (AccessDatagramChannelResult) params[1];
 
           event.handle(player, result);

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.codec.packet;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**

@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.configuration.define.CoreConfigurationType;
+import java.io.Serial;
 
 /**
  * When an available Udp channel port is requested, but the list is empty. It might be caused by
@@ -35,6 +36,7 @@ import com.tenio.core.configuration.define.CoreConfigurationType;
  */
 public final class EmptyUdpChannelsException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 6979513728417343122L;
 
   /**

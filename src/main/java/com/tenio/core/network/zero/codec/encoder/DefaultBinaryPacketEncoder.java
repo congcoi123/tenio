@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
  *
  * @see BinaryPacketEncoder
  */
-public final class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
+public class DefaultBinaryPacketEncoder implements BinaryPacketEncoder {
 
   private static final int DEFAULT_COMPRESSION_THRESHOLD_BYTES = 3000;
   private static final int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;

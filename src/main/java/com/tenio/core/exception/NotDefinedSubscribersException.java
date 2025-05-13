@@ -24,11 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import java.io.Serial;
+
 /**
  * When a declared event is in missing on defining its subscriber.
  */
 public final class NotDefinedSubscribersException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 4569867192216119437L;
 
   /**

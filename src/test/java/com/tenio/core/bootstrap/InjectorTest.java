@@ -26,6 +26,7 @@ package com.tenio.core.bootstrap;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,11 +74,11 @@ class InjectorTest {
         "com.tenio.core.bootstrap.bean");
     var bean = injector.getBean(BootstrapComponent.class);
     assertAll("scanPackageShouldRetrieveExpectedValues",
-        () -> assertTrue(bean.a instanceof TestClassA),
+        () -> assertInstanceOf(TestClassA.class, bean.a),
         () -> assertNull(bean.b),
-        () -> assertTrue(bean.c instanceof TestClassCCopy),
-        () -> assertTrue(bean.alone instanceof TestClassAlone),
-        () -> assertTrue(bean.bean instanceof TestBeanClass),
+        () -> assertInstanceOf(TestClassCCopy.class, bean.c),
+        () -> assertInstanceOf(TestClassAlone.class, bean.alone),
+        () -> assertInstanceOf(TestBeanClass.class, bean.bean),
         () -> assertEquals("common", bean.beanCommon.text()),
         () -> assertEquals("common a", bean.beanCommonA.text()),
         () -> assertEquals("common b", bean.beanCommonB.text())
@@ -93,8 +94,8 @@ class InjectorTest {
 
     var bean = injector.getBean(BootstrapComponent.class).a;
     assertAll("scanPackageShouldRetrieveInstanceOfA",
-        () -> assertTrue(bean instanceof TestInterfaceA),
-        () -> assertTrue(bean instanceof TestClassA)
+        () -> assertInstanceOf(TestInterfaceA.class, bean),
+        () -> assertInstanceOf(TestClassA.class, bean)
     );
   }
 
@@ -119,8 +120,8 @@ class InjectorTest {
 
     var bean = injector.getBean(BootstrapComponent.class).c;
     assertAll("scanPackageShouldRetrieveInstanceOfC",
-        () -> assertTrue(bean instanceof TestInterfaceC),
-        () -> assertTrue(bean instanceof TestClassCCopy)
+        () -> assertInstanceOf(TestInterfaceC.class, bean),
+        () -> assertInstanceOf(TestClassCCopy.class, bean)
     );
   }
 
@@ -133,27 +134,23 @@ class InjectorTest {
     injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
 
     var bean = injector.getBean(BootstrapComponent.class).alone;
-    assertTrue(bean instanceof TestClassAlone);
+    assertInstanceOf(TestClassAlone.class, bean);
   }
 
   @Test
   @DisplayName("After scanning the package should throw an exception because there are more than " +
       "2 classes implement same interface without @AutowiredQualifier declaration")
   void scanPackageShouldThrowExceptionInInstanceOfD() {
-    assertThrows(MultipleImplementedClassForInterfaceException.class, () -> {
-      injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
-          ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.one");
-    });
+    assertThrows(MultipleImplementedClassForInterfaceException.class, () -> injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
+        ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.one"));
   }
 
   @Test
   @DisplayName("After scanning the package should throw an exception because there is no class " +
       "implement declared interface")
   void scanPackageShouldThrowExceptionInInstanceOfE() {
-    assertThrows(NoImplementedClassFoundException.class, () -> {
-      injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
-          ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.two");
-    });
+    assertThrows(NoImplementedClassFoundException.class, () -> injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
+        ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.two"));
   }
 
   @Test
@@ -166,7 +163,7 @@ class InjectorTest {
 
     var bean = injector.getBean(BootstrapComponent.class).bean;
     assertAll("scanPackageShouldRetrieveInstanceOfBean",
-        () -> assertTrue(bean instanceof TestBeanClass),
+        () -> assertInstanceOf(TestBeanClass.class, bean),
         () -> assertEquals(2022, bean.getValue()),
         () -> assertEquals("This is a bean class", bean.toString())
     );

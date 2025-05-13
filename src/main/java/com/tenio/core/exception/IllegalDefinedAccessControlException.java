@@ -27,6 +27,7 @@ package com.tenio.core.exception;
 
 import com.tenio.core.bootstrap.annotation.Bean;
 import com.tenio.core.bootstrap.injector.Injector;
+import java.io.Serial;
 
 /**
  * The method annotated by {@link Bean} annotation but is not defined as <code>public</code> access.
@@ -36,5 +37,6 @@ import com.tenio.core.bootstrap.injector.Injector;
  */
 public final class IllegalDefinedAccessControlException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -3263083948979983L;
 }

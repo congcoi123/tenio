@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * This case should be checked in the future.
  */
-class BootstrapComponentCircular {
+class BootstrapComponentCircularTest {
 
   @Test
   @Disabled("Disabled until finding the solution")

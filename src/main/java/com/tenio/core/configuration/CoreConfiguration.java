@@ -103,14 +103,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
       }
     }
 
-    // Implemented Classes
-    var attrImplementedClasses = XmlUtility.getNodeList(root, "//Server/Implements/Class");
-    for (int j = 0; j < attrImplementedClasses.getLength(); j++) {
-      var dataNode = attrImplementedClasses.item(j);
-      var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
-      push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
-    }
-
     // Configured Workers
     var attrConfigurationWorkers =
         XmlUtility.getNodeList(root, "//Server/Configuration/Workers/Worker");

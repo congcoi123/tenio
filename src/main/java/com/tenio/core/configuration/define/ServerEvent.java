@@ -36,7 +36,7 @@ import com.tenio.core.handler.event.EventFetchedCcuInfo;
 import com.tenio.core.handler.event.EventPlayerAfterLeftRoom;
 import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
@@ -124,9 +124,9 @@ public enum ServerEvent {
   /**
    * When the server responds a player logged in request.
    *
-   * @see EventPlayerLoggedinResult
+   * @see EventPlayerLoginResult
    */
-  PLAYER_LOGGEDIN_RESULT,
+  PLAYER_LOGIN_RESULT,
   /**
    * When the server handles a reconnection request.
    *

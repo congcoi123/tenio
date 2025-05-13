@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
 /**
  * The default implementation for the binary packet decoding.
  */
-public final class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
+public class DefaultBinaryPacketDecoder implements BinaryPacketDecoder {
 
   private BinaryPacketCompressor compressor;
   private BinaryPacketEncryptor encryptor;

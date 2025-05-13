@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,9 +39,9 @@
     </scm>
 
     <properties>
-        <io.github.congcoi123.tenio.common>0.6.1</io.github.congcoi123.tenio.common>
+        <io.github.congcoi123.tenio.common>0.6.2</io.github.congcoi123.tenio.common>
 
-        <io.netty.version>4.1.108.Final</io.netty.version>
+        <io.netty.version>4.2.1.Final</io.netty.version>
         <org.eclipse.jetty.server.version>12.0.14</org.eclipse.jetty.server.version>
         <org.eclipse.jetty.ee10.servlet.version>12.0.14</org.eclipse.jetty.ee10.servlet.version>
         <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
@@ -65,7 +65,7 @@
 
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
         <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>

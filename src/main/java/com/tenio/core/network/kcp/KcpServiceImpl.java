@@ -90,9 +90,7 @@ public class KcpServiceImpl extends AbstractManager implements KcpService {
         networkReaderStatistic
     ), KcpConfiguration.inTurboMode(), Integer.parseInt(socketConfiguration.port()));
 
-    if (isInfoEnabled()) {
-      info("KCP CHANNEL", buildgen("Started at port: ", socketConfiguration.port()));
-    }
+    info("KCP CHANNEL", buildgen("Started at port: ", socketConfiguration.port()));
   }
 
   @Override
@@ -153,9 +151,7 @@ public class KcpServiceImpl extends AbstractManager implements KcpService {
         try {
           session.close(ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
         } catch (IOException exception) {
-          if (isErrorEnabled()) {
-            error(exception, session.toString());
-          }
+          error(exception, session.toString());
         }
         return;
       }
@@ -167,9 +163,7 @@ public class KcpServiceImpl extends AbstractManager implements KcpService {
         networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());
         networkWriterStatistic.updateWrittenPackets(1);
       } else {
-        if (isDebugEnabled()) {
-          debug("READ KCP CHANNEL", "Session is inactivated: ", session.toString());
-        }
+        debug("READ KCP CHANNEL", "Session is inactivated: ", session.toString());
       }
     }
   }

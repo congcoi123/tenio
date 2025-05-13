@@ -36,8 +36,7 @@ public enum TestConfigurationType implements ConfigurationType {
   CUSTOM_VALUE_4("custom-value-4");
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, TestConfigurationType> lookup =
-      new HashMap<String, TestConfigurationType>();
+  private static final Map<String, TestConfigurationType> lookup = new HashMap<>();
 
   static {
     for (var configurationType : TestConfigurationType.values()) {

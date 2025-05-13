@@ -2,14 +2,15 @@ package com.tenio.core.entity.setting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy;
+import com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy;
 import org.junit.jupiter.api.Test;
 
 class InitialRoomSettingTest {
@@ -19,10 +20,10 @@ class InitialRoomSettingTest {
     assertEquals(0, actualBuildResult.getMaxParticipants());
     assertFalse(actualBuildResult.isActivated());
     assertEquals(RoomRemoveMode.WHEN_EMPTY, actualBuildResult.getRoomRemoveMode());
-    assertTrue(actualBuildResult
-        .getRoomPlayerSlotGeneratedStrategy() instanceof com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy);
-    assertTrue(actualBuildResult
-        .getRoomCredentialValidatedStrategy() instanceof com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy);
+    assertInstanceOf(DefaultRoomPlayerSlotGeneratedStrategy.class, actualBuildResult
+        .getRoomPlayerSlotGeneratedStrategy());
+    assertInstanceOf(DefaultRoomCredentialValidatedStrategy.class, actualBuildResult
+        .getRoomCredentialValidatedStrategy());
     assertEquals(0, actualBuildResult.getMaxSpectators());
     assertNull(actualBuildResult.getPassword());
     assertNull(actualBuildResult.getName());

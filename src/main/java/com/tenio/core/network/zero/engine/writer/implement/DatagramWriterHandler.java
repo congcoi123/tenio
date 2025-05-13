@@ -62,16 +62,12 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
     // the datagram need to be declared first, something went wrong here, need to
     // log the exception content
     if (Objects.isNull(datagramChannel)) {
-      if (isErrorEnabled()) {
-        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-            ", no DatagramChannel was set");
-      }
+      error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+          ", no DatagramChannel was set");
       return;
     } else if (Objects.isNull(remoteSocketAddress)) {
-      if (isErrorEnabled()) {
-        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-            ", no InetSocketAddress was set");
-      }
+      error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+          ", no InetSocketAddress was set");
       return;
     }
 
@@ -82,10 +78,8 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
     try {
       // buffer size is not enough, need to be allocated more bytes
       if (getBuffer().capacity() < sendingData.length) {
-        if (isDebugEnabled()) {
-          debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(),
-              " to ", sendingData.length, " bytes");
-        }
+        debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(),
+            " to ", sendingData.length, " bytes");
         allocateBuffer(sendingData.length);
       }
 
@@ -97,14 +91,6 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
       int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
 
-        /*
-        if (writtenBytes == 0) {
-          if (isErrorEnabled()) {
-            error("{DATAGRAM CHANNEL SEND} ", "Channel writes 0 byte in session: ", session);
-          }
-        }
-        */
-
       // update statistic data
       getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
       getNetworkWriterStatistic().updateWrittenPackets(1);
@@ -112,9 +98,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
       // update statistic data for session
       session.addWrittenBytes(writtenBytes);
     } catch (IOException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Error occurred in writing on session: ", session.toString());
-      }
+      error(exception, "Error occurred in writing on session: ", session.toString());
     }
 
     // it is always safe to remove the packet from queue hence it should be sent

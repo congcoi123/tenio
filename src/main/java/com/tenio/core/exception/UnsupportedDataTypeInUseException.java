@@ -25,12 +25,14 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.common.data.DataType;
+import java.io.Serial;
 
 /**
  * When wrong data serialization type is attempting to be called.
  */
 public final class UnsupportedDataTypeInUseException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 198854106484130706L;
 
   /**

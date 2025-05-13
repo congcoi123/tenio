@@ -35,7 +35,7 @@ import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
-import com.tenio.core.handler.event.EventPlayerLoggedinResult;
+import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
@@ -50,22 +50,22 @@ import java.util.Optional;
 public final class PlayerEventHandler {
 
   @AutowiredAcceptNull
-  private EventPlayerLoggedinResult eventPlayerLoggedInResult;
+  private EventPlayerLoginResult<Player> eventPlayerLoggedInResult;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnectRequestHandle eventPlayerReconnectRequestHandle;
+  private EventPlayerReconnectRequestHandle<Player> eventPlayerReconnectRequestHandle;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnectedResult eventPlayerReconnectedResult;
+  private EventPlayerReconnectedResult<Player> eventPlayerReconnectedResult;
 
   @AutowiredAcceptNull
-  private EventReceivedMessageFromPlayer eventReceivedMessageFromPlayer;
+  private EventReceivedMessageFromPlayer<Player> eventReceivedMessageFromPlayer;
 
   @AutowiredAcceptNull
-  private EventSendMessageToPlayer eventSendMessageToPlayer;
+  private EventSendMessageToPlayer<Player> eventSendMessageToPlayer;
 
   @AutowiredAcceptNull
-  private EventDisconnectPlayer eventDisconnectPlayer;
+  private EventDisconnectPlayer<Player> eventDisconnectPlayer;
 
   /**
    * Initialization.
@@ -91,7 +91,7 @@ public final class PlayerEventHandler {
         Optional.ofNullable(eventDisconnectPlayer);
 
     eventPlayerLoggedInResultOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_LOGGEDIN_RESULT, params -> {
+        event -> eventManager.on(ServerEvent.PLAYER_LOGIN_RESULT, params -> {
           var player = (Player) params[0];
           var result = (PlayerLoggedInResult) params[1];
 

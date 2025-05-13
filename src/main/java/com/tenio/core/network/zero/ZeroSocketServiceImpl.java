@@ -139,11 +139,6 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
     acceptorEngine.shutdown();
     readerEngine.shutdown();
     writerEngine.shutdown();
-
-    destroy();
-  }
-
-  private void destroy() {
   }
 
   @Override

@@ -35,7 +35,6 @@ import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import io.netty.channel.Channel;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -160,27 +159,12 @@ public interface SessionManager extends Manager {
   void configureConnectionFilter(ConnectionFilter connectionFilter);
 
   /**
-   * Sets a packet queue policy class for the session manager.
+   * Sets an instance of packet queue policy for the session manager.
    *
-   * @param clazz the implementation class of {@link PacketQueuePolicy} used to apply rules for
-   *              the packet queue
-   * @throws InstantiationException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException    it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalArgumentException  it is related to the illegal argument exception
-   * @throws InvocationTargetException it is caused by
-   *                                   Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoSuchMethodException     it is caused by
-   *                                   {@link Class#getDeclaredConstructor(Class[])}
-   * @throws SecurityException         it is related to the security exception
    * @see PacketQueue
    * @see DefaultPacketQueuePolicy
    */
-  void configurePacketQueuePolicy(Class<? extends PacketQueuePolicy> clazz)
-      throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException,
-      NoSuchMethodException, SecurityException;
+  void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
 
   /**
    * Sets the packet queue size.
