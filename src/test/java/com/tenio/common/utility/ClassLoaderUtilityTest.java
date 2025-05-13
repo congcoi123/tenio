@@ -26,6 +26,7 @@ package com.tenio.common.utility;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,13 +57,13 @@ class ClassLoaderUtilityTest {
     assertAll("scanPackageShouldReturnListOfClasses",
         () -> assertEquals(3, listClasses.size()),
         () -> assertTrue(
-            listClasses.stream().map(clazz -> clazz.getName()).anyMatch(name -> name.equals(
+            listClasses.stream().map(Class::getName).anyMatch(name -> name.equals(
                 "com.tenio.common.bootstrap.loader.TestClassA"))),
         () -> assertTrue(
-            listClasses.stream().map(clazz -> clazz.getName()).anyMatch(name -> name.equals(
+            listClasses.stream().map(Class::getName).anyMatch(name -> name.equals(
                 "com.tenio.common.bootstrap.loader.TestClassB"))),
         () -> assertTrue(
-            listClasses.stream().map(clazz -> clazz.getName()).anyMatch(name -> name.equals(
+            listClasses.stream().map(Class::getName).anyMatch(name -> name.equals(
                 "com.tenio.common.bootstrap.loader.TestClassC")))
     );
   }
@@ -78,7 +79,7 @@ class ClassLoaderUtilityTest {
   @DisplayName("To be able to scan a package of a jar file and return a list of classes inside it")
   void scanExternalLibraryShouldReturnListOfClasses() throws ClassNotFoundException {
     var listClasses = ClassLoaderUtility.getClasses("com.google.common.annotations");
-    assertTrue(listClasses.size() > 0);
+    assertFalse(listClasses.isEmpty());
   }
 
 

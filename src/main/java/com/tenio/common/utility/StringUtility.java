@@ -86,10 +86,11 @@ public final class StringUtility {
   }
 
   /**
-   * *
-   * @param text
-   * @param trimBy
-   * @return
+   * Trims a string from another string.
+   *
+   * @param text the original text
+   * @param trimBy anchor characters to trim the original text
+   * @return trimmed text
    * @since 0.5.0
    */
   public static String trimStringByString(String text, String trimBy) {

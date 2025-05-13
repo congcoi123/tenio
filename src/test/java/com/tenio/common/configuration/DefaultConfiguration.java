@@ -28,7 +28,7 @@ import java.util.Map;
 
 class DefaultConfiguration extends CommonConfiguration {
 
-  public DummyObject dummyObject = new DummyObject();
+  public final DummyObject dummyObject = new DummyObject();
 
   @Override
   protected void extend(Map<String, String> extProperties) {

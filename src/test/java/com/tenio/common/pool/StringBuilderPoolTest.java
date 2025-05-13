@@ -111,8 +111,6 @@ class StringBuilderPoolTest {
   void repayAnInvalidElementShouldThrowAnException() {
     var pool = StringBuilderPool.getInstance();
 
-    assertThrows(NullElementPoolException.class, () -> {
-      pool.repay(new StringBuilder());
-    });
+    assertThrows(NullElementPoolException.class, () -> pool.repay(new StringBuilder()));
   }
 }

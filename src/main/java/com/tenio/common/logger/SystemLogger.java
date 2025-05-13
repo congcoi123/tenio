@@ -41,7 +41,7 @@ public abstract class SystemLogger extends AbstractLogger {
    * @param msg  the extra information for "type"
    */
   public void debugEvent(String type, Object... msg) {
-    if (!logger.isDebugEnabled()) {
+    if (!isDebugEnabled()) {
       return;
     }
 
@@ -67,7 +67,7 @@ public abstract class SystemLogger extends AbstractLogger {
    * @since 0.5.0
    */
   public void debug(String type, Object... msg) {
-    if (!logger.isDebugEnabled()) {
+    if (!isDebugEnabled()) {
       return;
     }
 
@@ -88,7 +88,7 @@ public abstract class SystemLogger extends AbstractLogger {
    * @param msg  the extra information for "type"
    */
   public void trace(String type, Object... msg) {
-    if (!logger.isTraceEnabled()) {
+    if (!isTraceEnabled()) {
       return;
     }
 
@@ -116,7 +116,7 @@ public abstract class SystemLogger extends AbstractLogger {
    * @param msg      the message content
    */
   public void trace(String where, Object subWhere, String tag, String msg) {
-    if (!logger.isTraceEnabled()) {
+    if (!isTraceEnabled()) {
       return;
     }
 
@@ -126,13 +126,5 @@ public abstract class SystemLogger extends AbstractLogger {
         .append(msg);
     logger.trace(builder.toString());
     stringPool.repay(builder);
-  }
-
-  public boolean isTraceEnabled() {
-    return logger.isTraceEnabled();
-  }
-
-  public boolean isDebugEnabled() {
-    return logger.isDebugEnabled();
   }
 }

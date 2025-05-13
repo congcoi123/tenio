@@ -40,3 +40,7 @@
 - Upgraded dependencies
 - Reworked on ZeroData classes to make them work with lower Java versions
 - Bugs fixed 
+
+## 0.6.2 2025-05-11 Feature release
+- Upgraded dependencies
+- Bugs fixed 

@@ -67,7 +67,7 @@ public final class MsgPackUtility {
    * Deserialize an array of bytes data to a {@link MsgPackMap} object.
    *
    * @param binaries an array of bytes data
-   * @return an message object in {@link MsgPackMap} type
+   * @return a message object in {@link MsgPackMap} type
    */
   public static MsgPackMap deserialize(byte[] binaries) {
     return MsgPackConverter.unpack(binaries);
