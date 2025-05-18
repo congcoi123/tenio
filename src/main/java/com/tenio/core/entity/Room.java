@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,44 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * The abstract room entity used on the server.
+ * Represents a game room entity that manages player interactions and game state.
+ * This interface defines the core functionality for managing game rooms, including
+ * player management, room state control, and room configuration.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Player management (participants and spectators)</li>
+ *   <li>Room state and lifecycle management</li>
+ *   <li>Room configuration and property management</li>
+ *   <li>Player role and slot management</li>
+ *   <li>Room capacity control</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * Room room = new GameRoom();
+ * room.setName("Game Room 1");
+ * room.setMaxParticipants(4);
+ * room.setMaxSpectators(2);
+ * 
+ * try {
+ *     room.addPlayer(player, PlayerRoleInRoom.PARTICIPANT);
+ * } catch (PlayerJoinedRoomException e) {
+ *     // Handle player join failure
+ * }
+ * 
+ * room.setState(RoomState.PLAYING);
+ * </pre>
+ *
+ * <p>Thread safety: Implementations of this interface should be thread-safe
+ * as they may be accessed from multiple threads concurrently. The interface
+ * provides atomic operations for state transitions and player management.
+ *
+ * @see Player
+ * @see RoomState
+ * @see PlayerRoleInRoom
+ * @see RoomRemoveMode
+ * @since 0.3.0
  */
 public interface Room {
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,5 +29,5 @@ import com.tenio.core.network.define.TransportType;
 /**
  * A configuration for a socket.
  */
-public record SocketConfiguration(String name, TransportType type, String port) {
+public record SocketConfiguration(String name, TransportType type, int port, int cacheSize) {
 }

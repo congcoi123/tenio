@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ public class KcpServiceImpl extends AbstractManager implements KcpService {
         sessionManager,
         dataType,
         networkReaderStatistic
-    ), KcpConfiguration.inTurboMode(), Integer.parseInt(socketConfiguration.port()));
+    ), KcpConfiguration.inTurboMode(), socketConfiguration.port());
 
     info("KCP CHANNEL", buildgen("Started at port: ", socketConfiguration.port()));
   }

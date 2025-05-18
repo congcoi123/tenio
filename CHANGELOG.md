@@ -72,3 +72,9 @@
 ## 0.6.2 2025-05-11 Feature release
 - Fixed several issues related to concurrency
 - Allowed dynamically declaring behaviors for packets processing with annotations
+
+## 0.6.3 2025-06-01 Feature release
+- Fixed several bugs
+- Stopped supporting multiple UDP ports, instead it is using datagram channel cache to enhance performance
+- New feature and events added: Channel which allows broadcasting to subscribed players
+

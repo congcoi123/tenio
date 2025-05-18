@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -67,9 +67,35 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.reflections.Reflections;
 
 /**
- * The Injector class supports creating the mechanism for autowiring.
+ * The Injector class provides a dependency injection mechanism for the application.
+ * It supports automatic wiring of components and beans through annotations.
  *
+ * <p>Key features:
+ * <ul>
+ *   <li>Automatic scanning and instantiation of components marked with {@link Component}</li>
+ *   <li>Support for bean factories and bean creation through {@link BeanFactory} and {@link Bean}</li>
+ *   <li>Dependency injection through {@link Autowired} and {@link AutowiredQualifier}</li>
+ *   <li>Thread-safe implementation for concurrent access</li>
+ *   <li>Component lifecycle management</li>
+ *   <li>Error handling and validation</li>
+ *   <li>Circular dependency detection</li>
+ * </ul>
+ *
+ * <p>Thread safety: This class is thread-safe and can be safely accessed
+ * from multiple threads. All operations on the bean registry and component
+ * scanning are synchronized.
+ *
+ * <p>Note: This class is designed to work in conjunction with the
+ * {@link Component}, {@link Bean}, {@link Autowired}, and {@link AutowiredQualifier}
+ * annotations for proper dependency injection.
+ *
+ * @see Component
+ * @see BeanFactory
+ * @see Bean
+ * @see Autowired
+ * @see AutowiredQualifier
  * @see ClassLoaderUtility
+ * @since 0.3.0
  */
 @ThreadSafe
 public final class Injector extends SystemLogger {
@@ -131,24 +157,21 @@ public final class Injector extends SystemLogger {
 
   /**
    * Scans all input packages to create classes' instances and put them into maps.
+   * This method performs component scanning and dependency injection in a single
+   * atomic operation.
    *
    * @param entryClass the root class which should be located in the parent package of other
    *                   class' packages
    * @param packages   a list of packages' names. It allows to define the scanning packages by
    *                   their names
-   * @throws InstantiationException          it is caused by
-   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException          it is caused by
-   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws ClassNotFoundException          it is caused by
-   *                                         {@link #getImplementedClass(Class, String, Class)}
-   * @throws IllegalArgumentException        it is related to the illegal argument exception
-   * @throws InvocationTargetException       it is caused by
-   *                                         Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoSuchMethodException           it is caused by
-   *                                         {@link Class#getDeclaredConstructor(Class[])}
-   * @throws SecurityException               it is related to the security exception
-   * @throws DuplicatedBeanCreationException when a same bean was created more than one time
+   * @throws InstantiationException          if a class cannot be instantiated
+   * @throws IllegalAccessException          if a class or its constructor is not accessible
+   * @throws ClassNotFoundException          if a required class cannot be found
+   * @throws IllegalArgumentException        if invalid arguments are provided
+   * @throws InvocationTargetException       if a constructor throws an exception
+   * @throws NoSuchMethodException           if a required method cannot be found
+   * @throws SecurityException               if a security violation occurs
+   * @throws DuplicatedBeanCreationException if a bean is created more than once
    */
   @SuppressWarnings("unchecked")
   public void scanPackages(Class<?> entryClass, String... packages)
@@ -454,6 +477,7 @@ public final class Injector extends SystemLogger {
 
   /**
    * Retrieves an instance which is declared in a class's field and put it in map of beans as well.
+   * This method handles dependency injection for field-level autowiring.
    *
    * @param classInterface the interface using to create a new bean
    * @param fieldName      the name of class's field that holds a reference of a bean in a class
@@ -462,23 +486,14 @@ public final class Injector extends SystemLogger {
    * @param classQualifier this value aims to differentiate which implemented class should be
    *                       used to create the bean (instance)
    * @return a bean object, an instance of the implemented class
-   * @throws ClassNotFoundException                        it is caused by
-   *                                                       {@link #getImplementedClass(Class, String, Class)}
-   * @throws NoSuchMethodException                         it is caused by
-   *                                                       Class#getDeclaredConstructor(Class[])
-   * @throws InvocationTargetException                     it is caused by
-   *                                                       Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws InstantiationException                        it is caused by
-   * @throws IllegalAccessException                        it is caused by
-   *                                                       Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws NoImplementedClassFoundException              this exception should be thrown
-   *                                                       when there is no {@link Component} annotation associated class found for the corresponding
-   *                                                       declared field in a class
-   * @throws MultipleImplementedClassForInterfaceException this exception would be thrown when
-   *                                                       there are more than 1 {@link Component} annotation associated with classes that implement
-   *                                                       a same interface
-   *                                                       Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws DuplicatedBeanCreationException               when a same bean was created more than one time*
+   * @throws ClassNotFoundException                        if a required class cannot be found
+   * @throws NoSuchMethodException                         if a required method cannot be found
+   * @throws InvocationTargetException                     if a constructor throws an exception
+   * @throws InstantiationException                        if a class cannot be instantiated
+   * @throws IllegalAccessException                        if a class or its constructor is not accessible
+   * @throws NoImplementedClassFoundException              if no implementation class is found
+   * @throws MultipleImplementedClassForInterfaceException if multiple implementations are found
+   * @throws DuplicatedBeanCreationException               if a bean is created more than once
    */
   private Object getBeanInstanceForInjector(Class<?> classInterface, String fieldName,
                                             String nameQualifier, Class<?> classQualifier)
@@ -542,17 +557,17 @@ public final class Injector extends SystemLogger {
 
   /**
    * Assigns bean (instance) values to its corresponding fields in a class.
+   * This method performs field-level dependency injection.
    *
    * @param beanClass the target class that holds declared bean fields
    * @param bean      the bean (instance) associated with the declared field
-   * @throws IllegalArgumentException        it is related to the illegal argument exception
-   * @throws SecurityException               it is related to the security exception
-   * @throws NoSuchMethodException           it is caused by Class#getDeclaredConstructor(Class[])
-   * @throws InvocationTargetException       it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws InstantiationException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws IllegalAccessException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws InstantiationException          it is caused by Class#getDeclaredConstructor(Class[])#newInstance()
-   * @throws DuplicatedBeanCreationException when a same bean was created more than one time
+   * @throws IllegalArgumentException        if invalid arguments are provided
+   * @throws SecurityException               if a security violation occurs
+   * @throws NoSuchMethodException           if a required method cannot be found
+   * @throws InvocationTargetException       if a constructor throws an exception
+   * @throws InstantiationException          if a class cannot be instantiated
+   * @throws IllegalAccessException          if a class or its constructor is not accessible
+   * @throws DuplicatedBeanCreationException if a bean is created more than once
    */
   private void autowire(BeanClass beanClass, Object bean)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,

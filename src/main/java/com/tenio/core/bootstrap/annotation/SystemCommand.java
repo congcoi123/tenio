@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,10 +35,42 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * A class annotated by this annotation will allow modifying the server's behavior.
+ * Annotation used to mark classes that implement system command handlers.
+ * Classes annotated with this annotation will be automatically registered with the
+ * system command manager and can handle system-level commands.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Automatic command registration</li>
+ *   <li>Integration with system command manager</li>
+ *   <li>Command label specification</li>
+ *   <li>Runtime retention for reflection-based processing</li>
+ *   <li>Type-level annotation</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * &#64;SystemCommand("shutdown")
+ * public class ShutdownCommandHandler extends AbstractSystemCommandHandler {
+ *     &#64;Override
+ *     public void execute(String[] args) {
+ *         // Handle shutdown command
+ *         System.exit(0);
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>Note: Classes annotated with this annotation:
+ * <ul>
+ *   <li>Must extend {@link AbstractSystemCommandHandler}</li>
+ *   <li>Will be automatically registered with {@link SystemCommandManager}</li>
+ *   <li>Should provide a unique command label</li>
+ *   <li>Must implement the command execution logic</li>
+ * </ul>
  *
  * @see AbstractSystemCommandHandler
  * @see SystemCommandManager
+ * @see AddedDuplicatedCommandException
  * @since 0.4.0
  */
 @Retention(RUNTIME)
@@ -47,10 +79,10 @@ import java.lang.annotation.Target;
 public @interface SystemCommand {
 
   /**
-   * Retrieves the label of command, that should be unique, otherwise, an exception will be thrown.
+   * The label used to identify and invoke the system command.
+   * This label must be unique across all registered system commands.
    *
-   * @return the {@link String} label of command
-   * @see AddedDuplicatedCommandException
+   * @return the command label
    */
   String label() default "";
 

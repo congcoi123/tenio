@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,28 @@ import java.util.concurrent.atomic.AtomicLong;
 import kcp.Ukcp;
 
 /**
- * When a connection connected to the server, it is managed by a corresponding session.
+ * Represents a network session that manages communication between the server and clients.
+ * This interface defines the core functionality for handling network connections,
+ * data transfer, and session lifecycle management.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Network connection management</li>
+ *   <li>Data transfer tracking (bytes read/written)</li>
+ *   <li>Session state and lifecycle control</li>
+ *   <li>Player association management</li>
+ *   <li>Idle state monitoring</li>
+ * </ul>
+ *
+ * <p>Thread safety: Implementations of this interface should be thread-safe
+ * as they may be accessed from multiple threads concurrently. The interface
+ * provides atomic operations for state transitions and data transfer tracking.
+ *
+ * @see SessionManager
+ * @see AssociatedState
+ * @see ConnectionDisconnectMode
+ * @see PlayerDisconnectMode
+ * @since 0.3.0
  */
 public interface Session {
 

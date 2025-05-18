@@ -21,8 +21,7 @@
 			<Port name="tcp" type="tcp">8032</Port>
 			<Port name="websocket" type="websocket">8033</Port>
 			<Port name="kcp" type="kcp">20003</Port>
-			<!-- It supports multiple ports, separated by commas -->
-			<Port name="udp" type="udp">20004,20005,20006</Port>
+			<Port name="udp" type="udp" cacheSize="10">20004</Port>
 			<Port name="http" type="http">9999</Port>
 		</Sockets>
 		<Properties>

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,34 @@ import com.tenio.core.service.Service;
 import com.tenio.core.service.ServiceListener;
 
 /**
- * All supported APIs for a controller.
+ * Represents a controller that manages request processing in the application.
+ * This interface extends both {@link Service} and {@link ServiceListener} to provide
+ * request handling capabilities with service lifecycle management.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Request queue management with configurable size limits</li>
+ *   <li>Thread pool management for request processing</li>
+ *   <li>Service lifecycle integration</li>
+ *   <li>Request processing monitoring and metrics</li>
+ *   <li>Priority-based request handling</li>
+ *   <li>Request validation and error handling</li>
+ *   <li>Performance monitoring capabilities</li>
+ * </ul>
+ *
+ * <p>Thread safety: Implementations of this interface should be thread-safe
+ * as they handle concurrent request processing. The interface provides atomic
+ * operations for request queue management and thread pool control.
+ *
+ * <p>Note: This interface is designed to work in conjunction with the
+ * {@link Service} and {@link ServiceListener} interfaces for proper lifecycle
+ * management and event handling.
+ *
+ * @see Service
+ * @see ServiceListener
+ * @see Request
+ * @see RequestQueueFullException
+ * @since 0.3.0
  */
 public interface Controller extends Service, ServiceListener {
 

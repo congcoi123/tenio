@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,8 +37,10 @@ import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.configuration.setting.Setting;
+import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.entity.manager.implement.ChannelManagerImpl;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.implement.EventManager;
@@ -86,6 +88,7 @@ public final class ServerImpl extends SystemLogger implements Server {
   private final EventManager eventManager;
   private final RoomManager roomManager;
   private final PlayerManager playerManager;
+  private final ChannelManager channelManager;
   private final DatagramChannelManager datagramChannelManager;
   private final InternalProcessorService internalProcessorService;
   private final ScheduleService scheduleService;
@@ -101,8 +104,9 @@ public final class ServerImpl extends SystemLogger implements Server {
     eventManager = EventManager.newInstance();
     roomManager = RoomManagerImpl.newInstance(eventManager);
     playerManager = PlayerManagerImpl.newInstance(eventManager);
+    channelManager = ChannelManagerImpl.newInstance(eventManager);
     datagramChannelManager = DatagramChannelManager.newInstance();
-    networkService = NetworkServiceImpl.newInstance(eventManager);
+    networkService = NetworkServiceImpl.newInstance(eventManager, datagramChannelManager);
     serverApi = ServerApiImpl.newInstance(this);
     internalProcessorService = InternalProcessorServiceImpl.newInstance(eventManager, serverApi, datagramChannelManager);
     scheduleService = ScheduleServiceImpl.newInstance(eventManager);
@@ -244,7 +248,7 @@ public final class ServerImpl extends SystemLogger implements Server {
         Objects.nonNull(httpConfiguration) ?
             configuration.getInt(CoreConfigurationType.WORKER_HTTP_WORKER) : 0,
         Objects.nonNull(httpConfiguration) ?
-            Integer.parseInt(((SocketConfiguration) httpConfiguration).port()) : 0,
+            ((SocketConfiguration) httpConfiguration).port() : 0,
         Objects.nonNull(httpConfiguration) ? servletMap : null);
 
     networkService.setSocketAcceptorServerAddress(
@@ -255,17 +259,24 @@ public final class ServerImpl extends SystemLogger implements Server {
     networkService.setSocketAcceptorWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_ACCEPTOR));
 
+    var udpSocketConfiguration = Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_UDP)) ?
+        (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_UDP) : null;
+    var kcpSocketConfiguration = Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_KCP)) ?
+        (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_KCP) : null;
     networkService.setSocketConfiguration(
         (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_TCP)) ?
             (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP) : null),
-        (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_UDP)) ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_UDP) : null),
+        udpSocketConfiguration,
         (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET)) ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) :
-            null),
-        (Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_KCP)) ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_KCP) :
-            null));
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) : null),
+        kcpSocketConfiguration);
+
+    if (Objects.nonNull(udpSocketConfiguration)) {
+      datagramChannelManager.configureUdpPort(udpSocketConfiguration.port());
+    }
+    if (Objects.nonNull(kcpSocketConfiguration)) {
+      datagramChannelManager.configureKcpPort(kcpSocketConfiguration.port());
+    }
 
     networkService.setSocketReaderBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
@@ -443,6 +454,11 @@ public final class ServerImpl extends SystemLogger implements Server {
   @Override
   public RoomManager getRoomManager() {
     return roomManager;
+  }
+
+  @Override
+  public ChannelManager getChannelManager() {
+    return channelManager;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,25 @@ import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationException;
 
 /**
- * This class provides a comparator using for sort the requests bases on their priorities in
- * the controller requests queue.
+ * A comparator implementation for sorting requests in the controller's request queue
+ * based on their priority levels. This class ensures that high-priority requests
+ * are processed before lower-priority ones.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Priority-based request ordering</li>
+ *   <li>Support for all {@link RequestPriority} levels</li>
+ *   <li>Null-safe comparison</li>
+ *   <li>Consistent ordering for equal priorities</li>
+ * </ul>
+ *
+ * <p>Thread safety: This class is thread-safe as it is stateless and
+ * implements a pure comparison function.
  *
  * @see RequestPriority
  * @see AbstractController
+ * @see Request
+ * @see Comparator
  */
 public final class RequestComparator implements Comparator<Request> {
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,28 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.exception;
+package com.tenio.core.handler.event;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import java.io.Serial;
+import com.tenio.core.entity.Channel;
+import com.tenio.core.entity.Player;
 
 /**
- * When an available Udp channel port is requested, but the list is empty. It might be caused by
- * the size of {@link CoreConfigurationType#NETWORK_UDP} equals to {@code 0}, or there was some
- * exception occurred while establishing Udp channels.
+ * When a player subscribed to a channel.
  *
- * @since 0.3.0
+ * @since 0.6.3
  */
-public final class EmptyUdpChannelsException extends RuntimeException {
-
-  @Serial
-  private static final long serialVersionUID = 6979513728417343122L;
+@FunctionalInterface
+public interface EventPlayerSubscribedChannel<P extends Player> {
 
   /**
-   * Initialization.
+   * When a player subscribed to a channel.
+   *
+   * @param channel an instance of {@link Channel}
+   * @param player  the {@link Player} which subscribed to the channel
+   * @since 0.6.3
    */
-  public EmptyUdpChannelsException() {
-    super("The list is empty, please check in configuration.xml file if value of udp-channel is " +
-        "greater than 0, or make sure there is no exception while establishing udp channels");
-  }
+  void handle(Channel channel, P player);
 }

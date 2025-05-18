@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -352,6 +352,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
   @Override
   public void onRunning() {
+    // Default read buffer is DIRECT
     ByteBuffer readerBuffer = ByteBuffer.allocateDirect(getMaxBufferSize());
 
     while (!Thread.currentThread().isInterrupted()) {
