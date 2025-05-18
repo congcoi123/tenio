@@ -19,7 +19,7 @@
 	<Network>
 		<Sockets>
 			<Port name="tcp" type="tcp">8032</Port>
-			<Port name="udp" type="udp">20004,20005,20006,20007,20008,20009</Port>
+			<Port name="udp" type="udp" cacheSize="80">20004</Port>
 		</Sockets>
 		<Properties>
 			<Property name="websocket-using-ssl">false</Property>
@@ -36,13 +36,13 @@
 
 	<Configuration>
 		<Workers>
-			<Worker name="socket-acceptor">10</Worker>
-			<Worker name="socket-reader">40</Worker>
-			<Worker name="socket-writer">60</Worker>
+			<Worker name="socket-acceptor">8</Worker>
+			<Worker name="socket-reader">16</Worker>
+			<Worker name="socket-writer">16</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
 			<Worker name="http-worker">8</Worker>
-			<Worker name="internal-processor">40</Worker>
+			<Worker name="internal-processor">8</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 

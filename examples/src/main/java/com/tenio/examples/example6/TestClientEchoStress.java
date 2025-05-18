@@ -48,7 +48,7 @@ import java.util.Map;
 public final class TestClientEchoStress implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
-  private static final int NUMBER_CLIENTS = 1000;
+  private static final int NUMBER_CLIENTS = 2000;
   private static final boolean ENABLED_DEBUG = true;
   /**
    * List of TCP clients
@@ -69,9 +69,7 @@ public final class TestClientEchoStress implements SocketListener {
       request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
       tcp.send(request);
 
-      if (ENABLED_DEBUG) {
-        System.err.println("Login Request -> " + request);
-      }
+      System.err.println("Login Request -> " + request);
     }
   }
 
