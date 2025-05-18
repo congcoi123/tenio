@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,7 @@ import com.tenio.core.network.zero.ZeroSocketService;
 import com.tenio.core.network.zero.ZeroSocketServiceImpl;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import jakarta.servlet.http.HttpServlet;
 import java.util.Collection;
 import java.util.Map;
@@ -77,7 +78,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   private boolean socketServiceInitialized;
   private boolean kcpChannelServiceInitialized;
 
-  private NetworkServiceImpl(EventManager eventManager) {
+  private NetworkServiceImpl(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
     super(eventManager);
 
     initialized = false;
@@ -93,7 +94,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
     httpService = JettyHttpService.newInstance(eventManager);
     webSocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
-    socketService = ZeroSocketServiceImpl.newInstance(eventManager);
+    socketService = ZeroSocketServiceImpl.newInstance(eventManager, datagramChannelManager);
     kcpChannelService = KcpServiceImpl.newInstance(eventManager);
   }
 
@@ -101,10 +102,11 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
    * Creates a new instance of the network service.
    *
    * @param eventManager the instance of {@link EventManager}
+   * @param datagramChannelManager the instance of {@link DatagramChannelManager}
    * @return a new instance of {@link NetworkService}
    */
-  public static NetworkService newInstance(EventManager eventManager) {
-    return new NetworkServiceImpl(eventManager);
+  public static NetworkService newInstance(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+    return new NetworkServiceImpl(eventManager, datagramChannelManager);
   }
 
   @Override

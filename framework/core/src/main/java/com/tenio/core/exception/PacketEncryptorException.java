@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,30 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
+import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import java.io.Serial;
 
 /**
- * When something went wrong with the packet encryption processes.
+ * Exception thrown when an error occurs during packet encryption or decryption.
+ * This exception is used to wrap and propagate errors that occur during the encryption
+ * or decryption of network packets.
+ *
+ * <p>Common causes:
+ * <ul>
+ *   <li>Invalid encryption key or initialization vector</li>
+ *   <li>Corrupted or tampered encrypted data</li>
+ *   <li>Encryption algorithm errors</li>
+ *   <li>Incompatible encryption formats</li>
+ * </ul>
+ *
+ * <p>Note: This exception preserves the original cause of the encryption error
+ * through the cause chain, making it easier to diagnose the root cause of
+ * encryption failures.
+ *
+ * @see BinaryPacketEncryptor
+ * @see Packet
+ * @since 0.3.0
  */
 public final class PacketEncryptorException extends RuntimeException {
 

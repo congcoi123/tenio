@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.manager;
 
-import com.tenio.core.exception.EmptyUdpChannelsException;
+import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.exception.EmptyDatagramChannelsException;
 import com.tenio.core.manager.Manager;
+import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,18 +38,22 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class DatagramChannelManager implements Manager {
 
+  private volatile int udpPort;
+  private volatile int kcpPort;
   private final AtomicInteger udpConveyIdGenerator;
   private final AtomicInteger kcpConveyIdGenerator;
   @GuardedBy("this")
-  private final List<Integer> udpPorts;
+  private final List<DatagramChannel> channels;
   @GuardedBy("this")
-  private int currentUdpPortIndex;
+  private int currentChannelIndex;
 
   private DatagramChannelManager() {
+    udpPort = CoreConstant.NULL_PORT_VALUE;
+    kcpPort = CoreConstant.NULL_PORT_VALUE;
     udpConveyIdGenerator = new AtomicInteger(0);
     kcpConveyIdGenerator = new AtomicInteger(0);
-    udpPorts = new ArrayList<>();
-    currentUdpPortIndex = -1;
+    channels = new ArrayList<>();
+    currentChannelIndex = -1;
   }
 
   /**
@@ -60,29 +66,48 @@ public class DatagramChannelManager implements Manager {
   }
 
   /**
-   * Appends a new port into the list.
+   * Configures UDP port.
    *
-   * @param udpPort a new {@code integer} value of available UDP channel
+   * @param udpPort UDP port
    */
-  public synchronized void appendUdpPort(int udpPort) {
-    udpPorts.add(udpPort);
+  public void configureUdpPort(int udpPort) {
+    this.udpPort = udpPort;
   }
 
   /**
-   * Retrieves the current available UDP port, applies the "round-robin" algorithm.
+   * Configures KCP port.
    *
-   * @return an {@code integer} value of UDP port
+   * @param kcpPort KCP port
    */
-  public synchronized int getCurrentAvailableUdpPort() {
-    int size = udpPorts.size();
+  public void configureKcpPort(int kcpPort) {
+    this.kcpPort = kcpPort;
+  }
+
+  /**
+   * Appends a new datagram channel into the list.
+   *
+   * @param datagramChannel a new {@link DatagramChannel} instance
+   */
+  public synchronized void addChannel(DatagramChannel datagramChannel) {
+    channels.add(datagramChannel);
+  }
+
+  /**
+   * Retrieves the current available datagram channel from cache, applies the "round-robin"
+   * algorithm.
+   *
+   * @return an {@link DatagramChannel} instance
+   */
+  public synchronized DatagramChannel getChannel() {
+    int size = channels.size();
     if (size == 0) {
-      throw new EmptyUdpChannelsException();
+      throw new EmptyDatagramChannelsException();
     }
-    currentUdpPortIndex++;
-    if (currentUdpPortIndex >= size) {
-      currentUdpPortIndex = 0;
+    currentChannelIndex++;
+    if (currentChannelIndex >= size) {
+      currentChannelIndex = 0;
     }
-    return udpPorts.get(currentUdpPortIndex);
+    return channels.get(currentChannelIndex);
   }
 
   /**
@@ -103,5 +128,23 @@ public class DatagramChannelManager implements Manager {
    */
   public int getCurrentKcpConveyId() {
     return kcpConveyIdGenerator.getAndIncrement();
+  }
+
+  /**
+   * Retrieves UDP port.
+   *
+   * @return the UDP port
+   */
+  public int getUdpPort() {
+    return udpPort;
+  }
+
+  /**
+   * Retrieves KCP port.
+   *
+   * @return the KCP port
+   */
+  public int getKcpPort() {
+    return kcpPort;
   }
 }

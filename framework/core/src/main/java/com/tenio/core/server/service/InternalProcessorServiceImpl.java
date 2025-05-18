@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -254,6 +254,8 @@ public final class InternalProcessorServiceImpl extends AbstractController
       var player = playerManager.getPlayerByIdentity(session.getName());
       // the player maybe existed
       if (Objects.nonNull(player)) {
+        // unsubscribe it from all channels
+        serverApi.unsubscribeFromAllChannels(player);
         // player should leave room (if applicable) first
         if (player.isInRoom()) {
           serverApi.leaveRoom(player, PlayerLeaveRoomMode.DEFAULT);

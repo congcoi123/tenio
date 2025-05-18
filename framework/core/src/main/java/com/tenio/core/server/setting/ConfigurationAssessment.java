@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,28 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Asserting the configuration files.
+ * Performs validation and assessment of server configuration settings.
+ * This class is responsible for verifying the correctness and completeness
+ * of server configuration, including data serialization settings, subscriber
+ * definitions, and network protocol configurations.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Configuration validation</li>
+ *   <li>Subscriber verification</li>
+ *   <li>Network protocol assessment</li>
+ *   <li>Data serialization checks</li>
+ *   <li>Exception handling for misconfigurations</li>
+ * </ul>
+ *
+ * <p>Note: This class performs critical validation of server configuration
+ * and should be used during server initialization to ensure proper setup.
+ *
+ * @see EventManager
+ * @see Configuration
+ * @see NotDefinedSubscribersException
+ * @see ConfigurationException
+ * @since 0.3.0
  */
 public final class ConfigurationAssessment {
 
@@ -54,22 +75,29 @@ public final class ConfigurationAssessment {
   }
 
   /**
-   * Retrieves a new instance of configuration assessment.
+   * Creates a new instance of configuration assessment.
    *
-   * @param eventManager an instance of {@link EventManager}
-   * @param configuration and instance of {@link Configuration}
+   * @param eventManager   the {@link EventManager} instance for event handling
+   * @param configuration  the {@link Configuration} instance to assess
    * @return a new instance of {@link ConfigurationAssessment}
    */
   public static ConfigurationAssessment newInstance(EventManager eventManager,
-                                                    Configuration configuration) {
+                                                  Configuration configuration) {
     return new ConfigurationAssessment(eventManager, configuration);
   }
 
   /**
-   * Assessment.
+   * Performs a comprehensive assessment of the server configuration.
+   * This method validates various aspects of the configuration including:
+   * <ul>
+   *   <li>Data serialization settings</li>
+   *   <li>Subscriber definitions for reconnection</li>
+   *   <li>Network protocol handlers</li>
+   *   <li>Socket connection configurations</li>
+   * </ul>
    *
-   * @throws NotDefinedSubscribersException an exception
-   * @throws ConfigurationException         an exception
+   * @throws NotDefinedSubscribersException if required subscribers are not defined
+   * @throws ConfigurationException if configuration settings are invalid
    */
   public void assess() throws NotDefinedSubscribersException, ConfigurationException {
     checkDataSerialization();
@@ -79,6 +107,10 @@ public final class ConfigurationAssessment {
     checkDefinedMainSocketConnection();
   }
 
+  /**
+   * Validates the data serialization configuration.
+   * Ensures that a valid data serialization type is specified.
+   */
   private void checkDataSerialization() {
     var dataSerialization = configuration.getString(CoreConfigurationType.DATA_SERIALIZATION);
     if (Objects.isNull(DataType.getByValue(dataSerialization))) {
@@ -88,6 +120,11 @@ public final class ConfigurationAssessment {
     }
   }
 
+  /**
+   * Verifies that required subscribers for reconnection handling are defined.
+   *
+   * @throws NotDefinedSubscribersException if required subscribers are missing
+   */
   private void checkSubscriberReconnection() throws NotDefinedSubscribersException {
     if (configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION)) {
       if (!eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE)
@@ -98,6 +135,11 @@ public final class ConfigurationAssessment {
     }
   }
 
+  /**
+   * Validates the presence of required subscribers for datagram channel handling.
+   *
+   * @throws NotDefinedSubscribersException if required subscribers are missing
+   */
   private void checkSubscriberRequestAccessingDatagramChannelHandler()
       throws NotDefinedSubscribersException {
     if (containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
@@ -110,6 +152,11 @@ public final class ConfigurationAssessment {
     }
   }
 
+  /**
+   * Validates the presence of required subscribers for KCP channel handling.
+   *
+   * @throws NotDefinedSubscribersException if required subscribers are missing
+   */
   private void checkSubscriberRequestAccessingKcpChannelHandler()
       throws NotDefinedSubscribersException {
     if (containsTcpSocketConfiguration() && containsKcpSocketConfiguration()) {
@@ -122,20 +169,40 @@ public final class ConfigurationAssessment {
     }
   }
 
+  /**
+   * Verifies that at least one main socket connection type is configured.
+   *
+   * @throws ConfigurationException if no valid socket connection is configured
+   */
   private void checkDefinedMainSocketConnection() throws ConfigurationException {
     if (!containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
       throw new ConfigurationException("TCP connection was not defined");
     }
   }
 
+  /**
+   * Checks if TCP socket configuration is present.
+   *
+   * @return {@code true} if TCP socket configuration exists
+   */
   private boolean containsTcpSocketConfiguration() {
     return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_TCP));
   }
 
+  /**
+   * Checks if UDP socket configuration is present.
+   *
+   * @return {@code true} if UDP socket configuration exists
+   */
   private boolean containsUdpSocketConfiguration() {
     return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_UDP));
   }
 
+  /**
+   * Checks if KCP socket configuration is present.
+   *
+   * @return {@code true} if KCP socket configuration exists
+   */
   private boolean containsKcpSocketConfiguration() {
     return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_KCP));
   }

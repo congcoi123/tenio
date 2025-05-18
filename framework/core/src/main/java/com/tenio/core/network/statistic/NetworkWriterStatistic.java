@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,36 @@ THE SOFTWARE.
 
 package com.tenio.core.network.statistic;
 
+import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * This class supports creating an instance for holding the network written data to clients side.
+ * Tracks and manages network writing statistics for the server.
+ * This class provides thread-safe counters for monitoring bytes written,
+ * packets sent, and dropped packets due to policy violations or queue overflow.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Thread-safe counters</li>
+ *   <li>Bytes written tracking</li>
+ *   <li>Packet count monitoring</li>
+ *   <li>Dropped packet statistics (policy and queue overflow)</li>
+ *   <li>Singleton instance management</li>
+ * </ul>
+ *
+ * @see NetworkReaderStatistic
+ * @see PacketQueue
+ * @see PacketQueuePolicy
+ * @since 0.3.0
  */
 public final class NetworkWriterStatistic {
 
-  private final AtomicLong writtenBytes;
-  private final AtomicLong writtenPackets;
-  private final AtomicLong writtenDroppedPacketsByPolicy;
-  private final AtomicLong writtenDroppedPacketsByFull;
+  private volatile long writtenBytes;
+  private volatile long writtenPackets;
+  private volatile long writtenDroppedPacketsByPolicy;
+  private volatile long writtenDroppedPacketsByFull;
 
   private NetworkWriterStatistic() {
-    writtenBytes = new AtomicLong();
-    writtenPackets = new AtomicLong();
-    writtenDroppedPacketsByPolicy = new AtomicLong();
-    writtenDroppedPacketsByFull = new AtomicLong();
   }
 
   /**
@@ -59,7 +71,7 @@ public final class NetworkWriterStatistic {
    * @param numberBytes {@code long} value, the number of sent bytes data to clients side
    */
   public void updateWrittenBytes(long numberBytes) {
-    writtenBytes.addAndGet(numberBytes);
+    writtenBytes += numberBytes;
   }
 
   /**
@@ -68,7 +80,7 @@ public final class NetworkWriterStatistic {
    * @param numberPackets {@code long} value, the number of sent packets to clients side
    */
   public void updateWrittenPackets(long numberPackets) {
-    writtenPackets.addAndGet(numberPackets);
+    writtenPackets += numberPackets;
   }
 
   /**
@@ -80,7 +92,7 @@ public final class NetworkWriterStatistic {
    * @see PacketQueuePolicy
    */
   public void updateWrittenDroppedPacketsByPolicy(long numberPackets) {
-    writtenDroppedPacketsByPolicy.addAndGet(numberPackets);
+    writtenDroppedPacketsByPolicy += numberPackets;
   }
 
   /**
@@ -92,7 +104,7 @@ public final class NetworkWriterStatistic {
    * @see PacketQueuePolicy
    */
   public void updateWrittenDroppedPacketsByFull(long numberPackets) {
-    writtenDroppedPacketsByFull.addAndGet(numberPackets);
+    writtenDroppedPacketsByFull += numberPackets;
   }
 
   /**
@@ -101,7 +113,7 @@ public final class NetworkWriterStatistic {
    * @return {@code long} value, the current number of sending bytes data to clients side
    */
   public long getWrittenBytes() {
-    return writtenBytes.longValue();
+    return writtenBytes;
   }
 
   /**
@@ -110,7 +122,7 @@ public final class NetworkWriterStatistic {
    * @return {@code long} value, the current number of sending packets to clients side
    */
   public long getWrittenPackets() {
-    return writtenPackets.longValue();
+    return writtenPackets;
   }
 
   /**
@@ -121,7 +133,7 @@ public final class NetworkWriterStatistic {
    * @see PacketQueuePolicy
    */
   public long getWrittenDroppedPacketsByPolicy() {
-    return writtenDroppedPacketsByPolicy.longValue();
+    return writtenDroppedPacketsByPolicy;
   }
 
   /**
@@ -132,7 +144,7 @@ public final class NetworkWriterStatistic {
    * @see PacketQueuePolicy
    */
   public long getWrittenDroppedPacketsByFull() {
-    return writtenDroppedPacketsByFull.longValue();
+    return writtenDroppedPacketsByFull;
   }
 
   /**
@@ -143,7 +155,7 @@ public final class NetworkWriterStatistic {
    * @see #getWrittenDroppedPacketsByFull
    */
   public long getWrittenDroppedPackets() {
-    return writtenDroppedPacketsByPolicy.longValue() + writtenDroppedPacketsByFull.longValue();
+    return writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull;
   }
 
   @Override

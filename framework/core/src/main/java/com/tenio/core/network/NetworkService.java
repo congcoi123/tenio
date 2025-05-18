@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,38 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
- * All designed APIs for the network services.
+ * Defines the core network service functionality for the game server.
+ * This interface provides comprehensive network management capabilities including
+ * HTTP, WebSocket, TCP, UDP, and KCP protocol support.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Multi-protocol support (HTTP, WebSocket, TCP, UDP, KCP)</li>
+ *   <li>Connection filtering and security</li>
+ *   <li>Configurable worker thread pools</li>
+ *   <li>Buffer size management</li>
+ *   <li>SSL/TLS support for WebSocket</li>
+ *   <li>Network statistics tracking</li>
+ *   <li>Packet queue management</li>
+ * </ul>
+ *
+ * <p>Configuration categories:
+ * <ul>
+ *   <li>HTTP Service: Web server configuration and servlet mapping</li>
+ *   <li>WebSocket Service: Real-time communication settings</li>
+ *   <li>Socket Service: TCP/UDP connection management</li>
+ *   <li>KCP Service: Reliable UDP implementation</li>
+ *   <li>Security: Connection filtering and SSL/TLS</li>
+ * </ul>
+ *
+ * <p>Note: This service is responsible for managing all network-related
+ * operations and should be properly configured before starting the server.
+ *
+ * @see NetworkServiceImpl
+ * @see SessionManager
+ * @see ConnectionFilter
+ * @see PacketQueue
+ * @since 0.3.0
  */
 public interface NetworkService extends Service {
 

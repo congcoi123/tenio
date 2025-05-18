@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,35 @@ import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 /**
- * The creation of a boostrap.
+ * Handles the initialization and bootstrapping of the game server application.
+ * This class is responsible for scanning and initializing components, managing
+ * dependency injection, and setting up the application's core services.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Component scanning and initialization</li>
+ *   <li>Dependency injection management</li>
+ *   <li>Command handler registration</li>
+ *   <li>Servlet bean management</li>
+ *   <li>Singleton instance management</li>
+ * </ul>
+ *
+ * <p>Initialization process:
+ * <ol>
+ *   <li>Scan specified packages for annotated components</li>
+ *   <li>Initialize dependency injection container</li>
+ *   <li>Register command handlers</li>
+ *   <li>Configure servlet beans</li>
+ *   <li>Set up bootstrap handler</li>
+ * </ol>
+ *
+ * <p>Note: This class implements the singleton pattern and should be accessed
+ * through the {@link #newInstance()} method.
+ *
+ * @see Bootstrap
+ * @see Injector
+ * @see BootstrapHandler
+ * @since 0.3.0
  */
 public final class Bootstrapper extends SystemLogger {
 

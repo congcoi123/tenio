@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
-import com.tenio.core.server.ServerImpl;
+import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -58,6 +58,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   private final List<SocketChannel> acceptableSockets;
   private final List<SelectableChannel> boundSockets;
+  private final DatagramChannelManager datagramChannelManager;
   private Selector acceptableSelector;
   private ConnectionFilter connectionFilter;
   private ZeroReaderListener zeroReaderListener;
@@ -65,9 +66,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private SocketConfiguration tcpSocketConfiguration;
   private SocketConfiguration udpSocketConfiguration;
 
-  private ZeroAcceptorImpl(EventManager eventManager) {
+  private ZeroAcceptorImpl(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
     super(eventManager);
-
+    this.datagramChannelManager = datagramChannelManager;
     acceptableSockets = new ArrayList<>();
     boundSockets = new ArrayList<>();
 
@@ -78,10 +79,11 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
    * Creates a new instance of acceptor engine.
    *
    * @param eventManager the instance of {@link EventManager}
+   * @param datagramChannelManager the instance of {@link DatagramChannelManager}
    * @return a new instance of {@link ZeroAcceptor}
    */
-  public static ZeroAcceptor newInstance(EventManager eventManager) {
-    return new ZeroAcceptorImpl(eventManager);
+  public static ZeroAcceptor newInstance(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+    return new ZeroAcceptorImpl(eventManager, datagramChannelManager);
   }
 
   private void initializeSocketChannel() throws ServiceRuntimeException {
@@ -99,10 +101,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
   private void bindSocketChannel(SocketConfiguration tcpSocketConfiguration, SocketConfiguration udpSocketConfiguration)
       throws ServiceRuntimeException {
     if (tcpSocketConfiguration.type() == TransportType.TCP) {
-      bindTcpSocket(Integer.parseInt(tcpSocketConfiguration.port()));
+      bindTcpSocket(tcpSocketConfiguration.port());
     }
     if (Objects.nonNull(udpSocketConfiguration) && udpSocketConfiguration.type() == TransportType.UDP) {
-      bindUdpChannel(udpSocketConfiguration.port());
+      bindUdpChannel(udpSocketConfiguration.port(), udpSocketConfiguration.cacheSize());
     }
   }
 
@@ -128,15 +130,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
     }
   }
 
-  private void bindUdpChannel(String ports) throws ServiceRuntimeException {
-    String[] portStrings = ports.trim().split(",");
-    List<Integer> portValues = new ArrayList<>();
-    for (String portString : portStrings) {
-      portValues.add(Integer.parseInt(portString.trim()));
-    }
+  private void bindUdpChannel(int port, int cacheSize) throws ServiceRuntimeException {
     try {
       synchronized (boundSockets) {
-        for (int portValue : portValues) {
+        for (int index = 0; index < cacheSize; index++) {
           var datagramChannel = DatagramChannel.open();
           datagramChannel.configureBlocking(false);
           if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
@@ -145,17 +142,17 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
             datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
           }
           datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
-          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, portValue));
+          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, port));
           // udp datagram is a connectionless protocol, we don't need to create
           // bi-direction connection, that why it's not necessary to register it to
           // acceptable selector. Just leave it to the reader selector later
           zeroReaderListener.acceptDatagramChannel(datagramChannel);
-          int boundPort = datagramChannel.socket().getLocalPort();
-          ServerImpl.getInstance().getDatagramChannelManager().appendUdpPort(boundPort);
-          info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ", boundPort));
+          datagramChannelManager.addChannel(datagramChannel);
           boundSockets.add(datagramChannel);
         }
       }
+      info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ",
+          port, ", cache: ", cacheSize));
     } catch (IOException exception) {
       throw new ServiceRuntimeException(exception.getMessage());
     }

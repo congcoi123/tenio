@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -133,7 +133,7 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
             NettyWsInitializer.newInstance(eventManager, sessionManager, connectionFilter, dataType,
                 networkReaderStatistic, sslContext, usingSsl));
 
-    var channelFuture = bootstrap.bind(Integer.parseInt(socketConfiguration.port())).sync()
+    var channelFuture = bootstrap.bind(socketConfiguration.port()).sync()
         .addListener(future -> {
           if (!future.isSuccess()) {
             error(future.cause());

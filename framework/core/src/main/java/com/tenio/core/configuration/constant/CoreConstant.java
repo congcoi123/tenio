@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,75 +24,100 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.constant;
 
-import com.tenio.common.data.zero.ZeroArray;
-import com.tenio.common.data.zero.ZeroMap;
-import com.tenio.core.bootstrap.Bootstrapper;
-import com.tenio.core.network.zero.engine.implement.ZeroReaderImpl;
-
 /**
- * This class holds constant values for the module.
+ * Defines core constants used throughout the server application.
+ * This class provides centralized access to commonly used constant values,
+ * including character encodings, content types, default package names,
+ * and configuration settings.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Character encoding constants</li>
+ *   <li>Content type definitions</li>
+ *   <li>Default package paths</li>
+ *   <li>Configuration defaults</li>
+ *   <li>Network protocol constants</li>
+ * </ul>
+ *
+ * <p>Note: This class contains only static final fields and should not be instantiated.
+ * All constants are immutable and thread-safe.
+ *
+ * @since 0.3.0
  */
 public final class CoreConstant {
 
   /**
-   * The HTTP response with UTF-8 encoding.
+   * UTF-8 character encoding constant.
+   * Used for string encoding and decoding operations.
    */
   public static final String UTF_8 = "UTF-8";
+
   /**
-   * The HTTP response with content type in JSON.
+   * JSON content type constant.
+   * Used for HTTP responses and content negotiation.
    */
   public static final String CONTENT_TYPE_JSON = "application/json";
+
   /**
-   * The HTTP response with content type in text.
+   * HTML content type constant.
+   * Used for HTTP responses serving HTML content.
    */
   public static final String CONTENT_TYPE_TEXT = "text/html";
+
   /**
-   * The server's default configuration file name.
+   * Default configuration file name.
+   * Used when no specific configuration file is provided.
    */
   public static final String DEFAULT_CONFIGURATION_FILE = "configuration.xml";
+
   /**
-   * The default bootstrap package name using for the bootstrap to scan all classes inside it.
-   *
-   * @see Bootstrapper
+   * Default package path for bootstrap components.
+   * Used for component scanning and initialization.
    */
   public static final String DEFAULT_BOOTSTRAP_PACKAGE = "com.tenio.core.bootstrap";
+
   /**
-   * The default events package name using for the bootstrap to scan all event interfaces inside it.
-   *
-   * @see Bootstrapper
+   * Default package path for event handling components.
+   * Used for event subscriber scanning and registration.
    */
   public static final String DEFAULT_EVENT_PACKAGE = "com.tenio.core.event";
+
   /**
-   * The default commands package.
+   * Default package path for command handling components.
+   * Used for command handler scanning and registration.
    */
   public static final String DEFAULT_COMMAND_PACKAGE = "com.tenio.core.command";
+
   /**
-   * The default restful controllers package.
+   * Default package path for REST controller components.
+   * Used for REST endpoint scanning and registration.
    */
   public static final String DEFAULT_REST_CONTROLLER_PACKAGE = "com.tenio.core.network.jetty" +
       ".controller";
+
   /**
-   * The default key value which carries the convey ID. This is for the first connection to UDP
-   * channel on the server side from the client.
-   *
-   * @see ZeroReaderImpl
+   * Default key for UDP convey ID in packet data.
+   * Used for UDP packet identification and routing.
    */
   public static final String DEFAULT_KEY_UDP_CONVEY_ID = "u";
+
   /**
-   * The default data value which carries message (array, map). This is for the first connection to
-   * UDP channel on the server side from the client.
-   *
-   * @see ZeroReaderImpl
-   * @see ZeroArray
-   * @see ZeroMap
+   * Default key for UDP message data in packet data.
+   * Used for UDP packet payload identification.
    */
   public static final String DEFAULT_KEY_UDP_MESSAGE_DATA = "d";
+
   /**
-   * When the required port is unavailable but the client still inquiries it.
+   * Null port value constant.
+   * Used to indicate an unassigned or invalid port number.
    */
   public static final int NULL_PORT_VALUE = -1;
 
+  /**
+   * Private constructor to prevent instantiation.
+   * This class should not be instantiated as it contains only constants.
+   */
   private CoreConstant() {
-    throw new UnsupportedOperationException("This class does not support to create a new instance");
+    throw new UnsupportedOperationException("This class should not be instantiated");
   }
 }

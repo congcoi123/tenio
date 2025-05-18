@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,16 +41,45 @@ import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 
 /**
- * This class provides all the necessary APIs for a logic game handling.
+ * Abstract base class that provides core functionality for game logic handling.
+ * This class serves as a foundation for implementing game-specific handlers,
+ * offering access to server configuration, API, and data manipulation utilities.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Server configuration and API access</li>
+ *   <li>Client command management</li>
+ *   <li>Response creation and data manipulation</li>
+ *   <li>Data type-specific array and map creation</li>
+ *   <li>Logging and error handling</li>
+ *   <li>Event management integration</li>
+ * </ul>
+ *
+ * <p>Thread safety: This class is not thread-safe by default. Implementations
+ * should ensure thread safety if the handler is accessed from multiple threads.
+ * The server configuration and API access methods are thread-safe.
+ *
+ * <p>Note: This class extends {@link SystemLogger} to provide logging capabilities
+ * and maintains a reference to the server instance for accessing core functionality.
+ * Handlers should be properly initialized before use.
+ *
+ * @see Server
+ * @see ServerApi
+ * @see Configuration
+ * @see Response
+ * @see DataType
+ * @see SystemLogger
+ * @since 0.3.0
  */
 public abstract class AbstractHandler extends SystemLogger {
 
   private final Server server = ServerImpl.getInstance();
 
   /**
-   * Retrieves the server's configuration.
+   * Retrieves the server configuration.
+   * This method provides access to the server's configuration settings.
    *
-   * @return the {@link Configuration}
+   * @return the server's {@link Configuration} instance
    */
   protected final Configuration configuration() {
     return server.getConfiguration();
@@ -85,9 +114,11 @@ public abstract class AbstractHandler extends SystemLogger {
   }
 
   /**
-   * Retrieves a zero array instance when the {@link DataType} in use is {@link DataType#ZERO}.
+   * Creates a new array based on the server's data type.
+   * For ZERO data type, returns a {@link ZeroArray}.
    *
-   * @return an instance of {@link ZeroArray}
+   * @return a new array instance appropriate for the server's data type
+   * @throws UnsupportedDataTypeInUseException if the server's data type is not ZERO
    */
   protected final ZeroArray array() {
     if (server.getDataType() != DataType.ZERO) {
@@ -97,9 +128,11 @@ public abstract class AbstractHandler extends SystemLogger {
   }
 
   /**
-   * Retrieves a zero map instance when the {@link DataType} in use is {@link DataType#ZERO}.
+   * Creates a new map based on the server's data type.
+   * For ZERO data type, returns a {@link ZeroMap}.
    *
-   * @return an instance of {@link ZeroMap}
+   * @return a new map instance appropriate for the server's data type
+   * @throws UnsupportedDataTypeInUseException if the server's data type is not ZERO
    */
   protected final ZeroMap map() {
     if (server.getDataType() != DataType.ZERO) {

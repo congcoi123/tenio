@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,26 @@ import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 
 /**
- * This class provides an instance of the server's configuration.
+ * Provides access to the server's configuration instance.
+ * This class serves as a component that manages and provides access to the server's
+ * configuration settings. It is designed to be used with dependency injection and
+ * component scanning.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Configuration instance management</li>
+ *   <li>Dependency injection support</li>
+ *   <li>Component-based architecture</li>
+ * </ul>
+ *
+ * <p>Note: This class is annotated with {@link Component} to enable automatic
+ * component scanning and dependency injection. The configuration instance is
+ * injected using the {@link Autowired} annotation.
+ *
+ * @see Component
+ * @see Autowired
+ * @see Configuration
+ * @since 0.3.0
  */
 @Component
 public final class ConfigurationHandler {

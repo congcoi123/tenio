@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,24 @@ import com.tenio.core.bootstrap.annotation.Component;
 import java.io.Serial;
 
 /**
- * This exception should be thrown when there is no {@link Component} annotation associated class
- * found for the corresponding declared field in a class.
+ * Exception thrown when a required implementation class cannot be found or instantiated.
+ * This exception occurs when the system attempts to load or create an instance of a
+ * required class but fails to find a valid implementation.
+ *
+ * <p>Common causes:
+ * <ul>
+ *   <li>Missing implementation class in classpath</li>
+ *   <li>Class instantiation failures</li>
+ *   <li>Incompatible implementation version</li>
+ *   <li>Class loading errors</li>
+ * </ul>
+ *
+ * <p>Note: This exception provides information about the class that was attempted
+ * to be loaded, helping to identify which implementation needs to be provided.
+ *
+ * @see ClassLoader
+ * @see Class
+ * @since 0.3.0
  */
 public final class NoImplementedClassFoundException extends RuntimeException {
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,24 @@ import com.tenio.core.event.Subscriber;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * An instance which creates a mapping between a server event type with its corresponding
- * subscriber.
+ * Represents a mapping between a server event and its corresponding subscriber.
+ * This class provides an immutable container for event-subscriber pairs, ensuring
+ * thread-safe access to event handling logic.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Immutable event-subscriber mapping</li>
+ *   <li>Thread-safe access</li>
+ *   <li>Factory method for instance creation</li>
+ *   <li>Event and subscriber retrieval</li>
+ * </ul>
+ *
+ * <p>Note: This class is thread-safe and can be safely shared between multiple threads.
+ * Instances should be created using the factory method {@link #newInstance(ServerEvent, Subscriber)}.
+ *
+ * @see ServerEvent
+ * @see Subscriber
+ * @since 0.3.0
  */
 @ThreadSafe
 public final class EventSubscriber {

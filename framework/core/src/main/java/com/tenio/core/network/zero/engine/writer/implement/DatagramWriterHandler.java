@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package com.tenio.core.network.zero.engine.writer.implement;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -35,16 +36,20 @@ import java.util.Objects;
  */
 public final class DatagramWriterHandler extends AbstractWriterHandler {
 
-  private DatagramWriterHandler() {
+  private final DatagramChannelManager datagramChannelManager;
+
+  private DatagramWriterHandler(DatagramChannelManager datagramChannelManager) {
+    this.datagramChannelManager = datagramChannelManager;
   }
 
   /**
    * Retrieves a new instance of datagram writer handler.
    *
+   * @param datagramChannelManager an instance of {@link DatagramChannelManager}
    * @return a new instance of {@link DatagramWriterHandler}
    */
-  public static DatagramWriterHandler newInstance() {
-    return new DatagramWriterHandler();
+  public static DatagramWriterHandler newInstance(DatagramChannelManager datagramChannelManager) {
+    return new DatagramWriterHandler(datagramChannelManager);
   }
 
   @Override
@@ -89,7 +94,8 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
       // ready to send
       getBuffer().flip();
 
-      int writtenBytes = datagramChannel.send(getBuffer(), remoteSocketAddress);
+      var datagramChannelCache = datagramChannelManager.getChannel();
+      int writtenBytes = datagramChannelCache.send(getBuffer(), remoteSocketAddress);
 
       // update statistic data
       getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);

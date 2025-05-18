@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.tenio.core.configuration.define;
 
 import com.tenio.common.configuration.ConfigurationType;
 import com.tenio.common.data.DataType;
+import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.exception.PacketQueueFullException;
@@ -35,10 +36,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This server needs some basic configuration to start running. The
- * configuration file can be defined as an XML file. See an example in
- * <b>configuration.example.xml</b>. You can also extend this file to create your own
- * configuration values.
+ * Defines the core configuration types used throughout the server.
+ * This enum provides a centralized way to manage and access various server
+ * configuration parameters, including server properties, worker thread settings,
+ * network configurations, and player/room management settings.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Server identity and version management</li>
+ *   <li>Worker thread pool configuration</li>
+ *   <li>Network and socket settings</li>
+ *   <li>Player and room management parameters</li>
+ *   <li>System monitoring and maintenance settings</li>
+ * </ul>
+ *
+ * <p>Configuration categories:
+ * <ul>
+ *   <li>Server Properties: Basic server identification and settings</li>
+ *   <li>Worker Settings: Thread pool configurations for various tasks</li>
+ *   <li>Network Properties: Socket and connection settings</li>
+ *   <li>Player Properties: Player management and behavior settings</li>
+ *   <li>Room Properties: Room management and behavior settings</li>
+ * </ul>
+ *
+ * @see CoreConfiguration
+ * @see ConfigurationType
+ * @since 0.3.0
  */
 public enum CoreConfigurationType implements ConfigurationType {
 

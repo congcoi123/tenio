@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,8 +58,8 @@ class ConfigurationTest {
     var tcp = (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP);
     var webSocket = (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET);
     assertAll("getSocketPortsConfiguration",
-        () -> assertEquals("8032", tcp.port()),
-        () -> assertEquals("8033", webSocket.port()),
+        () -> assertEquals(8032, tcp.port()),
+        () -> assertEquals(8033, webSocket.port()),
         () -> assertEquals(TransportType.TCP, tcp.type()),
         () -> assertEquals(TransportType.WEB_SOCKET, webSocket.type())
     );

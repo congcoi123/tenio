@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +32,27 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * The smallest unit to hold and transfer data from the server to clients.
+ * Represents the smallest unit of data transfer between the server and clients.
+ * This class encapsulates network communication data with support for different
+ * transport types and priority levels.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Multiple transport type support (TCP, WebSocket, UDP)</li>
+ *   <li>Priority-based packet handling</li>
+ *   <li>Session association</li>
+ *   <li>Deep copy capabilities</li>
+ *   <li>Last packet marking for connection closure</li>
+ * </ul>
+ *
+ * <p>Thread safety: This class is not thread-safe and should be used
+ * within a thread-safe context like {@link PacketQueue}.
  *
  * @see PacketQueue
  * @see PacketQueuePolicy
+ * @see TransportType
+ * @see ResponsePriority
+ * @see Session
  */
 public interface Packet {
 

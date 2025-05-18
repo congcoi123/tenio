@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
 import com.tenio.core.entity.define.result.PlayerLoggedInResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.implement.DefaultPlayer;
+import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
@@ -75,6 +76,9 @@ class ServerApiTest {
 
   @Mock
   RoomManager roomManager;
+
+  @Mock
+  ChannelManager channelManager;
 
   @Mock
   DatagramChannelManager datagramChannelManager;
@@ -188,6 +192,7 @@ class ServerApiTest {
   @DisplayName("When it tries to logout a player in a room, the player should leave the room first")
   void itLogoutPlayerInRoomShouldLeaveRoomFirst() {
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var player = Mockito.mock(Player.class);
@@ -203,6 +208,7 @@ class ServerApiTest {
       "exception RemovedNonExistentPlayer should be thrown")
   void itLogoutPlayerNotInRoomShouldHaveRemovedNonExistentPlayerException() {
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var player = Mockito.mock(Player.class);
@@ -366,9 +372,9 @@ class ServerApiTest {
     Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(roomList);
     Assertions.assertEquals(roomList, serverApi.getReadonlyRoomsList());
 
-    // getCurrentAvailableUdpPort()
-    Mockito.when(datagramChannelManager.getCurrentAvailableUdpPort()).thenReturn(8048);
-    Assertions.assertEquals(8048, serverApi.getCurrentAvailableUdpPort());
+    // getUdpPort()
+    Mockito.when(datagramChannelManager.getUdpPort()).thenReturn(8048);
+    Assertions.assertEquals(8048, serverApi.getUdpPort());
 
     // getStartedTime
     Mockito.when(server.getStartedTime()).thenReturn(100000L);

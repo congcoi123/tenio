@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,28 @@ import java.util.List;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
- * This class for managing events and these subscribers.
+ * Manages events and their subscribers in the game server.
+ * This class provides a centralized event management system that handles event emission,
+ * subscription, and logging. It extends SystemLogger to provide logging capabilities
+ * for event-related operations.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Event emission with parameter passing</li>
+ *   <li>Event subscription management</li>
+ *   <li>Event tracing and debugging</li>
+ *   <li>Thread-safe event handling</li>
+ *   <li>Event result collection</li>
+ * </ul>
+ *
+ * <p>Note: This class is not thread-safe and should be used in a single-threaded context
+ * or with proper synchronization.
+ *
+ * @see ServerEvent
+ * @see EventSubscriber
+ * @see EventProducer
+ * @see SystemLogger
+ * @since 0.3.0
  */
 @NotThreadSafe
 public final class EventManager extends SystemLogger {

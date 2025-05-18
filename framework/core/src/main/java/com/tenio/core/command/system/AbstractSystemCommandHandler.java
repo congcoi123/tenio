@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,65 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The base class for all self defined commands.
+ * Abstract base class for implementing system-level command handlers.
+ * This class provides a foundation for handling system commands with support
+ * for command metadata, background execution, and command management.
  *
+ * <p>Key features:
+ * <ul>
+ *   <li>Command metadata management (label, usage, description)</li>
+ *   <li>Background execution support</li>
+ *   <li>Integration with system command manager</li>
+ *   <li>Command execution lifecycle</li>
+ *   <li>Error handling and logging</li>
+ *   <li>Command argument processing</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * &#64;SystemCommand(
+ *     label = "SHUTDOWN",
+ *     description = "Shuts down the server gracefully",
+ *     usage = {"SHUTDOWN [delay]", "SHUTDOWN -f"},
+ *     isBackgroundRunning = false
+ * )
+ * public class ShutdownCommandHandler extends AbstractSystemCommandHandler {
+ *     &#64;Override
+ *     public void execute(List<String> args) {
+ *         try {
+ *             // Parse command arguments
+ *             boolean force = args.contains("-f");
+ *             int delay = args.stream()
+ *                 .filter(arg -> !arg.startsWith("-"))
+ *                 .mapToInt(Integer::parseInt)
+ *                 .findFirst()
+ *                 .orElse(0);
+ *             
+ *             // Implement shutdown logic
+ *             getCommandManager().broadcast("Server is shutting down...");
+ *             if (!force) {
+ *                 Thread.sleep(delay * 1000);
+ *             }
+ *             System.exit(0);
+ *         } catch (Exception e) {
+ *             error("Failed to shutdown server: " + e.getMessage());
+ *         }
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>Thread safety: This class is not thread-safe by default. Implementations
+ * should ensure thread safety if the command handler is accessed from multiple
+ * threads. The command manager reference is not thread-safe and should be
+ * accessed with proper synchronization.
+ *
+ * <p>Note: Command handlers should be annotated with {@link SystemCommand}
+ * to be properly registered with the system command manager. The command
+ * manager must be set before the handler can be used.
+ *
+ * @see SystemCommand
+ * @see SystemCommandManager
+ * @see AbstractHandler
  * @since 0.4.0
  */
 public abstract class AbstractSystemCommandHandler extends AbstractHandler {
@@ -40,17 +97,23 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
 
   /**
    * Retrieves the command label.
+   * The label is used to identify and invoke the command.
+   * This value is obtained from the {@link SystemCommand} annotation.
    *
    * @return a {@link String} value of the command label
+   * @throws IllegalStateException if the class is not properly annotated
    */
   public String getLabel() {
     return getClass().getAnnotation(SystemCommand.class).label();
   }
 
   /**
-   * Retrieves the command usage (manual).
+   * Retrieves the command usage instructions.
+   * These instructions provide guidance on how to use the command.
+   * This value is obtained from the {@link SystemCommand} annotation.
    *
    * @return an array of instructions in {@link String} values
+   * @throws IllegalStateException if the class is not properly annotated
    */
   public String[] getUsage() {
     return getClass().getAnnotation(SystemCommand.class).usage();
@@ -58,8 +121,11 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
 
   /**
    * Retrieves the command description.
+   * The description provides a brief explanation of the command's purpose.
+   * This value is obtained from the {@link SystemCommand} annotation.
    *
    * @return a {@link String} value of the command description
+   * @throws IllegalStateException if the class is not properly annotated
    */
   public String getDescription() {
     return getClass().getAnnotation(SystemCommand.class).description();
@@ -67,9 +133,13 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
 
   /**
    * Checks whether the command should be running in background.
+   * Background commands are executed in a separate thread to avoid
+   * blocking the main command processing thread.
+   * This value is obtained from the {@link SystemCommand} annotation.
    *
-   * @return {@code true} if the command should be running in the background, otherwise, returns
-   * {@code false}
+   * @return {@code true} if the command should be running in the background,
+   *         otherwise returns {@code false}
+   * @throws IllegalStateException if the class is not properly annotated
    */
   public boolean isRunningBackground() {
     return getClass().getAnnotation(SystemCommand.class).isBackgroundRunning();
@@ -77,26 +147,41 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
 
   /**
    * Retrieves the system command manager.
+   * The command manager provides access to system-wide command functionality.
    *
    * @return an instance of {@link SystemCommandManager}
+   * @throws IllegalStateException if the command manager has not been set
    */
   public SystemCommandManager getCommandManager() {
+    if (systemCommandManager == null) {
+      throw new IllegalStateException("Command manager not initialized");
+    }
     return systemCommandManager;
   }
 
   /**
-   * Sets a value for system command manager.
+   * Sets the system command manager.
+   * This method is called during command handler initialization.
+   * The command manager must be set before the handler can be used.
    *
    * @param systemCommandManager an instance of {@link SystemCommandManager}
+   * @throws IllegalArgumentException if the command manager is null
    */
   public void setCommandManager(SystemCommandManager systemCommandManager) {
+    if (systemCommandManager == null) {
+      throw new IllegalArgumentException("Command manager cannot be null");
+    }
     this.systemCommandManager = systemCommandManager;
   }
 
   /**
-   * It is called when the server invokes a command.
+   * Executes the command with the provided arguments.
+   * This method must be implemented by concrete command handlers to
+   * provide the actual command functionality.
    *
-   * @param args The arguments to the command
+   * @param args the command arguments as a list of strings
+   * @throws IllegalArgumentException if the arguments are invalid
+   * @throws IllegalStateException if the command manager is not initialized
    */
   public abstract void execute(List<String> args);
 
