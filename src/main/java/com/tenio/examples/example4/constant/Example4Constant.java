@@ -41,7 +41,7 @@ public final class Example4Constant {
 
   public static final int ONE_SECOND_EXPECT_RECEIVE_PACKETS = 10;
 
-  public static final int ONE_MINUTE_EXPECT_RECEIVE_PACKETS =
+  public static final int ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS =
       ONE_SECOND_EXPECT_RECEIVE_PACKETS * 60 * NUMBER_OF_PLAYERS;
 
   private Example4Constant() {

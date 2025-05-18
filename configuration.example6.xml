@@ -29,19 +29,19 @@
 			<Property name="socket-writer-buffer-size">1024</Property>
 			<Property name="packet-compression-threshold-bytes">10240</Property>
 			<Property name="allow-change-session">false</Property>
-			<Property name="max-connections-per-ip">1000</Property>
+			<Property name="max-connections-per-ip">2000</Property>
 		</Properties>
 	</Network>
 
 	<Configuration>
 		<Workers>
-			<Worker name="socket-acceptor">5</Worker>
-			<Worker name="socket-reader">30</Worker>
-			<Worker name="socket-writer">30</Worker>
+			<Worker name="socket-acceptor">8</Worker>
+			<Worker name="socket-reader">16</Worker>
+			<Worker name="socket-writer">16</Worker>
 			<Worker name="websocket-producer">1</Worker>
 			<Worker name="websocket-consumer">2</Worker>
 			<Worker name="http-worker">8</Worker>
-			<Worker name="internal-processor">20</Worker>
+			<Worker name="internal-processor">8</Worker>
 		</Workers>
 		<Schedules>
 			<!-- Get the period checking in seconds which server can keep the empty 
@@ -61,13 +61,13 @@
 		</Schedules>
 		<Properties>
 			<Property name="data-serialization">zero</Property>
-			<Property name="max-packet-queue-size">300</Property>
-			<Property name="max-request-queue-size">300</Property>
+			<Property name="max-packet-queue-size">2000</Property>
+			<Property name="max-request-queue-size">2000</Property>
 			<!-- When the server get disconnection of one client, can be hold its 
 				player instance until timeout -->
 			<Property name="keep-player-on-disconnection">false</Property>
 			<!-- The maximum number of players which game can handle -->
-			<Property name="max-number-players">1000</Property>
+			<Property name="max-number-players">2000</Property>
 			<!-- The maximum number of rooms which game can handle -->
 			<Property name="max-number-rooms">1000</Property>
 			<!-- The max IDLE time in seconds which server can wait from the last 

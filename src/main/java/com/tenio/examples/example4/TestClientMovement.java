@@ -176,8 +176,8 @@ public final class TestClientMovement extends AbstractLogger
 
             int countPackets = localCounter.getCountUdpPacketsOneMinute();
             double lostPacket =
-                ((double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS - countPackets)
-                    / (double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_PACKETS) * (double) 100;
+                ((double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS - countPackets)
+                    / (double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS) * (double) 100;
 
             statistic.addLostPackets(lostPacket);
             logLostPacket(lostPacket);
