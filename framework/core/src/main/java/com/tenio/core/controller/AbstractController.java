@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * The abstracted class for a controller.
+ * An abstract base class for implementing request controllers in the application.
+ * This class provides a foundation for handling and processing requests with
+ * configurable thread pools and queue management.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Thread pool management for request processing</li>
+ *   <li>Priority-based request queue</li>
+ *   <li>Configurable queue size limits</li>
+ *   <li>Request processing metrics</li>
+ *   <li>Service lifecycle integration</li>
+ *   <li>Request validation and error handling</li>
+ *   <li>Performance monitoring capabilities</li>
+ * </ul>
+ *
+ * <p>Thread safety: This class is thread-safe and handles concurrent
+ * request processing through its thread pool and queue mechanisms.
+ * All queue operations are synchronized to prevent race conditions.
+ *
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>Queue size should be configured based on expected load</li>
+ *   <li>Thread pool size should match available CPU cores</li>
+ *   <li>Request processing should be optimized for throughput</li>
+ *   <li>Error handling should not block the processing queue</li>
+ * </ul>
+ *
+ * @see Controller
+ * @see Request
+ * @see RequestQueueFullException
+ * @see RequestComparator
+ * @since 0.3.0
  */
 public abstract class AbstractController extends AbstractManager implements Controller, Runnable {
 
@@ -211,6 +242,9 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
   @Override
   public void setMaxRequestQueueSize(int maxSize) {
+    if (maxSize < 1) {
+      throw new IllegalArgumentException("Max queue size must be greater than 0");
+    }
     maxQueueSize = maxSize;
   }
 
@@ -221,6 +255,9 @@ public abstract class AbstractController extends AbstractManager implements Cont
 
   @Override
   public void setThreadPoolSize(int maxSize) {
+    if (maxSize < 1) {
+      throw new IllegalArgumentException("Thread pool size must be greater than 0");
+    }
     executorSize = maxSize;
   }
 

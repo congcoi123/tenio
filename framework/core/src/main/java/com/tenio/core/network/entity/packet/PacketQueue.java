@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,29 @@ import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 
 /**
- * The queue using for holding packets to send to clients side.
+ * Represents a thread-safe queue for managing network packets in the server.
+ * This interface defines the core functionality for packet queuing, including
+ * packet management, queue size control, and policy enforcement.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Thread-safe packet queuing</li>
+ *   <li>Queue size management and monitoring</li>
+ *   <li>Packet policy enforcement</li>
+ *   <li>Queue usage tracking</li>
+ *   <li>FIFO packet processing</li>
+ * </ul>
+ *
+ * <p>Thread safety: This interface is designed to be thread-safe and can be
+ * safely accessed from multiple threads. Implementations should ensure atomic
+ * operations for queue modifications.
  *
  * @see Packet
  * @see PacketQueuePolicy
+ * @see DefaultPacketQueuePolicy
+ * @see PacketQueueFullException
+ * @see PacketQueuePolicyViolationException
+ * @since 0.3.0
  */
 public interface PacketQueue {
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,12 +29,37 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.schedule.task.internal.AutoDisconnectPlayerTask;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * All supported APIs for the player management. A management can belong to a room or live stand
- * alone.
+ * Manages the lifecycle and operations of players in the game server.
+ * This interface provides comprehensive player management capabilities including
+ * player creation, removal, and state tracking.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Player lifecycle management (creation, removal, cleanup)</li>
+ *   <li>Player state tracking (idle time, activity monitoring)</li>
+ *   <li>Thread-safe player operations</li>
+ *   <li>Player identity management</li>
+ *   <li>Player property management</li>
+ *   <li>Player event handling</li>
+ * </ul>
+ *
+ * <p>Thread safety: Implementations of this interface should be thread-safe
+ * as they handle concurrent player operations. The interface provides atomic
+ * operations for player management and state changes.
+ *
+ * <p>Note: This interface is designed to work in conjunction with the
+ * {@link AutoDisconnectPlayerTask} for automatic player cleanup based on
+ * idle time and activity status.
+ *
+ * @see Player
+ * @see AutoDisconnectPlayerTask
+ * @see RemovedNonExistentPlayerException
+ * @since 0.5.0
  */
 public interface PlayerManager extends Manager {
 
@@ -79,16 +104,18 @@ public interface PlayerManager extends Manager {
   void configureInitialPlayer(Player player);
 
   /**
-   * Retrieves a player by using its name.
+   * Retrieves a player by their unique identity.
+   * This method provides thread-safe access to player instances.
    *
-   * @param playerIdentity a unique {@link String} name of player on the server
-   * @return an instance of {@link Player} if present, otherwise {@code null}
+   * @param playerIdentity the unique identifier of the player
+   * @return the {@link Player} instance if found, otherwise returns {@code null}
    */
   Player getPlayerByIdentity(String playerIdentity);
 
   /**
-   * Retrieves an iterator for a player management list. This method should be used to prevent
-   * the "escape references" issue.
+   * Retrieves an iterator for a player management list.
+   * This method should be used to prevent the "escape references" issue
+   * and provides thread-safe iteration over the player collection.
    *
    * @return an iterator of {@link Player} management list
    * @see Iterator
@@ -96,8 +123,9 @@ public interface PlayerManager extends Manager {
   Iterator<Player> getPlayerIterator();
 
   /**
-   * Retrieves a read-only player management list. This method should be used to prevent the
-   * "escape references" issue.
+   * Retrieves a read-only player management list.
+   * This method should be used to prevent the "escape references" issue
+   * and provides thread-safe access to the player collection.
    *
    * @return a list of all {@link Player}s in the management list
    * @see List
@@ -106,43 +134,48 @@ public interface PlayerManager extends Manager {
 
   /**
    * Removes a player from the management list.
+   * This operation is atomic and thread-safe.
    *
-   * @param playerIdentity the player's name ({@link String} value)
+   * @param playerIdentity the player's unique identifier
    * @throws RemovedNonExistentPlayerException when the player is not present in the
-   *                                                   management list
+   *                                          management list
    */
   void removePlayerByIdentity(String playerIdentity) throws RemovedNonExistentPlayerException;
 
   /**
-   * Determines whether the management list contains a player by checking its name.
+   * Determines whether the management list contains a player by checking their identity.
+   * This operation is thread-safe.
    *
-   * @param playerIdentity the player's name ({@link String} value)
+   * @param playerIdentity the player's unique identifier
    * @return {@code true} if the player is available, otherwise returns {@code false}
    */
   boolean containsPlayerIdentity(String playerIdentity);
 
   /**
    * Retrieves the current number of players in the management list.
+   * This operation is thread-safe and provides an atomic count.
    *
-   * @return the current number ({@code integer} value) of players in the list
+   * @return the current number of players in the list
    */
   int getPlayerCount();
 
   /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data).
+   * Sets the maximum time in seconds which allows the player to get in IDLE state.
+   * This configuration affects all players managed by this manager.
+   * Players exceeding this idle time may be automatically disconnected.
    *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
+   * @param seconds the maximum time in seconds which allows the player to get in IDLE state
+   * @see AutoDisconnectPlayerTask
    */
   void configureMaxIdleTimeInSeconds(int seconds);
 
   /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data) in case of never deported selection.
+   * Sets the maximum time in seconds which allows the player to get in IDLE state
+   * in case of never deported selection. This configuration is used for special
+   * players that should not be automatically disconnected.
    *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
+   * @param seconds the maximum time in seconds which allows the player to get in IDLE state
+   * @see Player#isNeverDeported()
    */
   void configureMaxIdleTimeNeverDeportedInSeconds(int seconds);
 

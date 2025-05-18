@@ -41,7 +41,7 @@ public final class PlayerLoggedInHandler extends AbstractHandler
     if (result == PlayerLoggedInResult.SUCCESS) {
       var parcel =
           msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getCurrentAvailableUdpPort() });
+              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getUdpPort() });
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }

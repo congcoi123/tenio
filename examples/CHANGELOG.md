@@ -59,3 +59,6 @@
 - Upgraded dependencies
 - Declared behaviors for packets processing with annotations
 - Bugs fixed
+
+## 0.6.3 2025-06-01 Feature release
+- Upgraded dependencies

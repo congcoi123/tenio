@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.constant.Trademark;
 import com.tenio.core.monitoring.system.SystemInfo;
+import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 import java.util.Arrays;
 import java.util.Objects;
@@ -36,7 +37,31 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.apache.logging.log4j.util.Strings;
 
 /**
- * The application will start from here.
+ * The main entry point for launching the game server application.
+ * This class handles the initialization and startup of the server, including
+ * configuration loading, system monitoring setup, and server instance creation.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Command-line argument parsing</li>
+ *   <li>Configuration file loading</li>
+ *   <li>System monitoring initialization</li>
+ *   <li>Server instance creation and startup</li>
+ *   <li>Logging system configuration</li>
+ * </ul>
+ *
+ * <p>Command-line options:
+ * <ul>
+ *   <li>The first parameter: Path to the configuration file (default: configuration.xml)</li>
+ * </ul>
+ *
+ * <p>Note: This class is designed to be the single entry point for the application
+ * and should not be instantiated multiple times.
+ *
+ * @see Bootstrapper
+ * @see Server
+ * @see SystemInfo
+ * @since 0.3.0
  */
 public final class ApplicationLauncher extends SystemLogger {
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,37 @@ package com.tenio.core.bootstrap.annotation;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import com.tenio.core.bootstrap.injector.Injector;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Declares this annotation for the root class which works as the entry point of the application.
+ * Annotation used to mark the root class that serves as the entry point of the application.
+ * This annotation is used to identify the main application class that will be
+ * used to bootstrap the dependency injection system and initialize the application.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Application entry point identification</li>
+ *   <li>Component scanning initialization</li>
+ *   <li>Dependency injection bootstrap</li>
+ *   <li>Runtime retention for reflection-based processing</li>
+ *   <li>Type-level annotation</li>
+ * </ul>
+ *
+ * <p>Note: The class annotated with this annotation:
+ * <ul>
+ *   <li>Should contain the main application entry point</li>
+ *   <li>Will be used as the root for component scanning</li>
+ *   <li>Should initialize the dependency injection system</li>
+ *   <li>Must be a public class</li>
+ * </ul>
+ *
+ * @see Injector
+ * @see Component
+ * @see Bean
+ * @since 0.3.0
  */
 @Retention(RUNTIME)
 @Target(TYPE)

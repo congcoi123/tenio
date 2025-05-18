@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,25 @@ import com.tenio.core.configuration.define.ServerEvent;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
- * Only for creating an event handler object.
+ * Creates and manages event handlers for the game server.
+ * This class provides a factory for creating event handlers and managing event emissions.
+ * It is designed to be used as a single point of event handling creation and management.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Event handler creation</li>
+ *   <li>Event emission with parameter passing</li>
+ *   <li>Event handler management</li>
+ *   <li>Event result collection</li>
+ * </ul>
+ *
+ * <p>Note: This class is not thread-safe and should be used in a single-threaded context
+ * or with proper synchronization. It is designed to be the single point of event handler
+ * creation and should not be instantiated multiple times.
  *
  * @see EventHandler
+ * @see ServerEvent
+ * @since 0.3.0
  */
 @NotThreadSafe
 public final class EventProducer {

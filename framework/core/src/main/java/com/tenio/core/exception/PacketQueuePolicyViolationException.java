@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,25 @@ import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import java.io.Serial;
 
 /**
- * When the packet queue, which is using to send packet from the server to clients side, has
- * any policy is violated.
+ * Exception thrown when a packet queue policy is violated.
+ * This exception occurs when a packet being sent from the server to clients violates
+ * the configured packet queue policies, such as size limits or rate limits.
+ *
+ * <p>Common causes:
+ * <ul>
+ *   <li>Packet queue size exceeds configured limits</li>
+ *   <li>Packet rate exceeds configured thresholds</li>
+ *   <li>Packet size exceeds maximum allowed size</li>
+ *   <li>Queue policy configuration conflicts</li>
+ * </ul>
+ *
+ * <p>Note: This exception provides information about the dropped packet and the
+ * current queue usage percentage to help diagnose policy violation issues.
+ *
+ * @see PacketQueue
+ * @see PacketQueuePolicy
+ * @see Packet
+ * @since 0.3.0
  */
 public final class PacketQueuePolicyViolationException extends RuntimeException {
 

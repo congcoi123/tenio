@@ -39,10 +39,11 @@ public final class PlayerLoggedInHandler extends AbstractHandler
   @Override
   public void handle(Player player, PlayerLoggedInResult result) {
     if (result == PlayerLoggedInResult.SUCCESS) {
+      player.setNeverDeported(true);
       var parcel =
           map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
               array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS)
-                  .addInteger(api().getCurrentAvailableUdpPort()));
+                  .addInteger(api().getUdpPort()));
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }

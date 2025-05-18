@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.tenio.core.api;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.constant.CoreConstant;
+import com.tenio.core.entity.Channel;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
@@ -37,11 +38,13 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
+import com.tenio.core.exception.CreatedDuplicatedChannelException;
 import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -352,6 +355,81 @@ public interface ServerApi {
   void removeRoom(Room room, RoomRemoveMode removeRoomMode);
 
   /**
+   * Creates a new channel.
+   *
+   * @param id          a unique value and should not be duplicated
+   * @param description the description of channel
+   * @throws CreatedDuplicatedChannelException when a channel which has its id to be already
+   *                                           registered is added onto server.
+   * @since 0.6.3
+   */
+  void createChannel(String id, String description) throws CreatedDuplicatedChannelException;
+
+  /**
+   * Creates a new channel.
+   *
+   * @param id a unique value and should not be duplicated
+   * @throws CreatedDuplicatedChannelException when a channel which has its id to be already
+   *                                           registered is added onto server.
+   * @since 0.6.3
+   */
+  default void createChannel(String id) throws CreatedDuplicatedChannelException {
+    createChannel(id, null);
+  }
+
+  /**
+   * Removes a channel from management.
+   *
+   * @param id the channel's id
+   * @since 0.6.3
+   */
+  void removeChannel(String id);
+
+  /**
+   * A player subscribes to a channel.
+   *
+   * @param channel an instance of {@link Channel}
+   * @param player an instance of {@link Player}
+   * @since 0.6.3
+   */
+  void subscribeToChannel(Channel channel, Player player);
+
+  /**
+   * A player unsubscribes from a channel.
+   *
+   * @param channel an instance of {@link Channel}
+   * @param player an instance of {@link Player}
+   * @since 0.6.3
+   */
+  void unsubscribeFromChannel(Channel channel, Player player);
+
+  /**
+   * A player unsubscribes from all channels.
+   *
+   * @param player an instance of {@link Player}
+   * @since 0.6.3
+   */
+  void unsubscribeFromAllChannels(Player player);
+
+  /**
+   * Broadcasts a message to a channel.
+   *
+   * @param channel an instance of {@link Channel}
+   * @param message an instance of {@link DataCollection}
+   * @since 0.6.3
+   */
+  void broadcastToChannel(Channel channel, DataCollection message);
+
+  /**
+   * Retrieves all channels that a player is subscribing to.
+   *
+   * @param player an instance of {@link Player}
+   * @return a map of subscribing {@link Channel}
+   * @since 0.6.3
+   */
+  Map<String, Channel> getSubscribedChannelsForPlayer(Player player);
+
+  /**
    * Sends a message from a player to all recipients in a room.
    *
    * @param sender  the sender ({@link Player} instance)
@@ -378,18 +456,20 @@ public interface ServerApi {
   /**
    * Retrieves the current available UDP port.
    *
-   * @return an {@code integer} value of UDP port
+   * @return an {@code integer} value of UDP port if available, otherwise returns
+   * {@link CoreConstant#NULL_PORT_VALUE}
    * @since 0.3.0
    */
-  int getCurrentAvailableUdpPort();
+  int getUdpPort();
 
   /**
    * Retrieves the current available KCP port.
    *
-   * @return an {@code integer} value of KCP port if available, otherwise returns {@link CoreConstant#NULL_PORT_VALUE}
+   * @return an {@code integer} value of KCP port if available, otherwise returns
+   * {@link CoreConstant#NULL_PORT_VALUE}
    * @since 0.6.0
    */
-  int getCurrentAvailableKcpPort();
+  int getKcpPort();
 
   /**
    * Retrieves the current available KCP Convey Id.

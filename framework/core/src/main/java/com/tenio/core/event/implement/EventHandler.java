@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class for handling events and these subscribers.
+ * Handles events and their subscribers in a type-safe manner.
+ * This class provides a generic event handling system that manages event subscriptions
+ * and emissions for a specific type of event data.
  *
- * @param <T> the template
+ * <p>Key features:
+ * <ul>
+ *   <li>Type-safe event handling with generics</li>
+ *   <li>Event-emitter mapping</li>
+ *   <li>Event emission with parameter passing</li>
+ *   <li>Event subscription management</li>
+ *   <li>Event result collection</li>
+ * </ul>
+ *
+ * <p>Note: This class maintains a mapping between events and their corresponding emitters,
+ * allowing for efficient event handling and result collection.
+ *
+ * @param <T> the type of data associated with the events
+ * @see ServerEvent
+ * @see Emitter
+ * @since 0.3.0
  */
 public final class EventHandler<T> {
 

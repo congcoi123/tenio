@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,11 +32,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Using <code>AutowiredQualifier</code> annotation with {@link Autowired}
- * or {@link AutowiredAcceptNull} annotation.
+ * Annotation used to specify which implementation should be injected when multiple
+ * implementations of an interface are available. This annotation works in conjunction
+ * with {@link Autowired} and {@link Bean} to provide fine-grained control over dependency
+ * injection.
  *
- * <p>This annotation can be used to avoid conflict if there are multiple
- * implementations of a same interface.
+ * <p>Key features:
+ * <ul>
+ *   <li>Name-based implementation selection</li>
+ *   <li>Class-based implementation selection</li>
+ *   <li>Integration with dependency injection</li>
+ *   <li>Runtime retention for reflection-based processing</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * public class MyService {
+ *     &#64;Autowired
+ *     &#64;AutowiredQualifier(name = "default")
+ *     private Repository repository;
+ *     
+ *     &#64;Autowired
+ *     &#64;AutowiredQualifier(clazz = CustomRepository.class)
+ *     private Repository customRepository;
+ * }
+ * </pre>
+ *
+ * <p>Note: This annotation can be used in combination with {@link Autowired} to
+ * specify which implementation should be injected when multiple implementations
+ * of an interface are available.
+ *
+ * @see Autowired
+ * @see Component
+ * @see Bean
+ * @since 0.5.0
  */
 @Target({FIELD})
 @Retention(RUNTIME)

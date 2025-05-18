@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,56 @@ package com.tenio.core.bootstrap.annotation;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import com.tenio.core.bootstrap.injector.Injector;
 import com.tenio.core.exception.NoImplementedClassFoundException;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation helps you inject the object dependency like {@link Autowired} does.
- * But the difference is that this one should be used in case you do not know the implementation
- * class was declared or not. When the corresponding class was not found then the variable
- * associated with it will be set by <code>null</code>.
+ * Annotation used to mark fields that can be autowired with {@code null} values.
+ * This annotation is similar to {@link Autowired} but allows the dependency
+ * injection system to inject {@code null} values when no suitable bean is found.
  *
- * <p>Using this annotation will never throw the {@link NoImplementedClassFoundException} exception.
+ * <p>Key features:
+ * <ul>
+ *   <li>Optional dependency injection</li>
+ *   <li>Null value acceptance</li>
+ *   <li>Integration with dependency injection</li>
+ *   <li>Runtime retention for reflection-based processing</li>
+ *   <li>Field-level annotation</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * &#64;Component
+ * public class UserService {
+ *     &#64;AutowiredAcceptNull
+ *     private EmailService emailService; // Can be null if no EmailService bean exists
+ *     
+ *     public void sendNotification(User user) {
+ *         if (emailService != null) {
+ *             emailService.sendEmail(user.getEmail());
+ *         }
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>Note: This annotation is useful when:
+ * <ul>
+ *   <li>A dependency is optional</li>
+ *   <li>Fallback behavior is needed when no bean is found</li>
+ *   <li>Gradual feature enablement is desired</li>
+ * </ul>
+ *
+ * @see Autowired
+ * @see AutowiredQualifier
+ * @see Injector
+ * @see NoImplementedClassFoundException
+ * @since 0.3.0
  */
-@Target({FIELD})
 @Retention(RUNTIME)
+@Target(FIELD)
 @Documented
 public @interface AutowiredAcceptNull {
 }

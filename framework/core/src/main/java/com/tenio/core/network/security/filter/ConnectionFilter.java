@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,26 @@ package com.tenio.core.network.security.filter;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 
 /**
- * Provides APIs for working with the connection filter.
+ * Defines the interface for connection filtering and security management.
+ * This interface provides mechanisms to control and validate incoming connections
+ * based on IP addresses, connection limits, and banned address lists.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>IP address validation and tracking</li>
+ *   <li>Connection limit enforcement per IP</li>
+ *   <li>Banned address management</li>
+ *   <li>Verified address tracking</li>
+ *   <li>Configurable connection limits</li>
+ * </ul>
+ *
+ * <p>Note: This interface is crucial for implementing security measures
+ * and preventing abuse of the server's resources. It should be properly
+ * configured to balance security with accessibility.
+ *
+ * @see DefaultConnectionFilter
+ * @see RefusedConnectionAddressException
+ * @since 0.3.0
  */
 public interface ConnectionFilter {
 
