@@ -61,9 +61,9 @@
 		</Schedules>
 		<Properties>
 			<Property name="data-serialization">zero</Property>
-			<Property name="max-packet-queue-size">100</Property>
 			<Property name="max-request-queue-size">100</Property>
-			<!-- When the server get disconnection of one client, can be hold its 
+			<Property name="max-response-queue-size-per-session">100</Property>
+			<!-- When the server get disconnection of one client, can be hold its
 				player instance until timeout -->
 			<Property name="keep-player-on-disconnection">false</Property>
 			<!-- The maximum number of players which game can handle -->
