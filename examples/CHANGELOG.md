@@ -62,3 +62,6 @@
 
 ## 0.6.3 2025-06-01 Feature release
 - Upgraded dependencies
+
+## 0.6.4 2025-07-01 Feature release
+- Upgraded dependencies
