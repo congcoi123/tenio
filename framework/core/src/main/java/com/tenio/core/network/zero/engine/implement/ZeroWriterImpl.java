@@ -64,11 +64,12 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
   /**
    * Creates a new instance of the socket writer.
    *
-   * @param eventManager the instance of {@link EventManager}
+   * @param eventManager           the instance of {@link EventManager}
    * @param datagramChannelManager an instance of {@link DatagramChannelManager}
    * @return a new instance of {@link ZeroWriter}
    */
-  public static ZeroWriter newInstance(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+  public static ZeroWriter newInstance(EventManager eventManager,
+                                       DatagramChannelManager datagramChannelManager) {
     return new ZeroWriterImpl(eventManager, datagramChannelManager);
   }
 
@@ -174,15 +175,14 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
     var packetQueue = session.fetchPacketQueue();
     if (Objects.nonNull(packetQueue)) {
       try {
-        // get the current state first
-        boolean isEmpty = packetQueue.isEmpty();
-        // now can put new item into the queue
+        // put new item into the queue
         packetQueue.put(packet);
 
-        // only need when the packet queue is empty or the session was not in the
-        // tickets queue
-        if (isEmpty || !sessionTicketsQueue.contains(session)) {
-          sessionTicketsQueue.add(session);
+        // only need when the session was not in the tickets queue
+        synchronized (sessionTicketsQueue) {
+          if (!sessionTicketsQueue.contains(session)) {
+            sessionTicketsQueue.add(session);
+          }
         }
 
         packet.setRecipients(null);

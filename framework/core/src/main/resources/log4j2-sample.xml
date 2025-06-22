@@ -49,15 +49,16 @@
 			<AppenderRef ref="error-log"/>
 		</Logger>
 
-		<Logger name="org.eclipse.jetty" level="warn"
-				additivity="false">
+		<Logger name="org.eclipse.jetty" level="warn" additivity="false">
 			<AppenderRef ref="console-log"/>
 			<AppenderRef ref="all-log"/>
 			<AppenderRef ref="error-log"/>
 		</Logger>
 
 		<Logger name="org.hibernate" level="warn" additivity="false">
-			<AppenderRef ref="${target}"/>
+			<AppenderRef ref="console-log"/>
+			<AppenderRef ref="all-log"/>
+			<AppenderRef ref="error-log"/>
 		</Logger>
 
 		<Logger name="org.reflections" level="OFF"/>

@@ -50,14 +50,14 @@ public final class HelpCommand extends AbstractSystemCommandHandler {
   }
 
   @Override
-  public void execute(List<String> args) {
+  public void execute(List<String> arguments) {
     var commandManager = getCommandManager();
     var commands = new ArrayList<>();
-    if (args.isEmpty()) {
+    if (arguments.isEmpty()) {
       commandManager.getHandlers()
           .forEach((key, command) -> commands.add(createCommandDetails(command)));
     } else {
-      var labels = args.remove(0).toLowerCase().trim().split(",");
+      var labels = arguments.remove(0).toLowerCase().trim().split(",");
       for (var label : labels) {
         var command = commandManager.getHandler(label);
         if (Objects.isNull(command)) {

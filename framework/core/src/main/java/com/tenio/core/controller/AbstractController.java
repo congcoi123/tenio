@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,6 +76,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class AbstractController extends AbstractManager implements Controller, Runnable {
 
+  /**
+   * This value must be configured in the configuration file later. It is set here for quicker
+   * experiment.
+   */
+  private static final boolean REQUEST_PRIORITY_ENABLED = false;
+
   private static final int DEFAULT_MAX_QUEUE_SIZE = 50;
   private static final int DEFAULT_NUMBER_WORKERS = 5;
 
@@ -106,8 +113,11 @@ public abstract class AbstractController extends AbstractManager implements Cont
   }
 
   private void initializeWorkers() {
-    var requestComparator = RequestComparator.newInstance();
-    requestQueue = new PriorityBlockingQueue<>(maxQueueSize, requestComparator);
+    if (REQUEST_PRIORITY_ENABLED) {
+      requestQueue = new PriorityBlockingQueue<>(maxQueueSize, RequestComparator.newInstance());
+    } else {
+      requestQueue = new LinkedBlockingQueue<>(maxQueueSize);
+    }
 
     var threadFactory = new ThreadFactoryBuilder().setDaemon(true).build();
     executorService = Executors.newFixedThreadPool(executorSize, threadFactory);

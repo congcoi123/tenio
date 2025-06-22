@@ -52,17 +52,18 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * &#64;BeanFactory
+ * {@code @BeanFactory
  * public class AppConfiguration {
- *     &#64;Bean("userService")
+ *     @Bean("userService")
  *     public UserService createUserService() {
  *         return new UserServiceImpl();
  *     }
  *     
- *     &#64;Bean
+ *     @Bean
  *     public DataSource createDataSource() {
  *         return new HikariDataSource();
  *     }
+ * }
  * }
  * </pre>
  *

@@ -78,3 +78,6 @@
 - Stopped supporting multiple UDP ports, instead it is using datagram channel cache to enhance performance
 - New feature and events added: Channel which allows broadcasting to subscribed players
 
+## 0.6.4 2025-07-01 Bugfix release
+- Fixed several issues related to performance
+- Temporarily disabled the Request Priority Mechanism, it could be enabled by checking this constant value AbstractController#REQUEST_PRIORITY_ENABLED

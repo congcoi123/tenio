@@ -107,7 +107,7 @@ public interface WriterHandler {
   /**
    * Allocates a byte buffer capacity.
    *
-   * @param capacity the capacity of a byte buffer ({@code integer} value)
+   * @param capacity the capacity of a byte buffer ({@code Integer} value)
    * @see ByteBuffer
    */
   void allocateBuffer(int capacity);

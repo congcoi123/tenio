@@ -29,11 +29,11 @@ import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.entity.Player;
 import com.tenio.core.exception.AddedDuplicatedClientCommandException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 /**
  * The commands' management class.
@@ -43,7 +43,7 @@ import java.util.TreeMap;
 @Component
 public final class ClientCommandManager extends SystemLogger {
 
-  private final Map<Short, AbstractClientCommandHandler<Player>> commands = new TreeMap<>();
+  private final Map<Short, AbstractClientCommandHandler<Player>> commands = new HashMap<>();
 
   /**
    * Registers a command handler.

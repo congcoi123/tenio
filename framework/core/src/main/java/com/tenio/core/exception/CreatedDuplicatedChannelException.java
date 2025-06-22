@@ -36,6 +36,8 @@ public final class CreatedDuplicatedChannelException extends RuntimeException {
 
   /**
    * Initialization.
+   *
+   * @param channelId channel's id
    */
   public CreatedDuplicatedChannelException(String channelId) {
     super(String.format("Unable to create channel with id: %s, it already exists", channelId));
