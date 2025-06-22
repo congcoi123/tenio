@@ -47,14 +47,15 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * public class MyService {
- *     &#64;Autowired
- *     &#64;AutowiredQualifier(name = "default")
+ * {@code public class MyService {
+ *     @Autowired
+ *     @AutowiredQualifier(name = "default")
  *     private Repository repository;
  *     
- *     &#64;Autowired
- *     &#64;AutowiredQualifier(clazz = CustomRepository.class)
+ *     @Autowired
+ *     @AutowiredQualifier(clazz = CustomRepository.class)
  *     private Repository customRepository;
+ * }
  * }
  * </pre>
  *

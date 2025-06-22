@@ -161,6 +161,7 @@ public interface SessionManager extends Manager {
   /**
    * Sets an instance of packet queue policy for the session manager.
    *
+   * @param packetQueuePolicy instance of {@link PacketQueuePolicy}
    * @see PacketQueue
    * @see DefaultPacketQueuePolicy
    */

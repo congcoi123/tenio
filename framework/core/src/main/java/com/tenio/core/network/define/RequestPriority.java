@@ -48,7 +48,7 @@ public enum RequestPriority {
   /**
    * The highest priority of a request waiting to be processed.
    */
-  QUICKEST(4);
+  HIGHEST(4);
 
   private final int value;
 

@@ -40,7 +40,7 @@ import java.util.List;
 public final class UnBanAddressCommand extends AbstractSystemCommandHandler {
 
   @Override
-  public void execute(List<String> args) {
+  public void execute(List<String> arguments) {
     CommandUtility.INSTANCE.showConsoleMessage("The feature is not available at the moment.");
   }
 }

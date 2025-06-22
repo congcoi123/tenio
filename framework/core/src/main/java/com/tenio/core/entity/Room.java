@@ -54,6 +54,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * <p>Usage example:
  * <pre>
+ * {@code
  * Room room = new GameRoom();
  * room.setName("Game Room 1");
  * room.setMaxParticipants(4);
@@ -66,6 +67,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * }
  * 
  * room.setState(RoomState.PLAYING);
+ * }
  * </pre>
  *
  * <p>Thread safety: Implementations of this interface should be thread-safe

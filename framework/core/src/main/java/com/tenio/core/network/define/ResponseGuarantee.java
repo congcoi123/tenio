@@ -29,12 +29,12 @@ import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 
 /**
- * Definition the priority for a response from server.
+ * Definition the guarantee of a response from server.
  *
  * @see PacketQueue
  * @see PacketQueuePolicy
  */
-public enum ResponsePriority {
+public enum ResponseGuarantee {
 
   /**
    * The response may not be responded bases on the rule implementations logic.
@@ -64,7 +64,7 @@ public enum ResponsePriority {
 
   private final int value;
 
-  ResponsePriority(final int value) {
+  ResponseGuarantee(final int value) {
     this.value = value;
   }
 

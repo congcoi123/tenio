@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.packet;
 
-import com.tenio.core.network.define.ResponsePriority;
+import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see PacketQueue
  * @see PacketQueuePolicy
  * @see TransportType
- * @see ResponsePriority
+ * @see ResponseGuarantee
  * @see Session
  */
 public interface Packet {
@@ -97,18 +97,18 @@ public interface Packet {
   void setTransportType(TransportType transportType);
 
   /**
-   * Retrieves the priority of packet.
+   * Retrieves the guarantee level of packet.
    *
-   * @return the {@link ResponsePriority} set for the packet
+   * @return the {@link ResponseGuarantee} set for the packet
    */
-  ResponsePriority getPriority();
+  ResponseGuarantee getGuarantee();
 
   /**
-   * Sets priority of the packet.
+   * Sets guarantee level of the packet.
    *
-   * @param priority the {@link ResponsePriority} set for the packet
+   * @param guarantee the {@link ResponseGuarantee} set for the packet
    */
-  void setPriority(ResponsePriority priority);
+  void setGuarantee(ResponseGuarantee guarantee);
 
   /**
    * Determines whether the packet data is encrypted.

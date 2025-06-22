@@ -39,6 +39,7 @@ import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.network.define.RequestPriority;
 import com.tenio.core.network.entity.protocol.Request;
 import com.tenio.core.network.entity.protocol.implement.DatagramRequestImpl;
 import com.tenio.core.network.entity.protocol.implement.SessionRequestImpl;
@@ -102,6 +103,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
           SessionRequestImpl.newInstance().setEvent(ServerEvent.SESSION_REQUEST_CONNECTION);
       request.setSender(params[0]);
       request.setMessage((DataCollection) params[1]);
+      request.setPriority(RequestPriority.HIGHEST);
       enqueueRequest(request);
 
       return null;
@@ -139,6 +141,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
       request.setSender(params[0]);
       request.setRemoteSocketAddress((SocketAddress) params[1]);
       request.setMessage((DataCollection) params[2]);
+      request.setPriority(RequestPriority.HIGHEST);
       enqueueRequest(request);
 
       return null;

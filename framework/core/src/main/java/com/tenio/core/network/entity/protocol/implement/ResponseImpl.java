@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entity.protocol.implement;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.network.define.ResponsePriority;
+import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.server.ServerImpl;
@@ -48,7 +48,7 @@ public final class ResponseImpl implements Response {
   private Collection<Session> datagramSessions;
   private Collection<Session> kcpSessions;
   private Collection<Session> webSocketSessions;
-  private ResponsePriority priority;
+  private ResponseGuarantee guarantee;
   private boolean isPrioritizedUdp;
   private boolean isPrioritizedKcp;
   private boolean isEncrypted;
@@ -60,7 +60,7 @@ public final class ResponseImpl implements Response {
     kcpSessions = null;
     webSocketSessions = null;
     nonSessionPlayers = null;
-    priority = ResponsePriority.NORMAL;
+    guarantee = ResponseGuarantee.NORMAL;
     isPrioritizedUdp = false;
     isPrioritizedKcp = false;
     isEncrypted = false;
@@ -169,8 +169,8 @@ public final class ResponseImpl implements Response {
   }
 
   @Override
-  public Response priority(ResponsePriority priority) {
-    this.priority = priority;
+  public Response guarantee(ResponseGuarantee guarantee) {
+    this.guarantee = guarantee;
     return this;
   }
 
@@ -180,8 +180,8 @@ public final class ResponseImpl implements Response {
   }
 
   @Override
-  public ResponsePriority getPriority() {
-    return priority;
+  public ResponseGuarantee getGuarantee() {
+    return guarantee;
   }
 
   @Override
@@ -266,7 +266,7 @@ public final class ResponseImpl implements Response {
         ", datagramSessions=" + datagramSessions +
         ", kcpSessions=" + kcpSessions +
         ", webSocketSessions=" + webSocketSessions +
-        ", priority=" + priority +
+        ", guarantee=" + guarantee +
         ", isPrioritizedUdp=" + isPrioritizedUdp +
         ", isEncrypted=" + isEncrypted +
         '}';

@@ -46,14 +46,14 @@ import java.util.List;
  *
  * <p>Usage example:
  * <pre>
- * &#64;SystemCommand(
+ * {@code @SystemCommand(
  *     label = "SHUTDOWN",
  *     description = "Shuts down the server gracefully",
  *     usage = {"SHUTDOWN [delay]", "SHUTDOWN -f"},
  *     isBackgroundRunning = false
  * )
  * public class ShutdownCommandHandler extends AbstractSystemCommandHandler {
- *     &#64;Override
+ *     @Override
  *     public void execute(List<String> args) {
  *         try {
  *             // Parse command arguments
@@ -63,7 +63,7 @@ import java.util.List;
  *                 .mapToInt(Integer::parseInt)
  *                 .findFirst()
  *                 .orElse(0);
- *             
+ *
  *             // Implement shutdown logic
  *             getCommandManager().broadcast("Server is shutting down...");
  *             if (!force) {
@@ -74,6 +74,7 @@ import java.util.List;
  *             error("Failed to shutdown server: " + e.getMessage());
  *         }
  *     }
+ * }
  * }
  * </pre>
  *
@@ -138,7 +139,7 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
    * This value is obtained from the {@link SystemCommand} annotation.
    *
    * @return {@code true} if the command should be running in the background,
-   *         otherwise returns {@code false}
+   * otherwise returns {@code false}
    * @throws IllegalStateException if the class is not properly annotated
    */
   public boolean isRunningBackground() {
@@ -176,14 +177,12 @@ public abstract class AbstractSystemCommandHandler extends AbstractHandler {
 
   /**
    * Executes the command with the provided arguments.
-   * This method must be implemented by concrete command handlers to
-   * provide the actual command functionality.
    *
-   * @param args the command arguments as a list of strings
+   * @param arguments the command arguments as a list of {@code String} values
    * @throws IllegalArgumentException if the arguments are invalid
-   * @throws IllegalStateException if the command manager is not initialized
+   * @throws IllegalStateException    if the command manager is not initialized
    */
-  public abstract void execute(List<String> args);
+  public abstract void execute(List<String> arguments);
 
   @Override
   public String toString() {

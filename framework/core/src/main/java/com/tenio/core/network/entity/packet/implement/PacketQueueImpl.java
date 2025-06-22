@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.packet.implement;
 
-import com.tenio.core.exception.PacketQueueFullException;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 
-import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * The implementation for packet queue.
@@ -38,19 +38,16 @@ import java.util.TreeSet;
  */
 public final class PacketQueueImpl implements PacketQueue {
 
-  private final TreeSet<Packet> queue;
+  private final Queue<Packet> queue;
   private volatile int size;
   private PacketQueuePolicy packetQueuePolicy;
   private int maxSize;
 
   /**
    * Constructor.
-   *
-   * @see PacketImpl#compareTo(Packet)
    */
   private PacketQueueImpl() {
-    // Provide a comparator
-    queue = new TreeSet<>();
+    queue = new LinkedList<>();
   }
 
   /**
@@ -66,7 +63,7 @@ public final class PacketQueueImpl implements PacketQueue {
   public Packet peek() {
     synchronized (queue) {
       if (!isEmpty()) {
-        return queue.last();
+        return queue.peek();
       }
     }
     return null;
@@ -76,7 +73,7 @@ public final class PacketQueueImpl implements PacketQueue {
   public Packet take() {
     synchronized (queue) {
       if (!isEmpty()) {
-        Packet packet = queue.pollLast();
+        Packet packet = queue.poll();
         size = queue.size();
         return packet;
       }
@@ -116,13 +113,9 @@ public final class PacketQueueImpl implements PacketQueue {
 
   @Override
   public void put(Packet packet) {
-    if (isFull()) {
-      throw new PacketQueueFullException(queue.size());
-    }
-
     packetQueuePolicy.applyPolicy(this, packet);
     synchronized (queue) {
-      queue.add(packet);
+      queue.offer(packet);
       size = queue.size();
     }
   }
