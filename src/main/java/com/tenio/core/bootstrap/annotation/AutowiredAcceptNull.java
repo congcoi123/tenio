@@ -49,9 +49,9 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * &#64;Component
+ * {@code @Component
  * public class UserService {
- *     &#64;AutowiredAcceptNull
+ *     @AutowiredAcceptNull
  *     private EmailService emailService; // Can be null if no EmailService bean exists
  *     
  *     public void sendNotification(User user) {
@@ -59,6 +59,7 @@ import java.lang.annotation.Target;
  *             emailService.sendEmail(user.getEmail());
  *         }
  *     }
+ * }
  * }
  * </pre>
  *

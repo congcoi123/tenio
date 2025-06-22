@@ -91,6 +91,8 @@ public interface NetworkService extends Service {
   /**
    * Sets a connection filter.
    *
+   * @param connectionFilter    instance of {@link ConnectionFilter}
+   * @param maxConnectionsPerIp maximum number of connections per ip address
    * @see DefaultConnectionFilter
    */
   void setConnectionFilterClass(ConnectionFilter connectionFilter, int maxConnectionsPerIp);
@@ -215,6 +217,7 @@ public interface NetworkService extends Service {
   /**
    * Sets an instance of packet queue policy the network.
    *
+   * @param packetQueuePolicy instance of {@link PacketQueuePolicy}
    * @see PacketQueue
    * @see DefaultPacketQueuePolicy
    */

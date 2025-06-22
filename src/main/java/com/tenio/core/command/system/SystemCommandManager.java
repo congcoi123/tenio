@@ -31,12 +31,12 @@ import com.tenio.core.bootstrap.annotation.SystemCommand;
 import com.tenio.core.exception.AddedDuplicatedCommandException;
 import com.tenio.core.utility.CommandUtility;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.concurrent.GuardedBy;
@@ -50,9 +50,9 @@ import javax.annotation.concurrent.GuardedBy;
 public final class SystemCommandManager extends SystemLogger {
 
   @GuardedBy("this")
-  private final Map<String, AbstractSystemCommandHandler> commands = new TreeMap<>();
+  private final Map<String, AbstractSystemCommandHandler> commands = new HashMap<>();
   @GuardedBy("this")
-  private final Map<String, SystemCommand> annotations = new TreeMap<>();
+  private final Map<String, SystemCommand> annotations = new HashMap<>();
   private final ExecutorService executors;
 
   /**

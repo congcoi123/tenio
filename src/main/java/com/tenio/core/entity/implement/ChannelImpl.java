@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Implementation of {@link Channel}.
+ */
 public final class ChannelImpl implements Channel {
 
   private final String id;
@@ -47,6 +50,14 @@ public final class ChannelImpl implements Channel {
     players = new ConcurrentHashMap<>();
   }
 
+  /**
+   * Creates a new channel.
+   *
+   * @param id unique channel id
+   * @param eventManager instance of {@link EventManager}
+   * @param description description of the channel
+   * @return a new instance of {@link Channel}
+   */
   public static Channel newInstance(String id, EventManager eventManager, String description) {
     return new ChannelImpl(id, eventManager, description);
   }

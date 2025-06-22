@@ -50,14 +50,15 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * &#64;Component
+ * {@code @Component
  * public class UserService {
- *     &#64;Autowired
+ *     @Autowired
  *     private UserRepository repository;
- *     
+ *
  *     public User findById(String id) {
  *         return repository.findById(id);
  *     }
+ * }
  * }
  * </pre>
  *

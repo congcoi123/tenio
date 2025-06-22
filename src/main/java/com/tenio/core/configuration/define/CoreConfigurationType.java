@@ -173,18 +173,18 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   DATA_SERIALIZATION("data-serialization"),
   /**
-   * Sets the maximum size of a packet queue. Notes that every {@link Session} has its own queue,
-   * and this setting applies for all of them.
-   *
-   * @see PacketQueuePolicy
-   * @see PacketQueueFullException
-   */
-  PROP_MAX_PACKET_QUEUE_SIZE("max-packet-queue-size"),
-  /**
    * Sets the maximum number of requesting packets in queue. In case there are more packets than
    * expected, some of them should be removed.
    */
   PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
+  /**
+   * Sets the maximum size of a packet queue (response queue). Notes that every {@link Session} has
+   * its own queue, and this setting applies for all of them.
+   *
+   * @see PacketQueuePolicy
+   * @see PacketQueueFullException
+   */
+  PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION("max-response-queue-size-per-session"),
   /**
    * Determines whether a disconnected connection could be held for a while or be removed
    * immediately.

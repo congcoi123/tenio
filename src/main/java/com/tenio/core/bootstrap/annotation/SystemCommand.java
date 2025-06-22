@@ -50,13 +50,14 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * &#64;SystemCommand("shutdown")
+ * {@code @SystemCommand("shutdown")
  * public class ShutdownCommandHandler extends AbstractSystemCommandHandler {
- *     &#64;Override
+ *     @Override
  *     public void execute(String[] args) {
  *         // Handle shutdown command
  *         System.exit(0);
  *     }
+ * }
  * }
  * </pre>
  *

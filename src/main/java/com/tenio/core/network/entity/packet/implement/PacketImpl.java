@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entity.packet.implement;
 
 import com.tenio.common.utility.TimeUtility;
-import com.tenio.core.network.define.ResponsePriority;
+import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
@@ -42,7 +42,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   private final long id;
   private final long createdTime;
   private byte[] data;
-  private ResponsePriority priority;
+  private ResponseGuarantee guarantee;
   private boolean encrypted;
   private TransportType transportType;
   private int originalSize;
@@ -54,7 +54,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
     id = ID_COUNTER.getAndIncrement();
     createdTime = TimeUtility.currentTimeMillis();
     transportType = TransportType.UNKNOWN;
-    priority = ResponsePriority.NORMAL;
+    guarantee = ResponseGuarantee.NORMAL;
   }
 
   /**
@@ -93,13 +93,13 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   @Override
-  public ResponsePriority getPriority() {
-    return priority;
+  public ResponseGuarantee getGuarantee() {
+    return guarantee;
   }
 
   @Override
-  public void setPriority(ResponsePriority priority) {
-    this.priority = priority;
+  public void setGuarantee(ResponseGuarantee guarantee) {
+    this.guarantee = guarantee;
   }
 
   @Override
@@ -192,8 +192,8 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   @Override
   public int compareTo(Packet packet2) {
     var packet1 = this;
-    return packet1.getPriority().getValue() != packet2.getPriority().getValue()
-        ? Integer.compare(packet1.getPriority().getValue(), packet2.getPriority().getValue())
+    return packet1.getGuarantee().getValue() != packet2.getGuarantee().getValue()
+        ? Integer.compare(packet1.getGuarantee().getValue(), packet2.getGuarantee().getValue())
         : Long.compare(packet2.getId(), packet1.getId());
   }
 
@@ -203,7 +203,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
         "id=" + id +
         ", createdTime=" + createdTime +
         ", data(bytes)=" + (Objects.nonNull(data) ? data.length : "null") +
-        ", priority=" + priority +
+        ", guarantee=" + guarantee +
         ", encrypted=" + encrypted +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
@@ -217,7 +217,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
     var packet = PacketImpl.newInstance();
     packet.setData(data);
     packet.setFragmentBuffer(fragmentBuffer);
-    packet.setPriority(priority);
+    packet.setGuarantee(guarantee);
     packet.setEncrypted(encrypted);
     packet.setRecipients(recipients);
     packet.setTransportType(transportType);

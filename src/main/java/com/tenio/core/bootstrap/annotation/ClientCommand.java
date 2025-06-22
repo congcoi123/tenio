@@ -48,15 +48,16 @@ import java.lang.annotation.Target;
  *
  * <p>Usage example:
  * <pre>
- * &#64;ClientCommand(Constants.LOGIN)
+ * {@code @ClientCommand(Constants.LOGIN)
  * public class LoginCommandHandler extends AbstractClientCommandHandler {
- *     &#64;Override
+ *     @Override
  *     public void execute(Player player, String[] args) {
  *         // Handle login command
  *         String username = args[0];
  *         String password = args[1];
  *         // Process login...
  *     }
+ * }
  * }
  * </pre>
  *

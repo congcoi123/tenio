@@ -49,7 +49,7 @@ public class DatagramRequestImpl implements Request {
 
   private DatagramRequestImpl() {
     id = ID_COUNTER.getAndIncrement();
-    priority = RequestPriority.NORMAL;
+    priority = RequestPriority.LOW;
     timestamp = TimeUtility.currentTimeMillis();
   }
 

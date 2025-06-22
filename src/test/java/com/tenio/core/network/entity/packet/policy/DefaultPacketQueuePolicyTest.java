@@ -24,9 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.packet.policy;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
+import com.tenio.core.exception.PacketQueueFullException;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
 import org.junit.jupiter.api.Test;
@@ -36,15 +37,6 @@ class DefaultPacketQueuePolicyTest {
   void testApplyPolicy() {
     DefaultPacketQueuePolicy defaultPacketQueuePolicy = new DefaultPacketQueuePolicy();
     PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
-    defaultPacketQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class));
-    assertTrue(newInstanceResult.isEmpty());
-  }
-
-  @Test
-  void testApplyPolicy2() {
-    DefaultPacketQueuePolicy defaultPacketQueuePolicy = new DefaultPacketQueuePolicy();
-    PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
-    defaultPacketQueuePolicy.applyPolicy(newInstanceResult, null);
-    assertTrue(newInstanceResult.isEmpty());
+    assertThrows(PacketQueueFullException.class, () -> defaultPacketQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class)));
   }
 }

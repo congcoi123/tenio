@@ -41,8 +41,8 @@ import java.util.List;
 public final class InfoCommand extends AbstractSystemCommandHandler {
 
   @Override
-  public void execute(List<String> args) {
-    var action = args.get(0);
+  public void execute(List<String> arguments) {
+    var action = arguments.get(0);
 
     switch (action) {
       case "player":

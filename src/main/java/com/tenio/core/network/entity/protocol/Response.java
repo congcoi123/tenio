@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.entity.protocol;
 
 import com.tenio.core.entity.Player;
-import com.tenio.core.network.define.ResponsePriority;
+import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
@@ -156,13 +156,21 @@ public interface Response {
   Response encrypted();
 
   /**
-   * Sets priority for the response.
+   * Sets guarantee level for the response.
    *
-   * @param priority the {@link ResponsePriority}
+   * @param guarantee the {@link ResponseGuarantee}
    * @return the pointer of response
    * @see PacketQueuePolicy
    */
-  Response priority(ResponsePriority priority);
+  Response guarantee(ResponseGuarantee guarantee);
+
+  /**
+   * Retrieves the guarantee level of response.
+   *
+   * @return the current {@link ResponseGuarantee} of response
+   * @see PacketQueuePolicy
+   */
+  ResponseGuarantee getGuarantee();
 
   /**
    * Determines whether the response's content is encrypted.
@@ -170,14 +178,6 @@ public interface Response {
    * @return {@code true} if the response's content is encrypted, otherwise returns {@code false}
    */
   boolean isEncrypted();
-
-  /**
-   * Retrieves the current priority of response.
-   *
-   * @return the current {@link ResponsePriority} of response
-   * @see PacketQueuePolicy
-   */
-  ResponsePriority getPriority();
 
   /**
    * Writes down the content data to sessions for sending to client sides.

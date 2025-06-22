@@ -49,6 +49,7 @@ import java.util.function.Consumer;
  *
  * <p>Usage example:
  * <pre>
+ * {@code
  * Player player = playerManager.getPlayerByIdentity("player1");
  * 
  * // Set player properties
@@ -70,6 +71,7 @@ import java.util.function.Consumer;
  * player.onUpdateListener(field -> {
  *     // Handle player property changes
  * });
+ * }
  * </pre>
  *
  * <p>Thread safety: Implementations of this interface should be thread-safe

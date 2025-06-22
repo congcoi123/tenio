@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class ResponsePriorityTest {
+class ResponseGuaranteeTest {
   @Test
   void testValueOf() {
-    ResponsePriority actualValueOfResult = ResponsePriority.valueOf("NON_GUARANTEED");
+    ResponseGuarantee actualValueOfResult = ResponseGuarantee.valueOf("NON_GUARANTEED");
     assertEquals(1, actualValueOfResult.getValue());
     assertEquals("NON_GUARANTEED", actualValueOfResult.toString());
   }
