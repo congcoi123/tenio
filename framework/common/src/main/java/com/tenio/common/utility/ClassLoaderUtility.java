@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,16 @@ package com.tenio.common.utility;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
+import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * This utility class provides methods to retrieve all classes from a java package.
@@ -45,107 +47,120 @@ public final class ClassLoaderUtility {
         + "instance");
   }
 
-  private static void checkDirectory(File directory, String packages,
-                                     HashSet<Class<?>> classes) throws ClassNotFoundException {
-    File tmpDirectory;
+  private static void scanDirectory(File directory, String packageName, Set<Class<?>> classes)
+      throws ClassNotFoundException {
+    File[] files = directory.listFiles();
+    if (Objects.isNull(files)) {
+      return;
+    }
 
-    if (directory.exists() && directory.isDirectory()) {
-      final var files = directory.list();
-
-      assert files != null;
-
-      for (final var file : files) {
-        if (file.endsWith(".class")) {
-          try {
-            // ignores 6 characters of the word ".class"
-            // only fetch the class name without its extension
-            classes.add(Class.forName(packages + '.'
-                + file.substring(0, file.length() - 6)));
-          } catch (final NoClassDefFoundError e) {
-            // do nothing. this class hasn't been found by the
-            // loader, and we don't care.
-          }
-        } else if ((tmpDirectory = new File(directory, file)).isDirectory()) {
-          checkDirectory(tmpDirectory, packages + "." + file, classes);
+    for (var file : files) {
+      if (file.isDirectory()) {
+        scanDirectory(file, packageName + "." + file.getName(), classes);
+      } else if (file.getName().endsWith(".class")) {
+        String className = packageName + '.' + file.getName().replace(".class", "");
+        try {
+          classes.add(
+              Class.forName(className, false, Thread.currentThread().getContextClassLoader()));
+        } catch (NoClassDefFoundError ignored) {
         }
       }
     }
   }
 
-  private static void checkJarFile(JarURLConnection connection, String packages,
-                                   HashSet<Class<?>> classes)
-      throws ClassNotFoundException, IOException {
-    final var jarFile = connection.getJarFile();
-    final var entries = jarFile.entries();
-    String name;
+  private static void scanJarFile(String jarPath, String packageName, Set<Class<?>> classes)
+      throws ClassNotFoundException {
+    try (JarFile jarFile = new JarFile(jarPath)) {
+      String prefix = packageName.replace('.', '/');
+      Enumeration<JarEntry> entries = jarFile.entries();
 
-    for (JarEntry jarEntry; entries.hasMoreElements()
-        && ((jarEntry = entries.nextElement()) != null); ) {
-      name = jarEntry.getName();
+      while (entries.hasMoreElements()) {
+        JarEntry entry = entries.nextElement();
+        String name = entry.getName();
 
-      if (name.contains(".class")) {
-        name = name.substring(0, name.length() - 6).replace('/', '.');
-
-        if (name.contains(packages)) {
-          classes.add(Class.forName(name));
+        if (name.endsWith(".class") && name.startsWith(prefix)) {
+          String className = name.replace('/', '.').replace(".class", "");
+          try {
+            classes.add(
+                Class.forName(className, false, Thread.currentThread().getContextClassLoader()));
+          } catch (NoClassDefFoundError ignored) {
+          }
         }
       }
+    } catch (IOException exception) {
+      throw new ClassNotFoundException("Failed to read jar file: " + jarPath, exception);
     }
   }
 
   /**
-   * Attempts to list all the classes in the specified package as determined
+   * Attempts to list all the classes in the specified packages as determined
    * by the context class loader.
    *
-   * @param packages the package name to search
-   * @return a list of classes that exist within that package
+   * @param packageName the package name to search
+   * @return a set of classes that exist within that package
    * @throws ClassNotFoundException if the finding class cannot be found
    */
-  public static HashSet<Class<?>> getClasses(String packages)
-      throws ClassNotFoundException {
-    final var classes = new HashSet<Class<?>>();
+  public static Set<Class<?>> getClasses(String packageName) throws ClassNotFoundException {
+    var classes = new HashSet<Class<?>>();
+    var packagePath = packageName.replace('.', '/');
 
     try {
-      final var classLoader = Thread.currentThread().getContextClassLoader();
+      Enumeration<URL> resources =
+          Thread.currentThread().getContextClassLoader().getResources(packagePath);
+      while (resources.hasMoreElements()) {
+        URL url = resources.nextElement();
+        String decodedPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
 
-      if (Objects.isNull(classLoader)) {
-        throw new ClassNotFoundException("Can't get class loader.");
-      }
-
-      final var resources = classLoader.getResources(packages
-          .replace('.', '/'));
-      URLConnection connection;
-
-      for (URL url; resources.hasMoreElements()
-          && ((url = resources.nextElement()) != null); ) {
-        try {
-          connection = url.openConnection();
-
-          if (connection instanceof JarURLConnection) {
-            checkJarFile((JarURLConnection) connection, packages,
-                classes);
-          } else {
-            checkDirectory(
-                new File(URLDecoder.decode(url.getPath(),
-                    StandardCharsets.UTF_8)), packages, classes);
+        if (decodedPath.endsWith(".jar") || decodedPath.contains(".jar!")) {
+          // Example: file:/path/to/your.jar!/com/example/
+          String jarFilePath = decodedPath.substring(0, decodedPath.indexOf(".jar") + 4)
+              .replace("file:", "");
+          scanJarFile(jarFilePath, packageName, classes);
+        } else {
+          File directory = new File(decodedPath);
+          if (directory.exists() && directory.isDirectory()) {
+            scanDirectory(directory, packageName, classes);
           }
-        } catch (final IOException ioException) {
-          throw new ClassNotFoundException(
-              "IOException was thrown when trying to get all resources for "
-                  + packages, ioException);
         }
       }
-    } catch (final NullPointerException nullPointerException) {
-      throw new ClassNotFoundException(
-          packages
-              + " does not appear to be a valid package (Null pointer exception)",
-          nullPointerException);
-    } catch (final IOException ioException) {
-      throw new ClassNotFoundException(
-          "IOException was thrown when trying to get all resources for "
-              + packages, ioException);
+    } catch (IOException exception) {
+      throw new ClassNotFoundException("Failed to read resources", exception);
     }
 
     return classes;
+  }
+
+  /**
+   * Attempts to list all the classes in the specified packages as determined
+   * by the context class loader.
+   *
+   * @param packages the set of package names to search
+   * @return a set of classes that exist within that package
+   * @throws ClassNotFoundException if the finding class cannot be found
+   */
+  public static Set<Class<?>> getClasses(Set<String> packages) throws ClassNotFoundException {
+    var classes = new HashSet<Class<?>>();
+    for (var packageName : packages) {
+      classes.addAll(getClasses(packageName));
+    }
+    return classes;
+  }
+
+  /**
+   * Fetches classes by their annotations.
+   *
+   * @param allClasses all scanned {@link Class}es
+   * @param annotation {@link Annotation} which is annotated on classes
+   * @return a set of classes if available, or an empty one
+   */
+  public static Set<Class<?>> getTypesAnnotatedWith(Set<Class<?>> allClasses,
+                                                    Class<? extends Annotation> annotation) {
+    var annotatedClasses = new HashSet<Class<?>>();
+    for (var clazz : allClasses) {
+      if (clazz.isAnnotationPresent(annotation)) {
+        annotatedClasses.add(clazz);
+      }
+    }
+    return annotatedClasses;
   }
 }

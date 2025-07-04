@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,9 @@ public final class UnsupportedMsgPackDataTypeException extends RuntimeException 
   @Serial
   private static final long serialVersionUID = -814968367492853470L;
 
+  /**
+   * Constructor.
+   */
   public UnsupportedMsgPackDataTypeException() {
     super("The data type is not supported. Please check out this available list: null, boolean, byte, short, int, " +
         "float, long, double, String, boolean[], byte[], short[], int[], float[], long[], double[], String[].");
