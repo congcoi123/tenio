@@ -41,7 +41,6 @@ import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.engine.implement.ZeroAcceptorImpl;
 import com.tenio.core.network.zero.engine.implement.ZeroReaderImpl;
 import com.tenio.core.network.zero.engine.implement.ZeroWriterImpl;
-import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
@@ -100,7 +99,6 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
   private void setupReader() {
     readerEngine.setDatagramIoHandler(datagramIoHandler);
     readerEngine.setSocketIoHandler(socketIoHandler);
-    readerEngine.setZeroAcceptorListener((ZeroAcceptorListener) acceptorEngine);
     readerEngine.setZeroWriterListener((ZeroWriterListener) writerEngine);
   }
 
@@ -128,9 +126,9 @@ public final class ZeroSocketServiceImpl extends AbstractManager implements Zero
       return;
     }
 
-    acceptorEngine.start();
     readerEngine.start();
     writerEngine.start();
+    acceptorEngine.start();
   }
 
   @Override

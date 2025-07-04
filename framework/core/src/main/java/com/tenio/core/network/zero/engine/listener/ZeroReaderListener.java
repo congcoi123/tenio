@@ -30,6 +30,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.function.Consumer;
 
 /**
  * The reader engine listener. Invoked by the acceptor engine, reader engine.
@@ -54,12 +55,13 @@ public interface ZeroReaderListener {
    * When a new coming socket connected to the server, and it is accepted by the acceptor. This
    * socket then is added to the reader engine to manage communication.
    *
-   * @param socketChannel the accepted {@link SocketChannel}
-   * @return the corresponding {@link SelectionKey} for management
+   * @param socketChannel   the accepted {@link SocketChannel}
+   * @param onKeyRegistered the callback when {@link SelectionKey} is ready
    * @throws ClosedChannelException when a channel is closed unexpectedly
    * @see ZeroAcceptor
    */
-  SelectionKey acceptSocketChannel(SocketChannel socketChannel) throws ClosedChannelException;
+  void acceptSocketChannel(SocketChannel socketChannel, Consumer<SelectionKey> onKeyRegistered)
+      throws ClosedChannelException;
 
   /**
    * Wakes up the reader selector in the reader engine for channels handling

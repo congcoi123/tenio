@@ -39,6 +39,12 @@
 
 	<Configuration>
 		<Workers>
+			<!--
+			  Sets the number of threads handling TCP acceptor logic.
+			  - Use 1 on macOS/Windows (SO_REUSEPORT not reliable).
+			  - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
+			  - Each thread handles new incoming connections via a Selector.
+			-->
 			<Worker name="socket-acceptor">1</Worker>
 			<Worker name="socket-reader">2</Worker>
 			<Worker name="socket-writer">2</Worker>
