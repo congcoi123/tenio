@@ -36,7 +36,7 @@
 
 	<Configuration>
 		<Workers>
-			<Worker name="socket-acceptor">8</Worker>
+			<Worker name="socket-acceptor">1</Worker>
 			<Worker name="socket-reader">16</Worker>
 			<Worker name="socket-writer">16</Worker>
 			<Worker name="websocket-producer">1</Worker>
