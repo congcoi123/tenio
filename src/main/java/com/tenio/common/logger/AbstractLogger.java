@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -298,18 +298,38 @@ public abstract class AbstractLogger {
     return builder;
   }
 
+  /**
+   * Determines whether the logging level is ERROR.
+   *
+   * @return {@code true} if the logging level is ERROR, {@code false} otherwise
+   */
   public boolean isErrorEnabled() {
     return logger.isErrorEnabled();
   }
 
+  /**
+   * Determines whether the logging level is INFO.
+   *
+   * @return {@code true} if the logging level is INFO, {@code false} otherwise
+   */
   public boolean isInfoEnabled() {
     return logger.isInfoEnabled();
   }
 
+  /**
+   * Determines whether the logging level is DEBUG.
+   *
+   * @return {@code true} if the logging level is DEBUG, {@code false} otherwise
+   */
   public boolean isDebugEnabled() {
     return logger.isDebugEnabled();
   }
 
+  /**
+   * Determines whether the logging level is TRACE.
+   *
+   * @return {@code true} if the logging level is TRACE, {@code false} otherwise
+   */
   public boolean isTraceEnabled() {
     return logger.isTraceEnabled();
   }
