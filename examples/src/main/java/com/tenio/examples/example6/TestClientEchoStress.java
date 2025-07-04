@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2023 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,8 @@ import java.util.Map;
 public final class TestClientEchoStress implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
-  private static final int NUMBER_CLIENTS = 2000;
-  private static final boolean ENABLED_DEBUG = true;
+  private static final int NUMBER_CLIENTS = 5000;
+  private static final boolean ENABLED_DEBUG = false;
   /**
    * List of TCP clients
    */

@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-engine</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,7 +39,7 @@
     </scm>
 
     <properties>
-        <io.github.congcoi123.tenio.common>0.6.2</io.github.congcoi123.tenio.common>
+        <io.github.congcoi123.tenio.common>0.6.3</io.github.congcoi123.tenio.common>
 
         <google.guava.version>33.3.1-jre</google.guava.version>
         <logging.log4j.version>2.20.0</logging.log4j.version>
@@ -142,19 +142,6 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
@@ -254,6 +241,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
             </plugin>
             <!-- jacoco report -->
             <plugin>

@@ -44,3 +44,6 @@
 ## 0.6.2 2025-05-11 Feature release
 - Upgraded dependencies
 - Bugs fixed 
+
+## 0.6.3 2025-08-01 Bugfix release
+- Removed Reflections API to avoid duplicated scanning packages

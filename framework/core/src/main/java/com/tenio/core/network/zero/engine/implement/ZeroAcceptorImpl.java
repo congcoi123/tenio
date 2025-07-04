@@ -24,301 +24,48 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
-import com.tenio.common.utility.OsUtility;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.exception.RefusedConnectionAddressException;
-import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.network.configuration.SocketConfiguration;
-import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
-import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
+import com.tenio.core.network.zero.engine.acceptor.AcceptorHandler;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * The implementation for acceptor engine.
  *
  * @see ZeroAcceptor
  */
-public final class ZeroAcceptorImpl extends AbstractZeroEngine
-    implements ZeroAcceptor, ZeroAcceptorListener {
+public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAcceptor {
 
-  private final List<SocketChannel> acceptableSockets;
-  private final List<SelectableChannel> boundSockets;
   private final DatagramChannelManager datagramChannelManager;
-  private Selector acceptableSelector;
+  private volatile List<AcceptorHandler> acceptorHandlers;
   private ConnectionFilter connectionFilter;
   private ZeroReaderListener zeroReaderListener;
   private String serverAddress;
   private SocketConfiguration tcpSocketConfiguration;
   private SocketConfiguration udpSocketConfiguration;
 
-  private ZeroAcceptorImpl(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+  private ZeroAcceptorImpl(EventManager eventManager,
+                           DatagramChannelManager datagramChannelManager) {
     super(eventManager);
     this.datagramChannelManager = datagramChannelManager;
-    acceptableSockets = new ArrayList<>();
-    boundSockets = new ArrayList<>();
-
     setName("acceptor");
   }
 
   /**
    * Creates a new instance of acceptor engine.
    *
-   * @param eventManager the instance of {@link EventManager}
+   * @param eventManager           the instance of {@link EventManager}
    * @param datagramChannelManager the instance of {@link DatagramChannelManager}
    * @return a new instance of {@link ZeroAcceptor}
    */
-  public static ZeroAcceptor newInstance(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+  public static ZeroAcceptor newInstance(EventManager eventManager,
+                                         DatagramChannelManager datagramChannelManager) {
     return new ZeroAcceptorImpl(eventManager, datagramChannelManager);
-  }
-
-  private void initializeSocketChannel() throws ServiceRuntimeException {
-    // opens a selector to handle server socket, udp datagram and accept all incoming client socket
-    try {
-      acceptableSelector = Selector.open();
-    } catch (IOException e) {
-      throw new ServiceRuntimeException(e.getMessage());
-    }
-
-    // each socket configuration constructs a server socket or an udp datagram
-    bindSocketChannel(tcpSocketConfiguration, udpSocketConfiguration);
-  }
-
-  private void bindSocketChannel(SocketConfiguration tcpSocketConfiguration, SocketConfiguration udpSocketConfiguration)
-      throws ServiceRuntimeException {
-    if (tcpSocketConfiguration.type() == TransportType.TCP) {
-      bindTcpSocket(tcpSocketConfiguration.port());
-    }
-    if (Objects.nonNull(udpSocketConfiguration) && udpSocketConfiguration.type() == TransportType.UDP) {
-      bindUdpChannel(udpSocketConfiguration.port(), udpSocketConfiguration.cacheSize());
-    }
-  }
-
-  private void bindTcpSocket(int port) throws ServiceRuntimeException {
-    try {
-      var serverSocketChannel = ServerSocketChannel.open();
-      serverSocketChannel.configureBlocking(false);
-      if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
-        serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-      } else {
-        serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-      }
-      serverSocketChannel.socket().bind(new InetSocketAddress(serverAddress, port));
-      info("TCP SOCKET", buildgen("Started at address: ", serverAddress, ", port: ",
-          serverSocketChannel.socket().getLocalPort()));
-      // only server socket should interest in this key OP_ACCEPT
-      serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
-      synchronized (boundSockets) {
-        boundSockets.add(serverSocketChannel);
-      }
-    } catch (IOException e) {
-      throw new ServiceRuntimeException(e.getMessage());
-    }
-  }
-
-  private void bindUdpChannel(int port, int cacheSize) throws ServiceRuntimeException {
-    try {
-      synchronized (boundSockets) {
-        for (int index = 0; index < cacheSize; index++) {
-          var datagramChannel = DatagramChannel.open();
-          datagramChannel.configureBlocking(false);
-          if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
-            datagramChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-          } else {
-            datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-          }
-          datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
-          datagramChannel.socket().bind(new InetSocketAddress(serverAddress, port));
-          // udp datagram is a connectionless protocol, we don't need to create
-          // bi-direction connection, that why it's not necessary to register it to
-          // acceptable selector. Just leave it to the reader selector later
-          zeroReaderListener.acceptDatagramChannel(datagramChannel);
-          datagramChannelManager.addChannel(datagramChannel);
-          boundSockets.add(datagramChannel);
-        }
-      }
-      info("UDP CHANNEL", buildgen("Started at address: ", serverAddress, ", port: ",
-          port, ", cache: ", cacheSize));
-    } catch (IOException exception) {
-      throw new ServiceRuntimeException(exception.getMessage());
-    }
-  }
-
-  private void acceptableLoop() throws IOException {
-    // blocks until at least one channel is ready for the events you registered for
-    int countReadyKeys = acceptableSelector.select(1);
-
-    if (countReadyKeys == 0) {
-      return;
-    }
-
-    synchronized (acceptableSelector) {
-      // retrieves a set of selected keys
-      var selectedKeys = acceptableSelector.selectedKeys();
-      var keyIterator = selectedKeys.iterator();
-
-      while (keyIterator.hasNext()) {
-        // iterates the list of selection keys
-        var selectionKey = keyIterator.next();
-        // once a key is proceeded, it should be removed from the process to prevent
-        // duplicating manipulation
-        keyIterator.remove();
-
-        // a client socket was accepted by a server socket
-        // we only interest in this event
-        if (selectionKey.isAcceptable()) {
-          try {
-            // get the server socket channel from the selector
-            var serverChannel = (ServerSocketChannel) selectionKey.channel();
-            // and accept the incoming request from client
-            var clientChannel = serverChannel.accept();
-
-            // make sure that the socket is available
-            if (Objects.nonNull(clientChannel)) {
-              synchronized (acceptableSockets) {
-                acceptableSockets.add(clientChannel);
-              }
-            }
-
-          } catch (IOException exception) {
-            error(exception);
-          }
-        }
-      }
-    }
-
-    // wakes up the reader selector for bellow channels handling
-    zeroReaderListener.wakeup();
-  }
-
-  private void shutdownAcceptedSockets() {
-    synchronized (acceptableSockets) {
-      // iterates the list of client socket channels
-      var socketIterator = acceptableSockets.iterator();
-
-      while (socketIterator.hasNext()) {
-        var socketChannel = socketIterator.next();
-        socketIterator.remove();
-
-        try {
-          getSocketIoHandler().channelInactive(socketChannel);
-          if (!socketChannel.socket().isClosed()) {
-            socketChannel.socket().shutdownInput();
-            socketChannel.socket().shutdownOutput();
-            socketChannel.close();
-          }
-        } catch (IOException exception) {
-          error(exception);
-          getSocketIoHandler().channelException(socketChannel, exception);
-        }
-      }
-    }
-  }
-
-  private void shutdownBoundSockets() {
-    synchronized (boundSockets) {
-      // iterates the list of server socket channels, datagram channels
-      var boundSocketIterator = boundSockets.iterator();
-
-      while (boundSocketIterator.hasNext()) {
-        var socketChannel = boundSocketIterator.next();
-        boundSocketIterator.remove();
-
-        try {
-          socketChannel.close();
-        } catch (IOException exception) {
-          error(exception);
-        }
-      }
-    }
-  }
-
-  private void shutdownSelector() {
-    try {
-      Thread.sleep(500L);
-      acceptableSelector.close();
-    } catch (IOException | InterruptedException exception) {
-      error(exception);
-    }
-  }
-
-  @Override
-  public void handleAcceptableChannels() {
-
-    // we need to register all new client channel to the reader selector before
-    // reading
-    synchronized (acceptableSockets) {
-      if (acceptableSockets.isEmpty()) {
-        return;
-      }
-
-      var socketIterator = acceptableSockets.iterator();
-
-      while (socketIterator.hasNext()) {
-        var socketChannel = socketIterator.next();
-        // makes sure that the loop will never check this item again
-        socketIterator.remove();
-
-        if (Objects.isNull(socketChannel)) {
-          debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket channel");
-        } else {
-          var socket = socketChannel.socket();
-
-          if (Objects.isNull(socket)) {
-            debug("ACCEPTABLE CHANNEL", "Acceptor handle a null socket");
-          } else {
-            var inetAddress = socket.getInetAddress();
-            if (Objects.nonNull(inetAddress)) {
-              try {
-                connectionFilter.validateAndAddAddress(inetAddress.getHostAddress());
-                socketChannel.configureBlocking(false);
-                socketChannel.socket().setTcpNoDelay(true);
-                SelectionKey selectionKey = zeroReaderListener.acceptSocketChannel(socketChannel);
-
-                getSocketIoHandler().channelActive(socketChannel, selectionKey);
-              } catch (RefusedConnectionAddressException exception1) {
-                error(exception1, "Refused connection with address: ", exception1.getMessage());
-                getSocketIoHandler().channelException(socketChannel, exception1);
-
-                try {
-                  getSocketIoHandler().channelInactive(socketChannel);
-                  socketChannel.socket().shutdownInput();
-                  socketChannel.socket().shutdownOutput();
-                  socketChannel.close();
-                } catch (IOException exception2) {
-                  error(exception2,
-                      "Additional problem with refused connection. "
-                      , "Was not able to shut down the channel: ",
-                      exception2.getMessage());
-                  getSocketIoHandler().channelException(socketChannel, exception2);
-                }
-              } catch (IOException exception3) {
-                var logger = buildgen("Failed accepting connection: ");
-                if (Objects.nonNull(socketChannel.socket())) {
-                  logger.append(socketChannel.socket().getInetAddress().getHostAddress());
-                }
-                error(exception3, logger);
-                getSocketIoHandler().channelException(socketChannel, exception3);
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
   @Override
@@ -345,7 +92,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onInitialized() {
-    initializeSocketChannel();
+    acceptorHandlers = new ArrayList<>(getThreadPoolSize());
   }
 
   @Override
@@ -355,10 +102,15 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onRunning() {
+    var acceptorHandler = new AcceptorHandler(serverAddress, datagramChannelManager,
+        connectionFilter, zeroReaderListener, tcpSocketConfiguration, udpSocketConfiguration,
+        getSocketIoHandler());
+    acceptorHandlers.add(acceptorHandler);
+
     while (!Thread.currentThread().isInterrupted()) {
       if (isActivated()) {
         try {
-          acceptableLoop();
+          acceptorHandler.running();
         } catch (Throwable cause) {
           error(cause);
         }
@@ -368,9 +120,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine
 
   @Override
   public void onShutdown() {
-    shutdownBoundSockets();
-    shutdownAcceptedSockets();
-    shutdownSelector();
+    for (var acceptorHandler : acceptorHandlers) {
+      acceptorHandler.shutdown();
+    }
   }
 
   @Override

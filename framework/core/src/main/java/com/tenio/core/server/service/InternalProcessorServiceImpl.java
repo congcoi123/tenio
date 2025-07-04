@@ -356,7 +356,7 @@ public final class InternalProcessorServiceImpl extends AbstractController
 
   @Override
   public String getName() {
-    return "internal";
+    return "internal-processor";
   }
 
   @Override

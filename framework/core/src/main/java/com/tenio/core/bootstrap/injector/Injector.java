@@ -64,7 +64,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.ThreadSafe;
-import org.reflections.Reflections;
 
 /**
  * The Injector class provides a dependency injection mechanism for the application.
@@ -180,29 +179,20 @@ public final class Injector extends SystemLogger {
       SecurityException, DuplicatedBeanCreationException {
 
     // clean first
-    reset();
+    cleanup();
 
-    var setPackageNames = new HashSet<String>();
+    var allPackageNames = new HashSet<String>();
 
     if (Objects.nonNull(entryClass)) {
-      setPackageNames.add(entryClass.getPackage().getName());
+      allPackageNames.add(entryClass.getPackage().getName());
     }
 
     if (Objects.nonNull(packages)) {
-      setPackageNames.addAll(Arrays.asList(packages));
+      allPackageNames.addAll(Arrays.asList(packages));
     }
 
     // fetches all classes that are in the same package as the root one
-    var classes = new HashSet<Class<?>>();
-    // declares a reflection object based on the package of root class
-    var reflections = new Reflections();
-    for (var packageName : setPackageNames) {
-      var packageClasses = ClassLoaderUtility.getClasses(packageName);
-      classes.addAll(packageClasses);
-
-      var reflectionPackage = new Reflections(packageName);
-      reflections.merge(reflectionPackage);
-    }
+    var allClasses = ClassLoaderUtility.getClasses(allPackageNames);
 
     // Step 1: We collect classes
     // The implemented class is defined with the "Component" annotation declared inside it
@@ -216,7 +206,7 @@ public final class Injector extends SystemLogger {
     var implementedComponentClasses = new HashSet<Class<?>>();
     Arrays.stream(listAnnotations).forEach(
         annotation -> implementedComponentClasses.addAll(
-            reflections.getTypesAnnotatedWith(annotation)));
+            ClassLoaderUtility.getTypesAnnotatedWith(allClasses, annotation)));
     // scans all interfaces with their implemented classes
     for (var implementedClass : implementedComponentClasses) {
       var classInterfaces = implementedClass.getInterfaces();
@@ -236,7 +226,8 @@ public final class Injector extends SystemLogger {
 
     // Retrieves all classes those are declared by the @Bean annotation
     var implementedBeanClasses = new HashSet<Class<?>>();
-    var beanFactoryClasses = reflections.getTypesAnnotatedWith(BeanFactory.class);
+    var beanFactoryClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses,
+        BeanFactory.class);
     for (var configurationClass : beanFactoryClasses) {
       for (var method : configurationClass.getMethods()) {
         if (method.isAnnotationPresent(Bean.class)) {
@@ -262,8 +253,8 @@ public final class Injector extends SystemLogger {
     }
 
     // Add all classes annotated by @RestController
-    var implementedRestClasses =
-        new HashSet<>(reflections.getTypesAnnotatedWith(RestController.class));
+    var implementedRestClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses,
+        RestController.class);
     // append all classes
     for (var implementedClass : implementedRestClasses) {
       classesMap.put(implementedClass, implementedClass);
@@ -271,7 +262,7 @@ public final class Injector extends SystemLogger {
 
     // Step 2: We create instances
     // create beans (class instances) based on annotations
-    for (var clazz : classes) {
+    for (var clazz : allClasses) {
       // in case you need to create a bean with another annotation, put it in here
       // but notices to put it in "implementedClasses" first
       // create beans automatically
@@ -639,7 +630,7 @@ public final class Injector extends SystemLogger {
   /**
    * Clear all references and beans created by the injector.
    */
-  private void reset() {
+  private void cleanup() {
     classesMap.clear();
     classBeansMap.clear();
     manualClassesSet.clear();
@@ -648,4 +639,3 @@ public final class Injector extends SystemLogger {
     clientCommandManager.clear();
   }
 }
-
