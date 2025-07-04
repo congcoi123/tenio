@@ -26,7 +26,6 @@ package com.tenio.core.network.zero.engine;
 
 import com.tenio.common.data.DataType;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
-import com.tenio.core.network.zero.engine.listener.ZeroAcceptorListener;
 import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
 
 /**
@@ -40,14 +39,6 @@ public interface ZeroReader extends ZeroEngine {
    * @param dataType the {@link DataType} value
    */
   void setDataType(DataType dataType);
-
-  /**
-   * Sets a listener for the acceptor engine which is using for communication between two engines.
-   *
-   * @param zeroAcceptorListener the {@link ZeroAcceptorListener} instance
-   * @see ZeroAcceptor
-   */
-  void setZeroAcceptorListener(ZeroAcceptorListener zeroAcceptorListener);
 
   /**
    * Sets a listener for the writer engine which is using for communication between two engines.

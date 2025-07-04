@@ -81,3 +81,8 @@
 ## 0.6.4 2025-07-01 Bugfix release
 - Fixed several issues related to performance
 - Temporarily disabled the Request Priority Mechanism, it could be enabled by checking this constant value AbstractController#REQUEST_PRIORITY_ENABLED
+
+## 0.6.5 2025-08-01 Bugfix release
+- Upgraded dependencies
+- Fixed several performance issues related to Injector (Removed unused Reflections API)
+- Fixed several performance issues related to Acceptor and Reader Engines

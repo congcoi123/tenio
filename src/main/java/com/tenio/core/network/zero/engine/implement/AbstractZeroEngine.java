@@ -78,15 +78,6 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   private void initializeWorkers() {
     var threadFactory = new ThreadFactoryBuilder().setDaemon(true).build();
     executorService = Executors.newFixedThreadPool(executorSize, threadFactory);
-    for (int i = 0; i < executorSize; i++) {
-      try {
-        Thread.sleep(100L);
-      } catch (InterruptedException exception) {
-        Thread.currentThread().interrupt();
-        error(exception);
-      }
-      executorService.execute(this);
-    }
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
@@ -197,6 +188,15 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
   @Override
   public void start() {
+    for (int i = 0; i < executorSize; i++) {
+      try {
+        Thread.sleep(100L);
+      } catch (InterruptedException exception) {
+        Thread.currentThread().interrupt();
+        error(exception);
+      }
+      executorService.execute(this);
+    }
     onStarted();
     activated = true;
     info("START SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
