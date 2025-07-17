@@ -36,7 +36,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * This class provides all necessary methods to work with the self-definition data elements.
@@ -226,7 +225,7 @@ public final class ZeroUtility {
   private static ZeroElement decodeElement(ByteBuffer buffer) throws RuntimeException {
     var headerByte = buffer.get();
     var type = ZeroType.getByValue(headerByte);
-    if (Objects.isNull(type)) {
+    if (type == null) {
       return null;
     }
 
@@ -475,7 +474,7 @@ public final class ZeroUtility {
       throw new IllegalStateException(
           String.format("Invalid ZeroType. Expected: %s, value: %d, but found: %s, value: %d",
               ZeroType.ZERO_ARRAY, ZeroType.ZERO_ARRAY.getValue(),
-              Objects.nonNull(ZeroType.getByValue(headerByte)) ?
+              ZeroType.getByValue(headerByte) != null ?
                   ZeroType.getByValue(headerByte).toString() : "null", headerByte));
     }
 
@@ -488,7 +487,7 @@ public final class ZeroUtility {
     try {
       for (int i = 0; i < arraySize; ++i) {
         var zeroElement = decodeElement(buffer);
-        if (Objects.isNull(zeroElement)) {
+        if (zeroElement == null) {
           throw new IllegalStateException(
               String.format("Unable to not decode ZeroArray item at index: %d", i));
         }
@@ -527,7 +526,7 @@ public final class ZeroUtility {
         var key = new String(keyData);
         var zeroElement = decodeElement(buffer);
 
-        if (Objects.isNull(zeroElement)) {
+        if (zeroElement == null) {
           throw new IllegalStateException(
               String.format("Unable to decode value for key: %s", Arrays.toString(keyData)));
         }

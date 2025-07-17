@@ -29,7 +29,6 @@ import com.tenio.common.exception.MsgPackOperationException;
 import com.tenio.common.exception.UnsupportedMsgPackDataTypeException;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
@@ -98,7 +97,7 @@ class MsgPackConverter {
       packer.packMapHeader(map.size());
       for (Map.Entry<String, Object> entry : map.entrySet()) {
         // Single value
-        if (Objects.isNull(entry.getValue())) {
+        if (entry.getValue() == null) {
           packer.packString(entry.getKey());
           packer.packNil();
         } else if (entry.getValue() instanceof Boolean) {
