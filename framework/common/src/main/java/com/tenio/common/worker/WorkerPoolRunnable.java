@@ -58,15 +58,21 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
   public void run() {
     currentThread = Thread.currentThread();
     currentThread.setName(String.format("worker-%s-%d", name, index));
-    currentThread.setUncaughtExceptionHandler((thread, cause) -> error(cause, thread.getName()));
+    currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+      if (isErrorEnabled()) {
+        error(cause, thread.getName());
+      }
+    });
 
     while (!isStopped()) {
       try {
         Runnable runnable = taskQueue.take();
         runnable.run();
       } catch (Throwable cause) {
-        // log or otherwise report exception but keep pool thread alive.
-        error(cause);
+        if (isErrorEnabled()) {
+          // log or otherwise report exception but keep pool thread alive.
+          error(cause);
+        }
       }
     }
   }

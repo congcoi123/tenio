@@ -47,3 +47,6 @@
 
 ## 0.6.3 2025-08-01 Bugfix release
 - Removed Reflections API to avoid duplicated scanning packages
+
+## 0.6.4 2025-09-01 Bugfix release
+- Removed unnecessary wrapper methods

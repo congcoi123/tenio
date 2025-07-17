@@ -51,8 +51,10 @@ public final class WorkerPool extends SystemLogger {
     runnableWorkerPools = new ArrayList<>();
     isStopped = false;
 
-    info("CREATED NEW WORKERS",
-        buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
+    if (isInfoEnabled()) {
+      info("CREATED NEW WORKERS",
+          buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
+    }
 
     for (int i = 0; i < noOfThreads; i++) {
       runnableWorkerPools.add(new WorkerPoolRunnable(name, i, taskQueue));
@@ -76,7 +78,9 @@ public final class WorkerPool extends SystemLogger {
       throw new IllegalStateException("WorkersPool is stopped");
     }
 
-    trace("EXECUTED A TASK", debugText);
+    if (isTraceEnabled()) {
+      trace("EXECUTED A TASK", debugText);
+    }
 
     taskQueue.offer(task);
   }
@@ -100,7 +104,9 @@ public final class WorkerPool extends SystemLogger {
         Thread.sleep(1);
       } catch (InterruptedException exception) {
         Thread.currentThread().interrupt();
-        error(exception);
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
     }
   }

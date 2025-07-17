@@ -32,7 +32,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -50,7 +49,7 @@ public final class ClassLoaderUtility {
   private static void scanDirectory(File directory, String packageName, Set<Class<?>> classes)
       throws ClassNotFoundException {
     File[] files = directory.listFiles();
-    if (Objects.isNull(files)) {
+    if (files == null) {
       return;
     }
 

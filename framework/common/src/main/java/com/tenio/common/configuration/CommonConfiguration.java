@@ -27,7 +27,6 @@ package com.tenio.common.configuration;
 import com.tenio.common.logger.SystemLogger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * This server needs some basic configuration to start running. The configuration file can be
@@ -76,7 +75,7 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
 
   @Override
   public boolean isDefined(ConfigurationType key) {
-    return Objects.nonNull(configuration.get(key)) && (!getString(key).equals("-1"));
+    return getString(key) != null && !getString(key).equals("-1");
   }
 
   @Override
@@ -96,14 +95,16 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
    * @param value a value for the map
    */
   protected void push(ConfigurationType key, Object value) {
-    if (Objects.isNull(key)) {
+    if (key == null) {
       return;
     }
 
     if (configuration.containsKey(key)) {
-      info("CONFIGURATION",
-          buildgen("Configuration key [", key, "] attempted to replace the old value ",
-              configuration.get(key), " by the new one ", value));
+      if (isInfoEnabled()) {
+        info("CONFIGURATION",
+            buildgen("Configuration key [", key, "] attempted to replace the old value ",
+                configuration.get(key), " by the new one ", value));
+      }
       return;
     }
 

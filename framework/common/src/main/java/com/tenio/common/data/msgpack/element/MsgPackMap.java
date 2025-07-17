@@ -30,7 +30,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * This is an element object class holds data in a map. All message comes from other services
@@ -74,7 +73,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return {@code true} if the value is {@code null}, otherwise {@code false}
    */
   public boolean isNull(String key) {
-    return Objects.isNull(get(key));
+    return get(key) == null;
   }
 
   /**
