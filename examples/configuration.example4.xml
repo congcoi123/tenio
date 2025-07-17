@@ -19,7 +19,7 @@
 	<Network>
 		<Sockets>
 			<Port name="tcp" type="tcp">8032</Port>
-			<Port name="udp" type="udp" cacheSize="80">20004</Port>
+			<Port name="udp" type="udp" cacheSize="100">20004</Port>
 		</Sockets>
 		<Properties>
 			<Property name="websocket-using-ssl">false</Property>
@@ -62,7 +62,7 @@
 		</Schedules>
 		<Properties>
 			<Property name="data-serialization">zero</Property>
-			<Property name="max-request-queue-size">300</Property>
+			<Property name="max-request-queue-size">0</Property>
 			<Property name="max-response-queue-size-per-session">300</Property>
 			<!-- When the server get disconnection of one client, can be hold its
 				player instance until timeout -->

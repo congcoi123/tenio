@@ -34,7 +34,7 @@ import com.tenio.core.bootstrap.annotation.Setting;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventPlayerLoginResult;
@@ -89,12 +89,12 @@ public final class TestSimpleServer {
   }
 
   @EventHandler
-  public static class PlayerLoggedInHandler extends AbstractHandler
+  public static class PlayerLoginHandler extends AbstractHandler
       implements EventPlayerLoginResult<Player> {
 
     @Override
-    public void handle(Player player, PlayerLoggedInResult result) {
-      if (result == PlayerLoggedInResult.SUCCESS) {
+    public void handle(Player player, PlayerLoginResult result) {
+      if (result == PlayerLoginResult.SUCCESS) {
         var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
             String.format("Welcome to server: %s", player.getIdentity()));
 

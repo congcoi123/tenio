@@ -22,28 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example4.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
+import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.examples.server.DatagramEstablishedState;
+import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
-public final class BandwidthInformationHandler extends AbstractHandler
-    implements EventFetchedBandwidthInfo {
+public final class PlayerLoginHandler extends AbstractHandler
+    implements EventPlayerLoginResult<Player> {
 
   @Override
-  public void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
-                     long writtenPackets, long writtenDroppedPacketsByPolicy,
-                     long writtenDroppedPacketsByFull) {
-    if (isInfoEnabled()) {
-      var info = String.format(
-          "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",
-          readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
-          writtenDroppedPacketsByPolicy,
-          writtenDroppedPacketsByFull, writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull);
+  public void handle(Player player, PlayerLoginResult result) {
+    if (result == PlayerLoginResult.SUCCESS) {
+      player.setNeverDeported(true);
+      var parcel =
+          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
+              array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS)
+                  .addInteger(api().getUdpPort()));
 
-      info("BANDWIDTH INFO", info);
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

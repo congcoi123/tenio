@@ -36,12 +36,14 @@ public final class SystemMonitoringHandler extends AbstractHandler
   @Override
   public void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory,
                      int countRunningThreads) {
-    var info = String.format(
-        "cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
-        (float) cpuUsage * 100, ServerUtility.convertBytesToMB(totalMemory),
-        ServerUtility.convertBytesToMB(usedMemory), ServerUtility.convertBytesToMB(freeMemory),
-        countRunningThreads);
+    if (isInfoEnabled()) {
+      var info = String.format(
+          "cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
+          (float) cpuUsage * 100, ServerUtility.convertBytesToMB(totalMemory),
+          ServerUtility.convertBytesToMB(usedMemory), ServerUtility.convertBytesToMB(freeMemory),
+          countRunningThreads);
 
-    info("SYSTEM MONITORING", info);
+      info("SYSTEM MONITORING", info);
+    }
   }
 }

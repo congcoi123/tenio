@@ -22,29 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example3.handler;
+package com.tenio.examples.example1.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventPlayerLoginResult;
 import com.tenio.examples.server.SharedEventKey;
-import com.tenio.examples.server.DatagramEstablishedState;
 
 @EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
+public final class PlayerLoginHandler extends AbstractHandler
     implements EventPlayerLoginResult<Player> {
 
   @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      var parcel =
-          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS)
-                  .addInteger(api().getUdpPort()));
+  public void handle(Player player, PlayerLoginResult result) {
+    if (result == PlayerLoginResult.SUCCESS) {
+      var request = msgmap().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+          String.format("Welcome to server: %s", player.getIdentity()));
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
     }
   }
 }

@@ -22,28 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example6.handler;
+package com.tenio.examples.example1.configuration.policy;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
+import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.protocol.policy.RequestPolicy;
 
-@EventHandler
-public final class BandwidthInformationHandler extends AbstractHandler
-    implements EventFetchedBandwidthInfo {
+@Component
+public final class CustomRequestPolicy implements RequestPolicy {
 
   @Override
-  public void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
-                     long writtenPackets, long writtenDroppedPacketsByPolicy,
-                     long writtenDroppedPacketsByFull) {
-    if (isInfoEnabled()) {
-      var info = String.format(
-          "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",
-          readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
-          writtenDroppedPacketsByPolicy,
-          writtenDroppedPacketsByFull, writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull);
-
-      info("BANDWIDTH INFO", info);
-    }
+  public void applyPolicy(Request request) {
   }
 }

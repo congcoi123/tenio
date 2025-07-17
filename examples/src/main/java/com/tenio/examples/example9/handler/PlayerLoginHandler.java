@@ -22,26 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example10.handler;
+package com.tenio.examples.example9.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventPlayerLoginResult;
-import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
+import com.tenio.examples.server.DatagramEstablishedState;
 
 @EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
+public final class PlayerLoginHandler extends AbstractHandler
     implements EventPlayerLoginResult<Player> {
 
   @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
+  public void handle(Player player, PlayerLoginResult result) {
+    if (result == PlayerLoginResult.SUCCESS) {
       var parcel =
-          msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getUdpPort() });
+          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
+              array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS));
 
       response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }

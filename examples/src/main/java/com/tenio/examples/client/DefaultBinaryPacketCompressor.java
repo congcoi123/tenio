@@ -22,30 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example4.handler;
+package com.tenio.examples.client;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
-import com.tenio.examples.server.DatagramEstablishedState;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 
-@EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoginResult<Player> {
+/**
+ * The default implementation of the binary packet compressor.
+ *
+ * @see BinaryPacketCompressor
+ */
+public final class DefaultBinaryPacketCompressor implements BinaryPacketCompressor {
 
   @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      player.setNeverDeported(true);
-      var parcel =
-          map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS)
-                  .addInteger(api().getUdpPort()));
+  public byte[] compress(byte[] binary) {
+    return binary;
+  }
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+  @Override
+  public byte[] uncompress(byte[] binary) {
+    return binary;
   }
 }

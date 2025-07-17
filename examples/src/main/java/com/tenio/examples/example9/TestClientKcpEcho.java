@@ -37,7 +37,6 @@ import com.tenio.examples.server.SharedEventKey;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.net.InetSocketAddress;
-import java.util.Objects;
 import kcp.ChannelConfig;
 import kcp.KcpClient;
 import kcp.KcpListener;
@@ -110,7 +109,7 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
         // the KCP connected successful, you now can send test requests
         System.out.println("Start the conversation ...");
 
-        if (Objects.isNull(ukcp)) {
+        if (ukcp == null) {
           System.err.println("[ERROR] No KCP instance found!");
           return;
         }

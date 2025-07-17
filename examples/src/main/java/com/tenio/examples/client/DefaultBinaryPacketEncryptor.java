@@ -22,26 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.examples.example1.handler;
+package com.tenio.examples.client;
 
-import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
-import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
-import com.tenio.examples.server.SharedEventKey;
+import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 
-@EventHandler
-public final class PlayerLoggedInHandler extends AbstractHandler
-    implements EventPlayerLoginResult<Player> {
+/**
+ * The default implementation for the binary packet encryption.
+ *
+ * @see BinaryPacketEncryptor
+ */
+public final class DefaultBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
   @Override
-  public void handle(Player player, PlayerLoggedInResult result) {
-    if (result == PlayerLoggedInResult.SUCCESS) {
-      var request = msgmap().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-          String.format("Welcome to server: %s", player.getIdentity()));
+  public byte[] decrypt(byte[] binary) {
+    return binary;
+  }
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
-    }
+  @Override
+  public byte[] encrypt(byte[] binary) {
+    return binary;
   }
 }
