@@ -8,7 +8,6 @@ import com.tenio.engine.physic2d.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Objects;
 
 /**
  * This class is used to divide a 2D space into a grid of cells each of which
@@ -21,7 +20,7 @@ import java.util.Objects;
  * the entity and the cell space it occupies
  *
  * @param <T> the game entity template
- * @author sallyx (https://www.sallyx.org/sally/en/game-ai/)
+ * @author sallyx (<a href="https://www.sallyx.org/sally/en/game-ai/">https://www.sallyx.org/sally/en/game-ai/</a>)
  */
 public class CellSpacePartition<T extends BaseGameEntity> implements Renderable {
 
@@ -204,7 +203,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @return the next entity in the neighbor vector
    */
   public T getNextOfNeighbor() {
-    if (Objects.isNull(currNeighbor) || !currNeighbor.hasNext()) {
+    if (currNeighbor == null || !currNeighbor.hasNext()) {
       return null;
     }
     return currNeighbor.next();
@@ -216,7 +215,7 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @return <b>true</b> if the end of the vector is found (a zero value marks the end)
    */
   public boolean isEndOfNeighbors() {
-    return (Objects.isNull(currNeighbor) || (!currNeighbor.hasNext()));
+    return (currNeighbor == null || (!currNeighbor.hasNext()));
   }
 
   /**

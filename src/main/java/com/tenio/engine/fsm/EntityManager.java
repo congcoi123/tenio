@@ -51,8 +51,9 @@ public final class EntityManager extends SystemLogger {
         throw new DuplicatedEntityException();
       }
     } catch (DuplicatedEntityException exception) {
-      // fire an event
-      error(exception, "entity id: ", entity.getId());
+      if (isErrorEnabled()) {
+        error(exception, "entity id: ", entity.getId());
+      }
       return;
     }
 

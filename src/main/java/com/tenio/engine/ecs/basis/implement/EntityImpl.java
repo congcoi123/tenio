@@ -30,7 +30,6 @@ import com.tenio.engine.ecs.basis.Component;
 import com.tenio.engine.ecs.basis.Entity;
 import com.tenio.engine.exception.ComponentIsNotExistedException;
 import com.tenio.engine.exception.DuplicatedComponentException;
-import java.util.Objects;
 
 /**
  * An entity is something that exists in your game world. Again, an entity is
@@ -65,7 +64,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
 
   @Override
   public void setComponentPools(ElementPool<Component>[] componentPools) {
-    if (Objects.isNull(this.componentPools)) {
+    if (this.componentPools == null) {
       this.componentPools = componentPools;
     }
   }
@@ -77,10 +76,10 @@ public class EntityImpl extends AbstractLogger implements Entity {
 
   @Override
   public void setContextInfo(ContextInfo contextInfo) {
-    if (Objects.isNull(this.contextInfo)) {
+    if (this.contextInfo == null) {
       this.contextInfo = contextInfo;
     }
-    if (Objects.isNull(components)) {
+    if (components == null) {
       components = new Component[contextInfo.getNumberComponents()];
     }
   }
@@ -89,7 +88,9 @@ public class EntityImpl extends AbstractLogger implements Entity {
   public void setComponent(int index, Component component) {
     if (hasComponent(index)) {
       var exception = new DuplicatedComponentException();
-      error(exception, "index: ", index);
+      if (isErrorEnabled()) {
+        error(exception, "index: ", index);
+      }
       throw exception;
     }
 
@@ -100,7 +101,9 @@ public class EntityImpl extends AbstractLogger implements Entity {
   public void removeComponent(int index) {
     if (!hasComponent(index)) {
       var exception = new ComponentIsNotExistedException();
-      error(exception, "index: ", index);
+      if (isErrorEnabled()) {
+        error(exception, "index: ", index);
+      }
       throw exception;
     }
 
@@ -112,7 +115,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
     if (hasComponent(index)) {
       replaceComponentInternal(index, component);
     } else {
-      if (Objects.nonNull(component)) {
+      if (component != null) {
         setComponent(index, component);
       }
     }
@@ -139,7 +142,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasComponent(int index) {
     if (index < components.length) {
-      return Objects.nonNull(components[index]);
+      return components[index] != null;
     } else {
       return false;
     }
@@ -148,7 +151,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasComponents(int... indices) {
     for (int index : indices) {
-      if (Objects.isNull(components[index])) {
+      if (components[index] == null) {
         return false;
       }
     }
@@ -158,7 +161,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasAnyComponent(int... indices) {
     for (int index : indices) {
-      if (Objects.nonNull(components[index])) {
+      if (components[index] != null) {
         return true;
       }
     }
@@ -168,7 +171,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public void removeAllComponents() {
     for (int i = 0; i < components.length; i++) {
-      if (Objects.nonNull(components[i])) {
+      if (components[i] != null) {
         replaceComponent(i, null);
       }
     }

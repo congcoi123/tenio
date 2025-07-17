@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-engine</artifactId>
-    <version>0.6.3</version>
+    <version>0.6.4</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,7 +39,7 @@
     </scm>
 
     <properties>
-        <io.github.congcoi123.tenio.common>0.6.3</io.github.congcoi123.tenio.common>
+        <io.github.congcoi123.tenio.common>0.6.4</io.github.congcoi123.tenio.common>
 
         <google.guava.version>33.3.1-jre</google.guava.version>
         <logging.log4j.version>2.20.0</logging.log4j.version>
