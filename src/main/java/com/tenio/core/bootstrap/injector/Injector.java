@@ -60,7 +60,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.ThreadSafe;
@@ -133,7 +132,7 @@ public final class Injector extends SystemLogger {
   private final ClientCommandManager clientCommandManager;
 
   private Injector() {
-    if (Objects.nonNull(instance)) {
+    if (instance != null) {
       throw new ExceptionInInitializerError("Could not re-create the class instance");
     }
 
@@ -183,11 +182,11 @@ public final class Injector extends SystemLogger {
 
     var allPackageNames = new HashSet<String>();
 
-    if (Objects.nonNull(entryClass)) {
+    if (entryClass != null) {
       allPackageNames.add(entryClass.getPackage().getName());
     }
 
-    if (Objects.nonNull(packages)) {
+    if (packages != null) {
       allPackageNames.addAll(Arrays.asList(packages));
     }
 
@@ -350,11 +349,14 @@ public final class Injector extends SystemLogger {
             handler.setCommandManager(systemCommandManager);
             systemCommandManager.registerCommand(systemCommandAnnotation.label(), handler);
           } else {
-            error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
-                "AbstractSystemCommandHandler"));
+            if (isErrorEnabled()) {
+              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a AbstractSystemCommandHandler"));
+            }
           }
         } catch (Exception exception) {
-          error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          if (isErrorEnabled()) {
+            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          }
         }
       } else if (clazz.isAnnotationPresent(ClientCommand.class)) {
         try {
@@ -373,11 +375,14 @@ public final class Injector extends SystemLogger {
             clientCommandManager.registerCommand(clientCommandAnnotation.value(),
                 (AbstractClientCommandHandler<Player>) handler);
           } else {
-            error(new IllegalArgumentException("Class " + clazz.getName() + " is not a " +
-                "AbstractClientCommandHandler"));
+            if (isErrorEnabled()) {
+              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a AbstractClientCommandHandler"));
+            }
           }
         } catch (Exception exception) {
-          error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          if (isErrorEnabled()) {
+            error(exception, "Failed to register command handler for ", clazz.getSimpleName());
+          }
         }
       }
     }
@@ -388,20 +393,12 @@ public final class Injector extends SystemLogger {
       try {
         autowire(clazz, bean);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | DuplicatedBeanCreationException exception) {
-        error("Initialize class: ", clazz.clazz().getName(), "\n", getStackTrace(exception));
+        if (isErrorEnabled()) {
+          error("Initialize class: ", clazz.clazz().getName(), "\n",
+              StringUtility.getStackTrace(exception));
+        }
       }
     });
-  }
-
-  private String getStackTrace(Exception exception) {
-    StringBuilder stringBuilder = new StringBuilder();
-    StackTraceElement[] stackTraceElements = exception.getStackTrace();
-    stringBuilder.append(exception.getClass().getName()).append(": ").append(exception.getMessage())
-        .append("\n");
-    for (StackTraceElement stackTraceElement : stackTraceElements) {
-      stringBuilder.append("\t at ").append(stackTraceElement.toString()).append("\n");
-    }
-    return stringBuilder.toString();
   }
 
   /**
@@ -500,7 +497,7 @@ public final class Injector extends SystemLogger {
       return classBeansMap.get(beanClass);
     }
 
-    if (Objects.nonNull(implementedClass) && !manualClassesSet.contains(beanClass.getClass())) {
+    if (implementedClass != null && !manualClassesSet.contains(beanClass.getClass())) {
       if (classBeansMap.containsKey(beanClass)) {
         throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
       }
@@ -535,8 +532,7 @@ public final class Injector extends SystemLogger {
     } else {
       // multiple implemented class from the interface, need to be selected by
       // "qualifier" value
-      final var findBy =
-          (Objects.isNull(classQualifier)) ? fieldName : classQualifier;
+      final var findBy = classQualifier == null ? fieldName : classQualifier;
       var optional = implementedClasses.stream()
           .filter(entry -> entry.getKey().equals(findBy)).findAny();
       // in case of could not find an appropriately single instance, so throw an exception
@@ -583,7 +579,7 @@ public final class Injector extends SystemLogger {
           var fieldInstance =
               getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
                   classQualifier);
-          if (Objects.nonNull(fieldInstance)) {
+          if (fieldInstance != null) {
             field.set(bean, fieldInstance);
             autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
           }
@@ -592,9 +588,8 @@ public final class Injector extends SystemLogger {
         }
       } else if (field.isAnnotationPresent(Autowired.class)) {
         var fieldInstance =
-            getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
-                classQualifier);
-        if (Objects.nonNull(fieldInstance)) {
+            getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier, classQualifier);
+        if (fieldInstance != null) {
           field.set(bean, fieldInstance);
           autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
         }
@@ -612,7 +607,7 @@ public final class Injector extends SystemLogger {
   private Set<Field> findFields(Class<?> clazz) {
     var fields = new HashSet<Field>();
 
-    while (Objects.nonNull(clazz)) {
+    while (clazz != null) {
       for (var field : clazz.getDeclaredFields()) {
         if (field.isAnnotationPresent(Autowired.class)
             || field.isAnnotationPresent(AutowiredAcceptNull.class)) {

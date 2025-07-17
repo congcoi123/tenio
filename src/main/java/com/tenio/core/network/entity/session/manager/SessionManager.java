@@ -40,6 +40,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import kcp.Ukcp;
 
 /**
@@ -48,24 +49,23 @@ import kcp.Ukcp;
 public interface SessionManager extends Manager {
 
   /**
-   * Default size value of packet queue.
+   * Default the maximum size value of a packet queue.
    */
-  int DEFAULT_PACKET_QUEUE_SIZE = 100;
+  int DEFAULT_MAX_PACKET_QUEUE_SIZE = 100;
 
   /**
-   * Retrieves an iterator for a session management list. This method should be used to prevent
-   * the "escape references" issue.
+   * Ensures the calculation on the session list is thread-safe.
    *
-   * @return an iterator of {@link Session} management list
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Session> getSessionIterator();
+  void computeSessions(Consumer<Iterator<Session>> onComputed);
 
   /**
    * Creates a new socket (TCP) session and adds it to the management list.
    *
    * @param socketChannel the {@link SocketChannel}
-   * @param selectionKey  the {@link SelectionKey}
+   * @param selectionKey  the {@link SelectionKey}, selected for the socket channel by a selector
    * @return a new instance of {@link Session}
    */
   Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey);

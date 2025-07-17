@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * An implemented class is for player management.
@@ -90,7 +90,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
   @Override
   public Player createPlayerWithSession(String playerName, Session session) {
-    if (Objects.isNull(session)) {
+    if (session == null) {
       throw new NullPointerException("Unable to assign a null session for the player");
     }
 
@@ -102,7 +102,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
   @Override
   public void configureInitialPlayer(Player player) {
-    if (Objects.isNull(player)) {
+    if (player == null) {
       throw new NullPointerException("Unable to process an unavailable player");
     }
 
@@ -118,8 +118,10 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public synchronized Iterator<Player> getPlayerIterator() {
-    return players.values().iterator();
+  public void computePlayers(Consumer<Iterator<Player>> onComputed) {
+    synchronized (this) {
+      onComputed.accept(players.values().iterator());
+    }
   }
 
   @Override

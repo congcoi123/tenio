@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * The commands' management class.
@@ -53,7 +52,9 @@ public final class ClientCommandManager extends SystemLogger {
    */
   public synchronized void registerCommand(Short code,
                                            AbstractClientCommandHandler<Player> command) {
-    debug("CLIENT_COMMAND", "Registered command > ", code);
+    if (isDebugEnabled()) {
+      debug("CLIENT_COMMAND", "Registered command > ", code);
+    }
 
     // checks availability
     if (commands.containsKey(code)) {
@@ -70,8 +71,9 @@ public final class ClientCommandManager extends SystemLogger {
    * @param code The command code
    */
   public synchronized void unregisterCommand(Short code) {
-    debug("CLIENT_COMMAND", "Unregistered command > ", code);
-
+    if (isDebugEnabled()) {
+      debug("CLIENT_COMMAND", "Unregistered command > ", code);
+    }
     commands.remove(code);
   }
 
@@ -115,7 +117,7 @@ public final class ClientCommandManager extends SystemLogger {
     var handler = getHandler(code);
 
     // checks if the handler is null
-    if (Objects.isNull(handler)) {
+    if (handler == null) {
       return;
     }
 

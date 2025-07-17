@@ -32,7 +32,7 @@ public enum PlayerDisconnectMode {
   /**
    * When a player manually disconnect from the server.
    */
-  DEFAULT,
+  CLIENT_REQUEST,
   /**
    * When a player's connection is lost and the reason comes from the client side.
    */

@@ -64,32 +64,39 @@ public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
   @Override
   public ScheduledFuture<?> run() {
     var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-task-%d")
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-task")
             .build();
     var threadFactoryWorker =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-worker" +
-            "-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-worker")
+            .build();
     var executors = Executors.newCachedThreadPool(threadFactoryWorker);
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
-          debug("AUTO DISCONNECT PLAYER",
-              "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
+          if (isDebugEnabled()) {
+            debug("AUTO DISCONNECT PLAYER",
+                "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
+          }
           executors.execute(() -> {
             Iterator<Player> iterator = playerManager.getReadonlyPlayersList().listIterator();
             while (iterator.hasNext()) {
               Player player = iterator.next();
               if (player.isNeverDeported()) {
                 if (player.isIdleNeverDeported()) {
-                  debug("AUTO DISCONNECT PLAYER",
-                      player.getIdentity(),
-                      " (never deported) is going to be forced to remove by the cleaning task");
+                  if (isDebugEnabled()) {
+                    debug("AUTO DISCONNECT PLAYER",
+                        player.getIdentity(),
+                        " (never deported) is going to be forced to remove by the cleaning task");
+                  }
                   ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
                       PlayerDisconnectMode.IDLE);
                 }
               } else {
                 if (player.isIdle()) {
-                  debug("AUTO DISCONNECT PLAYER",
-                      player.getIdentity(), " is going to be forced to remove by the cleaning task");
+                  if (isDebugEnabled()) {
+                    debug("AUTO DISCONNECT PLAYER",
+                        player.getIdentity(),
+                        " is going to be forced to remove by the cleaning task");
+                  }
                   ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
                       PlayerDisconnectMode.IDLE);
                 }

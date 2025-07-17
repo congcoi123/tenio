@@ -34,7 +34,6 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.ChannelNotExistException;
 import com.tenio.core.exception.CreatedDuplicatedChannelException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -84,10 +83,10 @@ public final class ChannelManagerImpl implements ChannelManager {
 
   @Override
   public void subscribe(Channel channel, Player player) {
-    if (Objects.isNull(player)) {
+    if (player == null) {
       return;
     }
-    if (Objects.isNull(channel)) {
+    if (channel == null) {
       throw new ChannelNotExistException();
     }
     channel.addPlayer(player);
@@ -95,7 +94,7 @@ public final class ChannelManagerImpl implements ChannelManager {
 
   @Override
   public void unsubscribe(Channel channel, Player player) {
-    if (Objects.isNull(channel) || Objects.isNull(player)) {
+    if (channel == null || player == null) {
       return;
     }
     channel.removePlayer(player);
@@ -103,7 +102,7 @@ public final class ChannelManagerImpl implements ChannelManager {
 
   @Override
   public void unsubscribe(Player player) {
-    if (Objects.isNull(player)) {
+    if (player == null) {
       return;
     }
     channels.values().forEach(channel -> channel.removePlayer(player));
@@ -111,12 +110,11 @@ public final class ChannelManagerImpl implements ChannelManager {
 
   @Override
   public void broadcast(Channel channel, DataCollection message) {
-    if (Objects.isNull(channel)) {
+    if (channel == null) {
       throw new ChannelNotExistException();
     }
     channel.getReadonlyPlayers()
-        .forEach(player -> eventManager.emit(ServerEvent.BROADCAST_TO_CHANNEL, channel,
-            player, message));
+        .forEach(player -> eventManager.emit(ServerEvent.BROADCAST_TO_CHANNEL, channel, player, message));
   }
 
   @Override

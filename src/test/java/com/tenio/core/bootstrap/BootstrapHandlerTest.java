@@ -24,8 +24,17 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
 
+import com.tenio.core.bootstrap.injector.BeanClass;
+import com.tenio.core.command.client.ClientCommandManager;
+import com.tenio.core.command.system.SystemCommandManager;
+import jakarta.servlet.http.HttpServlet;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +48,82 @@ class BootstrapHandlerTest {
     assertNull(actualBootstrapHandler.getConfigurationHandler());
     assertNull(actualBootstrapHandler.getEventHandler());
     assertNull(actualBootstrapHandler.getSystemCommandManager());
+  }
+
+  @Test
+  @DisplayName("Test systemCommandManager getter/setter")
+  void testSystemCommandManager() {
+    BootstrapHandler handler = new BootstrapHandler();
+    SystemCommandManager scm = mock(SystemCommandManager.class);
+    handler.setSystemCommandManager(scm);
+    assertSame(scm, handler.getSystemCommandManager());
+  }
+
+  @Test
+  @DisplayName("Test clientCommandManager getter/setter")
+  void testClientCommandManager() {
+    BootstrapHandler handler = new BootstrapHandler();
+    ClientCommandManager ccm = mock(ClientCommandManager.class);
+    handler.setClientCommandManager(ccm);
+    assertSame(ccm, handler.getClientCommandManager());
+  }
+
+  @Test
+  @DisplayName("Test servletMap getter/setter")
+  void testServletMap() {
+    BootstrapHandler handler = new BootstrapHandler();
+    Map<String, HttpServlet> map = new HashMap<>();
+    HttpServlet servlet = mock(HttpServlet.class);
+    map.put("test", servlet);
+    handler.setServletMap(map);
+    assertSame(map, handler.getServletMap());
+  }
+
+  @Test
+  @DisplayName("Test createReversedClassesMap and setClassBeansMap")
+  void testCreateReversedClassesMapAndSetClassBeansMap() {
+    BootstrapHandler handler = new BootstrapHandler();
+    Map<Class<?>, Class<?>> classesMap = new HashMap<>();
+    classesMap.put(String.class, Object.class);
+    handler.createReversedClassesMap(classesMap);
+    Map<BeanClass, Object> beansMap = new HashMap<>();
+    beansMap.put(new BeanClass(String.class, ""), "bean");
+    handler.setClassBeansMap(beansMap);
+    // getBeanByClazz should return null (no reversed mapping for String.class)
+    assertNull(handler.getBeanByClazz(String.class));
+    // Now, reversed mapping for Object.class -> String.class, so getBeanByClazz(Object.class) should return "bean"
+    assertEquals("bean", handler.getBeanByClazz(Object.class));
+  }
+
+  @Test
+  @DisplayName("Test getBeanByClazz with name")
+  void testGetBeanByClazzWithName() {
+    BootstrapHandler handler = new BootstrapHandler();
+    Map<Class<?>, Class<?>> classesMap = new HashMap<>();
+    classesMap.put(String.class, Object.class);
+    handler.createReversedClassesMap(classesMap);
+    Map<BeanClass, Object> beansMap = new HashMap<>();
+    beansMap.put(new BeanClass(String.class, "special"), "specialBean");
+    handler.setClassBeansMap(beansMap);
+    assertEquals("specialBean", handler.getBeanByClazz(Object.class, "special"));
+    assertNull(handler.getBeanByClazz(Object.class, "notfound"));
+  }
+
+  @Test
+  @DisplayName("Test getBeanByClazz returns null for missing mapping")
+  void testGetBeanByClazzReturnsNullForMissingMapping() {
+    BootstrapHandler handler = new BootstrapHandler();
+    // Initialize empty maps to avoid NPE
+    handler.createReversedClassesMap(new HashMap<>());
+    handler.setClassBeansMap(new HashMap<>());
+    assertNull(handler.getBeanByClazz(Object.class));
+  }
+
+  @Test
+  @DisplayName("Test getConfigurationHandler and getEventHandler (default null)")
+  void testGetConfigurationHandlerAndEventHandler() {
+    BootstrapHandler handler = new BootstrapHandler();
+    assertNull(handler.getConfigurationHandler());
+    assertNull(handler.getEventHandler());
   }
 }

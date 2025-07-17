@@ -29,8 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 class PlayerDisconnectModeTest {
+
   @Test
   void testValueOf() {
-    assertEquals("DEFAULT", PlayerDisconnectMode.valueOf("DEFAULT").toString());
+    assertEquals("CLIENT_REQUEST", PlayerDisconnectMode.valueOf("CLIENT_REQUEST").toString());
   }
 }

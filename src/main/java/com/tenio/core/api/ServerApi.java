@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * This class provides all supported APIs working with the server.
@@ -181,14 +182,12 @@ public interface ServerApi {
   int getPlayerCount();
 
   /**
-   * Retrieves an iterator for the global player management list on the server. This method should
-   * be used to prevent the "escape references" issue.
+   * Ensures the calculation on the player list is thread-safe.
    *
-   * @return an iterator of {@link Player} management list
-   * @see PlayerManager
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Player> getPlayerIterator();
+  void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
    * Retrieves a read-only global player management list on the server. This method should be used
@@ -210,14 +209,12 @@ public interface ServerApi {
   Optional<Room> getRoomById(long roomId);
 
   /**
-   * Retrieves an iterator for the room management list on the server. This method should be used
-   * to prevent the "escape references" issue.
+   * Ensures the calculation on the room list is thread-safe.
    *
-   * @return a list of all rooms {@link Room} in the management list on the server
-   * @see RoomManager
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Room> getRoomIterator();
+  void computeRooms(Consumer<Iterator<Room>> onComputed);
 
   /**
    * Retrieves a read-only global room management list on the server. This method should be used

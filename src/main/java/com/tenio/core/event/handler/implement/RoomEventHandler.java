@@ -44,7 +44,6 @@ import com.tenio.core.handler.event.EventRoomCreatedResult;
 import com.tenio.core.handler.event.EventRoomWillBeRemoved;
 import com.tenio.core.handler.event.EventSwitchParticipantToSpectatorResult;
 import com.tenio.core.handler.event.EventSwitchSpectatorToParticipantResult;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -96,7 +95,7 @@ public final class RoomEventHandler {
     eventPlayerAfterLeftRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_AFTER_LEFT_ROOM, params -> {
           var player = (Player) params[0];
-          var room = Objects.isNull(params[1]) ? null : (Room) params[1];
+          var room = params[1] == null ? null : (Room) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
           var result = (PlayerLeftRoomResult) (params[3]);
 
@@ -108,7 +107,7 @@ public final class RoomEventHandler {
     eventPlayerBeforeLeaveRoomOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, params -> {
           var player = (Player) params[0];
-          var room = Objects.isNull(params[1]) ? null : (Room) params[1];
+          var room = params[1] == null ? null : (Room) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
 
           event.handle(player, room, mode);
@@ -129,7 +128,7 @@ public final class RoomEventHandler {
 
     eventRoomCreatedResultOp.ifPresent(event -> eventManager.on(ServerEvent.ROOM_CREATED_RESULT,
         params -> {
-          var room = Objects.isNull(params[0]) ? null : (Room) params[0];
+          var room = params[0] == null ? null : (Room) params[0];
           var setting = (InitialRoomSetting) params[1];
           var result = (RoomCreatedResult) params[2];
 

@@ -24,5 +24,25 @@ THE SOFTWARE.
 
 package com.tenio.core.server;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Unit Test Cases For ServerTest")
 class ServerTest {
+
+  @BeforeEach
+  void setUp() {
+    ServerImpl.getInstance();
+  }
+
+  @Test
+  @DisplayName("Test singleton")
+  void testSingleton() {
+    Server s1 = ServerImpl.getInstance();
+    Server s2 = ServerImpl.getInstance();
+    assertSame(s1, s2);
+  }
 }

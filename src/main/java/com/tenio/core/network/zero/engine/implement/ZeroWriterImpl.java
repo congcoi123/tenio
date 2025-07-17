@@ -32,86 +32,83 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.engine.ZeroWriter;
-import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
-import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
+import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
 import com.tenio.core.network.zero.engine.writer.WriterHandler;
 import com.tenio.core.network.zero.engine.writer.implement.DatagramWriterHandler;
 import com.tenio.core.network.zero.engine.writer.implement.SocketWriterHandler;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The implementation for writer engine.
  *
  * @see ZeroWriter
  */
-public final class ZeroWriterImpl extends AbstractZeroEngine
-    implements ZeroWriter, ZeroWriterListener {
+public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWriter {
 
-  private final BlockingQueue<Session> sessionTicketsQueue;
-  private final DatagramChannelManager datagramChannelManager;
+  private final AtomicInteger id;
+  private SessionTicketsQueueManager sessionTicketsQueueManager;
   private NetworkWriterStatistic networkWriterStatistic;
   private BinaryPacketEncoder binaryPacketEncoder;
 
-  private ZeroWriterImpl(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+  private ZeroWriterImpl(EventManager eventManager) {
     super(eventManager);
-    this.datagramChannelManager = datagramChannelManager;
-    sessionTicketsQueue = new LinkedBlockingQueue<>();
+    id = new AtomicInteger(0);
     setName("writer");
   }
 
   /**
    * Creates a new instance of the socket writer.
    *
-   * @param eventManager           the instance of {@link EventManager}
-   * @param datagramChannelManager an instance of {@link DatagramChannelManager}
+   * @param eventManager the instance of {@link EventManager}
    * @return a new instance of {@link ZeroWriter}
    */
-  public static ZeroWriter newInstance(EventManager eventManager,
-                                       DatagramChannelManager datagramChannelManager) {
-    return new ZeroWriterImpl(eventManager, datagramChannelManager);
+  public static ZeroWriter newInstance(EventManager eventManager) {
+    return new ZeroWriterImpl(eventManager);
   }
 
   private WriterHandler createSocketWriterHandler() {
     var socketWriterHandler = SocketWriterHandler.newInstance();
     socketWriterHandler.setNetworkWriterStatistic(networkWriterStatistic);
-    socketWriterHandler.setSessionTicketsQueue(sessionTicketsQueue);
+    socketWriterHandler.setSessionTicketsQueueManager(sessionTicketsQueueManager);
     socketWriterHandler.allocateBuffer(getMaxBufferSize());
 
     return socketWriterHandler;
   }
 
   private WriterHandler createDatagramWriterHandler() {
-    var datagramWriterHandler = DatagramWriterHandler.newInstance(datagramChannelManager);
+    var datagramWriterHandler = DatagramWriterHandler.newInstance();
     datagramWriterHandler.setNetworkWriterStatistic(networkWriterStatistic);
-    datagramWriterHandler.setSessionTicketsQueue(sessionTicketsQueue);
+    datagramWriterHandler.setSessionTicketsQueueManager(sessionTicketsQueueManager);
     datagramWriterHandler.allocateBuffer(getMaxBufferSize());
 
     return datagramWriterHandler;
   }
 
-  private void writableLoop(WriterHandler socketWriterHandler,
-                            WriterHandler datagramWriterHandler) {
+  private void writing(BlockingQueue<Session> sessionTicketsQueue,
+                       WriterHandler socketWriterHandler,
+                       WriterHandler datagramWriterHandler) {
     try {
-      var session = sessionTicketsQueue.take();
+      Session session = sessionTicketsQueue.take();
       processSessionQueue(session, socketWriterHandler, datagramWriterHandler);
     } catch (Throwable cause) {
-      error(cause, "Interruption occurred when process a session and its packet");
+      if (isErrorEnabled()) {
+        error(cause, "Interruption occurred when process a session and its packet");
+      }
     }
   }
 
   private void processSessionQueue(Session session, WriterHandler socketWriterHandler,
                                    WriterHandler datagramWriterHandler) {
     // ignore a null or inactivated session
-    if (Objects.isNull(session)) {
+    if (session == null) {
       return;
     }
 
     // now we can iterate packets from queue to proceed
     var packetQueue = session.fetchPacketQueue();
     // ignore the empty queue
-    if (Objects.isNull(packetQueue) || packetQueue.isEmpty()) {
+    if (packetQueue == null || packetQueue.isEmpty()) {
       return;
     }
 
@@ -123,7 +120,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
     var packet = packetQueue.peek();
     // ignore the null packet and remove it from queue
-    if (Objects.isNull(packet)) {
+    if (packet == null) {
       if (!packetQueue.isEmpty()) {
         packetQueue.take();
       }
@@ -142,7 +139,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
   public void enqueuePacket(Packet packet) {
     // retrieve all recipient sessions from the packet
     var recipients = packet.getRecipients();
-    if (Objects.isNull(recipients)) {
+    if (recipients == null) {
       return;
     }
 
@@ -173,17 +170,13 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
     // loops through the packet queue and handles its packets
     var packetQueue = session.fetchPacketQueue();
-    if (Objects.nonNull(packetQueue)) {
+    if (packetQueue != null) {
       try {
         // put new item into the queue
         packetQueue.put(packet);
 
-        // only need when the session was not in the tickets queue
-        synchronized (sessionTicketsQueue) {
-          if (!sessionTicketsQueue.contains(session)) {
-            sessionTicketsQueue.add(session);
-          }
-        }
+        // duplicated entries are expected
+        sessionTicketsQueueManager.getQueueByElementId(session.getId()).add(session);
 
         packet.setRecipients(null);
       } catch (PacketQueuePolicyViolationException exception) {
@@ -193,13 +186,6 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
         session.addDroppedPackets(1);
         networkWriterStatistic.updateWrittenDroppedPacketsByFull(1);
       }
-    }
-  }
-
-  @Override
-  public void continueWriteInterestOp(Session session) {
-    if (Objects.nonNull(session)) {
-      sessionTicketsQueue.add(session);
     }
   }
 
@@ -220,7 +206,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
 
   @Override
   public void onInitialized() {
-    // do nothing
+    sessionTicketsQueueManager = new SessionTicketsQueueManager(getThreadPoolSize());
   }
 
   @Override
@@ -232,17 +218,18 @@ public final class ZeroWriterImpl extends AbstractZeroEngine
   public void onRunning() {
     var socketWriterHandler = createSocketWriterHandler();
     var datagramWriterHandler = createDatagramWriterHandler();
+    var sessionTicketsQueue = sessionTicketsQueueManager.getQueueByIndex(id.getAndIncrement());
 
     while (!Thread.currentThread().isInterrupted()) {
       if (isActivated()) {
-        writableLoop(socketWriterHandler, datagramWriterHandler);
+        writing(sessionTicketsQueue, socketWriterHandler, datagramWriterHandler);
       }
     }
   }
 
   @Override
   public void onShutdown() {
-    sessionTicketsQueue.clear();
+    sessionTicketsQueueManager.clear();
   }
 
   @Override
