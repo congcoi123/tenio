@@ -61,7 +61,9 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
         used[i] = false;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        error(exception);
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
     }
   }
@@ -91,12 +93,16 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
         used[i] = false;
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        error(exception);
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
     }
 
-    info("COMPONENT POOL", buildgen("Increase the number of elements by ",
-        CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
+    if (isInfoEnabled()) {
+      info("COMPONENT POOL", buildgen("Increase the number of elements by ",
+          CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
+    }
 
     // and allocate the last old element
     used[oldPool.length - 1] = true;
@@ -115,7 +121,9 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
     }
     if (!flagFound) {
       var exception = new NullElementPoolException(element.toString());
-      error(exception);
+      if (isErrorEnabled()) {
+        error(exception);
+      }
       throw exception;
     }
   }

@@ -29,7 +29,6 @@ import com.tenio.engine.exception.HeartbeatNotFoundException;
 import com.tenio.engine.message.ExtraMessage;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,13 +67,17 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
   @Override
   public void initialize(final int maxHeartbeat) throws Exception {
     executorService = Executors.newFixedThreadPool(maxHeartbeat);
-    info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
+    if (isInfoEnabled()) {
+      info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
+    }
   }
 
   @Override
   public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
     try {
-      info("CREATE HEART BEAT", buildgen("id: ", id));
+      if (isInfoEnabled()) {
+        info("CREATE HEART BEAT", buildgen("id: ", id));
+      }
       // Add the listener
       var listener = new TreeSet<HeartbeatMessage>();
       heartbeat.setMessageListener(listener);
@@ -83,7 +86,9 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       var future = executorService.submit(heartbeat);
       threadsManager.put(id, future);
     } catch (Exception exception) {
-      error(exception, "id: ", id);
+      if (isErrorEnabled()) {
+        error(exception, "id: ", id);
+      }
     }
   }
 
@@ -95,21 +100,24 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       }
 
       var future = threadsManager.get(id);
-      if (Objects.isNull(future)) {
+      if (future == null) {
         throw new NullPointerException();
       }
 
       future.cancel(true);
       threadsManager.remove(id);
 
-      info("DISPOSE HEART BEAT", buildgen(id));
+      if (isInfoEnabled()) {
+        info("DISPOSE HEART BEAT", buildgen(id));
+      }
 
       // Remove the listener
       messagesManager.get(id).clear();
       messagesManager.remove(id);
-
     } catch (Exception exception) {
-      error(exception, "id: ", id);
+      if (isErrorEnabled()) {
+        error(exception, "id: ", id);
+      }
     }
   }
 
@@ -120,7 +128,7 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
 
   @Override
   public synchronized void clear() {
-    if (Objects.nonNull(executorService)) {
+    if (executorService != null) {
       executorService.shutdownNow();
     }
     executorService = null;

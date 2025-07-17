@@ -3,7 +3,6 @@ package com.tenio.engine.physic2d.utility;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.engine.physic2d.math.Vector2;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Some useful 2D geometry functions.
@@ -496,7 +495,7 @@ public final class Geometry {
   public static float getTwoCirclesIntersectionArea(float x1, float y1, float r1, float x2,
                                                     float y2, float r2) {
     // first calculate the intersection points
-    if (Objects.isNull(getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2))) {
+    if (getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2) == null) {
       return 0; // no overlap
     }
 

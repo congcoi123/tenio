@@ -31,7 +31,6 @@ import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.message.ExtraMessage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.TreeSet;
 
 /**
@@ -79,7 +78,7 @@ public final class MessageDispatcher {
     var preceiver = entityManager.get(receiver);
 
     // make sure the receiver is valid
-    if (Objects.isNull(preceiver)) {
+    if (preceiver == null) {
       return;
     }
 

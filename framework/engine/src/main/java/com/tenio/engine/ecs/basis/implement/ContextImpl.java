@@ -32,7 +32,6 @@ import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
@@ -60,7 +59,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
     componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
 
     for (int i = 0; i < this.contextInfo.getNumberComponents(); i++) {
-      if (Objects.nonNull(this.contextInfo.getComponentTypes()[i])) {
+      if (this.contextInfo.getComponentTypes()[i] != null) {
         componentPools[i] = new ComponentPool(this.contextInfo.getComponentTypes()[i]);
       }
     }
@@ -118,7 +117,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
     destroyAllEntities();
     entityPool.cleanup();
     for (var componentPool : componentPools) {
-      if (Objects.nonNull(componentPool)) {
+      if (componentPool != null) {
         componentPool.cleanup();
       }
     }
