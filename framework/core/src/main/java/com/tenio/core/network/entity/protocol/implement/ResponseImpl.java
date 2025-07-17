@@ -31,7 +31,6 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.server.ServerImpl;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -119,7 +118,7 @@ public final class ResponseImpl implements Response {
 
   @Override
   public Response setRecipientPlayers(Collection<Player> players) {
-    if (Objects.isNull(this.players)) {
+    if (this.players == null) {
       this.players = players;
     } else {
       this.players.addAll(players);
@@ -130,7 +129,7 @@ public final class ResponseImpl implements Response {
 
   @Override
   public Response setRecipientPlayer(Player player) {
-    if (Objects.isNull(players)) {
+    if (players == null) {
       players = new ArrayList<>();
     }
     players.add(player);
@@ -207,7 +206,7 @@ public final class ResponseImpl implements Response {
   }
 
   private void constructRecipientPlayers() {
-    if (Objects.isNull(players) || players.isEmpty()) {
+    if (players == null || players.isEmpty()) {
       return;
     }
 
@@ -218,7 +217,7 @@ public final class ResponseImpl implements Response {
         var session = player.getSession();
         session.ifPresent(this::checksAndAddsSession);
       } else {
-        if (Objects.isNull(nonSessionPlayers)) {
+        if (nonSessionPlayers == null) {
           nonSessionPlayers = new ArrayList<>();
         }
         nonSessionPlayers.add(player);
@@ -231,25 +230,25 @@ public final class ResponseImpl implements Response {
       // when the session contains a UDP connection and the response requires it, add its session
       // to the list: UDP > KCP > Socket
       if (isPrioritizedUdp && session.containsUdp()) {
-        if (Objects.isNull(datagramSessions)) {
+        if (datagramSessions == null) {
           datagramSessions = new ArrayList<>();
         }
         datagramSessions.add(session);
       } else {
         if (isPrioritizedKcp && session.containsKcp()) {
-          if (Objects.isNull(kcpSessions)) {
+          if (kcpSessions == null) {
             kcpSessions = new ArrayList<>();
           }
           kcpSessions.add(session);
         } else {
-          if (Objects.isNull(socketSessions)) {
+          if (socketSessions == null) {
             socketSessions = new ArrayList<>();
           }
           socketSessions.add(session);
         }
       }
     } else if (session.isWebSocket()) {
-      if (Objects.isNull(webSocketSessions)) {
+      if (webSocketSessions == null) {
         webSocketSessions = new ArrayList<>();
       }
       webSocketSessions.add(session);
@@ -259,7 +258,7 @@ public final class ResponseImpl implements Response {
   @Override
   public String toString() {
     return "Response{" +
-        "content(bytes)=" + (Objects.nonNull(content) ? content.length : "null") +
+        "content(bytes)=" + (content != null ? content.length : "null") +
         ", players=" + players +
         ", nonSessionPlayers=" + nonSessionPlayers +
         ", socketSessions=" + socketSessions +

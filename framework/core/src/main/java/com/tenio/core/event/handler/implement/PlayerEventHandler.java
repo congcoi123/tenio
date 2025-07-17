@@ -31,7 +31,7 @@ import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
@@ -50,7 +50,7 @@ import java.util.Optional;
 public final class PlayerEventHandler {
 
   @AutowiredAcceptNull
-  private EventPlayerLoginResult<Player> eventPlayerLoggedInResult;
+  private EventPlayerLoginResult<Player> eventPlayerLoginResult;
 
   @AutowiredAcceptNull
   private EventPlayerReconnectRequestHandle<Player> eventPlayerReconnectRequestHandle;
@@ -74,8 +74,8 @@ public final class PlayerEventHandler {
    */
   public void initialize(EventManager eventManager) {
 
-    final var eventPlayerLoggedInResultOp =
-        Optional.ofNullable(eventPlayerLoggedInResult);
+    final var eventPlayerLoginResultOp =
+        Optional.ofNullable(eventPlayerLoginResult);
 
     final var eventPlayerReconnectRequestHandleOp =
         Optional.ofNullable(eventPlayerReconnectRequestHandle);
@@ -90,10 +90,10 @@ public final class PlayerEventHandler {
     final var eventDisconnectPlayerOp =
         Optional.ofNullable(eventDisconnectPlayer);
 
-    eventPlayerLoggedInResultOp.ifPresent(
+    eventPlayerLoginResultOp.ifPresent(
         event -> eventManager.on(ServerEvent.PLAYER_LOGIN_RESULT, params -> {
           var player = (Player) params[0];
-          var result = (PlayerLoggedInResult) params[1];
+          var result = (PlayerLoginResult) params[1];
 
           event.handle(player, result);
 

@@ -30,7 +30,6 @@ import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * The implementation for packet.
@@ -159,7 +158,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
 
   @Override
   public boolean isFragmented() {
-    return Objects.nonNull(fragmentBuffer);
+    return fragmentBuffer != null;
   }
 
   @Override
@@ -202,14 +201,14 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
     return "Packet{" +
         "id=" + id +
         ", createdTime=" + createdTime +
-        ", data(bytes)=" + (Objects.nonNull(data) ? data.length : "null") +
+        ", data(bytes)=" + (data != null ? data.length : "null") +
         ", guarantee=" + guarantee +
         ", encrypted=" + encrypted +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
         ", recipients=" + recipients +
         ", last=" + last +
-        ", fragmentBuffer(bytes)=" + (Objects.nonNull(fragmentBuffer) ? fragmentBuffer.length : "null") +
+        ", fragmentBuffer(bytes)=" + (fragmentBuffer != null ? fragmentBuffer.length : "null") +
         '}';
   }
 

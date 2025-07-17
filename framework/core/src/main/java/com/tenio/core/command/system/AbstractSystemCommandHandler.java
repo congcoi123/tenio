@@ -71,7 +71,9 @@ import java.util.List;
  *             }
  *             System.exit(0);
  *         } catch (Exception e) {
- *             error("Failed to shutdown server: " + e.getMessage());
+ *             if (isErrorEnabled()) {
+ *                 error("Failed to shutdown server: " + e.getMessage());
+ *             }
  *         }
  *     }
  * }

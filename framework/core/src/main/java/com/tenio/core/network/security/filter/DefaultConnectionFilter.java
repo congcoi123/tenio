@@ -28,7 +28,6 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
@@ -84,14 +83,14 @@ public class DefaultConnectionFilter implements ConnectionFilter {
 
     synchronized (addressMap) {
       var counter = addressMap.get(addressIp);
-      if (Objects.nonNull(counter) && counter.intValue() >= maxConnectionsPerIp) {
+      if (counter != null && counter.intValue() >= maxConnectionsPerIp) {
         throw new RefusedConnectionAddressException(
             String.format("The IP address has reached maximum (%d) allowed connection",
                 counter.intValue()),
             addressIp);
       }
 
-      if (Objects.isNull(counter)) {
+      if (counter == null) {
         counter = new AtomicInteger(1);
         addressMap.put(addressIp, counter);
       } else {
@@ -104,7 +103,7 @@ public class DefaultConnectionFilter implements ConnectionFilter {
   public void removeAddress(String addressIp) {
     synchronized (addressMap) {
       var counter = addressMap.get(addressIp);
-      if (Objects.nonNull(counter)) {
+      if (counter != null) {
         int value = counter.decrementAndGet();
         if (value == 0) {
           addressMap.remove(addressIp);

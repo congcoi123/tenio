@@ -30,9 +30,17 @@ package com.tenio.core.entity.define.mode;
 public enum PlayerLeaveRoomMode {
 
   /**
-   * When a player leaves the room as its desire.
+   * When the player's session is closed.
+   *
+   * @since 0.6.6
    */
-  DEFAULT,
+  SESSION_CLOSED,
+  /**
+   * When the reconnection happens.
+   *
+   * @since 0.6.6
+   */
+  RECONNECTION,
   /**
    * When a player changes its current room.
    */

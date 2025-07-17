@@ -33,18 +33,17 @@ import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.utility.SocketUtility;
 import com.tenio.core.network.zero.codec.packet.PacketReadState;
 import com.tenio.core.network.zero.codec.packet.PendingPacket;
 import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 import io.netty.channel.Channel;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import kcp.Ukcp;
 
@@ -64,7 +63,7 @@ public final class SessionImpl implements Session {
 
   private SessionManager sessionManager;
   private SocketChannel socketChannel;
-  private SelectionKey selectionKey;
+  private SelectionKey socketSelectionKey;
   private DatagramChannel datagramChannel;
   private Channel webSocketChannel;
   private ConnectionFilter connectionFilter;
@@ -76,9 +75,8 @@ public final class SessionImpl implements Session {
 
   private volatile Ukcp kcpChannel;
   private volatile TransportType transportType;
-  private volatile SocketAddress datagramRemoteSocketAddress;
-  private volatile String clientAddress;
-  private volatile int clientPort;
+  private volatile InetSocketAddress socketRemoteAddress;
+  private volatile SocketAddress datagramRemoteAddress;
   private volatile int udpConvey;
 
   private volatile long inactivatedTime;
@@ -152,7 +150,8 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public boolean transitionAssociatedState(AssociatedState expectedState, AssociatedState newState) {
+  public boolean transitionAssociatedState(AssociatedState expectedState,
+                                           AssociatedState newState) {
     if (atomicAssociatedState.compareAndSet(expectedState, newState)) {
       associatedState = newState;
       return true;
@@ -197,6 +196,27 @@ public final class SessionImpl implements Session {
   }
 
   @Override
+  public void configureSocketChannel(SocketChannel socketChannel, SelectionKey selectionKey)
+      throws IllegalArgumentException, IllegalCallerException {
+    if (getTransportType() != TransportType.UNKNOWN) {
+      throw new IllegalCallerException(
+          String.format("Unable to add another connection type, the current connection is: %s",
+              getTransportType().toString()));
+    }
+
+    if (socketChannel == null) {
+      throw new IllegalArgumentException("Null value is unacceptable");
+    }
+
+    transportType = TransportType.TCP;
+    createPacketSocketHandler();
+    this.socketChannel = socketChannel;
+    this.socketSelectionKey = selectionKey;
+
+    socketRemoteAddress = (InetSocketAddress) this.socketChannel.socket().getRemoteSocketAddress();
+  }
+
+  @Override
   public boolean isWebSocket() {
     return getTransportType() == TransportType.WEB_SOCKET;
   }
@@ -207,38 +227,8 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public void configureSocketChannel(SocketChannel socketChannel) {
-    if (getTransportType() != TransportType.UNKNOWN) {
-      throw new IllegalCallerException(
-          String.format("Unable to add another connection type, the current connection is: %s",
-              getTransportType().toString()));
-    }
-
-    if (Objects.isNull(socketChannel)) {
-      throw new IllegalArgumentException("Null value is unacceptable");
-    }
-
-    if (Objects.nonNull(socketChannel.socket()) && !socketChannel.socket().isClosed()) {
-      transportType = TransportType.TCP;
-      createPacketSocketHandler();
-      this.socketChannel = socketChannel;
-
-      InetSocketAddress socketAddress =
-          (InetSocketAddress) this.socketChannel.socket().getRemoteSocketAddress();
-      InetAddress remoteAddress = socketAddress.getAddress();
-      clientAddress = remoteAddress.getHostAddress();
-      clientPort = socketAddress.getPort();
-    }
-  }
-
-  @Override
-  public SelectionKey fetchSelectionKey() {
-    return selectionKey;
-  }
-
-  @Override
-  public void configureSelectionKey(SelectionKey selectionKey) {
-    this.selectionKey = selectionKey;
+  public SocketAddress getSocketRemoteAddress() {
+    return socketRemoteAddress;
   }
 
   @Override
@@ -262,21 +252,21 @@ public final class SessionImpl implements Session {
   }
 
   @Override
-  public DatagramChannel fetchDatagramChannel() {
-    return datagramChannel;
-  }
-
-  @Override
   public void configureDatagramChannel(DatagramChannel datagramChannel, int udpConvey) {
     this.datagramChannel = datagramChannel;
-    if (Objects.isNull(this.datagramChannel)) {
-      datagramRemoteSocketAddress = null;
+    if (this.datagramChannel == null) {
+      datagramRemoteAddress = null;
       this.udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
       hasUdp = false;
     } else {
       this.udpConvey = udpConvey;
       hasUdp = true;
     }
+  }
+
+  @Override
+  public DatagramChannel fetchDatagramChannel() {
+    return datagramChannel;
   }
 
   @Override
@@ -291,22 +281,22 @@ public final class SessionImpl implements Session {
 
   @Override
   public void setKcpChannel(Ukcp kcpChannel) {
-    if (Objects.nonNull(this.kcpChannel) && this.kcpChannel.isActive()) {
+    if (this.kcpChannel != null && this.kcpChannel.isActive()) {
       this.kcpChannel.close();
     }
 
     this.kcpChannel = kcpChannel;
-    hasKcp = Objects.nonNull(kcpChannel);
+    hasKcp = kcpChannel != null;
   }
 
   @Override
-  public SocketAddress getDatagramRemoteSocketAddress() {
-    return datagramRemoteSocketAddress;
+  public SocketAddress getDatagramRemoteAddress() {
+    return datagramRemoteAddress;
   }
 
   @Override
-  public void setDatagramRemoteSocketAddress(SocketAddress datagramRemoteSocketAddress) {
-    this.datagramRemoteSocketAddress = datagramRemoteSocketAddress;
+  public void setDatagramRemoteAddress(SocketAddress datagramRemoteAddress) {
+    this.datagramRemoteAddress = datagramRemoteAddress;
   }
 
   @Override
@@ -322,19 +312,14 @@ public final class SessionImpl implements Session {
               transportType.toString()));
     }
 
-    if (Objects.isNull(webSocketChannel)) {
+    if (webSocketChannel == null) {
       throw new IllegalArgumentException("Null value is unacceptable");
     }
 
-    if (webSocketChannel.isActive()) {
-      transportType = TransportType.WEB_SOCKET;
-      this.webSocketChannel = webSocketChannel;
+    transportType = TransportType.WEB_SOCKET;
+    this.webSocketChannel = webSocketChannel;
 
-      var socketAddress = (InetSocketAddress) this.webSocketChannel.remoteAddress();
-      var remoteAddress = socketAddress.getAddress();
-      clientAddress = remoteAddress.getHostAddress();
-      clientPort = socketAddress.getPort();
-    }
+    socketRemoteAddress = (InetSocketAddress) this.webSocketChannel.remoteAddress();
   }
 
   @Override
@@ -350,6 +335,10 @@ public final class SessionImpl implements Session {
   @Override
   public long getLastActivityTime() {
     return lastActivityTime;
+  }
+
+  private void setLastActivityTime(long timestamp) {
+    lastActivityTime = timestamp;
   }
 
   @Override
@@ -425,7 +414,8 @@ public final class SessionImpl implements Session {
   }
 
   private boolean isConnectionIdle() {
-    return (maxIdleTimeInSecond > 0) && ((now() - getLastActivityTime()) / 1000L > maxIdleTimeInSecond);
+    return (maxIdleTimeInSecond > 0) &&
+        ((now() - getLastActivityTime()) / 1000L > maxIdleTimeInSecond);
   }
 
   @Override
@@ -441,21 +431,6 @@ public final class SessionImpl implements Session {
   @Override
   public long getInactivatedTime() {
     return now() - inactivatedTime;
-  }
-
-  @Override
-  public String getFullClientIpAddress() {
-    return String.format("%s:%d", clientAddress, clientPort);
-  }
-
-  @Override
-  public String getClientAddress() {
-    return clientAddress;
-  }
-
-  @Override
-  public int getClientPort() {
-    return clientPort;
   }
 
   @Override
@@ -477,32 +452,22 @@ public final class SessionImpl implements Session {
       }
       activated = false;
     }
-    
+
     inactivatedTime = now();
 
-    connectionFilter.removeAddress(clientAddress);
+    connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
 
-    if (Objects.nonNull(packetQueue)) {
+    if (packetQueue != null) {
       packetQueue.clear();
     }
 
     switch (transportType) {
       case TCP:
-        if (Objects.nonNull(socketChannel)) {
-          var socket = socketChannel.socket();
-          if (Objects.nonNull(socket) && !socket.isClosed()) {
-            socket.shutdownInput();
-            socket.shutdownOutput();
-            socket.close();
-            socketChannel.close();
-          }
-        }
+        SocketUtility.closeSocket(socketChannel, socketSelectionKey);
         break;
 
       case WEB_SOCKET:
-        if (Objects.nonNull(webSocketChannel)) {
-          webSocketChannel.close();
-        }
+        SocketUtility.closeSocket(webSocketChannel);
         break;
 
       default:
@@ -511,10 +476,6 @@ public final class SessionImpl implements Session {
 
     sessionManager.emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
         connectionDisconnectMode, playerDisconnectMode);
-  }
-
-  private void setLastActivityTime(long timestamp) {
-    lastActivityTime = timestamp;
   }
 
   private void setAssociatedState(AssociatedState associatedState) {
@@ -560,8 +521,12 @@ public final class SessionImpl implements Session {
         ", createdTime=" + createdTime +
         ", name='" + name + '\'' +
         ", transportType=" + transportType +
-        ", clientAddress='" + clientAddress + '\'' +
-        ", clientPort=" + clientPort +
+        ", socketRemoteAddress='" +
+        (socketRemoteAddress == null ? "null" :
+            (socketRemoteAddress.getAddress() + ":" + socketRemoteAddress.getPort())) + '\'' +
+        ", datagramRemoteAddress='" + (datagramRemoteAddress == null ? "null" :
+        (((InetSocketAddress) datagramRemoteAddress).getAddress() + ":" +
+            ((InetSocketAddress) datagramRemoteAddress).getPort())) + '\'' +
         ", udpConvey=" + udpConvey +
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
         ", inactivatedTime=" + inactivatedTime +

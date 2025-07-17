@@ -64,26 +64,34 @@ public final class AutoCleanOrphanSessionTask extends AbstractSystemTask {
   @Override
   public ScheduledFuture<?> run() {
     var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-session-task" +
-            "-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-session-task")
+            .build();
     var threadFactoryWorker =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-worker-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-worker")
+            .build();
     var executors = Executors.newCachedThreadPool(threadFactoryWorker);
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
-          debug("AUTO CLEAN ORPHAN SESSION",
-              "Checking orphan sessions in ", sessionManager.getSessionCount(), " entities");
+          if (isDebugEnabled()) {
+            debug("AUTO CLEAN ORPHAN SESSION",
+                "Checking orphan sessions in ", sessionManager.getSessionCount(), " entities");
+          }
           executors.execute(() -> {
             Iterator<Session> iterator = sessionManager.getReadonlySessionsList().listIterator();
             while (iterator.hasNext()) {
               Session session = iterator.next();
-              if (session.isOrphan()) {
+              if (session.isActivated() && session.isOrphan()) {
                 try {
-                  debug("AUTO CLEAN ORPHAN SESSION",
-                      "Session ", session.getId(), " is going to be forced to remove by the cleaning task");
-                  session.close(ConnectionDisconnectMode.ORPHAN, PlayerDisconnectMode.DEFAULT);
+                  if (isDebugEnabled()) {
+                    debug("AUTO CLEAN ORPHAN SESSION",
+                        "Session ", session.getId(),
+                        " is going to be forced to remove by the cleaning task");
+                  }
+                  session.close(ConnectionDisconnectMode.ORPHAN, PlayerDisconnectMode.CONNECTION_LOST);
                 } catch (IOException exception) {
-                  error(exception, session.toString());
+                  if (isErrorEnabled()) {
+                    error(exception, session.toString());
+                  }
                 }
               }
             }

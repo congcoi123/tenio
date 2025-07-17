@@ -38,7 +38,6 @@ import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
 import com.tenio.core.handler.event.EventPlayerReconnectedResult;
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Performs validation and assessment of server configuration settings.
@@ -113,7 +112,7 @@ public final class ConfigurationAssessment {
    */
   private void checkDataSerialization() {
     var dataSerialization = configuration.getString(CoreConfigurationType.DATA_SERIALIZATION);
-    if (Objects.isNull(DataType.getByValue(dataSerialization))) {
+    if (DataType.getByValue(dataSerialization) == null) {
       throw new ConfigurationException(String.format("Data Serialization Type {%s} is not " +
               "supported, please reference to the supporting list: %s", dataSerialization,
           Arrays.toString(DataType.values())));
@@ -142,7 +141,7 @@ public final class ConfigurationAssessment {
    */
   private void checkSubscriberRequestAccessingDatagramChannelHandler()
       throws NotDefinedSubscribersException {
-    if (containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
+    if (containsTcpSocketConfiguration() && containsUdpChannelConfiguration()) {
       if (!eventManager.hasSubscriber(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION)
           || !eventManager.hasSubscriber(
           ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT)) {
@@ -175,7 +174,7 @@ public final class ConfigurationAssessment {
    * @throws ConfigurationException if no valid socket connection is configured
    */
   private void checkDefinedMainSocketConnection() throws ConfigurationException {
-    if (!containsTcpSocketConfiguration() && containsUdpSocketConfiguration()) {
+    if (!containsTcpSocketConfiguration() && containsUdpChannelConfiguration()) {
       throw new ConfigurationException("TCP connection was not defined");
     }
   }
@@ -186,7 +185,7 @@ public final class ConfigurationAssessment {
    * @return {@code true} if TCP socket configuration exists
    */
   private boolean containsTcpSocketConfiguration() {
-    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_TCP));
+    return configuration.get(CoreConfigurationType.NETWORK_TCP) != null;
   }
 
   /**
@@ -194,8 +193,8 @@ public final class ConfigurationAssessment {
    *
    * @return {@code true} if UDP socket configuration exists
    */
-  private boolean containsUdpSocketConfiguration() {
-    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_UDP));
+  private boolean containsUdpChannelConfiguration() {
+    return configuration.get(CoreConfigurationType.NETWORK_UDP) != null;
   }
 
   /**
@@ -204,6 +203,6 @@ public final class ConfigurationAssessment {
    * @return {@code true} if KCP socket configuration exists
    */
   private boolean containsKcpSocketConfiguration() {
-    return Objects.nonNull(configuration.get(CoreConfigurationType.NETWORK_KCP));
+    return configuration.get(CoreConfigurationType.NETWORK_KCP) != null;
   }
 }

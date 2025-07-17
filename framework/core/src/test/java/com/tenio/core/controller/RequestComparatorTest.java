@@ -30,7 +30,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.tenio.core.network.define.RequestPriority;
 import com.tenio.core.network.entity.protocol.Request;
 import org.junit.jupiter.api.Test;
 
@@ -40,10 +39,10 @@ class RequestComparatorTest {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
     when(request.getCreatedTimestamp()).thenReturn(10L);
-    when(request.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request.getPriority()).thenReturn(1);
     Request request1 = mock(Request.class);
     when(request1.getCreatedTimestamp()).thenReturn(10L);
-    when(request1.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request1.getPriority()).thenReturn(1);
     int actualCompareResult = actualNewInstanceResult.compare(request, request1);
     verify(request, atLeast(1)).getPriority();
     verify(request, atLeast(1)).getCreatedTimestamp();
@@ -57,10 +56,10 @@ class RequestComparatorTest {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
     when(request.getCreatedTimestamp()).thenReturn(0L);
-    when(request.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request.getPriority()).thenReturn(1);
     Request request1 = mock(Request.class);
     when(request1.getCreatedTimestamp()).thenReturn(10L);
-    when(request1.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request1.getPriority()).thenReturn(1);
     int actualCompareResult = actualNewInstanceResult.compare(request, request1);
     verify(request, atLeast(1)).getPriority();
     verify(request).getCreatedTimestamp();
@@ -74,10 +73,10 @@ class RequestComparatorTest {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
     when(request.getCreatedTimestamp()).thenReturn(Long.MAX_VALUE);
-    when(request.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request.getPriority()).thenReturn(1);
     Request request1 = mock(Request.class);
     when(request1.getCreatedTimestamp()).thenReturn(10L);
-    when(request1.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request1.getPriority()).thenReturn(1);
     int actualCompareResult = actualNewInstanceResult.compare(request, request1);
     verify(request, atLeast(1)).getPriority();
     verify(request, atLeast(1)).getCreatedTimestamp();
@@ -91,10 +90,10 @@ class RequestComparatorTest {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
     when(request.getCreatedTimestamp()).thenReturn(10L);
-    when(request.getPriority()).thenReturn(RequestPriority.LOW);
+    when(request.getPriority()).thenReturn(2);
     Request request1 = mock(Request.class);
     when(request1.getCreatedTimestamp()).thenReturn(10L);
-    when(request1.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request1.getPriority()).thenReturn(1);
     int actualCompareResult = actualNewInstanceResult.compare(request, request1);
     verify(request, atLeast(1)).getPriority();
     verify(request1, atLeast(1)).getPriority();
@@ -106,10 +105,10 @@ class RequestComparatorTest {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
     when(request.getCreatedTimestamp()).thenReturn(10L);
-    when(request.getPriority()).thenReturn(RequestPriority.LOWEST);
+    when(request.getPriority()).thenReturn(1);
     Request request1 = mock(Request.class);
     when(request1.getCreatedTimestamp()).thenReturn(10L);
-    when(request1.getPriority()).thenReturn(RequestPriority.LOW);
+    when(request1.getPriority()).thenReturn(2);
     int actualCompareResult = actualNewInstanceResult.compare(request, request1);
     verify(request).getPriority();
     verify(request1).getPriority();

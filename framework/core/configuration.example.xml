@@ -1,121 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Server>
 
-	<Properties>
-		<!-- The server name -->
-		<Property name="server-name">TenIO Core</Property>
-		<!-- The server id (module name) -->
-		<Property name="server-id">tenio-core</Property>
-		<!-- The server address -->
-		<Property name="server-address">localhost</Property>
-		<!-- The current version code of your server in integer type (comparable) -->
-		<Property name="version-code">1</Property>
-		<!-- The current version name of your server in string type -->
-		<Property name="version-name">1.0</Property>
-		<!-- The core setting file's path for your server -->
-		<Property name="setting">setting.json</Property>
-	</Properties>
+    <Properties>
+        <!-- The server name -->
+        <Property name="server-name">TenIO Core</Property>
+        <!-- The server id (module name) -->
+        <Property name="server-id">tenio-core</Property>
+        <!-- The server address -->
+        <Property name="server-address">localhost</Property>
+        <!-- The current version code of your server in integer type (comparable) -->
+        <Property name="version-code">1</Property>
+        <!-- The current version name of your server in string type -->
+        <Property name="version-name">1.0</Property>
+        <!-- The core setting file's path for your server -->
+        <Property name="setting">setting.json</Property>
+    </Properties>
 
-	<Network>
-		<Sockets>
-			<Port name="tcp" type="tcp">8032</Port>
-			<Port name="websocket" type="websocket">8033</Port>
-			<Port name="kcp" type="kcp">20003</Port>
-			<Port name="udp" type="udp" cacheSize="10">20004</Port>
-			<Port name="http" type="http">9999</Port>
-		</Sockets>
-		<Properties>
-			<Property name="websocket-using-ssl">false</Property>
-			<Property name="websocket-sender-buffer-size">1024</Property>
-			<Property name="websocket-receiver-buffer-size">1024</Property>
-			<Property name="socket-acceptor-buffer-size">1024</Property>
-			<Property name="socket-reader-buffer-size">1024</Property>
-			<Property name="socket-writer-buffer-size">1024</Property>
-			<Property name="packet-compression-threshold-bytes">10240</Property>
-			<Property name="allow-change-session">false</Property>
-			<Property name="max-connections-per-ip">10</Property>
-		</Properties>
-	</Network>
+    <Network>
+        <Sockets>
+            <Port name="tcp" type="tcp">8032</Port>
+            <Port name="websocket" type="websocket">8033</Port>
+            <Port name="kcp" type="kcp">20003</Port>
+            <!-- The cache size is the number of datagram channels will be created on a same selector.
+              - Use 1 or let the cacheSize to be absent on macOS/Windows (SO_REUSEPORT not reliable).
+              - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
+             -->
+            <Port name="udp" type="udp" cacheSize="100">20004</Port>
+            <Port name="http" type="http">9999</Port>
+        </Sockets>
+        <Properties>
+            <Property name="websocket-using-ssl">false</Property>
+            <Property name="websocket-sender-buffer-size">1024</Property>
+            <Property name="websocket-receiver-buffer-size">1024</Property>
+            <Property name="socket-acceptor-buffer-size">1024</Property>
+            <Property name="socket-reader-buffer-size">1024</Property>
+            <Property name="socket-writer-buffer-size">1024</Property>
+            <!-- This will never compress packets if the threshold is less than or equals to 0 -->
+            <Property name="packet-compression-threshold-bytes">10240</Property>
+            <Property name="allow-change-session">false</Property>
+            <Property name="max-connections-per-ip">10</Property>
+        </Properties>
+    </Network>
 
-	<Configuration>
-		<Workers>
-			<!--
-			  Sets the number of threads handling TCP acceptor logic.
-			  - Use 1 on macOS/Windows (SO_REUSEPORT not reliable).
-			  - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
-			  - Each thread handles new incoming connections via a Selector.
-			-->
-			<Worker name="socket-acceptor">1</Worker>
-			<Worker name="socket-reader">2</Worker>
-			<Worker name="socket-writer">2</Worker>
-			<Worker name="websocket-producer">1</Worker>
-			<Worker name="websocket-consumer">2</Worker>
-			<!-- The minimum number of threads to keep alive in the thread pool is 8 -->
-			<Worker name="http-worker">8</Worker>
-			<Worker name="internal-processor">2</Worker>
-		</Workers>
-		<Schedules>
-			<!-- Get the period checking in seconds which server can keep the empty 
-				room -->
-			<Task name="removed-room-scan-interval">30</Task>		<!-- Unit: Seconds -->
-			<!-- The period checking player time out in seconds -->
-			<Task name="disconnected-player-scan-interval">45</Task>		<!-- Unit: Seconds -->
-			<!-- The period checking CCU in seconds -->
-			<Task name="ccu-scan-interval">60</Task>				<!-- Unit: Seconds -->
-			<!-- Schedule detecting deadlocked threads -->
-			<Task name="deadlock-scan-interval">60</Task>			<!-- Unit: Seconds -->
-			<!-- The delay between two computations of performances for channels or 
-				0 if no statics are to be computed -->
-			<Task name="traffic-counter-interval">60</Task>			<!-- Unit: Seconds -->
-			<!-- The period monitoring system -->
-			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
-		</Schedules>
-		<Properties>
-			<!-- Choose the data serialization mechanism, currently, there are 2 types supported: (internal) zero and
-			msgpack -->
-			<Property name="data-serialization">zero</Property>
-			<Property name="max-request-queue-size">100</Property>
-			<Property name="max-response-queue-size-per-session">100</Property>
-			<!-- When the server get disconnection of one client, can be hold its
-				player instance until timeout -->
-			<Property name="keep-player-on-disconnection">true</Property>
-			<!-- The maximum number of players which game can handle -->
-			<Property name="max-number-players">1000</Property>
-			<!-- The maximum number of rooms which game can handle -->
-			<Property name="max-number-rooms">1000</Property>
-			<!-- The max IDLE time in seconds which server can wait from the last 
-				 getting message from client.
-				 Set it to -1 to ignore the checking -->
-			<Property name="max-player-idle-time">180</Property>					<!-- Unit: Seconds -->
-			<!-- The max IDLE time in seconds which server can wait from the last
-				 getting message from client (in case the player enables the never deported flag).
-				 Set it to -1 to ignore the checking -->
-			<Property name="max-player-idle-time-never-deported">86400</Property>	<!-- Unit: Seconds -->
-		</Properties>
-	</Configuration>
+    <Configuration>
+        <Workers>
+            <!--
+              Sets the number of threads handling TCP acceptor logic.
+              - Use 1 on macOS/Windows (SO_REUSEPORT not reliable).
+              - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
+              - Each thread handles new incoming connections via a Selector.
+            -->
+            <Worker name="socket-acceptor">1</Worker>
+            <Worker name="socket-reader">2</Worker>
+            <Worker name="socket-writer">2</Worker>
+            <Worker name="websocket-producer">1</Worker>
+            <Worker name="websocket-consumer">2</Worker>
+            <!-- The minimum number of threads to keep alive in the thread pool is 8 -->
+            <Worker name="http-worker">8</Worker>
+            <Worker name="internal-processor">2</Worker>
+        </Workers>
+        <Schedules>
+            <!-- Get the period checking in seconds which server can keep the empty
+                room -->
+            <Task name="removed-room-scan-interval">30</Task>        <!-- Unit: Seconds -->
+            <!-- The period checking player time out in seconds -->
+            <Task name="disconnected-player-scan-interval">45</Task>        <!-- Unit: Seconds -->
+            <!-- The period checking CCU in seconds -->
+            <Task name="ccu-scan-interval">60</Task>                <!-- Unit: Seconds -->
+            <!-- Schedule detecting deadlocked threads -->
+            <Task name="deadlock-scan-interval">60</Task>            <!-- Unit: Seconds -->
+            <!-- The delay between two computations of performances for channels or
+                0 if no statics are to be computed -->
+            <Task name="traffic-counter-interval">60</Task>            <!-- Unit: Seconds -->
+            <!-- The period monitoring system -->
+            <Task name="system-monitoring-interval">60</Task>        <!-- Unit: Seconds -->
+        </Schedules>
+        <Properties>
+            <!-- Choose the data serialization mechanism, currently, there are 2 types supported: (internal) zero and
+            msgpack -->
+            <Property name="data-serialization">zero</Property>
+            <!-- When this queue size is set to 0, then there is no restriction -->
+            <Property name="max-request-queue-size">100</Property>
+            <Property name="max-response-queue-size-per-session">100</Property>
+            <!-- When the server get disconnection of one client, can be hold its
+                player instance until timeout -->
+            <Property name="keep-player-on-disconnection">true</Property>
+            <!-- The maximum number of players which game can handle -->
+            <Property name="max-number-players">1000</Property>
+            <!-- The maximum number of rooms which game can handle -->
+            <Property name="max-number-rooms">1000</Property>
+            <!-- The max IDLE time in seconds which server can wait from the last
+                 getting message from client.
+                 Set it to -1 to ignore the checking -->
+            <Property name="max-player-idle-time">180</Property>                    <!-- Unit: Seconds -->
+            <!-- The max IDLE time in seconds which server can wait from the last
+                 getting message from client (in case the player enables the never deported flag).
+                 Set it to -1 to ignore the checking -->
+            <Property name="max-player-idle-time-never-deported">86400</Property>    <!-- Unit: Seconds -->
+        </Properties>
+    </Configuration>
 
-	<!-- Customizable behaviors -->
-	<!-- Just create your own classes, implement desired interfaces and annotate them with @Component.
-		 In case you do not declare any change, their default implementation will be applied
-		 (DefaultBinaryPacketEncryptor, DefaultBinaryPacketCompressor, DefaultBinaryPacketEncoder,
-		 DefaultBinaryPacketDecoder, DefaultConnectionFilter, DefaultPacketQueuePolicy).
+    <!-- Customizable Behaviors -->
+    <!-- Just create your own classes, implement desired interfaces and annotate them with @Component.
+         In case you do not declare any change, their default implementations will be applied
+         (DefaultConnectionFilter, DefaultPacketQueuePolicy).
 
-			packet-encryptor: BinaryPacketEncryptor
-			packet-compressor: BinaryPacketCompressor
-			packet-encoder: BinaryPacketEncoder
-			packet-decoder: BinaryPacketDecoder
-			connection-filter: ConnectionFilter
-			packet-queue-policy: PacketQueuePolicy
-	-->
+            packet-encryptor: BinaryPacketEncryptor
+            packet-compressor: BinaryPacketCompressor
+            connection-filter: ConnectionFilter
+            packet-queue-policy: PacketQueuePolicy
+            request-policy: RequestPolicy
+    -->
 
-	<!-- Your customizable configurations -->
-	<Extension>
-		<Properties>
-			<Property name="custom-value-1">String</Property>
-			<Property name="custom-value-2">1</Property>
-			<Property name="custom-value-3">1.5</Property>
-			<Property name="custom-value-4">True</Property>
-		</Properties>
-	</Extension>
+    <!-- Your Customizable Configurations -->
+    <Extension>
+        <Properties>
+            <Property name="custom-value-1">String</Property>
+            <Property name="custom-value-2">1</Property>
+            <Property name="custom-value-3">1.5</Property>
+            <Property name="custom-value-4">True</Property>
+        </Properties>
+    </Extension>
 
 </Server>

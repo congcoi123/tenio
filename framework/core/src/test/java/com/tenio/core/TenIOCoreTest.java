@@ -35,13 +35,19 @@ import org.junit.runner.RunWith;
 @SelectPackages({
     "com.tenio.core.api",
     "com.tenio.core.bootstrap",
+    "com.tenio.core.command",
     "com.tenio.core.configuration",
     "com.tenio.core.controller",
     "com.tenio.core.entity",
     "com.tenio.core.event",
+    "com.tenio.core.exception",
+    "com.tenio.core.handler",
+    "com.tenio.core.manager",
     "com.tenio.core.monitoring",
     "com.tenio.core.network",
-    "com.tenio.core.server"
+    "com.tenio.core.scheduler",
+    "com.tenio.core.server",
+    "com.tenio.core.utility"
 })
 class TenIOCoreTest {
 }

@@ -59,7 +59,7 @@ public final class CcuReportTask extends AbstractSystemTask {
   @Override
   public ScheduledFuture<?> run() {
     var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ccu-report-task-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ccu-report-task").build();
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount()),
         initialDelay, interval, TimeUnit.SECONDS);

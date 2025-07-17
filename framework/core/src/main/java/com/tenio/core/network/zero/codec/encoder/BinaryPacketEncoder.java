@@ -66,6 +66,17 @@ import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 public interface BinaryPacketEncoder {
 
   /**
+   * Whenever a packet's size is greater than this value, it should be compressed. However, when
+   * the value is 0, the system skips compression.
+   */
+  int DEFAULT_COMPRESSION_THRESHOLD_BYTES = 0;
+  /**
+   * The maximum value in bytes of a normal size packet. If a packet has its size to be greater
+   * than this value, it should be considered as a big size packet.
+   */
+  int MAX_BYTES_FOR_NORMAL_SIZE = Short.MAX_VALUE * 2 + 1;
+
+  /**
    * Encodes a packet for transmission to clients.
    * This method performs the complete encoding process including
    * compression and encryption if configured.

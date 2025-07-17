@@ -50,11 +50,9 @@ import com.tenio.core.network.zero.ZeroSocketService;
 import com.tenio.core.network.zero.ZeroSocketServiceImpl;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import jakarta.servlet.http.HttpServlet;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * The implementation for network service.
@@ -78,7 +76,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   private boolean socketServiceInitialized;
   private boolean kcpChannelServiceInitialized;
 
-  private NetworkServiceImpl(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
+  private NetworkServiceImpl(EventManager eventManager) {
     super(eventManager);
 
     initialized = false;
@@ -94,7 +92,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
 
     httpService = JettyHttpService.newInstance(eventManager);
     webSocketService = NettyWebSocketServiceImpl.newInstance(eventManager);
-    socketService = ZeroSocketServiceImpl.newInstance(eventManager, datagramChannelManager);
+    socketService = ZeroSocketServiceImpl.newInstance(eventManager);
     kcpChannelService = KcpServiceImpl.newInstance(eventManager);
   }
 
@@ -102,11 +100,10 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
    * Creates a new instance of the network service.
    *
    * @param eventManager the instance of {@link EventManager}
-   * @param datagramChannelManager the instance of {@link DatagramChannelManager}
    * @return a new instance of {@link NetworkService}
    */
-  public static NetworkService newInstance(EventManager eventManager, DatagramChannelManager datagramChannelManager) {
-    return new NetworkServiceImpl(eventManager, datagramChannelManager);
+  public static NetworkService newInstance(EventManager eventManager) {
+    return new NetworkServiceImpl(eventManager);
   }
 
   @Override
@@ -186,7 +183,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     httpService.setThreadPoolSize(threadPoolSize);
     httpService.setPort(port);
     httpService.setServletMap(servletMap);
-    httpServiceInitialized = (port != 0 && Objects.nonNull(servletMap));
+    httpServiceInitialized = (port != 0 && servletMap != null);
   }
 
   @Override
@@ -259,21 +256,21 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
   }
 
   @Override
-  public void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
-                                     SocketConfiguration udpSocketConfiguration,
-                                     SocketConfiguration webSocketConfiguration,
-                                     SocketConfiguration kcpSocketConfiguration) {
-    if (Objects.nonNull(tcpSocketConfiguration)) {
+  public void setSocketConfigurations(SocketConfiguration tcpSocketConfiguration,
+                                      SocketConfiguration udpChannelConfiguration,
+                                      SocketConfiguration webSocketConfiguration,
+                                      SocketConfiguration kcpSocketConfiguration) {
+    if (tcpSocketConfiguration != null) {
       socketServiceInitialized = true;
-      socketService.setSocketConfiguration(tcpSocketConfiguration, udpSocketConfiguration);
+      socketService.setSocketConfigurations(tcpSocketConfiguration, udpChannelConfiguration);
     }
 
-    if (Objects.nonNull(webSocketConfiguration)) {
+    if (webSocketConfiguration != null) {
       webSocketServiceInitialized = true;
       webSocketService.setWebSocketConfiguration(webSocketConfiguration);
     }
 
-    if (Objects.nonNull(kcpSocketConfiguration)) {
+    if (kcpSocketConfiguration != null) {
       kcpChannelServiceInitialized = true;
       kcpChannelService.setKcpSocketConfiguration(kcpSocketConfiguration);
     }
@@ -333,7 +330,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     var message = DataUtility.binaryToCollection(dataType, response.getContent());
 
     var recipientPlayers = response.getRecipientPlayers();
-    if (Objects.nonNull(recipientPlayers) && !recipientPlayers.isEmpty()) {
+    if (recipientPlayers != null && !recipientPlayers.isEmpty()) {
       var playerIterator = recipientPlayers.iterator();
       while (playerIterator.hasNext()) {
         var player = playerIterator.next();
@@ -342,7 +339,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var nonSessionRecipientPlayers = response.getNonSessionRecipientPlayers();
-    if (Objects.nonNull(nonSessionRecipientPlayers) && !nonSessionRecipientPlayers.isEmpty()) {
+    if (nonSessionRecipientPlayers != null && !nonSessionRecipientPlayers.isEmpty()) {
       var nonSessionIterator = nonSessionRecipientPlayers.iterator();
       while (nonSessionIterator.hasNext()) {
         var player = nonSessionIterator.next();
@@ -351,7 +348,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var socketSessions = response.getRecipientSocketSessions();
-    if (Objects.nonNull(socketSessions)) {
+    if (socketSessions != null) {
       var packet = createPacket(response, socketSessions, TransportType.TCP);
       packet.setMarkedAsLast(markedAsLast);
       socketService.write(packet);
@@ -360,7 +357,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var datagramSessions = response.getRecipientDatagramSessions();
-    if (Objects.nonNull(datagramSessions)) {
+    if (datagramSessions != null) {
       var packet = createPacket(response, datagramSessions, TransportType.UDP);
       socketService.write(packet);
       datagramSessions.forEach(
@@ -368,7 +365,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var kcpSessions = response.getRecipientKcpSessions();
-    if (Objects.nonNull(kcpSessions)) {
+    if (kcpSessions != null) {
       var packet = createPacket(response, kcpSessions, TransportType.KCP);
       kcpChannelService.write(packet);
       kcpSessions.forEach(
@@ -376,7 +373,7 @@ public final class NetworkServiceImpl extends AbstractManager implements Network
     }
 
     var webSocketSessions = response.getRecipientWebSocketSessions();
-    if (Objects.nonNull(webSocketSessions)) {
+    if (webSocketSessions != null) {
       var packet = createPacket(response, webSocketSessions, TransportType.WEB_SOCKET);
       packet.setMarkedAsLast(markedAsLast);
       webSocketService.write(packet);

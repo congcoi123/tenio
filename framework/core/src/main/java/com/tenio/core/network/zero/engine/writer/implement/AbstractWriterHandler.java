@@ -27,6 +27,8 @@ package com.tenio.core.network.zero.engine.writer.implement;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.network.utility.SocketUtility;
+import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
 import com.tenio.core.network.zero.engine.writer.WriterHandler;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
@@ -36,18 +38,18 @@ import java.util.concurrent.BlockingQueue;
  */
 public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {
 
-  private BlockingQueue<Session> sessionTicketsQueue;
+  private SessionTicketsQueueManager sessionTicketsQueueManager;
   private NetworkWriterStatistic networkWriterStatistic;
   private ByteBuffer byteBuffer;
 
   @Override
-  public BlockingQueue<Session> getSessionTicketsQueue() {
-    return sessionTicketsQueue;
+  public BlockingQueue<Session> getSessionTicketsQueue(long sessionId) {
+    return sessionTicketsQueueManager.getQueueByElementId(sessionId);
   }
 
   @Override
-  public void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue) {
-    this.sessionTicketsQueue = sessionTicketsQueue;
+  public void setSessionTicketsQueueManager(SessionTicketsQueueManager sessionTicketsQueueManager) {
+    this.sessionTicketsQueueManager = sessionTicketsQueueManager;
   }
 
   @Override
@@ -67,7 +69,6 @@ public abstract class AbstractWriterHandler extends SystemLogger implements Writ
 
   @Override
   public void allocateBuffer(int capacity) {
-    // Default write buffer is HEAP
-    byteBuffer = ByteBuffer.allocate(capacity);
+    byteBuffer = SocketUtility.createWriterBuffer(capacity);
   }
 }

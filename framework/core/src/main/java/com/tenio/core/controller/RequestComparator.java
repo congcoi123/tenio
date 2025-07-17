@@ -24,10 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.controller;
 
-import com.tenio.core.network.define.RequestPriority;
 import com.tenio.core.network.entity.protocol.Request;
 import java.util.Comparator;
-import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationException;
 
 /**
@@ -38,7 +36,7 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationExc
  * <p>Key features:
  * <ul>
  *   <li>Priority-based request ordering</li>
- *   <li>Support for all {@link RequestPriority} levels</li>
+ *   <li>Support for all request priority levels</li>
  *   <li>Null-safe comparison</li>
  *   <li>Consistent ordering for equal priorities</li>
  * </ul>
@@ -46,7 +44,6 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationExc
  * <p>Thread safety: This class is thread-safe as it is stateless and
  * implements a pure comparison function.
  *
- * @see RequestPriority
  * @see AbstractController
  * @see Request
  * @see Comparator
@@ -56,7 +53,7 @@ public final class RequestComparator implements Comparator<Request> {
   private static final RequestComparator instance = new RequestComparator();
 
   private RequestComparator() {
-    if (Objects.nonNull(instance)) {
+    if (instance != null) {
       throw new InitializationException("Could not recreate this class' instance");
     }
   }
@@ -74,7 +71,7 @@ public final class RequestComparator implements Comparator<Request> {
   public int compare(Request request1, Request request2) {
     int result;
 
-    if (request1.getPriority().getValue() < request2.getPriority().getValue()) {
+    if (request1.getPriority() < request2.getPriority()) {
       result = -1;
     } else if (request1.getPriority() == request2.getPriority()) {
       result = Long.compare(request1.getCreatedTimestamp(), request2.getCreatedTimestamp());

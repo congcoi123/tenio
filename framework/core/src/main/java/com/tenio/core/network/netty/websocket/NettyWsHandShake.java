@@ -33,7 +33,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -120,7 +119,7 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
      binary protocol which does not conform to the HTTP protocol.
      */
     var handshake = wsFactory.newHandshaker(req);
-    if (Objects.isNull(handshake)) {
+    if (handshake == null) {
       WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
     } else {
       handshake.handshake(ctx.channel(), req);

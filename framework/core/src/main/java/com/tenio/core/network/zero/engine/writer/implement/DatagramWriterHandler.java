@@ -27,29 +27,23 @@ package com.tenio.core.network.zero.engine.writer.implement;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * The Datagram writing handler.
  */
 public final class DatagramWriterHandler extends AbstractWriterHandler {
 
-  private final DatagramChannelManager datagramChannelManager;
-
-  private DatagramWriterHandler(DatagramChannelManager datagramChannelManager) {
-    this.datagramChannelManager = datagramChannelManager;
+  private DatagramWriterHandler() {
   }
 
   /**
    * Retrieves a new instance of datagram writer handler.
    *
-   * @param datagramChannelManager an instance of {@link DatagramChannelManager}
    * @return a new instance of {@link DatagramWriterHandler}
    */
-  public static DatagramWriterHandler newInstance(DatagramChannelManager datagramChannelManager) {
-    return new DatagramWriterHandler(datagramChannelManager);
+  public static DatagramWriterHandler newInstance() {
+    return new DatagramWriterHandler();
   }
 
   @Override
@@ -62,58 +56,67 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
     // the InetSocketAddress should be saved and updated when the datagram channel receive
     // messages from the client
-    var remoteSocketAddress = session.getDatagramRemoteSocketAddress();
+    var remoteAddress = session.getDatagramRemoteAddress();
 
     // the datagram need to be declared first, something went wrong here, need to
     // log the exception content
-    if (Objects.isNull(datagramChannel)) {
-      error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-          ", no DatagramChannel was set");
+    if (datagramChannel == null) {
+      if (isErrorEnabled()) {
+        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+            ", no DatagramChannel was set");
+      }
       return;
-    } else if (Objects.isNull(remoteSocketAddress)) {
-      error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
-          ", no InetSocketAddress was set");
+    } else if (remoteAddress == null) {
+      if (isErrorEnabled()) {
+        error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
+            ", no InetSocketAddress was set");
+      }
       return;
     }
 
     // clear the buffer first
     getBuffer().clear();
 
-    // send data to the client
-    try {
-      // buffer size is not enough, need to be allocated more bytes
-      if (getBuffer().capacity() < sendingData.length) {
+    // buffer size is not enough, need to be allocated more bytes
+    if (getBuffer().capacity() < sendingData.length) {
+      if (isDebugEnabled()) {
         debug("DATAGRAM CHANNEL SEND", "Allocate new buffer from ", getBuffer().capacity(),
             " to ", sendingData.length, " bytes");
-        allocateBuffer(sendingData.length);
       }
-
-      // put data to buffer
-      getBuffer().put(sendingData);
-
-      // ready to send
-      getBuffer().flip();
-
-      var datagramChannelCache = datagramChannelManager.getChannel();
-      int writtenBytes = datagramChannelCache.send(getBuffer(), remoteSocketAddress);
-
-      // update statistic data
-      getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
-      getNetworkWriterStatistic().updateWrittenPackets(1);
-
-      // update statistic data for session
-      session.addWrittenBytes(writtenBytes);
-    } catch (IOException exception) {
-      error(exception, "Error occurred in writing on session: ", session.toString());
+      allocateBuffer(sendingData.length);
     }
+
+    // put data to buffer
+    getBuffer().put(sendingData);
+
+    // ready to send
+    getBuffer().flip();
+
+    int writtenBytes;
+    try {
+      // send data to the client
+      writtenBytes = datagramChannel.send(getBuffer(), remoteAddress);
+    } catch (IOException exception) {
+      if (isErrorEnabled()) {
+        error(exception, "Error occurred in writing on session: ", session.toString());
+      }
+      return;
+    }
+
+    // update statistic data
+    getNetworkWriterStatistic().updateWrittenBytes(writtenBytes);
+    getNetworkWriterStatistic().updateWrittenPackets(1);
+
+    // update statistic data for session
+    session.addWrittenBytes(writtenBytes);
 
     // it is always safe to remove the packet from queue hence it should be sent
     packetQueue.take();
 
-    // if the packet queue still contains more packets, then put the session back to
-    // the tickets queue
-    if (!packetQueue.isEmpty()) {
-      getSessionTicketsQueue().add(session);
+    // if the packet queue still contains more packets, session is activated, then put the
+    // session back to the tickets queue
+    if (session.isActivated() && !packetQueue.isEmpty()) {
+      getSessionTicketsQueue(session.getId()).add(session);
     }
   }
 }

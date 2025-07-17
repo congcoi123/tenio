@@ -130,13 +130,13 @@ public interface ZeroSocketService extends Service {
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
   /**
-   * Declares sockets (TCP, UDP) configuration for the network.
+   * Declares socket (TCP, UDP) configurations for the network.
    *
-   * @param tcpSocketConfiguration an instance of {@link SocketConfiguration} for TCP
-   * @param udpSocketConfiguration an instance of {@link SocketConfiguration} for UDP
+   * @param tcpSocketConfiguration  an instance of {@link SocketConfiguration} for TCP
+   * @param udpChannelConfiguration an instance of {@link SocketConfiguration} for UDP
    */
-  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
-                              SocketConfiguration udpSocketConfiguration);
+  void setSocketConfigurations(SocketConfiguration tcpSocketConfiguration,
+                               SocketConfiguration udpChannelConfiguration);
 
   /**
    * Sets an instance of packet encoder to encode packets for sending to clients side via the

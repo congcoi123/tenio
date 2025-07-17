@@ -31,7 +31,6 @@ import com.tenio.core.schedule.task.AbstractSystemTask;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +62,7 @@ public final class DeadlockScanTask extends AbstractSystemTask {
   @Override
   public ScheduledFuture<?> run() {
     var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("deadlock-scan-task-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("deadlock-scan-task").build();
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         this::checkForDeadlockedThreads, initialDelay, interval, TimeUnit.SECONDS);
   }
@@ -75,7 +74,7 @@ public final class DeadlockScanTask extends AbstractSystemTask {
 
     long[] threadIds = findDeadlockedThreads();
 
-    if (Objects.nonNull(threadIds) && threadIds.length > 0) {
+    if (threadIds != null && threadIds.length > 0) {
       var threads = new Thread[threadIds.length];
 
       var logger = buildgen("\n");
@@ -96,11 +95,15 @@ public final class DeadlockScanTask extends AbstractSystemTask {
         try {
           threads[i] = findMatchingThread(threadInfo);
         } catch (IllegalStateException exception) {
-          error(exception);
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
 
-      info("DEADLOCKED THREAD DETECTOR", logger);
+      if (isInfoEnabled()) {
+        info("DEADLOCKED THREAD DETECTOR", logger);
+      }
     }
   }
 

@@ -59,7 +59,7 @@ public final class TrafficCounterTask extends AbstractSystemTask {
   @Override
   public ScheduledFuture<?> run() {
     var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("traffic-counter-task-%d").build();
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("traffic-counter-task").build();
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
             networkReaderStatistic.getReadBytes(),

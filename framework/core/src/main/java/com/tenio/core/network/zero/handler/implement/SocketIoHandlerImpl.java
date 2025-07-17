@@ -31,13 +31,13 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.utility.SocketUtility;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.Objects;
 
 /**
  * The implementation for socket IO handler.
@@ -66,8 +66,10 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
     var message = DataUtility.binaryToCollection(dataType, binary);
 
     if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
-      debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
-          " Rejected message: ", message);
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
+            " Rejected message: ", message);
+      }
       return;
     }
 
@@ -100,17 +102,29 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   }
 
   @Override
-  public void channelInactive(SocketChannel socketChannel) {
+  public void channelInactive(SocketChannel socketChannel,
+                              SelectionKey selectionKey,
+                              ConnectionDisconnectMode connectionDisconnectMode) {
     var session = sessionManager.getSessionBySocket(socketChannel);
-    if (Objects.isNull(session)) {
-      return;
-    }
-
-    try {
-      session.close(ConnectionDisconnectMode.LOST, PlayerDisconnectMode.CONNECTION_LOST);
-    } catch (IOException exception) {
-      error(exception, "Session closed with error: ", session.toString());
-      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
+    if (session != null && session.isActivated()) {
+      // if the socket is handled by its session, let the session processes
+      try {
+        session.close(connectionDisconnectMode, PlayerDisconnectMode.CONNECTION_LOST);
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Session closed with error: ", session.toString());
+        }
+        eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
+      }
+    } else {
+      // let the socket be closed
+      try {
+        SocketUtility.closeSocket(socketChannel, selectionKey);
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Socket closed with error: ", socketChannel.toString());
+        }
+      }
     }
   }
 
