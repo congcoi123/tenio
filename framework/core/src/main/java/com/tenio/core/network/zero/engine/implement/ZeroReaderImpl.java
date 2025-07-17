@@ -26,14 +26,14 @@ package com.tenio.core.network.zero.engine.implement;
 
 import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.utility.SocketUtility;
 import com.tenio.core.network.zero.engine.ZeroReader;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
-import com.tenio.core.network.zero.engine.listener.ZeroWriterListener;
-import com.tenio.core.network.zero.engine.reader.ReaderHandler;
+import com.tenio.core.network.zero.engine.reader.DatagramReaderHandler;
+import com.tenio.core.network.zero.engine.reader.SocketReaderHandler;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -51,9 +51,11 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
   private static final AtomicInteger INDEXER = new AtomicInteger(0);
 
-  private volatile List<ReaderHandler> readerHandlers;
+  private volatile List<SocketReaderHandler> socketReaderHandlers;
+  private DatagramReaderHandler datagramReaderHandler;
   private DataType dataType;
-  private ZeroWriterListener zeroWriterListener;
+  private String serverAddress;
+  private SocketConfiguration udpChannelConfiguration;
   private NetworkReaderStatistic networkReaderStatistic;
 
   private ZeroReaderImpl(EventManager eventManager) {
@@ -71,20 +73,17 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
     return new ZeroReaderImpl(eventManager);
   }
 
-  private ReaderHandler getReaderHandler() {
-    int index = Math.floorMod(INDEXER.getAndIncrement(), getThreadPoolSize());
-    return readerHandlers.get(index);
+  private SocketReaderHandler getSocketReaderHandler() {
+    int index =
+        Math.floorMod(INDEXER.getAndIncrement(), getThreadPoolSize() - getNumberOfExtraWorkers());
+    return socketReaderHandlers.get(index);
   }
 
   @Override
-  public void acceptDatagramChannel(DatagramChannel datagramChannel) {
-    getReaderHandler().registerDatagramChannel(datagramChannel);
-  }
-
-  @Override
-  public void acceptSocketChannel(SocketChannel socketChannel,
-                                  Consumer<SelectionKey> onKeyRegistered) {
-    getReaderHandler().registerSocketChannel(socketChannel, onKeyRegistered);
+  public void acceptClientSocketChannel(SocketChannel socketChannel,
+                                        Consumer<SelectionKey> onSuccess,
+                                        Runnable onFailed) {
+    getSocketReaderHandler().registerClientSocketChannel(socketChannel, onSuccess, onFailed);
   }
 
   @Override
@@ -93,8 +92,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   }
 
   @Override
-  public void setZeroWriterListener(ZeroWriterListener zeroWriterListener) {
-    this.zeroWriterListener = zeroWriterListener;
+  public void setServerAddress(String serverAddress) {
+    this.serverAddress = serverAddress;
+  }
+
+  @Override
+  public void setUdpChannelConfiguration(SocketConfiguration udpChannelConfiguration) {
+    this.udpChannelConfiguration = udpChannelConfiguration;
   }
 
   @Override
@@ -108,58 +112,87 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   }
 
   @Override
-  public void wakeup() {
-    if (isActivated()) {
-      for (var readerHandler : readerHandlers) {
-        readerHandler.wakeup();
+  public void onInitialized() {
+    // multiple socket reader handlers
+    socketReaderHandlers = new ArrayList<>(getThreadPoolSize() - getNumberOfExtraWorkers());
+    // but only one datagram reader handler allowed
+    if (udpChannelConfiguration != null) {
+      try {
+        datagramReaderHandler = new DatagramReaderHandler(dataType,
+            SocketUtility.createReaderBuffer(getMaxBufferSize()), getSessionManager(),
+            getNetworkReaderStatistic(), getDatagramIoHandler());
+        datagramReaderHandler.openDatagramChannels(serverAddress, udpChannelConfiguration.port(),
+            udpChannelConfiguration.cacheSize());
+      } catch (IOException exception) {
+        error(exception);
       }
     }
   }
 
   @Override
-  public void onInitialized() {
-    readerHandlers = new ArrayList<>(getThreadPoolSize());
-  }
-
-  @Override
   public void onStarted() {
-    // do nothing
+    if (datagramReaderHandler != null) {
+      runningExtraWorking(() -> {
+        while (!Thread.currentThread().isInterrupted()) {
+          if (isActivated()) {
+            try {
+              datagramReaderHandler.running();
+            } catch (Throwable cause) {
+              if (isErrorEnabled()) {
+                error(cause);
+              }
+            }
+          }
+        }
+      });
+    }
   }
 
   @Override
   public void onRunning() {
-    // Default read buffer is DIRECT
-    ByteBuffer readerBuffer = ByteBuffer.allocateDirect(getMaxBufferSize());
-
     try {
-      var readerHandler = new ReaderHandler(dataType, readerBuffer, zeroWriterListener,
-          getSessionManager(), getNetworkReaderStatistic(), getSocketIoHandler(),
-          getDatagramIoHandler());
-      readerHandlers.add(readerHandler);
+      var readerHandler =
+          new SocketReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
+              getSessionManager(), getNetworkReaderStatistic(), getSocketIoHandler());
+      socketReaderHandlers.add(readerHandler);
 
       while (!Thread.currentThread().isInterrupted()) {
         if (isActivated()) {
           try {
             readerHandler.running();
           } catch (Throwable cause) {
-            error(cause);
+            if (isErrorEnabled()) {
+              error(cause);
+            }
           }
         }
       }
     } catch (IOException exception) {
-      error(exception);
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
+  }
+
+  @Override
+  public int getNumberOfExtraWorkers() {
+    return udpChannelConfiguration != null ? 1 : 0;
   }
 
   @Override
   public void onShutdown() {
     try {
       Thread.sleep(500L);
-      for (var readerHandler : readerHandlers) {
+      for (var readerHandler : socketReaderHandlers) {
         readerHandler.shutdown();
       }
+      if (datagramReaderHandler != null) {
+        datagramReaderHandler.shutdown();
+      }
     } catch (IOException | InterruptedException exception) {
-      error(exception, "Exception while closing the selector");
+      if (isErrorEnabled()) {
+        error(exception, "Exception while closing the selector");
+      }
     }
   }
 

@@ -86,3 +86,10 @@
 - Upgraded dependencies
 - Fixed several performance issues related to Injector (Removed unused Reflections API)
 - Fixed several performance issues related to Acceptor and Reader Engines
+
+## 0.6.6 2025-09-01 Feature release
+- Upgraded dependencies
+- Provided several thread-safe methods to work with lists (compute methods)
+- Removed unnecessary wrapper methods
+- Reworked on writer, reader and acceptor handlers
+- Supported Request Policy interface

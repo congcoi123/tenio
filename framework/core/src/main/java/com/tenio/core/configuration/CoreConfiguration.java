@@ -33,7 +33,6 @@ import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Objects;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -100,7 +99,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
     for (int j = 0; j < attrNetworkSockets.getLength(); j++) {
       var dataNode = attrNetworkSockets.item(j);
       var cacheSizeNode = dataNode.getAttributes().getNamedItem("cacheSize");
-      int cacheSize = Objects.nonNull(cacheSizeNode) ?
+      int cacheSize = cacheSizeNode != null ?
           Integer.parseInt(cacheSizeNode.getTextContent()) : 1; // The default value should be 1
       var socketConfiguration =
           new SocketConfiguration(dataNode.getAttributes().getNamedItem("name").getTextContent(),

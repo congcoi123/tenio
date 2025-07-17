@@ -31,7 +31,6 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -123,7 +122,7 @@ public class DefaultPlayer implements Player {
 
   @Override
   public boolean containsSession() {
-    return Objects.nonNull(session);
+    return session != null;
   }
 
   @Override
@@ -244,7 +243,7 @@ public class DefaultPlayer implements Player {
 
   @Override
   public void setSession(Session session) {
-    if (Objects.nonNull(session)) {
+    if (session != null) {
       session.setName(identity);
       session.setAssociatedToPlayer(Session.AssociatedState.DONE);
     }
@@ -253,7 +252,7 @@ public class DefaultPlayer implements Player {
 
   @Override
   public boolean isInRoom() {
-    return Objects.nonNull(currentRoom);
+    return currentRoom != null;
   }
 
   @Override
@@ -284,7 +283,7 @@ public class DefaultPlayer implements Player {
   @Override
   public void setCurrentRoom(Room room) {
     currentRoom = room;
-    setPlayerSlotInCurrentRoom(Objects.isNull(room) ? Room.NIL_SLOT : Room.DEFAULT_SLOT);
+    setPlayerSlotInCurrentRoom(room == null ? Room.NIL_SLOT : Room.DEFAULT_SLOT);
     setLastJoinedRoomTime();
   }
 
@@ -379,7 +378,7 @@ public class DefaultPlayer implements Player {
 
   // This is not thread-safe
   private void notifyUpdate(Field field) {
-    if (Objects.nonNull(updateConsumer)) {
+    if (updateConsumer != null) {
       updateConsumer.accept(field);
     }
   }
@@ -391,7 +390,7 @@ public class DefaultPlayer implements Player {
 
   @Override
   public int hashCode() {
-    return Objects.isNull(identity) ? 0 : identity.hashCode();
+    return identity == null ? 0 : identity.hashCode();
   }
 
   @Override

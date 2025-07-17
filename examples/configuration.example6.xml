@@ -27,7 +27,7 @@
 			<Property name="socket-acceptor-buffer-size">1024</Property>
 			<Property name="socket-reader-buffer-size">1024</Property>
 			<Property name="socket-writer-buffer-size">1024</Property>
-			<Property name="packet-compression-threshold-bytes">10240</Property>
+			<Property name="packet-compression-threshold-bytes">0</Property>
 			<Property name="allow-change-session">false</Property>
 			<Property name="max-connections-per-ip">5000</Property>
 		</Properties>
@@ -61,7 +61,7 @@
 		</Schedules>
 		<Properties>
 			<Property name="data-serialization">zero</Property>
-			<Property name="max-request-queue-size">5000</Property>
+			<Property name="max-request-queue-size">0</Property>
 			<Property name="max-response-queue-size-per-session">5000</Property>
 			<!-- When the server get disconnection of one client, can be hold its
 				player instance until timeout -->

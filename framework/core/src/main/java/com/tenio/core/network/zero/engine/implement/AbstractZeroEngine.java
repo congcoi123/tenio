@@ -33,7 +33,6 @@ import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.zero.engine.ZeroEngine;
 import com.tenio.core.network.zero.handler.DatagramIoHandler;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,17 +48,15 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   private static final int DEFAULT_BUFFER_SIZE = 1024;
 
   private final AtomicInteger id;
+  private final AtomicBoolean stopping;
+  private final AtomicInteger countExtraWorkers;
   private String name;
-
   private ExecutorService executorService;
   private int executorSize;
   private int bufferSize;
-
   private SocketIoHandler socketIoHandler;
   private DatagramIoHandler datagramIoHandler;
   private SessionManager sessionManager;
-
-  private final AtomicBoolean stopping;
   private volatile boolean activated;
 
   /**
@@ -73,6 +70,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     stopping = new AtomicBoolean(false);
     executorSize = DEFAULT_NUMBER_WORKERS;
     bufferSize = DEFAULT_BUFFER_SIZE;
+    countExtraWorkers = new AtomicInteger(0);
   }
 
   private void initializeWorkers() {
@@ -80,11 +78,13 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     executorService = Executors.newFixedThreadPool(executorSize, threadFactory);
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (Objects.nonNull(executorService) && !executorService.isShutdown()) {
+      if (executorService != null && !executorService.isShutdown()) {
         try {
           halting();
         } catch (Exception exception) {
-          error(exception);
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
     }));
@@ -106,28 +106,26 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
         executorService.shutdownNow();
         destroyEngine();
       }
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       executorService.shutdownNow();
       destroyEngine();
     }
   }
 
   private void destroyEngine() {
-    info("STOPPED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("STOPPED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
     onDestroyed();
-    info("DESTROYED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("DESTROYED SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override
   public void run() {
-    setThreadName();
+    setThreadName(id.incrementAndGet(), null);
     onRunning();
-  }
-
-  private void setThreadName() {
-    Thread currentThread = Thread.currentThread();
-    currentThread.setName(StringUtility.strgen("zero-", getName(), "-", id.incrementAndGet()));
-    currentThread.setUncaughtExceptionHandler((thread, cause) -> error(cause, thread.getName()));
   }
 
   @Override
@@ -188,18 +186,27 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
   @Override
   public void start() {
-    for (int i = 0; i < executorSize; i++) {
+    // check the number extra workers
+    if (executorSize - getNumberOfExtraWorkers() <= 0) {
+      throw new IllegalArgumentException("The number of extra workers must be less than the " +
+          "executor size");
+    }
+    for (int i = 0; i < executorSize - getNumberOfExtraWorkers(); i++) {
       try {
         Thread.sleep(100L);
       } catch (InterruptedException exception) {
         Thread.currentThread().interrupt();
-        error(exception);
+        if (isErrorEnabled()) {
+          error(exception);
+        }
       }
       executorService.execute(this);
     }
     onStarted();
     activated = true;
-    info("START SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE", buildgen("zero-", getName(), " (", executorSize, ")"));
+    }
   }
 
   @Override
@@ -211,6 +218,35 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     return activated;
   }
 
+  /**
+   * Retrieves the number of extra workers. This value must be less than {@link #executorSize}.
+   *
+   * @return the number of extra workers
+   * @since 0.6.6
+   */
+  public int getNumberOfExtraWorkers() {
+    return 0;
+  }
+
+  /**
+   * Executes an extra task. The number of the invocation on this method must be less than or
+   * equals to {@link #getNumberOfExtraWorkers()}.
+   *
+   * @param action the extra task
+   * @since 0.6.6
+   */
+  public void runningExtraWorking(Runnable action) {
+    int count = countExtraWorkers.incrementAndGet();
+    if (count > getNumberOfExtraWorkers()) {
+      throw new IllegalArgumentException("It cannot excess the number of extra workers, the " +
+          "current running times: " + count);
+    }
+    executorService.execute(() -> {
+      setThreadName(count, "extra");
+      action.run();
+    });
+  }
+
   @Override
   public String getName() {
     return name;
@@ -219,5 +255,16 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   @Override
   public void setName(String name) {
     this.name = name;
+  }
+
+  private void setThreadName(int id, String extra) {
+    Thread currentThread = Thread.currentThread();
+    currentThread.setName(extra == null ? StringUtility.strgen("zero-", getName(), "-", id) :
+        StringUtility.strgen("zero-", getName(), "-", extra, "-", id));
+    currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+      if (isErrorEnabled()) {
+        error(cause, thread.getName());
+      }
+    });
   }
 }

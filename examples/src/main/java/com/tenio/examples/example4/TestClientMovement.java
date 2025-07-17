@@ -206,16 +206,20 @@ public final class TestClientMovement extends AbstractLogger
       statistic.addLatency(latency);
       statistic.addFps(fps);
 
-      info("LATENCY", buildgen("Player ", playerName, " -> ", latency, " ms | fps -> ", fps));
+      if (isInfoEnabled()) {
+        info("LATENCY", buildgen("Player ", playerName, " -> ", latency, " ms | fps -> ", fps));
+      }
     }
   }
 
   private void logLostPacket(double lostPacket) {
-    info("COUNTING",
-        String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-            playerName,
-            localCounter.getCountUdpPacketsOneMinute(), lostPacket,
-            (float) localCounter.getCountReceivedPacketSizeOneMinute() / 1000.0f));
+    if (isInfoEnabled()) {
+      info("COUNTING",
+          String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
+              playerName,
+              localCounter.getCountUdpPacketsOneMinute(), lostPacket,
+              (float) localCounter.getCountReceivedPacketSizeOneMinute() / 1000.0f));
+    }
   }
 
   private void requestNeighbours() {

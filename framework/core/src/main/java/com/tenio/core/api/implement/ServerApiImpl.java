@@ -37,7 +37,7 @@ import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
-import com.tenio.core.entity.define.result.PlayerLoggedInResult;
+import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -54,8 +54,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * An implementation for Server APIs.
@@ -84,11 +84,13 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
       final var player = getPlayerManager().createPlayer(playerName);
 
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoggedInResult.SUCCESS);
+          PlayerLoginResult.SUCCESS);
     } catch (AddedDuplicatedPlayerException exception) {
-      error(exception, "Logged in with same player name: ", playerName);
+      if (isErrorEnabled()) {
+        error(exception, "Logged in with same player name: ", playerName);
+      }
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, exception.getPlayer(),
-          PlayerLoggedInResult.DUPLICATED_PLAYER);
+          PlayerLoginResult.DUPLICATED_PLAYER);
     }
   }
 
@@ -98,17 +100,21 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
       Player player = getPlayerManager().createPlayerWithSession(playerName, session);
 
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoggedInResult.SUCCESS);
+          PlayerLoginResult.SUCCESS);
     } catch (Exception exception) {
       if (exception instanceof AddedDuplicatedPlayerException duplicatedPlayerException) {
-        error(exception, "Logged in with same player name: ", playerName);
+        if (isErrorEnabled()) {
+          error(exception, "Logged in with same player name: ", playerName);
+        }
         getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT,
-            duplicatedPlayerException.getPlayer(), PlayerLoggedInResult.DUPLICATED_PLAYER);
+            duplicatedPlayerException.getPlayer(), PlayerLoginResult.DUPLICATED_PLAYER);
         return;
       }
-      error(exception, "On the player: ", playerName);
+      if (isErrorEnabled()) {
+        error(exception, "On the player: ", playerName);
+      }
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT,
-          getPlayerByIdentity(playerName).orElse(null), PlayerLoggedInResult.EXCEPTION);
+          getPlayerByIdentity(playerName).orElse(null), PlayerLoginResult.EXCEPTION);
     }
   }
 
@@ -119,26 +125,31 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
       getPlayerManager().addPlayer(player);
 
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoggedInResult.SUCCESS);
+          PlayerLoginResult.SUCCESS);
     } catch (AddedDuplicatedPlayerException exception) {
-      error(exception, "Logged in with same player name: ", player.getIdentity());
+      if (isErrorEnabled()) {
+        error(exception, "Logged in with same player name: ", player.getIdentity());
+      }
       getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, exception.getPlayer(),
-          PlayerLoggedInResult.DUPLICATED_PLAYER);
+          PlayerLoginResult.DUPLICATED_PLAYER);
     }
   }
 
   @Override
   public void logout(Player player, ConnectionDisconnectMode connectionDisconnectMode,
                      PlayerDisconnectMode playerDisconnectMode) {
-    if (Objects.isNull(player)) {
+    if (player == null) {
       // maybe we needn't do anything
       return;
     }
 
     try {
       if (player.containsSession() && player.getSession().isPresent()) {
-        // check process on method InternalProcessorServiceImpl#processSessionWillBeClosed
-        player.getSession().get().close(connectionDisconnectMode, playerDisconnectMode);
+        // check process on method ZeroProcessorServiceImpl#processSessionWillBeClosed
+        Session session = player.getSession().get();
+        if (session.isActivated()) {
+          session.close(connectionDisconnectMode, playerDisconnectMode);
+        }
       } else {
         // unsubscribe it from all channels
         unsubscribeFromAllChannels(player);
@@ -149,11 +160,15 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
         getEventManager().emit(ServerEvent.DISCONNECT_PLAYER, player, playerDisconnectMode);
         String removedPlayer = player.getIdentity();
         getPlayerManager().removePlayerByIdentity(removedPlayer);
-        debug("DISCONNECTED PLAYER", "Player ", removedPlayer, " was removed");
+        if (isDebugEnabled()) {
+          debug("DISCONNECTED PLAYER", "Player ", removedPlayer, " was removed");
+        }
         player.clean();
       }
     } catch (RemovedNonExistentPlayerException | IOException exception) {
-      error(exception, "Remove player: ", player.getIdentity(), " with issue");
+      if (isErrorEnabled()) {
+        error(exception, "Remove player: ", player.getIdentity(), " with issue");
+      }
     }
   }
 
@@ -161,7 +176,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   public Room createRoom(InitialRoomSetting roomSetting, Player roomOwner) {
     Room room = null;
     try {
-      if (Objects.isNull(roomOwner)) {
+      if (roomOwner == null) {
         room = getRoomManager().createRoom(roomSetting);
       } else {
         room = getRoomManager().createRoomWithOwner(roomSetting, roomOwner);
@@ -207,8 +222,8 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   }
 
   @Override
-  public Iterator<Player> getPlayerIterator() {
-    return getPlayerManager().getPlayerIterator();
+  public void computePlayers(Consumer<Iterator<Player>> onComputed) {
+    getPlayerManager().computePlayers(onComputed);
   }
 
   @Override
@@ -222,8 +237,8 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   }
 
   @Override
-  public Iterator<Room> getRoomIterator() {
-    return getRoomManager().getRoomIterator();
+  public void computeRooms(Consumer<Iterator<Room>> onComputed) {
+    getRoomManager().computeRooms(onComputed);
   }
 
   @Override
@@ -239,7 +254,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   @Override
   public void joinRoom(Player player, Room room, String roomPassword, int slotInRoom,
                        boolean asSpectator) {
-    if (Objects.isNull(player) || Objects.isNull(room)) {
+    if (player == null || room == null) {
       getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
           PlayerJoinedRoomResult.PLAYER_OR_ROOM_UNAVAILABLE);
       return;
@@ -268,7 +283,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   @Override
   public void changeRoom(Player player, Room room, String roomPassword, int slotInRoom,
                          boolean asSpectator) {
-    if (Objects.isNull(player) || Objects.isNull(room)) {
+    if (player == null || room == null) {
       getEventManager().emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
           PlayerJoinedRoomResult.PLAYER_OR_ROOM_UNAVAILABLE);
       return;
@@ -293,7 +308,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
     getEventManager().emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room,
         leaveRoomMode);
     try {
-      if (Objects.nonNull(room)) {
+      if (room != null) {
         room.removePlayer(player);
       }
       getEventManager().emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, room,
@@ -306,22 +321,25 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
   @Override
   public void removeRoom(Room room, RoomRemoveMode removeRoomMode) {
-    if (Objects.isNull(room)) {
+    if (room == null) {
       // nothing needs to do
       return;
     }
 
     getEventManager().emit(ServerEvent.ROOM_WILL_BE_REMOVED, room, removeRoomMode);
 
-    var playerIterator = room.getPlayerIterator();
-    while (playerIterator.hasNext()) {
-      var player = playerIterator.next();
-      leaveRoom(player, PlayerLeaveRoomMode.ROOM_REMOVED);
-    }
+    room.computePlayers(iterator -> {
+      while (iterator.hasNext()) {
+        var player = iterator.next();
+        leaveRoom(player, PlayerLeaveRoomMode.ROOM_REMOVED);
+      }
+    });
 
     long roomId = room.getId();
     getRoomManager().removeRoomById(roomId);
-    debug("REMOVED ROOM", "Room ", roomId, " was removed");
+    if (isDebugEnabled()) {
+      debug("REMOVED ROOM", "Room ", roomId, " was removed");
+    }
   }
 
   @Override

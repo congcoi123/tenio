@@ -28,6 +28,7 @@ import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
+import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
@@ -68,18 +69,21 @@ public interface WriterHandler {
   /**
    * Retrieves a blocking queue of all sessions.
    *
+   * @param sessionId the session id of which is used to determine which queue it should belong to
    * @return the blocking queue of all {@link Session}s
    * @see BlockingQueue
+   * @see SessionTicketsQueueManager
    */
-  BlockingQueue<Session> getSessionTicketsQueue();
+  BlockingQueue<Session> getSessionTicketsQueue(long sessionId);
 
   /**
-   * Sets a blocking queue of sessions.
+   * Sets a blocking queues manager.
    *
-   * @param sessionTicketsQueue a blocking queue of all {@link Session}s
+   * @param sessionTicketsQueueManager an instance of {@link SessionTicketsQueueManager} which
+   *                                   manages blocking queues of all {@link Session}s
    * @see BlockingQueue
    */
-  void setSessionTicketsQueue(BlockingQueue<Session> sessionTicketsQueue);
+  void setSessionTicketsQueueManager(SessionTicketsQueueManager sessionTicketsQueueManager);
 
   /**
    * Retrieves a network writer statistic instance which takes responsibility recording the

@@ -32,7 +32,6 @@ import com.tenio.engine.ecs.system.TearDownSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Systems provide a convenient way to group systems. You can add
@@ -70,7 +69,7 @@ public final class Systems
    * @return the current system instance
    */
   public Systems add(System system) {
-    if (Objects.nonNull(system)) {
+    if (system != null) {
       if (system instanceof InitializeSystem) {
         initializeSystems.add((InitializeSystem) system);
       }

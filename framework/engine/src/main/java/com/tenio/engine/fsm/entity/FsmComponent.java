@@ -26,7 +26,6 @@ package com.tenio.engine.fsm.entity;
 
 import com.tenio.engine.fsm.Component;
 import com.tenio.engine.fsm.MessageDispatcher;
-import java.util.Objects;
 
 /**
  * Check out the
@@ -72,12 +71,12 @@ public final class FsmComponent<T> extends Component<T> {
   @Override
   public void update(double delta) {
     // if a global state exists, call its execute method, else do nothing
-    if (Objects.nonNull(globalState)) {
+    if (globalState != null) {
       globalState.execute(entity);
     }
 
     // same for the current state
-    if (Objects.nonNull(currentState)) {
+    if (currentState != null) {
       currentState.execute(entity);
     }
   }
@@ -91,13 +90,13 @@ public final class FsmComponent<T> extends Component<T> {
   public boolean handleMessage(Telegram message) {
     // First see if the current state is valid and that it can handle
     // the message
-    if (Objects.nonNull(currentState) && currentState.onMessage(entity, message)) {
+    if (currentState != null && currentState.onMessage(entity, message)) {
       return true;
     }
 
     // If not, and if a global state has been implemented, send
     // the message to the global state
-    return Objects.nonNull(globalState) && globalState.onMessage(entity, message);
+    return globalState != null && globalState.onMessage(entity, message);
   }
 
   /**

@@ -36,12 +36,14 @@ public final class BandwidthInformationHandler extends AbstractHandler
   public void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
                      long writtenPackets, long writtenDroppedPacketsByPolicy,
                      long writtenDroppedPacketsByFull) {
-    var info = String.format(
-        "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",
-        readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
-        writtenDroppedPacketsByPolicy,
-        writtenDroppedPacketsByFull, writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull);
+    if (isInfoEnabled()) {
+      var info = String.format(
+          "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",
+          readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
+          writtenDroppedPacketsByPolicy,
+          writtenDroppedPacketsByFull, writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull);
 
-    info("BANDWIDTH INFO", info);
+      info("BANDWIDTH INFO", info);
+    }
   }
 }

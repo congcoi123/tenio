@@ -35,7 +35,6 @@ import com.tenio.core.event.handler.EventHandler;
 import jakarta.servlet.http.HttpServlet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * This class provides instances for the events handler and the configuration setups.
@@ -142,11 +141,11 @@ public final class BootstrapHandler {
   public <T> T getBeanByClazz(Class<T> clazz, String name) {
     // We check its interface by looking at the reversed mapping classes
     var implementedClazz = reversedClassesMap.get(clazz);
-    if (Objects.isNull(implementedClazz)) {
+    if (implementedClazz == null) {
       return null;
     }
     var object = classBeansMap.get(new BeanClass(implementedClazz, name));
-    return Objects.isNull(object) ? null : clazz.isInstance(object) ? clazz.cast(object) : null;
+    return object == null ? null : clazz.isInstance(object) ? clazz.cast(object) : null;
   }
 
   /**

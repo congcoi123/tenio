@@ -15,6 +15,7 @@ import com.tenio.engine.physic2d.utility.EntitiesRelationship;
 import com.tenio.engine.physic2d.utility.Geometry;
 import com.tenio.engine.physic2d.utility.Smoother;
 import com.tenio.examples.example4.configuration.ParamLoader;
+import com.tenio.examples.example4.constant.Example4Constant;
 import com.tenio.examples.example4.constant.SummingMethod;
 import com.tenio.examples.example4.entity.Obstacle;
 import com.tenio.examples.example4.entity.Vehicle;
@@ -92,7 +93,8 @@ public final class World extends AbstractHeartBeat {
     enableRenderNeighbors = false;
     enableViewKeys = false;
     enableShowCellSpaceInfo = false;
-    workerPool = new WorkerPool("world", 150, 300);
+    workerPool = new WorkerPool("world", Example4Constant.NUMBER_OF_THREADS_WORKER_POOL,
+        Example4Constant.NUMBER_OF_TASKS_PER_THREAD_WORKER_POOL);
 
     // set up the spatial subdivision class
     cellSpace = new CellSpacePartition<>((float) cx, (float) cy, paramLoader.NUM_CELLS_X,
@@ -459,8 +461,10 @@ public final class World extends AbstractHeartBeat {
             }
 
           }, "update-vehicles-position");
-        } catch (Exception e) {
-          error(e);
+        } catch (Exception exception) {
+          if (isErrorEnabled()) {
+            error(exception);
+          }
         }
       }
 
@@ -519,8 +523,10 @@ public final class World extends AbstractHeartBeat {
         List<Vehicle> neighbours = getNeighboursOf(entityId);
         worldListener.responseVehicleNeighbours(name, neighbours, getFps());
       }, name);
-    } catch (Exception e) {
-      error(e);
+    } catch (Exception exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
   }
 

@@ -25,35 +25,24 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.manager;
 
 import com.tenio.core.configuration.constant.CoreConstant;
-import com.tenio.core.exception.EmptyDatagramChannelsException;
 import com.tenio.core.manager.Manager;
-import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * This class takes responsibility to provide an available UDP channel port, KCP convey id, ... when required.
  */
 public class DatagramChannelManager implements Manager {
 
-  private volatile int udpPort;
-  private volatile int kcpPort;
   private final AtomicInteger udpConveyIdGenerator;
   private final AtomicInteger kcpConveyIdGenerator;
-  @GuardedBy("this")
-  private final List<DatagramChannel> channels;
-  @GuardedBy("this")
-  private int currentChannelIndex;
+  private volatile int udpPort;
+  private volatile int kcpPort;
 
   private DatagramChannelManager() {
     udpPort = CoreConstant.NULL_PORT_VALUE;
     kcpPort = CoreConstant.NULL_PORT_VALUE;
     udpConveyIdGenerator = new AtomicInteger(0);
     kcpConveyIdGenerator = new AtomicInteger(0);
-    channels = new ArrayList<>();
-    currentChannelIndex = -1;
   }
 
   /**
@@ -68,7 +57,7 @@ public class DatagramChannelManager implements Manager {
   /**
    * Configures UDP port.
    *
-   * @param udpPort UDP port
+   * @param udpPort the UDP port
    */
   public void configureUdpPort(int udpPort) {
     this.udpPort = udpPort;
@@ -81,33 +70,6 @@ public class DatagramChannelManager implements Manager {
    */
   public void configureKcpPort(int kcpPort) {
     this.kcpPort = kcpPort;
-  }
-
-  /**
-   * Appends a new datagram channel into the list.
-   *
-   * @param datagramChannel a new {@link DatagramChannel} instance
-   */
-  public synchronized void addChannel(DatagramChannel datagramChannel) {
-    channels.add(datagramChannel);
-  }
-
-  /**
-   * Retrieves the current available datagram channel from cache, applies the "round-robin"
-   * algorithm.
-   *
-   * @return an {@link DatagramChannel} instance
-   */
-  public synchronized DatagramChannel getChannel() {
-    int size = channels.size();
-    if (size == 0) {
-      throw new EmptyDatagramChannelsException();
-    }
-    currentChannelIndex++;
-    if (currentChannelIndex >= size) {
-      currentChannelIndex = 0;
-    }
-    return channels.get(currentChannelIndex);
   }
 
   /**

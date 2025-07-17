@@ -34,7 +34,13 @@ public class ZeroElementImpl implements ZeroElement {
 
   private static final long serialVersionUID = -3839072498152322959L;
 
+  /**
+   * Key.
+   */
   private final ZeroType type;
+  /**
+   * Value.
+   */
   private final Object data;
 
   /**

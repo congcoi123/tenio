@@ -29,7 +29,7 @@ import com.tenio.core.exception.PacketEncryptorException;
 import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 
 @Component
-public class CustomBinaryPacketEncryptor implements BinaryPacketEncryptor {
+public final class CustomBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
   @Override
   public byte[] encrypt(byte[] binary) throws PacketEncryptorException {

@@ -32,7 +32,6 @@ import com.tenio.core.monitoring.system.SystemInfo;
 import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 import java.util.Arrays;
-import java.util.Objects;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.apache.logging.log4j.util.Strings;
 
@@ -68,7 +67,7 @@ public final class ApplicationLauncher extends SystemLogger {
   private static final ApplicationLauncher instance = new ApplicationLauncher();
 
   private ApplicationLauncher() {
-    if (Objects.nonNull(instance)) {
+    if (instance != null) {
       throw new CommandLine.InitializationException("Could not recreate this class instance");
     }
   }
@@ -96,9 +95,11 @@ public final class ApplicationLauncher extends SystemLogger {
    */
   public void start(Class<?> entryClass, String[] params) {
     // print out the framework's preface
-    var trademark =
-        String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
-    info("HAPPY CODING", trademark);
+    if (isInfoEnabled()) {
+      var trademark =
+          String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
+      info("HAPPY CODING", trademark);
+    }
 
     // show system information
     var systemInfo = new SystemInfo();
@@ -107,14 +108,17 @@ public final class ApplicationLauncher extends SystemLogger {
     systemInfo.logDiskInfo();
 
     Bootstrapper bootstrap = null;
-    if (Objects.nonNull(entryClass)) {
+    if (entryClass != null) {
       bootstrap = Bootstrapper.newInstance();
       try {
         bootstrap.run(entryClass, CoreConstant.DEFAULT_BOOTSTRAP_PACKAGE,
             CoreConstant.DEFAULT_EVENT_PACKAGE, CoreConstant.DEFAULT_COMMAND_PACKAGE,
             CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE);
       } catch (Exception exception) {
-        error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+        if (isErrorEnabled()) {
+          error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+        }
+        // exit with errors
         System.exit(1);
       }
     }
@@ -124,8 +128,9 @@ public final class ApplicationLauncher extends SystemLogger {
       assert bootstrap != null;
       server.start(bootstrap.getBootstrapHandler(), params);
     } catch (Exception exception) {
-      error(exception, "The application started with exceptions occurred: ",
-          exception.getMessage());
+      if (isErrorEnabled()) {
+        error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+      }
       server.shutdown();
       // exit with errors
       System.exit(1);
@@ -135,16 +140,19 @@ public final class ApplicationLauncher extends SystemLogger {
     try {
       var currentThread = Thread.currentThread();
       currentThread.setName("tenio-main-thread");
-      currentThread.setUncaughtExceptionHandler((thread, cause) -> error(cause, thread.getName()));
+      currentThread.setUncaughtExceptionHandler((thread, cause) -> {
+        if (isErrorEnabled()) {
+          error(cause, thread.getName());
+        }
+      });
       currentThread.join();
     } catch (InterruptedException exception) {
-      error(exception);
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
 
     // Suddenly shutdown
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      server.shutdown();
-      System.exit(0);
-    }));
+    Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
   }
 }

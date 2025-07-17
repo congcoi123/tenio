@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.concurrent.GuardedBy;
@@ -71,7 +70,9 @@ public final class SystemCommandManager extends SystemLogger {
    * @param command The command handler
    */
   public synchronized void registerCommand(String label, AbstractSystemCommandHandler command) {
-    debug("SYSTEM_COMMAND", "Registered command > ", label);
+    if (isDebugEnabled()) {
+      debug("SYSTEM_COMMAND", "Registered command > ", label);
+    }
 
     label = label.toLowerCase();
 
@@ -92,8 +93,9 @@ public final class SystemCommandManager extends SystemLogger {
    * @param label The command label
    */
   public synchronized void unregisterCommand(String label) {
-    debug("SYSTEM_COMMAND", "Unregistered command > ", label);
-
+    if (isDebugEnabled()) {
+      debug("SYSTEM_COMMAND", "Unregistered command > ", label);
+    }
     annotations.remove(label);
     commands.remove(label);
   }
@@ -166,7 +168,7 @@ public final class SystemCommandManager extends SystemLogger {
     var handler = getHandler(label);
 
     // checks if the handler is null
-    if (Objects.isNull(handler)) {
+    if (handler == null) {
       return;
     }
 

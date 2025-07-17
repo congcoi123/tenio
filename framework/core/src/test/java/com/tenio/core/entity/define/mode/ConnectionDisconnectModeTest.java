@@ -32,6 +32,6 @@ class ConnectionDisconnectModeTest {
 
   @Test
   void testValueOf() {
-    assertEquals("DEFAULT", ConnectionDisconnectMode.valueOf("DEFAULT").toString());
+    assertEquals("CLIENT_REQUEST", ConnectionDisconnectMode.valueOf("CLIENT_REQUEST").toString());
   }
 }

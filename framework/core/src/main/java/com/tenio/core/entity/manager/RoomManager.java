@@ -33,6 +33,7 @@ import com.tenio.core.exception.CreatedRoomException;
 import com.tenio.core.manager.Manager;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * All supported APIs for the room management.
@@ -125,13 +126,12 @@ public interface RoomManager extends Manager {
   List<Room> getReadonlyRoomsListByName(String roomName);
 
   /**
-   * Retrieves an iterator for a room management list. This method should be used to prevent the
-   * "escape references" issue.
+   * Ensures the calculation on the room list is thread-safe.
    *
-   * @return a list of all {@link Room}s in the management list
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Room> getRoomIterator();
+  void computeRooms(Consumer<Iterator<Room>> onComputed);
 
   /**
    * Retrieves a read-only room management list. This method should be used to prevent the

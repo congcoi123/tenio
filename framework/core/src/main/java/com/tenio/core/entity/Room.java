@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 /**
  * Represents a game room entity that manages player interactions and game state.
@@ -294,13 +295,12 @@ public interface Room {
   Optional<Player> getPlayerByIdentity(String playerIdentity);
 
   /**
-   * Retrieves an iterator for a player management list. This method should be used to prevent
-   * the "escape references" issue.
+   * Ensures the calculation on the player list is thread-safe.
    *
-   * @return an iterator of {@link Player} management list
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Player> getPlayerIterator();
+  void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
    * Retrieves a read-only player management list. This method should be used to prevent the

@@ -31,7 +31,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Objects;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
@@ -62,7 +61,7 @@ public enum HttpUtility {
    */
   public boolean hasHeaderKey(HttpServletRequest request, String key) {
     var headerNames = request.getHeaderNames();
-    if (Objects.nonNull(headerNames)) {
+    if (headerNames != null) {
       while (headerNames.hasMoreElements()) {
         if (headerNames.nextElement().equals(key)) {
           return true;
@@ -93,15 +92,17 @@ public enum HttpUtility {
           builder.append(charBuffer, 0, bytesRead);
         }
       } catch (IOException exception) {
-        // swallow silently -- can't get body, won't
-        logger.error(exception);
+        if (logger.isErrorEnabled()) {
+          logger.error(exception);
+        }
       } finally {
-        if (Objects.nonNull(bufferedReader)) {
+        if (bufferedReader != null) {
           try {
             bufferedReader.close();
           } catch (IOException exception) {
-            // swallow silently -- can't get body, won't
-            logger.error(exception);
+            if (logger.isErrorEnabled()) {
+              logger.error(exception);
+            }
           }
         }
       }
@@ -131,15 +132,17 @@ public enum HttpUtility {
           builder.append(charBuffer, 0, bytesRead);
         }
       } catch (IOException exception) {
-        // swallow silently -- can't get body, won't
-        logger.error(exception);
+        if (logger.isErrorEnabled()) {
+          logger.error(exception);
+        }
       } finally {
-        if (Objects.nonNull(bufferedReader)) {
+        if (bufferedReader != null) {
           try {
             bufferedReader.close();
           } catch (IOException exception) {
-            // swallow silently -- can't get body, won't
-            logger.error(exception);
+            if (logger.isErrorEnabled()) {
+              logger.error(exception);
+            }
           }
         }
       }
@@ -161,7 +164,9 @@ public enum HttpUtility {
     try {
       response.getWriter().println(payload);
     } catch (IOException exception) {
-      logger.error(exception);
+      if (logger.isErrorEnabled()) {
+        logger.error(exception);
+      }
     }
   }
 }

@@ -32,6 +32,7 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.schedule.task.internal.AutoDisconnectPlayerTask;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Manages the lifecycle and operations of players in the game server.
@@ -85,8 +86,8 @@ public interface PlayerManager extends Manager {
   /**
    * Creates a new player with session and adds it in to the management list.
    *
-   * @param playerName    a unique player's name ({@link String} value) on the server
-   * @param session a {@link Session} associated with the player
+   * @param playerName a unique player's name ({@link String} value) on the server
+   * @param session    a {@link Session} associated with the player
    * @return a new instance of {@link Player}
    * @throws AddedDuplicatedPlayerException when a same player is already available in the
    *                                        management list, but it is mentioned again
@@ -113,14 +114,12 @@ public interface PlayerManager extends Manager {
   Player getPlayerByIdentity(String playerIdentity);
 
   /**
-   * Retrieves an iterator for a player management list.
-   * This method should be used to prevent the "escape references" issue
-   * and provides thread-safe iteration over the player collection.
+   * Ensures the calculation on the player list is thread-safe.
    *
-   * @return an iterator of {@link Player} management list
-   * @see Iterator
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
    */
-  Iterator<Player> getPlayerIterator();
+  void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
    * Retrieves a read-only player management list.
@@ -138,7 +137,7 @@ public interface PlayerManager extends Manager {
    *
    * @param playerIdentity the player's unique identifier
    * @throws RemovedNonExistentPlayerException when the player is not present in the
-   *                                          management list
+   *                                           management list
    */
   void removePlayerByIdentity(String playerIdentity) throws RemovedNonExistentPlayerException;
 

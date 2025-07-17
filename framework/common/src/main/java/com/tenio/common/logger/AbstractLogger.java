@@ -269,6 +269,7 @@ public abstract class AbstractLogger {
    */
   public void error(Throwable cause, StringBuilder msg) {
     if (!isErrorEnabled()) {
+      stringPool.repay(msg);
       return;
     }
     var builder = stringPool.get();

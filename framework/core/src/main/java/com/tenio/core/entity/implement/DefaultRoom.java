@@ -40,10 +40,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * An implemented class is for a room using in the server.
@@ -139,7 +139,7 @@ public class DefaultRoom implements Room {
 
   @Override
   public boolean isPublic() {
-    return Objects.isNull(password);
+    return password == null;
   }
 
   @Override
@@ -223,8 +223,8 @@ public class DefaultRoom implements Room {
   }
 
   @Override
-  public Iterator<Player> getPlayerIterator() {
-    return playerManager.getPlayerIterator();
+  public void computePlayers(Consumer<Iterator<Player>> onComputed) {
+    playerManager.computePlayers(onComputed);
   }
 
   @Override
@@ -244,7 +244,7 @@ public class DefaultRoom implements Room {
 
   @Override
   public void addPlayer(Player player, String password, boolean asSpectator, int targetSlot) {
-    if (Objects.nonNull(this.password) && !this.password.equals(password)) {
+    if (this.password != null && !this.password.equals(password)) {
       throw new PlayerJoinedRoomException(
           String.format("Unable to add player: %s to room due to invalid password provided", player.getIdentity()),
           PlayerJoinedRoomResult.INVALID_CREDENTIALS);

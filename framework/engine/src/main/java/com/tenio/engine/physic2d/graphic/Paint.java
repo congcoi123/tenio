@@ -30,7 +30,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This class provides some methods for painting objects to a screen.
@@ -59,7 +58,7 @@ public final class Paint {
   private Color textColor;
 
   private Paint() {
-    if (Objects.nonNull(instance)) {
+    if (instance != null) {
       throw new UnsupportedOperationException("Could not recreate this instance");
     }
 
@@ -136,7 +135,7 @@ public final class Paint {
    * @return the font's height
    */
   public int getFontHeight() {
-    if (Objects.isNull(brush)) {
+    if (brush == null) {
       return 0;
     }
     return brush.getFontMetrics().getHeight();
@@ -222,7 +221,7 @@ public final class Paint {
     polygon.addPoint((int) arrowPoint2.x, (int) arrowPoint2.y);
     polygon.addPoint((int) to.x, (int) to.y);
 
-    if (Objects.nonNull(bgColor)) {
+    if (bgColor != null) {
       brush.setColor(bgColor);
       brush.fillPolygon(polygon);
     }
@@ -276,7 +275,7 @@ public final class Paint {
     }
     brush.setColor(penColor);
     brush.drawRect(left, top, right - left, bottom - top);
-    if (Objects.nonNull(bgColor)) {
+    if (bgColor != null) {
       brush.setColor(bgColor);
       brush.fillRect(left, top, right - left, bottom - top);
     }
@@ -300,7 +299,7 @@ public final class Paint {
     }
     brush.setColor(penColor);
     brush.drawPolygon(polygon);
-    if (Objects.nonNull(bgColor)) {
+    if (bgColor != null) {
       brush.fillPolygon(polygon);
     }
   }
@@ -318,12 +317,10 @@ public final class Paint {
    */
   public void drawCircle(float x, float y, float radius) {
     brush.setColor(penColor);
-    brush.drawOval((int) (x - radius), (int) (y - radius), (int) (radius * 2),
-        (int) (radius * 2));
-    if (Objects.nonNull(bgColor)) {
+    brush.drawOval((int) (x - radius), (int) (y - radius), (int) (radius * 2), (int) (radius * 2));
+    if (bgColor != null) {
       brush.setColor(bgColor);
-      brush.fillOval((int) (x - radius + 1), (int) (y - radius + 1), (int) (radius * 2 - 1),
-          (int) (radius * 2 - 1));
+      brush.fillOval((int) (x - radius + 1), (int) (y - radius + 1), (int) (radius * 2 - 1), (int) (radius * 2 - 1));
     }
   }
 

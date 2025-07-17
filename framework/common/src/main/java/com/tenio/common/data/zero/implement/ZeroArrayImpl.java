@@ -42,6 +42,9 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   private static final long serialVersionUID = 2372647354857285192L;
 
+  /**
+   * Elements holder.
+   */
   private final List<ZeroElement> array;
 
   /**

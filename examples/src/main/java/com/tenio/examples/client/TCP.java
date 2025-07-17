@@ -28,13 +28,11 @@ import com.tenio.common.data.DataCollection;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
-import com.tenio.core.network.zero.codec.compression.DefaultBinaryPacketCompressor;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.zero.codec.decoder.DefaultBinaryPacketDecoder;
+import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoderImpl;
 import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encoder.DefaultBinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encryption.DefaultBinaryPacketEncryptor;
+import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoderImpl;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -79,11 +77,11 @@ public final class TCP implements PacketDecoderResultListener {
       var binaryCompressor = new DefaultBinaryPacketCompressor();
       var binaryEncryptor = new DefaultBinaryPacketEncryptor();
 
-      binaryPacketEncoder = new DefaultBinaryPacketEncoder();
+      binaryPacketEncoder = new BinaryPacketEncoderImpl();
       binaryPacketEncoder.setCompressor(binaryCompressor);
       binaryPacketEncoder.setEncryptor(binaryEncryptor);
 
-      binaryPacketDecoder = new DefaultBinaryPacketDecoder();
+      binaryPacketDecoder = new BinaryPacketDecoderImpl();
       binaryPacketDecoder.setCompressor(binaryCompressor);
       binaryPacketDecoder.setEncryptor(binaryEncryptor);
       binaryPacketDecoder.setResultListener(this);

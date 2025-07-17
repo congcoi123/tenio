@@ -56,11 +56,9 @@ public interface ZeroAcceptor extends ZeroEngine {
   void setServerAddress(String serverAddress);
 
   /**
-   * Declares sockets (TCP, UDP) configurations for the network.
+   * Declares socket configuration for the network.
    *
    * @param tcpSocketConfiguration an instance of {@link SocketConfiguration} for TCP
-   * @param udpSocketConfiguration an instance of {@link SocketConfiguration} for UDP
    */
-  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
-                              SocketConfiguration udpSocketConfiguration);
+  void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration);
 }

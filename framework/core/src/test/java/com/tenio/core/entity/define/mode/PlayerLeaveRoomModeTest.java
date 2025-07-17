@@ -29,8 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 class PlayerLeaveRoomModeTest {
+
   @Test
   void testValueOf() {
-    assertEquals("DEFAULT", PlayerLeaveRoomMode.valueOf("DEFAULT").toString());
+    assertEquals("SESSION_CLOSED", PlayerLeaveRoomMode.valueOf("SESSION_CLOSED").toString());
   }
 }

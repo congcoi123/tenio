@@ -29,7 +29,6 @@ import com.tenio.core.command.system.AbstractSystemCommandHandler;
 import com.tenio.core.utility.CommandUtility;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Show all supporting commands.
@@ -60,9 +59,8 @@ public final class HelpCommand extends AbstractSystemCommandHandler {
       var labels = arguments.remove(0).toLowerCase().trim().split(",");
       for (var label : labels) {
         var command = commandManager.getHandler(label);
-        if (Objects.isNull(command)) {
-          CommandUtility.INSTANCE.showConsoleMessage(
-              "SystemCommand {" + label + "} does not exist.");
+        if (command == null) {
+          CommandUtility.INSTANCE.showConsoleMessage("SystemCommand {" + label + "} does not exist.");
           return;
         } else {
           commands.add(createCommandDetails(command));

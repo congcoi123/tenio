@@ -88,7 +88,7 @@ public final class StringUtility {
   /**
    * Trims a string from another string.
    *
-   * @param text the original text
+   * @param text   the original text
    * @param trimBy anchor characters to trim the original text
    * @return trimmed text
    * @since 0.5.0
@@ -106,5 +106,22 @@ public final class StringUtility {
     }
 
     return text.substring(beginIndex, endIndex);
+  }
+
+  /**
+   * Converts stack trace to formatted texts.
+   *
+   * @param exception the {@link Exception}
+   * @return a {@code string} value which contains exception info
+   */
+  public static String getStackTrace(Exception exception) {
+    StringBuilder stringBuilder = new StringBuilder();
+    StackTraceElement[] stackTraceElements = exception.getStackTrace();
+    stringBuilder.append(exception.getClass().getName()).append(": ").append(exception.getMessage())
+        .append("\n");
+    for (StackTraceElement stackTraceElement : stackTraceElements) {
+      stringBuilder.append("\t at ").append(stackTraceElement.toString()).append("\n");
+    }
+    return stringBuilder.toString();
   }
 }

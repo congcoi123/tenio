@@ -169,7 +169,9 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * @param msg the message content
    */
   private void infoWithoutPool(String msg) {
-    logger.info("[STRING BUILDER POOL] {}", msg);
+    if (logger.isInfoEnabled()) {
+      logger.info("[STRING BUILDER POOL] {}", msg);
+    }
   }
 
   /**
@@ -179,7 +181,9 @@ public final class StringBuilderPool implements ElementPool<StringBuilder> {
    * @param cause the throwable
    */
   private void errorWithoutPool(Throwable cause) {
-    logger.error(Throwables.getStackTraceAsString(cause));
+    if (logger.isErrorEnabled()) {
+      logger.error(Throwables.getStackTraceAsString(cause));
+    }
   }
 
   /**

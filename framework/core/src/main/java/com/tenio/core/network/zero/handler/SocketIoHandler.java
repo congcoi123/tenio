@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.handler;
 
 import com.tenio.common.data.DataType;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import java.nio.channels.SelectionKey;
@@ -56,7 +57,7 @@ public interface SocketIoHandler extends BaseIoHandler {
    * then this method is invoked.
    *
    * @param socketChannel the active {@link SocketChannel}
-   * @param selectionKey  the {@link SelectionKey} used to distinguish each session
+   * @param selectionKey  the {@link SelectionKey} used to distinguish each socket channel in a selector
    */
   void channelActive(SocketChannel socketChannel, SelectionKey selectionKey);
 
@@ -64,9 +65,13 @@ public interface SocketIoHandler extends BaseIoHandler {
    * When a disconnection signal sent from client side to the server via socket (TCP) channel
    * then this method is invoked.
    *
-   * @param socketChannel the inactive {@link SocketChannel}
+   * @param socketChannel            the inactive {@link SocketChannel}
+   * @param selectionKey             the {@link SelectionKey}, selected for the socket channel by a selector
+   * @param connectionDisconnectMode the {@link ConnectionDisconnectMode}
    */
-  void channelInactive(SocketChannel socketChannel);
+  void channelInactive(SocketChannel socketChannel,
+                       SelectionKey selectionKey,
+                       ConnectionDisconnectMode connectionDisconnectMode);
 
   /**
    * When any exception occurred on the socket (TCP) channel then this method is invoked.

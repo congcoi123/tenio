@@ -30,7 +30,6 @@ import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
 import com.tenio.core.network.zero.engine.acceptor.AcceptorHandler;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
-import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,18 +40,14 @@ import java.util.List;
  */
 public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAcceptor {
 
-  private final DatagramChannelManager datagramChannelManager;
   private volatile List<AcceptorHandler> acceptorHandlers;
   private ConnectionFilter connectionFilter;
   private ZeroReaderListener zeroReaderListener;
   private String serverAddress;
   private SocketConfiguration tcpSocketConfiguration;
-  private SocketConfiguration udpSocketConfiguration;
 
-  private ZeroAcceptorImpl(EventManager eventManager,
-                           DatagramChannelManager datagramChannelManager) {
+  private ZeroAcceptorImpl(EventManager eventManager) {
     super(eventManager);
-    this.datagramChannelManager = datagramChannelManager;
     setName("acceptor");
   }
 
@@ -60,12 +55,10 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
    * Creates a new instance of acceptor engine.
    *
    * @param eventManager           the instance of {@link EventManager}
-   * @param datagramChannelManager the instance of {@link DatagramChannelManager}
    * @return a new instance of {@link ZeroAcceptor}
    */
-  public static ZeroAcceptor newInstance(EventManager eventManager,
-                                         DatagramChannelManager datagramChannelManager) {
-    return new ZeroAcceptorImpl(eventManager, datagramChannelManager);
+  public static ZeroAcceptor newInstance(EventManager eventManager) {
+    return new ZeroAcceptorImpl(eventManager);
   }
 
   @Override
@@ -79,10 +72,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
   }
 
   @Override
-  public void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration,
-                                     SocketConfiguration udpSocketConfiguration) {
+  public void setSocketConfiguration(SocketConfiguration tcpSocketConfiguration) {
     this.tcpSocketConfiguration = tcpSocketConfiguration;
-    this.udpSocketConfiguration = udpSocketConfiguration;
   }
 
   @Override
@@ -102,9 +93,8 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
 
   @Override
   public void onRunning() {
-    var acceptorHandler = new AcceptorHandler(serverAddress, datagramChannelManager,
-        connectionFilter, zeroReaderListener, tcpSocketConfiguration, udpSocketConfiguration,
-        getSocketIoHandler());
+    var acceptorHandler = new AcceptorHandler(serverAddress, connectionFilter, zeroReaderListener,
+        tcpSocketConfiguration, getSocketIoHandler());
     acceptorHandlers.add(acceptorHandler);
 
     while (!Thread.currentThread().isInterrupted()) {
@@ -112,7 +102,9 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
         try {
           acceptorHandler.running();
         } catch (Throwable cause) {
-          error(cause);
+          if (isErrorEnabled()) {
+            error(cause);
+          }
         }
       }
     }

@@ -62,6 +62,15 @@ import com.tenio.core.service.ServiceListener;
 public interface Controller extends Service, ServiceListener {
 
   /**
+   * The default initial queue size.
+   */
+  int DEFAULT_INITIAL_QUEUE_SIZE = 11;
+  /**
+   * The default number of workers (threads).
+   */
+  int DEFAULT_NUMBER_WORKERS = 5;
+
+  /**
    * Enqueue a request from a request queue for processing.
    *
    * @param request the processing {@link Request}
@@ -82,13 +91,6 @@ public interface Controller extends Service, ServiceListener {
    * @param maxSize the maximum size of a request queue ({@code integer} value)
    */
   void setMaxRequestQueueSize(int maxSize);
-
-  /**
-   * Retrieves the current percentage using of a request queue.
-   *
-   * @return the percentage of using ({@code float} value)
-   */
-  float getPercentageUsedRequestQueue();
 
   /**
    * Retrieves the thread pool size using for processes.

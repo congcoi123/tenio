@@ -30,18 +30,38 @@ package com.tenio.core.entity.define.mode;
 public enum ConnectionDisconnectMode {
 
   /**
+   * When the server is down, all connections must be disconnected.
+   *
+   * @since 0.6.6
+   */
+  SERVER_DOWN,
+  /**
    * When the player manually disconnect the connection.
    */
-  DEFAULT,
+  CLIENT_REQUEST,
   /**
-   * When the connection is lost and its caused by the client side.
+   * When the connection is lost while reading and its caused by the client side.
+   *
+   * @since 0.6.6
    */
-  LOST,
+  LOST_IN_READ,
+  /**
+   * When the connection is lost while writing and its caused by the client side.
+   *
+   * @since 0.6.6
+   */
+  LOST_IN_WRITTEN,
   /**
    * When the number of connection reaches limitation and the server decides to refuse a
    * new one.
    */
   REACHED_MAX_CONNECTION,
+  /**
+   * When a connection gets refused to connect.
+   *
+   * @since 0.6.6
+   */
+  REFUSED_CONNECTION,
   /**
    * When a connection falls in IDLE state for a long time enough to be disconnected.
    */

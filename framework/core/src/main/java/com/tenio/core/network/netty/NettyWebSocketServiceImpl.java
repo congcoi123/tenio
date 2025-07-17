@@ -50,7 +50,6 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * The implementation for the Netty's websockets services.
@@ -107,8 +106,10 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
   }
 
   private void attemptToStart() throws InterruptedException {
-    info("START SERVICE",
-        buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    if (isInfoEnabled()) {
+      info("START SERVICE",
+          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    }
 
     var defaultWebsocketThreadFactory =
         new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
@@ -136,13 +137,17 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     var channelFuture = bootstrap.bind(socketConfiguration.port()).sync()
         .addListener(future -> {
           if (!future.isSuccess()) {
-            error(future.cause());
+            if (isErrorEnabled()) {
+              error(future.cause());
+            }
             throw new IOException(String.valueOf(socketConfiguration.port()));
           }
         });
     serverWebSockets.add(channelFuture.channel());
 
-    info("WEB SOCKET", buildgen("Started at port: ", socketConfiguration.port()));
+    if (isInfoEnabled()) {
+      info("WEB SOCKET", buildgen("Started at port: ", socketConfiguration.port()));
+    }
   }
 
   private void attemptToShutdown() {
@@ -151,15 +156,17 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
     }
     serverWebSockets.clear();
 
-    if (Objects.nonNull(webSocketAcceptors)) {
+    if (webSocketAcceptors != null) {
       webSocketAcceptors.shutdownGracefully();
     }
-    if (Objects.nonNull(webSocketWorkers)) {
+    if (webSocketWorkers != null) {
       webSocketWorkers.shutdownGracefully();
     }
 
-    info("STOPPED SERVICE",
-        buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    if (isInfoEnabled()) {
+      info("STOPPED SERVICE",
+          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+    }
   }
 
   /**
@@ -168,18 +175,22 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
    * @param channel the closed channel
    */
   private void close(Channel channel) {
-    if (Objects.isNull(channel)) {
+    if (channel == null) {
       return;
     }
 
     try {
       channel.close().sync().addListener(future -> {
         if (!future.isSuccess()) {
-          error(future.cause());
+          if (isErrorEnabled()) {
+            error(future.cause());
+          }
         }
       });
     } catch (InterruptedException exception) {
-      error(exception);
+      if (isErrorEnabled()) {
+        error(exception);
+      }
     }
   }
 
@@ -286,9 +297,13 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
       var session = iterator.next();
       if (packet.isMarkedAsLast()) {
         try {
-          session.close(ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
+          if (session.isActivated()) {
+            session.close(ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
+          }
         } catch (IOException exception) {
-          error(exception, session.toString());
+          if (isErrorEnabled()) {
+            error(exception, session.toString());
+          }
         }
         return;
       }
@@ -299,7 +314,9 @@ public final class NettyWebSocketServiceImpl extends AbstractManager
         networkWriterStatistic.updateWrittenBytes(packet.getOriginalSize());
         networkWriterStatistic.updateWrittenPackets(1);
       } else {
-        debug("READ WEBSOCKET CHANNEL", "Session is inactivated: ", session.toString());
+        if (isDebugEnabled()) {
+          debug("READ WEBSOCKET CHANNEL", "Session is inactivated: ", session.toString());
+        }
       }
     }
   }

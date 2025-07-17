@@ -46,6 +46,9 @@ public final class ZeroMapImpl implements ZeroMap {
 
   private static final long serialVersionUID = -9209290648545740755L;
 
+  /**
+   * Elements holder.
+   */
   private final Map<String, ZeroElement> map;
 
   /**
