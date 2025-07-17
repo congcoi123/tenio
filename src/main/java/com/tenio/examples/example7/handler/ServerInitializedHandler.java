@@ -40,13 +40,17 @@ public final class ServerInitializedHandler extends AbstractHandler
 
   @Override
   public void handle(String serverName, Configuration configuration) {
-    info("SERVER INITIALIZATION",
-        String.format("Started: %s", simpleDateFormat.format(new Date(api().getStartedTime()))));
+    if (isInfoEnabled()) {
+      info("SERVER INITIALIZATION",
+          String.format("Started: %s", simpleDateFormat.format(new Date(api().getStartedTime()))));
+    }
 
     var roomSetting =
         roomSetting().setActivated(true).setMaxParticipants(2).setName("test-room").build();
 
     var room = api().createRoom(roomSetting);
-    info("SERVER INITIALIZATION", String.format("Created room: %s", room.toString()));
+    if (isInfoEnabled()) {
+      info("SERVER INITIALIZATION", String.format("Created room: %s", room.toString()));
+    }
   }
 }

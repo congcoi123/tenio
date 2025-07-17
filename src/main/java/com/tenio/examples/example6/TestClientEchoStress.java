@@ -49,7 +49,7 @@ public final class TestClientEchoStress implements SocketListener {
 
   private static final int SOCKET_PORT = 8032;
   private static final int NUMBER_CLIENTS = 5000;
-  private static final boolean ENABLED_DEBUG = false;
+  private static final boolean ENABLED_DEBUG = true;
   /**
    * List of TCP clients
    */

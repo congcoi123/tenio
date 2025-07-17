@@ -50,7 +50,7 @@ public class PlayerCommand extends AbstractSystemCommandHandler {
       var firstPlayer = players.get(0);
       CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getIdentity() + "} is " +
           "going to logout.");
-      api().logout(firstPlayer, ConnectionDisconnectMode.DEFAULT, PlayerDisconnectMode.DEFAULT);
+      api().logout(firstPlayer, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
     } else {
       CommandUtility.INSTANCE.showConsoleMessage("Invalid action.");
     }

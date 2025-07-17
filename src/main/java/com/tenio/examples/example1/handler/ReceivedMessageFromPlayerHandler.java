@@ -27,12 +27,13 @@ package com.tenio.examples.example1.handler;
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.bootstrap.annotation.Component;
+import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.examples.server.SharedEventKey;
 
-@Component
+@EventHandler
 public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     implements EventReceivedMessageFromPlayer<Player> {
 

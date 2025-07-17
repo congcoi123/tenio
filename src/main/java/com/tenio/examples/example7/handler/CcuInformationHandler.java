@@ -33,7 +33,9 @@ public final class CcuInformationHandler extends AbstractHandler implements Even
 
   @Override
   public void handle(int numberPlayers) {
-    info("CCU INFO", String.format("Current players: %d, Uptime: %d seconds", numberPlayers,
-        api().getUptime() / 1000L));
+    if (isInfoEnabled()) {
+      info("CCU INFO", String.format("Current players: %d, Uptime: %d seconds", numberPlayers,
+          api().getUptime() / 1000L));
+    }
   }
 }
