@@ -88,16 +88,14 @@ public final class TestSimpleServer {
 
   @EventHandler
   public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLoggedinResult<Player> {
+      implements EventPlayerLogin<Player> {
 
     @Override
-    public void handle(Player player, PlayerLoggedInResult result) {
-      if (result == PlayerLoggedInResult.SUCCESS) {
-        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+    public void handle(Player player) {
+      var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
             String.format("Welcome to server: %s", player.getName()));
 
-        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-      }
+      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
     }
   }
 
