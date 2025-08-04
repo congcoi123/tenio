@@ -490,7 +490,6 @@ public final class World extends AbstractHeartBeat {
 
   @Override
   protected void onDispose() {
-    workerPool.waitUntilAllTasksFinished();
     workerPool.stop();
   }
 

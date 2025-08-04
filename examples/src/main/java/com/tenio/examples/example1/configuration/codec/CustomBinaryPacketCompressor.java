@@ -26,18 +26,18 @@ package com.tenio.examples.example1.configuration.codec;
 
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.exception.PacketCompressorException;
-import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
 
 @Component
 public final class CustomBinaryPacketCompressor implements BinaryPacketCompressor {
 
   @Override
-  public byte[] compress(byte[] binary) throws PacketCompressorException {
-    return binary;
+  public byte[] compress(byte[] binaries) throws PacketCompressorException {
+    return binaries;
   }
 
   @Override
-  public byte[] uncompress(byte[] binary) throws PacketCompressorException {
-    return binary;
+  public byte[] uncompress(byte[] binaries) throws PacketCompressorException {
+    return binaries;
   }
 }

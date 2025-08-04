@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
@@ -35,12 +34,11 @@ import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
 public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
-    implements EventReceivedMessageFromPlayer<Player> {
+    implements EventReceivedMessageFromPlayer<Player, MsgPackMap> {
 
   @Override
-  public void handle(Player player, DataCollection message) {
-    var msgpackMap = (MsgPackMap) message;
-    var positions = msgpackMap.getIntegerArray(SharedEventKey.KEY_DATA);
+  public void handle(Player player, MsgPackMap message) {
+    var positions = message.getIntegerArray(SharedEventKey.KEY_DATA);
 
     player.setProperty(Example7Constant.PLAYER_POSITION_X, positions[0]);
     player.setProperty(Example7Constant.PLAYER_POSITION_Y, positions[1]);
@@ -50,8 +48,8 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     var parcel = msgmap()
         .putString(SharedEventKey.KEY_COMMAND, "m")
         .putString(SharedEventKey.KEY_USER, player.getIdentity())
-        .putIntegerArray(SharedEventKey.KEY_DATA, new int[] { positions[0], positions[1] });
+        .putIntegerArray(SharedEventKey.KEY_DATA, new int[] {positions[0], positions[1]});
 
-    response().setRecipientPlayers(players).setContent(parcel.toBinary()).write();
+    response().setRecipientPlayers(players).setContent(parcel).write();
   }
 }

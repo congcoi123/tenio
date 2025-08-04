@@ -31,7 +31,6 @@ public final class Example4Constant {
 
   public static final int SOCKET_PORT = 8032;
 
-  public static final float DELAY_CREATION = 0.1f;
   // time in minutes
   public static final int AVERAGE_LATENCY_MEASUREMENT_INTERVAL = 1;
   // time in seconds
