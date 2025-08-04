@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.monitoring.system;
 
 import com.sun.management.OperatingSystemMXBean;
+import com.tenio.core.utility.ZeroUtility;
 import java.lang.management.ManagementFactory;
 
 /**
@@ -122,5 +123,15 @@ public final class SystemMonitoring {
    */
   public long getUsedMemory() {
     return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
+        (float) getCpuUsage() * 100, ZeroUtility.convertBytesToMB(getTotalMemory()),
+        ZeroUtility.convertBytesToMB(getUsedMemory()),
+        ZeroUtility.convertBytesToMB(getFreeMemory()),
+        countRunningThreads());
   }
 }

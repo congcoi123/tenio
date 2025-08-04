@@ -25,13 +25,12 @@ THE SOFTWARE.
 package com.tenio.core.network.kcp.handler;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.common.data.DataType;
-import com.tenio.common.data.DataUtility;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -49,7 +48,7 @@ public class KcpHandler implements KcpListener {
 
   private final EventManager eventManager;
   private final SessionManager sessionManager;
-  private final DataType dataType;
+  private final BinaryPacketDecoder binaryPacketDecoder;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final KcpHandlerPrivateLogger logger;
 
@@ -58,14 +57,15 @@ public class KcpHandler implements KcpListener {
    *
    * @param eventManager           {@link EventManager} instance
    * @param sessionManager         {@link SessionManager} instance
-   * @param dataType               {@link DataType}
+   * @param binaryPacketDecoder    {@link BinaryPacketDecoder} instance
    * @param networkReaderStatistic {@link NetworkReaderStatistic} instance
    */
   public KcpHandler(EventManager eventManager, SessionManager sessionManager,
-                    DataType dataType, NetworkReaderStatistic networkReaderStatistic) {
+                    BinaryPacketDecoder binaryPacketDecoder,
+                    NetworkReaderStatistic networkReaderStatistic) {
     this.eventManager = eventManager;
     this.sessionManager = sessionManager;
-    this.dataType = dataType;
+    this.binaryPacketDecoder = binaryPacketDecoder;
     this.networkReaderStatistic = networkReaderStatistic;
     logger = new KcpHandlerPrivateLogger();
   }
@@ -79,20 +79,19 @@ public class KcpHandler implements KcpListener {
 
   @Override
   public void handleReceive(ByteBuf byteBuf, Ukcp ukcp) {
-    var binary = new byte[byteBuf.readableBytes()];
-    byteBuf.getBytes(byteBuf.readerIndex(), binary);
+    var binaries = new byte[byteBuf.readableBytes()];
+    byteBuf.getBytes(byteBuf.readerIndex(), binaries);
+    var dataCollection = binaryPacketDecoder.decode(binaries);
 
-    var message = DataUtility.binaryToCollection(dataType, binary);
     Session session = sessionManager.getSessionByKcp(ukcp);
-
     if (session == null) {
-      processDatagramChannelReadMessageForTheFirstTime(ukcp, message);
+      processDatagramChannelReadMessageForTheFirstTime(ukcp, dataCollection);
     } else {
       if (session.isActivated()) {
-        session.addReadBytes(binary.length);
-        networkReaderStatistic.updateReadBytes(binary.length);
+        session.addReadBytes(binaries.length);
+        networkReaderStatistic.updateReadBytes(binaries.length);
         networkReaderStatistic.updateReadPackets(1);
-        eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
+        eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, dataCollection);
       } else {
         if (logger.isDebugEnabled()) {
           logger.debug("READ KCP CHANNEL", "Session is inactivated: ", session.toString());

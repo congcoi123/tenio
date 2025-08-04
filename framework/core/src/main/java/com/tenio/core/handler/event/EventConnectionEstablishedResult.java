@@ -34,16 +34,16 @@ import com.tenio.core.network.entity.session.Session;
  * When a connection requests to establish itself on the server, and the server returns a result.
  */
 @FunctionalInterface
-public interface EventConnectionEstablishedResult {
+public interface EventConnectionEstablishedResult<D extends DataCollection> {
 
   /**
    * When a connection requests to establish itself on the server, and the server returns a result.
    *
    * @param session when the first request from client side passes the filter process and get on
    *                the server, then an instance of {@link Session} is created.
-   * @param message the {@link DataCollection} sent by client side. The information it carries is
-   *                used to decide the following actions. In case the connection does not fulfill
-   *                any condition, then the session should be closed manually, otherwise, let the
+   * @param message the message {@link D} sent by client side. The information it carries is used
+   *                to decide the following actions. In case the connection does not fulfill any
+   *                condition, then the session should be closed manually, otherwise, let the
    *                client login the server and becomes a player.
    * @param result  the returned {@link ConnectionEstablishedResult} from the server. In any case
    *                if the result does not equal to {@link ConnectionEstablishedResult#SUCCESS}
@@ -53,5 +53,5 @@ public interface EventConnectionEstablishedResult {
    * @see Response#setRecipientSession(Session)
    * @see Session#close()
    */
-  void handle(Session session, DataCollection message, ConnectionEstablishedResult result);
+  void handle(Session session, D message, ConnectionEstablishedResult result);
 }

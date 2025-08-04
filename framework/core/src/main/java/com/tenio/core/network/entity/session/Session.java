@@ -27,14 +27,14 @@ package com.tenio.core.network.entity.session;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.network.codec.packet.PacketReadState;
+import com.tenio.core.network.codec.packet.PendingPacket;
+import com.tenio.core.network.codec.packet.ProcessedPacket;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
-import com.tenio.core.network.zero.codec.packet.PacketReadState;
-import com.tenio.core.network.zero.codec.packet.PendingPacket;
-import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
-import com.tenio.core.schedule.task.internal.AutoCleanOrphanSessionTask;
+import com.tenio.core.scheduler.task.core.AutoCleanOrphanSessionTask;
 import io.netty.channel.Channel;
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -219,6 +219,15 @@ public interface Session {
    * @return an instance of {@link SocketChannel}
    */
   SocketChannel fetchSocketChannel();
+
+  /**
+   * Retrieves a selection key which is associating to its socket channel.
+   *
+   * @return an instance of {@link SelectionKey}
+   * @see #fetchSocketChannel()
+   * @since 0.6.7
+   */
+  SelectionKey fectchSocketSelectionKey();
 
   /**
    * Retrieves the remote address associating to the client side whenever the server receives

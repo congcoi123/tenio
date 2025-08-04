@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
+import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 import java.io.Serial;
 
 /**

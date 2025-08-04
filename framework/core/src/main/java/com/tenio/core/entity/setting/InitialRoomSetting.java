@@ -30,7 +30,7 @@ import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.schedule.task.internal.AutoRemoveRoomTask;
+import com.tenio.core.scheduler.task.core.AutoRemoveRoomTask;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 

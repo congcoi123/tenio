@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.protocol;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
 import com.tenio.core.entity.Player;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
@@ -36,19 +38,29 @@ import java.util.Collection;
 public interface Response {
 
   /**
-   * Retrieves an array of binaries data that is carried by the response.
+   * Retrieves the content which is carried by the response.
    *
-   * @return an array of {@code byte} data that is carried by the response
+   * @return an instance of {@link DataCollection}
    */
-  byte[] getContent();
+  DataCollection getContent();
 
   /**
-   * Sets content for the response.
+   * Sets content for the response. This will automatically detect its data type.
    *
-   * @param content an array of {@code byte} data that is carried by the response
+   * @param content an instance of {@link DataCollection}
    * @return the pointer of response
+   * @see DataType
+   * @since 0.6.7
    */
-  Response setContent(byte[] content);
+  Response setContent(DataCollection content);
+
+  /**
+   * Retrieves the data type.
+   *
+   * @return the {@link DataType}
+   * @since 0.6.7
+   */
+  DataType getDataType();
 
   /**
    * Retrieves a collection of recipient players.
@@ -173,11 +185,11 @@ public interface Response {
   ResponseGuarantee getGuarantee();
 
   /**
-   * Determines whether the response's content is encrypted.
+   * Determines whether the response's content needs to be encrypted.
    *
    * @return {@code true} if the response's content is encrypted, otherwise returns {@code false}
    */
-  boolean isEncrypted();
+  boolean needsEncrypted();
 
   /**
    * Writes down the content data to sessions for sending to client sides.

@@ -24,17 +24,18 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler.implement;
 
-import com.tenio.common.data.DataUtility;
+import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.utility.SocketUtility;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
+import com.tenio.core.network.zero.handler.frame.BinaryPacketFramer;
+import com.tenio.core.network.zero.handler.frame.PacketFramingListener;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -43,12 +44,13 @@ import java.nio.channels.SocketChannel;
  * The implementation for socket IO handler.
  */
 public final class SocketIoHandlerImpl extends AbstractIoHandler
-    implements SocketIoHandler, PacketDecoderResultListener {
+    implements SocketIoHandler, PacketFramingListener {
 
-  private BinaryPacketDecoder binaryPacketDecoder;
+  private final BinaryPacketFramer binaryPacketFramer;
 
   private SocketIoHandlerImpl(EventManager eventManager) {
     super(eventManager);
+    binaryPacketFramer = new BinaryPacketFramer();
   }
 
   /**
@@ -62,8 +64,16 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   }
 
   @Override
-  public void resultFrame(Session session, byte[] binary) {
-    var message = DataUtility.binaryToCollection(dataType, binary);
+  public void onFramedResult(Session session, DataCollection message) {
+    if (message == null) {
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Trying to decode a null message on session: ",
+            session.toString());
+      }
+      return;
+    }
+
+    networkReaderStatistic.updateReadPackets(1);
 
     if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
       if (isDebugEnabled()) {
@@ -81,24 +91,13 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   }
 
   @Override
-  public void updateReadDroppedPackets(long numberPackets) {
-    networkReaderStatistic.updateReadDroppedPackets(numberPackets);
-  }
-
-  @Override
-  public void updateReadPackets(long numberPackets) {
-    networkReaderStatistic.updateReadPackets(numberPackets);
-  }
-
-  @Override
   public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
-    var session = sessionManager.createSocketSession(socketChannel, selectionKey);
-    session.activate();
+    sessionManager.createSocketSession(socketChannel, selectionKey);
   }
 
   @Override
-  public void sessionRead(Session session, byte[] binary) {
-    binaryPacketDecoder.decode(session, binary);
+  public void sessionRead(Session session, byte[] binaries) {
+    binaryPacketFramer.framing(session, binaries);
   }
 
   @Override
@@ -137,13 +136,18 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
   }
 
   @Override
+  public BinaryPacketDecoder getPacketDecoder() {
+    return binaryPacketFramer.getBinaryPacketDecoder();
+  }
+
+  @Override
   public void sessionException(Session session, Exception exception) {
     eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
   }
 
   @Override
   public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
-    binaryPacketDecoder = packetDecoder;
-    binaryPacketDecoder.setResultListener(this);
+    binaryPacketFramer.setBinaryPacketDecoder(packetDecoder);
+    binaryPacketFramer.setPacketFramingResult(this);
   }
 }

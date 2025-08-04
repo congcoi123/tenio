@@ -61,19 +61,19 @@ public final class ConnectionEventHandler {
   private EventWebSocketConnectionRefused eventWebSocketConnectionRefused;
 
   @AutowiredAcceptNull
-  private EventConnectionEstablishedResult eventConnectionEstablishedResult;
+  private EventConnectionEstablishedResult<DataCollection> eventConnectionEstablishedResult;
 
   @AutowiredAcceptNull
   private EventWriteMessageToConnection eventWriteMessageToConnection;
 
   @AutowiredAcceptNull
-  private EventAccessDatagramChannelRequestValidation eventAccessDatagramChannelRequestValidation;
+  private EventAccessDatagramChannelRequestValidation<DataCollection> eventAccessDatagramChannelRequestValidation;
 
   @AutowiredAcceptNull
   private EventAccessDatagramChannelRequestValidationResult<Player> eventAccessDatagramChannelRequestValidationResult;
 
   @AutowiredAcceptNull
-  private EventAccessKcpChannelRequestValidation eventAccessKcpChannelRequestValidation;
+  private EventAccessKcpChannelRequestValidation<DataCollection> eventAccessKcpChannelRequestValidation;
 
   @AutowiredAcceptNull
   private EventAccessKcpChannelRequestValidationResult<Player> eventAccessKcpChannelRequestValidationResult;

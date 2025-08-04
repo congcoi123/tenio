@@ -37,13 +37,10 @@ import com.tenio.core.network.zero.handler.SocketIoHandler;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Handles incoming TCP/UDP connections using Java NIO's {@link Selector}.
@@ -71,9 +68,10 @@ import java.util.List;
 public final class AcceptorHandler extends SystemLogger {
 
   private final String serverAddress;
+  /**
+   * This selector manages {@link ServerSocketChannel} instances.
+   */
   private final Selector acceptableSelector;
-  private final List<SelectableChannel> serverChannels;
-  private final List<SocketChannel> clientChannels;
   private final ConnectionFilter connectionFilter;
   private final ZeroReaderListener zeroReaderListener;
   private final SocketIoHandler socketIoHandler;
@@ -96,9 +94,6 @@ public final class AcceptorHandler extends SystemLogger {
     this.connectionFilter = connectionFilter;
     this.zeroReaderListener = zeroReaderListener;
     this.socketIoHandler = socketIoHandler;
-
-    clientChannels = new ArrayList<>();
-    serverChannels = new ArrayList<>();
 
     // opens a selector to handle server socket and accept all incoming client sockets
     try {
@@ -128,9 +123,6 @@ public final class AcceptorHandler extends SystemLogger {
       }
       // only server socket should interest in this key OP_ACCEPT
       serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
-      synchronized (serverChannels) {
-        serverChannels.add(serverSocketChannel);
-      }
     } catch (IOException e) {
       throw new ServiceRuntimeException(e.getMessage());
     }
@@ -157,12 +149,8 @@ public final class AcceptorHandler extends SystemLogger {
             socketChannel.configureBlocking(false);
             socketChannel.socket().setTcpNoDelay(true);
             zeroReaderListener.acceptClientSocketChannel(socketChannel,
-                readerSelectionKey -> {
-                  socketIoHandler.channelActive(socketChannel, readerSelectionKey);
-                  synchronized (clientChannels) {
-                    clientChannels.add(socketChannel);
-                  }
-                }, () -> {
+                readerSelectionKey -> socketIoHandler.channelActive(socketChannel,
+                    readerSelectionKey), () -> {
                   try {
                     SocketUtility.closeSocket(socketChannel, acceptorSelectionKey);
                   } catch (IOException exception) {
@@ -191,52 +179,6 @@ public final class AcceptorHandler extends SystemLogger {
                 ConnectionDisconnectMode.UNKNOWN);
           }
         }
-      }
-    }
-  }
-
-  private void shutdownClientChannels() {
-    synchronized (clientChannels) {
-      // iterates the list of client socket channels
-      var socketIterator = clientChannels.iterator();
-
-      while (socketIterator.hasNext()) {
-        var socketChannel = socketIterator.next();
-        var selectionKey = socketChannel.keyFor(acceptableSelector);
-        socketIterator.remove();
-        socketIoHandler.channelInactive(socketChannel, selectionKey,
-            ConnectionDisconnectMode.SERVER_DOWN);
-      }
-    }
-  }
-
-  private void shutdownServerChannels() {
-    synchronized (serverChannels) {
-      // iterates the list of server socket channels, datagram channels
-      var boundSocketIterator = serverChannels.iterator();
-
-      while (boundSocketIterator.hasNext()) {
-        var socketChannel = boundSocketIterator.next();
-        boundSocketIterator.remove();
-
-        try {
-          socketChannel.close();
-        } catch (IOException exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
-        }
-      }
-    }
-  }
-
-  private void shutdownSelector() {
-    try {
-      Thread.sleep(500L);
-      acceptableSelector.close();
-    } catch (IOException | InterruptedException exception) {
-      if (isErrorEnabled()) {
-        error(exception);
       }
     }
   }
@@ -291,8 +233,12 @@ public final class AcceptorHandler extends SystemLogger {
    * Shutdown processing.
    */
   public void shutdown() {
-    shutdownServerChannels();
-    shutdownClientChannels();
-    shutdownSelector();
+    try {
+      SocketUtility.shutdownSelector(acceptableSelector);
+    } catch (IOException exception) {
+      if (isErrorEnabled()) {
+        error(exception);
+      }
+    }
   }
 }

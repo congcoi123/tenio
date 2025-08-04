@@ -31,13 +31,13 @@ import com.tenio.core.entity.Player;
  * When the server receives a message from a player.
  */
 @FunctionalInterface
-public interface EventReceivedMessageFromPlayer<P extends Player> {
+public interface EventReceivedMessageFromPlayer<P extends Player, D extends DataCollection> {
 
   /**
    * When the server receives a message from a player.
    *
    * @param player  the {@link Player} which is sending a message to the server
-   * @param message the receiving {@link DataCollection}
+   * @param message the receiving {@link D} message
    */
-  void handle(P player, DataCollection message);
+  void handle(P player, D message);
 }

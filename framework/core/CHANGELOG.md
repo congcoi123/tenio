@@ -93,3 +93,9 @@
 - Removed unnecessary wrapper methods
 - Reworked on writer, reader and acceptor handlers
 - Supported Request Policy interface
+
+## 0.6.7 2025-09-02 Feature release
+- Fixed several bugs
+- Supported Datagram Packet Policy interface
+- Reworked on Binary Packet Encoder / Decoder
+- Full support Codec for all Transportations

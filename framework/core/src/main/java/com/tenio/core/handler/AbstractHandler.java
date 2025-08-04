@@ -121,9 +121,6 @@ public abstract class AbstractHandler extends SystemLogger {
    * @throws UnsupportedDataTypeInUseException if the server's data type is not ZERO
    */
   protected final ZeroArray array() {
-    if (server.getDataType() != DataType.ZERO) {
-      throw new UnsupportedDataTypeInUseException(server.getDataType());
-    }
     return ZeroUtility.newZeroArray();
   }
 
@@ -135,9 +132,6 @@ public abstract class AbstractHandler extends SystemLogger {
    * @throws UnsupportedDataTypeInUseException if the server's data type is not ZERO
    */
   protected final ZeroMap map() {
-    if (server.getDataType() != DataType.ZERO) {
-      throw new UnsupportedDataTypeInUseException(server.getDataType());
-    }
     return ZeroUtility.newZeroMap();
   }
 
@@ -147,9 +141,6 @@ public abstract class AbstractHandler extends SystemLogger {
    * @return an instance of {@link MsgPackMap}
    */
   protected final MsgPackMap msgmap() {
-    if (server.getDataType() != DataType.MSG_PACK) {
-      throw new UnsupportedDataTypeInUseException(server.getDataType());
-    }
     return MsgPackMap.newInstance();
   }
 

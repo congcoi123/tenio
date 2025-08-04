@@ -32,7 +32,6 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.entity.session.Session;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,9 +68,15 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
   @Override
   public void addPlayer(Player player) {
+    if (player == null) {
+      throw new NullPointerException("Unable to process an unavailable player");
+    }
+
     if (containsPlayerIdentity(player.getIdentity())) {
       throw new AddedDuplicatedPlayerException(player);
     }
+
+    configureInitialPlayer(player);
 
     synchronized (this) {
       players.put(player.getIdentity(), player);
@@ -98,18 +103,6 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
     configureInitialPlayer(player);
     addPlayer(player);
     return player;
-  }
-
-  @Override
-  public void configureInitialPlayer(Player player) {
-    if (player == null) {
-      throw new NullPointerException("Unable to process an unavailable player");
-    }
-
-    player.configureMaxIdleTimeInSeconds(maxIdleTimeInSecond);
-    player.configureMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
-    player.setActivated(true);
-    player.setLoggedIn(true);
   }
 
   @Override
@@ -167,5 +160,18 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
     players.clear();
     readOnlyPlayersList = new ArrayList<>();
     playerCount = 0;
+  }
+
+  /**
+   * Configures basic info when a player is initially created, or before it is added into
+   * the management list.
+   *
+   * @param player the target player
+   */
+  private void configureInitialPlayer(Player player) {
+    player.configureMaxIdleTimeInSeconds(maxIdleTimeInSecond);
+    player.configureMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    player.setActivated(true);
+    player.setLoggedIn(true);
   }
 }

@@ -33,7 +33,8 @@ import com.tenio.core.handler.AbstractHandler;
  *
  * @since 0.5.0
  */
-public abstract class AbstractClientCommandHandler<P extends Player> extends AbstractHandler {
+public abstract class AbstractClientCommandHandler<P extends Player, D extends DataCollection>
+    extends AbstractHandler {
 
   private ClientCommandManager clientCommandManager;
 
@@ -48,7 +49,7 @@ public abstract class AbstractClientCommandHandler<P extends Player> extends Abs
 
   /**
    * Sets value for the client command manager.
-   * *
+   *
    * @param clientCommandManager an instance of {@link ClientCommandManager}
    */
   public void setCommandManager(ClientCommandManager clientCommandManager) {
@@ -61,5 +62,5 @@ public abstract class AbstractClientCommandHandler<P extends Player> extends Abs
    * @param player  The receiver which gets command from its client
    * @param message The message as command
    */
-  public abstract void execute(P player, DataCollection message);
+  public abstract void execute(P player, D message);
 }

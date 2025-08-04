@@ -58,7 +58,7 @@ public final class ChannelEventHandler {
   private EventPlayerUnsubscribedChannel<Player> eventPlayerUnsubscribedChannel;
 
   @AutowiredAcceptNull
-  private EventBroadcastToChannel<Player> eventBroadcastToChannel;
+  private EventBroadcastToChannel<Player, DataCollection> eventBroadcastToChannel;
 
   /**
    * Initialization.

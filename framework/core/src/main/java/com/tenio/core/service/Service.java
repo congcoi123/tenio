@@ -51,6 +51,13 @@ public interface Service {
   void shutdown();
 
   /**
+   * Activate the service.
+   *
+   * @since 0.6.7
+   */
+  void activate();
+
+  /**
    * Determines whether the service is activated.
    *
    * @return {@code true} if the service is activated, {@code false} otherwise
@@ -70,4 +77,12 @@ public interface Service {
    * @param name the {@link String} service's name
    */
   void setName(String name);
+
+  /**
+   * Retrieves the maximum starting time in milliseconds.
+   *
+   * @return the maximum starting time in milliseconds
+   * @since 0.6.7
+   */
+  int getMaximumStartingTimeInMilliseconds();
 }

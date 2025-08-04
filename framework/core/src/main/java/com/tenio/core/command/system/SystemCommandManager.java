@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * The commands' management class.
@@ -48,9 +47,7 @@ import javax.annotation.concurrent.GuardedBy;
 @Component
 public final class SystemCommandManager extends SystemLogger {
 
-  @GuardedBy("this")
   private final Map<String, AbstractSystemCommandHandler> commands = new HashMap<>();
-  @GuardedBy("this")
   private final Map<String, SystemCommand> annotations = new HashMap<>();
   private final ExecutorService executors;
 
@@ -69,7 +66,7 @@ public final class SystemCommandManager extends SystemLogger {
    * @param label   The command label
    * @param command The command handler
    */
-  public synchronized void registerCommand(String label, AbstractSystemCommandHandler command) {
+  public void registerCommand(String label, AbstractSystemCommandHandler command) {
     if (isDebugEnabled()) {
       debug("SYSTEM_COMMAND", "Registered command > ", label);
     }
@@ -88,25 +85,12 @@ public final class SystemCommandManager extends SystemLogger {
   }
 
   /**
-   * Removes a registered command handler.
-   *
-   * @param label The command label
-   */
-  public synchronized void unregisterCommand(String label) {
-    if (isDebugEnabled()) {
-      debug("SYSTEM_COMMAND", "Unregistered command > ", label);
-    }
-    annotations.remove(label);
-    commands.remove(label);
-  }
-
-  /**
    * Retrieves the annotations list.
    *
    * @return a {@link List} of annotations
    * @see SystemCommand
    */
-  public synchronized List<SystemCommand> getAnnotationsAsList() {
+  public List<SystemCommand> getAnnotationsAsList() {
     return new LinkedList<>(annotations.values());
   }
 
@@ -116,7 +100,7 @@ public final class SystemCommandManager extends SystemLogger {
    * @return a {@link Map} of annotations
    * @see SystemCommand
    */
-  public synchronized Map<String, SystemCommand> getAnnotations() {
+  public Map<String, SystemCommand> getAnnotations() {
     return new LinkedHashMap<>(annotations);
   }
 
@@ -134,7 +118,7 @@ public final class SystemCommandManager extends SystemLogger {
    *
    * @return a {@link Map} of all handlers which are managed
    */
-  public synchronized Map<String, AbstractSystemCommandHandler> getHandlers() {
+  public Map<String, AbstractSystemCommandHandler> getHandlers() {
     return commands;
   }
 
@@ -144,7 +128,7 @@ public final class SystemCommandManager extends SystemLogger {
    * @param label The command label
    * @return the command handler
    */
-  public synchronized AbstractSystemCommandHandler getHandler(String label) {
+  public AbstractSystemCommandHandler getHandler(String label) {
     return commands.get(label);
   }
 
@@ -188,7 +172,7 @@ public final class SystemCommandManager extends SystemLogger {
   /**
    * Clear all settings.
    */
-  public synchronized void clear() {
+  public void clear() {
     commands.clear();
     annotations.clear();
   }

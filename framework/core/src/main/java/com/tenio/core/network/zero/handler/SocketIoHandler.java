@@ -24,10 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.handler;
 
-import com.tenio.common.data.DataType;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
@@ -37,20 +36,12 @@ import java.nio.channels.SocketChannel;
 public interface SocketIoHandler extends BaseIoHandler {
 
   /**
-   * Set the data serialization type.
-   *
-   * @param dataType the {@link DataType} value
-   */
-  void setDataType(DataType dataType);
-
-
-  /**
    * When a new message comes from a session then this method is invoked.
    *
-   * @param session the {@link Session} using to communicate to client side
-   * @param binary  an array of {@code byte} data sent by client side
+   * @param session  the {@link Session} using to communicate to client side
+   * @param binaries an array of {@code byte} data sent by client side
    */
-  void sessionRead(Session session, byte[] binary);
+  void sessionRead(Session session, byte[] binaries);
 
   /**
    * When the first connection signal sent from client side to the server via socket (TCP) channel
@@ -82,7 +73,15 @@ public interface SocketIoHandler extends BaseIoHandler {
   void channelException(SocketChannel socketChannel, Exception exception);
 
   /**
-   * Sets the packet decoder for the socket (TCP), every packet should be decoded for
+   * Retrieves the packet decoder.
+   *
+   * @return an instance of {@link BinaryPacketDecoder}
+   * @since 0.6.7
+   */
+  BinaryPacketDecoder getPacketDecoder();
+
+  /**
+   * Sets the packet decoder for the socket, every packet should be decoded for
    * the following steps. In theory, every kind of decoder should be acceptable,
    * for example a text decoder. However, this server is using binary decoder for all processes.
    *

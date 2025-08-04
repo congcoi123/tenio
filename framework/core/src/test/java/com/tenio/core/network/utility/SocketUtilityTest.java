@@ -37,6 +37,7 @@ import io.netty.channel.Channel;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,10 @@ class SocketUtilityTest {
   @DisplayName("Close a null socket channel should not do anything")
   void testCloseSocketChannelNulls() throws IOException {
     // Should not throw
-    SocketUtility.closeSocket(null, null);
+    ServerSocketChannel serverSocketChannel = null;
+    SocketUtility.closeServerSocket(serverSocketChannel, null);
+    SocketChannel socketChannel = null;
+    SocketUtility.closeSocket(socketChannel, null);
   }
 
   @Test

@@ -42,7 +42,8 @@ import java.util.Map;
 @Component
 public final class ClientCommandManager extends SystemLogger {
 
-  private final Map<Short, AbstractClientCommandHandler<Player>> commands = new HashMap<>();
+  private final Map<Short, AbstractClientCommandHandler<Player, DataCollection>> commands =
+      new HashMap<>();
 
   /**
    * Registers a command handler.
@@ -50,8 +51,8 @@ public final class ClientCommandManager extends SystemLogger {
    * @param code    The command code
    * @param command The command handler
    */
-  public synchronized void registerCommand(Short code,
-                                           AbstractClientCommandHandler<Player> command) {
+  public void registerCommand(Short code,
+                                           AbstractClientCommandHandler<Player, DataCollection> command) {
     if (isDebugEnabled()) {
       debug("CLIENT_COMMAND", "Registered command > ", code);
     }
@@ -66,23 +67,11 @@ public final class ClientCommandManager extends SystemLogger {
   }
 
   /**
-   * Removes a registered command handler.
-   *
-   * @param code The command code
-   */
-  public synchronized void unregisterCommand(Short code) {
-    if (isDebugEnabled()) {
-      debug("CLIENT_COMMAND", "Unregistered command > ", code);
-    }
-    commands.remove(code);
-  }
-
-  /**
    * Returns a list of all registered commands.
    *
    * @return all command handlers as a list
    */
-  public synchronized List<AbstractClientCommandHandler<Player>> getHandlersAsList() {
+  public List<AbstractClientCommandHandler<Player, DataCollection>> getHandlersAsList() {
     return new LinkedList<>(commands.values());
   }
 
@@ -91,7 +80,7 @@ public final class ClientCommandManager extends SystemLogger {
    *
    * @return a {@link Map} of all registered commands
    */
-  public synchronized Map<Short, AbstractClientCommandHandler<Player>> getHandlers() {
+  public Map<Short, AbstractClientCommandHandler<Player, DataCollection>> getHandlers() {
     return commands;
   }
 
@@ -101,7 +90,7 @@ public final class ClientCommandManager extends SystemLogger {
    * @param code The command code
    * @return the command handler
    */
-  public synchronized AbstractClientCommandHandler<Player> getHandler(Short code) {
+  public AbstractClientCommandHandler<Player, DataCollection> getHandler(Short code) {
     return commands.get(code);
   }
 
@@ -129,7 +118,7 @@ public final class ClientCommandManager extends SystemLogger {
   /**
    * Clears all the list of commands.
    */
-  public synchronized void clear() {
+  public void clear() {
     commands.clear();
   }
 }

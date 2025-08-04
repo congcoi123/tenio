@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
-import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -33,6 +32,7 @@ import com.tenio.core.network.zero.engine.ZeroReader;
 import com.tenio.core.network.zero.engine.listener.ZeroReaderListener;
 import com.tenio.core.network.zero.engine.reader.DatagramReaderHandler;
 import com.tenio.core.network.zero.engine.reader.SocketReaderHandler;
+import com.tenio.core.network.zero.engine.reader.policy.DatagramPacketPolicy;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -53,7 +53,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
   private volatile List<SocketReaderHandler> socketReaderHandlers;
   private DatagramReaderHandler datagramReaderHandler;
-  private DataType dataType;
+  private DatagramPacketPolicy datagramPacketPolicy;
   private String serverAddress;
   private SocketConfiguration udpChannelConfiguration;
   private NetworkReaderStatistic networkReaderStatistic;
@@ -87,11 +87,6 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   }
 
   @Override
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
-
-  @Override
   public void setServerAddress(String serverAddress) {
     this.serverAddress = serverAddress;
   }
@@ -112,15 +107,21 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   }
 
   @Override
+  public void setDatagramPacketPolicy(DatagramPacketPolicy datagramPacketPolicy) {
+    this.datagramPacketPolicy = datagramPacketPolicy;
+  }
+
+  @Override
   public void onInitialized() {
     // multiple socket reader handlers
     socketReaderHandlers = new ArrayList<>(getThreadPoolSize() - getNumberOfExtraWorkers());
     // but only one datagram reader handler allowed
     if (udpChannelConfiguration != null) {
       try {
-        datagramReaderHandler = new DatagramReaderHandler(dataType,
-            SocketUtility.createReaderBuffer(getMaxBufferSize()), getSessionManager(),
-            getNetworkReaderStatistic(), getDatagramIoHandler());
+        datagramReaderHandler =
+            new DatagramReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
+                getSessionManager(), getSocketIoHandler().getPacketDecoder(),
+                getNetworkReaderStatistic(), getDatagramIoHandler(), datagramPacketPolicy);
         datagramReaderHandler.openDatagramChannels(serverAddress, udpChannelConfiguration.port(),
             udpChannelConfiguration.cacheSize());
       } catch (IOException exception) {
@@ -182,14 +183,13 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   @Override
   public void onShutdown() {
     try {
-      Thread.sleep(500L);
-      for (var readerHandler : socketReaderHandlers) {
-        readerHandler.shutdown();
+      for (SocketReaderHandler socketReaderHandler : socketReaderHandlers) {
+        socketReaderHandler.shutdown();
       }
       if (datagramReaderHandler != null) {
         datagramReaderHandler.shutdown();
       }
-    } catch (IOException | InterruptedException exception) {
+    } catch (IOException exception) {
       if (isErrorEnabled()) {
         error(exception, "Exception while closing the selector");
       }

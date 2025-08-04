@@ -37,7 +37,6 @@ import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
@@ -80,59 +79,20 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
   @Override
   public void login(String playerName) {
-    try {
-      final var player = getPlayerManager().createPlayer(playerName);
-
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoginResult.SUCCESS);
-    } catch (AddedDuplicatedPlayerException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Logged in with same player name: ", playerName);
-      }
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, exception.getPlayer(),
-          PlayerLoginResult.DUPLICATED_PLAYER);
-    }
+    Player player = getPlayerManager().createPlayer(playerName);
+    getEventManager().emit(ServerEvent.PLAYER_LOGIN, player);
   }
 
   @Override
   public void login(String playerName, Session session) {
-    try {
-      Player player = getPlayerManager().createPlayerWithSession(playerName, session);
-
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoginResult.SUCCESS);
-    } catch (Exception exception) {
-      if (exception instanceof AddedDuplicatedPlayerException duplicatedPlayerException) {
-        if (isErrorEnabled()) {
-          error(exception, "Logged in with same player name: ", playerName);
-        }
-        getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT,
-            duplicatedPlayerException.getPlayer(), PlayerLoginResult.DUPLICATED_PLAYER);
-        return;
-      }
-      if (isErrorEnabled()) {
-        error(exception, "On the player: ", playerName);
-      }
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT,
-          getPlayerByIdentity(playerName).orElse(null), PlayerLoginResult.EXCEPTION);
-    }
+    Player player = getPlayerManager().createPlayerWithSession(playerName, session);
+    getEventManager().emit(ServerEvent.PLAYER_LOGIN, player);
   }
 
   @Override
   public void login(Player player) {
-    try {
-      getPlayerManager().configureInitialPlayer(player);
-      getPlayerManager().addPlayer(player);
-
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, player,
-          PlayerLoginResult.SUCCESS);
-    } catch (AddedDuplicatedPlayerException exception) {
-      if (isErrorEnabled()) {
-        error(exception, "Logged in with same player name: ", player.getIdentity());
-      }
-      getEventManager().emit(ServerEvent.PLAYER_LOGIN_RESULT, exception.getPlayer(),
-          PlayerLoginResult.DUPLICATED_PLAYER);
-    }
+    getPlayerManager().addPlayer(player);
+    getEventManager().emit(ServerEvent.PLAYER_LOGIN, player);
   }
 
   @Override
@@ -145,7 +105,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
 
     try {
       if (player.containsSession() && player.getSession().isPresent()) {
-        // check process on method ZeroProcessorServiceImpl#processSessionWillBeClosed
+        // check process on method ZeroProcessorImpl#processSessionWillBeClosed
         Session session = player.getSession().get();
         if (session.isActivated()) {
           session.close(connectionDisconnectMode, playerDisconnectMode);

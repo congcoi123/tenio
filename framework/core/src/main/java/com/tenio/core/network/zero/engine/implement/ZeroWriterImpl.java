@@ -30,7 +30,7 @@ import com.tenio.core.exception.PacketQueuePolicyViolationException;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.zero.engine.ZeroWriter;
 import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
 import com.tenio.core.network.zero.engine.writer.WriterHandler;
@@ -71,6 +71,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     var socketWriterHandler = SocketWriterHandler.newInstance();
     socketWriterHandler.setNetworkWriterStatistic(networkWriterStatistic);
     socketWriterHandler.setSessionTicketsQueueManager(sessionTicketsQueueManager);
+    socketWriterHandler.setPacketEncoder(binaryPacketEncoder);
     socketWriterHandler.allocateBuffer(getMaxBufferSize());
 
     return socketWriterHandler;
@@ -80,6 +81,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     var datagramWriterHandler = DatagramWriterHandler.newInstance();
     datagramWriterHandler.setNetworkWriterStatistic(networkWriterStatistic);
     datagramWriterHandler.setSessionTicketsQueueManager(sessionTicketsQueueManager);
+    datagramWriterHandler.setPacketEncoder(binaryPacketEncoder);
     datagramWriterHandler.allocateBuffer(getMaxBufferSize());
 
     return datagramWriterHandler;
@@ -143,10 +145,6 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
       return;
     }
 
-    if (packet.isTcp()) {
-      packet = binaryPacketEncoder.encode(packet);
-    }
-
     // when there is only one recipient, no need to create clone packets
     if (recipients.size() == 1) {
       enqueuePacket(recipients.iterator().next(), packet);
@@ -201,7 +199,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 
   @Override
   public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
-    binaryPacketEncoder = packetEncoder;
+    this.binaryPacketEncoder = packetEncoder;
   }
 
   @Override
