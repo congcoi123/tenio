@@ -63,6 +63,7 @@ class ControllerTest {
     controller.initialize();
     assertFalse(controller.isActivated());
     controller.start();
+    controller.activate();
     assertTrue(controller.isActivated());
     controller.shutdown();
     assertFalse(controller.isActivated());

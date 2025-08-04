@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.packet.implement;
 
+import com.tenio.common.data.DataType;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.define.TransportType;
@@ -41,8 +42,10 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   private final long id;
   private final long createdTime;
   private byte[] data;
+  private DataType dataType;
   private ResponseGuarantee guarantee;
   private boolean encrypted;
+  private boolean counting;
   private TransportType transportType;
   private int originalSize;
   private Collection<Session> recipients;
@@ -76,9 +79,19 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   @Override
-  public void setData(byte[] binary) {
-    data = binary;
-    originalSize = binary.length;
+  public void setData(byte[] binaries) {
+    data = binaries;
+    originalSize = binaries.length;
+  }
+
+  @Override
+  public DataType getDataType() {
+    return dataType;
+  }
+
+  @Override
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
   }
 
   @Override
@@ -102,13 +115,23 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   @Override
-  public boolean isEncrypted() {
+  public boolean needsEncrypted() {
     return encrypted;
   }
 
   @Override
-  public void setEncrypted(boolean encrypted) {
+  public void needsEncrypted(boolean encrypted) {
     this.encrypted = encrypted;
+  }
+
+  @Override
+  public boolean needsDataCounting() {
+    return counting;
+  }
+
+  @Override
+  public void needsDataCounting(boolean counting) {
+    this.counting = counting;
   }
 
   @Override
@@ -142,18 +165,13 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   @Override
-  public boolean isWebSocket() {
-    return transportType == TransportType.WEB_SOCKET;
-  }
-
-  @Override
   public byte[] getFragmentBuffer() {
     return fragmentBuffer;
   }
 
   @Override
-  public void setFragmentBuffer(byte[] binary) {
-    fragmentBuffer = binary;
+  public void setFragmentBuffer(byte[] binaries) {
+    fragmentBuffer = binaries;
   }
 
   @Override
@@ -190,10 +208,8 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
 
   @Override
   public int compareTo(Packet packet2) {
-    var packet1 = this;
-    return packet1.getGuarantee().getValue() != packet2.getGuarantee().getValue()
-        ? Integer.compare(packet1.getGuarantee().getValue(), packet2.getGuarantee().getValue())
-        : Long.compare(packet2.getId(), packet1.getId());
+    Packet packet1 = this;
+    return Long.compare(packet2.getId(), packet1.getId());
   }
 
   @Override
@@ -202,8 +218,10 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
         "id=" + id +
         ", createdTime=" + createdTime +
         ", data(bytes)=" + (data != null ? data.length : "null") +
+        ", dataType=" + dataType +
         ", guarantee=" + guarantee +
         ", encrypted=" + encrypted +
+        ", counting=" + counting +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
         ", recipients=" + recipients +
@@ -213,11 +231,13 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   public Packet deepCopy() {
-    var packet = PacketImpl.newInstance();
+    Packet packet = PacketImpl.newInstance();
+    packet.setDataType(dataType);
     packet.setData(data);
     packet.setFragmentBuffer(fragmentBuffer);
     packet.setGuarantee(guarantee);
-    packet.setEncrypted(encrypted);
+    packet.needsEncrypted(encrypted);
+    packet.needsDataCounting(counting);
     packet.setRecipients(recipients);
     packet.setTransportType(transportType);
     packet.setMarkedAsLast(last);

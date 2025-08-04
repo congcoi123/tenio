@@ -27,7 +27,7 @@ package com.tenio.core.network.zero.engine;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 
 /**
  * The engine supports writing binaries data to sockets.
@@ -59,8 +59,7 @@ public interface ZeroWriter extends ZeroEngine {
   void setNetworkWriterStatistic(NetworkWriterStatistic networkWriterStatistic);
 
   /**
-   * Sets an instance of packet encoder to encode packets for sending to clients side via the
-   * socket (TCP).
+   * Sets an instance of packet encoder to encode packets for sending to clients.
    *
    * @param packetEncoder an instance of {@link BinaryPacketEncoder}
    */

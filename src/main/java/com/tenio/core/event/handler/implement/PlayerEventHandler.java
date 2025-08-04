@@ -31,13 +31,11 @@ import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
-import com.tenio.core.entity.define.result.PlayerReconnectedResult;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
-import com.tenio.core.handler.event.EventPlayerReconnectRequestHandle;
-import com.tenio.core.handler.event.EventPlayerReconnectedResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
+import com.tenio.core.handler.event.EventPlayerReconnectRequestHandling;
+import com.tenio.core.handler.event.EventPlayerReconnected;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.handler.event.EventSendMessageToPlayer;
 import com.tenio.core.network.entity.session.Session;
@@ -50,19 +48,20 @@ import java.util.Optional;
 public final class PlayerEventHandler {
 
   @AutowiredAcceptNull
-  private EventPlayerLoginResult<Player> eventPlayerLoginResult;
+  private EventPlayerLogin<Player> eventPlayerLogin;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnectRequestHandle<Player> eventPlayerReconnectRequestHandle;
+  private EventPlayerReconnectRequestHandling<Player, DataCollection>
+      eventPlayerReconnectRequestHandling;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnectedResult<Player> eventPlayerReconnectedResult;
+  private EventPlayerReconnected<Player> eventPlayerReconnected;
 
   @AutowiredAcceptNull
-  private EventReceivedMessageFromPlayer<Player> eventReceivedMessageFromPlayer;
+  private EventReceivedMessageFromPlayer<Player, DataCollection> eventReceivedMessageFromPlayer;
 
   @AutowiredAcceptNull
-  private EventSendMessageToPlayer<Player> eventSendMessageToPlayer;
+  private EventSendMessageToPlayer<Player, DataCollection> eventSendMessageToPlayer;
 
   @AutowiredAcceptNull
   private EventDisconnectPlayer<Player> eventDisconnectPlayer;
@@ -74,13 +73,13 @@ public final class PlayerEventHandler {
    */
   public void initialize(EventManager eventManager) {
 
-    final var eventPlayerLoginResultOp =
-        Optional.ofNullable(eventPlayerLoginResult);
+    final var eventPlayerLoginOp =
+        Optional.ofNullable(eventPlayerLogin);
 
-    final var eventPlayerReconnectRequestHandleOp =
-        Optional.ofNullable(eventPlayerReconnectRequestHandle);
-    final var eventPlayerReconnectedResultOp =
-        Optional.ofNullable(eventPlayerReconnectedResult);
+    final var eventPlayerReconnectRequestHandlingOp =
+        Optional.ofNullable(eventPlayerReconnectRequestHandling);
+    final var eventPlayerReconnectedOp =
+        Optional.ofNullable(eventPlayerReconnected);
 
     final var eventReceivedMessageFromPlayerOp =
         Optional.ofNullable(eventReceivedMessageFromPlayer);
@@ -90,31 +89,29 @@ public final class PlayerEventHandler {
     final var eventDisconnectPlayerOp =
         Optional.ofNullable(eventDisconnectPlayer);
 
-    eventPlayerLoginResultOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_LOGIN_RESULT, params -> {
+    eventPlayerLoginOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_LOGIN, params -> {
           var player = (Player) params[0];
-          var result = (PlayerLoginResult) params[1];
 
-          event.handle(player, result);
+          event.handle(player);
 
           return null;
         }));
 
-    eventPlayerReconnectRequestHandleOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLE, params -> {
+    eventPlayerReconnectRequestHandlingOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING, params -> {
           var session = (Session) params[0];
           var message = (DataCollection) params[1];
 
           return event.handle(session, message);
         }));
 
-    eventPlayerReconnectedResultOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_RECONNECTED_RESULT, params -> {
+    eventPlayerReconnectedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_RECONNECTED, params -> {
           var player = (Player) params[0];
           var session = (Session) params[1];
-          var result = (PlayerReconnectedResult) params[2];
 
-          event.handle(player, session, result);
+          event.handle(player, session);
 
           return null;
         }));

@@ -112,6 +112,20 @@ public final class CoreConstant {
    * Used to indicate an unassigned or invalid port number.
    */
   public static final int NULL_PORT_VALUE = -1;
+  /**
+   * It should have a small delay between starting a new worker in an executor service to prevent
+   * any unexpected issue.
+   *
+   * @since 0.6.7
+   */
+  public static final int DELAY_BETWEEN_STARTING_WORKER_IN_MILLISECONDS = 100;
+  /**
+   * After everything was settled down, the server has a small delay before it announces
+   * readiness to all.
+   *
+   * @since 0.6.7
+   */
+  public static final int DELAY_BEFORE_SERVER_IS_READY_IN_MILLISECONDS = 1000;
 
   /**
    * Private constructor to prevent instantiation.

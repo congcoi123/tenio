@@ -36,13 +36,6 @@ import java.nio.channels.DatagramChannel;
 public interface DatagramIoHandler extends BaseIoHandler {
 
   /**
-   * Set the data serialization type.
-   *
-   * @param dataType the {@link DataType} value
-   */
-  void setDataType(DataType dataType);
-
-  /**
    * When a new message comes from client side then this method is invoked.
    *
    * @param datagramChannel a {@link DatagramChannel} created on the server

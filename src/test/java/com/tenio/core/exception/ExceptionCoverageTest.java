@@ -188,7 +188,7 @@ class ExceptionCoverageTest {
   @Test
   @DisplayName("Test AddedDuplicatedClientCommandException")
   void testAddedDuplicatedClientCommandException() {
-    AbstractClientCommandHandler<Player> handler =
+    AbstractClientCommandHandler<Player, DataCollection> handler =
         new AbstractClientCommandHandler<>() {
 
           @Override

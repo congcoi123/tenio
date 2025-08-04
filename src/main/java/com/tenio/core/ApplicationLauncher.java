@@ -29,6 +29,7 @@ import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.constant.Trademark;
 import com.tenio.core.monitoring.system.SystemInfo;
+import com.tenio.core.monitoring.system.SystemMonitoring;
 import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 import java.util.Arrays;
@@ -116,7 +117,8 @@ public final class ApplicationLauncher extends SystemLogger {
             CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE);
       } catch (Exception exception) {
         if (isErrorEnabled()) {
-          error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+          error(exception, "The application started with exceptions occurred: ",
+              exception.getMessage());
         }
         // exit with errors
         System.exit(1);
@@ -129,7 +131,8 @@ public final class ApplicationLauncher extends SystemLogger {
       server.start(bootstrap.getBootstrapHandler(), params);
     } catch (Exception exception) {
       if (isErrorEnabled()) {
-        error(exception, "The application started with exceptions occurred: ", exception.getMessage());
+        error(exception, "The application started with exceptions occurred: ",
+            exception.getMessage());
       }
       server.shutdown();
       // exit with errors
@@ -153,6 +156,13 @@ public final class ApplicationLauncher extends SystemLogger {
     }
 
     // Suddenly shutdown
-    Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      if (isDebugEnabled()) {
+        debug("APPLICATION", "JVM is shutting down");
+        info("LAST SYSTEM MONITORING", SystemMonitoring.newInstance());
+      }
+      server.shutdown();
+      System.exit(0);
+    }));
   }
 }

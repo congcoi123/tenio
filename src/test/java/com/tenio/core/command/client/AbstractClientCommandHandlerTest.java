@@ -32,7 +32,7 @@ import com.tenio.core.entity.Player;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class TestClientCommandHandler extends AbstractClientCommandHandler<Player> {
+class TestClientCommandHandler extends AbstractClientCommandHandler<Player, DataCollection> {
 
   @Override
   public void execute(Player player, DataCollection message) {

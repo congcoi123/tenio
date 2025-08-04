@@ -39,7 +39,7 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
 import com.tenio.core.exception.CreatedDuplicatedChannelException;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
@@ -59,7 +59,7 @@ public interface ServerApi {
    *
    * @param playerName a unique player's name ({@link String} value) on the server
    * @see Session
-   * @see EventPlayerLoginResult
+   * @see EventPlayerLogin
    */
   void login(String playerName);
 
@@ -68,7 +68,7 @@ public interface ServerApi {
    *
    * @param playerName a unique player's name ({@link String} value) on the server
    * @param session    a {@link Session} associated to the player
-   * @see EventPlayerLoginResult
+   * @see EventPlayerLogin
    */
   void login(String playerName, Session session);
 
@@ -77,7 +77,7 @@ public interface ServerApi {
    *
    * @param player a {@link Player} who must have a unique name on the server
    * @see Session
-   * @see EventPlayerLoginResult
+   * @see EventPlayerLogin
    * @since 0.5.0
    */
   void login(Player player);

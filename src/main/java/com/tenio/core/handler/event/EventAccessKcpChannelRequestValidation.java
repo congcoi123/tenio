@@ -33,18 +33,18 @@ import java.util.Optional;
  * When a player attempts to connect to a KCP channel to send and receive messages.
  */
 @FunctionalInterface
-public interface EventAccessKcpChannelRequestValidation {
+public interface EventAccessKcpChannelRequestValidation<D extends DataCollection> {
 
   /**
    * When a player attempts to connect to a KCP channel to send and receive messages.
    *
-   * @param message an instance of {@link DataCollection} sent by client to identify its
-   *                corresponding player on the server
+   * @param message an instance of {@link D} sent by client to identify its corresponding player
+   *                on the server
    * @return an optional of {@link Player} is present if it qualifies identified conditions,
    * otherwise is empty
    * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION
    * @see EventAccessKcpChannelRequestValidationResult
    * @see Optional
    */
-  Optional<Player> handle(DataCollection message);
+  Optional<Player> handle(D message);
 }

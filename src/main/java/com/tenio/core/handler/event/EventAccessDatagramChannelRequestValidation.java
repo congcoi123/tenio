@@ -33,18 +33,18 @@ import java.util.Optional;
  * When a player attempts to connect to UDP channel to send and receive messages.
  */
 @FunctionalInterface
-public interface EventAccessDatagramChannelRequestValidation {
+public interface EventAccessDatagramChannelRequestValidation<D extends DataCollection> {
 
   /**
    * When a player attempts to connect to UDP channel to send and receive messages.
    *
-   * @param message an instance of {@link DataCollection} sent by client to identify its
-   *                corresponding player on the server
+   * @param message an instance of {@link D} sent by client to identify its corresponding player
+   *                on the server
    * @return an optional of {@link Player} is present if it qualifies identified conditions,
    * otherwise is empty
    * @see ServerEvent#ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION
    * @see EventAccessDatagramChannelRequestValidationResult
    * @see Optional
    */
-  Optional<Player> handle(DataCollection message);
+  Optional<Player> handle(D message);
 }

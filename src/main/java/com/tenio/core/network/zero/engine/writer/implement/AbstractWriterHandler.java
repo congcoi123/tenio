@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.writer.implement;
 
 import com.tenio.common.logger.SystemLogger;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.utility.SocketUtility;
@@ -39,6 +40,7 @@ import java.util.concurrent.BlockingQueue;
 public abstract class AbstractWriterHandler extends SystemLogger implements WriterHandler {
 
   private SessionTicketsQueueManager sessionTicketsQueueManager;
+  private BinaryPacketEncoder binaryPacketEncoder;
   private NetworkWriterStatistic networkWriterStatistic;
   private ByteBuffer byteBuffer;
 
@@ -50,6 +52,16 @@ public abstract class AbstractWriterHandler extends SystemLogger implements Writ
   @Override
   public void setSessionTicketsQueueManager(SessionTicketsQueueManager sessionTicketsQueueManager) {
     this.sessionTicketsQueueManager = sessionTicketsQueueManager;
+  }
+
+  @Override
+  public BinaryPacketEncoder getPacketEncoder() {
+    return binaryPacketEncoder;
+  }
+
+  @Override
+  public void setPacketEncoder(BinaryPacketEncoder packetEncoder) {
+    this.binaryPacketEncoder = packetEncoder;
   }
 
   @Override

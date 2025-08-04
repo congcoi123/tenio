@@ -28,15 +28,15 @@ import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.network.codec.packet.PacketReadState;
+import com.tenio.core.network.codec.packet.PendingPacket;
+import com.tenio.core.network.codec.packet.ProcessedPacket;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.utility.SocketUtility;
-import com.tenio.core.network.zero.codec.packet.PacketReadState;
-import com.tenio.core.network.zero.codec.packet.PendingPacket;
-import com.tenio.core.network.zero.codec.packet.ProcessedPacket;
 import io.netty.channel.Channel;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -52,7 +52,7 @@ import kcp.Ukcp;
  *
  * @see Session
  */
-public final class SessionImpl implements Session {
+public class SessionImpl implements Session {
 
   private final long id;
   private final long createdTime;
@@ -76,7 +76,7 @@ public final class SessionImpl implements Session {
   private volatile Ukcp kcpChannel;
   private volatile TransportType transportType;
   private volatile InetSocketAddress socketRemoteAddress;
-  private volatile SocketAddress datagramRemoteAddress;
+  private volatile InetSocketAddress datagramRemoteAddress;
   private volatile int udpConvey;
 
   private volatile long inactivatedTime;
@@ -86,7 +86,12 @@ public final class SessionImpl implements Session {
 
   private int maxIdleTimeInSecond;
 
-  private SessionImpl() {
+  /**
+   * Constructor.
+   *
+   * @since 0.6.7
+   */
+  protected SessionImpl() {
     id = ID_COUNTER.getAndIncrement();
     transportType = TransportType.UNKNOWN;
     udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
@@ -105,17 +110,6 @@ public final class SessionImpl implements Session {
    */
   public static Session newInstance() {
     return new SessionImpl();
-  }
-
-  /**
-   * Special instance which is built for TCP.
-   *
-   * @return a new instance of {@link Session}
-   */
-  public static Session newInstanceForTcp() {
-    SessionImpl session = new SessionImpl();
-    session.createPacketSocketHandler();
-    return session;
   }
 
   @Override
@@ -227,6 +221,11 @@ public final class SessionImpl implements Session {
   }
 
   @Override
+  public SelectionKey fectchSocketSelectionKey() {
+    return socketSelectionKey;
+  }
+
+  @Override
   public SocketAddress getSocketRemoteAddress() {
     return socketRemoteAddress;
   }
@@ -296,7 +295,7 @@ public final class SessionImpl implements Session {
 
   @Override
   public void setDatagramRemoteAddress(SocketAddress datagramRemoteAddress) {
-    this.datagramRemoteAddress = datagramRemoteAddress;
+    this.datagramRemoteAddress = (InetSocketAddress) datagramRemoteAddress;
   }
 
   @Override
@@ -483,7 +482,12 @@ public final class SessionImpl implements Session {
     atomicAssociatedState.set(associatedState);
   }
 
-  private void createPacketSocketHandler() {
+  /**
+   * Creates packet handler objects.
+   *
+   * @since 0.6.7
+   */
+  protected void createPacketSocketHandler() {
     packetReadState = PacketReadState.WAIT_NEW_PACKET;
     processedPacket = ProcessedPacket.newInstance();
     pendingPacket = PendingPacket.newInstance();
@@ -525,8 +529,7 @@ public final class SessionImpl implements Session {
         (socketRemoteAddress == null ? "null" :
             (socketRemoteAddress.getAddress() + ":" + socketRemoteAddress.getPort())) + '\'' +
         ", datagramRemoteAddress='" + (datagramRemoteAddress == null ? "null" :
-        (((InetSocketAddress) datagramRemoteAddress).getAddress() + ":" +
-            ((InetSocketAddress) datagramRemoteAddress).getPort())) + '\'' +
+        (datagramRemoteAddress.getAddress() + ":" + datagramRemoteAddress.getPort())) + '\'' +
         ", udpConvey=" + udpConvey +
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
         ", inactivatedTime=" + inactivatedTime +

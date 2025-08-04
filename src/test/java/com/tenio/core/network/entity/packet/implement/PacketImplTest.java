@@ -36,7 +36,7 @@ class PacketImplTest {
   @Test
   void testNewInstance() {
     Packet actualNewInstanceResult = PacketImpl.newInstance();
-    assertFalse(actualNewInstanceResult.isEncrypted());
+    assertFalse(actualNewInstanceResult.needsEncrypted());
     assertEquals(TransportType.UNKNOWN, actualNewInstanceResult.getTransportType());
     assertEquals(ResponseGuarantee.NORMAL, actualNewInstanceResult.getGuarantee());
   }

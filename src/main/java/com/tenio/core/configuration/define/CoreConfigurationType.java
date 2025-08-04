@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.configuration.define;
 
 import com.tenio.common.configuration.ConfigurationType;
-import com.tenio.common.data.DataType;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
@@ -165,13 +164,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    * @since 0.5.1
    */
   INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
-  /**
-   * Sets the data serialization mechanism is in use, currently, there are 2 types supported:
-   * (internal) zero and msgpack.
-   *
-   * @see DataType
-   */
-  DATA_SERIALIZATION("data-serialization"),
   /**
    * Sets the maximum number of requesting packets in queue. In case there are more packets than
    * expected, some of them should be removed.
