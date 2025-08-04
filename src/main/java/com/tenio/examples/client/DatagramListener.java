@@ -24,16 +24,18 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
+import com.tenio.common.data.DataCollection;
+
 /**
  * This interface helps you listen to all messages these came from the server's
  * UDP port.
  */
-public interface DatagramListener {
+public interface DatagramListener<D extends DataCollection> {
 
   /**
    * Listens for upcoming packets.
    *
-   * @param binary an array of {@code byte} data
+   * @param message the received {@link D} message
    */
-  void onReceivedUDP(byte[] binary);
+  void onReceivedUDP(D message);
 }

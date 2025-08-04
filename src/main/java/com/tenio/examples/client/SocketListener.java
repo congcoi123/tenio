@@ -24,16 +24,18 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
+import com.tenio.common.data.DataCollection;
+
 /**
  * This interface helps you listen to all messages these came from the server's
  * TCP port.
  */
-public interface SocketListener {
+public interface SocketListener<D extends DataCollection> {
 
   /**
-   * Listen for a new message.
+   * Listen to a new message.
    *
-   * @param binaries the received message
+   * @param message the received {@link D} message
    */
-  void onReceivedTCP(byte[] binaries);
+  void onReceivedTCP(D message);
 }

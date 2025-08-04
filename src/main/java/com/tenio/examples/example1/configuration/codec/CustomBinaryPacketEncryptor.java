@@ -26,18 +26,18 @@ package com.tenio.examples.example1.configuration.codec;
 
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.exception.PacketEncryptorException;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
+import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 
 @Component
 public final class CustomBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
   @Override
-  public byte[] encrypt(byte[] binary) throws PacketEncryptorException {
-    return binary;
+  public byte[] encrypt(byte[] binaries) throws PacketEncryptorException {
+    return binaries;
   }
 
   @Override
-  public byte[] decrypt(byte[] binary) throws PacketEncryptorException {
-    return binary;
+  public byte[] decrypt(byte[] binaries) throws PacketEncryptorException {
+    return binaries;
   }
 }

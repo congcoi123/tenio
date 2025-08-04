@@ -26,25 +26,22 @@ package com.tenio.examples.example6.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
 public final class PlayerLoginHandler extends AbstractHandler
-    implements EventPlayerLoginResult<Player> {
+    implements EventPlayerLogin<Player> {
 
   @Override
-  public void handle(Player player, PlayerLoginResult result) {
-    if (result == PlayerLoginResult.SUCCESS) {
-      player.setNeverDeported(true);
-      var parcel = map()
-          .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-              String.format("Welcome to server: %s", player.getIdentity()))
-          .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getIdentity());
+  public void handle(Player player) {
+    player.setNeverDeported(true);
+    var parcel = map()
+        .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+            String.format("Welcome to server: %s", player.getIdentity()))
+        .putString(SharedEventKey.KEY_PLAYER_LOGIN, player.getIdentity());
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+    response().setContent(parcel).setRecipientPlayer(player).write();
   }
 }

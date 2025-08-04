@@ -63,7 +63,7 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
           .putIntegerArray(SharedEventKey.KEY_DATA_1, positionXs)
           .putIntegerArray(SharedEventKey.KEY_DATA_2, positionYs);
 
-      response().setRecipientPlayers(players).setContent(parcel.toBinary()).write();
+      response().setRecipientPlayers(players).setContent(parcel).write();
     }
   }
 }

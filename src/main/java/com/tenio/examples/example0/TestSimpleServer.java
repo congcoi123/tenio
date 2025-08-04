@@ -26,6 +26,7 @@ package com.tenio.examples.example0;
 
 import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
 import com.tenio.core.bootstrap.annotation.Bootstrap;
@@ -34,10 +35,9 @@ import com.tenio.core.bootstrap.annotation.Setting;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.examples.server.ExampleConfigurationType;
@@ -75,46 +75,47 @@ public final class TestSimpleServer {
 
   @EventHandler
   public static class ConnectionEstablishedHandler extends AbstractHandler
-      implements EventConnectionEstablishedResult {
+      implements EventConnectionEstablishedResult<ZeroMap> {
 
     @Override
-    public void handle(Session session, DataCollection message,
-                       ConnectionEstablishedResult result) {
+    public void handle(Session session, ZeroMap message, ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
-        var request = (ZeroMap) message;
-
-        api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
     }
   }
 
   @EventHandler
   public static class PlayerLoginHandler extends AbstractHandler
-      implements EventPlayerLoginResult<Player> {
+      implements EventPlayerLogin<Player> {
 
     @Override
-    public void handle(Player player, PlayerLoginResult result) {
-      if (result == PlayerLoginResult.SUCCESS) {
-        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-            String.format("Welcome to server: %s", player.getIdentity()));
+    public void handle(Player player) {
+      var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+          String.format("Welcome to server: %s", player.getIdentity()));
 
-        response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-      }
+      response().setContent(parcel).setRecipientPlayer(player).write();
     }
   }
 
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer<Player> {
+      implements EventReceivedMessageFromPlayer<Player, DataCollection> {
 
     @Override
     public void handle(Player player, DataCollection message) {
-      var parcel =
-          map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-              player.getIdentity(),
-              ((ZeroMap) message).getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+      DataCollection parcel = null;
+      if (message instanceof ZeroMap request) {
+        parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+            String.format("Echo(%s): %s", player.getIdentity(),
+                request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+      } else if (message instanceof MsgPackMap request) {
+        parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+            String.format("Echo(%s): %s", player.getIdentity(),
+                request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+      }
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel).setRecipientPlayer(player).write();
     }
   }
 }

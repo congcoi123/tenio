@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.examples.example4;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.logger.AbstractLogger;
@@ -52,12 +51,11 @@ import java.util.concurrent.TimeUnit;
  * 4. Receive a response for allowed UDP connection.<br>
  */
 public final class TestClientMovement extends AbstractLogger
-    implements SocketListener, DatagramListener {
+    implements SocketListener<ZeroMap>, DatagramListener<ZeroMap> {
 
   private static final boolean LOGGER_DEBUG = false;
   private static final NetworkStatistic statistic = NetworkStatistic.newInstance();
   private static final long START_EXECUTION_TIME = TimeUtility.currentTimeSeconds();
-  private final TCP tcp;
   private final String playerName;
   private final LocalCounter localCounter;
   private UDP udp;
@@ -68,12 +66,13 @@ public final class TestClientMovement extends AbstractLogger
     this.playerName = playerName;
     localCounter = LocalCounter.newInstance();
 
-    // create a new TCP object and listen for this port
-    tcp = new TCP(Example4Constant.SOCKET_PORT);
-    tcp.receive(this);
+    // create a new TCP object and listen to this port
+    new TCP(Example4Constant.SOCKET_PORT, it -> {
+      it.receive(TestClientMovement.this);
 
-    // send a login request
-    sendLoginRequest();
+      // send a login request
+      sendLoginRequest(it);
+    });
   }
 
   public static void main(String[] args) throws InterruptedException {
@@ -90,12 +89,8 @@ public final class TestClientMovement extends AbstractLogger
 
     // create clients
     for (int i = 0; i < Example4Constant.NUMBER_OF_PLAYERS; i++) {
-
       new TestClientMovement(String.valueOf(i));
-
-      Thread.sleep((long) (Example4Constant.DELAY_CREATION * 1000));
     }
-
   }
 
   private static void logExecutionTime() {
@@ -118,7 +113,7 @@ public final class TestClientMovement extends AbstractLogger
         statistic.getLostPacketsAverage());
   }
 
-  private void sendLoginRequest() {
+  private void sendLoginRequest(TCP tcp) {
     var request = DataUtility.newZeroMap();
     request.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
     tcp.send(request);
@@ -129,9 +124,7 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var parcel = (ZeroMap) DataUtility.binaryToCollection(DataType.ZERO, binaries);
-
+  public void onReceivedTCP(ZeroMap parcel) {
     if (LOGGER_DEBUG) {
       System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
     }
@@ -140,23 +133,24 @@ public final class TestClientMovement extends AbstractLogger
       var accessingPhaseData = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
       switch (accessingPhaseData.getByte(0)) {
         case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
-          // create a new UDP object and listen for this port
-          udp = new UDP(accessingPhaseData.getInteger(1));
-          udp.receive(this);
-          System.out.println(playerName + " connected to UDP port: " +
-              accessingPhaseData.getInteger(1));
+          // create a new UDP object and listen to this port
+          udp = new UDP(accessingPhaseData.getInteger(1), it -> {
+            it.receive(TestClientMovement.this);
+            System.out.println(playerName + " connected to UDP port: " +
+                accessingPhaseData.getInteger(1));
 
-          // now you can send request for UDP connection request
-          var udpMessageData = DataUtility.newZeroMap();
-          udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-          var request =
-              DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
-                  udpMessageData);
-          udp.send(request);
+            // now you can send request for UDP connection request
+            var udpMessageData = DataUtility.newZeroMap();
+            udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+            var request =
+                DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
+                    udpMessageData);
+            it.send(request);
 
-          if (LOGGER_DEBUG) {
-            System.out.println(playerName + " requests a UDP connection -> " + request);
-          }
+            if (LOGGER_DEBUG) {
+              System.out.println(playerName + " requests a UDP connection -> " + request);
+            }
+          });
         }
         case DatagramEstablishedState.ESTABLISHED -> {
           udpConvey = accessingPhaseData.getInteger(1);
@@ -234,9 +228,7 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   @Override
-  public void onReceivedUDP(byte[] binary) {
-    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binary);
-
+  public void onReceivedUDP(ZeroMap parcel) {
     if (LOGGER_DEBUG) {
       System.err.println("[RECV FROM SERVER UDP] -> " + parcel);
     }
@@ -246,6 +238,6 @@ public final class TestClientMovement extends AbstractLogger
 
   private void counting(DataCollection message) {
     localCounter.addCountUdpPacketsOneMinute();
-    localCounter.addCountReceivedPacketSizeOneMinute((message.toBinary().length));
+    localCounter.addCountReceivedPacketSizeOneMinute((message.toBinaries().length));
   }
 }

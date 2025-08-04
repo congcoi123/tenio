@@ -26,14 +26,19 @@ package com.tenio.examples.client;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.utility.OsUtility;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
+import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.StandardSocketOptions;
-import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * Create an object for handling a Datagram socket connection. It is used to
@@ -46,7 +51,9 @@ public final class UDP {
   /**
    * The desired port for listening.
    */
-  private final int port;
+  private int port;
+  private BinaryPacketEncoder binaryPacketEncoder;
+  private BinaryPacketDecoder binaryPacketDecoder;
   private Future<?> future;
   private DatagramSocket datagramSocket;
   private InetAddress inetAddress;
@@ -54,9 +61,11 @@ public final class UDP {
   /**
    * Listen in a port on the local machine.
    *
-   * @param port the desired port
+   * @param port      the desired port
+   * @param broadcast sets to {@code true} to enable broadcasting
+   * @param onSuccess UDP connected successfully
    */
-  public UDP(int port, boolean broadcast) {
+  public UDP(int port, boolean broadcast, Consumer<UDP> onSuccess) {
     try {
       if (broadcast) {
         datagramSocket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
@@ -69,19 +78,35 @@ public final class UDP {
       } else {
         datagramSocket = new DatagramSocket();
       }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    try {
+
       inetAddress = InetAddress.getLocalHost();
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
+      this.port = port;
+
+      var binaryCompressor = new DefaultBinaryPacketCompressor();
+      var binaryEncryptor = new DefaultBinaryPacketEncryptor();
+
+      binaryPacketEncoder = new BinaryPacketEncoderImpl();
+      binaryPacketEncoder.setCompressor(binaryCompressor);
+      binaryPacketEncoder.setEncryptor(binaryEncryptor);
+
+      binaryPacketDecoder = new BinaryPacketDecoderImpl();
+      binaryPacketDecoder.setCompressor(binaryCompressor);
+      binaryPacketDecoder.setEncryptor(binaryEncryptor);
+
+      onSuccess.accept(this);
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
-    this.port = port;
   }
 
-  public UDP(int port) {
-    this(port, false);
+  /**
+   * Listen in a port on the local machine.
+   *
+   * @param port      the desired port
+   * @param onSuccess UDP connected successfully
+   */
+  public UDP(int port, Consumer<UDP> onSuccess) {
+    this(port, false, onSuccess);
   }
 
   public int getLocalPort() {
@@ -106,31 +131,36 @@ public final class UDP {
    * @param message the desired message
    */
   public void send(DataCollection message) {
-    var pack = message.toBinary();
-    var request = new DatagramPacket(pack, pack.length, inetAddress, port);
+    // convert message object to bytes data
+    var packet = PacketImpl.newInstance();
+    packet.setDataType(message.getType());
+    packet.setData(message.toBinaries());
+    packet = binaryPacketEncoder.encode(packet);
+    var sendingPacket = packet.getData();
+    var request = new DatagramPacket(sendingPacket, sendingPacket.length, inetAddress, port);
     try {
       datagramSocket.send(request);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 
   /**
-   * Listen for messages that came from the server.
+   * Listen to messages that came from the server.
    *
    * @param listener instance of {@link DatagramListener}
    */
   public void receive(DatagramListener listener) {
     var executorService = Executors.newSingleThreadExecutor();
     future = executorService.submit(() -> {
-      var buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
+      var binaries = new byte[DEFAULT_BYTE_BUFFER_SIZE];
       while (true) {
         try {
-          var response = new DatagramPacket(buffer, buffer.length);
+          var response = new DatagramPacket(binaries, binaries.length);
           datagramSocket.receive(response);
-          listener.onReceivedUDP(buffer);
-        } catch (IOException e) {
-          e.printStackTrace();
+          listener.onReceivedUDP(binaryPacketDecoder.decode(binaries));
+        } catch (IOException exception) {
+          exception.printStackTrace();
           return;
         }
       }

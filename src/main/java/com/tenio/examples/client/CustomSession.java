@@ -24,18 +24,15 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
+import com.tenio.core.network.entity.session.implement.SessionImpl;
+
 /**
- * The utility class for server.
+ * The customized session implementation.
  */
-public final class ServerUtility {
+public final class CustomSession extends SessionImpl {
 
-  private static final int CONVERT_TO_MB = 1024 * 1024;
-
-  private ServerUtility() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static float convertBytesToMB(long bytes) {
-    return (float) bytes / CONVERT_TO_MB;
+  public CustomSession() {
+    super();
+    createPacketSocketHandler();
   }
 }

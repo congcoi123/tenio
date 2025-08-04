@@ -27,25 +27,22 @@ package com.tenio.examples.example7.handler;
 import com.tenio.common.utility.MathUtility;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.examples.example7.constant.Example7Constant;
 
 @EventHandler
 public final class PlayerLoginHandler extends AbstractHandler
-    implements EventPlayerLoginResult<Player> {
+    implements EventPlayerLogin<Player> {
 
   @Override
-  public void handle(Player player, PlayerLoginResult result) {
-    if (result == PlayerLoginResult.SUCCESS) {
-      // create the initial position for player
-      int x = MathUtility.randInt(100, 400);
-      int y = MathUtility.randInt(100, 400);
-      player.setProperty(Example7Constant.PLAYER_POSITION_X, x);
-      player.setProperty(Example7Constant.PLAYER_POSITION_Y, y);
+  public void handle(Player player) {
+    // create the initial position for player
+    int x = MathUtility.randInt(100, 400);
+    int y = MathUtility.randInt(100, 400);
+    player.setProperty(Example7Constant.PLAYER_POSITION_X, x);
+    player.setProperty(Example7Constant.PLAYER_POSITION_Y, y);
 
-      api().joinRoom(player, api().getRoomById(0).get());
-    }
+    api().joinRoom(player, api().getRoomById(0).get());
   }
 }

@@ -42,7 +42,7 @@ public final class AccessKcpChannelRequestValidationResultHandler extends Abstra
       var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL,
           array().addByte(DatagramEstablishedState.COMMUNICATING));
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(request).setRecipientPlayer(player).write();
     }
   }
 }

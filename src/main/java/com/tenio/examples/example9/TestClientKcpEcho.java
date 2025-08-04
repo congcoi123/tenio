@@ -52,7 +52,7 @@ import kcp.Ukcp;
  * 5. Send messages via KCP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientKcpEcho implements SocketListener, KcpListener {
+public final class TestClientKcpEcho implements SocketListener<ZeroMap>, KcpListener {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
@@ -62,18 +62,19 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
   public TestClientKcpEcho() {
     playerName = ClientUtility.generateRandomString(5);
 
-    // create a new TCP object and listen for this port
-    tcp = new TCP(SOCKET_PORT);
-    tcp.receive(this);
-    Session session = tcp.getSession();
-    session.setName(playerName);
+    // create a new TCP object and listen to this port
+    tcp = new TCP(SOCKET_PORT, it -> {
+      it.receive(TestClientKcpEcho.this);
+      Session session = it.getSession();
+      session.setName(playerName);
 
-    // send a login request
-    var request =
-        DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    tcp.send(request);
+      // send a login request
+      var request =
+          DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+      it.send(request);
 
-    System.out.println("Login Request -> " + request);
+      System.out.println("Login Request -> " + request);
+    });
   }
 
   /**
@@ -84,9 +85,7 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var parcel = (ZeroMap) DataUtility.binaryToCollection(DataType.ZERO, binaries);
-
+  public void onReceivedTCP(ZeroMap parcel) {
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
     ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_KCP_CHANNEL);
 
@@ -118,7 +117,7 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
           var request = DataUtility.newZeroMap();
           request.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING);
           request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Hello from client %d", i));
-          ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinary());
+          ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinaries());
           ukcp.write(byteBuf);
           byteBuf.release();
 
@@ -142,7 +141,7 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
 
     // now you can send request via the KCP channel
     var request = DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinary());
+    ByteBuf byteBuf = Unpooled.wrappedBuffer(request.toBinaries());
     ukcp.write(byteBuf);
     byteBuf.release();
 
@@ -154,7 +153,7 @@ public final class TestClientKcpEcho implements SocketListener, KcpListener {
     var binary = new byte[byteBuf.readableBytes()];
     byteBuf.getBytes(byteBuf.readerIndex(), binary);
 
-    var message = DataUtility.binaryToCollection(DataType.ZERO, binary);
+    var message = DataUtility.binariesToCollection(DataType.ZERO, binary);
 
     System.out.println("[KCP RECEIVE] " + message);
   }

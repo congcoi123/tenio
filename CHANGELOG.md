@@ -72,3 +72,7 @@
 ## 0.6.6 2025-09-01 Feature release
 - Upgraded dependencies
 - Removed unnecessary wrapper methods
+
+## 0.6.7 2025-09-02 Feature release
+- Upgraded dependencies
+- Adapted new APIs

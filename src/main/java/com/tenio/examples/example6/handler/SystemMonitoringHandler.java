@@ -27,7 +27,7 @@ package com.tenio.examples.example6.handler;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventSystemMonitoring;
-import com.tenio.examples.client.ServerUtility;
+import com.tenio.core.utility.ZeroUtility;
 
 @EventHandler
 public final class SystemMonitoringHandler extends AbstractHandler
@@ -39,8 +39,8 @@ public final class SystemMonitoringHandler extends AbstractHandler
     if (isInfoEnabled()) {
       var info = String.format(
           "cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
-          (float) cpuUsage * 100, ServerUtility.convertBytesToMB(totalMemory),
-          ServerUtility.convertBytesToMB(usedMemory), ServerUtility.convertBytesToMB(freeMemory),
+          (float) cpuUsage * 100, ZeroUtility.convertBytesToMB(totalMemory),
+          ZeroUtility.convertBytesToMB(usedMemory), ZeroUtility.convertBytesToMB(freeMemory),
           countRunningThreads);
 
       info("SYSTEM MONITORING", info);

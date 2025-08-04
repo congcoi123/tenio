@@ -42,7 +42,7 @@ public final class AccessDatagramChannelRequestValidationResultHandler extends A
       var parcel = msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
           new int[] { DatagramEstablishedState.ESTABLISHED });
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(parcel).setRecipientPlayer(player).write();
     }
   }
 }
