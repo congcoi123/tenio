@@ -57,7 +57,7 @@ class MsgPackUtilityTest {
   void itShouldReturnCorrectDataCollection() {
     var msgpackArray = new boolean[] { true, false, true };
     var msgpackMap = MsgPackUtility.newMsgPackMap().putBoolean("a", true).putBooleanArray("b", msgpackArray);
-    var checkMsgPackMap = MsgPackUtility.deserialize(msgpackMap.toBinary());
+    var checkMsgPackMap = MsgPackUtility.deserialize(msgpackMap.toBinaries());
 
     assert checkMsgPackMap != null;
     assertEquals(msgpackMap.getBoolean("a"), checkMsgPackMap.getBoolean("a"));
@@ -69,16 +69,15 @@ class MsgPackUtilityTest {
   void addedDataInArrayShouldMatch() {
     var origin = new int[] { 10, 20, 30, 40, 50 };
     var carry = MsgPackUtility.newMsgPackMap().putIntegerArray("k", origin);
-    var binary = carry.toBinary();
-    var newOne = MsgPackUtility.deserialize(binary);
+    var actuality = MsgPackUtility.deserialize(carry.toBinaries());
 
-    assert newOne != null;
+    assert actuality != null;
     assertAll("addedDataInArrayShouldMatch",
-        () -> assertEquals(10, newOne.getIntegerArray("k")[0]),
-        () -> assertEquals(20, newOne.getIntegerArray("k")[1]),
-        () -> assertEquals(30, newOne.getIntegerArray("k")[2]),
-        () -> assertEquals(40, newOne.getIntegerArray("k")[3]),
-        () -> assertEquals(50, newOne.getIntegerArray("k")[4])
+        () -> assertEquals(10, actuality.getIntegerArray("k")[0]),
+        () -> assertEquals(20, actuality.getIntegerArray("k")[1]),
+        () -> assertEquals(30, actuality.getIntegerArray("k")[2]),
+        () -> assertEquals(40, actuality.getIntegerArray("k")[3]),
+        () -> assertEquals(50, actuality.getIntegerArray("k")[4])
     );
   }
 
@@ -91,17 +90,16 @@ class MsgPackUtilityTest {
         .putFloat("f", 101.1f)
         .putString("s", "msgpack")
         .putMsgPackMap("map", MsgPackMap.newInstance().putBoolean("mapb", true));
-    var binary = origin.toBinary();
-    var newOne = MsgPackUtility.deserialize(binary);
+    var actuality = MsgPackUtility.deserialize(origin.toBinaries());
 
-    assert newOne != null;
+    assert actuality != null;
     assertAll("putDataInMapShouldMatch",
-        () -> assertFalse(newOne.contains("out")),
-        () -> assertTrue(newOne.getBoolean("b")),
-        () -> assertEquals(1000, newOne.getInteger("i")),
-        () -> assertEquals(101.1f, newOne.getFloat("f")),
-        () -> assertEquals("msgpack", newOne.getString("s")),
-        () -> assertEquals(origin.getMsgPackMap("map").getBoolean("mapb"), newOne.getMsgPackMap("map").getBoolean(
+        () -> assertFalse(actuality.contains("out")),
+        () -> assertTrue(actuality.getBoolean("b")),
+        () -> assertEquals(1000, actuality.getInteger("i")),
+        () -> assertEquals(101.1f, actuality.getFloat("f")),
+        () -> assertEquals("msgpack", actuality.getString("s")),
+        () -> assertEquals(origin.getMsgPackMap("map").getBoolean("mapb"), actuality.getMsgPackMap("map").getBoolean(
             "mapb"))
     );
 

@@ -48,10 +48,4 @@ class WorkerPoolTest {
     Assertions.assertThrows(IllegalStateException.class,
         () -> workerPool.execute(mock(Runnable.class), "Test Runnable Worker"));
   }
-
-
-  @Test
-  void testWaitUntilAllTasksFinished() {
-    (new WorkerPool("Name", 1, 3)).waitUntilAllTasksFinished();
-  }
 }

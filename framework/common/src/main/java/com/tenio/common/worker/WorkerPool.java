@@ -94,20 +94,4 @@ public final class WorkerPool extends SystemLogger {
       runnable.doStop();
     }
   }
-
-  /**
-   * Waits until all tasks are finished.
-   */
-  public synchronized void waitUntilAllTasksFinished() {
-    while (!taskQueue.isEmpty()) {
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException exception) {
-        Thread.currentThread().interrupt();
-        if (isErrorEnabled()) {
-          error(exception);
-        }
-      }
-    }
-  }
 }

@@ -84,9 +84,9 @@ public final class ByteUtility {
    * @return a new byte array
    */
   public static byte[] resizeBytesArray(byte[] source, int position, int newSize) {
-    byte[] binary = new byte[newSize];
-    System.arraycopy(source, position, binary, 0, newSize);
+    byte[] binaries = new byte[newSize];
+    System.arraycopy(source, position, binaries, 0, newSize);
 
-    return binary;
+    return binaries;
   }
 }

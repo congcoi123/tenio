@@ -61,10 +61,9 @@ class DataUtilityTest {
         () -> assertInstanceOf(ZeroMap.class, DataUtility.newZeroMap()),
         () -> assertInstanceOf(MsgPackMap.class, DataUtility.newMsgMap()));
 
-    var zeroMapBinaries = ZeroUtility.mapToBinary(ZeroUtility.newZeroMap());
+    var zeroMapBinaries = ZeroUtility.mapToBinaries(ZeroUtility.newZeroMap());
     var msgPackBinaries = MsgPackUtility.serialize(MsgPackMap.newInstance().putBoolean("a", true));
-    assertInstanceOf(ZeroMap.class, DataUtility.binaryToCollection(DataType.ZERO, zeroMapBinaries));
-    assertInstanceOf(MsgPackMap.class, DataUtility.binaryToCollection(DataType.MSG_PACK,
-        msgPackBinaries));
+    assertInstanceOf(ZeroMap.class, DataUtility.binariesToCollection(DataType.ZERO, zeroMapBinaries));
+    assertInstanceOf(MsgPackMap.class, DataUtility.binariesToCollection(DataType.MSG_PACK, msgPackBinaries));
   }
 }
