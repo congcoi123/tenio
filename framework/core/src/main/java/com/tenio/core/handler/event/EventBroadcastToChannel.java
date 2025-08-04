@@ -34,15 +34,15 @@ import com.tenio.core.entity.Player;
  * @since 0.6.3
  */
 @FunctionalInterface
-public interface EventBroadcastToChannel<P extends Player> {
+public interface EventBroadcastToChannel<P extends Player, D extends DataCollection> {
 
   /**
    * When the server broadcasts a message to a player via its channel.
    *
    * @param channel the {@link Channel} which broadcasts the message
    * @param player  the {@link Player} which is receiving a message from the server via its channel
-   * @param message the sending {@link DataCollection}
+   * @param message the sending {@link D} message
    * @since 0.6.3
    */
-  void handle(Channel channel, P player, DataCollection message);
+  void handle(Channel channel, P player, D message);
 }

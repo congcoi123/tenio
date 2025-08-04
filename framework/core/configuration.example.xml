@@ -76,9 +76,6 @@
             <Task name="system-monitoring-interval">60</Task>        <!-- Unit: Seconds -->
         </Schedules>
         <Properties>
-            <!-- Choose the data serialization mechanism, currently, there are 2 types supported: (internal) zero and
-            msgpack -->
-            <Property name="data-serialization">zero</Property>
             <!-- When this queue size is set to 0, then there is no restriction -->
             <Property name="max-request-queue-size">100</Property>
             <Property name="max-response-queue-size-per-session">100</Property>

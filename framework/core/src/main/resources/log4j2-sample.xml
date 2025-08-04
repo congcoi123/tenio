@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Configuration status="info">
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
 	<Properties>
 		<!-- Please change your own path of the log file here -->
 		<!-- <Property name="logdir">/Users/kong/Downloads/logs</Property> -->
@@ -14,60 +15,65 @@
 
 	<Appenders>
 
-		<Console name="console-log">
-			<PatternLayout pattern="${layout}"/>
+		<!-- Console appender (optional: useful in development) -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="${layout}" />
 		</Console>
 
-		<RollingFile name="all-log"
+		<!-- Main rolling file appender -->
+		<RollingFile name="MainFile"
 					 fileName="${logdir}/${logfile}.log"
-					 filePattern="${logdir}/${logfile}.%d{yyyy-MM-dd}-%i.log">
-			<PatternLayout pattern="${layout}"/>
+					 filePattern="${logdir}/${logfile}.%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="${layout}" />
 			<Policies>
-				<TimeBasedTriggeringPolicy/>
-				<SizeBasedTriggeringPolicy size="10 MB"/>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			<DefaultRolloverStrategy max="10"/>
+			<DefaultRolloverStrategy max="10" />
 		</RollingFile>
-		<RollingFile name="error-log"
+
+		<!-- Error-level file appender -->
+		<RollingFile name="ErrorFile"
 					 fileName="${logdir}/${logfile-error}.log"
-					 filePattern="${logdir}/${logfile-error}.%d{yyyy-MM-dd}-%i.log">
+					 filePattern="${logdir}/${logfile-error}.%d{yyyy-MM-dd}-%i.log.gz">
 			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
-			<PatternLayout pattern="${layout}"/>
+			<PatternLayout pattern="${layout}" />
 			<Policies>
-				<TimeBasedTriggeringPolicy/>
-				<SizeBasedTriggeringPolicy size="10 MB"/>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			<DefaultRolloverStrategy max="10"/>
+			<DefaultRolloverStrategy max="10" />
 		</RollingFile>
+
+		<!-- Async wrapper for file-based logging -->
+		<Async name="AsyncFile">
+			<AppenderRef ref="MainFile" />
+			<AppenderRef ref="ErrorFile" />
+		</Async>
+
 	</Appenders>
 
 	<Loggers>
 
+		<!-- Silence 3rd party frameworks -->
 		<Logger name="io.netty" level="warn" additivity="false">
-			<AppenderRef ref="console-log"/>
-			<AppenderRef ref="all-log"/>
-			<AppenderRef ref="error-log"/>
+			<AppenderRef ref="AsyncFile"/>
 		</Logger>
 
 		<Logger name="org.eclipse.jetty" level="warn" additivity="false">
-			<AppenderRef ref="console-log"/>
-			<AppenderRef ref="all-log"/>
-			<AppenderRef ref="error-log"/>
+			<AppenderRef ref="AsyncFile"/>
 		</Logger>
 
 		<Logger name="org.hibernate" level="warn" additivity="false">
-			<AppenderRef ref="console-log"/>
-			<AppenderRef ref="all-log"/>
-			<AppenderRef ref="error-log"/>
+			<AppenderRef ref="AsyncFile"/>
 		</Logger>
-
-		<Logger name="org.reflections" level="OFF"/>
-
+		
+		<!-- Application root logger -->
 		<Root level="${level}">
-			<AppenderRef ref="console-log"/>
-			<AppenderRef ref="all-log"/>
-			<AppenderRef ref="error-log"/>
+			<AppenderRef ref="Console"/> <!-- remove this in production if needed -->
+			<AppenderRef ref="AsyncFile"/>
 		</Root>
 
 	</Loggers>
+
 </Configuration>

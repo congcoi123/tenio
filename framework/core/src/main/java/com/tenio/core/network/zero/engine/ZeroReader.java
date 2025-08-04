@@ -24,21 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine;
 
-import com.tenio.common.data.DataType;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.zero.engine.reader.policy.DatagramPacketPolicy;
 
 /**
  * The engine supports reading binaries data from sockets.
  */
 public interface ZeroReader extends ZeroEngine {
-
-  /**
-   * Set the data serialization type.
-   *
-   * @param dataType the {@link DataType} value
-   */
-  void setDataType(DataType dataType);
 
   /**
    * Declares the server IP address.
@@ -69,4 +62,12 @@ public interface ZeroReader extends ZeroEngine {
    * @param networkReaderStatistic a {@link NetworkReaderStatistic} instance
    */
   void setNetworkReaderStatistic(NetworkReaderStatistic networkReaderStatistic);
+
+  /**
+   * Sets a datagram packet policy.
+   *
+   * @param datagramPacketPolicy instance of {@link DatagramPacketPolicy}
+   * @since 0.6.7
+   */
+  void setDatagramPacketPolicy(DatagramPacketPolicy datagramPacketPolicy);
 }

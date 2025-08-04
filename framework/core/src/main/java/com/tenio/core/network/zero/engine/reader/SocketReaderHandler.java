@@ -30,12 +30,16 @@ import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.zero.engine.acceptor.AcceptorHandler;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
+import com.tenio.core.utility.entity.Triple;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 /**
@@ -62,11 +66,16 @@ import java.util.function.Consumer;
 
 public final class SocketReaderHandler extends SystemLogger {
 
+  /**
+   * This selector manages {@link SocketChannel} instances.
+   */
   private final Selector readableSelector;
   private final ByteBuffer readerBuffer;
   private final SessionManager sessionManager;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final SocketIoHandler socketIoHandler;
+  private final Queue<Triple<SocketChannel, Consumer<SelectionKey>, Runnable>>
+      pendingClientSocketChannels;
 
   /**
    * Constructor.
@@ -87,31 +96,21 @@ public final class SocketReaderHandler extends SystemLogger {
     this.socketIoHandler = socketIoHandler;
 
     readableSelector = Selector.open();
+    pendingClientSocketChannels = new ConcurrentLinkedQueue<>();
   }
 
   /**
    * Registers a client socket to the reader selector.
    *
    * @param socketChannel {@link SocketChannel} a client channel
-   * @param onSuccess  when its {@link SelectionKey} is ready
+   * @param onSuccess     when its {@link SelectionKey} is ready
    * @param onFailed      it's failed to register this channel to a reader handler
    */
   public void registerClientSocketChannel(SocketChannel socketChannel,
                                           Consumer<SelectionKey> onSuccess,
                                           Runnable onFailed) {
-    // register channels to selector
-    // readable selector was registered by OP_READ interested only socket channels,
-    // but in some cases, we can receive "can writable" signal from those sockets
-    SelectionKey selectionKey;
-    try {
-      selectionKey = socketChannel.register(readableSelector, SelectionKey.OP_READ);
-      readableSelector.wakeup(); // this helps unblock the instruction select() in the method running()
-      onSuccess.accept(selectionKey);
-    } catch (ClosedChannelException exception) {
-      error(exception, "It was unable to register this channel to to selector: ",
-          exception.getMessage());
-      onFailed.run();
-    }
+    pendingClientSocketChannels.offer(new Triple<>(socketChannel, onSuccess, onFailed));
+    readableSelector.wakeup(); // this helps unblock the instruction select() in the method running()
   }
 
   /**
@@ -120,7 +119,15 @@ public final class SocketReaderHandler extends SystemLogger {
    * @throws IOException whenever IO exceptions thrown
    */
   public void shutdown() throws IOException {
+    pendingClientSocketChannels.clear();
     readableSelector.wakeup(); // this helps unblock the instruction select() in the method running()
+    for (SelectionKey selectionKey : readableSelector.keys()) {
+      SelectableChannel channel = selectionKey.channel();
+      if (channel instanceof SocketChannel socketChannel) {
+        socketIoHandler.channelInactive(socketChannel, selectionKey,
+            ConnectionDisconnectMode.SERVER_DOWN);
+      }
+    }
     readableSelector.close();
   }
 
@@ -134,6 +141,22 @@ public final class SocketReaderHandler extends SystemLogger {
       countReadyKeys = readableSelector.select();
     } catch (IOException exception) {
       error(exception, "I/O reading/selection error: ", exception.getMessage());
+    }
+
+    // register channels to selector
+    // readable selector was registered by OP_READ interested only socket channels,
+    // but in some cases, we can receive "can writable" signal from those sockets
+    Triple<SocketChannel, Consumer<SelectionKey>, Runnable> pendingSocketChannel;
+    while ((pendingSocketChannel = pendingClientSocketChannels.poll()) != null) {
+      try {
+        SelectionKey selectionKey =
+            pendingSocketChannel.first().register(readableSelector, SelectionKey.OP_READ);
+        pendingSocketChannel.second().accept(selectionKey);
+      } catch (ClosedChannelException exception) {
+        error(exception, "It was unable to register this channel to to selector: ",
+            exception.getMessage());
+        pendingSocketChannel.third().run();
+      }
     }
 
     if (countReadyKeys == 0) {
@@ -212,10 +235,10 @@ public final class SocketReaderHandler extends SystemLogger {
         // ready to read data from buffer
         readerBuffer.flip();
         // reads data from buffer and transfers them to the next process
-        byte[] binary = new byte[readerBuffer.limit()];
-        readerBuffer.get(binary);
+        byte[] binaries = new byte[readerBuffer.limit()];
+        readerBuffer.get(binaries);
 
-        socketIoHandler.sessionRead(session, binary);
+        socketIoHandler.sessionRead(session, binaries);
       }
     }
   }

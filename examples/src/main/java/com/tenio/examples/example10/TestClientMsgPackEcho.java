@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example10;
 
-import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.core.network.entity.session.Session;
@@ -46,7 +45,8 @@ import com.tenio.examples.server.SharedEventKey;
  * 5. Send messages via UDP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientMsgPackEcho implements SocketListener, DatagramListener {
+public final class TestClientMsgPackEcho implements SocketListener<MsgPackMap>,
+    DatagramListener<MsgPackMap> {
 
   private static final int SOCKET_PORT = 8032;
   private final String playerName;
@@ -54,18 +54,20 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
   public TestClientMsgPackEcho() {
     playerName = ClientUtility.generateRandomString(5);
 
-    // create a new TCP object and listen for this port
-    TCP tcp = new TCP(SOCKET_PORT);
-    tcp.receive(this);
-    Session session = tcp.getSession();
-    session.setName(playerName);
+    // create a new TCP object and listen to this port
+    new TCP(SOCKET_PORT, it -> {
+      it.receive(TestClientMsgPackEcho.this);
 
-    // send a login request
-    var request =
-        DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    tcp.send(request);
+      Session session = it.getSession();
+      session.setName(playerName);
 
-    System.out.println("Login Request -> " + request);
+      // send a login request
+      var request =
+          DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+      it.send(request);
+
+      System.out.println("Login Request -> " + request);
+    });
   }
 
   /**
@@ -76,9 +78,7 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var parcel = (MsgPackMap) DataUtility.binaryToCollection(DataType.MSG_PACK, binaries);
-
+  public void onReceivedTCP(MsgPackMap parcel) {
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
     var pack = parcel.getIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
@@ -87,14 +87,15 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
         // now you can send request for UDP connection request
         var request =
             DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-        // create a new UDP object and listen for this port
-        UDP udp = new UDP(pack[1]);
-        udp.receive(this);
-        udp.send(request);
+        // create a new UDP object and listen to this port
+        new UDP(pack[1], it -> {
+          it.receive(TestClientMsgPackEcho.this);
+          it.send(request);
 
-        System.out.println(
-            udp.getLocalAddress().getHostAddress() + ", " + udp.getLocalPort() + " Request a UDP " +
-                "connection -> " + request);
+          System.out.println(
+              it.getLocalAddress().getHostAddress() + ", " + it.getLocalPort() + " Request a UDP " +
+                  "connection -> " + request);
+        });
       }
       case DatagramEstablishedState.ESTABLISHED -> {
       }
@@ -102,6 +103,6 @@ public final class TestClientMsgPackEcho implements SocketListener, DatagramList
   }
 
   @Override
-  public void onReceivedUDP(byte[] binary) {
+  public void onReceivedUDP(MsgPackMap parcel) {
   }
 }

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example9.handler;
 
-import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
@@ -35,12 +34,10 @@ import java.util.Optional;
 
 @EventHandler
 public final class AccessKcpChannelRequestValidatedHandler extends AbstractHandler
-    implements EventAccessKcpChannelRequestValidation {
+    implements EventAccessKcpChannelRequestValidation<ZeroMap> {
 
   @Override
-  public Optional<Player> handle(DataCollection message) {
-    var request = (ZeroMap) message;
-
-    return api().getPlayerByIdentity(request.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+  public Optional<Player> handle(ZeroMap message) {
+    return api().getPlayerByIdentity(message.getString(SharedEventKey.KEY_PLAYER_LOGIN));
   }
 }

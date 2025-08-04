@@ -30,6 +30,7 @@ import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
 
 /**
  * The Socket writing handler.
@@ -52,21 +53,40 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
   public void send(PacketQueue packetQueue, Session session, Packet packet) {
     var channel = session.fetchSocketChannel();
 
-    // this channel can be deactivated by some reasons, no need to throw an
-    // exception here
+    // this channel can be deactivated by some reasons, no need to throw an exception here
     if (channel == null || !channel.isOpen() || !channel.isConnected()) {
       if (isDebugEnabled()) {
         debug("SOCKET CHANNEL SEND", "Skipping this packet, found null/closed socket for session ",
             session);
       }
+      // in this case, just disconnect the session if possible, it's no longer help writing data
+      try {
+        packetQueue.clear();
+        if (session.isActivated()) {
+          session.close(ConnectionDisconnectMode.LOST_IN_WRITTEN, PlayerDisconnectMode.CONNECTION_LOST);
+        }
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Error occurred in writing on session: ", session.toString());
+        }
+        return;
+      }
       return;
     }
 
-    // clear the buffer first
-    getBuffer().clear();
-
+    // encode the packet
+    packet.needsDataCounting(true);
+    packet = getPacketEncoder().encode(packet);
     // set priority for packet left unsent data (fragment)
     byte[] sendingData = packet.isFragmented() ? packet.getFragmentBuffer() : packet.getData();
+    if (sendingData == null || sendingData.length == 0) {
+      if (isDebugEnabled()) {
+        debug("SOCKET CHANNEL SEND", "Empty data, nothing to write for session: ", session);
+      }
+      // now the packet can be safely removed
+      packetQueue.take();
+      return;
+    }
 
     // buffer size is not enough, need to be allocated more bytes
     if (getBuffer().capacity() < sendingData.length) {
@@ -76,6 +96,9 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       }
       allocateBuffer(sendingData.length);
     }
+
+    // clear the buffer first
+    getBuffer().clear();
 
     // start to read data to buffer
     getBuffer().put(sendingData);
@@ -87,18 +110,30 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
     int expectedWritingBytes = getBuffer().remaining();
     int realWrittenBytes;
 
-    // but it's up to the channel, so it's possible to get left unsent bytes.
-    // We are asking for writing without checking whether the channel is writable,
-    // that may lead to creating several fragment packets.
-    // This needs to be reimplemented in better way later, for now, I have no idea yet
+    // but it's up to the channel, so it's possible to get left unsent bytes
     try {
       realWrittenBytes = channel.write(getBuffer());
+      var selectionKey = session.fectchSocketSelectionKey();
+      int currentOps = selectionKey.interestOps();
+      // in this case, the channel is not interested in writing, so we are asking for it
+      if (getBuffer().hasRemaining()) {
+        if ((currentOps & SelectionKey.OP_WRITE) == 0) {
+          selectionKey.interestOps(currentOps | SelectionKey.OP_WRITE);
+        }
+      } else {
+        // nothing left to be written, the channel should not wait for that action, remove it
+        if ((currentOps & SelectionKey.OP_WRITE) != 0) {
+          selectionKey.interestOps(currentOps & ~SelectionKey.OP_WRITE);
+        }
+      }
+
     } catch (IOException exception) {
       if (isErrorEnabled()) {
         error(exception, "Error occurred in writing on session: ", session.toString());
       }
       // in this case, just disconnect the session, it's no longer help writing data
       try {
+        packetQueue.clear();
         if (session.isActivated()) {
           session.close(ConnectionDisconnectMode.LOST_IN_WRITTEN, PlayerDisconnectMode.CONNECTION_LOST);
         }

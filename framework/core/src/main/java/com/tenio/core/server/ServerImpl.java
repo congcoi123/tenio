@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.DataType;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.api.ServerApi;
@@ -44,8 +43,14 @@ import com.tenio.core.entity.manager.implement.ChannelManagerImpl;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.manager.implement.RoomManagerImpl;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.NetworkService;
-import com.tenio.core.network.NetworkServiceImpl;
+import com.tenio.core.network.Network;
+import com.tenio.core.network.NetworkImpl;
+import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
+import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
@@ -53,17 +58,13 @@ import com.tenio.core.network.entity.protocol.Response;
 import com.tenio.core.network.entity.protocol.policy.RequestPolicy;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.filter.DefaultConnectionFilter;
-import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoderImpl;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoderImpl;
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
-import com.tenio.core.schedule.ScheduleService;
-import com.tenio.core.schedule.ScheduleServiceImpl;
-import com.tenio.core.server.service.ZeroProcessorService;
-import com.tenio.core.server.service.ZeroProcessorServiceImpl;
+import com.tenio.core.network.zero.engine.reader.policy.DatagramPacketPolicy;
+import com.tenio.core.network.zero.engine.reader.policy.DefaultDatagramPacketPolicy;
+import com.tenio.core.scheduler.Scheduler;
+import com.tenio.core.scheduler.SchedulerImpl;
+import com.tenio.core.server.core.ZeroProcessor;
+import com.tenio.core.server.core.ZeroProcessorImpl;
 import com.tenio.core.server.setting.ConfigurationAssessment;
 import com.tenio.core.utility.CommandUtility;
 import java.io.IOError;
@@ -88,13 +89,12 @@ public final class ServerImpl extends SystemLogger implements Server {
   private final PlayerManager playerManager;
   private final ChannelManager channelManager;
   private final DatagramChannelManager datagramChannelManager;
-  private final ZeroProcessorService zeroProcessorService;
-  private final ScheduleService scheduleService;
-  private final NetworkService networkService;
+  private final ZeroProcessor zeroProcessor;
+  private final Scheduler scheduler;
+  private final Network network;
   private final ServerApi serverApi;
   private ClientCommandManager clientCommandManager;
   private Configuration configuration;
-  private DataType dataType;
   private long startedTime;
   private String serverName;
 
@@ -104,10 +104,11 @@ public final class ServerImpl extends SystemLogger implements Server {
     playerManager = PlayerManagerImpl.newInstance(eventManager);
     channelManager = ChannelManagerImpl.newInstance(eventManager);
     datagramChannelManager = DatagramChannelManager.newInstance();
-    networkService = NetworkServiceImpl.newInstance(eventManager);
+    network = NetworkImpl.newInstance(eventManager);
     serverApi = ServerApiImpl.newInstance(this);
-    zeroProcessorService = ZeroProcessorServiceImpl.newInstance(eventManager, serverApi, datagramChannelManager);
-    scheduleService = ScheduleServiceImpl.newInstance(eventManager);
+    zeroProcessor =
+        ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
+    scheduler = SchedulerImpl.newInstance(eventManager);
   } // prevent creation manually
 
   /**
@@ -145,8 +146,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 
     this.configuration = configuration;
 
-    dataType =
-        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION));
     serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
     if (isInfoEnabled()) {
@@ -154,7 +153,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     }
 
     // subscribing for processes and handlers
-    zeroProcessorService.subscribe();
+    zeroProcessor.subscribe();
 
     bootstrapHandler.getEventHandler().initialize(eventManager);
 
@@ -174,14 +173,23 @@ public final class ServerImpl extends SystemLogger implements Server {
     startServices();
 
     // it should wait for a while to let everything settles down
-    Thread.sleep(1000);
+    int servicesTakeTime = Math.max(Math.max(network.getMaximumStartingTimeInMilliseconds(),
+        zeroProcessor.getMaximumStartingTimeInMilliseconds()),
+        scheduler.getMaximumStartingTimeInMilliseconds());
+    int totalWaitingTime =
+        servicesTakeTime + CoreConstant.DELAY_BEFORE_SERVER_IS_READY_IN_MILLISECONDS;
+    Thread.sleep(totalWaitingTime);
 
     if (isInfoEnabled()) {
-      info("SERVER", serverName, "Started");
+      info("SERVER", serverName, buildgen("Started after ", totalWaitingTime, " milliseconds"));
     }
 
-    // emit "server started" event
+    // emit "server initialization" event
     eventManager.emit(ServerEvent.SERVER_INITIALIZATION, serverName, configuration);
+
+    // now it can be able to accept connections
+    network.activate();
+    zeroProcessor.activate();
 
     if (((Setting) configuration.get(CoreConfigurationType.SERVER_SETTING)).getCommand()
         .isEnabled()) {
@@ -190,15 +198,15 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   private void initializeServices() {
-    networkService.initialize();
-    zeroProcessorService.initialize();
-    scheduleService.initialize();
+    network.initialize();
+    zeroProcessor.initialize();
+    scheduler.initialize();
   }
 
   private void startServices() {
-    networkService.start();
-    zeroProcessorService.start();
-    scheduleService.start();
+    network.start();
+    zeroProcessor.start();
+    scheduler.start();
   }
 
   private void setupClientCommands(ClientCommandManager clientCommandManager) {
@@ -206,33 +214,36 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   private void setupEntitiesManagementService(Configuration configuration) {
-    playerManager.configureMaxIdleTimeInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
-    playerManager.configureMaxIdleTimeNeverDeportedInSeconds(configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED));
-    roomManager.configureMaxRooms(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_ROOMS));
+    playerManager.configureMaxIdleTimeInSeconds(
+        configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
+    playerManager.configureMaxIdleTimeNeverDeportedInSeconds(
+        configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED));
+    roomManager.configureMaxRooms(
+        configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_ROOMS));
   }
 
   private void setupScheduleService(Configuration configuration) {
-    scheduleService.setCcuReportInterval(
+    scheduler.setCcuReportInterval(
         configuration.getInt(CoreConfigurationType.INTERVAL_CCU_SCAN));
-    scheduleService.setDeadlockScanInterval(
+    scheduler.setDeadlockScanInterval(
         configuration.getInt(CoreConfigurationType.INTERVAL_DEADLOCK_SCAN));
-    scheduleService.setDisconnectedPlayerScanInterval(
+    scheduler.setDisconnectedPlayerScanInterval(
         configuration.getInt(CoreConfigurationType.INTERVAL_DISCONNECTED_PLAYER_SCAN));
-    scheduleService
+    scheduler
         .setRemovedRoomScanInterval(
             configuration.getInt(CoreConfigurationType.INTERVAL_REMOVED_ROOM_SCAN));
-    scheduleService
+    scheduler
         .setSystemMonitoringInterval(
             configuration.getInt(CoreConfigurationType.INTERVAL_SYSTEM_MONITORING));
-    scheduleService
+    scheduler
         .setTrafficCounterInterval(
             configuration.getInt(CoreConfigurationType.INTERVAL_TRAFFIC_COUNTER));
 
-    scheduleService.setSessionManager(networkService.getSessionManager());
-    scheduleService.setPlayerManager(playerManager);
-    scheduleService.setRoomManager(roomManager);
-    scheduleService.setNetworkReaderStatistic(networkService.getNetworkReaderStatistic());
-    scheduleService.setNetworkWriterStatistic(networkService.getNetworkWriterStatistic());
+    scheduler.setSessionManager(network.getSessionManager());
+    scheduler.setPlayerManager(playerManager);
+    scheduler.setRoomManager(roomManager);
+    scheduler.setNetworkReaderStatistic(network.getNetworkReaderStatistic());
+    scheduler.setNetworkWriterStatistic(network.getNetworkWriterStatistic());
   }
 
   private void setupNetworkService(Configuration configuration, BootstrapHandler bootstrapHandler)
@@ -242,13 +253,13 @@ public final class ServerImpl extends SystemLogger implements Server {
     if (connectionFilter == null) {
       connectionFilter = new DefaultConnectionFilter();
     }
-    networkService.setConnectionFilterClass(
+    network.setConnectionFilterClass(
         connectionFilter,
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_MAX_CONNECTIONS_PER_IP));
 
     var servletMap = bootstrapHandler.getServletMap();
     var httpConfiguration = configuration.get(CoreConfigurationType.NETWORK_HTTP);
-    networkService.setHttpConfiguration(
+    network.setHttpConfiguration(
         httpConfiguration != null ?
             configuration.getInt(CoreConfigurationType.WORKER_HTTP_WORKER) : 0,
         httpConfiguration != null ?
@@ -257,23 +268,24 @@ public final class ServerImpl extends SystemLogger implements Server {
 
     var serverAddress = configuration.getString(CoreConfigurationType.SERVER_ADDRESS);
 
-    networkService.setSocketAcceptorServerAddress(serverAddress);
+    network.setSocketAcceptorServerAddress(serverAddress);
 
-    networkService.setSocketAcceptorBufferSize(
+    network.setSocketAcceptorBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));
-    networkService.setSocketAcceptorWorkers(
+    network.setSocketAcceptorWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_ACCEPTOR));
 
     var udpChannelConfiguration = configuration.get(CoreConfigurationType.NETWORK_UDP) != null ?
         (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_UDP) : null;
     var kcpSocketConfiguration = configuration.get(CoreConfigurationType.NETWORK_KCP) != null ?
         (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_KCP) : null;
-    networkService.setSocketConfigurations(
+    network.setSocketConfigurations(
         (configuration.get(CoreConfigurationType.NETWORK_TCP) != null ?
             (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP) : null),
         udpChannelConfiguration,
         (configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) != null ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) : null),
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) :
+            null),
         kcpSocketConfiguration);
 
     if (udpChannelConfiguration != null) {
@@ -283,31 +295,28 @@ public final class ServerImpl extends SystemLogger implements Server {
       datagramChannelManager.configureKcpPort(kcpSocketConfiguration.port());
     }
 
-    networkService.setSocketReaderBufferSize(
+    network.setSocketReaderBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_READER_BUFFER_SIZE));
-    networkService.setSocketReaderWorkers(
+    network.setSocketReaderWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_READER));
 
-    networkService.setSocketWriterBufferSize(
+    network.setSocketWriterBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_WRITER_BUFFER_SIZE));
-    networkService.setSocketWriterWorkers(
+    network.setSocketWriterWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_WRITER));
 
-    networkService
+    network
         .setWebSocketConsumerWorkers(
             configuration.getInt(CoreConfigurationType.WORKER_WEBSOCKET_CONSUMER));
-    networkService
+    network
         .setWebSocketProducerWorkers(
             configuration.getInt(CoreConfigurationType.WORKER_WEBSOCKET_PRODUCER));
 
-    networkService.setDataType(
-        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION)));
-
-    networkService.setWebSocketReceiverBufferSize(
+    network.setWebSocketReceiverBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_RECEIVER_BUFFER_SIZE));
-    networkService.setWebSocketSenderBufferSize(
+    network.setWebSocketSenderBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_SENDER_BUFFER_SIZE));
-    networkService
+    network
         .setWebSocketUsingSsl(
             configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
 
@@ -315,11 +324,18 @@ public final class ServerImpl extends SystemLogger implements Server {
     if (packetQueuePolicy == null) {
       packetQueuePolicy = new DefaultPacketQueuePolicy();
     }
-    networkService.setPacketQueuePolicy(packetQueuePolicy);
-    networkService.setPacketQueueSize(
+    network.setPacketQueuePolicy(packetQueuePolicy);
+    network.setPacketQueueSize(
         configuration.getInt(CoreConfigurationType.PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION));
 
-    networkService.setSessionMaxIdleTimeInSeconds(
+    DatagramPacketPolicy datagramPacketPolicy =
+        bootstrapHandler.getBeanByClazz(DatagramPacketPolicy.class);
+    if (datagramPacketPolicy == null) {
+      datagramPacketPolicy = new DefaultDatagramPacketPolicy();
+    }
+    network.setDatagramPacketPolicy(datagramPacketPolicy);
+
+    network.setSessionMaxIdleTimeInSeconds(
         configuration.getInt(CoreConfigurationType.PROP_MAX_PLAYER_IDLE_TIME));
 
     BinaryPacketCompressor binaryPacketCompressor =
@@ -330,36 +346,36 @@ public final class ServerImpl extends SystemLogger implements Server {
     BinaryPacketDecoder binaryPacketDecoder = new BinaryPacketDecoderImpl();
 
     binaryPacketEncoder.setCompressionThresholdBytes(
-        configuration.getInt(CoreConfigurationType.NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES));
+        configuration.getInt(
+            CoreConfigurationType.NETWORK_PROP_PACKET_COMPRESSION_THRESHOLD_BYTES));
     binaryPacketEncoder.setCompressor(binaryPacketCompressor);
     binaryPacketEncoder.setEncryptor(binaryPacketEncryptor);
 
     binaryPacketDecoder.setCompressor(binaryPacketCompressor);
     binaryPacketDecoder.setEncryptor(binaryPacketEncryptor);
 
-    networkService.setPacketDecoder(binaryPacketDecoder);
-    networkService.setPacketEncoder(binaryPacketEncoder);
+    network.setPacketDecoder(binaryPacketDecoder);
+    network.setPacketEncoder(binaryPacketEncoder);
   }
 
-  private void setupInternalProcessorService(Configuration configuration, BootstrapHandler bootstrapHandler) {
-    zeroProcessorService.setDataType(
-        DataType.getByValue(configuration.getString(CoreConfigurationType.DATA_SERIALIZATION)));
+  private void setupInternalProcessorService(Configuration configuration,
+                                             BootstrapHandler bootstrapHandler) {
     RequestPolicy requestPolicy = bootstrapHandler.getBeanByClazz(RequestPolicy.class);
-    zeroProcessorService.setRequestPolicy(requestPolicy);
-    zeroProcessorService
+    zeroProcessor.setRequestPolicy(requestPolicy);
+    zeroProcessor
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
-    zeroProcessorService.setSessionManager(networkService.getSessionManager());
-    zeroProcessorService.setPlayerManager(playerManager);
-    zeroProcessorService
+    zeroProcessor.setSessionManager(network.getSessionManager());
+    zeroProcessor.setPlayerManager(playerManager);
+    zeroProcessor
         .setMaxRequestQueueSize(
             configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
-    zeroProcessorService
+    zeroProcessor
         .setThreadPoolSize(configuration.getInt(CoreConfigurationType.WORKER_INTERNAL_PROCESSOR));
-    zeroProcessorService.setKeepPlayerOnDisconnection(
+    zeroProcessor.setKeepPlayerOnDisconnection(
         configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION));
 
-    zeroProcessorService.setNetworkReaderStatistic(networkService.getNetworkReaderStatistic());
-    zeroProcessorService.setNetworkWriterStatistic(networkService.getNetworkWriterStatistic());
+    zeroProcessor.setNetworkReaderStatistic(network.getNetworkReaderStatistic());
+    zeroProcessor.setNetworkWriterStatistic(network.getNetworkWriterStatistic());
   }
 
   private void startConsole(SystemCommandManager systemCommandManager) {
@@ -422,9 +438,9 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   private void shutdownServices() {
-    zeroProcessorService.shutdown();
-    networkService.shutdown();
-    scheduleService.shutdown();
+    zeroProcessor.shutdown();
+    network.shutdown();
+    scheduler.shutdown();
   }
 
   @Override
@@ -468,11 +484,6 @@ public final class ServerImpl extends SystemLogger implements Server {
   }
 
   @Override
-  public DataType getDataType() {
-    return dataType;
-  }
-
-  @Override
   public long getStartedTime() {
     return startedTime;
   }
@@ -484,6 +495,6 @@ public final class ServerImpl extends SystemLogger implements Server {
 
   @Override
   public void write(Response response, boolean markedAsLast) {
-    networkService.write(response, markedAsLast);
+    network.write(response, markedAsLast);
   }
 }

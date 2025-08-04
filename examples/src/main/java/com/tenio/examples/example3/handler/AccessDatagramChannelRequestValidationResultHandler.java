@@ -42,7 +42,7 @@ public final class AccessDatagramChannelRequestValidationResultHandler extends A
       var request = map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
           array().addByte(DatagramEstablishedState.ESTABLISHED).addInteger(udpConv));
 
-      response().setContent(request.toBinary()).setRecipientPlayer(player).write();
+      response().setContent(request).setRecipientPlayer(player).write();
     }
   }
 }

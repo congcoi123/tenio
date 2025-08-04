@@ -27,7 +27,11 @@ package com.tenio.core.network.utility;
 import io.netty.channel.Channel;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -42,6 +46,27 @@ public final class SocketUtility {
   }
 
   /**
+   * Closes all channels in the selector and shuts it down.
+   *
+   * @param selector the {@link Selector}
+   * @throws IOException whenever there is any exception occurred
+   * @since 0.6.7
+   */
+  public static void shutdownSelector(Selector selector) throws IOException {
+    for (SelectionKey selectionKey : selector.keys()) {
+      SelectableChannel channel = selectionKey.channel();
+      if (channel instanceof ServerSocketChannel serverSocketChannel) {
+        closeServerSocket(serverSocketChannel, selectionKey);
+      } else if (channel instanceof SocketChannel socketChannel) {
+        closeSocket(socketChannel, selectionKey);
+      } else if (channel instanceof DatagramChannel datagramChannel) {
+        closeDatagramChannel(datagramChannel, selectionKey);
+      }
+    }
+    selector.close();
+  }
+
+  /**
    * Closes a socket channel and its related info.
    *
    * @param socketChannel the {@link SocketChannel}
@@ -50,10 +75,10 @@ public final class SocketUtility {
    */
   public static void closeSocket(SocketChannel socketChannel, SelectionKey selectionKey)
       throws IOException {
+    if (selectionKey != null) {
+      selectionKey.cancel();
+    }
     if (socketChannel != null) {
-      if (selectionKey != null) {
-        selectionKey.cancel();
-      }
       if (socketChannel.isOpen()) {
         var socket = socketChannel.socket();
         if (socket != null) {
@@ -61,6 +86,48 @@ public final class SocketUtility {
           socket.shutdownOutput();
         }
         socketChannel.close();
+      }
+    }
+  }
+
+  /**
+   * Closes a server socket channel and its related info.
+   *
+   * @param serverSocketChannel the {@link ServerSocketChannel}
+   * @param selectionKey        the {@link SelectionKey}, selected for the socket channel by a selector
+   * @throws IOException whenever there is any exception occurred
+   * @since 0.6.7
+   */
+  public static void closeServerSocket(ServerSocketChannel serverSocketChannel,
+                                       SelectionKey selectionKey)
+      throws IOException {
+    if (selectionKey != null) {
+      selectionKey.cancel();
+    }
+    if (serverSocketChannel != null) {
+      if (serverSocketChannel.isOpen()) {
+        serverSocketChannel.close();
+      }
+    }
+  }
+
+  /**
+   * Closes a datagram channel and its related info.
+   *
+   * @param datagramChannel the {@link DatagramChannel}
+   * @param selectionKey    the {@link SelectionKey}, selected for the socket channel by a selector
+   * @throws IOException whenever there is any exception occurred
+   * @since 0.6.7
+   */
+  public static void closeDatagramChannel(DatagramChannel datagramChannel,
+                                          SelectionKey selectionKey)
+      throws IOException {
+    if (selectionKey != null) {
+      selectionKey.cancel();
+    }
+    if (datagramChannel != null) {
+      if (datagramChannel.isOpen()) {
+        datagramChannel.close();
       }
     }
   }

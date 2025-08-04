@@ -102,15 +102,13 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   public Session createSocketSession(SocketChannel socketChannel, SelectionKey selectionKey) {
     Session session = SessionImpl.newInstance();
     session.configureSocketChannel(socketChannel, selectionKey);
-    session.configureSessionManager(this);
-    session.configurePacketQueue(configureNewPacketQueue());
-    session.configureConnectionFilter(connectionFilter);
-    session.configureMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
+    configureSession(session);
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionBySockets.put(session.fetchSocketChannel(), session);
       readonlySessionsList = sessionByIds.values().stream().toList();
       sessionCount = readonlySessionsList.size();
+      session.activate();
     }
     return session;
   }
@@ -176,15 +174,13 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   public Session createWebSocketSession(Channel webSocketChannel) {
     Session session = SessionImpl.newInstance();
     session.configureWebSocketChannel(webSocketChannel);
-    session.configureSessionManager(this);
-    session.configurePacketQueue(configureNewPacketQueue());
-    session.configureConnectionFilter(connectionFilter);
-    session.configureMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
+    configureSession(session);
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionByWebSockets.put(webSocketChannel, session);
       readonlySessionsList = sessionByIds.values().stream().toList();
       sessionCount = readonlySessionsList.size();
+      session.activate();
     }
     return session;
   }
@@ -262,5 +258,12 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     packetQueue.configureMaxSize(packetQueueSize);
     packetQueue.configurePacketQueuePolicy(packetQueuePolicy);
     return packetQueue;
+  }
+
+  private void configureSession(Session session) {
+    session.configureSessionManager(this);
+    session.configurePacketQueue(configureNewPacketQueue());
+    session.configureConnectionFilter(connectionFilter);
+    session.configureMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
   }
 }

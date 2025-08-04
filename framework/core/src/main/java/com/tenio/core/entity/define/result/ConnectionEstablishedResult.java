@@ -36,6 +36,8 @@ public enum ConnectionEstablishedResult {
   /**
    * Connection fails to connect to the server because the server reached maximum number of
    * connections.
+   * <p>
+   * <b>NOTE:</b> After this event emitted, the session will be <b>closed</b>.
    */
   REACHED_MAX_CONNECTION;
 

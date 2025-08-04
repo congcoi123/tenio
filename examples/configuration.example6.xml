@@ -60,7 +60,6 @@
 			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
 		</Schedules>
 		<Properties>
-			<Property name="data-serialization">zero</Property>
 			<Property name="max-request-queue-size">0</Property>
 			<Property name="max-response-queue-size-per-session">5000</Property>
 			<!-- When the server get disconnection of one client, can be hold its

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example6.handler;
 
-import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
@@ -35,14 +34,12 @@ import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
 public final class ConnectionEstablishedHandler extends AbstractHandler
-    implements EventConnectionEstablishedResult {
+    implements EventConnectionEstablishedResult<ZeroMap> {
 
   @Override
-  public void handle(Session session, DataCollection message, ConnectionEstablishedResult result) {
+  public void handle(Session session, ZeroMap message, ConnectionEstablishedResult result) {
     if (result == ConnectionEstablishedResult.SUCCESS) {
-      var request = (ZeroMap) message;
-
-      api().login(request.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+      api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
     }
   }
 }

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
+import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 
 /**
  * The default implementation for the binary packet encryption.
@@ -34,12 +34,12 @@ import com.tenio.core.network.zero.codec.encryption.BinaryPacketEncryptor;
 public final class DefaultBinaryPacketEncryptor implements BinaryPacketEncryptor {
 
   @Override
-  public byte[] decrypt(byte[] binary) {
-    return binary;
+  public byte[] decrypt(byte[] binaries) {
+    return binaries;
   }
 
   @Override
-  public byte[] encrypt(byte[] binary) {
-    return binary;
+  public byte[] encrypt(byte[] binaries) {
+    return binaries;
   }
 }

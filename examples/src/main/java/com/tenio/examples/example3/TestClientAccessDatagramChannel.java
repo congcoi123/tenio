@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example3;
 
-import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroMap;
@@ -46,7 +45,8 @@ import com.tenio.examples.server.SharedEventKey;
  * 5. Send messages via UDP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientAccessDatagramChannel implements SocketListener, DatagramListener {
+public final class TestClientAccessDatagramChannel implements SocketListener<ZeroMap>,
+    DatagramListener<ZeroMap> {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
@@ -57,16 +57,17 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
   public TestClientAccessDatagramChannel() {
     playerName = ClientUtility.generateRandomString(5);
 
-    // create a new TCP object and listen for this port
-    tcp = new TCP(SOCKET_PORT);
-    tcp.receive(this);
+    // create a new TCP object and listen to this port
+    tcp = new TCP(SOCKET_PORT, it -> {
+      it.receive(TestClientAccessDatagramChannel.this);
 
-    // send a login request
-    var request =
-        DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-    tcp.send(request);
+      // send a login request
+      var request =
+          DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+      it.send(request);
 
-    System.out.println("Login Request -> " + request);
+      System.out.println("Login Request -> " + request);
+    });
   }
 
   /**
@@ -77,9 +78,7 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var parcel = (ZeroMap) DataUtility.binaryToCollection(DataType.ZERO, binaries);
-
+  public void onReceivedTCP(ZeroMap parcel) {
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
     ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
@@ -91,12 +90,13 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
         var request =
             DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
                 udpMessageData);
-        // create a new UDP object and listen for this port
-        udp = new UDP(udpParcel.getInteger(1));
-        udp.receive(this);
-        udp.send(request);
+        // create a new UDP object and listen to this port
+        udp = new UDP(udpParcel.getInteger(1), it -> {
+          it.receive(TestClientAccessDatagramChannel.this);
+          it.send(request);
 
-        System.out.println("Request a UDP connection -> " + request);
+          System.out.println("Request a UDP connection -> " + request);
+        });
       }
       case DatagramEstablishedState.ESTABLISHED -> {
         udpConvey = udpParcel.getInteger(1);
@@ -137,8 +137,7 @@ public final class TestClientAccessDatagramChannel implements SocketListener, Da
   }
 
   @Override
-  public void onReceivedUDP(byte[] binary) {
-    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binary);
+  public void onReceivedUDP(ZeroMap parcel) {
     System.err.println("[RECV FROM SERVER UDP] -> " + parcel);
   }
 }

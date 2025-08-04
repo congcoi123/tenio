@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.protocol.implement;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.entity.Player;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.protocol.Response;
@@ -38,9 +41,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @see Response
  */
-public final class ResponseImpl implements Response {
+public final class ResponseImpl extends SystemLogger implements Response {
 
-  private byte[] content;
+  private DataCollection content;
   private Collection<Player> players;
   private Collection<Player> nonSessionPlayers;
   private Collection<Session> socketSessions;
@@ -48,9 +51,9 @@ public final class ResponseImpl implements Response {
   private Collection<Session> kcpSessions;
   private Collection<Session> webSocketSessions;
   private ResponseGuarantee guarantee;
-  private boolean isPrioritizedUdp;
-  private boolean isPrioritizedKcp;
-  private boolean isEncrypted;
+  private boolean prioritizedUdp;
+  private boolean prioritizedKcp;
+  private boolean encrypted;
 
   private ResponseImpl() {
     players = null;
@@ -60,9 +63,9 @@ public final class ResponseImpl implements Response {
     webSocketSessions = null;
     nonSessionPlayers = null;
     guarantee = ResponseGuarantee.NORMAL;
-    isPrioritizedUdp = false;
-    isPrioritizedKcp = false;
-    isEncrypted = false;
+    prioritizedUdp = false;
+    prioritizedKcp = false;
+    encrypted = false;
   }
 
   /**
@@ -75,15 +78,19 @@ public final class ResponseImpl implements Response {
   }
 
   @Override
-  public byte[] getContent() {
+  public DataCollection getContent() {
     return content;
   }
 
   @Override
-  public Response setContent(byte[] content) {
+  public Response setContent(DataCollection content) {
     this.content = content;
-
     return this;
+  }
+
+  @Override
+  public DataType getDataType() {
+    return content.getType();
   }
 
   @Override
@@ -123,7 +130,6 @@ public final class ResponseImpl implements Response {
     } else {
       this.players.addAll(players);
     }
-
     return this;
   }
 
@@ -133,7 +139,6 @@ public final class ResponseImpl implements Response {
       players = new ArrayList<>();
     }
     players.add(player);
-
     return this;
   }
 
@@ -151,19 +156,19 @@ public final class ResponseImpl implements Response {
 
   @Override
   public Response prioritizedUdp() {
-    isPrioritizedUdp = true;
+    prioritizedUdp = true;
     return this;
   }
 
   @Override
   public Response prioritizedKcp() {
-    isPrioritizedKcp = true;
+    prioritizedKcp = true;
     return this;
   }
 
   @Override
   public Response encrypted() {
-    isEncrypted = true;
+    encrypted = true;
     return this;
   }
 
@@ -174,8 +179,8 @@ public final class ResponseImpl implements Response {
   }
 
   @Override
-  public boolean isEncrypted() {
-    return isEncrypted;
+  public boolean needsEncrypted() {
+    return encrypted;
   }
 
   @Override
@@ -195,7 +200,7 @@ public final class ResponseImpl implements Response {
       TimeUnit.MILLISECONDS.sleep(delayInMilliseconds);
       write();
     } catch (InterruptedException exception) {
-      exception.printStackTrace();
+      error(exception);
     }
   }
 
@@ -229,13 +234,13 @@ public final class ResponseImpl implements Response {
     if (session.isTcp()) {
       // when the session contains a UDP connection and the response requires it, add its session
       // to the list: UDP > KCP > Socket
-      if (isPrioritizedUdp && session.containsUdp()) {
+      if (prioritizedUdp && session.containsUdp()) {
         if (datagramSessions == null) {
           datagramSessions = new ArrayList<>();
         }
         datagramSessions.add(session);
       } else {
-        if (isPrioritizedKcp && session.containsKcp()) {
+        if (prioritizedKcp && session.containsKcp()) {
           if (kcpSessions == null) {
             kcpSessions = new ArrayList<>();
           }
@@ -258,7 +263,7 @@ public final class ResponseImpl implements Response {
   @Override
   public String toString() {
     return "Response{" +
-        "content(bytes)=" + (content != null ? content.length : "null") +
+        "content=" + content +
         ", players=" + players +
         ", nonSessionPlayers=" + nonSessionPlayers +
         ", socketSessions=" + socketSessions +
@@ -266,8 +271,9 @@ public final class ResponseImpl implements Response {
         ", kcpSessions=" + kcpSessions +
         ", webSocketSessions=" + webSocketSessions +
         ", guarantee=" + guarantee +
-        ", isPrioritizedUdp=" + isPrioritizedUdp +
-        ", isEncrypted=" + isEncrypted +
+        ", prioritizedUdp=" + prioritizedUdp +
+        ", prioritizedKcp=" + prioritizedKcp +
+        ", encrypted=" + encrypted +
         '}';
   }
 }

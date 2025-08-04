@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap.injector;
 
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.utility.ClassLoaderUtility;
 import com.tenio.common.utility.StringUtility;
@@ -350,7 +351,8 @@ public final class Injector extends SystemLogger {
             systemCommandManager.registerCommand(systemCommandAnnotation.label(), handler);
           } else {
             if (isErrorEnabled()) {
-              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a AbstractSystemCommandHandler"));
+              error(new IllegalArgumentException(
+                  "Class " + clazz.getName() + " is not a AbstractSystemCommandHandler"));
             }
           }
         } catch (Exception exception) {
@@ -362,7 +364,7 @@ public final class Injector extends SystemLogger {
         try {
           var clientCommandAnnotation = clazz.getAnnotation(ClientCommand.class);
           var clientCommandInstance = clazz.getDeclaredConstructor().newInstance();
-          if (clientCommandInstance instanceof AbstractClientCommandHandler<?> handler) {
+          if (clientCommandInstance instanceof AbstractClientCommandHandler<?, ?> handler) {
             // manages by the class bean system
             var beanClass =
                 new BeanClass(clazz, String.valueOf(clientCommandAnnotation.value()));
@@ -373,10 +375,11 @@ public final class Injector extends SystemLogger {
             // add to its own management system
             handler.setCommandManager(clientCommandManager);
             clientCommandManager.registerCommand(clientCommandAnnotation.value(),
-                (AbstractClientCommandHandler<Player>) handler);
+                (AbstractClientCommandHandler<Player, DataCollection>) handler);
           } else {
             if (isErrorEnabled()) {
-              error(new IllegalArgumentException("Class " + clazz.getName() + " is not a AbstractClientCommandHandler"));
+              error(new IllegalArgumentException(
+                  "Class " + clazz.getName() + " is not a AbstractClientCommandHandler"));
             }
           }
         } catch (Exception exception) {
@@ -392,7 +395,9 @@ public final class Injector extends SystemLogger {
     classBeansMap.forEach((clazz, bean) -> {
       try {
         autowire(clazz, bean);
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | DuplicatedBeanCreationException exception) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+               NoSuchMethodException | ClassNotFoundException |
+               DuplicatedBeanCreationException exception) {
         if (isErrorEnabled()) {
           error("Initialize class: ", clazz.clazz().getName(), "\n",
               StringUtility.getStackTrace(exception));
@@ -588,7 +593,8 @@ public final class Injector extends SystemLogger {
         }
       } else if (field.isAnnotationPresent(Autowired.class)) {
         var fieldInstance =
-            getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier, classQualifier);
+            getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
+                classQualifier);
         if (fieldInstance != null) {
           field.set(bean, fieldInstance);
           autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);

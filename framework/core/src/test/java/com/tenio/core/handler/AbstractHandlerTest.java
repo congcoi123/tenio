@@ -27,16 +27,13 @@ package com.tenio.core.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.DataType;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
-import com.tenio.core.exception.UnsupportedDataTypeInUseException;
 import com.tenio.core.server.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -91,37 +88,14 @@ class AbstractHandlerTest {
   @Test
   @DisplayName("Test array() and map() methods in case of data type ZERO")
   void testArrayAndMapWithZeroDataType() {
-    when(server.getDataType()).thenReturn(DataType.ZERO);
     assertNotNull(handler.array());
     assertNotNull(handler.map());
   }
 
   @Test
-  @DisplayName("Invoke array() method in case of data type MSGPACK should throw exception")
-  void testArrayThrowsForNonZeroDataType() {
-    when(server.getDataType()).thenReturn(DataType.MSG_PACK);
-    assertThrows(UnsupportedDataTypeInUseException.class, () -> handler.array());
-  }
-
-  @Test
-  @DisplayName("Invoke map() method in case of data type MSGPACK should throw exception")
-  void testMapThrowsForNonZeroDataType() {
-    when(server.getDataType()).thenReturn(DataType.MSG_PACK);
-    assertThrows(UnsupportedDataTypeInUseException.class, () -> handler.map());
-  }
-
-  @Test
   @DisplayName("Test msgmap() method in case of data type MSGPACK")
   void testMsgmapWithMsgPackDataType() {
-    when(server.getDataType()).thenReturn(DataType.MSG_PACK);
     assertNotNull(handler.msgmap());
-  }
-
-  @Test
-  @DisplayName("Invoke msgmap() method in case of data type ZERO should throw exception")
-  void testMsgmapThrowsForNonMsgPackDataType() {
-    when(server.getDataType()).thenReturn(DataType.ZERO);
-    assertThrows(UnsupportedDataTypeInUseException.class, () -> handler.msgmap());
   }
 
   @Test

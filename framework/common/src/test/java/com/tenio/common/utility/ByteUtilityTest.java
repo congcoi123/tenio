@@ -57,13 +57,13 @@ class ByteUtilityTest {
       "1695609641, '101, 16, -13, 41'",
       "66320, '0, 1, 3, 16'"
   })
-  void testIntToBytes(int intValue, @ConvertWith(StringArrayConverter.class) String[] binary) {
+  void testIntToBytes(int intValue, @ConvertWith(StringArrayConverter.class) String[] binaries) {
     byte[] byteArray = ByteUtility.intToBytes(intValue);
-    assertEquals(binary.length, byteArray.length);
-    assertEquals(binary[0], String.valueOf(byteArray[0]));
-    assertEquals(binary[1], String.valueOf(byteArray[1]));
-    assertEquals(binary[2], String.valueOf(byteArray[2]));
-    assertEquals(binary[3], String.valueOf(byteArray[3]));
+    assertEquals(binaries.length, byteArray.length);
+    assertEquals(binaries[0], String.valueOf(byteArray[0]));
+    assertEquals(binaries[1], String.valueOf(byteArray[1]));
+    assertEquals(binaries[2], String.valueOf(byteArray[2]));
+    assertEquals(binaries[3], String.valueOf(byteArray[3]));
   }
 
   @Test

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.client;
 
-import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
+import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
 
 /**
  * The default implementation of the binary packet compressor.
@@ -34,12 +34,12 @@ import com.tenio.core.network.zero.codec.compression.BinaryPacketCompressor;
 public final class DefaultBinaryPacketCompressor implements BinaryPacketCompressor {
 
   @Override
-  public byte[] compress(byte[] binary) {
-    return binary;
+  public byte[] compress(byte[] binaries) {
+    return binaries;
   }
 
   @Override
-  public byte[] uncompress(byte[] binary) {
-    return binary;
+  public byte[] uncompress(byte[] binaries) {
+    return binaries;
   }
 }

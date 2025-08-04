@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.data.msgpack.element;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
 import com.tenio.common.data.msgpack.MsgPackUtility;
 import java.io.Serial;
 import java.io.Serializable;
@@ -462,7 +463,12 @@ public final class MsgPackMap extends HashMap<String, Object>
   }
 
   @Override
-  public byte[] toBinary() {
+  public byte[] toBinaries() {
     return MsgPackUtility.serialize(this);
+  }
+
+  @Override
+  public DataType getType() {
+    return DataType.MSG_PACK;
   }
 }

@@ -48,6 +48,8 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
   @Override
   public void send(PacketQueue packetQueue, Session session, Packet packet) {
+    packet = getPacketEncoder().encode(packet);
+
     // the datagram channel will send data by packet, so no fragment using here
     byte[] sendingData = packet.getData();
 

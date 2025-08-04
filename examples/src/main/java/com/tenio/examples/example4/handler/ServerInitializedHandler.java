@@ -64,8 +64,7 @@ public final class ServerInitializedHandler extends AbstractHandler
         array.add((int) vehicle.getRotation());
         parcel.putIntegerArray(SharedEventKey.KEY_PLAYER_GET_RESPONSE, array);
 
-        response().setRecipientPlayers(players).setContent(parcel.toBinary()).prioritizedUdp()
-            .write();
+        response().setRecipientPlayers(players).setContent(parcel).prioritizedUdp().write();
       }
 
       @Override
@@ -76,7 +75,7 @@ public final class ServerInitializedHandler extends AbstractHandler
           var parcel = map();
           parcel.putInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS, currentFps);
 
-          response().setRecipientPlayer(player.get()).setContent(parcel.toBinary()).write();
+          response().setRecipientPlayer(player.get()).setContent(parcel).write();
         }
       }
 

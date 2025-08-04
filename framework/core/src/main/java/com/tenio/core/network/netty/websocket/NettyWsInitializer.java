@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.netty.websocket;
 
-import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.ssl.WebSocketSslContext;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -44,19 +44,20 @@ public final class NettyWsInitializer extends ChannelInitializer<SocketChannel> 
   private final EventManager eventManager;
   private final SessionManager sessionManager;
   private final ConnectionFilter connectionFilter;
-  private final DataType dataType;
+  private final BinaryPacketDecoder binaryPacketDecoder;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final WebSocketSslContext sslContext;
   private final boolean usingSsl;
 
   private NettyWsInitializer(EventManager eventManager, SessionManager sessionManager,
-                             ConnectionFilter connectionFilter, DataType dataType,
+                             ConnectionFilter connectionFilter,
+                             BinaryPacketDecoder binaryPacketDecoder,
                              NetworkReaderStatistic networkReaderStatistic,
                              WebSocketSslContext sslContext, boolean usingSsl) {
     this.eventManager = eventManager;
     this.sessionManager = sessionManager;
     this.connectionFilter = connectionFilter;
-    this.dataType = dataType;
+    this.binaryPacketDecoder = binaryPacketDecoder;
     this.networkReaderStatistic = networkReaderStatistic;
     this.sslContext = sslContext;
     this.usingSsl = usingSsl;
@@ -65,23 +66,23 @@ public final class NettyWsInitializer extends ChannelInitializer<SocketChannel> 
   /**
    * Initialization.
    *
-   * @param eventManager           the event manager
-   * @param sessionManager         the sessin manager
-   * @param connectionFilter       the connection filter
-   * @param dataType               the {@link DataType}
-   * @param networkReaderStatistic the network reader statistic
-   * @param sslContext             the ssl context
+   * @param eventManager           the instance of {@link EventManager}
+   * @param sessionManager         the instance of {@link SessionManager}
+   * @param connectionFilter       the instance of {@link ConnectionFilter}
+   * @param binaryPacketDecoder    the instance of {@link BinaryPacketDecoder}
+   * @param networkReaderStatistic the instance of {@link NetworkReaderStatistic}
+   * @param sslContext             the {@link WebSocketSslContext}
    * @param usingSsl               is using ssl or not
    * @return an instance
    */
   public static NettyWsInitializer newInstance(EventManager eventManager,
                                                SessionManager sessionManager,
                                                ConnectionFilter connectionFilter,
-                                               DataType dataType,
+                                               BinaryPacketDecoder binaryPacketDecoder,
                                                NetworkReaderStatistic networkReaderStatistic,
                                                WebSocketSslContext sslContext, boolean usingSsl) {
-    return new NettyWsInitializer(eventManager, sessionManager, connectionFilter, dataType,
-        networkReaderStatistic, sslContext, usingSsl);
+    return new NettyWsInitializer(eventManager, sessionManager, connectionFilter,
+        binaryPacketDecoder, networkReaderStatistic, sslContext, usingSsl);
   }
 
   @Override
@@ -101,6 +102,6 @@ public final class NettyWsInitializer extends ChannelInitializer<SocketChannel> 
     // the logic handler
     pipeline.addLast("http-handshake",
         NettyWsHandShake.newInstance(eventManager, sessionManager, connectionFilter,
-            dataType, networkReaderStatistic));
+            binaryPacketDecoder, networkReaderStatistic));
   }
 }

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.examples.example11;
 
-import com.tenio.common.data.DataType;
+import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataUtility;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
@@ -37,24 +37,25 @@ import com.tenio.examples.server.SharedEventKey;
  * 2. Send a login request.<br>
  * 3. Receive messages via TCP connection from the server.<br>
  */
-public final class TestClientCommand implements SocketListener {
+public final class TestClientCommand implements SocketListener<DataCollection> {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
 
   public TestClientCommand() {
-    // create a new TCP object and listen for this port
-    tcp = new TCP(SOCKET_PORT);
-    tcp.receive(this);
+    // create a new TCP object and listen to this port
+    tcp = new TCP(SOCKET_PORT, it -> {
+      it.receive(TestClientCommand.this);
 
-    String name = ClientUtility.generateRandomString(5);
+      String name = ClientUtility.generateRandomString(5);
 
-    // send a login request
-    var request = DataUtility.newZeroMap();
-    request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-    tcp.send(request);
+      // send a login request
+      var request = DataUtility.newZeroMap();
+      request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+      it.send(request);
 
-    System.err.println("Login Request -> " + request);
+      System.err.println("Login Request -> " + request);
+    });
   }
 
   /**
@@ -65,9 +66,7 @@ public final class TestClientCommand implements SocketListener {
   }
 
   @Override
-  public void onReceivedTCP(byte[] binaries) {
-    var parcel = DataUtility.binaryToCollection(DataType.ZERO, binaries);
-
+  public void onReceivedTCP(DataCollection parcel) {
     System.out.println("[RECV FROM SERVER TCP] -> " + parcel.toString());
 
     try {

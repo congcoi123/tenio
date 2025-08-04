@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.packet;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
@@ -38,7 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * <p>Key features:
  * <ul>
- *   <li>Multiple transport type support (TCP, WebSocket, UDP)</li>
+ *   <li>Multiple transport type support (TCP, UDP)</li>
  *   <li>Priority-based packet handling</li>
  *   <li>Session association</li>
  *   <li>Deep copy capabilities</li>
@@ -78,9 +79,25 @@ public interface Packet {
   /**
    * Puts data of binaries into the packet.
    *
-   * @param binary data of {@code byte} array conveyed by the packet
+   * @param binaries data of {@code byte} array conveyed by the packet
    */
-  void setData(byte[] binary);
+  void setData(byte[] binaries);
+
+  /**
+   * Retrieves the data type of packet.
+   *
+   * @return the {@link DataType} using by the packet
+   * @since 0.6.7
+   */
+  DataType getDataType();
+
+  /**
+   * Sets data type of packet.
+   *
+   * @param dataType the {@link DataType} using by the packet
+   * @since 0.6.7
+   */
+  void setDataType(DataType dataType);
 
   /**
    * Retrieves the transportation type of packet.
@@ -115,7 +132,7 @@ public interface Packet {
    *
    * @return {@code true} if the packet data is encrypted, otherwise returns {@code false}
    */
-  boolean isEncrypted();
+  boolean needsEncrypted();
 
   /**
    * Marks the packet data is encrypted or not.
@@ -123,7 +140,24 @@ public interface Packet {
    * @param encrypted is set to {@code true} if the packet data is encrypted, otherwise
    *                  {@code false}
    */
-  void setEncrypted(boolean encrypted);
+  void needsEncrypted(boolean encrypted);
+
+  /**
+   * Determines whether the packet needs data counting in the header.
+   *
+   * @return {@code true} if the packet data needs data counting, otherwise returns {@code false}
+   * @since 0.6.7
+   */
+  boolean needsDataCounting();
+
+  /**
+   * Marks the packet is needed data counting or not.
+   *
+   * @param counting is set to {@code true} if the packet needs data counting, otherwise
+   *                 {@code false}
+   * @since 0.6.7
+   */
+  void needsDataCounting(boolean counting);
 
   /**
    * Retrieves a collection of sessions which play roles as recipients.
@@ -172,14 +206,6 @@ public interface Packet {
   boolean isUdp();
 
   /**
-   * Determines whether the packet's transportation type is WebSocket.
-   *
-   * @return {@code true} if the packet's transportation type is WebSocket, otherwise
-   * {@code false}
-   */
-  boolean isWebSocket();
-
-  /**
    * Retrieves the rest of sending binaries from the packet's data.
    *
    * @return the rest of sending {@code byte} array from the packet's data
@@ -190,9 +216,9 @@ public interface Packet {
    * Updates the rest of sending binaries from the packet's data. The data may not be sent at
    * once, but it is split to some parts according to the sending process.
    *
-   * @param binary the rest of sending {@code byte} array from the packet's data
+   * @param binaries the rest of sending {@code byte} array from the packet's data
    */
-  void setFragmentBuffer(byte[] binary);
+  void setFragmentBuffer(byte[] binaries);
 
   /**
    * Determines whether the packet's data is fragmented.

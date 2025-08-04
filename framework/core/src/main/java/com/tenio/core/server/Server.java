@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.server;
 
 import com.tenio.common.configuration.Configuration;
-import com.tenio.common.data.DataType;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.bootstrap.BootstrapHandler;
 import com.tenio.core.bootstrap.Bootstrapper;
@@ -119,13 +118,6 @@ public interface Server {
    * @since 0.4.0
    */
   Configuration getConfiguration();
-
-  /**
-   * Retrieves the data serialization type.
-   *
-   * @return the {@link DataType} value
-   */
-  DataType getDataType();
 
   /**
    * Retrieves the time when server starts in milliseconds.

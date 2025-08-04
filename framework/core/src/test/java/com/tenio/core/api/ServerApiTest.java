@@ -36,12 +36,12 @@ import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
@@ -111,24 +111,21 @@ class ServerApiTest {
     Mockito.when(playerManager.createPlayer(loginName)).thenReturn(loginPlayer);
     serverApi.login(loginName);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
-            PlayerLoginResult.SUCCESS);
+        .emit(ServerEvent.PLAYER_LOGIN, loginPlayer);
   }
 
   @Test
   @DisplayName("When a player login without session, and it has duplicated exception")
   void playerLoginWithoutSessionShouldHaveDuplicatedException() {
+    var playerManager = PlayerManagerImpl.newInstance(eventManager);
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var loginName = "test";
     var loginPlayer = DefaultPlayer.newInstance(loginName);
-    Mockito.doThrow(new AddedDuplicatedPlayerException(loginPlayer))
-        .when(playerManager).createPlayer(loginName);
     serverApi.login(loginName);
-    Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
-            PlayerLoginResult.DUPLICATED_PLAYER);
+    Assertions.assertThrows(AddedDuplicatedPlayerException.class,
+        () -> serverApi.login(loginPlayer));
   }
 
   @Test
@@ -144,42 +141,45 @@ class ServerApiTest {
         .thenReturn(loginPlayer);
     serverApi.login(loginName, loginSession);
     Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
-            PlayerLoginResult.SUCCESS);
+        .emit(ServerEvent.PLAYER_LOGIN, loginPlayer);
+  }
+
+  @Test
+  @DisplayName("When a player login with an unavailable player instance, it should have null " +
+      "pointer exception")
+  void playerLoginWithPlayerShouldHaveNullPointerException() {
+    var playerManager = PlayerManagerImpl.newInstance(eventManager);
+    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
+
+    Player player = null;
+    Assertions.assertThrows(NullPointerException.class, () -> serverApi.login(player));
   }
 
   @Test
   @DisplayName("When a player login with an unavailable session, it should have null pointer " +
       "exception")
   void playerLoginWithSessionShouldHaveNullPointerException() {
+    var playerManager = PlayerManagerImpl.newInstance(eventManager);
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
-    Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var loginName = "test";
-    var loginSession = SessionImpl.newInstance();
-    Mockito.doThrow(NullPointerException.class)
-        .when(playerManager).createPlayerWithSession(loginName, loginSession);
-    serverApi.login(loginName, loginSession);
-    Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGIN_RESULT, null,
-            PlayerLoginResult.EXCEPTION);
+    Assertions.assertThrows(NullPointerException.class, () -> serverApi.login(loginName,
+        null));
   }
 
   @Test
   @DisplayName("When a player login with a session, and it has duplicated exception")
   void playerLoginWithSessionShouldHaveDuplicatedException() {
+    var playerManager = PlayerManagerImpl.newInstance(eventManager);
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
     var loginName = "test";
     var loginPlayer = DefaultPlayer.newInstance(loginName);
     var loginSession = SessionImpl.newInstance();
-    Mockito.doThrow(new AddedDuplicatedPlayerException(loginPlayer))
-        .when(playerManager).createPlayerWithSession(loginName, loginSession);
     serverApi.login(loginName, loginSession);
-    Mockito.verify(eventManager, Mockito.times(1))
-        .emit(ServerEvent.PLAYER_LOGIN_RESULT, loginPlayer,
-            PlayerLoginResult.DUPLICATED_PLAYER);
+    Assertions.assertThrows(AddedDuplicatedPlayerException.class,
+        () -> serverApi.login(loginPlayer));
   }
 
   @Test

@@ -25,14 +25,14 @@ THE SOFTWARE.
 package com.tenio.examples.client;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
 import com.tenio.core.network.entity.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.entity.session.implement.SessionImpl;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.zero.codec.decoder.BinaryPacketDecoderImpl;
-import com.tenio.core.network.zero.codec.decoder.PacketDecoderResultListener;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.zero.codec.encoder.BinaryPacketEncoderImpl;
+import com.tenio.core.network.zero.handler.frame.BinaryPacketFramer;
+import com.tenio.core.network.zero.handler.frame.PacketFramingListener;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,12 +40,13 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * Create an object for handling a socket connection. It is used to send
  * messages to a server or receive messages from that one.
  */
-public final class TCP implements PacketDecoderResultListener {
+public final class TCP implements PacketFramingListener {
 
   private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
   private static final String LOCAL_HOST = "localhost";
@@ -57,22 +58,23 @@ public final class TCP implements PacketDecoderResultListener {
   private DataInputStream dataInputStream;
   private ByteArrayOutputStream byteArrayOutputStream;
   private Session session;
+  private BinaryPacketFramer binaryPacketFramer;
   private BinaryPacketEncoder binaryPacketEncoder;
-  private BinaryPacketDecoder binaryPacketDecoder;
 
   /**
    * Listen in a port on the local machine.
    *
-   * @param port the desired port
+   * @param port      the desired port
+   * @param onSuccess TCP connected successfully
    */
-  public TCP(int port) {
+  public TCP(int port, Consumer<TCP> onSuccess) {
     try {
       socket = new Socket(LOCAL_HOST, port);
       dataOutputStream = new DataOutputStream(socket.getOutputStream());
       dataInputStream = new DataInputStream(socket.getInputStream());
       byteArrayOutputStream = new ByteArrayOutputStream();
 
-      session = SessionImpl.newInstanceForTcp();
+      session = new CustomSession();
 
       var binaryCompressor = new DefaultBinaryPacketCompressor();
       var binaryEncryptor = new DefaultBinaryPacketEncryptor();
@@ -81,10 +83,15 @@ public final class TCP implements PacketDecoderResultListener {
       binaryPacketEncoder.setCompressor(binaryCompressor);
       binaryPacketEncoder.setEncryptor(binaryEncryptor);
 
-      binaryPacketDecoder = new BinaryPacketDecoderImpl();
+      BinaryPacketDecoder binaryPacketDecoder = new BinaryPacketDecoderImpl();
       binaryPacketDecoder.setCompressor(binaryCompressor);
       binaryPacketDecoder.setEncryptor(binaryEncryptor);
-      binaryPacketDecoder.setResultListener(this);
+
+      binaryPacketFramer = new BinaryPacketFramer();
+      binaryPacketFramer.setBinaryPacketDecoder(binaryPacketDecoder);
+      binaryPacketFramer.setPacketFramingResult(this);
+
+      onSuccess.accept(this);
     } catch (IOException exception) {
       exception.printStackTrace();
     }
@@ -100,14 +107,16 @@ public final class TCP implements PacketDecoderResultListener {
    * @param message the desired message
    */
   public void send(DataCollection message) {
-    // convert message object to bytes data
+    // convert message object to binaries data
     var packet = PacketImpl.newInstance();
-    packet.setData(message.toBinary());
+    packet.setDataType(message.getType());
+    packet.setData(message.toBinaries());
+    packet.needsDataCounting(true);
     packet = binaryPacketEncoder.encode(packet);
     // attach the packet's length to packet's header
-    var bytes = packet.getData();
+    var binaries = packet.getData();
     try {
-      dataOutputStream.write(bytes);
+      dataOutputStream.write(binaries);
       dataOutputStream.flush();
     } catch (IOException exception) {
       exception.printStackTrace();
@@ -115,7 +124,7 @@ public final class TCP implements PacketDecoderResultListener {
   }
 
   /**
-   * Listen for messages that came from the server.
+   * Listen to messages that came from the server.
    *
    * @param listener the socket listener
    */
@@ -123,13 +132,13 @@ public final class TCP implements PacketDecoderResultListener {
     socketListener = listener;
     var executorService = Executors.newSingleThreadExecutor();
     future = executorService.submit(() -> {
-      var binary = new byte[DEFAULT_BYTE_BUFFER_SIZE];
+      var binaries = new byte[DEFAULT_BYTE_BUFFER_SIZE];
       int readBytes;
       try {
-        while ((readBytes = dataInputStream.read(binary, 0, binary.length)) != -1) {
+        while ((readBytes = dataInputStream.read(binaries, 0, binaries.length)) != -1) {
           byteArrayOutputStream.reset();
-          byteArrayOutputStream.write(binary, 0, readBytes);
-          binaryPacketDecoder.decode(session, byteArrayOutputStream.toByteArray());
+          byteArrayOutputStream.write(binaries, 0, readBytes);
+          binaryPacketFramer.framing(session, byteArrayOutputStream.toByteArray());
         }
       } catch (IOException | RuntimeException exception) {
         exception.printStackTrace();
@@ -150,17 +159,7 @@ public final class TCP implements PacketDecoderResultListener {
   }
 
   @Override
-  public void resultFrame(Session session, byte[] binary) {
-    socketListener.onReceivedTCP(binary);
-  }
-
-  @Override
-  public void updateReadDroppedPackets(long numberPackets) {
-    // do nothing
-  }
-
-  @Override
-  public void updateReadPackets(long numberPackets) {
-    // do nothing
+  public void onFramedResult(Session session, DataCollection message) {
+    socketListener.onReceivedTCP(message);
   }
 }

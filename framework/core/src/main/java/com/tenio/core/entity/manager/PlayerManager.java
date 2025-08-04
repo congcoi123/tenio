@@ -29,7 +29,7 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.schedule.task.internal.AutoDisconnectPlayerTask;
+import com.tenio.core.scheduler.task.core.AutoDisconnectPlayerTask;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -95,14 +95,6 @@ public interface PlayerManager extends Manager {
    */
   Player createPlayerWithSession(String playerName, Session session)
       throws AddedDuplicatedPlayerException, NullPointerException;
-
-  /**
-   * Configures basic info when a player is initially created, or before it is added into
-   * the management list.
-   *
-   * @param player the target player
-   */
-  void configureInitialPlayer(Player player);
 
   /**
    * Retrieves a player by their unique identity.

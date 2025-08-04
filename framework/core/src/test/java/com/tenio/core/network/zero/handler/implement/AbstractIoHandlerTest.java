@@ -27,7 +27,6 @@ package com.tenio.core.network.zero.handler.implement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import com.tenio.common.data.DataType;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -63,12 +62,5 @@ class AbstractIoHandlerTest {
   void testSetNetworkReaderStatistic() {
     handler.setNetworkReaderStatistic(readerStatistic);
     assertEquals(readerStatistic, handler.networkReaderStatistic);
-  }
-
-  @Test
-  @DisplayName("Test data type setter")
-  void testSetDataType() {
-    handler.setDataType(DataType.ZERO);
-    assertEquals(DataType.ZERO, handler.dataType);
   }
 }

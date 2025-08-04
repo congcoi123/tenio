@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.writer;
 
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
@@ -84,6 +85,22 @@ public interface WriterHandler {
    * @see BlockingQueue
    */
   void setSessionTicketsQueueManager(SessionTicketsQueueManager sessionTicketsQueueManager);
+
+  /**
+   * Retrieves a packet queue encoder.
+   *
+   * @return an instance of {@link BinaryPacketEncoder}
+   * @since 0.6.7
+   */
+  BinaryPacketEncoder getPacketEncoder();
+
+  /**
+   * Sets an instance of packet encoder to encode packets for sending to clients.
+   *
+   * @param packetEncoder an instance of {@link BinaryPacketEncoder}
+   * @since 0.6.7
+   */
+  void setPacketEncoder(BinaryPacketEncoder packetEncoder);
 
   /**
    * Retrieves a network writer statistic instance which takes responsibility recording the

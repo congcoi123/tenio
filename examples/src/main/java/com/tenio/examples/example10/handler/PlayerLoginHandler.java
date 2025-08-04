@@ -26,24 +26,21 @@ package com.tenio.examples.example10.handler;
 
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.entity.Player;
-import com.tenio.core.entity.define.result.PlayerLoginResult;
 import com.tenio.core.handler.AbstractHandler;
-import com.tenio.core.handler.event.EventPlayerLoginResult;
+import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
 public final class PlayerLoginHandler extends AbstractHandler
-    implements EventPlayerLoginResult<Player> {
+    implements EventPlayerLogin<Player> {
 
   @Override
-  public void handle(Player player, PlayerLoginResult result) {
-    if (result == PlayerLoginResult.SUCCESS) {
-      var parcel =
-          msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-              new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getUdpPort() });
+  public void handle(Player player) {
+    var parcel =
+        msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
+            new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getUdpPort() });
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
-    }
+    response().setContent(parcel).setRecipientPlayer(player).write();
   }
 }

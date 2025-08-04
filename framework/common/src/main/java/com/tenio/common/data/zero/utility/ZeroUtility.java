@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.common.data.zero.utility;
 
-import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.zero.ZeroArray;
 import com.tenio.common.data.zero.ZeroElement;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.common.data.zero.ZeroType;
@@ -101,34 +101,34 @@ public final class ZeroUtility {
   /**
    * Deserializes a stream of bytes to a zero collection.
    *
-   * @param binary the stream of bytes
+   * @param binaries the stream of bytes
    * @return a new zero collection instance
    */
-  public static DataCollection binaryToCollection(byte[] binary) {
-    return switch (ZeroType.getByValue(binary[0])) {
-      case ZERO_MAP -> binaryToMap(binary);
-      case ZERO_ARRAY -> binaryToArray(binary);
+  public static DataCollection binariesToCollection(byte[] binaries) {
+    return switch (ZeroType.getByValue(binaries[0])) {
+      case ZERO_MAP -> binariesToMap(binaries);
+      case ZERO_ARRAY -> binariesToArray(binaries);
       default -> throw new UnsupportedOperationException(
-          String.format("Unsupported value: %s", ZeroType.getByValue(binary[0])));
+          String.format("Unsupported value: %s", ZeroType.getByValue(binaries[0])));
     };
   }
 
   /**
    * Deserializes a stream of bytes to a zero array.
    *
-   * @param binary the stream of bytes
+   * @param binaries the stream of bytes
    * @return a new zero array instance
    */
-  public static ZeroArray binaryToArray(byte[] binary) {
-    if (binary.length < 3) {
+  public static ZeroArray binariesToArray(byte[] binaries) {
+    if (binaries.length < 3) {
       throw new IllegalStateException(String.format(
           "Unable to decode a ZeroArray because binary data size is not big enough to work on it."
               + " Size: %d bytes",
-          binary.length));
+          binaries.length));
     }
 
-    var buffer = ByteBuffer.allocate(binary.length);
-    buffer.put(binary);
+    var buffer = ByteBuffer.allocate(binaries.length);
+    buffer.put(binaries);
     buffer.flip();
 
     return decodeZeroArray(buffer);
@@ -137,19 +137,19 @@ public final class ZeroUtility {
   /**
    * Deserializes a stream of bytes to a zero map.
    *
-   * @param binary the stream of bytes
+   * @param binaries the stream of bytes
    * @return a new zero map instance
    */
-  public static ZeroMap binaryToMap(byte[] binary) {
-    if (binary.length < 3) {
+  public static ZeroMap binariesToMap(byte[] binaries) {
+    if (binaries.length < 3) {
       throw new IllegalStateException(String.format(
           "Unable to decode a ZeroMap because binary data size is not big enough to work on it"
               + ". Size: %d bytes",
-          binary.length));
+          binaries.length));
     }
 
-    var buffer = ByteBuffer.allocate(binary.length);
-    buffer.put(binary);
+    var buffer = ByteBuffer.allocate(binaries.length);
+    buffer.put(binaries);
     buffer.flip();
 
     return decodeZeroMap(buffer);
@@ -161,15 +161,15 @@ public final class ZeroUtility {
    * @param map the map
    * @return the stream of bytes converted from the map
    */
-  public static byte[] mapToBinary(ZeroMap map) {
+  public static byte[] mapToBinaries(ZeroMap map) {
     var buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
     buffer.put((byte) ZeroType.ZERO_MAP.getValue());
     buffer.putShort((short) map.size());
 
-    return mapToBinary(map, buffer);
+    return mapToBinaries(map, buffer);
   }
 
-  private static byte[] mapToBinary(ZeroMap map, ByteBuffer buffer) {
+  private static byte[] mapToBinaries(ZeroMap map, ByteBuffer buffer) {
     var keys = map.getKeys();
     ZeroElement zeroElement;
     Object data;
@@ -196,15 +196,15 @@ public final class ZeroUtility {
    * @param array the array
    * @return the stream of bytes converted from the array
    */
-  public static byte[] arrayToBinary(ZeroArray array) {
+  public static byte[] arrayToBinaries(ZeroArray array) {
     var buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
     buffer.put((byte) ZeroType.ZERO_ARRAY.getValue());
     buffer.putShort((short) array.size());
 
-    return arrayToBinary(array, buffer);
+    return arrayToBinaries(array, buffer);
   }
 
-  private static byte[] arrayToBinary(ZeroArray array, ByteBuffer buffer) {
+  private static byte[] arrayToBinaries(ZeroArray array, ByteBuffer buffer) {
     ZeroElement zeroElement;
     Object data;
 
@@ -278,8 +278,8 @@ public final class ZeroUtility {
       case FLOAT_ARRAY -> buffer = encodeFloatArray(buffer, (Collection<Float>) data);
       case DOUBLE_ARRAY -> buffer = encodeDoubleArray(buffer, (Collection<Double>) data);
       case STRING_ARRAY -> buffer = encodeStringArray(buffer, (Collection<String>) data);
-      case ZERO_ARRAY -> buffer = appendBinaryToBuffer(buffer, arrayToBinary((ZeroArray) data));
-      case ZERO_MAP -> buffer = appendBinaryToBuffer(buffer, mapToBinary((ZeroMap) data));
+      case ZERO_ARRAY -> buffer = appendBinariesToBuffer(buffer, arrayToBinaries((ZeroArray) data));
+      case ZERO_MAP -> buffer = appendBinariesToBuffer(buffer, mapToBinaries((ZeroMap) data));
     }
 
     return buffer;
@@ -552,17 +552,17 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeNull(ByteBuffer buffer) {
-    return appendBinaryToBuffer(buffer, new byte[1]);
+    return appendBinariesToBuffer(buffer, new byte[1]);
   }
 
   private static ByteBuffer encodeBoolean(ByteBuffer buffer, Boolean data) {
-    var binary = new byte[] {(byte) ZeroType.BOOLEAN.getValue(), (byte) (data ? 1 : 0)};
-    return appendBinaryToBuffer(buffer, binary);
+    var binaries = new byte[] {(byte) ZeroType.BOOLEAN.getValue(), (byte) (data ? 1 : 0)};
+    return appendBinariesToBuffer(buffer, binaries);
   }
 
   private static ByteBuffer encodeByte(ByteBuffer buffer, Byte data) {
-    var binary = new byte[] {(byte) ZeroType.BYTE.getValue(), data};
-    return appendBinaryToBuffer(buffer, binary);
+    var binaries = new byte[] {(byte) ZeroType.BYTE.getValue(), data};
+    return appendBinariesToBuffer(buffer, binaries);
   }
 
   private static ByteBuffer encodeShort(ByteBuffer buffer, Short data) {
@@ -570,7 +570,7 @@ public final class ZeroUtility {
     buf.put((byte) ZeroType.SHORT.getValue());
     buf.putShort(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeInteger(ByteBuffer buffer, Integer data) {
@@ -578,7 +578,7 @@ public final class ZeroUtility {
     buf.put((byte) ZeroType.INTEGER.getValue());
     buf.putInt(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeLong(ByteBuffer buffer, Long data) {
@@ -586,7 +586,7 @@ public final class ZeroUtility {
     buf.put((byte) ZeroType.LONG.getValue());
     buf.putLong(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeFloat(ByteBuffer buffer, Float data) {
@@ -594,7 +594,7 @@ public final class ZeroUtility {
     buf.put((byte) ZeroType.FLOAT.getValue());
     buf.putFloat(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeDouble(ByteBuffer buffer, Double data) {
@@ -602,7 +602,7 @@ public final class ZeroUtility {
     buf.put((byte) ZeroType.DOUBLE.getValue());
     buf.putDouble(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeString(ByteBuffer buffer, String data) {
@@ -612,7 +612,7 @@ public final class ZeroUtility {
     buf.putShort((short) stringBytes.length);
     buf.put(stringBytes);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeBooleanArray(ByteBuffer buffer, Collection<Boolean> data) {
@@ -624,7 +624,7 @@ public final class ZeroUtility {
       buf.put((byte) (boolValue ? 1 : 0));
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeByteArray(ByteBuffer buffer, byte[] data) {
@@ -633,7 +633,7 @@ public final class ZeroUtility {
     buf.putInt(data.length);
     buf.put(data);
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeShortArray(ByteBuffer buffer, Collection<Short> data) {
@@ -645,7 +645,7 @@ public final class ZeroUtility {
       buf.putShort(shortValue);
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeIntegerArray(ByteBuffer buffer, Collection<Integer> data) {
@@ -657,7 +657,7 @@ public final class ZeroUtility {
       buf.putInt(integerValue);
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeLongArray(ByteBuffer buffer, Collection<Long> data) {
@@ -669,7 +669,7 @@ public final class ZeroUtility {
       buf.putLong(longValue);
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeFloatArray(ByteBuffer buffer, Collection<Float> data) {
@@ -681,7 +681,7 @@ public final class ZeroUtility {
       buf.putFloat(floatValue);
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeDoubleArray(ByteBuffer buffer, Collection<Double> data) {
@@ -693,7 +693,7 @@ public final class ZeroUtility {
       buf.putDouble(doubleValue);
     }
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeStringArray(ByteBuffer buffer, Collection<String> collection) {
@@ -715,7 +715,7 @@ public final class ZeroUtility {
       buf.put(bytes);
     });
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer encodeZeroMapKey(ByteBuffer buffer, String key) {
@@ -723,14 +723,14 @@ public final class ZeroUtility {
     buf.putShort((short) key.length());
     buf.put(key.getBytes());
 
-    return appendBinaryToBuffer(buffer, buf.array());
+    return appendBinariesToBuffer(buffer, buf.array());
   }
 
-  private static ByteBuffer appendBinaryToBuffer(ByteBuffer buffer, byte[] binary) {
-    if (buffer.remaining() < binary.length) {
+  private static ByteBuffer appendBinariesToBuffer(ByteBuffer buffer, byte[] binaries) {
+    if (buffer.remaining() < binaries.length) {
       int newSize = BUFFER_CHUNK_BYTES;
-      if (newSize < binary.length) {
-        newSize = binary.length;
+      if (newSize < binaries.length) {
+        newSize = binaries.length;
       }
 
       var newBuffer = ByteBuffer.allocate(buffer.capacity() + newSize);
@@ -739,7 +739,7 @@ public final class ZeroUtility {
       buffer = newBuffer;
     }
 
-    buffer.put(binary);
+    buffer.put(binaries);
     return buffer;
   }
 }
