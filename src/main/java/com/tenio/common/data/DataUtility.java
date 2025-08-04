@@ -71,14 +71,14 @@ public final class DataUtility {
   /**
    * Deserializes a stream of bytes to a zero collection.
    *
-   * @param type   the serialization tool is using which is declared by {@link DataType}
-   * @param binary the stream of bytes
+   * @param type     the serialization tool is using which is declared by {@link DataType}
+   * @param binaries the stream of bytes
    * @return a new collection instance
    */
-  public static DataCollection binaryToCollection(DataType type, byte[] binary) {
+  public static DataCollection binariesToCollection(DataType type, byte[] binaries) {
     return switch (type) {
-      case ZERO -> ZeroUtility.binaryToCollection(binary);
-      case MSG_PACK -> MsgPackUtility.deserialize(binary);
+      case ZERO -> ZeroUtility.binariesToCollection(binaries);
+      case MSG_PACK -> MsgPackUtility.deserialize(binaries);
     };
   }
 }
