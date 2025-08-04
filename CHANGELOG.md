@@ -33,3 +33,6 @@
 ## 0.6.4 2025-09-01 Bugfix release
 - Upgraded dependencies
 - Removed unnecessary wrapper methods
+
+## 0.6.5 2025-09-02 Bugfix release
+- Upgraded dependencies
