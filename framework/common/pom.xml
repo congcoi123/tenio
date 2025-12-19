@@ -41,7 +41,7 @@
     <properties>
         <google.guava.version>33.3.1-jre</google.guava.version>
         <org.msgpack.version>0.9.8</org.msgpack.version>
-        <logging.log4j.version>2.20.0</logging.log4j.version>
+        <logging.log4j.version>2.25.3</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
