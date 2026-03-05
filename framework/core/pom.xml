@@ -42,7 +42,7 @@
         <io.github.congcoi123.tenio.common>0.6.5</io.github.congcoi123.tenio.common>
 
         <io.netty.version>4.2.1.Final</io.netty.version>
-        <org.eclipse.jetty.server.version>12.0.14</org.eclipse.jetty.server.version>
+        <org.eclipse.jetty.server.version>12.0.32</org.eclipse.jetty.server.version>
         <org.eclipse.jetty.ee10.servlet.version>12.0.14</org.eclipse.jetty.ee10.servlet.version>
         <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
         <kcp-base.version>1.6.1</kcp-base.version>
