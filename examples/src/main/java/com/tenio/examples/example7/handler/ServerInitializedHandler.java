@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example7.handler;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventServerInitialization;
@@ -39,7 +38,7 @@ public final class ServerInitializedHandler extends AbstractHandler
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
   @Override
-  public void handle(String serverName, Configuration configuration) {
+  public void handle(String serverName) {
     if (isInfoEnabled()) {
       info("SERVER INITIALIZATION",
           String.format("Started: %s", simpleDateFormat.format(new Date(api().getStartedTime()))));
