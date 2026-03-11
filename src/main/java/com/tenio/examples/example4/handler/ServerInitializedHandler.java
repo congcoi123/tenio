@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4.handler;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
@@ -46,8 +45,7 @@ public final class ServerInitializedHandler extends AbstractHandler
   private HeartBeatManager heartBeatManager;
 
   @Override
-  public void handle(String serverName, Configuration configuration) {
-
+  public void handle(String serverName) {
     var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
     world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
     world.setListener(new WorldListener() {

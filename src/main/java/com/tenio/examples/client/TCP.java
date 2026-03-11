@@ -111,7 +111,7 @@ public final class TCP implements PacketFramingListener {
     var packet = PacketImpl.newInstance();
     packet.setDataType(message.getType());
     packet.setData(message.toBinaries());
-    packet.needsDataCounting(true);
+    packet.hasLengthPrefixed(true);
     packet = binaryPacketEncoder.encode(packet);
     // attach the packet's length to packet's header
     var binaries = packet.getData();
