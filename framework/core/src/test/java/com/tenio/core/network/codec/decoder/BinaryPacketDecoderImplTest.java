@@ -26,10 +26,10 @@ package com.tenio.core.network.codec.decoder;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.msgpack.core.MessageTypeException;
 
 @DisplayName("Unit Test Cases For BinaryPacketDecoderImpl")
 class BinaryPacketDecoderImplTest {
@@ -51,6 +51,6 @@ class BinaryPacketDecoderImplTest {
   @DisplayName("Decode invalid data should throw an exception")
   void testDecodeInvalidData() {
     byte[] binaries = new byte[] {1, 2, 3};
-    assertThrows(IllegalArgumentException.class, () -> decoder.decode(binaries));
+    assertThrows(MessageTypeException.class, () -> decoder.decode(binaries));
   }
 }

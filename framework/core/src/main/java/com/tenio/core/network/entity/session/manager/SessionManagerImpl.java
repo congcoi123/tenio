@@ -43,7 +43,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import javax.annotation.concurrent.GuardedBy;
 import kcp.Ukcp;
 
 /**
@@ -53,15 +52,10 @@ import kcp.Ukcp;
  */
 public final class SessionManagerImpl extends AbstractManager implements SessionManager {
 
-  @GuardedBy("this")
   private final Map<Long, Session> sessionByIds;
-  @GuardedBy("this")
   private final Map<SocketChannel, Session> sessionBySockets;
-  @GuardedBy("this")
   private final Map<Channel, Session> sessionByWebSockets;
-  @GuardedBy("this")
   private final Map<Integer, Session> sessionByDatagrams;
-  @GuardedBy("this")
   private final Map<Integer, Session> sessionByKcps;
   private volatile List<Session> readonlySessionsList;
   private volatile int sessionCount;

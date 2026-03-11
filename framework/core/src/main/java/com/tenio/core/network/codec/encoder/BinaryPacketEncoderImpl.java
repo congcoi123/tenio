@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.network.codec.encoder;
 
-import com.tenio.common.data.DataType;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.network.codec.CodecUtility;
 import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
@@ -96,7 +95,7 @@ public final class BinaryPacketEncoderImpl extends SystemLogger implements Binar
     // in default, there is no header size
     int headerSize = 0;
     // in case of stream-oriented type
-    if (packet.needsDataCounting()) {
+    if (packet.hasLengthPrefixed()) {
       // if the original size of data exceeded threshold, it needs to be resized the
       // header bytes value
       headerSize = Short.BYTES;
@@ -107,9 +106,8 @@ public final class BinaryPacketEncoderImpl extends SystemLogger implements Binar
 
     // create new packet header and encode the first indicated byte
     PacketHeader packetHeader =
-        PacketHeader.newInstance(packet.needsDataCounting(), needsCompressed,
-            headerSize > Short.BYTES, needsEncrypted, packet.getDataType() == DataType.ZERO,
-            packet.getDataType() == DataType.MSG_PACK);
+        PacketHeader.newInstance(packet.hasLengthPrefixed(), needsCompressed,
+            headerSize > Short.BYTES, needsEncrypted, packet.getDataType());
     byte headerByte = CodecUtility.encodeFirstHeaderByte(packetHeader);
 
     // allocate bytes for the new data and put all value to form a new packet
@@ -119,7 +117,7 @@ public final class BinaryPacketEncoderImpl extends SystemLogger implements Binar
     packetBuffer.put(headerByte);
 
     // 2. put original data size for header bases on its length (in case of stream-oriented type)
-    if (packetHeader.needsCounting()) {
+    if (packetHeader.hasLengthPrefixed()) {
       if (headerSize > Short.BYTES) {
         packetBuffer.putInt(binaries.length);
       } else {

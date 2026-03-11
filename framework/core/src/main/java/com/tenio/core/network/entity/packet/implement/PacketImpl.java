@@ -45,7 +45,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   private DataType dataType;
   private ResponseGuarantee guarantee;
   private boolean encrypted;
-  private boolean counting;
+  private boolean lengthPrefixed;
   private TransportType transportType;
   private int originalSize;
   private Collection<Session> recipients;
@@ -125,13 +125,13 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
   }
 
   @Override
-  public boolean needsDataCounting() {
-    return counting;
+  public boolean hasLengthPrefixed() {
+    return lengthPrefixed;
   }
 
   @Override
-  public void needsDataCounting(boolean counting) {
-    this.counting = counting;
+  public void hasLengthPrefixed(boolean lengthPrefixed) {
+    this.lengthPrefixed = lengthPrefixed;
   }
 
   @Override
@@ -221,7 +221,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
         ", dataType=" + dataType +
         ", guarantee=" + guarantee +
         ", encrypted=" + encrypted +
-        ", counting=" + counting +
+        ", counting=" + lengthPrefixed +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
         ", recipients=" + recipients +
@@ -237,7 +237,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
     packet.setFragmentBuffer(fragmentBuffer);
     packet.setGuarantee(guarantee);
     packet.needsEncrypted(encrypted);
-    packet.needsDataCounting(counting);
+    packet.hasLengthPrefixed(lengthPrefixed);
     packet.setRecipients(recipients);
     packet.setTransportType(transportType);
     packet.setMarkedAsLast(last);

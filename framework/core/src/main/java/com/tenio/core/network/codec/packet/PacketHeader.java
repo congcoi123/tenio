@@ -31,21 +31,19 @@ import com.tenio.common.data.DataType;
  */
 public final class PacketHeader {
 
-  private final boolean counting;
+  private final boolean lengthPrefixed;
   private final boolean compressed;
   private final boolean bigSized;
   private final boolean encrypted;
-  private final boolean zero;
-  private final boolean msgpack;
+  private final DataType dataType;
 
-  private PacketHeader(boolean counting, boolean compressed, boolean bigSized,
-                       boolean encrypted, boolean zero, boolean msgpack) {
-    this.counting = counting;
+  private PacketHeader(boolean lengthPrefixed, boolean compressed, boolean bigSized,
+                       boolean encrypted, DataType dataType) {
+    this.lengthPrefixed = lengthPrefixed;
     this.compressed = compressed;
     this.bigSized = bigSized;
     this.encrypted = encrypted;
-    this.zero = zero;
-    this.msgpack = msgpack;
+    this.dataType = dataType;
   }
 
   /**
@@ -57,38 +55,35 @@ public final class PacketHeader {
    * <li>If 2 values are {@code false}, the zero flag is enabled by default</li>
    * </ul>
    *
-   * @param counting sets to {@code true} if the packet needs to include the total number of
-   *                    bytes for data in the header, otherwise {@code false}
-   * @param compressed  sets to {@code true} if the data is compressed, otherwise
-   *                    {@code false}
-   * @param bigSized    sets to {@code true} if the data size is considered big size,
-   *                    otherwise returns {@code false}
-   * @param encrypted   sets to {@code true} if the data is encrypted, otherwise
-   *                    {@code false}
-   * @param zero        sets to {@code true} if the data is encoded/decoded in Zero Type.
-   * @param msgpack     sets to {@code true} if the data is encoded/decoded in MsgPack Type.
+   * @param lengthPrefixed sets to {@code true} if the packet needs to include the total number of
+   *                       bytes for data in the header, otherwise {@code false}
+   * @param compressed     sets to {@code true} if the data is compressed, otherwise
+   *                       {@code false}
+   * @param bigSized       sets to {@code true} if the data size is considered big size,
+   *                       otherwise returns {@code false}
+   * @param encrypted      sets to {@code true} if the data is encrypted, otherwise
+   *                       {@code false}
+   * @param dataType       sets the {@link DataType}, the value could be {@code null}
    * @return a new instance of {@link PacketHeader}
    * @see DataType
    */
-  public static PacketHeader newInstance(boolean counting, boolean compressed, boolean bigSized,
-                                         boolean encrypted, boolean zero, boolean msgpack) {
-    if (zero && msgpack) {
-      throw new IllegalArgumentException("Only one of zero or msgpack flag should be enabled");
+  public static PacketHeader newInstance(boolean lengthPrefixed, boolean compressed,
+                                         boolean bigSized, boolean encrypted, DataType dataType) {
+    if (dataType == null) {
+      throw new IllegalArgumentException("Unsupported data type.");
     }
-    if (!zero && !msgpack) {
-      throw new IllegalArgumentException("Either zero or msgpack flag should be enabled");
-    }
-    return new PacketHeader(counting, compressed, bigSized, encrypted, zero, msgpack);
+    return new PacketHeader(lengthPrefixed, compressed, bigSized, encrypted, dataType);
   }
 
   /**
-   * Determines whether the packet needs data counting.
+   * Determines whether the packet needs length prefixed value for its data.
    *
-   * @return {@code true} if the packet needs data counting, otherwise returns {@code false}
+   * @return {@code true} if the packet needs length prefixed value for its data,
+   * otherwise returns {@code false}
    * @since 0.6.7
    */
-  public boolean needsCounting() {
-    return counting;
+  public boolean hasLengthPrefixed() {
+    return lengthPrefixed;
   }
 
   /**
@@ -120,36 +115,24 @@ public final class PacketHeader {
   }
 
   /**
-   * Determines whether the data is encoded/decoded in Zero type.
+   * Gets the data type.
    *
-   * @return {@code true} if the data is encoded/decoded in Zero type, otherwise returns {@code false}
-   * @see DataType#ZERO
-   * @since 0.6.7
+   * @return an instance of {@link DataType} if the data is supported, otherwise returns {@code
+   * null}
+   * @since 0.6.8
    */
-  public boolean isZero() {
-    return zero;
-  }
-
-  /**
-   * Determines whether the data is encoded/decoded in MsgPack type.
-   *
-   * @return {@code true} if the data is encoded/decoded in MsgPack type, otherwise returns {@code false}
-   * @see DataType#MSG_PACK
-   * @since 0.6.7
-   */
-  public boolean isMsgpack() {
-    return msgpack;
+  public DataType getDataType() {
+    return dataType;
   }
 
   @Override
   public String toString() {
     return "PacketHeader{" +
-        "counting=" + counting +
+        "lengthPrefixed=" + lengthPrefixed +
         ", compressed=" + compressed +
         ", bigSized=" + bigSized +
         ", encrypted=" + encrypted +
-        ", zero=" + zero +
-        ", msgpack=" + msgpack +
+        ", dataType=" + dataType +
         '}';
   }
 }

@@ -63,7 +63,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * The Injector class provides a dependency injection mechanism for the application.
@@ -96,7 +95,6 @@ import javax.annotation.concurrent.ThreadSafe;
  * @see ClassLoaderUtility
  * @since 0.3.0
  */
-@ThreadSafe
 public final class Injector extends SystemLogger {
 
   private static final Injector instance = new Injector();
@@ -502,7 +500,7 @@ public final class Injector extends SystemLogger {
       return classBeansMap.get(beanClass);
     }
 
-    if (implementedClass != null && !manualClassesSet.contains(beanClass.getClass())) {
+    if (!manualClassesSet.contains(beanClass.getClass())) {
       if (classBeansMap.containsKey(beanClass)) {
         throw new DuplicatedBeanCreationException(beanClass.clazz(), beanClass.name());
       }

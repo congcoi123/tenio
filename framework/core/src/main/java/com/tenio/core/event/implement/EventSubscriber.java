@@ -26,7 +26,6 @@ package com.tenio.core.event.implement;
 
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.Subscriber;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * Represents a mapping between a server event and its corresponding subscriber.
@@ -48,7 +47,6 @@ import javax.annotation.concurrent.ThreadSafe;
  * @see Subscriber
  * @since 0.3.0
  */
-@ThreadSafe
 public final class EventSubscriber {
 
   private final ServerEvent serverEvent;

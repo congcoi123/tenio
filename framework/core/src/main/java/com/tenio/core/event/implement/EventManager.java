@@ -29,7 +29,6 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.Subscriber;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Manages events and their subscribers in the game server.
@@ -55,7 +54,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  * @see SystemLogger
  * @since 0.3.0
  */
-@NotThreadSafe
 public final class EventManager extends SystemLogger {
 
   /**

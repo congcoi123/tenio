@@ -30,12 +30,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * The default implementation for the connection filter.
  */
-@ThreadSafe
 public class DefaultConnectionFilter implements ConnectionFilter {
 
   private final Set<String> bannedAddresses;
