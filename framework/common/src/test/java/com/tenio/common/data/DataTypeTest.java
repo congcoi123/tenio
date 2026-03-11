@@ -35,16 +35,16 @@ class DataTypeTest {
 
   @ParameterizedTest
   @CsvSource({
-      "ZERO, zero",
-      "MSG_PACK, msgpack"
+      "ZERO, 0",
+      "MSG_PACK, 1"
   })
   @DisplayName("Test All Enumerated Values")
-  void testAllEnumValues(String name, String value) {
+  void testAllEnumValues(String name, byte value) {
     DataType dataType = DataType.valueOf(name);
     DataType dataTypeByValue = DataType.getByValue(value);
     assertEquals(dataTypeByValue, dataType);
     assertEquals(value, dataType.getValue());
-    assertEquals(value, dataType.toString());
+    assertEquals(name, dataType.toString());
     assertEquals(name, dataType.name());
   }
 }

@@ -53,3 +53,6 @@
 
 ## 0.6.5 2025-09-02 Bugfix release
 - Renamed some methods
+
+## 0.6.8 2026-03-10 Bugfix release
+- Upgraded dependencies
