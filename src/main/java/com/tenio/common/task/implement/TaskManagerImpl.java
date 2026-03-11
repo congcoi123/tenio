@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * This class uses Java scheduler ({@link ScheduledFuture}) to manage your
@@ -42,7 +41,6 @@ import javax.annotation.concurrent.ThreadSafe;
  *
  * @see TaskManager
  */
-@ThreadSafe
 public final class TaskManagerImpl extends SystemLogger implements TaskManager {
 
   /**

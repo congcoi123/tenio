@@ -28,23 +28,18 @@ import com.google.common.base.Throwables;
 import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.ElementPool;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * The object pool mechanism for {@link StringBuilder}.
  */
-@ThreadSafe
 public final class StringBuilderPool implements ElementPool<StringBuilder> {
 
   private static volatile StringBuilderPool instance;
   private final Logger logger = LogManager.getLogger(getClass());
 
-  @GuardedBy("this")
   private StringBuilder[] pool;
-  @GuardedBy("this")
   private boolean[] used;
 
   private StringBuilderPool() {
