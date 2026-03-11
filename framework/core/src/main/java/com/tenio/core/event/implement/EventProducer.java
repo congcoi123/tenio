@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.event.implement;
 
 import com.tenio.core.configuration.define.ServerEvent;
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Creates and manages event handlers for the game server.
@@ -48,7 +47,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  * @see ServerEvent
  * @since 0.3.0
  */
-@NotThreadSafe
 public final class EventProducer {
 
   private final EventHandler<Object> eventHandler;

@@ -1,6 +1,6 @@
 <p align="center">
     <a href="#">
-        <img src="https://github.com/congcoi123/tenio/blob/master/assets/tenio-github-logo.png">
+        <img src="https://raw.githubusercontent.com/congcoi123/tenio/refs/heads/master/assets/tenio-github-logo.png">
     </a>
 </p>
 <p align="center">

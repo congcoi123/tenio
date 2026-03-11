@@ -48,11 +48,6 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
   @Override
   public void send(PacketQueue packetQueue, Session session, Packet packet) {
-    packet = getPacketEncoder().encode(packet);
-
-    // the datagram channel will send data by packet, so no fragment using here
-    byte[] sendingData = packet.getData();
-
     // retrieve the datagram channel instance from session
     var datagramChannel = session.fetchDatagramChannel();
 
@@ -73,6 +68,19 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
         error("{DATAGRAM CHANNEL SEND} ", "UDP Packet cannot be sent to ", session.toString(),
             ", no InetSocketAddress was set");
       }
+      return;
+    }
+
+    packet = getPacketEncoder().encode(packet);
+
+    // the datagram channel will send data by packet, so no fragment using here
+    byte[] sendingData = packet.getData();
+    if (sendingData == null || sendingData.length == 0) {
+      if (isDebugEnabled()) {
+        debug("DATAGRAM CHANNEL SEND", "Empty data, nothing to write for session: ", session);
+      }
+      // now the packet can be safely removed
+      packetQueue.take();
       return;
     }
 

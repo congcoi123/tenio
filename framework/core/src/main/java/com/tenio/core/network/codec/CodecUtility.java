@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.codec;
 
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.codec.packet.PacketHeader;
 import com.tenio.core.network.codec.packet.PacketHeaderType;
 
@@ -31,6 +32,11 @@ import com.tenio.core.network.codec.packet.PacketHeaderType;
  * The utility class provides methods to work with packet and binary data.
  */
 public final class CodecUtility {
+
+  /**
+   * The last 2 bits are reserved to encode {@link DataType} instance.
+   */
+  private static final byte DATA_TYPE_MASK = 0b00000011;
 
   private CodecUtility() {
     throw new UnsupportedOperationException("This class does not support to create new instance");
@@ -43,13 +49,26 @@ public final class CodecUtility {
    * @return the new instance of {@link PacketHeader}
    */
   public static PacketHeader decodeFirstHeaderByte(byte headerByte) {
+    // The mask will ensure we are only using the last 2 bits for DataType (Which is expected to
+    // have values from 0 to 3). In the future, if there are changes, for example, new DataType
+    // (5) is introduced:
+    // 00000101
+    // AND
+    // 00000011
+    //--------
+    // 00000001
+    // With masking, it won't break the header byte layout
+    byte dataTypeValue = (byte) (headerByte & DATA_TYPE_MASK);
+    DataType dataType = DataType.getByValue(dataTypeValue);
+    if (dataType == null) {
+      throw new IllegalArgumentException("Unsupported data type value in header: " + dataTypeValue);
+    }
     return PacketHeader.newInstance(
-        (headerByte & PacketHeaderType.COUNTING.getValue()) > 0,
-        (headerByte & PacketHeaderType.COMPRESSION.getValue()) > 0,
-        (headerByte & PacketHeaderType.BIG_SIZE.getValue()) > 0,
-        (headerByte & PacketHeaderType.ENCRYPTION.getValue()) > 0,
-        (headerByte & PacketHeaderType.ZERO.getValue()) > 0,
-        (headerByte & PacketHeaderType.MSG_PACK.getValue()) > 0
+        (headerByte & PacketHeaderType.LENGTH_PREFIXED.getValue()) != 0,
+        (headerByte & PacketHeaderType.COMPRESSION.getValue()) != 0,
+        (headerByte & PacketHeaderType.BIG_SIZE.getValue()) != 0,
+        (headerByte & PacketHeaderType.ENCRYPTION.getValue()) != 0,
+        dataType
     );
   }
 
@@ -62,29 +81,34 @@ public final class CodecUtility {
   public static byte encodeFirstHeaderByte(PacketHeader packetHeader) {
     byte headerByte = 0;
 
-    if (packetHeader.needsCounting()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.COUNTING.getValue());
+    if (packetHeader.hasLengthPrefixed()) {
+      headerByte |= PacketHeaderType.LENGTH_PREFIXED.getValue();
     }
 
     if (packetHeader.isCompressed()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.COMPRESSION.getValue());
+      headerByte |= PacketHeaderType.COMPRESSION.getValue();
     }
 
     if (packetHeader.isBigSized()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.BIG_SIZE.getValue());
+      headerByte |= PacketHeaderType.BIG_SIZE.getValue();
     }
 
     if (packetHeader.isEncrypted()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.ENCRYPTION.getValue());
+      headerByte |= PacketHeaderType.ENCRYPTION.getValue();
     }
 
-    if (packetHeader.isZero()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.ZERO.getValue());
-    }
+    // DataType encoding
+    // The mask will ensure we are only using the last 2 bits for DataType (Which is expected to
+    // have values from 0 to 3). In the future, if there are changes, for example, new DataType
+    // (5) is introduced:
+    // 00000101
+    // AND
+    // 00000011
+    //--------
+    // 00000001
+    // With masking, it won't break the header byte layout
+    headerByte |= (byte) (packetHeader.getDataType().getValue() & DATA_TYPE_MASK);
 
-    if (packetHeader.isMsgpack()) {
-      headerByte = (byte) (headerByte | PacketHeaderType.MSG_PACK.getValue());
-    }
 
     return headerByte;
   }

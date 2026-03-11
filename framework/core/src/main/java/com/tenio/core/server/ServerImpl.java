@@ -68,7 +68,6 @@ import com.tenio.core.server.core.ZeroProcessorImpl;
 import com.tenio.core.server.setting.ConfigurationAssessment;
 import com.tenio.core.utility.CommandUtility;
 import java.io.IOError;
-import javax.annotation.concurrent.ThreadSafe;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
@@ -80,7 +79,6 @@ import org.jline.terminal.TerminalBuilder;
  * orders are important, event subscribes must be set last and all configuration
  * values should be confirmed.
  */
-@ThreadSafe
 public final class ServerImpl extends SystemLogger implements Server {
 
   private static Server instance;
@@ -185,7 +183,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     }
 
     // emit "server initialization" event
-    eventManager.emit(ServerEvent.SERVER_INITIALIZATION, serverName, configuration);
+    eventManager.emit(ServerEvent.SERVER_INITIALIZATION, serverName);
 
     // now it can be able to accept connections
     network.activate();

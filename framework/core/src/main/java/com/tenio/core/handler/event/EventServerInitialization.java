@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
-import com.tenio.common.configuration.Configuration;
-
 /**
  * When the server is initialized.
  */
@@ -36,7 +34,6 @@ public interface EventServerInitialization {
    * When the server finished initialization process.
    *
    * @param serverName    the {@link String} name of the server
-   * @param configuration all server settings in {@link Configuration}
    */
-  void handle(String serverName, Configuration configuration);
+  void handle(String serverName);
 }

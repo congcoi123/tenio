@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
-import com.tenio.core.bootstrap.annotation.Component;
 import java.io.Serial;
 
 /**
