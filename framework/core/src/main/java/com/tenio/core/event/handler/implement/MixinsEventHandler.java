@@ -85,9 +85,8 @@ public final class MixinsEventHandler {
     eventServerInitializationOp.ifPresent(
         event -> eventManager.on(ServerEvent.SERVER_INITIALIZATION, params -> {
           var serverName = (String) params[0];
-          var configuration = (Configuration) params[1];
 
-          event.handle(serverName, configuration);
+          event.handle(serverName);
 
           return null;
         }));

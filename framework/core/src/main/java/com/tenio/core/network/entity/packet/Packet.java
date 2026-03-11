@@ -143,21 +143,22 @@ public interface Packet {
   void needsEncrypted(boolean encrypted);
 
   /**
-   * Determines whether the packet needs data counting in the header.
+   * Determines whether the packet needs length prefixed value for its data.
    *
-   * @return {@code true} if the packet data needs data counting, otherwise returns {@code false}
+   * @return {@code true} if the packet needs length prefixed value for its data,
+   * otherwise returns {@code false}
    * @since 0.6.7
    */
-  boolean needsDataCounting();
+  boolean hasLengthPrefixed();
 
   /**
-   * Marks the packet is needed data counting or not.
+   * Marks the packet to have data length prefixed or not.
    *
-   * @param counting is set to {@code true} if the packet needs data counting, otherwise
-   *                 {@code false}
+   * @param lengthPrefixed is set to {@code true} if the packet has length prefixed, otherwise
+   *                       {@code false}
    * @since 0.6.7
    */
-  void needsDataCounting(boolean counting);
+  void hasLengthPrefixed(boolean lengthPrefixed);
 
   /**
    * Retrieves a collection of sessions which play roles as recipients.

@@ -35,14 +35,14 @@ public enum DataType {
   /**
    * Uses the internal Zero serialization mechanism.
    */
-  ZERO("zero"),
+  ZERO((byte) 0),
   /**
    * Uses the MsgPack tool.
    */
-  MSG_PACK("msgpack");
+  MSG_PACK((byte) 1);
 
   // Reverse-lookup map for getting a type from a value
-  private static final Map<String, DataType> lookup = new HashMap<>();
+  private static final Map<Byte, DataType> lookup = new HashMap<>();
 
   static {
     for (var type : DataType.values()) {
@@ -50,33 +50,33 @@ public enum DataType {
     }
   }
 
-  private final String value;
+  private final byte value;
 
-  DataType(String value) {
+  DataType(byte value) {
     this.value = value;
   }
 
   /**
    * Retrieves a type by using its value.
    *
-   * @param value the value in <code>String</code>
+   * @param value the value in <code>byte</code>
    * @return the corresponding {@link DataType} if available, otherwise <code>null</code>
    */
-  public static DataType getByValue(String value) {
+  public static DataType getByValue(byte value) {
     return lookup.get(value);
   }
 
   /**
    * Fetches the type's value.
    *
-   * @return the type's value in <code>String</code> type
+   * @return the type's value in <code>byte</code> type
    */
-  public final String getValue() {
+  public final byte getValue() {
     return this.value;
   }
 
   @Override
   public final String toString() {
-    return getValue();
+    return name();
   }
 }

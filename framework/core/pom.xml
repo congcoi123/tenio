@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.6.7</version>
+    <version>0.6.8</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -39,19 +39,21 @@
     </scm>
 
     <properties>
-        <io.github.congcoi123.tenio.common>0.6.5</io.github.congcoi123.tenio.common>
+        <io.github.congcoi123.tenio.common>0.6.8</io.github.congcoi123.tenio.common>
 
-        <io.netty.version>4.2.1.Final</io.netty.version>
-        <org.eclipse.jetty.server.version>12.0.14</org.eclipse.jetty.server.version>
-        <org.eclipse.jetty.ee10.servlet.version>12.0.14</org.eclipse.jetty.ee10.servlet.version>
+        <io.netty.version>4.2.10.Final</io.netty.version>
+        <org.eclipse.jetty.server.version>12.1.6</org.eclipse.jetty.server.version>
+        <org.eclipse.jetty.ee10.servlet.version>12.1.6</org.eclipse.jetty.ee10.servlet.version>
         <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
         <kcp-base.version>1.6.1</kcp-base.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <org.json.version>20240303</org.json.version>
-        <com.fasterxml.jackson.core.version>2.18.0</com.fasterxml.jackson.core.version>
+        <com.fasterxml.jackson.core.version>2.18.6</com.fasterxml.jackson.core.version>
         <org.jline.version>3.27.0</org.jline.version>
+        <org.apache.commons.lang3.version>3.19.0</org.apache.commons.lang3.version>
+        <org.apache.httpcomponents.httpcore.version>4.4.16</org.apache.httpcomponents.httpcore.version>
 
-        <logging.log4j.version>2.20.0</logging.log4j.version>
+        <logging.log4j.version>2.25.3</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -59,15 +61,15 @@
         <org.junit.platform.version>1.11.2</org.junit.platform.version>
         <org.mockito.core.version>5.14.1</org.mockito.core.version>
 
-        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <jdk.release>17</jdk.release>
         <jdk.vendor>oracle</jdk.vendor>
 
-        <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
+        <maven.checkstyle.version>3.6.0</maven.checkstyle.version>
         <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-        <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
-        <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
+        <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
+        <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
 
         <maven.compiler.target>17</maven.compiler.target>
@@ -124,6 +126,16 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${org.apache.commons.lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${org.apache.httpcomponents.httpcore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jline</groupId>
@@ -183,12 +195,6 @@
             <version>${org.mockito.core.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>${maven.javadoc.plugin.version}</version>
-            <type>maven-plugin</type>
-        </dependency>
     </dependencies>
 
     <build>
@@ -218,13 +224,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyle.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>9.0.1</version>
-                    </dependency>
-                </dependencies>
+
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <encoding>UTF-8</encoding>
@@ -295,7 +295,7 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.8.0</version>
+                <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
@@ -331,7 +331,7 @@
                     <dependency>
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
-                        <version>2.2.3</version>
+                        <version>2.3.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
