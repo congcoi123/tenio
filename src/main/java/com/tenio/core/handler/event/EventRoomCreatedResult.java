@@ -27,7 +27,6 @@ package com.tenio.core.handler.event;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.setting.InitialRoomSetting;
-import javax.annotation.Nullable;
 
 /**
  * Returns the result when the server attempts to create a new room.
@@ -45,5 +44,5 @@ public interface EventRoomCreatedResult<R extends Room> {
    *                when the result equals to success
    * @see RoomCreatedResult#SUCCESS
    */
-  void handle(@Nullable R room, InitialRoomSetting setting, RoomCreatedResult result);
+  void handle(R room, InitialRoomSetting setting, RoomCreatedResult result);
 }

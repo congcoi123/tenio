@@ -66,9 +66,9 @@ class EventHandlerInterfacesTest {
   @Test
   @DisplayName("Test EventServerInitialization")
   void testEventServerInitialization() {
-    EventServerInitialization handler = (serverName, config) -> {
+    EventServerInitialization handler = (serverName) -> {
     };
-    handler.handle("server", Mockito.mock(com.tenio.common.configuration.Configuration.class));
+    handler.handle("server");
   }
 
   @Test

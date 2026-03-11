@@ -119,9 +119,9 @@ public final class BinaryPacketFramer {
 
   private ProcessedPacket handleNewPacket(Session session, byte[] binaries) {
     PacketHeader packetHeader = CodecUtility.decodeFirstHeaderByte(binaries[0]);
-    if (!packetHeader.needsCounting()) {
-      throw new IllegalArgumentException("The packet must have data counting attached in the " +
-          "header to process");
+    if (!packetHeader.hasLengthPrefixed()) {
+      throw new IllegalArgumentException("The packet must have data length prefixed value " +
+          "attached in the header to process");
     }
     session.getPendingPacket().setPacketHeader(packetHeader);
     binaries = ByteUtility.resizeBytesArray(binaries, 1, binaries.length - 1);

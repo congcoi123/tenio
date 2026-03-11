@@ -28,7 +28,6 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
-import javax.annotation.Nullable;
 
 /**
  * When a player left its current room.
@@ -49,5 +48,5 @@ public interface EventPlayerAfterLeftRoom<P extends Player, R extends Room> {
    * @see PlayerLeftRoomResult#SUCCESS
    * @see EventPlayerBeforeLeaveRoom
    */
-  void handle(P player, @Nullable R room, PlayerLeaveRoomMode mode, PlayerLeftRoomResult result);
+  void handle(P player, R room, PlayerLeaveRoomMode mode, PlayerLeftRoomResult result);
 }

@@ -29,6 +29,7 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.network.entity.packet.Packet;
 import com.tenio.core.network.entity.packet.PacketQueue;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.utility.ExceptionUtility;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 
@@ -75,7 +76,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
     }
 
     // encode the packet
-    packet.needsDataCounting(true);
+    packet.hasLengthPrefixed(true);
     packet = getPacketEncoder().encode(packet);
     // set priority for packet left unsent data (fragment)
     byte[] sendingData = packet.isFragmented() ? packet.getFragmentBuffer() : packet.getData();
@@ -128,7 +129,8 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       }
 
     } catch (IOException exception) {
-      if (isErrorEnabled()) {
+      if (isErrorEnabled() && !ExceptionUtility.messageContains(exception,
+          ExceptionUtility.IGNORE_SOCKET_EXCEPTIONS)) {
         error(exception, "Error occurred in writing on session: ", session.toString());
       }
       // in this case, just disconnect the session, it's no longer help writing data

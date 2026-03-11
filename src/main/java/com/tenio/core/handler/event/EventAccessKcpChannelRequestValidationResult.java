@@ -27,7 +27,6 @@ package com.tenio.core.handler.event;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
-import javax.annotation.Nullable;
 
 /**
  * When the server responds to the request from client side which requires using the KCP channel.
@@ -45,5 +44,5 @@ public interface EventAccessKcpChannelRequestValidationResult<P extends Player> 
    * @see ServerEvent#ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT
    * @see EventAccessKcpChannelRequestValidation
    */
-  void handle(@Nullable P player, AccessDatagramChannelResult result);
+  void handle(P player, AccessDatagramChannelResult result);
 }

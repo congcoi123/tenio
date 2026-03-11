@@ -22,27 +22,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.handler.event;
+package com.tenio.core.utility;
 
-import com.tenio.core.entity.Player;
-import com.tenio.core.entity.Room;
-import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
+import java.util.Set;
 
 /**
- * The event occurs before a player leave its current room.
+ * The class provides utility methods to work with exceptions.
+ *
+ * @since 0.6.8
  */
-@FunctionalInterface
-public interface EventPlayerBeforeLeaveRoom<P extends Player, R extends Room> {
+public final class ExceptionUtility {
+
+  public static final Set<String> IGNORE_SOCKET_EXCEPTIONS = Set.of(
+      "broken pipe",
+      "connection reset"
+  );
+
+  private ExceptionUtility() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
-   * When a player is going to leave its current room.
+   * Checks if the given exception's message contains any of the provided keywords.
    *
-   * @param player the leaving {@link Player}
-   * @param room   the {@link Room} which the player is going to leave out, this object can be
-   *               {@code null} due to auto removing processes
-   * @param mode   the leaving {@link PlayerLeaveRoomMode} applied for the player when it leaves
-   *               the room
-   * @see EventPlayerAfterLeftRoom
+   * @param exception the exception to check
+   * @param keywords  a set of keywords to search for (case-insensitive)
+   * @return {@code true} if the message contains any keyword, {@code false} otherwise
    */
-  void handle(P player, R room, PlayerLeaveRoomMode mode);
+  public static boolean messageContains(Exception exception, Set<String> keywords) {
+    if (exception == null || exception.getMessage() == null || keywords == null ||
+        keywords.isEmpty()) {
+      return false;
+    }
+    String message = exception.getMessage().toLowerCase();
+    for (String keyword : keywords) {
+      if (keyword != null && message.contains(keyword.toLowerCase())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

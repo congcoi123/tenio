@@ -40,7 +40,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import java.io.IOException;
-import javax.annotation.Nonnull;
 
 /**
  * Receive all messages sent from clients side. It converts serialize data to a system's object
@@ -105,7 +104,7 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
   }
 
   @Override
-  public void channelRead(@Nonnull ChannelHandlerContext ctx, @Nonnull Object raw) {
+  public void channelRead(ChannelHandlerContext ctx, Object raw) {
     // only allow this type of frame
     if (raw instanceof BinaryWebSocketFrame) {
       // convert the BinaryWebSocketFrame to bytes' array

@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
-import com.tenio.core.bootstrap.annotation.AutowiredQualifier;
-import com.tenio.core.bootstrap.annotation.Bean;
 import com.tenio.core.bootstrap.annotation.BeanFactory;
 import com.tenio.core.bootstrap.annotation.Component;
 import java.io.Serial;

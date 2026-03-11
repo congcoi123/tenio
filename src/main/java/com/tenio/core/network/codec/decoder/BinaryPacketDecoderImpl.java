@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.network.codec.decoder;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.common.data.DataType;
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.utility.ByteUtility;
 import com.tenio.core.network.codec.CodecUtility;
@@ -77,13 +76,7 @@ public final class BinaryPacketDecoderImpl implements BinaryPacketDecoder {
       }
     }
 
-    // gets the data type
-    DataType dataType = DataType.ZERO;
-    if (packetHeader.isMsgpack()) {
-      dataType = DataType.MSG_PACK;
-    }
-
-    return DataUtility.binariesToCollection(dataType, binaries);
+    return DataUtility.binariesToCollection(packetHeader.getDataType(), binaries);
   }
 
   @Override
