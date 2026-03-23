@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,13 +45,46 @@ import com.tenio.examples.server.SharedEventKey;
 import java.util.Map;
 
 /**
- * This class shows how a simple server handle messages that came from a client.
+ * This class shows how a simple server handle messages that come from a client.
  */
 @Bootstrap
-public final class TestSimpleServer {
+@EventHandler
+public final class TestSimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
+        EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
   public static void main(String[] params) {
     ApplicationLauncher.run(TestSimpleServer.class, params);
+  }
+
+  @Override
+  public void onConnectionEstablishedResult(Session session, ZeroMap message, ConnectionEstablishedResult result) {
+    if (result == ConnectionEstablishedResult.SUCCESS) {
+      api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+    }
+  }
+
+  @Override
+  public void onPlayerLogin(Player player) {
+    var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+            String.format("Welcome to server: %s", player.getIdentity()));
+
+    response().setContent(parcel).setRecipientPlayer(player).write();
+  }
+
+  @Override
+  public void onReceivedMessageFromPlayer(Player player, DataCollection message) {
+    DataCollection parcel = null;
+    if (message instanceof ZeroMap request) {
+      parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+              String.format("Echo(%s): %s", player.getIdentity(),
+                      request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+    } else if (message instanceof MsgPackMap request) {
+      parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+              String.format("Echo(%s): %s", player.getIdentity(),
+                      request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+    }
+
+    response().setContent(parcel).setRecipientPlayer(player).write();
   }
 
   /**
@@ -66,56 +99,6 @@ public final class TestSimpleServer {
         var paramName = entry.getKey();
         push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
       }
-    }
-  }
-
-  /**
-   * Define your handlers.
-   */
-
-  @EventHandler
-  public static class ConnectionEstablishedHandler extends AbstractHandler
-      implements EventConnectionEstablishedResult<ZeroMap> {
-
-    @Override
-    public void handle(Session session, ZeroMap message, ConnectionEstablishedResult result) {
-      if (result == ConnectionEstablishedResult.SUCCESS) {
-        api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-      }
-    }
-  }
-
-  @EventHandler
-  public static class PlayerLoginHandler extends AbstractHandler
-      implements EventPlayerLogin<Player> {
-
-    @Override
-    public void handle(Player player) {
-      var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-          String.format("Welcome to server: %s", player.getIdentity()));
-
-      response().setContent(parcel).setRecipientPlayer(player).write();
-    }
-  }
-
-  @EventHandler
-  public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer<Player, DataCollection> {
-
-    @Override
-    public void handle(Player player, DataCollection message) {
-      DataCollection parcel = null;
-      if (message instanceof ZeroMap request) {
-        parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-            String.format("Echo(%s): %s", player.getIdentity(),
-                request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-      } else if (message instanceof MsgPackMap request) {
-        parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-            String.format("Echo(%s): %s", player.getIdentity(),
-                request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-      }
-
-      response().setContent(parcel).setRecipientPlayer(player).write();
     }
   }
 }

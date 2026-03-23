@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public final class ServerInitializedHandler extends AbstractHandler
   private HeartBeatManager heartBeatManager;
 
   @Override
-  public void handle(String serverName) {
+  public void onServerInitialization(String serverName) {
     var world = new World(Example4Constant.DESIGN_WIDTH, Example4Constant.DESIGN_HEIGHT);
     world.debug("[TenIO] Server Debugger : Stress Movement Simulation");
     world.setListener(new WorldListener() {

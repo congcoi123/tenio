@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import com.tenio.core.handler.event.EventFetchedCcuInfo;
 public final class CcuInformationHandler extends AbstractHandler implements EventFetchedCcuInfo {
 
   @Override
-  public void handle(int numberPlayers) {
+  public void onFetchedCcuInfo(int numberPlayers) {
     if (isInfoEnabled()) {
       info("CCU INFO", String.format("Current players: %d, Uptime: %d seconds", numberPlayers,
           api().getUptime() / 1000L));
