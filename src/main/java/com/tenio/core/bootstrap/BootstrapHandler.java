@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import com.tenio.core.command.system.SystemCommandManager;
 import com.tenio.core.event.handler.EventHandler;
 import jakarta.servlet.http.HttpServlet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -112,13 +113,12 @@ public final class BootstrapHandler {
 
   /**
    * Creates mapping classes from {@link Injector} which should have reversed keys and values.
-   * NOTE: This will override duplicated implemented classes and only keep one.
    *
    * @param classesMap a map of classes
    */
-  public void createReversedClassesMap(Map<Class<?>, Class<?>> classesMap) {
+  public void createReversedClassesMap(Map<Class<?>, List<Class<?>>> classesMap) {
     reversedClassesMap = new HashMap<>();
-    classesMap.forEach((key, value) -> reversedClassesMap.put(value, key));
+    classesMap.forEach((key, value) -> value.forEach(c -> reversedClassesMap.put(c, key)));
   }
 
   /**

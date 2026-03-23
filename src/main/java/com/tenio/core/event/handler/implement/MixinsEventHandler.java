@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.tenio.core.event.handler.implement;
 
 import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
@@ -86,7 +85,7 @@ public final class MixinsEventHandler {
         event -> eventManager.on(ServerEvent.SERVER_INITIALIZATION, params -> {
           var serverName = (String) params[0];
 
-          event.handle(serverName);
+          event.onServerInitialization(serverName);
 
           return null;
         }));
@@ -95,7 +94,7 @@ public final class MixinsEventHandler {
         params -> {
           var throwable = (Throwable) params[0];
 
-          event.handle(throwable);
+          event.onServerException(throwable);
 
           return null;
         }));
@@ -104,7 +103,7 @@ public final class MixinsEventHandler {
         params -> {
           var serverName = (String) params[0];
 
-          event.handle(serverName);
+          event.onServerTeardown(serverName);
 
           return null;
         }));
@@ -119,7 +118,7 @@ public final class MixinsEventHandler {
           long writtenDroppedPacketsByPolicy = (long) params[5];
           long writtenDroppedPacketsByFull = (long) params[6];
 
-          event.handle(readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
+          event.onFetchedBandwidthInfo(readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
               writtenDroppedPacketsByPolicy, writtenDroppedPacketsByFull);
 
           return null;
@@ -129,7 +128,7 @@ public final class MixinsEventHandler {
         params -> {
           int numberPlayers = (int) params[0];
 
-          event.handle(numberPlayers);
+          event.onFetchedCcuInfo(numberPlayers);
 
           return null;
         }));
@@ -142,7 +141,7 @@ public final class MixinsEventHandler {
           long freeMemory = (long) params[3];
           int countRunningThreads = (int) params[4];
 
-          event.handle(cpuUsage, totalMemory, usedMemory, freeMemory, countRunningThreads);
+          event.onSystemMonitoring(cpuUsage, totalMemory, usedMemory, freeMemory, countRunningThreads);
 
           return null;
         }));

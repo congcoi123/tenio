@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -93,7 +93,7 @@ public final class PlayerEventHandler {
         event -> eventManager.on(ServerEvent.PLAYER_LOGIN, params -> {
           var player = (Player) params[0];
 
-          event.handle(player);
+          event.onPlayerLogin(player);
 
           return null;
         }));
@@ -103,7 +103,7 @@ public final class PlayerEventHandler {
           var session = (Session) params[0];
           var message = (DataCollection) params[1];
 
-          return event.handle(session, message);
+          return event.onPlayerReconnectRequestHandling(session, message);
         }));
 
     eventPlayerReconnectedOp.ifPresent(
@@ -111,7 +111,7 @@ public final class PlayerEventHandler {
           var player = (Player) params[0];
           var session = (Session) params[1];
 
-          event.handle(player, session);
+          event.onPlayerReconnected(player, session);
 
           return null;
         }));
@@ -122,7 +122,7 @@ public final class PlayerEventHandler {
           var message = (DataCollection) params[1];
           player.setLastReadTime(TimeUtility.currentTimeMillis());
 
-          event.handle(player, message);
+          event.onReceivedMessageFromPlayer(player, message);
 
           return null;
         }));
@@ -133,7 +133,7 @@ public final class PlayerEventHandler {
           var message = (DataCollection) params[1];
           player.setLastWriteTime(TimeUtility.currentTimeMillis());
 
-          event.handle(player, message);
+          event.onSendMessageToPlayer(player, message);
 
           return null;
         }));
@@ -143,7 +143,7 @@ public final class PlayerEventHandler {
           var player = (Player) params[0];
           var mode = (PlayerDisconnectMode) params[1];
 
-          event.handle(player, mode);
+          event.onDisconnectPlayer(player, mode);
 
           return null;
         }));
