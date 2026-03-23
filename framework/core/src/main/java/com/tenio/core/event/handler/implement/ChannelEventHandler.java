@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ public final class ChannelEventHandler {
         event -> eventManager.on(ServerEvent.CHANNEL_CREATED, params -> {
           var channel = (Channel) params[0];
 
-          event.handle(channel);
+          event.onChannelCreated(channel);
 
           return null;
         }));
@@ -88,7 +88,7 @@ public final class ChannelEventHandler {
         event -> eventManager.on(ServerEvent.CHANNEL_WILL_BE_REMOVED, params -> {
           var channel = (Channel) params[0];
 
-          event.handle(channel);
+          event.onChannelWillBeRemoved(channel);
 
           return null;
         }));
@@ -98,7 +98,7 @@ public final class ChannelEventHandler {
           var channel = (Channel) params[0];
           var player = (Player) params[1];
 
-          event.handle(channel, player);
+          event.onPlayerSubscribedChannel(channel, player);
 
           return null;
         }));
@@ -108,7 +108,7 @@ public final class ChannelEventHandler {
           var channel = (Channel) params[0];
           var player = (Player) params[1];
 
-          event.handle(channel, player);
+          event.onPlayerUnsubscribedChannel(channel, player);
 
           return null;
         }));
@@ -120,7 +120,7 @@ public final class ChannelEventHandler {
           var message = (DataCollection) params[2];
           player.setLastWriteTime(TimeUtility.currentTimeMillis());
 
-          event.handle(channel, player, message);
+          event.onBroadcastToChannel(channel, player, message);
 
           return null;
         }));

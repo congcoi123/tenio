@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.command.system.SystemCommandManager;
 import jakarta.servlet.http.HttpServlet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -83,8 +84,8 @@ class BootstrapHandlerTest {
   @DisplayName("Test createReversedClassesMap and setClassBeansMap")
   void testCreateReversedClassesMapAndSetClassBeansMap() {
     BootstrapHandler handler = new BootstrapHandler();
-    Map<Class<?>, Class<?>> classesMap = new HashMap<>();
-    classesMap.put(String.class, Object.class);
+    Map<Class<?>, List<Class<?>>> classesMap = new HashMap<>();
+    classesMap.put(String.class, List.of(Object.class));
     handler.createReversedClassesMap(classesMap);
     Map<BeanClass, Object> beansMap = new HashMap<>();
     beansMap.put(new BeanClass(String.class, ""), "bean");
@@ -99,8 +100,8 @@ class BootstrapHandlerTest {
   @DisplayName("Test getBeanByClazz with name")
   void testGetBeanByClazzWithName() {
     BootstrapHandler handler = new BootstrapHandler();
-    Map<Class<?>, Class<?>> classesMap = new HashMap<>();
-    classesMap.put(String.class, Object.class);
+    Map<Class<?>, List<Class<?>>> classesMap = new HashMap<>();
+    classesMap.put(String.class, List.of(Object.class));
     handler.createReversedClassesMap(classesMap);
     Map<BeanClass, Object> beansMap = new HashMap<>();
     beansMap.put(new BeanClass(String.class, "special"), "specialBean");

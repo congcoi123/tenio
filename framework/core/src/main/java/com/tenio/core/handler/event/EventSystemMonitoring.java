@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,5 @@ public interface EventSystemMonitoring {
    * @param countRunningThreads {@code integer} value, the current running threads on the JVM
    * @see CoreConfigurationType#INTERVAL_SYSTEM_MONITORING
    */
-  void handle(double cpuUsage, long totalMemory, long usedMemory, long freeMemory,
-              int countRunningThreads);
+  void onSystemMonitoring(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, int countRunningThreads);
 }

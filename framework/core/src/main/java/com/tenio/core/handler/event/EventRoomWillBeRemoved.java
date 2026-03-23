@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,5 +40,5 @@ public interface EventRoomWillBeRemoved<R extends Room> {
    * @param mode the removing {@link RoomRemoveMode} applied for the room when it is
    *             eliminated from the management list
    */
-  void handle(R room, RoomRemoveMode mode);
+  void onRoomWillBeRemoved(R room, RoomRemoveMode mode);
 }

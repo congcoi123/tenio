@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,5 +48,5 @@ public interface EventPlayerAfterLeftRoom<P extends Player, R extends Room> {
    * @see PlayerLeftRoomResult#SUCCESS
    * @see EventPlayerBeforeLeaveRoom
    */
-  void handle(P player, R room, PlayerLeaveRoomMode mode, PlayerLeftRoomResult result);
+  void onPlayerAfterLeftRoom(P player, R room, PlayerLeaveRoomMode mode, PlayerLeftRoomResult result);
 }

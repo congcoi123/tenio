@@ -103,3 +103,8 @@
 ## 0.6.8 2026-03-10 Bugfix release
 - Upgraded dependencies
 - Fixed several bugs
+
+## 0.6.9 2026-03-23 Bugfix release
+- Supported injecting multiple interfaces into one class
+- Renamed all events' main method
+- Updated License

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,5 +43,5 @@ public interface EventPlayerJoinedRoomResult<P extends Player, R extends Room> {
    *               considered as it joined the room when the result equals to success
    * @see PlayerJoinedRoomResult#SUCCESS
    */
-  void handle(P player, R room, PlayerJoinedRoomResult result);
+  void onPlayerJoinedRoomResult(P player, R room, PlayerJoinedRoomResult result);
 }

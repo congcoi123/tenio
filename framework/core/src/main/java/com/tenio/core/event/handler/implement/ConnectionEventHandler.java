@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -109,7 +109,7 @@ public final class ConnectionEventHandler {
           var socketChannel = (SocketChannel) params[0];
           var exception = (RefusedConnectionAddressException) params[1];
 
-          event.handle(socketChannel, exception);
+          event.onSocketConnectionRefused(socketChannel, exception);
 
           return null;
         }));
@@ -119,7 +119,7 @@ public final class ConnectionEventHandler {
           var channel = (Channel) params[0];
           var exception = (RefusedConnectionAddressException) params[1];
 
-          event.handle(channel, exception);
+          event.onWebSocketConnectionRefused(channel, exception);
 
           return null;
         }));
@@ -130,7 +130,7 @@ public final class ConnectionEventHandler {
           var message = (DataCollection) params[1];
           var result = (ConnectionEstablishedResult) params[2];
 
-          event.handle(session, message, result);
+          event.onConnectionEstablishedResult(session, message, result);
 
           return null;
         }));
@@ -141,7 +141,7 @@ public final class ConnectionEventHandler {
           var packet = (Packet) params[1];
           session.setLastWriteTime(TimeUtility.currentTimeMillis());
 
-          event.handle(session, packet);
+          event.onWriteMessageToConnection(session, packet);
 
           return null;
         }));
@@ -150,7 +150,7 @@ public final class ConnectionEventHandler {
         event -> eventManager.on(ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION, params -> {
           var message = (DataCollection) params[0];
 
-          return event.handle(message);
+          return event.onAccessDatagramChannelRequestValidation(message);
         }));
 
     eventAccessDatagramChannelRequestValidationResultOp.ifPresent(
@@ -159,7 +159,7 @@ public final class ConnectionEventHandler {
           var udpConv = (int) params[1];
           var result = (AccessDatagramChannelResult) params[2];
 
-          event.handle(player, udpConv, result);
+          event.onAccessDatagramChannelRequestValidationResult(player, udpConv, result);
 
           return null;
         }));
@@ -168,7 +168,7 @@ public final class ConnectionEventHandler {
         event -> eventManager.on(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION, params -> {
           var message = (DataCollection) params[0];
 
-          return event.handle(message);
+          return event.onAccessKcpChannelRequestValidation(message);
         }));
 
     eventAccessKcpChannelRequestValidationResultOp.ifPresent(
@@ -176,7 +176,7 @@ public final class ConnectionEventHandler {
           var player = params[0] == null ? null : (Player) params[0];
           var result = (AccessDatagramChannelResult) params[1];
 
-          event.handle(player, result);
+          event.onAccessKcpChannelRequestValidationResult(player, result);
 
           return null;
         }));
