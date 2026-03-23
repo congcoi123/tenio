@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,9 @@ public final class BandwidthInformationHandler extends AbstractHandler
     implements EventFetchedBandwidthInfo {
 
   @Override
-  public void handle(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
-                     long writtenPackets, long writtenDroppedPacketsByPolicy,
-                     long writtenDroppedPacketsByFull) {
+  public void onFetchedBandwidthInfo(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
+                                     long writtenPackets, long writtenDroppedPacketsByPolicy,
+                                     long writtenDroppedPacketsByFull) {
     if (isInfoEnabled()) {
       var info = String.format(
           "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",

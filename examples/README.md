@@ -29,8 +29,8 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.6.7
-- tenio-engine 0.6.5
+- tenio-core 0.6.9
+- tenio-engine 0.6.9
 ```
 
 ## Requirements
@@ -55,73 +55,62 @@ $ git clone https://github.com/congcoi123/tenio-examples.git
 
 ```Java
 /**
- * This class shows how a simple server handle messages that came from a client.
+ * This class shows how a simple server handle messages that come from a client.
  */
 @Bootstrap
-public final class TestSimpleServer {
+@EventHandler
+public final class TestSimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
+        EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
-  public static void main(String[] params) {
-    ApplicationLauncher.run(TestSimpleServer.class, params);
-  }
-
-  /**
-   * Create your own configurations.
-   */
-  @Setting
-  public static class TestConfiguration extends CoreConfiguration implements Configuration {
+    public static void main(String[] params) {
+        ApplicationLauncher.run(TestSimpleServer.class, params);
+    }
 
     @Override
-    protected void extend(Map<String, String> extProperties) {
-      for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-        var paramName = entry.getKey();
-        push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-      }
+    public void onConnectionEstablishedResult(Session session, ZeroMap message, ConnectionEstablishedResult result) {
+        if (result == ConnectionEstablishedResult.SUCCESS) {
+            api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+        }
     }
-  }
-
-  /**
-   * Define your handlers.
-   */
-
-  @EventHandler
-  public static class ConnectionEstablishedHandler extends AbstractHandler
-      implements EventConnectionEstablishedResult<ZeroMap> {
 
     @Override
-    public void handle(Session session, ZeroMap message, ConnectionEstablishedResult result) {
-      if (result == ConnectionEstablishedResult.SUCCESS) {
-        api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-      }
-    }
-  }
+    public void onPlayerLogin(Player player) {
+        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+                String.format("Welcome to server: %s", player.getIdentity()));
 
-  @EventHandler
-  public static class PlayerLoggedInHandler extends AbstractHandler
-      implements EventPlayerLogin<Player> {
+        response().setContent(parcel).setRecipientPlayer(player).write();
+    }
 
     @Override
-    public void handle(Player player) {
-      var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-          String.format("Welcome to server: %s", player.getName()));
+    public void onReceivedMessageFromPlayer(Player player, DataCollection message) {
+        DataCollection parcel = null;
+        if (message instanceof ZeroMap request) {
+            parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+                    String.format("Echo(%s): %s", player.getIdentity(),
+                            request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+        } else if (message instanceof MsgPackMap request) {
+            parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+                    String.format("Echo(%s): %s", player.getIdentity(),
+                            request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+        }
 
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
+        response().setContent(parcel).setRecipientPlayer(player).write();
     }
-  }
 
-  @EventHandler
-  public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
-      implements EventReceivedMessageFromPlayer<Player, ZeroMap> {
+    /**
+     * Create your own configurations.
+     */
+    @Setting
+    public static class TestConfiguration extends CoreConfiguration implements Configuration {
 
-    @Override
-    public void handle(Player player, ZeroMap message) {
-      var parcel =
-          map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
-              player.getName(),
-              message.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-
-      response().setContent(parcel.toBinary()).setRecipientPlayer(player).write();
+        @Override
+        protected void extend(Map<String, String> extProperties) {
+            for (Map.Entry<String, String> entry : extProperties.entrySet()) {
+                var paramName = entry.getKey();
+                push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
+            }
+        }
     }
-  }
 }
 ```
 
