@@ -56,3 +56,6 @@
 
 ## 0.6.8 2026-03-10 Bugfix release
 - Upgraded dependencies
+
+## 0.6.9 2026-03-23 Chore release
+- Updated License
