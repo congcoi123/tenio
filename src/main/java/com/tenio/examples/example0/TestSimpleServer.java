@@ -24,15 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.examples.example0;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
 import com.tenio.core.bootstrap.annotation.Bootstrap;
 import com.tenio.core.bootstrap.annotation.EventHandler;
-import com.tenio.core.bootstrap.annotation.Setting;
-import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
@@ -40,9 +37,7 @@ import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.examples.server.ExampleConfigurationType;
 import com.tenio.examples.server.SharedEventKey;
-import java.util.Map;
 
 /**
  * This class shows how a simple server handle messages that come from a client.
@@ -85,20 +80,5 @@ public final class TestSimpleServer extends AbstractHandler implements EventConn
     }
 
     response().setContent(parcel).setRecipientPlayer(player).write();
-  }
-
-  /**
-   * Create your own configurations.
-   */
-  @Setting
-  public static class TestConfiguration extends CoreConfiguration implements Configuration {
-
-    @Override
-    protected void extend(Map<String, String> extProperties) {
-      for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-        var paramName = entry.getKey();
-        push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-      }
-    }
   }
 }

@@ -13,8 +13,8 @@ public final class ParamLoader extends FileLoaderBase {
   static {
     try {
       instance = new ParamLoader();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException exception) {
+      exception.printStackTrace();
     }
   }
 

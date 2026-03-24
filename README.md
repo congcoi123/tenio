@@ -96,21 +96,6 @@ public final class TestSimpleServer extends AbstractHandler implements EventConn
 
         response().setContent(parcel).setRecipientPlayer(player).write();
     }
-
-    /**
-     * Create your own configurations.
-     */
-    @Setting
-    public static class TestConfiguration extends CoreConfiguration implements Configuration {
-
-        @Override
-        protected void extend(Map<String, String> extProperties) {
-            for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-                var paramName = entry.getKey();
-                push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-            }
-        }
-    }
 }
 ```
 
