@@ -70,9 +70,9 @@ import java.util.List;
  *                 Thread.sleep(delay * 1000);
  *             }
  *             System.exit(0);
- *         } catch (Exception e) {
+ *         } catch (Exception exception) {
  *             if (isErrorEnabled()) {
- *                 error("Failed to shutdown server: " + e.getMessage());
+ *                 error("Failed to shutdown server: " + exception.getMessage());
  *             }
  *         }
  *     }

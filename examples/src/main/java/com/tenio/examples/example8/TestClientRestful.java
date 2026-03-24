@@ -79,8 +79,8 @@ public final class TestClientRestful {
       }
       rd.close();
       return response.toString();
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception exception) {
+      exception.printStackTrace();
       return null;
     } finally {
       if (connection != null) {

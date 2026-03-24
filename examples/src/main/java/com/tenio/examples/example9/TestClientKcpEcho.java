@@ -123,8 +123,8 @@ public final class TestClientKcpEcho implements SocketListener<ZeroMap>, KcpList
 
           try {
             Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+          } catch (InterruptedException exception) {
+            exception.printStackTrace();
           }
         }
 

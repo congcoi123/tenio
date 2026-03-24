@@ -558,8 +558,7 @@ public final class Injector extends SystemLogger {
    */
   private void autowire(BeanClass beanClass, Object bean)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException,
-      NoSuchMethodException, SecurityException, ClassNotFoundException,
+      InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException,
       DuplicatedBeanCreationException {
     var fields = findFields(beanClass.clazz());
     for (var field : fields) {
@@ -577,13 +576,12 @@ public final class Injector extends SystemLogger {
       if (field.isAnnotationPresent(AutowiredAcceptNull.class)) {
         try {
           var fieldInstance =
-              getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
-                  classQualifier);
+              getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier, classQualifier);
           if (fieldInstance != null) {
             field.set(bean, fieldInstance);
             autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
           }
-        } catch (NoImplementedClassFoundException e) {
+        } catch (NoImplementedClassFoundException exception) {
           // do nothing
         }
       } else if (field.isAnnotationPresent(Autowired.class)) {

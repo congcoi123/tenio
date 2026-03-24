@@ -329,18 +329,16 @@ public class DefaultRoom implements Room {
     }
 
     if (targetSlot == DEFAULT_SLOT) {
-      player.setPlayerSlotInCurrentRoom(
-          roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
+      player.setPlayerSlotInCurrentRoom(roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
       player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
     } else {
       try {
         roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
         player.setPlayerSlotInCurrentRoom(targetSlot);
         player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException exception) {
         throw new SwitchedPlayerRoleInRoomException(String
-            .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
-                player.getIdentity()),
+            .format("Unable to set the target slot: %d for the participant: %s", targetSlot, player.getIdentity()),
             SwitchedPlayerRoleInRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
       }
     }
