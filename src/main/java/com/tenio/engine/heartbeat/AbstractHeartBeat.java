@@ -322,7 +322,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger
         // look at different peoples' solutions to this.
         try {
           Thread.sleep(1);
-        } catch (Exception e) {
+        } catch (Exception exception) {
           // can dispose
           onDispose();
           return;
