@@ -496,8 +496,8 @@ public final class ZeroUtility {
       }
 
       return zeroArray;
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(e.getMessage());
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException(exception.getMessage());
     }
   }
 
@@ -535,8 +535,8 @@ public final class ZeroUtility {
       }
 
       return zeroMap;
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(e.getMessage());
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException(exception.getMessage());
     }
   }
 
