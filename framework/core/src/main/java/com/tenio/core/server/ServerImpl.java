@@ -32,6 +32,7 @@ import com.tenio.core.api.implement.ServerApiImpl;
 import com.tenio.core.bootstrap.BootstrapHandler;
 import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.command.system.SystemCommandManager;
+import com.tenio.core.configuration.DefaultCoreConfiguration;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
@@ -134,7 +135,14 @@ public final class ServerImpl extends SystemLogger implements Server {
     }
 
     // load configuration file
-    var configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
+    Configuration configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
+    if (configuration == null) {
+      if (isInfoEnabled()) {
+        info("CONFIGURATION", "No custom configuration class found. Use default configuration (DefaultCoreConfiguration).");
+      }
+
+      configuration = new DefaultCoreConfiguration();
+    }
     configuration.load(file);
 
     // Put the current configurations to the logger
@@ -380,11 +388,11 @@ public final class ServerImpl extends SystemLogger implements Server {
     Terminal terminal = null;
     try {
       terminal = TerminalBuilder.builder().jna(true).build();
-    } catch (Exception e) {
+    } catch (Exception exception) {
       try {
         // fallback to a dumb jLine terminal
         terminal = TerminalBuilder.builder().dumb(true).build();
-      } catch (Exception exception) {
+      } catch (Exception exception1) {
         // when dumb is true, build() never throws, ignore it
       }
     }
@@ -395,7 +403,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     while (true) {
       try {
         input = consoleLineReader.readLine("$ ");
-      } catch (UserInterruptException e) {
+      } catch (UserInterruptException exception) {
         if (!isLastInterrupted) {
           isLastInterrupted = true;
           CommandUtility.INSTANCE.showConsoleMessage("Press Ctrl-C again to shutdown.");

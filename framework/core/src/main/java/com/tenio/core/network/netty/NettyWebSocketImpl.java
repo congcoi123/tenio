@@ -199,8 +199,8 @@ public final class NettyWebSocketImpl extends AbstractManager
 
     try {
       attemptToStart();
-    } catch (InterruptedException e) {
-      throw new ServiceRuntimeException(e.getMessage());
+    } catch (InterruptedException exception) {
+      throw new ServiceRuntimeException(exception.getMessage());
     }
   }
 

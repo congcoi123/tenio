@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  * 
  * try {
  *     room.addPlayer(player, PlayerRoleInRoom.PARTICIPANT);
- * } catch (PlayerJoinedRoomException e) {
+ * } catch (PlayerJoinedRoomException exception) {
  *     // Handle player join failure
  * }
  * 
