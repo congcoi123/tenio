@@ -53,55 +53,40 @@ Simple Movement Simulation
 public final class TestSimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
-    public static void main(String[] params) {
-        ApplicationLauncher.run(TestSimpleServer.class, params);
+  public static void main(String[] params) {
+    ApplicationLauncher.run(TestSimpleServer.class, params);
+  }
+
+  @Override
+  public void onConnectionEstablishedResult(Session session, ZeroMap message, ConnectionEstablishedResult result) {
+    if (result == ConnectionEstablishedResult.SUCCESS) {
+      api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
+    }
+  }
+
+  @Override
+  public void onPlayerLogin(Player player) {
+    var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
+            String.format("Welcome to server: %s", player.getIdentity()));
+
+    response().setContent(parcel).setRecipientPlayer(player).write();
+  }
+
+  @Override
+  public void onReceivedMessageFromPlayer(Player player, DataCollection message) {
+    DataCollection parcel = null;
+    if (message instanceof ZeroMap request) {
+      parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+              String.format("Echo(%s): %s", player.getIdentity(),
+                      request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
+    } else if (message instanceof MsgPackMap request) {
+      parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
+              String.format("Echo(%s): %s", player.getIdentity(),
+                      request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
     }
 
-    @Override
-    public void onConnectionEstablishedResult(Session session, ZeroMap message, ConnectionEstablishedResult result) {
-        if (result == ConnectionEstablishedResult.SUCCESS) {
-            api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
-        }
-    }
-
-    @Override
-    public void onPlayerLogin(Player player) {
-        var parcel = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
-                String.format("Welcome to server: %s", player.getIdentity()));
-
-        response().setContent(parcel).setRecipientPlayer(player).write();
-    }
-
-    @Override
-    public void onReceivedMessageFromPlayer(Player player, DataCollection message) {
-        DataCollection parcel = null;
-        if (message instanceof ZeroMap request) {
-            parcel = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-                    String.format("Echo(%s): %s", player.getIdentity(),
-                            request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-        } else if (message instanceof MsgPackMap request) {
-            parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-                    String.format("Echo(%s): %s", player.getIdentity(),
-                            request.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
-        }
-
-        response().setContent(parcel).setRecipientPlayer(player).write();
-    }
-
-    /**
-     * Create your own configurations.
-     */
-    @Setting
-    public static class TestConfiguration extends CoreConfiguration implements Configuration {
-
-        @Override
-        protected void extend(Map<String, String> extProperties) {
-            for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-                var paramName = entry.getKey();
-                push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-            }
-        }
-    }
+    response().setContent(parcel).setRecipientPlayer(player).write();
+  }
 }
 ```
 
