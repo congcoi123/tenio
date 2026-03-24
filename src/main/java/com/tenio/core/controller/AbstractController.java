@@ -142,7 +142,7 @@ public abstract class AbstractController extends AbstractManager implements Cont
         executorService.shutdownNow();
         destroyController();
       }
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       executorService.shutdownNow();
       destroyController();
     }

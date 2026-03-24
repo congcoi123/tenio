@@ -123,8 +123,8 @@ public final class AcceptorHandler extends SystemLogger {
       }
       // only server socket should interest in this key OP_ACCEPT
       serverSocketChannel.register(acceptableSelector, SelectionKey.OP_ACCEPT);
-    } catch (IOException e) {
-      throw new ServiceRuntimeException(e.getMessage());
+    } catch (IOException exception) {
+      throw new ServiceRuntimeException(exception.getMessage());
     }
   }
 

@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.bootstrap.configuration;
 
 import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 
@@ -53,7 +54,7 @@ import com.tenio.common.configuration.Configuration;
 @Component
 public final class ConfigurationHandler {
 
-  @Autowired
+  @AutowiredAcceptNull
   private Configuration configuration;
 
   /**
