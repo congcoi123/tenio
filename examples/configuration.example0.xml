@@ -76,14 +76,4 @@
 		</Properties>
 	</Configuration>
 
-	<!-- Your customizable configurations -->
-	<Extension>
-		<Properties>
-			<Property name="custom-value-1">String</Property>
-			<Property name="custom-value-2">1</Property>
-			<Property name="custom-value-3">1.5</Property>
-			<Property name="custom-value-4">True</Property>
-		</Properties>
-	</Extension>
-
 </Server>
