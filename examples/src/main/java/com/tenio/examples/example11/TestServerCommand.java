@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ public final class TestServerCommand {
       implements EventConnectionEstablishedResult<ZeroMap> {
 
     @Override
-    public void handle(Session session, ZeroMap message, ConnectionEstablishedResult result) {
+    public void onConnectionEstablishedResult(Session session, ZeroMap message, ConnectionEstablishedResult result) {
       if (result == ConnectionEstablishedResult.SUCCESS) {
         api().login(message.getString(SharedEventKey.KEY_PLAYER_LOGIN), session);
       }
@@ -88,7 +88,7 @@ public final class TestServerCommand {
       implements EventPlayerLogin<Player> {
 
     @Override
-    public void handle(Player player) {
+    public void onPlayerLogin(Player player) {
       var data = map().putString(SharedEventKey.KEY_PLAYER_LOGIN,
           String.format("Welcome to server: %s", player.getIdentity()));
 
@@ -101,7 +101,7 @@ public final class TestServerCommand {
       implements EventReceivedMessageFromPlayer<Player, ZeroMap> {
 
     @Override
-    public void handle(Player player, ZeroMap message) {
+    public void onReceivedMessageFromPlayer(Player player, ZeroMap message) {
       var data =
           map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getIdentity(),

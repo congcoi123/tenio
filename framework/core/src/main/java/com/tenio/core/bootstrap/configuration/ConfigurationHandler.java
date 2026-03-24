@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.bootstrap.configuration;
 
 import com.tenio.core.bootstrap.annotation.Autowired;
+import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.common.configuration.Configuration;
 
@@ -53,7 +54,7 @@ import com.tenio.common.configuration.Configuration;
 @Component
 public final class ConfigurationHandler {
 
-  @Autowired
+  @AutowiredAcceptNull
   private Configuration configuration;
 
   /**

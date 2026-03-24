@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
     implements EventPlayerJoinedRoomResult<Player, Room> {
 
   @Override
-  public void handle(Player player, Room room, PlayerJoinedRoomResult result) {
+  public void onPlayerJoinedRoomResult(Player player, Room room, PlayerJoinedRoomResult result) {
     if (result == PlayerJoinedRoomResult.SUCCESS) {
       var players = room.getReadonlyPlayersList();
       var iterator = players.iterator();

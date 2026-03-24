@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,9 +70,9 @@ import java.util.List;
  *                 Thread.sleep(delay * 1000);
  *             }
  *             System.exit(0);
- *         } catch (Exception e) {
+ *         } catch (Exception exception) {
  *             if (isErrorEnabled()) {
- *                 error("Failed to shutdown server: " + e.getMessage());
+ *                 error("Failed to shutdown server: " + exception.getMessage());
  *             }
  *         }
  *     }

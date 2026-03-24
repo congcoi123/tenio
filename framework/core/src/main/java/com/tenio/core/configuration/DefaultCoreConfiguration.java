@@ -22,15 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.entity.define.result;
+package com.tenio.core.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+/**
+ * This class will be used in case there is no custom configuration found.
+ *
+ * @since 0.6.9
+ */
+public class DefaultCoreConfiguration extends CoreConfiguration {
 
-class RoomCreatedResultTest {
-  @Test
-  void testValueOf() {
-    assertEquals("SUCCESS", RoomCreatedResult.valueOf("SUCCESS").toString());
-  }
+    @Override
+    protected void extend(Map<String, String> extProperties) {
+        // Do nothing
+    }
 }

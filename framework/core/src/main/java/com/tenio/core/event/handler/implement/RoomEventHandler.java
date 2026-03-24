@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -99,7 +99,7 @@ public final class RoomEventHandler {
           var mode = (PlayerLeaveRoomMode) (params[2]);
           var result = (PlayerLeftRoomResult) (params[3]);
 
-          event.handle(player, room, mode, result);
+          event.onPlayerAfterLeftRoom(player, room, mode, result);
 
           return null;
         }));
@@ -110,7 +110,7 @@ public final class RoomEventHandler {
           var room = params[1] == null ? null : (Room) params[1];
           var mode = (PlayerLeaveRoomMode) (params[2]);
 
-          event.handle(player, room, mode);
+          event.onPlayerBeforeLeaveRoom(player, room, mode);
 
           return null;
         }));
@@ -121,7 +121,7 @@ public final class RoomEventHandler {
           var room = (Room) params[1];
           var result = (PlayerJoinedRoomResult) params[2];
 
-          event.handle(player, room, result);
+          event.onPlayerJoinedRoomResult(player, room, result);
 
           return null;
         }));
@@ -132,7 +132,7 @@ public final class RoomEventHandler {
           var setting = (InitialRoomSetting) params[1];
           var result = (RoomCreatedResult) params[2];
 
-          event.handle(room, setting, result);
+          event.onRoomCreatedResult(room, setting, result);
 
           return null;
         }));
@@ -142,7 +142,7 @@ public final class RoomEventHandler {
           var room = (Room) params[0];
           var mode = (RoomRemoveMode) params[1];
 
-          event.handle(room, mode);
+          event.onRoomWillBeRemoved(room, mode);
 
           return null;
         }));
@@ -153,7 +153,7 @@ public final class RoomEventHandler {
           var room = (Room) params[1];
           var result = (SwitchedPlayerRoleInRoomResult) params[2];
 
-          event.handle(player, room, result);
+          event.onSwitchParticipantToSpectatorResult(player, room, result);
 
           return null;
         }));
@@ -164,7 +164,7 @@ public final class RoomEventHandler {
           var room = (Room) params[1];
           var result = (SwitchedPlayerRoleInRoomResult) params[2];
 
-          event.handle(player, room, result);
+          event.onSwitchSpectatorToParticipantResult(player, room, result);
 
           return null;
         }));

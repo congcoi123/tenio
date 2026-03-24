@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ class EventHandlerInterfacesTest {
   void testEventReceivedMessageFromPlayer() {
     EventReceivedMessageFromPlayer<Player, DataCollection> handler = (player, message) -> {
     };
-    handler.handle(Mockito.mock(Player.class), Mockito.mock(DataCollection.class));
+    handler.onReceivedMessageFromPlayer(Mockito.mock(Player.class), Mockito.mock(DataCollection.class));
   }
 
   @Test
@@ -60,7 +60,7 @@ class EventHandlerInterfacesTest {
   void testEventSendMessageToPlayer() {
     EventSendMessageToPlayer<Player, DataCollection> handler = (player, message) -> {
     };
-    handler.handle(Mockito.mock(Player.class), Mockito.mock(DataCollection.class));
+    handler.onSendMessageToPlayer(Mockito.mock(Player.class), Mockito.mock(DataCollection.class));
   }
 
   @Test
@@ -68,7 +68,7 @@ class EventHandlerInterfacesTest {
   void testEventServerInitialization() {
     EventServerInitialization handler = (serverName) -> {
     };
-    handler.handle("server");
+    handler.onServerInitialization("server");
   }
 
   @Test
@@ -76,7 +76,7 @@ class EventHandlerInterfacesTest {
   void testEventDisconnectPlayer() {
     EventDisconnectPlayer<Player> handler = (player, mode) -> {
     };
-    handler.handle(Mockito.mock(Player.class), PlayerDisconnectMode.IDLE);
+    handler.onDisconnectPlayer(Mockito.mock(Player.class), PlayerDisconnectMode.IDLE);
   }
 
   @Test
@@ -84,7 +84,7 @@ class EventHandlerInterfacesTest {
   void testEventWriteMessageToConnection() {
     EventWriteMessageToConnection handler = (session, packet) -> {
     };
-    handler.handle(Mockito.mock(Session.class), Mockito.mock(Packet.class));
+    handler.onWriteMessageToConnection(Mockito.mock(Session.class), Mockito.mock(Packet.class));
   }
 
   @Test
@@ -92,7 +92,7 @@ class EventHandlerInterfacesTest {
   void testEventServerException() {
     EventServerException handler = throwable -> {
     };
-    handler.handle(new Exception("test"));
+    handler.onServerException(new Exception("test"));
   }
 
   @Test
@@ -100,7 +100,7 @@ class EventHandlerInterfacesTest {
   void testEventBroadcastToChannel() {
     EventBroadcastToChannel<Player, DataCollection> handler = (channel, player, message) -> {
     };
-    handler.handle(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class),
+    handler.onBroadcastToChannel(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class),
         Mockito.mock(DataCollection.class));
   }
 
@@ -109,7 +109,7 @@ class EventHandlerInterfacesTest {
   void testEventRoomWillBeRemoved() {
     EventRoomWillBeRemoved<Room> handler = (room, mode) -> {
     };
-    handler.handle(Mockito.mock(Room.class), RoomRemoveMode.WHEN_EMPTY);
+    handler.onRoomWillBeRemoved(Mockito.mock(Room.class), RoomRemoveMode.WHEN_EMPTY);
   }
 
   @Test
@@ -117,7 +117,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerLogin() {
     EventPlayerLogin<Player> handler = player -> {
     };
-    handler.handle(Mockito.mock(Player.class));
+    handler.onPlayerLogin(Mockito.mock(Player.class));
   }
 
   @Test
@@ -125,7 +125,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerSubscribedChannel() {
     EventPlayerSubscribedChannel<Player> handler = (channel, player) -> {
     };
-    handler.handle(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class));
+    handler.onPlayerSubscribedChannel(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class));
   }
 
   @Test
@@ -133,7 +133,7 @@ class EventHandlerInterfacesTest {
   void testEventChannelCreated() {
     EventChannelCreated handler = channel -> {
     };
-    handler.handle(Mockito.mock(com.tenio.core.entity.Channel.class));
+    handler.onChannelCreated(Mockito.mock(com.tenio.core.entity.Channel.class));
   }
 
   @Test
@@ -141,7 +141,7 @@ class EventHandlerInterfacesTest {
   void testEventServerTeardown() {
     EventServerTeardown handler = serverName -> {
     };
-    handler.handle("server");
+    handler.onServerTeardown("server");
   }
 
   @Test
@@ -149,7 +149,7 @@ class EventHandlerInterfacesTest {
   void testEventFetchedCcuInfo() {
     EventFetchedCcuInfo handler = numberPlayers -> {
     };
-    handler.handle(42);
+    handler.onFetchedCcuInfo(42);
   }
 
   @Test
@@ -157,7 +157,7 @@ class EventHandlerInterfacesTest {
   void testEventChannelWillBeRemoved() {
     EventChannelWillBeRemoved handler = channel -> {
     };
-    handler.handle(Mockito.mock(com.tenio.core.entity.Channel.class));
+    handler.onChannelWillBeRemoved(Mockito.mock(com.tenio.core.entity.Channel.class));
   }
 
   @Test
@@ -165,7 +165,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerJoinedRoomResult() {
     EventPlayerJoinedRoomResult<Player, Room> handler = (player, room, result) -> {
     };
-    handler.handle(Mockito.mock(Player.class), Mockito.mock(Room.class),
+    handler.onPlayerJoinedRoomResult(Mockito.mock(Player.class), Mockito.mock(Room.class),
         PlayerJoinedRoomResult.SUCCESS);
   }
 
@@ -175,7 +175,7 @@ class EventHandlerInterfacesTest {
     EventFetchedBandwidthInfo handler =
         (readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets, writtenDroppedPacketsByPolicy, writtenDroppedPacketsByFull) -> {
         };
-    handler.handle(1L, 2L, 3L, 4L, 5L, 6L, 7L);
+    handler.onFetchedBandwidthInfo(1L, 2L, 3L, 4L, 5L, 6L, 7L);
   }
 
   @Test
@@ -183,7 +183,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerReconnectRequestHandling() {
     EventPlayerReconnectRequestHandling<Player, DataCollection> handler =
         (session, message) -> Optional.empty();
-    handler.handle(Mockito.mock(Session.class), Mockito.mock(DataCollection.class));
+    handler.onPlayerReconnectRequestHandling(Mockito.mock(Session.class), Mockito.mock(DataCollection.class));
     assertTrue(true);
   }
 
@@ -192,7 +192,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerBeforeLeaveRoom() {
     EventPlayerBeforeLeaveRoom<Player, Room> handler = (player, room, mode) -> {
     };
-    handler.handle(Mockito.mock(Player.class), Mockito.mock(Room.class),
+    handler.onPlayerBeforeLeaveRoom(Mockito.mock(Player.class), Mockito.mock(Room.class),
         PlayerLeaveRoomMode.SESSION_CLOSED);
   }
 
@@ -201,7 +201,7 @@ class EventHandlerInterfacesTest {
   void testEventSocketConnectionRefused() {
     EventSocketConnectionRefused handler = (channel, exception) -> {
     };
-    handler.handle(Mockito.mock(SocketChannel.class),
+    handler.onSocketConnectionRefused(Mockito.mock(SocketChannel.class),
         Mockito.mock(RefusedConnectionAddressException.class));
   }
 
@@ -210,7 +210,7 @@ class EventHandlerInterfacesTest {
   void testEventConnectionEstablishedResult() {
     EventConnectionEstablishedResult<DataCollection> handler = (session, message, result) -> {
     };
-    handler.handle(Mockito.mock(Session.class), Mockito.mock(DataCollection.class),
+    handler.onConnectionEstablishedResult(Mockito.mock(Session.class), Mockito.mock(DataCollection.class),
         ConnectionEstablishedResult.SUCCESS);
   }
 
@@ -219,7 +219,7 @@ class EventHandlerInterfacesTest {
   void testEventPlayerUnsubscribedChannel() {
     EventPlayerUnsubscribedChannel<Player> handler = (channel, player) -> {
     };
-    handler.handle(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class));
+    handler.onPlayerUnsubscribedChannel(Mockito.mock(com.tenio.core.entity.Channel.class), Mockito.mock(Player.class));
   }
 
   @Test
@@ -227,7 +227,7 @@ class EventHandlerInterfacesTest {
   void testEventWebSocketConnectionRefused() {
     EventWebSocketConnectionRefused handler = (channel, exception) -> {
     };
-    handler.handle(Mockito.mock(Channel.class),
+    handler.onWebSocketConnectionRefused(Mockito.mock(Channel.class),
         Mockito.mock(RefusedConnectionAddressException.class));
   }
 }

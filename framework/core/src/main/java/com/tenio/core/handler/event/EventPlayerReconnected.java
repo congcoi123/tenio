@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,5 +44,5 @@ public interface EventPlayerReconnected<P extends Player> {
    * @see CoreConfigurationType#PROP_MAX_PLAYER_IDLE_TIME
    * @see EventPlayerReconnectRequestHandling
    */
-  void handle(P player, Session session);
+  void onPlayerReconnected(P player, Session session);
 }

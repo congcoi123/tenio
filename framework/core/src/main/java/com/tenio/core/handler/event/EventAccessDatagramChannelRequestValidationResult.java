@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,5 +47,5 @@ public interface EventAccessDatagramChannelRequestValidationResult<P extends Pla
    * @see ServerEvent#ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT
    * @see EventAccessDatagramChannelRequestValidation
    */
-  void handle(P player, int udpConv, AccessDatagramChannelResult result);
+  void onAccessDatagramChannelRequestValidationResult(P player, int udpConv, AccessDatagramChannelResult result);
 }

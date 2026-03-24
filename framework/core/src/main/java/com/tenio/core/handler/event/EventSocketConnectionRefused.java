@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,5 +43,5 @@ public interface EventSocketConnectionRefused {
    * @see ServerEvent#SOCKET_CONNECTION_REFUSED
    * @since 0.3.1
    */
-  void handle(SocketChannel channel, RefusedConnectionAddressException exception);
+  void onSocketConnectionRefused(SocketChannel channel, RefusedConnectionAddressException exception);
 }

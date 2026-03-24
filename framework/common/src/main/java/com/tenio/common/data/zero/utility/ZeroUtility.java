@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -496,8 +496,8 @@ public final class ZeroUtility {
       }
 
       return zeroArray;
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(e.getMessage());
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException(exception.getMessage());
     }
   }
 
@@ -535,8 +535,8 @@ public final class ZeroUtility {
       }
 
       return zeroMap;
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(e.getMessage());
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException(exception.getMessage());
     }
   }
 

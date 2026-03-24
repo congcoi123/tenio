@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -329,18 +329,16 @@ public class DefaultRoom implements Room {
     }
 
     if (targetSlot == DEFAULT_SLOT) {
-      player.setPlayerSlotInCurrentRoom(
-          roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
+      player.setPlayerSlotInCurrentRoom(roomPlayerSlotGeneratedStrategy.getFreePlayerSlotInRoom());
       player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
     } else {
       try {
         roomPlayerSlotGeneratedStrategy.tryTakeSlot(targetSlot);
         player.setPlayerSlotInCurrentRoom(targetSlot);
         player.setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException exception) {
         throw new SwitchedPlayerRoleInRoomException(String
-            .format("Unable to set the target slot: %d for the participant: %s", targetSlot,
-                player.getIdentity()),
+            .format("Unable to set the target slot: %d for the participant: %s", targetSlot, player.getIdentity()),
             SwitchedPlayerRoleInRoomResult.SLOT_UNAVAILABLE_IN_ROOM);
       }
     }

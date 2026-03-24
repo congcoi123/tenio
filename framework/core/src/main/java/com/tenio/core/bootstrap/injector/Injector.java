@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2016-2025 kong <congcoi123@gmail.com>
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +59,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -104,7 +105,7 @@ public final class Injector extends SystemLogger {
    *
    * <p>This map is protected by the class instance to ensure thread-safe.
    */
-  private final Map<Class<?>, Class<?>> classesMap;
+  private final Map<Class<?>, List<Class<?>>> classesMap;
   /**
    * A map has keys are {@link #classesMap}'s key implemented classes and the value are keys'
    * instances.
@@ -211,21 +212,18 @@ public final class Injector extends SystemLogger {
       // in case the class has not implemented any interfaces, it still can be created, so put
       // the class into the map
       if (classInterfaces.length == 0) {
-        classesMap.put(implementedClass, implementedClass);
+        classesMap.put(implementedClass, List.of(implementedClass));
       } else {
-        // normal case, put the pair of class and interface
+        // normal case, put the pair of class and its list of interfaces
         // the interface will be used to retrieved back the corresponding class when we want to
         // create a bean by its interface
-        for (var classInterface : classInterfaces) {
-          classesMap.put(implementedClass, classInterface);
-        }
+        classesMap.put(implementedClass, List.of(classInterfaces));
       }
     }
 
     // Retrieves all classes those are declared by the @Bean annotation
     var implementedBeanClasses = new HashSet<Class<?>>();
-    var beanFactoryClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses,
-        BeanFactory.class);
+    var beanFactoryClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses, BeanFactory.class);
     for (var configurationClass : beanFactoryClasses) {
       for (var method : configurationClass.getMethods()) {
         if (method.isAnnotationPresent(Bean.class)) {
@@ -247,15 +245,14 @@ public final class Injector extends SystemLogger {
     }
     // append all classes
     for (var implementedClass : implementedBeanClasses) {
-      classesMap.put(implementedClass, implementedClass);
+      classesMap.put(implementedClass, List.of(implementedClass));
     }
 
     // Add all classes annotated by @RestController
-    var implementedRestClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses,
-        RestController.class);
+    var implementedRestClasses = ClassLoaderUtility.getTypesAnnotatedWith(allClasses, RestController.class);
     // append all classes
     for (var implementedClass : implementedRestClasses) {
-      classesMap.put(implementedClass, implementedClass);
+      classesMap.put(implementedClass, List.of(implementedClass));
     }
 
     // Step 2: We create instances
@@ -414,7 +411,7 @@ public final class Injector extends SystemLogger {
   @SuppressWarnings("unchecked")
   public <T> T getBean(Class<T> clazz) {
     var optional = classesMap.entrySet().stream()
-        .filter(entry -> entry.getValue() == clazz).findFirst();
+        .filter(entry -> entry.getValue().contains(clazz)).findFirst();
 
     return optional.map(
             classClassEntry -> (T) classBeansMap.get(new BeanClass(classClassEntry.getKey(), "")))
@@ -426,7 +423,7 @@ public final class Injector extends SystemLogger {
    *
    * @return a {@link Map} of classes
    */
-  public Map<Class<?>, Class<?>> getClassesMap() {
+  public Map<Class<?>, List<Class<?>>> getClassesMap() {
     return classesMap;
   }
 
@@ -524,7 +521,7 @@ public final class Injector extends SystemLogger {
   private Class<?> getImplementedClass(Class<?> classInterface, String fieldName,
                                        Class<?> classQualifier) throws ClassNotFoundException {
     var implementedClasses = classesMap.entrySet().stream()
-        .filter(entry -> entry.getValue() == classInterface).collect(Collectors.toSet());
+        .filter(entry -> entry.getValue().contains(classInterface)).collect(Collectors.toSet());
 
     if (implementedClasses.isEmpty()) {
       throw new NoImplementedClassFoundException(classInterface);
@@ -561,8 +558,7 @@ public final class Injector extends SystemLogger {
    */
   private void autowire(BeanClass beanClass, Object bean)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException,
-      NoSuchMethodException, SecurityException, ClassNotFoundException,
+      InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException,
       DuplicatedBeanCreationException {
     var fields = findFields(beanClass.clazz());
     for (var field : fields) {
@@ -580,13 +576,12 @@ public final class Injector extends SystemLogger {
       if (field.isAnnotationPresent(AutowiredAcceptNull.class)) {
         try {
           var fieldInstance =
-              getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier,
-                  classQualifier);
+              getBeanInstanceForInjector(field.getType(), field.getName(), nameQualifier, classQualifier);
           if (fieldInstance != null) {
             field.set(bean, fieldInstance);
             autowire(new BeanClass(fieldInstance.getClass(), nameQualifier), fieldInstance);
           }
-        } catch (NoImplementedClassFoundException e) {
+        } catch (NoImplementedClassFoundException exception) {
           // do nothing
         }
       } else if (field.isAnnotationPresent(Autowired.class)) {
