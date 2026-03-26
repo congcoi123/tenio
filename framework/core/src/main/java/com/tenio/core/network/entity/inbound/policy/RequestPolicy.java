@@ -22,21 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.policy;
+package com.tenio.core.network.entity.inbound.policy;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import com.tenio.core.network.entity.inbound.Request;
+import com.tenio.core.network.entity.inbound.implement.DatagramRequest;
+import com.tenio.core.network.entity.inbound.implement.SessionRequest;
 
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
-import org.junit.jupiter.api.Test;
+/**
+ * The request policy.
+ *
+ * @see Request
+ * @see DatagramRequest
+ * @see SessionRequest
+ * @since 0.6.6
+ */
+public interface RequestPolicy {
 
-class DefaultPacketQueuePolicyTest {
-  @Test
-  void testApplyPolicy() {
-    DefaultPacketQueuePolicy defaultPacketQueuePolicy = new DefaultPacketQueuePolicy();
-    PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
-    assertThrows(PacketQueueFullException.class, () -> defaultPacketQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class)));
-  }
+  /**
+   * Preprocesses the request before it gets into the processor. It is highly recommended to add
+   * the request priory if you are really aware of its usage.
+   *
+   * @param request an instance of {@link Request}
+   */
+  void applyPolicy(Request request);
 }

@@ -37,10 +37,10 @@ import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entity.protocol.Request;
-import com.tenio.core.network.entity.protocol.implement.DatagramRequest;
-import com.tenio.core.network.entity.protocol.implement.SessionRequest;
-import com.tenio.core.network.entity.protocol.policy.RequestPolicy;
+import com.tenio.core.network.entity.inbound.Request;
+import com.tenio.core.network.entity.inbound.implement.DatagramRequest;
+import com.tenio.core.network.entity.inbound.implement.SessionRequest;
+import com.tenio.core.network.entity.inbound.policy.RequestPolicy;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -56,8 +56,7 @@ import java.util.Optional;
  *
  * @see ZeroProcessor
  */
-public final class ZeroProcessorImpl extends AbstractController
-    implements ZeroProcessor {
+public final class ZeroProcessorImpl extends AbstractController implements ZeroProcessor {
 
   private final ServerApi serverApi;
   private final DatagramChannelManager datagramChannelManager;
@@ -94,61 +93,67 @@ public final class ZeroProcessorImpl extends AbstractController
   }
 
   @Override
+  public void subscribe(boolean supportSocketConnection, boolean supportDatagramChannel) {
+    if (supportSocketConnection) {
+      eventManager.on(ServerEvent.SESSION_REQUEST_CONNECTION, params -> {
+        var request = SessionRequest.newInstance().setEvent(ServerEvent.SESSION_REQUEST_CONNECTION);
+        request.setSender(params[0]);
+        request.setMessage((DataCollection) params[1]);
+        if (requestPolicy != null) {
+          requestPolicy.applyPolicy(request);
+        }
+        enqueueRequest(request);
+
+        return null;
+      });
+
+      eventManager.on(ServerEvent.SESSION_OCCURRED_EXCEPTION, params -> {
+        eventManager.emit(ServerEvent.SERVER_EXCEPTION, params);
+
+        return null;
+      });
+
+      eventManager.on(ServerEvent.SESSION_WILL_BE_CLOSED, params -> {
+        processSessionWillBeClosed((Session) params[0], (PlayerDisconnectMode) params[2]);
+
+        return null;
+      });
+
+      eventManager.on(ServerEvent.SESSION_READ_MESSAGE, params -> {
+        var session = (Session) params[0];
+        var request = SessionRequest.newInstance().setEvent(ServerEvent.SESSION_READ_MESSAGE);
+        request.setSender(session);
+        request.setMessage((DataCollection) params[1]);
+        session.setLastReadTime(TimeUtility.currentTimeMillis());
+        session.increaseReadMessages();
+        if (requestPolicy != null) {
+          requestPolicy.applyPolicy(request);
+        }
+        enqueueRequest(request);
+
+        return null;
+      });
+    }
+
+    if (supportDatagramChannel) {
+      eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME, params -> {
+        var request = DatagramRequest.newInstance().setEvent(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME);
+        request.setSender(params[0]);
+        request.setRemoteAddress((SocketAddress) params[1]);
+        request.setMessage((DataCollection) params[2]);
+        if (requestPolicy != null) {
+          requestPolicy.applyPolicy(request);
+        }
+        enqueueRequest(request);
+
+        return null;
+      });
+    }
+  }
+
+  @Override
   public void subscribe() {
-    eventManager.on(ServerEvent.SESSION_REQUEST_CONNECTION, params -> {
-      var request =
-          SessionRequest.newInstance().setEvent(ServerEvent.SESSION_REQUEST_CONNECTION);
-      request.setSender(params[0]);
-      request.setMessage((DataCollection) params[1]);
-      if (requestPolicy != null) {
-        requestPolicy.applyPolicy(request);
-      }
-      enqueueRequest(request);
-
-      return null;
-    });
-
-    eventManager.on(ServerEvent.SESSION_OCCURRED_EXCEPTION, params -> {
-      eventManager.emit(ServerEvent.SERVER_EXCEPTION, params);
-
-      return null;
-    });
-
-    eventManager.on(ServerEvent.SESSION_WILL_BE_CLOSED, params -> {
-      processSessionWillBeClosed((Session) params[0], (PlayerDisconnectMode) params[2]);
-
-      return null;
-    });
-
-    eventManager.on(ServerEvent.SESSION_READ_MESSAGE, params -> {
-      var session = (Session) params[0];
-      var request =
-          SessionRequest.newInstance().setEvent(ServerEvent.SESSION_READ_MESSAGE);
-      request.setSender(session);
-      request.setMessage((DataCollection) params[1]);
-      session.setLastReadTime(TimeUtility.currentTimeMillis());
-      session.increaseReadMessages();
-      if (requestPolicy != null) {
-        requestPolicy.applyPolicy(request);
-      }
-      enqueueRequest(request);
-
-      return null;
-    });
-
-    eventManager.on(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME, params -> {
-      var request = DatagramRequest.newInstance()
-              .setEvent(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME);
-      request.setSender(params[0]);
-      request.setRemoteAddress((SocketAddress) params[1]);
-      request.setMessage((DataCollection) params[2]);
-      if (requestPolicy != null) {
-        requestPolicy.applyPolicy(request);
-      }
-      enqueueRequest(request);
-
-      return null;
-    });
+    // Do nothing
   }
 
   @Override
@@ -161,8 +166,7 @@ public final class ZeroProcessorImpl extends AbstractController
     switch (request.getEvent()) {
       case SESSION_REQUEST_CONNECTION -> processSessionRequestsConnection(request);
       case SESSION_READ_MESSAGE -> processSessionReadMessage(request);
-      case DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME ->
-          processDatagramChannelReadMessageForTheFirstTime(request);
+      case DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME -> processDatagramChannelReadMessageForTheFirstTime(request);
       default -> {
         // do nothing
       }

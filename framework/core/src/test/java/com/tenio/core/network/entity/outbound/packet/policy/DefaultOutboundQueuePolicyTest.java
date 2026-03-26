@@ -22,27 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.policy;
+package com.tenio.core.network.entity.outbound.packet.policy;
 
-import com.tenio.core.exception.PacketQueuePolicyViolationException;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
-/**
- * The packet queue policy.
- *
- * @see PacketQueue
- */
-public interface PacketQueuePolicy {
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.implement.OutboundQueueImpl;
+import org.junit.jupiter.api.Test;
 
-  /**
-   * Applies policies on a queue whenever a new packet is added into it.
-   *
-   * @param packetQueue the checking {@link PacketQueue}
-   * @param packet      a new appended {@link Packet}
-   * @throws PacketQueuePolicyViolationException whenever a new added packet violates the queue's
-   * policies
-   */
-  void applyPolicy(PacketQueue packetQueue, Packet packet)
-      throws PacketQueuePolicyViolationException;
+class DefaultOutboundQueuePolicyTest {
+  @Test
+  void testApplyPolicy() {
+    DefaultOutboundQueuePolicy defaultOutboundQueuePolicy = new DefaultOutboundQueuePolicy();
+    OutboundQueueImpl newInstanceResult = OutboundQueueImpl.newInstance();
+    assertThrows(OutboundQueueFullException.class, () -> defaultOutboundQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class)));
+  }
 }

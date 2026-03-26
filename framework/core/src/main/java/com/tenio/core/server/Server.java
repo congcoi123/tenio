@@ -33,7 +33,7 @@ import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import io.netty.bootstrap.Bootstrap;
 

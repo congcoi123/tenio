@@ -25,8 +25,8 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.writer;
 
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
@@ -49,7 +49,7 @@ import java.util.concurrent.BlockingQueue;
  * <p>Note: This interface is typically implemented by specific writer handlers
  * for different network protocols (TCP, WebSocket, UDP, etc.).
  *
- * @see PacketQueue
+ * @see OutboundQueue
  * @see Session
  * @see Packet
  * @see NetworkWriterStatistic
@@ -61,11 +61,11 @@ public interface WriterHandler {
   /**
    * Sends a packet to a session.
    *
-   * @param packetQueue the {@link PacketQueue}
+   * @param outboundQueue the {@link OutboundQueue}
    * @param session     the {@link Session}
    * @param packet      the {@link Packet}
    */
-  void send(PacketQueue packetQueue, Session session, Packet packet);
+  void send(OutboundQueue outboundQueue, Session session, Packet packet);
 
   /**
    * Retrieves a blocking queue of all sessions.
@@ -87,7 +87,7 @@ public interface WriterHandler {
   void setSessionTicketsQueueManager(SessionTicketsQueueManager sessionTicketsQueueManager);
 
   /**
-   * Retrieves a packet queue encoder.
+   * Retrieves a packet encoder.
    *
    * @return an instance of {@link BinaryPacketEncoder}
    * @since 0.6.7

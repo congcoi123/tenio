@@ -24,33 +24,33 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import java.io.Serial;
 
 /**
- * Exception thrown when a packet queue policy is violated.
+ * Exception thrown when an outbound queue policy is violated.
  * This exception occurs when a packet being sent from the server to clients violates
- * the configured packet queue policies, such as size limits or rate limits.
+ * the configured outbound queue policies, such as size limits or rate limits.
  *
  * <p>Common causes:
  * <ul>
- *   <li>Packet queue size exceeds configured limits</li>
- *   <li>Packet rate exceeds configured thresholds</li>
- *   <li>Packet size exceeds maximum allowed size</li>
+ *   <li>Outbound queue size exceeds configured limits</li>
+ *   <li>Outbound rate exceeds configured thresholds</li>
+ *   <li>Outbound size exceeds maximum allowed size</li>
  *   <li>Queue policy configuration conflicts</li>
  * </ul>
  *
  * <p>Note: This exception provides information about the dropped packet and the
  * current queue usage percentage to help diagnose policy violation issues.
  *
- * @see PacketQueue
- * @see PacketQueuePolicy
+ * @see OutboundQueue
+ * @see OutboundQueuePolicy
  * @see Packet
  * @since 0.3.0
  */
-public final class PacketQueuePolicyViolationException extends RuntimeException {
+public final class OutboundQueuePolicyViolationException extends RuntimeException {
 
   @Serial
   private static final long serialVersionUID = -1620230030870946508L;
@@ -60,11 +60,11 @@ public final class PacketQueuePolicyViolationException extends RuntimeException 
    *
    * @param packet         the dropping {@link Packet}
    * @param percentageUsed the current usage of queue in percent ({@code float} value)
-   * @see PacketQueue
-   * @see PacketQueuePolicy
+   * @see OutboundQueue
+   * @see OutboundQueuePolicy
    */
-  public PacketQueuePolicyViolationException(Packet packet, float percentageUsed) {
-    super(String.format("Dropped packet: [%s], current packet queue usage: %f%%", packet.toString(),
+  public OutboundQueuePolicyViolationException(Packet packet, float percentageUsed) {
+    super(String.format("Dropped packet: [%s], current outbound queue usage: %f%%", packet.toString(),
         percentageUsed));
   }
 }

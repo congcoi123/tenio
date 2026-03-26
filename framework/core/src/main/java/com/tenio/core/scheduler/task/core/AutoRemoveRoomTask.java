@@ -69,15 +69,14 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
     return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
-            debug("AUTO REMOVE ROOM",
-                "Checking empty rooms in ", roomManager.getRoomCount(), " entities");
+            debug("AUTO REMOVE ROOM", "Checking empty rooms in ", roomManager.getRoomCount(), " entities");
           }
           executors.execute(() -> {
             Iterator<Room> iterator = roomManager.getReadonlyRoomsList().listIterator();
             while (iterator.hasNext()) {
               Room room = iterator.next();
-              if (room.getRoomRemoveMode() == RoomRemoveMode.WHEN_EMPTY && room.isEmpty() &&
-                  room.getState().isIdle()) {
+              if (room.getRoomRemoveMode() == RoomRemoveMode.WHEN_EMPTY && room.isEmpty()
+                      && room.getState() != null && room.getState().isIdle()) {
                 if (isDebugEnabled()) {
                   debug("AUTO REMOVE ROOM", "Room ", room.getId(),
                       " is going to be forced to remove by the cleaning task");

@@ -22,39 +22,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.policy;
+package com.tenio.core.network.entity.outbound.packet.policy;
 
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.exception.PacketQueuePolicyViolationException;
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
 import com.tenio.core.network.define.ResponseGuarantee;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 
 /**
- * The default implementation of the packet queue policy.
+ * The default implementation of the outbound queue policy.
  *
- * @see PacketQueuePolicy
+ * @see OutboundQueuePolicy
  */
-public class DefaultPacketQueuePolicy implements PacketQueuePolicy {
+public class DefaultOutboundQueuePolicy implements OutboundQueuePolicy {
 
   private static final float THREE_QUARTERS_FULL = 75.0f;
   private static final float NINETY_PERCENT_FULL = 90.0f;
 
   @Override
-  public void applyPolicy(PacketQueue packetQueue, Packet packet) {
-    if (packetQueue.isFull()) {
-      throw new PacketQueueFullException(packetQueue.getSize());
+  public void applyPolicy(OutboundQueue outboundQueue, Packet packet) {
+    if (outboundQueue.isFull()) {
+      throw new OutboundQueueFullException(outboundQueue.getSize());
     }
 
-    float percentageUsed = packetQueue.getPercentageUsed();
+    float percentageUsed = outboundQueue.getPercentageUsed();
 
     if (percentageUsed >= THREE_QUARTERS_FULL && percentageUsed < NINETY_PERCENT_FULL) {
       if (packet.getGuarantee().getValue() < ResponseGuarantee.NORMAL.getValue()) {
-        throw new PacketQueuePolicyViolationException(packet, percentageUsed);
+        throw new OutboundQueuePolicyViolationException(packet, percentageUsed);
       }
     } else if (percentageUsed >= NINETY_PERCENT_FULL) {
       if (packet.getGuarantee().getValue() < ResponseGuarantee.GUARANTEED.getValue()) {
-        throw new PacketQueuePolicyViolationException(packet, percentageUsed);
+        throw new OutboundQueuePolicyViolationException(packet, percentageUsed);
       }
     }
   }

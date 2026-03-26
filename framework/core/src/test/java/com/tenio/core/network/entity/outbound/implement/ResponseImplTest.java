@@ -22,27 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.exception;
+package com.tenio.core.network.entity.outbound.implement;
 
-import com.tenio.core.network.entity.packet.PacketQueue;
-import java.io.Serial;
+import org.junit.jupiter.api.Test;
 
-/**
- * When the packet queue, which is using to send packet from the server to clients side, is full.
- */
-public final class PacketQueueFullException extends RuntimeException {
-
-  @Serial
-  private static final long serialVersionUID = -2526342485508899328L;
-
-  /**
-   * Creates a new exception.
-   *
-   * @param currentSize the current size of the packet queue ({@code integer} value)
-   * @see PacketQueue
-   */
-  public PacketQueueFullException(int currentSize) {
-    super(String.format("Reached max queue size, the packet was dropped. The current size: %d",
-        currentSize));
+class ResponseImplTest {
+  @Test
+  void testNewInstance() {
+    ResponseImpl.newInstance();
   }
 }

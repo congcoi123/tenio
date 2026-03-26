@@ -25,7 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.controller;
 
 import com.tenio.core.exception.RequestQueueFullException;
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.inbound.Request;
 import com.tenio.core.service.Service;
 import com.tenio.core.service.ServiceListener;
 

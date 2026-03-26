@@ -22,22 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.implement;
+package com.tenio.core.exception;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import java.io.Serial;
 
-import com.tenio.core.network.define.ResponseGuarantee;
-import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.packet.Packet;
-import org.junit.jupiter.api.Test;
+/**
+ * When the outbound queue, which is using to send packet from the server to clients side, is full.
+ */
+public final class OutboundQueueFullException extends RuntimeException {
 
-class PacketImplTest {
-  @Test
-  void testNewInstance() {
-    Packet actualNewInstanceResult = PacketImpl.newInstance();
-    assertFalse(actualNewInstanceResult.needsEncrypted());
-    assertEquals(TransportType.UNKNOWN, actualNewInstanceResult.getTransportType());
-    assertEquals(ResponseGuarantee.NORMAL, actualNewInstanceResult.getGuarantee());
+  @Serial
+  private static final long serialVersionUID = -2526342485508899328L;
+
+  /**
+   * Creates a new exception.
+   *
+   * @param currentSize the current size of the outbound queue ({@code integer} value)
+   * @see OutboundQueue
+   */
+  public OutboundQueueFullException(int currentSize) {
+    super(String.format("Reached max queue size, the packet was dropped. The current size: %d",
+        currentSize));
   }
 }

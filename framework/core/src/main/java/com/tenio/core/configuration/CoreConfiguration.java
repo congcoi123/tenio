@@ -27,11 +27,13 @@ package com.tenio.core.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XmlUtility;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.setting.Setting;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -68,7 +70,27 @@ public abstract class CoreConfiguration extends CommonConfiguration {
   @Override
   public void load(String file) throws Exception {
 
-    Document document = XmlUtility.parseFile(new File(file));
+    // 1. Check external file (user-provided)
+    File externalFile = file == null ? null : new File(file);
+    Document document;
+
+    if (file != null && externalFile.exists()) {
+      if (isInfoEnabled()) {
+        info("CONFIGURATION", buildgen("The external configuration file: ", file));
+      }
+      document = XmlUtility.parseFile(externalFile);
+    } else {
+      // 2. Fallback to embedded default
+      if (isInfoEnabled()) {
+        info("CONFIGURATION", buildgen("The external configuration file is not found, use the default: ", CoreConstant.DEFAULT_CONFIGURATION_FILE));
+      }
+      try (InputStream configStream = getClass().getClassLoader().getResourceAsStream(CoreConstant.DEFAULT_CONFIGURATION_FILE)) {
+        document = XmlUtility.parseStream(configStream);
+      } catch (Exception exception) {
+        throw new Exception(exception);
+      }
+    }
+
     Node root = document.getFirstChild();
 
     // Server Properties
@@ -79,7 +101,25 @@ public abstract class CoreConfiguration extends CommonConfiguration {
       if (paramName.equals(CoreConfigurationType.SERVER_SETTING.getValue())) {
         var path = dataNode.getTextContent();
         var objectMapper = new ObjectMapper();
-        var setting = objectMapper.readValue(new File(path), Setting.class);
+        // 1. Check external file (user-provided)
+        externalFile = new File(path);
+        Setting setting;
+        if (externalFile.exists()) {
+          if (isInfoEnabled()) {
+            info("CONFIGURATION", buildgen("The external setting file: ", path));
+          }
+          setting = objectMapper.readValue(new File(path), Setting.class);
+        } else {
+          // 2. Fallback to embedded default
+          if (isInfoEnabled()) {
+            info("CONFIGURATION", buildgen("The external setting file is not found, use the default: ", CoreConstant.DEFAULT_SETTING_FILE));
+          }
+          try (InputStream configStream = getClass().getClassLoader().getResourceAsStream(CoreConstant.DEFAULT_SETTING_FILE)) {
+            setting = objectMapper.readValue(configStream, Setting.class);
+          } catch (Exception exception) {
+            throw new Exception(exception);
+          }
+        }
         push(CoreConfigurationType.getByValue(paramName), setting);
       } else {
         push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());

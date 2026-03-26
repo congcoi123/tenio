@@ -25,10 +25,10 @@ THE SOFTWARE.
 package com.tenio.core.network;
 
 import com.tenio.core.network.configuration.SocketConfiguration;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
-import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.filter.DefaultConnectionFilter;
@@ -55,7 +55,7 @@ import java.util.Map;
  *   <li>Buffer size management</li>
  *   <li>SSL/TLS support for WebSocket</li>
  *   <li>Network statistics tracking</li>
- *   <li>Packet queue management</li>
+ *   <li>Outbound queue management</li>
  * </ul>
  *
  * <p>Configuration categories:
@@ -73,7 +73,7 @@ import java.util.Map;
  * @see NetworkImpl
  * @see SessionManager
  * @see ConnectionFilter
- * @see PacketQueue
+ * @see OutboundQueue
  * @since 0.3.0
  */
 public interface Network extends Service {
@@ -215,22 +215,22 @@ public interface Network extends Service {
   void setSessionMaxIdleTimeInSeconds(int seconds);
 
   /**
-   * Sets an instance of packet queue policy the network.
+   * Sets an instance of outbound queue policy the network.
    *
-   * @param packetQueuePolicy instance of {@link PacketQueuePolicy}
-   * @see PacketQueue
-   * @see DefaultPacketQueuePolicy
+   * @param outboundQueuePolicy instance of {@link OutboundQueuePolicy}
+   * @see OutboundQueue
+   * @see DefaultOutboundQueuePolicy
    */
-  void setPacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
+  void setOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy);
 
   /**
-   * Sets the packet queue size.
+   * Sets the outbound queue size.
    *
-   * @param queueSize the new size ({@code integer} value) for the packet queue
-   * @see PacketQueue
-   * @see PacketQueuePolicy
+   * @param queueSize the new size ({@code integer} value) for the outbound queue
+   * @see OutboundQueue
+   * @see OutboundQueuePolicy
    */
-  void setPacketQueueSize(int queueSize);
+  void setOutboundQueueSize(int queueSize);
 
   /**
    * Sets an instance of packet encoder to encode packets for sending to clients.

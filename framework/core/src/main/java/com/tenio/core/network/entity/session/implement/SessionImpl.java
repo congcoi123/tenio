@@ -32,7 +32,7 @@ import com.tenio.core.network.codec.packet.PacketReadState;
 import com.tenio.core.network.codec.packet.PendingPacket;
 import com.tenio.core.network.codec.packet.ProcessedPacket;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -68,7 +68,7 @@ public class SessionImpl implements Session {
   private Channel webSocketChannel;
   private ConnectionFilter connectionFilter;
 
-  private PacketQueue packetQueue;
+  private OutboundQueue outboundQueue;
   private ProcessedPacket processedPacket;
   private volatile PendingPacket pendingPacket;
   private volatile PacketReadState packetReadState;
@@ -160,13 +160,13 @@ public class SessionImpl implements Session {
   }
 
   @Override
-  public PacketQueue fetchPacketQueue() {
-    return packetQueue;
+  public OutboundQueue fetchOutboundQueue() {
+    return outboundQueue;
   }
 
   @Override
-  public void configurePacketQueue(PacketQueue packetQueue) {
-    this.packetQueue = packetQueue;
+  public void configureOutboundQueue(OutboundQueue outboundQueue) {
+    this.outboundQueue = outboundQueue;
   }
 
   @Override
@@ -456,8 +456,8 @@ public class SessionImpl implements Session {
 
     connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
 
-    if (packetQueue != null) {
-      packetQueue.clear();
+    if (outboundQueue != null) {
+      outboundQueue.clear();
     }
 
     switch (transportType) {

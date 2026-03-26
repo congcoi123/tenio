@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet;
+package com.tenio.core.network.entity.outbound.packet;
 
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.exception.PacketQueuePolicyViolationException;
-import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
 /**
- * Represents a thread-safe queue for managing network packets in the server.
+ * Represents a thread-safe queue for managing outbound packets on the server.
  * This interface defines the core functionality for packet queuing, including
  * packet management, queue size control, and policy enforcement.
  *
@@ -48,13 +48,13 @@ import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
  * operations for queue modifications.
  *
  * @see Packet
- * @see PacketQueuePolicy
- * @see DefaultPacketQueuePolicy
- * @see PacketQueueFullException
- * @see PacketQueuePolicyViolationException
+ * @see OutboundQueuePolicy
+ * @see DefaultOutboundQueuePolicy
+ * @see OutboundQueueFullException
+ * @see OutboundQueuePolicyViolationException
  * @since 0.3.0
  */
-public interface PacketQueue {
+public interface OutboundQueue {
 
   /**
    * Retrieves the last-in packet in the queue.
@@ -101,11 +101,11 @@ public interface PacketQueue {
   /**
    * Sets a set of rules for managing packets in queue.
    *
-   * @param packetQueuePolicy the implementation of {@link PacketQueuePolicy} used to manage
+   * @param outboundQueuePolicy the implementation of {@link OutboundQueuePolicy} used to manage
    *                          packets in the queue
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
-  void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
+  void configureOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy);
 
   /**
    * Retrieves the current usage of queue.
@@ -118,13 +118,13 @@ public interface PacketQueue {
    * Puts a new packet into queue.
    *
    * @param packet an appended {@link Packet}
-   * @throws PacketQueueFullException            when the queue is full and not be able to hold
+   * @throws OutboundQueueFullException            when the queue is full and not be able to hold
    *                                             more packets
-   * @throws PacketQueuePolicyViolationException when a new appended packet violates the queue
+   * @throws OutboundQueuePolicyViolationException when a new appended packet violates the queue
    *                                             policies
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
-  void put(Packet packet) throws PacketQueueFullException, PacketQueuePolicyViolationException;
+  void put(Packet packet) throws OutboundQueueFullException, OutboundQueuePolicyViolationException;
 
   /**
    * Clears all packets from the queue.

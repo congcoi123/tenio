@@ -22,18 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet;
+package com.tenio.core.network.entity.outbound.packet;
 
 import com.tenio.common.data.DataType;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Represents the smallest unit of data transfer between the server and clients.
+ * Represents the smallest unit of data transfer from the server to clients.
  * This class encapsulates network communication data with support for different
  * transport types and priority levels.
  *
@@ -47,10 +47,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * </ul>
  *
  * <p>Thread safety: This class is not thread-safe and should be used
- * within a thread-safe context like {@link PacketQueue}.
+ * within a thread-safe context like {@link OutboundQueue}.
  *
- * @see PacketQueue
- * @see PacketQueuePolicy
+ * @see OutboundQueue
+ * @see OutboundQueuePolicy
  * @see TransportType
  * @see ResponseGuarantee
  * @see Session
