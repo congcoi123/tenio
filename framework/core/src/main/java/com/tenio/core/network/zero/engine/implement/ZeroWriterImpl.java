@@ -25,9 +25,9 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.implement;
 
 import com.tenio.core.event.implement.EventManager;
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.exception.PacketQueuePolicyViolationException;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
@@ -108,32 +108,32 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     }
 
     // now we can iterate packets from queue to proceed
-    var packetQueue = session.fetchPacketQueue();
+    var outboundQueue = session.fetchOutboundQueue();
     // ignore the empty queue
-    if (packetQueue == null || packetQueue.isEmpty()) {
+    if (outboundQueue == null || outboundQueue.isEmpty()) {
       return;
     }
 
     // when the session is in-activated, just ignore its packets
     if (!session.isActivated()) {
-      packetQueue.take();
+      outboundQueue.take();
       return;
     }
 
-    var packet = packetQueue.peek();
+    var packet = outboundQueue.peek();
     // ignore the null packet and remove it from queue
     if (packet == null) {
-      if (!packetQueue.isEmpty()) {
-        packetQueue.take();
+      if (!outboundQueue.isEmpty()) {
+        outboundQueue.take();
       }
 
       return;
     }
 
     if (packet.isTcp()) {
-      socketWriterHandler.send(packetQueue, session, packet);
+      socketWriterHandler.send(outboundQueue, session, packet);
     } else if (packet.isUdp()) {
-      datagramWriterHandler.send(packetQueue, session, packet);
+      datagramWriterHandler.send(outboundQueue, session, packet);
     }
   }
 
@@ -166,21 +166,21 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
       return;
     }
 
-    // loops through the packet queue and handles its packets
-    var packetQueue = session.fetchPacketQueue();
-    if (packetQueue != null) {
+    // loops through the outbound queue and handles its packets
+    var outboundQueue = session.fetchOutboundQueue();
+    if (outboundQueue != null) {
       try {
         // put new item into the queue
-        packetQueue.put(packet);
+        outboundQueue.put(packet);
 
         // duplicated entries are expected
         sessionTicketsQueueManager.getQueueByElementId(session.getId()).add(session);
 
         packet.setRecipients(null);
-      } catch (PacketQueuePolicyViolationException exception) {
+      } catch (OutboundQueuePolicyViolationException exception) {
         session.addDroppedPackets(1);
         networkWriterStatistic.updateWrittenDroppedPacketsByPolicy(1);
-      } catch (PacketQueueFullException exception) {
+      } catch (OutboundQueueFullException exception) {
         session.addDroppedPackets(1);
         networkWriterStatistic.updateWrittenDroppedPacketsByFull(1);
       }

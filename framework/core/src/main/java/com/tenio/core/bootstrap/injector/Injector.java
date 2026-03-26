@@ -80,10 +80,6 @@ import java.util.stream.Collectors;
  *   <li>Circular dependency detection</li>
  * </ul>
  *
- * <p>Thread safety: This class is thread-safe and can be safely accessed
- * from multiple threads. All operations on the bean registry and component
- * scanning are synchronized.
- *
  * <p>Note: This class is designed to work in conjunction with the
  * {@link Component}, {@link Bean}, {@link Autowired}, and {@link AutowiredQualifier}
  * annotations for proper dependency injection.

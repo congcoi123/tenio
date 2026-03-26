@@ -53,10 +53,10 @@ import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
 import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.configuration.SocketConfiguration;
-import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
-import com.tenio.core.network.entity.protocol.Response;
-import com.tenio.core.network.entity.protocol.policy.RequestPolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.Response;
+import com.tenio.core.network.entity.inbound.policy.RequestPolicy;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.filter.DefaultConnectionFilter;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
@@ -105,8 +105,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     datagramChannelManager = DatagramChannelManager.newInstance();
     network = NetworkImpl.newInstance(eventManager);
     serverApi = ServerApiImpl.newInstance(this);
-    zeroProcessor =
-        ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
+    zeroProcessor = ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
     scheduler = SchedulerImpl.newInstance(eventManager);
   } // prevent creation manually
 
@@ -128,13 +127,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     // record the started time
     startedTime = TimeUtility.currentTimeMillis();
 
-    // get the file path
-    var file = params.length == 0 ? null : params[0];
-    if (file == null) {
-      file = CoreConstant.DEFAULT_CONFIGURATION_FILE;
-    }
-
-    // load configuration file
+    // create a new configuration instance
     Configuration configuration = bootstrapHandler.getConfigurationHandler().getConfiguration();
     if (configuration == null) {
       if (isInfoEnabled()) {
@@ -143,6 +136,11 @@ public final class ServerImpl extends SystemLogger implements Server {
 
       configuration = new DefaultCoreConfiguration();
     }
+
+    // get the file path
+    var file = params.length == 0 ? null : params[0];
+
+    // load the file
     configuration.load(file);
 
     // Put the current configurations to the logger
@@ -159,7 +157,9 @@ public final class ServerImpl extends SystemLogger implements Server {
     }
 
     // subscribing for processes and handlers
-    zeroProcessor.subscribe();
+    zeroProcessor.subscribe(configuration.get(CoreConfigurationType.NETWORK_TCP) != null ||
+            configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) != null,
+            configuration.get(CoreConfigurationType.NETWORK_UDP) != null);
 
     bootstrapHandler.getEventHandler().initialize(eventManager);
 
@@ -326,12 +326,12 @@ public final class ServerImpl extends SystemLogger implements Server {
         .setWebSocketUsingSsl(
             configuration.getBoolean(CoreConfigurationType.NETWORK_PROP_WEBSOCKET_USING_SSL));
 
-    PacketQueuePolicy packetQueuePolicy = bootstrapHandler.getBeanByClazz(PacketQueuePolicy.class);
-    if (packetQueuePolicy == null) {
-      packetQueuePolicy = new DefaultPacketQueuePolicy();
+    OutboundQueuePolicy outboundQueuePolicy = bootstrapHandler.getBeanByClazz(OutboundQueuePolicy.class);
+    if (outboundQueuePolicy == null) {
+      outboundQueuePolicy = new DefaultOutboundQueuePolicy();
     }
-    network.setPacketQueuePolicy(packetQueuePolicy);
-    network.setPacketQueueSize(
+    network.setOutboundQueuePolicy(outboundQueuePolicy);
+    network.setOutboundQueueSize(
         configuration.getInt(CoreConfigurationType.PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION));
 
     DatagramPacketPolicy datagramPacketPolicy =
@@ -372,9 +372,7 @@ public final class ServerImpl extends SystemLogger implements Server {
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
     zeroProcessor.setSessionManager(network.getSessionManager());
     zeroProcessor.setPlayerManager(playerManager);
-    zeroProcessor
-        .setMaxRequestQueueSize(
-            configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
+    zeroProcessor.setMaxRequestQueueSize(configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
     zeroProcessor
         .setThreadPoolSize(configuration.getInt(CoreConfigurationType.WORKER_INTERNAL_PROCESSOR));
     zeroProcessor.setKeepPlayerOnDisconnection(

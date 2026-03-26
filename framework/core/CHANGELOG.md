@@ -108,3 +108,7 @@
 - Supported injecting multiple interfaces into one class
 - Renamed all events' main method
 - Updated License
+
+## 0.6.10 2026-03-26 Bugfix release
+- Supported default embedded configurations
+- Refactored inbound/outbound packages

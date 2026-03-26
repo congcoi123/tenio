@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.exception;
 
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import java.io.Serial;
 
 /**

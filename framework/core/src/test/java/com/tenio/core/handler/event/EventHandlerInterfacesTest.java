@@ -35,7 +35,7 @@ import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.exception.RefusedConnectionAddressException;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import io.netty.channel.Channel;
 import java.nio.channels.SocketChannel;

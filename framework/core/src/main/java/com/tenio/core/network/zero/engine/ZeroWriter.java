@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine;
 
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 
@@ -35,10 +35,10 @@ import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 public interface ZeroWriter extends ZeroEngine {
 
   /**
-   * Enqueue a packet from the packet queue to process.
+   * Enqueue a packet from the outbound queue to process.
    *
    * @param packet the processing {@link Packet}
-   * @see PacketQueue
+   * @see OutboundQueue
    */
   void enqueuePacket(Packet packet);
 
