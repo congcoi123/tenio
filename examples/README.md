@@ -29,8 +29,8 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.6.9
-- tenio-engine 0.6.9
+- tenio-core 0.6.10
+- tenio-engine 0.6.10
 ```
 
 ## Requirements
@@ -59,11 +59,11 @@ $ git clone https://github.com/congcoi123/tenio-examples.git
  */
 @Bootstrap
 @EventHandler
-public final class TestSimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
+public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
     public static void main(String[] params) {
-        ApplicationLauncher.run(TestSimpleServer.class, params);
+        ApplicationLauncher.run(SimpleServer.class, params);
     }
 
     @Override

@@ -25,8 +25,8 @@ THE SOFTWARE.
 package com.tenio.examples.example1.configuration.policy;
 
 import com.tenio.core.bootstrap.annotation.Component;
-import com.tenio.core.network.entity.protocol.Request;
-import com.tenio.core.network.entity.protocol.policy.RequestPolicy;
+import com.tenio.core.network.entity.inbound.Request;
+import com.tenio.core.network.entity.inbound.policy.RequestPolicy;
 
 @Component
 public final class CustomRequestPolicy implements RequestPolicy {
