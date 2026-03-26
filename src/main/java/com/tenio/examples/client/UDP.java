@@ -30,7 +30,7 @@ import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
-import com.tenio.core.network.entity.packet.implement.PacketImpl;
+import com.tenio.core.network.entity.outbound.packet.implement.PacketImpl;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
