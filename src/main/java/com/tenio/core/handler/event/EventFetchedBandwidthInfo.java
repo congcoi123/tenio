@@ -26,10 +26,10 @@ package com.tenio.core.handler.event;
 
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.controller.AbstractController;
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.exception.PacketQueuePolicyViolationException;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
 /**
  * Fetches the bandwidth information on the server.
@@ -54,17 +54,17 @@ public interface EventFetchedBandwidthInfo {
    *                                      sending packets to clients side
    * @param writtenDroppedPacketsByPolicy {@code long} value, the current total number of
    *                                      dropped packets which could not sent to clients side
-   *                                      because they violated the packet queue policies
+   *                                      because they violated the outbound queue policies
    * @param writtenDroppedPacketsByFull   {@code long} value, the current total number of
    *                                      dropped packets which could not sent to clients side
-   *                                      because packet queue is full and could not hold any
+   *                                      because outbound queue is full and could not hold any
    *                                      written packet
    * @see CoreConfigurationType#INTERVAL_TRAFFIC_COUNTER
    * @see AbstractController
-   * @see PacketQueue
-   * @see PacketQueuePolicy
-   * @see PacketQueuePolicyViolationException
-   * @see PacketQueueFullException
+   * @see OutboundQueue
+   * @see OutboundQueuePolicy
+   * @see OutboundQueuePolicyViolationException
+   * @see OutboundQueueFullException
    */
   void onFetchedBandwidthInfo(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
                               long writtenPackets, long writtenDroppedPacketsByPolicy,

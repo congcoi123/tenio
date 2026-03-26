@@ -29,7 +29,7 @@ import com.tenio.core.network.codec.CodecUtility;
 import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
 import com.tenio.core.network.codec.packet.PacketHeader;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import java.nio.ByteBuffer;
 
 /**

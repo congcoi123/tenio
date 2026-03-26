@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.writer.implement;
 
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
   }
 
   @Override
-  public void send(PacketQueue packetQueue, Session session, Packet packet) {
+  public void send(OutboundQueue outboundQueue, Session session, Packet packet) {
     // retrieve the datagram channel instance from session
     var datagramChannel = session.fetchDatagramChannel();
 
@@ -80,7 +80,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
         debug("DATAGRAM CHANNEL SEND", "Empty data, nothing to write for session: ", session);
       }
       // now the packet can be safely removed
-      packetQueue.take();
+      outboundQueue.take();
       return;
     }
 
@@ -121,11 +121,11 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
     session.addWrittenBytes(writtenBytes);
 
     // it is always safe to remove the packet from queue hence it should be sent
-    packetQueue.take();
+    outboundQueue.take();
 
-    // if the packet queue still contains more packets, session is activated, then put the
+    // if the outbound queue still contains more packets, session is activated, then put the
     // session back to the tickets queue
-    if (session.isActivated() && !packetQueue.isEmpty()) {
+    if (session.isActivated() && !outboundQueue.isEmpty()) {
       getSessionTicketsQueue(session.getId()).add(session);
     }
   }

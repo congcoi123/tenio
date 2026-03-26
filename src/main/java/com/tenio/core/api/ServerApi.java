@@ -40,7 +40,7 @@ import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.exception.AddedDuplicatedRoomException;
 import com.tenio.core.exception.CreatedDuplicatedChannelException;
 import com.tenio.core.handler.event.EventPlayerLogin;
-import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Iterator;
 import java.util.List;

@@ -13,7 +13,7 @@
         <!-- The current version name of your server in string type -->
         <Property name="version-name">1.0</Property>
         <!-- The core setting file's path for your server -->
-        <Property name="setting">setting.json</Property>
+        <Property name="setting">setting.example.json</Property>
     </Properties>
 
     <Network>
@@ -98,15 +98,17 @@
     </Configuration>
 
     <!-- Customizable Behaviors -->
-    <!-- Just create your own classes, implement desired interfaces and annotate them with @Component.
-         In case you do not declare any change, their default implementations will be applied
-         (DefaultConnectionFilter, DefaultPacketQueuePolicy).
+    <!--
+        Just create your own classes, implement desired interfaces and annotate them with @Component.
+        In case you do not declare any change, their default implementations will be applied
+        (DefaultConnectionFilter, DefaultOutboundQueuePolicy, DefaultDatagramPacketPolicy).
 
-            packet-encryptor: BinaryPacketEncryptor
-            packet-compressor: BinaryPacketCompressor
-            connection-filter: ConnectionFilter
-            packet-queue-policy: PacketQueuePolicy
-            request-policy: RequestPolicy
+        packet-encryptor: BinaryPacketEncryptor
+        packet-compressor: BinaryPacketCompressor
+        connection-filter: ConnectionFilter
+        outbound-queue-policy: OutboundQueuePolicy
+        request-policy: RequestPolicy
+        datagram-packet-policy: DatagramPacketPolicy
     -->
 
     <!-- Your Customizable Configurations -->

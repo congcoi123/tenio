@@ -26,8 +26,8 @@ package com.tenio.core.network.zero.engine.writer.implement;
 
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.utility.ExceptionUtility;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
   }
 
   @Override
-  public void send(PacketQueue packetQueue, Session session, Packet packet) {
+  public void send(OutboundQueue outboundQueue, Session session, Packet packet) {
     var channel = session.fetchSocketChannel();
 
     // this channel can be deactivated by some reasons, no need to throw an exception here
@@ -62,7 +62,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       }
       // in this case, just disconnect the session if possible, it's no longer help writing data
       try {
-        packetQueue.clear();
+        outboundQueue.clear();
         if (session.isActivated()) {
           session.close(ConnectionDisconnectMode.LOST_IN_WRITTEN, PlayerDisconnectMode.CONNECTION_LOST);
         }
@@ -85,7 +85,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
         debug("SOCKET CHANNEL SEND", "Empty data, nothing to write for session: ", session);
       }
       // now the packet can be safely removed
-      packetQueue.take();
+      outboundQueue.take();
       return;
     }
 
@@ -135,7 +135,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       }
       // in this case, just disconnect the session, it's no longer help writing data
       try {
-        packetQueue.clear();
+        outboundQueue.clear();
         if (session.isActivated()) {
           session.close(ConnectionDisconnectMode.LOST_IN_WRITTEN, PlayerDisconnectMode.CONNECTION_LOST);
         }
@@ -169,11 +169,11 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       getNetworkWriterStatistic().updateWrittenPackets(1);
 
       // now the packet can be safely removed
-      packetQueue.take();
+      outboundQueue.take();
 
       // in case this packet is the last one, it closes the session
       if (packet.isMarkedAsLast()) {
-        packetQueue.clear();
+        outboundQueue.clear();
         try {
           if (session.isActivated()) {
             session.close(ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
@@ -184,10 +184,10 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
         return;
       }
 
-      // if the packet queue still contains more packets, session is activated, and its channel
+      // if the outbound queue still contains more packets, session is activated, and its channel
       // is alive, then put the session back to the tickets queue
       if (session.isActivated() && channel.isOpen() && channel.isConnected() &&
-          !packetQueue.isEmpty()) {
+          !outboundQueue.isEmpty()) {
         getSessionTicketsQueue(session.getId()).add(session);
       }
     }

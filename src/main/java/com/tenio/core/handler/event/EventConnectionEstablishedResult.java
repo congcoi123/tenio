@@ -27,7 +27,7 @@ package com.tenio.core.handler.event;
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
-import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.Session;
 
 /**

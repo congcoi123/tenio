@@ -24,41 +24,41 @@ THE SOFTWARE.
 
 package com.tenio.core.network.define;
 
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
 /**
  * Definition the guarantee of a response from server.
  *
- * @see PacketQueue
- * @see PacketQueuePolicy
+ * @see OutboundQueue
+ * @see OutboundQueuePolicy
  */
 public enum ResponseGuarantee {
 
   /**
    * The response may not be responded bases on the rule implementations logic.
    *
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
   NON_GUARANTEED(1),
   /**
    * The response is processed bases on the rule implementations logic.
    *
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
   NORMAL(2),
   /**
    * The response should be guaranteed to be responded bases on the rule implementations logic.
    *
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
   GUARANTEED(3),
   /**
    * The response should be guaranteed to be responded in the highest priority bases on the
    * rule implementations logic.
    *
-   * @see DefaultPacketQueuePolicy
+   * @see DefaultOutboundQueuePolicy
    */
   GUARANTEED_QUICKEST(4);
 

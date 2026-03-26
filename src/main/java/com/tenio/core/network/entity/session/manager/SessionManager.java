@@ -29,9 +29,9 @@ import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.Manager;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.DefaultPacketQueuePolicy;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import io.netty.channel.Channel;
@@ -49,9 +49,9 @@ import kcp.Ukcp;
 public interface SessionManager extends Manager {
 
   /**
-   * Default the maximum size value of a packet queue.
+   * Default the maximum size value of an outbound queue.
    */
-  int DEFAULT_MAX_PACKET_QUEUE_SIZE = 100;
+  int DEFAULT_MAX_OUTBOUND_QUEUE_SIZE = 100;
 
   /**
    * Ensures the calculation on the session list is thread-safe.
@@ -159,22 +159,22 @@ public interface SessionManager extends Manager {
   void configureConnectionFilter(ConnectionFilter connectionFilter);
 
   /**
-   * Sets an instance of packet queue policy for the session manager.
+   * Sets an instance of outbound queue policy for the session manager.
    *
-   * @param packetQueuePolicy instance of {@link PacketQueuePolicy}
-   * @see PacketQueue
-   * @see DefaultPacketQueuePolicy
+   * @param outboundQueuePolicy instance of {@link OutboundQueuePolicy}
+   * @see OutboundQueue
+   * @see DefaultOutboundQueuePolicy
    */
-  void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy);
+  void configureOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy);
 
   /**
-   * Sets the packet queue size.
+   * Sets the outbound queue size.
    *
-   * @param queueSize the {@code integer} value of new size for the packet queue
-   * @see PacketQueue
-   * @see PacketQueuePolicy
+   * @param queueSize the {@code integer} value of new size for the outbound queue
+   * @see OutboundQueue
+   * @see OutboundQueuePolicy
    */
-  void configurePacketQueueSize(int queueSize);
+  void configureOutboundQueueSize(int queueSize);
 
   /**
    * Removes a session from its manager, this method should not be invoked directly. Calls

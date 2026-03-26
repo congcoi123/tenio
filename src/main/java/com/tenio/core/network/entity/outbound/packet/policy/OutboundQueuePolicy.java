@@ -22,27 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.protocol.policy;
+package com.tenio.core.network.entity.outbound.packet.policy;
 
-import com.tenio.core.network.entity.protocol.Request;
-import com.tenio.core.network.entity.protocol.implement.DatagramRequest;
-import com.tenio.core.network.entity.protocol.implement.SessionRequest;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 
 /**
- * The request policy.
+ * The outbound queue policy.
  *
- * @see Request
- * @see DatagramRequest
- * @see SessionRequest
- * @since 0.6.6
+ * @see OutboundQueue
  */
-public interface RequestPolicy {
+public interface OutboundQueuePolicy {
 
   /**
-   * Preprocesses the request before it gets into the processor. It is highly recommended to add
-   * the request priory if you are really aware of its usage.
+   * Applies policies on a queue whenever a new packet is added into it.
    *
-   * @param request an instance of {@link Request}
+   * @param outboundQueue the checking {@link OutboundQueue}
+   * @param packet      a new appended {@link Packet}
+   * @throws OutboundQueuePolicyViolationException whenever a new added packet violates the queue's
+   * policies
    */
-  void applyPolicy(Request request);
+  void applyPolicy(OutboundQueue outboundQueue, Packet packet)
+      throws OutboundQueuePolicyViolationException;
 }

@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.protocol.implement;
+package com.tenio.core.network.entity.inbound.implement;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.inbound.Request;
 import com.tenio.core.network.entity.session.Session;
 import java.net.SocketAddress;
 

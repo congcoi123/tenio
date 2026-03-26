@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.protocol;
+package com.tenio.core.network.entity.outbound;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataType;
 import com.tenio.core.entity.Player;
 import com.tenio.core.network.define.ResponseGuarantee;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import java.util.Collection;
 
@@ -172,7 +172,7 @@ public interface Response {
    *
    * @param guarantee the {@link ResponseGuarantee}
    * @return the pointer of response
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   Response guarantee(ResponseGuarantee guarantee);
 
@@ -180,7 +180,7 @@ public interface Response {
    * Retrieves the guarantee level of response.
    *
    * @return the current {@link ResponseGuarantee} of response
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   ResponseGuarantee getGuarantee();
 

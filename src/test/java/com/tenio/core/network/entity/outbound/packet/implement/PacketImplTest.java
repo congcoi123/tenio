@@ -22,13 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.protocol.implement;
+package com.tenio.core.network.entity.outbound.packet.implement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import com.tenio.core.network.define.ResponseGuarantee;
+import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.implement.PacketImpl;
 import org.junit.jupiter.api.Test;
 
-class ResponseImplTest {
+class PacketImplTest {
   @Test
   void testNewInstance() {
-    ResponseImpl.newInstance();
+    Packet actualNewInstanceResult = PacketImpl.newInstance();
+    assertFalse(actualNewInstanceResult.needsEncrypted());
+    assertEquals(TransportType.UNKNOWN, actualNewInstanceResult.getTransportType());
+    assertEquals(ResponseGuarantee.NORMAL, actualNewInstanceResult.getGuarantee());
   }
 }

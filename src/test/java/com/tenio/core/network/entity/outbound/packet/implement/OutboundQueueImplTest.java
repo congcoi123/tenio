@@ -22,41 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.implement;
+package com.tenio.core.network.entity.outbound.packet.implement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import org.junit.jupiter.api.Test;
 
-class PacketQueueImplTest {
+class OutboundQueueImplTest {
   @Test
   void testNewInstance() {
-    PacketQueueImpl actualNewInstanceResult = PacketQueueImpl.newInstance();
+    OutboundQueueImpl actualNewInstanceResult = OutboundQueueImpl.newInstance();
     actualNewInstanceResult.configureMaxSize(3);
-    actualNewInstanceResult.configurePacketQueuePolicy(mock(PacketQueuePolicy.class));
+    actualNewInstanceResult.configureOutboundQueuePolicy(mock(OutboundQueuePolicy.class));
     assertEquals(0, actualNewInstanceResult.getSize());
   }
 
   @Test
   void testGetPercentageUsed() {
-    assertEquals(0.0f, PacketQueueImpl.newInstance().getPercentageUsed());
+    assertEquals(0.0f, OutboundQueueImpl.newInstance().getPercentageUsed());
   }
 
   @Test
   void testGetPercentageUsed2() {
-    PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
+    OutboundQueueImpl newInstanceResult = OutboundQueueImpl.newInstance();
     newInstanceResult.configureMaxSize(3);
     assertEquals(0.0f, newInstanceResult.getPercentageUsed());
   }
 
   @Test
   void testClear() {
-    PacketQueueImpl newInstanceResult = PacketQueueImpl.newInstance();
+    OutboundQueueImpl newInstanceResult = OutboundQueueImpl.newInstance();
     newInstanceResult.clear();
-    assertEquals("PacketQueue{queue=[], packetQueuePolicy=null, maxSize=0, size=0}", newInstanceResult.toString());
+    assertEquals("OutboundQueue{queue=[], outboundQueuePolicy=null, maxSize=0, size=0}", newInstanceResult.toString());
     assertTrue(newInstanceResult.isEmpty());
   }
 }

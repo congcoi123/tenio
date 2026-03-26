@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.statistic;
 
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
 /**
  * Tracks and manages network writing statistics for the server.
@@ -42,8 +42,8 @@ import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
  * </ul>
  *
  * @see NetworkReaderStatistic
- * @see PacketQueue
- * @see PacketQueuePolicy
+ * @see OutboundQueue
+ * @see OutboundQueuePolicy
  * @since 0.3.0
  */
 public final class NetworkWriterStatistic {
@@ -89,7 +89,7 @@ public final class NetworkWriterStatistic {
    *
    * @param numberPackets {@code long} value, the number of dropped packets which violated
    *                      policies
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   public void updateWrittenDroppedPacketsByPolicy(long numberPackets) {
     writtenDroppedPacketsByPolicy += numberPackets;
@@ -101,7 +101,7 @@ public final class NetworkWriterStatistic {
    *
    * @param numberPackets {@code long} value, the number of dropped packets which cannot
    *                      append to the full queue
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   public void updateWrittenDroppedPacketsByFull(long numberPackets) {
     writtenDroppedPacketsByFull += numberPackets;
@@ -130,7 +130,7 @@ public final class NetworkWriterStatistic {
    * send to clients side.
    *
    * @return {@code long} value, the number of dropped packets which violated policies
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   public long getWrittenDroppedPacketsByPolicy() {
     return writtenDroppedPacketsByPolicy;
@@ -141,7 +141,7 @@ public final class NetworkWriterStatistic {
    * not be able to send to clients side.
    *
    * @return the number of dropped packets which cannot append to a full queue
-   * @see PacketQueuePolicy
+   * @see OutboundQueuePolicy
    */
   public long getWrittenDroppedPacketsByFull() {
     return writtenDroppedPacketsByFull;

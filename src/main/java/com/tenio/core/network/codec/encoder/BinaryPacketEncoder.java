@@ -28,7 +28,7 @@ import com.tenio.core.exception.PacketCompressorException;
 import com.tenio.core.exception.PacketEncryptorException;
 import com.tenio.core.network.codec.compression.BinaryPacketCompressor;
 import com.tenio.core.network.codec.encryption.BinaryPacketEncryptor;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 
 /**
  * Provides APIs for encoding network packets into binary format.

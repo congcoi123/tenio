@@ -22,41 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.network.entity.packet.implement;
+package com.tenio.core.network.entity.outbound.packet.implement;
 
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * The implementation for packet queue.
+ * The implementation for outbound queue.
  *
- * @see PacketQueue
+ * @see OutboundQueue
  */
-public final class PacketQueueImpl implements PacketQueue {
+public final class OutboundQueueImpl implements OutboundQueue {
 
   private final Queue<Packet> queue;
   private volatile int size;
-  private PacketQueuePolicy packetQueuePolicy;
+  private OutboundQueuePolicy outboundQueuePolicy;
   private int maxSize;
 
   /**
    * Constructor.
    */
-  private PacketQueueImpl() {
+  private OutboundQueueImpl() {
     queue = new LinkedList<>();
   }
 
   /**
-   * Creates a new instance of a packet queue.
+   * Creates a new instance of an outbound queue.
    *
-   * @return a new instance of {@link PacketQueue}
+   * @return a new instance of {@link OutboundQueue}
    */
-  public static PacketQueueImpl newInstance() {
-    return new PacketQueueImpl();
+  public static OutboundQueueImpl newInstance() {
+    return new OutboundQueueImpl();
   }
 
   @Override
@@ -102,8 +102,8 @@ public final class PacketQueueImpl implements PacketQueue {
   }
 
   @Override
-  public void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
-    this.packetQueuePolicy = packetQueuePolicy;
+  public void configureOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
+    this.outboundQueuePolicy = outboundQueuePolicy;
   }
 
   @Override
@@ -113,7 +113,7 @@ public final class PacketQueueImpl implements PacketQueue {
 
   @Override
   public void put(Packet packet) {
-    packetQueuePolicy.applyPolicy(this, packet);
+    outboundQueuePolicy.applyPolicy(this, packet);
     synchronized (queue) {
       queue.offer(packet);
       size = queue.size();
@@ -130,9 +130,9 @@ public final class PacketQueueImpl implements PacketQueue {
 
   @Override
   public String toString() {
-    return "PacketQueue{" +
+    return "OutboundQueue{" +
         "queue=" + queue +
-        ", packetQueuePolicy=" + packetQueuePolicy +
+        ", outboundQueuePolicy=" + outboundQueuePolicy +
         ", maxSize=" + maxSize +
         ", size=" + size +
         '}';
