@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
@@ -52,7 +52,7 @@ class AbstractWriterHandlerTest {
   void setUp() {
     handler = new AbstractWriterHandler() {
       @Override
-      public void send(PacketQueue packetQueue, Session session, Packet packet) {
+      public void send(OutboundQueue outboundQueue, Session session, Packet packet) {
         // no-op for test
       }
     };

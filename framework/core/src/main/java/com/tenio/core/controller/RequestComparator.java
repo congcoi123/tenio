@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.controller;
 
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.inbound.Request;
 import java.util.Comparator;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationException;
 

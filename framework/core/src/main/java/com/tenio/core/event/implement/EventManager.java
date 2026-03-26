@@ -132,7 +132,16 @@ public final class EventManager extends SystemLogger {
           eventSubscriber.getSubscriber()::dispatch);
     });
     if (isInfoEnabled()) {
-      info("SERVER EVENT SUBSCRIBERS", "Subscribers", events.toString());
+      StringBuilder sb = new StringBuilder("[\n");
+      if (events.isEmpty()) {
+        sb.append("<empty>\n");
+      } else {
+        for (Object item : events) {
+          sb.append("  - ").append(item).append("\n");
+        }
+      }
+      sb.append("]");
+      info("SERVER EVENT SUBSCRIBERS", sb.toString());
     }
   }
 

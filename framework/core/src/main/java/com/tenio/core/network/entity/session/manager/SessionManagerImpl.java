@@ -27,9 +27,9 @@ package com.tenio.core.network.entity.session.manager;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
-import com.tenio.core.network.entity.packet.PacketQueue;
-import com.tenio.core.network.entity.packet.implement.PacketQueueImpl;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.implement.OutboundQueueImpl;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -59,9 +59,9 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private final Map<Integer, Session> sessionByKcps;
   private volatile List<Session> readonlySessionsList;
   private volatile int sessionCount;
-  private PacketQueuePolicy packetQueuePolicy;
+  private OutboundQueuePolicy outboundQueuePolicy;
   private ConnectionFilter connectionFilter;
-  private int packetQueueSize;
+  private int outboundQueueSize;
   private int maxIdleTimeInSeconds;
 
   private SessionManagerImpl(EventManager eventManager) {
@@ -72,7 +72,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     sessionByDatagrams = new HashMap<>();
     sessionByKcps = new HashMap<>();
     readonlySessionsList = new ArrayList<>();
-    packetQueueSize = DEFAULT_MAX_PACKET_QUEUE_SIZE;
+    outboundQueueSize = DEFAULT_MAX_OUTBOUND_QUEUE_SIZE;
   }
 
   /**
@@ -193,13 +193,13 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
-  public void configurePacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
-    this.packetQueuePolicy = packetQueuePolicy;
+  public void configureOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
+    this.outboundQueuePolicy = outboundQueuePolicy;
   }
 
   @Override
-  public void configurePacketQueueSize(int queueSize) {
-    packetQueueSize = queueSize;
+  public void configureOutboundQueueSize(int queueSize) {
+    outboundQueueSize = queueSize;
   }
 
   @Override
@@ -247,16 +247,16 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     eventManager.emit(event, params);
   }
 
-  private PacketQueue configureNewPacketQueue() {
-    PacketQueue packetQueue = PacketQueueImpl.newInstance();
-    packetQueue.configureMaxSize(packetQueueSize);
-    packetQueue.configurePacketQueuePolicy(packetQueuePolicy);
-    return packetQueue;
+  private OutboundQueue configureNewOutboundQueue() {
+    OutboundQueue outboundQueue = OutboundQueueImpl.newInstance();
+    outboundQueue.configureMaxSize(outboundQueueSize);
+    outboundQueue.configureOutboundQueuePolicy(outboundQueuePolicy);
+    return outboundQueue;
   }
 
   private void configureSession(Session session) {
     session.configureSessionManager(this);
-    session.configurePacketQueue(configureNewPacketQueue());
+    session.configureOutboundQueue(configureNewOutboundQueue());
     session.configureConnectionFilter(connectionFilter);
     session.configureMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
   }

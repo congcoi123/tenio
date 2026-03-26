@@ -31,7 +31,7 @@ import com.tenio.core.network.codec.packet.PacketReadState;
 import com.tenio.core.network.codec.packet.PendingPacket;
 import com.tenio.core.network.codec.packet.ProcessedPacket;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.packet.PacketQueue;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.scheduler.task.core.AutoCleanOrphanSessionTask;
@@ -145,19 +145,19 @@ public interface Session {
   boolean isOrphan();
 
   /**
-   * Retrieves a packet queue of session which is using to send messages to clients side.
+   * Retrieves an outbound queue of session which is using to send messages to clients side.
    *
-   * @return an instance of {@link PacketQueue}
+   * @return an instance of {@link OutboundQueue}
    */
-  PacketQueue fetchPacketQueue();
+  OutboundQueue fetchOutboundQueue();
 
   /**
-   * Sets a packet queue to session which is using to send messages to clients side.
+   * Sets an outbound queue to session which is using to send messages to clients side.
    *
-   * @param packetQueue an instance of {@link PacketQueue}
+   * @param outboundQueue an instance of {@link OutboundQueue}
    * @throws IllegalStateException when an illegal queue is in use
    */
-  void configurePacketQueue(PacketQueue packetQueue) throws IllegalStateException;
+  void configureOutboundQueue(OutboundQueue outboundQueue) throws IllegalStateException;
 
   /**
    * Retrieves the transportation type of session.

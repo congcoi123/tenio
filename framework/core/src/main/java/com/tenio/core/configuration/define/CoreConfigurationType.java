@@ -28,8 +28,8 @@ import com.tenio.common.configuration.ConfigurationType;
 import com.tenio.core.configuration.CoreConfiguration;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
-import com.tenio.core.exception.PacketQueueFullException;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
+import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.session.Session;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,11 +170,11 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
   /**
-   * Sets the maximum size of a packet queue (response queue). Notes that every {@link Session} has
+   * Sets the maximum size of an outbound queue (response queue). Notes that every {@link Session} has
    * its own queue, and this setting applies for all of them.
    *
-   * @see PacketQueuePolicy
-   * @see PacketQueueFullException
+   * @see OutboundQueuePolicy
+   * @see OutboundQueueFullException
    */
   PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION("max-response-queue-size-per-session"),
   /**

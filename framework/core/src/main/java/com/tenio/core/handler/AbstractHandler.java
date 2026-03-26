@@ -35,8 +35,8 @@ import com.tenio.core.api.ServerApi;
 import com.tenio.core.command.client.ClientCommandManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.exception.UnsupportedDataTypeInUseException;
-import com.tenio.core.network.entity.protocol.Response;
-import com.tenio.core.network.entity.protocol.implement.ResponseImpl;
+import com.tenio.core.network.entity.outbound.Response;
+import com.tenio.core.network.entity.outbound.implement.ResponseImpl;
 import com.tenio.core.server.Server;
 import com.tenio.core.server.ServerImpl;
 

@@ -42,7 +42,7 @@ import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.session.Session;
 import io.netty.channel.Channel;
 import java.nio.channels.SocketChannel;

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.tenio.core.network.entity.protocol.Request;
+import com.tenio.core.network.entity.inbound.Request;
 import org.junit.jupiter.api.Test;
 
 class RequestComparatorTest {

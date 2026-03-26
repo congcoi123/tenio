@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core;
 
+import com.tenio.common.logger.LoggerBootstrap;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.configuration.constant.CoreConstant;
@@ -80,6 +81,10 @@ public final class ApplicationLauncher extends SystemLogger {
    * @param params     the additional parameters
    */
   public static void run(Class<?> entryClass, String[] params) {
+    // Logger Configuration
+    LoggerBootstrap.initialize(CoreConstant.DEFAULT_FW_LOG4J2_FILE, CoreConstant.EXPECTED_USER_LOG4J2_FILE);
+
+    // Start the application
     var application = ApplicationLauncher.newInstance();
     application.start(entryClass, params);
   }
@@ -117,8 +122,7 @@ public final class ApplicationLauncher extends SystemLogger {
             CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE);
       } catch (Exception exception) {
         if (isErrorEnabled()) {
-          error(exception, "The application started with exceptions occurred: ",
-              exception.getMessage());
+          error(exception, "The application started with exceptions occurred: ", exception.getMessage());
         }
         // exit with errors
         System.exit(1);

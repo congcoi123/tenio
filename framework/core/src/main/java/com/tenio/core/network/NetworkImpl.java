@@ -29,10 +29,10 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.manager.AbstractManager;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
-import com.tenio.core.network.entity.packet.Packet;
-import com.tenio.core.network.entity.packet.implement.PacketImpl;
-import com.tenio.core.network.entity.packet.policy.PacketQueuePolicy;
-import com.tenio.core.network.entity.protocol.Response;
+import com.tenio.core.network.entity.outbound.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.implement.PacketImpl;
+import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
+import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.entity.session.manager.SessionManagerImpl;
@@ -299,13 +299,13 @@ public final class NetworkImpl extends AbstractManager implements Network {
   }
 
   @Override
-  public void setPacketQueuePolicy(PacketQueuePolicy packetQueuePolicy) {
-    sessionManager.configurePacketQueuePolicy(packetQueuePolicy);
+  public void setOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
+    sessionManager.configureOutboundQueuePolicy(outboundQueuePolicy);
   }
 
   @Override
-  public void setPacketQueueSize(int queueSize) {
-    sessionManager.configurePacketQueueSize(queueSize);
+  public void setOutboundQueueSize(int queueSize) {
+    sessionManager.configureOutboundQueueSize(queueSize);
   }
 
   @Override

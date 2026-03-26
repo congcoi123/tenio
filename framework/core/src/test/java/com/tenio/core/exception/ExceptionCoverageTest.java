@@ -36,7 +36,7 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
 import com.tenio.core.entity.define.result.SwitchedPlayerRoleInRoomResult;
-import com.tenio.core.network.entity.packet.Packet;
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -123,13 +123,13 @@ class ExceptionCoverageTest {
   }
 
   @Test
-  @DisplayName("Test PacketQueuePolicyViolationException")
-  void testPacketQueuePolicyViolationException() {
+  @DisplayName("Test OutboundQueuePolicyViolationException")
+  void testOutboundQueuePolicyViolationException() {
     Packet packet = mock(Packet.class);
     Mockito.when(packet.toString()).thenReturn("packet1");
-    PacketQueuePolicyViolationException ex = new PacketQueuePolicyViolationException(packet, 75.5f);
+    OutboundQueuePolicyViolationException ex = new OutboundQueuePolicyViolationException(packet, 75.5f);
     assertTrue(ex.getMessage()
-        .contains("Dropped packet: [packet1], current packet queue usage: 75.500000%"));
+        .contains("Dropped packet: [packet1], current outbound queue usage: 75.500000%"));
   }
 
   @Test
@@ -208,9 +208,9 @@ class ExceptionCoverageTest {
   }
 
   @Test
-  @DisplayName("Test PacketQueueFullException")
-  void testPacketQueueFullException() {
-    PacketQueueFullException ex = new PacketQueueFullException(5);
+  @DisplayName("Test OutboundQueueFullException")
+  void testOutboundQueueFullException() {
+    OutboundQueueFullException ex = new OutboundQueueFullException(5);
     assertTrue(ex.getMessage()
         .contains("Reached max queue size, the packet was dropped. The current size: 5"));
   }
