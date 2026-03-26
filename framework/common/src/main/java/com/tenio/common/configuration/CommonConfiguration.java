@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.common.configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.tenio.common.logger.SystemLogger;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +83,13 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
 
   @Override
   public String toString() {
-    return configuration.toString();
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    try {
+        return mapper.writeValueAsString(configuration);
+    } catch (JsonProcessingException exception) {
+        return configuration.toString();
+    }
   }
 
   @Override

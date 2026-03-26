@@ -69,6 +69,6 @@ class ConfigurationTest {
   @DisplayName("To be able to clear all configuration data")
   void clearAllConfigurationsShouldWork() {
     configuration.clear();
-    assertEquals("{}", configuration.toString());
+    assertEquals("{ }", configuration.toString());
   }
 }
