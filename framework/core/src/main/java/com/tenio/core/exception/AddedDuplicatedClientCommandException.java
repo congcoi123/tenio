@@ -45,8 +45,6 @@ public final class AddedDuplicatedClientCommandException extends RuntimeExceptio
    */
   public AddedDuplicatedClientCommandException(Short code,
                                                AbstractClientCommandHandler<Player, DataCollection> commandHandler) {
-    super(
-        String.format("Unable to add label {%d}, it already exists > {%s}",
-            code, commandHandler.toString()));
+    super(String.format("Unable to add label {%d}, it already exists > {%s}", code, commandHandler.toString()));
   }
 }

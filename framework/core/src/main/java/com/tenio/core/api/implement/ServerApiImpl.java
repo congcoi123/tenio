@@ -265,8 +265,7 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
     }
 
     var room = player.getCurrentRoom().orElse(null);
-    getEventManager().emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room,
-        leaveRoomMode);
+    getEventManager().emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, room, leaveRoomMode);
     try {
       if (room != null) {
         room.removePlayer(player);

@@ -42,7 +42,6 @@ public final class AddedDuplicatedCommandException extends RuntimeException {
    * @param commandHandler the available {@link AbstractSystemCommandHandler} instance
    */
   public AddedDuplicatedCommandException(String label, AbstractSystemCommandHandler commandHandler) {
-    super(
-        String.format("Unable to add label {%s}, it already exists > {%s}", label, commandHandler.toString()));
+    super(String.format("Unable to add label {%s}, it already exists > {%s}", label, commandHandler.toString()));
   }
 }

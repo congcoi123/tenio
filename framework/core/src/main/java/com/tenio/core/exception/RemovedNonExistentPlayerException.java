@@ -40,7 +40,6 @@ public final class RemovedNonExistentPlayerException extends RuntimeException {
    * @param playerIdentity the {@link Object} of player's identity
    */
   public RemovedNonExistentPlayerException(Object playerIdentity) {
-    super(String.format("Unable to remove player: %s, the player did not exist",
-        playerIdentity.toString()));
+    super(String.format("Unable to remove player: %s, the player did not exist", playerIdentity.toString()));
   }
 }
