@@ -25,12 +25,15 @@ THE SOFTWARE.
 package com.tenio.core.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.inbound.Request;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,6 +111,64 @@ class ControllerTest {
     assertThrows(Exception.class, () -> controller.enqueueRequest(req2));
   }
 
+  @Test
+  @DisplayName("Default thread pool size is DEFAULT_NUMBER_WORKERS (5)")
+  void testDefaultThreadPoolSize() {
+    assertEquals(Controller.DEFAULT_NUMBER_WORKERS, controller.getThreadPoolSize());
+  }
+
+  @Test
+  @DisplayName("isActivated is false before activate() is called")
+  void testIsActivatedDefaultFalse() {
+    assertFalse(controller.isActivated());
+  }
+
+  @Test
+  @DisplayName("getName returns null before setName is called")
+  void testGetNameDefaultNull() {
+    assertNull(controller.getName());
+  }
+
+  @Test
+  @DisplayName("setThreadPoolSize below 1 throws IllegalArgumentException")
+  void testSetThreadPoolSizeBelowOneThrows() {
+    assertThrows(IllegalArgumentException.class, () -> controller.setThreadPoolSize(0));
+    assertThrows(IllegalArgumentException.class, () -> controller.setThreadPoolSize(-1));
+  }
+
+  @Test
+  @DisplayName("getMaximumStartingTimeInMilliseconds equals threadPoolSize * delay constant")
+  void testGetMaximumStartingTimeInMilliseconds() {
+    controller.setThreadPoolSize(3);
+    assertEquals(3 * CoreConstant.DELAY_BETWEEN_STARTING_WORKER_IN_MILLISECONDS,
+        controller.getMaximumStartingTimeInMilliseconds());
+  }
+
+  @Test
+  @DisplayName("shutdown before initialize is a no-op and does not throw")
+  void testShutdownBeforeInitializeIsNoOp() {
+    assertDoesNotThrow(() -> controller.shutdown());
+  }
+
+  @Test
+  @DisplayName("enqueueRequest after initialize succeeds when queue is unlimited")
+  void testEnqueueRequestSucceedsWhenQueueUnlimited() {
+    controller.setThreadPoolSize(1);
+    controller.initialize();
+    Request req = mock(Request.class);
+    when(req.getId()).thenReturn(1L);
+    assertDoesNotThrow(() -> controller.enqueueRequest(req));
+  }
+
+  @Test
+  @DisplayName("priority-enabled controller initializes without throwing")
+  void testPriorityEnabledControllerInitializesOk() {
+    EventManager eventManager = mock(EventManager.class);
+    var priorityController = new PriorityTestController(eventManager);
+    priorityController.setThreadPoolSize(1);
+    assertDoesNotThrow(priorityController::initialize);
+  }
+
   static class TestController extends AbstractController {
 
     TestController(EventManager eventManager) {
@@ -117,6 +178,46 @@ class ControllerTest {
     @Override
     protected boolean isEnabledPriority() {
       return false;
+    }
+
+    @Override
+    public void subscribe() {
+    }
+
+    @Override
+    public void processRequest(Request request) {
+    }
+
+    @Override
+    public void onInitialized() {
+    }
+
+    @Override
+    public void onStarted() {
+    }
+
+    @Override
+    public void onRunning() {
+    }
+
+    @Override
+    public void onShutdown() {
+    }
+
+    @Override
+    public void onDestroyed() {
+    }
+  }
+
+  static class PriorityTestController extends AbstractController {
+
+    PriorityTestController(EventManager eventManager) {
+      super(eventManager);
+    }
+
+    @Override
+    protected boolean isEnabledPriority() {
+      return true;
     }
 
     @Override

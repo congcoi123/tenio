@@ -25,6 +25,8 @@ THE SOFTWARE.
 package com.tenio.core.network.statistic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,5 +48,36 @@ class NetworkReaderStatisticTest {
     assertEquals(0L, actualNewInstanceResult.getReadBytes());
     assertEquals(0L, actualNewInstanceResult.getReadPackets());
     assertEquals(0L, actualNewInstanceResult.getReadDroppedPackets());
+  }
+
+  @Test
+  void testUpdateReadBytesAccumulates() {
+    NetworkReaderStatistic stat = NetworkReaderStatistic.newInstance();
+    stat.updateReadBytes(100L);
+    stat.updateReadBytes(200L);
+    assertEquals(300L, stat.getReadBytes());
+  }
+
+  @Test
+  void testUpdateReadPacketsAccumulates() {
+    NetworkReaderStatistic stat = NetworkReaderStatistic.newInstance();
+    stat.updateReadPackets(5L);
+    stat.updateReadPackets(3L);
+    assertEquals(8L, stat.getReadPackets());
+  }
+
+  @Test
+  void testUpdateReadDroppedPacketsAccumulates() {
+    NetworkReaderStatistic stat = NetworkReaderStatistic.newInstance();
+    stat.updateReadDroppedPackets(2L);
+    stat.updateReadDroppedPackets(1L);
+    assertEquals(3L, stat.getReadDroppedPackets());
+  }
+
+  @Test
+  void testToStringContainsClassName() {
+    NetworkReaderStatistic stat = NetworkReaderStatistic.newInstance();
+    assertNotNull(stat.toString());
+    assertTrue(stat.toString().contains("NetworkReaderStatistic"));
   }
 }

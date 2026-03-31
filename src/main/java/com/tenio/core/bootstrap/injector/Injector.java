@@ -406,6 +406,9 @@ public final class Injector extends SystemLogger {
    */
   @SuppressWarnings("unchecked")
   public <T> T getBean(Class<T> clazz) {
+    if (clazz == null) {
+      return null;
+    }
     var optional = classesMap.entrySet().stream()
         .filter(entry -> entry.getValue().contains(clazz)).findFirst();
 

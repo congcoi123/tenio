@@ -42,7 +42,6 @@ import com.tenio.core.bootstrap.test.impl.TestClassAlone;
 import com.tenio.core.bootstrap.test.impl.TestClassCCopy;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceA;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceC;
-import com.tenio.core.custom.DisabledTestFindingSolution;
 import com.tenio.core.exception.DuplicatedBeanCreationException;
 import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
 import com.tenio.core.exception.NoImplementedClassFoundException;
@@ -221,8 +220,9 @@ class InjectorTest {
     );
   }
 
-  @DisabledTestFindingSolution
+  @Test
   @DisplayName("Attempt fetching null bean should return null")
   void getNullBeanShouldReturnNull() {
+    assertNull(Injector.newInstance().getBean(null));
   }
 }

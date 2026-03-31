@@ -64,7 +64,6 @@ public final class OutboundQueuePolicyViolationException extends RuntimeExceptio
    * @see OutboundQueuePolicy
    */
   public OutboundQueuePolicyViolationException(Packet packet, float percentageUsed) {
-    super(String.format("Dropped packet: [%s], current outbound queue usage: %f%%", packet.toString(),
-        percentageUsed));
+    super(String.format("Dropped packet: [%s], current outbound queue usage: %f%%", packet.toString(), percentageUsed));
   }
 }
