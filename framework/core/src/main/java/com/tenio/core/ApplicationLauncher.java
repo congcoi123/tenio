@@ -163,7 +163,7 @@ public final class ApplicationLauncher extends SystemLogger {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (isDebugEnabled()) {
         debug("APPLICATION", "JVM is shutting down");
-        info("LAST SYSTEM MONITORING", SystemMonitoring.newInstance());
+        debug("LAST SYSTEM MONITORING", SystemMonitoring.newInstance());
       }
       server.shutdown();
       System.exit(0);

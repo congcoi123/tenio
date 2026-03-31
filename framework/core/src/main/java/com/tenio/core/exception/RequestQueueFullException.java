@@ -42,7 +42,6 @@ public final class RequestQueueFullException extends RuntimeException {
    * @see AbstractController
    */
   public RequestQueueFullException(int currentSize) {
-    super(String.format("Reached max queue size, the request was dropped. The current size: %d",
-        currentSize));
+    super(String.format("Reached max queue size, the request was dropped. The current size: %d", currentSize));
   }
 }

@@ -60,7 +60,6 @@ public final class DuplicatedBeanCreationException extends Exception {
    * @param name  the bean's {@link String} name
    */
   public DuplicatedBeanCreationException(Class<?> clazz, String name) {
-    super(String.format("Duplicated bean creation with type: %s, and name: %s",
-        clazz.getSimpleName(), name));
+    super(String.format("Duplicated bean creation with type: %s, and name: %s", clazz.getSimpleName(), name));
   }
 }

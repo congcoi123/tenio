@@ -25,13 +25,30 @@ THE SOFTWARE.
 package com.tenio.core.network.entity.outbound.packet.implement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
+import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class OutboundQueueImplTest {
+
+  private OutboundQueueImpl queue;
+  private OutboundQueuePolicy policy;
+
+  @BeforeEach
+  void setUp() {
+    queue = OutboundQueueImpl.newInstance();
+    policy = mock(OutboundQueuePolicy.class);
+    queue.configureMaxSize(10);
+    queue.configureOutboundQueuePolicy(policy);
+  }
+
   @Test
   void testNewInstance() {
     OutboundQueueImpl actualNewInstanceResult = OutboundQueueImpl.newInstance();
@@ -58,5 +75,87 @@ class OutboundQueueImplTest {
     newInstanceResult.clear();
     assertEquals("OutboundQueue{queue=[], outboundQueuePolicy=null, maxSize=0, size=0}", newInstanceResult.toString());
     assertTrue(newInstanceResult.isEmpty());
+  }
+
+  @Test
+  void testIsEmptyOnNewQueue() {
+    assertTrue(queue.isEmpty());
+  }
+
+  @Test
+  void testPeekOnEmptyQueueReturnsNull() {
+    assertNull(queue.peek());
+  }
+
+  @Test
+  void testTakeOnEmptyQueueReturnsNull() {
+    assertNull(queue.take());
+  }
+
+  @Test
+  void testPutThenPeekReturnsSamePacket() {
+    Packet packet = mock(Packet.class);
+    queue.put(packet);
+    assertEquals(packet, queue.peek());
+    // peek does not remove
+    assertEquals(1, queue.getSize());
+  }
+
+  @Test
+  void testPutThenTakeReturnsSamePacket() {
+    Packet packet = mock(Packet.class);
+    queue.put(packet);
+    assertEquals(packet, queue.take());
+    // take removes from queue
+    assertTrue(queue.isEmpty());
+  }
+
+  @Test
+  void testIsEmptyFalseAfterPut() {
+    queue.put(mock(Packet.class));
+    assertFalse(queue.isEmpty());
+  }
+
+  @Test
+  void testIsFullWhenSizeEqualsMaxSize() {
+    OutboundQueueImpl q = OutboundQueueImpl.newInstance();
+    q.configureMaxSize(1);
+    q.configureOutboundQueuePolicy(mock(OutboundQueuePolicy.class));
+    q.put(mock(Packet.class));
+    assertTrue(q.isFull());
+  }
+
+  @Test
+  void testGetPercentageUsedAfterPut() {
+    // maxSize=10, 1 packet → 10%
+    queue.put(mock(Packet.class));
+    assertEquals(10.0f, queue.getPercentageUsed(), 0.01f);
+  }
+
+  @Test
+  void testClearAfterPutEmptiesQueue() {
+    queue.put(mock(Packet.class));
+    queue.put(mock(Packet.class));
+    queue.clear();
+    assertTrue(queue.isEmpty());
+    assertEquals(0, queue.getSize());
+  }
+
+  @Test
+  void testPutInvokesPolicyApplyPolicy() {
+    Packet packet = mock(Packet.class);
+    queue.put(packet);
+    verify(policy).applyPolicy(queue, packet);
+  }
+
+  @Test
+  void testGetSizeReflectsQueueSize() {
+    assertEquals(0, queue.getSize());
+    queue.put(mock(Packet.class));
+    assertEquals(1, queue.getSize());
+    queue.put(mock(Packet.class));
+    assertEquals(2, queue.getSize());
+    queue.take();
+    assertEquals(1, queue.getSize());
   }
 }

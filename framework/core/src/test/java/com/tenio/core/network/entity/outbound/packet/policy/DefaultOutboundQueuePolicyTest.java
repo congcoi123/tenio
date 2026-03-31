@@ -24,19 +24,100 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.outbound.packet.policy;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.tenio.core.exception.OutboundQueueFullException;
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.define.ResponseGuarantee;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.implement.OutboundQueueImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class DefaultOutboundQueuePolicyTest {
+
+  private DefaultOutboundQueuePolicy policy;
+
+  @BeforeEach
+  void setUp() {
+    policy = new DefaultOutboundQueuePolicy();
+  }
+
   @Test
   void testApplyPolicy() {
     DefaultOutboundQueuePolicy defaultOutboundQueuePolicy = new DefaultOutboundQueuePolicy();
     OutboundQueueImpl newInstanceResult = OutboundQueueImpl.newInstance();
     assertThrows(OutboundQueueFullException.class, () -> defaultOutboundQueuePolicy.applyPolicy(newInstanceResult, mock(Packet.class)));
+  }
+
+  @Test
+  void testFullQueueThrowsOutboundQueueFullException() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    when(queue.isFull()).thenReturn(true);
+    when(queue.getSize()).thenReturn(5);
+
+    assertThrows(OutboundQueueFullException.class,
+        () -> policy.applyPolicy(queue, mock(Packet.class)));
+  }
+
+  @Test
+  void testBetween75And90PercentWithNonGuaranteedThrowsPolicyViolation() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    when(queue.isFull()).thenReturn(false);
+    when(queue.getPercentageUsed()).thenReturn(80.0f);
+    when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NON_GUARANTEED);
+
+    assertThrows(OutboundQueuePolicyViolationException.class,
+        () -> policy.applyPolicy(queue, packet));
+  }
+
+  @Test
+  void testBetween75And90PercentWithNormalGuaranteeDoesNotThrow() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    when(queue.isFull()).thenReturn(false);
+    when(queue.getPercentageUsed()).thenReturn(80.0f);
+    when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NORMAL);
+
+    assertDoesNotThrow(() -> policy.applyPolicy(queue, packet));
+  }
+
+  @Test
+  void testAt90PercentOrAboveWithNormalGuaranteeThrowsPolicyViolation() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    when(queue.isFull()).thenReturn(false);
+    when(queue.getPercentageUsed()).thenReturn(92.0f);
+    when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NORMAL);
+
+    assertThrows(OutboundQueuePolicyViolationException.class,
+        () -> policy.applyPolicy(queue, packet));
+  }
+
+  @Test
+  void testAt90PercentOrAboveWithGuaranteedDoesNotThrow() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    when(queue.isFull()).thenReturn(false);
+    when(queue.getPercentageUsed()).thenReturn(92.0f);
+    when(packet.getGuarantee()).thenReturn(ResponseGuarantee.GUARANTEED);
+
+    assertDoesNotThrow(() -> policy.applyPolicy(queue, packet));
+  }
+
+  @Test
+  void testBelow75PercentWithNonGuaranteedDoesNotThrow() {
+    OutboundQueue queue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    when(queue.isFull()).thenReturn(false);
+    when(queue.getPercentageUsed()).thenReturn(50.0f);
+    when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NON_GUARANTEED);
+
+    assertDoesNotThrow(() -> policy.applyPolicy(queue, packet));
   }
 }

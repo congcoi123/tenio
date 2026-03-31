@@ -22,18 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.bootstrap.circular;
+package com.tenio.core.network.security.ssl;
 
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/**
- * This case should be checked in the future.
- */
-class BootstrapComponentCircularTest {
+@DisplayName("Unit Test Cases For WebSocketSslContext")
+class WebSocketSslContextTest {
 
   @Test
-  @Disabled("Disabled until finding the solution")
-  void createCircularDependenciesShouldThrowError() {
+  @DisplayName("constructor does not throw even when keystore file is absent")
+  void testConstructorDoesNotThrowWhenKeystoreAbsent() {
+    assertDoesNotThrow(WebSocketSslContext::new);
+  }
+
+  @Test
+  @DisplayName("getServerContext returns null when keystore file is absent")
+  void testGetServerContextReturnsNullWhenKeystoreAbsent() {
+    WebSocketSslContext sslContext = new WebSocketSslContext();
+    assertNull(sslContext.getServerContext());
   }
 }

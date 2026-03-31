@@ -25,6 +25,8 @@ THE SOFTWARE.
 package com.tenio.core.network.statistic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -54,5 +56,36 @@ class NetworkWriterStatisticTest {
   @Test
   void testGetWrittenDroppedPackets() {
     assertEquals(0L, NetworkWriterStatistic.newInstance().getWrittenDroppedPackets());
+  }
+
+  @Test
+  void testGetWrittenDroppedPacketsIsSumOfBothCounters() {
+    NetworkWriterStatistic stat = NetworkWriterStatistic.newInstance();
+    stat.updateWrittenDroppedPacketsByPolicy(3L);
+    stat.updateWrittenDroppedPacketsByFull(2L);
+    assertEquals(5L, stat.getWrittenDroppedPackets());
+  }
+
+  @Test
+  void testUpdateWrittenBytesAccumulates() {
+    NetworkWriterStatistic stat = NetworkWriterStatistic.newInstance();
+    stat.updateWrittenBytes(512L);
+    stat.updateWrittenBytes(256L);
+    assertEquals(768L, stat.getWrittenBytes());
+  }
+
+  @Test
+  void testUpdateWrittenPacketsAccumulates() {
+    NetworkWriterStatistic stat = NetworkWriterStatistic.newInstance();
+    stat.updateWrittenPackets(10L);
+    stat.updateWrittenPackets(5L);
+    assertEquals(15L, stat.getWrittenPackets());
+  }
+
+  @Test
+  void testToStringContainsClassName() {
+    NetworkWriterStatistic stat = NetworkWriterStatistic.newInstance();
+    assertNotNull(stat.toString());
+    assertTrue(stat.toString().contains("NetworkWriterStatistic"));
   }
 }

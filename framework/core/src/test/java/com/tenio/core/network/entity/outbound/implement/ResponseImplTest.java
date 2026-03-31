@@ -24,11 +24,181 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.outbound.implement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
+import com.tenio.core.entity.Player;
+import com.tenio.core.network.define.ResponseGuarantee;
+import com.tenio.core.network.entity.outbound.Response;
+import com.tenio.core.network.entity.session.Session;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ResponseImplTest {
+
+  private Response response;
+
+  @BeforeEach
+  void setUp() {
+    response = ResponseImpl.newInstance();
+  }
+
   @Test
   void testNewInstance() {
     ResponseImpl.newInstance();
+  }
+
+  @Test
+  void testNewInstanceCreatesNonNull() {
+    assertNotNull(response);
+  }
+
+  @Test
+  void testDefaultGuaranteeIsNormal() {
+    assertEquals(ResponseGuarantee.NORMAL, response.getGuarantee());
+  }
+
+  @Test
+  void testDefaultNeedsEncryptedIsFalse() {
+    assertFalse(response.needsEncrypted());
+  }
+
+  @Test
+  void testDefaultRecipientCollectionsAreNull() {
+    assertNull(response.getRecipientPlayers());
+    assertNull(response.getRecipientSocketSessions());
+    assertNull(response.getRecipientDatagramSessions());
+    assertNull(response.getRecipientKcpSessions());
+    assertNull(response.getRecipientWebSocketSessions());
+    assertNull(response.getNonSessionRecipientPlayers());
+  }
+
+  @Test
+  void testSetAndGetContent() {
+    DataCollection content = mock(DataCollection.class);
+    response.setContent(content);
+    assertEquals(content, response.getContent());
+  }
+
+  @Test
+  void testGetDataTypeDelegatesToContent() {
+    DataCollection content = mock(DataCollection.class);
+    when(content.getType()).thenReturn(DataType.MSG_PACK);
+    response.setContent(content);
+    assertEquals(DataType.MSG_PACK, response.getDataType());
+  }
+
+  @Test
+  void testGuaranteeSetterAndGetter() {
+    response.guarantee(ResponseGuarantee.GUARANTEED);
+    assertEquals(ResponseGuarantee.GUARANTEED, response.getGuarantee());
+  }
+
+  @Test
+  void testEncryptedFlagIsSetByEncrypted() {
+    response.encrypted();
+    assertTrue(response.needsEncrypted());
+  }
+
+  @Test
+  void testSetRecipientPlayerAddsSinglePlayer() {
+    Player player = mock(Player.class);
+    response.setRecipientPlayer(player);
+    assertNotNull(response.getRecipientPlayers());
+    assertTrue(response.getRecipientPlayers().contains(player));
+  }
+
+  @Test
+  void testSetRecipientPlayersAddsCollection() {
+    Player player1 = mock(Player.class);
+    Player player2 = mock(Player.class);
+    response.setRecipientPlayers(List.of(player1, player2));
+    assertEquals(2, response.getRecipientPlayers().size());
+  }
+
+  @Test
+  void testSetRecipientSessionTcpGoesToSocketSessions() {
+    Session session = mock(Session.class);
+    when(session.isTcp()).thenReturn(true);
+    when(session.containsUdp()).thenReturn(false);
+    when(session.containsKcp()).thenReturn(false);
+
+    response.setRecipientSession(session);
+
+    assertNotNull(response.getRecipientSocketSessions());
+    assertTrue(response.getRecipientSocketSessions().contains(session));
+    assertNull(response.getRecipientDatagramSessions());
+    assertNull(response.getRecipientKcpSessions());
+  }
+
+  @Test
+  void testSetRecipientSessionTcpWithUdpAndPrioritizedUdpGoesToDatagramSessions() {
+    Session session = mock(Session.class);
+    when(session.isTcp()).thenReturn(true);
+    when(session.containsUdp()).thenReturn(true);
+
+    response.prioritizedUdp().setRecipientSession(session);
+
+    assertNotNull(response.getRecipientDatagramSessions());
+    assertTrue(response.getRecipientDatagramSessions().contains(session));
+    assertNull(response.getRecipientSocketSessions());
+  }
+
+  @Test
+  void testSetRecipientSessionTcpWithKcpAndPrioritizedKcpGoesToKcpSessions() {
+    Session session = mock(Session.class);
+    when(session.isTcp()).thenReturn(true);
+    when(session.containsUdp()).thenReturn(false);
+    when(session.containsKcp()).thenReturn(true);
+
+    response.prioritizedKcp().setRecipientSession(session);
+
+    assertNotNull(response.getRecipientKcpSessions());
+    assertTrue(response.getRecipientKcpSessions().contains(session));
+    assertNull(response.getRecipientSocketSessions());
+  }
+
+  @Test
+  void testSetRecipientSessionWebSocketGoesToWebSocketSessions() {
+    Session session = mock(Session.class);
+    when(session.isTcp()).thenReturn(false);
+    when(session.isWebSocket()).thenReturn(true);
+
+    response.setRecipientSession(session);
+
+    assertNotNull(response.getRecipientWebSocketSessions());
+    assertTrue(response.getRecipientWebSocketSessions().contains(session));
+    assertNull(response.getRecipientSocketSessions());
+  }
+
+  @Test
+  void testSetRecipientSessionsAddsMultiple() {
+    Session s1 = mock(Session.class);
+    Session s2 = mock(Session.class);
+    when(s1.isTcp()).thenReturn(true);
+    when(s1.containsUdp()).thenReturn(false);
+    when(s1.containsKcp()).thenReturn(false);
+    when(s2.isTcp()).thenReturn(true);
+    when(s2.containsUdp()).thenReturn(false);
+    when(s2.containsKcp()).thenReturn(false);
+
+    response.setRecipientSessions(List.of(s1, s2));
+
+    assertEquals(2, response.getRecipientSocketSessions().size());
+  }
+
+  @Test
+  void testToStringIsNotNull() {
+    assertNotNull(response.toString());
+    assertTrue(response.toString().contains("Response"));
   }
 }

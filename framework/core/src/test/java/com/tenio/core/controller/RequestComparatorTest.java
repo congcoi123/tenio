@@ -25,16 +25,34 @@ THE SOFTWARE.
 package com.tenio.core.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tenio.core.network.entity.inbound.Request;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Unit Test Cases For RequestComparator")
 class RequestComparatorTest {
+
   @Test
+  @DisplayName("newInstance returns a non-null singleton")
+  void testNewInstanceReturnsNonNull() {
+    assertNotNull(RequestComparator.newInstance());
+  }
+
+  @Test
+  @DisplayName("newInstance always returns the same singleton instance")
+  void testNewInstanceReturnsSameSingleton() {
+    assertSame(RequestComparator.newInstance(), RequestComparator.newInstance());
+  }
+
+  @Test
+  @DisplayName("compare returns 0 for equal priority and equal timestamp")
   void testNewInstance() {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
@@ -52,6 +70,7 @@ class RequestComparatorTest {
   }
 
   @Test
+  @DisplayName("compare returns -1 when r1 has earlier timestamp and equal priority")
   void testNewInstance2() {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
@@ -69,6 +88,7 @@ class RequestComparatorTest {
   }
 
   @Test
+  @DisplayName("compare returns 1 when r1 has later timestamp and equal priority")
   void testNewInstance3() {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
@@ -86,6 +106,7 @@ class RequestComparatorTest {
   }
 
   @Test
+  @DisplayName("compare returns 1 when r1.priority > r2.priority")
   void testNewInstance4() {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);
@@ -101,6 +122,7 @@ class RequestComparatorTest {
   }
 
   @Test
+  @DisplayName("compare returns -1 when r1.priority < r2.priority")
   void testNewInstance5() {
     RequestComparator actualNewInstanceResult = RequestComparator.newInstance();
     Request request = mock(Request.class);

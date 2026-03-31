@@ -42,7 +42,6 @@ public final class OutboundQueueFullException extends RuntimeException {
    * @see OutboundQueue
    */
   public OutboundQueueFullException(int currentSize) {
-    super(String.format("Reached max queue size, the packet was dropped. The current size: %d",
-        currentSize));
+    super(String.format("Reached max queue size, the packet was dropped. The current size: %d", currentSize));
   }
 }

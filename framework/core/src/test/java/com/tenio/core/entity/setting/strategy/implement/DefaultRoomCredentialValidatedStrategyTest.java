@@ -24,14 +24,63 @@ THE SOFTWARE.
 
 package com.tenio.core.entity.setting.strategy.implement;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Unit Test Cases For DefaultRoomCredentialValidatedStrategy")
 class DefaultRoomCredentialValidatedStrategyTest {
+
+  private DefaultRoomCredentialValidatedStrategy strategy;
+
+  @BeforeEach
+  void setUp() {
+    strategy = new DefaultRoomCredentialValidatedStrategy();
+  }
+
   @Test
-  void testConstructor() {
-    DefaultRoomCredentialValidatedStrategy actualDefaultRoomCredentialValidatedStrategy =
-        new DefaultRoomCredentialValidatedStrategy();
-    actualDefaultRoomCredentialValidatedStrategy.validateName("Name");
-    actualDefaultRoomCredentialValidatedStrategy.validatePassword("iloveyou");
+  @DisplayName("implements RoomCredentialValidatedStrategy")
+  void testImplementsInterface() {
+    assertInstanceOf(RoomCredentialValidatedStrategy.class, strategy);
+  }
+
+  @Test
+  @DisplayName("validateName does not throw for a valid name")
+  void testValidateNameDoesNotThrow() {
+    assertDoesNotThrow(() -> strategy.validateName("my-room"));
+  }
+
+  @Test
+  @DisplayName("validateName does not throw for an empty name")
+  void testValidateNameDoesNotThrowForEmptyName() {
+    assertDoesNotThrow(() -> strategy.validateName(""));
+  }
+
+  @Test
+  @DisplayName("validateName does not throw for a null name")
+  void testValidateNameDoesNotThrowForNullName() {
+    assertDoesNotThrow(() -> strategy.validateName(null));
+  }
+
+  @Test
+  @DisplayName("validatePassword does not throw for a valid password")
+  void testValidatePasswordDoesNotThrow() {
+    assertDoesNotThrow(() -> strategy.validatePassword("secret123"));
+  }
+
+  @Test
+  @DisplayName("validatePassword does not throw for an empty password")
+  void testValidatePasswordDoesNotThrowForEmptyPassword() {
+    assertDoesNotThrow(() -> strategy.validatePassword(""));
+  }
+
+  @Test
+  @DisplayName("validatePassword does not throw for a null password")
+  void testValidatePasswordDoesNotThrowForNullPassword() {
+    assertDoesNotThrow(() -> strategy.validatePassword(null));
   }
 }
