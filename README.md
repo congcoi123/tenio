@@ -50,11 +50,11 @@ Simple Movement Simulation
  */
 @Bootstrap
 @EventHandler
-public final class TestSimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
+public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
   public static void main(String[] params) {
-    ApplicationLauncher.run(TestSimpleServer.class, params);
+    ApplicationLauncher.run(SimpleServer.class, params);
   }
 
   @Override
