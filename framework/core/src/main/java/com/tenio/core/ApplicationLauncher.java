@@ -89,6 +89,15 @@ public final class ApplicationLauncher extends SystemLogger {
     application.start(entryClass, params);
   }
 
+  /**
+   * Run the application using default configurations.
+   *
+   * @param entryClass the {@link Class} which is placed in the root package
+   */
+  public  static void run(Class<?> entryClass) {
+    run(entryClass, null);
+  }
+
   private static ApplicationLauncher newInstance() {
     return instance;
   }

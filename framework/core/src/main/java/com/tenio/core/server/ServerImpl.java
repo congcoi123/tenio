@@ -36,7 +36,6 @@ import com.tenio.core.configuration.DefaultCoreConfiguration;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.configuration.setting.Setting;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
@@ -138,7 +137,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     }
 
     // get the file path
-    var file = params.length == 0 ? null : params[0];
+    var file = params == null ? null : (params.length == 0 ? null : params[0]);
 
     // load the file
     configuration.load(file);
@@ -197,8 +196,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     network.activate();
     zeroProcessor.activate();
 
-    if (((Setting) configuration.get(CoreConfigurationType.SERVER_SETTING)).getCommand()
-        .isEnabled()) {
+    if (configuration.getBoolean(CoreConfigurationType.ENABLE_TERMINAL_COMMAND)) {
       startConsole(bootstrapHandler.getSystemCommandManager());
     }
   }
