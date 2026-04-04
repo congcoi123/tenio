@@ -37,8 +37,6 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.entity.session.manager.SessionManagerImpl;
 import com.tenio.core.network.jetty.JettyHttp;
-import com.tenio.core.network.kcp.KcpChannel;
-import com.tenio.core.network.kcp.KcpChannelImpl;
 import com.tenio.core.network.netty.NettyWebSocket;
 import com.tenio.core.network.netty.NettyWebSocketImpl;
 import com.tenio.core.network.security.filter.ConnectionFilter;
@@ -63,7 +61,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
   private final SessionManager sessionManager;
   private final JettyHttp httpService;
   private final NettyWebSocket webSocketService;
-  private final KcpChannel kcpChannelService;
   private final ZeroSocket socketService;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final NetworkWriterStatistic networkWriterStatistic;
@@ -72,7 +69,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
   private boolean httpServiceInitialized;
   private boolean webSocketServiceInitialized;
   private boolean socketServiceInitialized;
-  private boolean kcpChannelServiceInitialized;
 
   private NetworkImpl(EventManager eventManager) {
     super(eventManager);
@@ -82,7 +78,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     httpServiceInitialized = false;
     webSocketServiceInitialized = false;
     socketServiceInitialized = false;
-    kcpChannelServiceInitialized = false;
 
     sessionManager = SessionManagerImpl.newInstance(eventManager);
     networkReaderStatistic = NetworkReaderStatistic.newInstance();
@@ -91,7 +86,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     httpService = JettyHttp.newInstance(eventManager);
     webSocketService = NettyWebSocketImpl.newInstance(eventManager);
     socketService = ZeroSocketImpl.newInstance(eventManager);
-    kcpChannelService = KcpChannelImpl.newInstance(eventManager);
   }
 
   /**
@@ -119,10 +113,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     socketService.setNetworkReaderStatistic(networkReaderStatistic);
     socketService.setNetworkWriterStatistic(networkWriterStatistic);
 
-    kcpChannelService.setSessionManager(sessionManager);
-    kcpChannelService.setNetworkReaderStatistic(networkReaderStatistic);
-    kcpChannelService.setNetworkWriterStatistic(networkWriterStatistic);
-
     if (httpServiceInitialized) {
       httpService.initialize();
     }
@@ -132,9 +122,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     if (socketServiceInitialized) {
       socketService.initialize();
     }
-    if (kcpChannelServiceInitialized) {
-      kcpChannelService.initialize();
-    }
   }
 
   @Override
@@ -142,7 +129,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     httpService.start();
     webSocketService.start();
     socketService.start();
-    kcpChannelService.start();
   }
 
   @Override
@@ -158,14 +144,12 @@ public final class NetworkImpl extends AbstractManager implements Network {
     httpService.activate();
     webSocketService.activate();
     socketService.activate();
-    kcpChannelService.activate();
   }
 
   private void attemptToShutdown() {
     httpService.shutdown();
     webSocketService.shutdown();
     socketService.shutdown();
-    kcpChannelService.shutdown();
   }
 
   @Override
@@ -188,10 +172,8 @@ public final class NetworkImpl extends AbstractManager implements Network {
     int httpServiceStartingTime = httpService.getMaximumStartingTimeInMilliseconds();
     int webSocketServiceStartingTime = httpService.getMaximumStartingTimeInMilliseconds();
     int socketServiceStartingTime = socketService.getMaximumStartingTimeInMilliseconds();
-    int kcpChannelServiceStartingTime = kcpChannelService.getMaximumStartingTimeInMilliseconds();
 
-    return Math.max(Math.max(httpServiceStartingTime, webSocketServiceStartingTime),
-        Math.max(socketServiceStartingTime, kcpChannelServiceStartingTime));
+    return Math.max(Math.max(httpServiceStartingTime, webSocketServiceStartingTime), socketServiceStartingTime);
   }
 
   @Override
@@ -275,8 +257,7 @@ public final class NetworkImpl extends AbstractManager implements Network {
   @Override
   public void setSocketConfigurations(SocketConfiguration tcpSocketConfiguration,
                                       SocketConfiguration udpChannelConfiguration,
-                                      SocketConfiguration webSocketConfiguration,
-                                      SocketConfiguration kcpSocketConfiguration) {
+                                      SocketConfiguration webSocketConfiguration) {
     if (tcpSocketConfiguration != null) {
       socketServiceInitialized = true;
       socketService.setSocketConfigurations(tcpSocketConfiguration, udpChannelConfiguration);
@@ -285,11 +266,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
     if (webSocketConfiguration != null) {
       webSocketServiceInitialized = true;
       webSocketService.setWebSocketConfiguration(webSocketConfiguration);
-    }
-
-    if (kcpSocketConfiguration != null) {
-      kcpChannelServiceInitialized = true;
-      kcpChannelService.setKcpSocketConfiguration(kcpSocketConfiguration);
     }
   }
 
@@ -376,14 +352,6 @@ public final class NetworkImpl extends AbstractManager implements Network {
       var packet = createPacket(response, datagramSessions, TransportType.UDP);
       socketService.write(packet);
       datagramSessions.forEach(
-          session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
-    }
-
-    var kcpSessions = response.getRecipientKcpSessions();
-    if (kcpSessions != null) {
-      var packet = createPacket(response, kcpSessions, TransportType.KCP);
-      kcpChannelService.write(packet);
-      kcpSessions.forEach(
           session -> eventManager.emit(ServerEvent.SESSION_WRITE_MESSAGE, session, packet));
     }
 

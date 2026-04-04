@@ -249,12 +249,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   NETWORK_WEBSOCKET("websocket-configuration"),
   /**
-   * KCP in the server configuration.
-   *
-   * @since 0.6.0
-   */
-  NETWORK_KCP("kcp-configuration"),
-  /**
    * UDP in the server configuration.
    *
    * @since 0.6.0

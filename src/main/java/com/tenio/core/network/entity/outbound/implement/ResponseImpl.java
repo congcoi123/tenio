@@ -48,23 +48,19 @@ public final class ResponseImpl extends SystemLogger implements Response {
   private Collection<Player> nonSessionPlayers;
   private Collection<Session> socketSessions;
   private Collection<Session> datagramSessions;
-  private Collection<Session> kcpSessions;
   private Collection<Session> webSocketSessions;
   private ResponseGuarantee guarantee;
   private boolean prioritizedUdp;
-  private boolean prioritizedKcp;
   private boolean encrypted;
 
   private ResponseImpl() {
     players = null;
     socketSessions = null;
     datagramSessions = null;
-    kcpSessions = null;
     webSocketSessions = null;
     nonSessionPlayers = null;
     guarantee = ResponseGuarantee.NORMAL;
     prioritizedUdp = false;
-    prioritizedKcp = false;
     encrypted = false;
   }
 
@@ -114,11 +110,6 @@ public final class ResponseImpl extends SystemLogger implements Response {
   }
 
   @Override
-  public Collection<Session> getRecipientKcpSessions() {
-    return kcpSessions;
-  }
-
-  @Override
   public Collection<Session> getRecipientWebSocketSessions() {
     return webSocketSessions;
   }
@@ -157,12 +148,6 @@ public final class ResponseImpl extends SystemLogger implements Response {
   @Override
   public Response prioritizedUdp() {
     prioritizedUdp = true;
-    return this;
-  }
-
-  @Override
-  public Response prioritizedKcp() {
-    prioritizedKcp = true;
     return this;
   }
 
@@ -233,24 +218,17 @@ public final class ResponseImpl extends SystemLogger implements Response {
   private void checksAndAddsSession(Session session) {
     if (session.isTcp()) {
       // when the session contains a UDP connection and the response requires it, add its session
-      // to the list: UDP > KCP > Socket
+      // to the list: UDP > TCP
       if (prioritizedUdp && session.containsUdp()) {
         if (datagramSessions == null) {
           datagramSessions = new ArrayList<>();
         }
         datagramSessions.add(session);
       } else {
-        if (prioritizedKcp && session.containsKcp()) {
-          if (kcpSessions == null) {
-            kcpSessions = new ArrayList<>();
-          }
-          kcpSessions.add(session);
-        } else {
-          if (socketSessions == null) {
-            socketSessions = new ArrayList<>();
-          }
-          socketSessions.add(session);
+        if (socketSessions == null) {
+          socketSessions = new ArrayList<>();
         }
+        socketSessions.add(session);
       }
     } else if (session.isWebSocket()) {
       if (webSocketSessions == null) {
@@ -268,11 +246,9 @@ public final class ResponseImpl extends SystemLogger implements Response {
         ", nonSessionPlayers=" + nonSessionPlayers +
         ", socketSessions=" + socketSessions +
         ", datagramSessions=" + datagramSessions +
-        ", kcpSessions=" + kcpSessions +
         ", webSocketSessions=" + webSocketSessions +
         ", guarantee=" + guarantee +
         ", prioritizedUdp=" + prioritizedUdp +
-        ", prioritizedKcp=" + prioritizedKcp +
         ", encrypted=" + encrypted +
         '}';
   }

@@ -342,16 +342,6 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   }
 
   @Override
-  public int getKcpPort() {
-    return server.getDatagramChannelManager().getKcpPort();
-  }
-
-  @Override
-  public int getCurrentKcpConveyId() {
-    return server.getDatagramChannelManager().getCurrentKcpConveyId();
-  }
-
-  @Override
   public long getStartedTime() {
     return server.getStartedTime();
   }

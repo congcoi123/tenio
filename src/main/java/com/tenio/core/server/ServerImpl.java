@@ -281,24 +281,16 @@ public final class ServerImpl extends SystemLogger implements Server {
     network.setSocketAcceptorWorkers(
         configuration.getInt(CoreConfigurationType.WORKER_SOCKET_ACCEPTOR));
 
+    var tcpSocketConfiguration = configuration.get(CoreConfigurationType.NETWORK_TCP) != null ?
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP) : null;
     var udpChannelConfiguration = configuration.get(CoreConfigurationType.NETWORK_UDP) != null ?
-        (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_UDP) : null;
-    var kcpSocketConfiguration = configuration.get(CoreConfigurationType.NETWORK_KCP) != null ?
-        (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_KCP) : null;
-    network.setSocketConfigurations(
-        (configuration.get(CoreConfigurationType.NETWORK_TCP) != null ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP) : null),
-        udpChannelConfiguration,
-        (configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) != null ?
-            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) :
-            null),
-        kcpSocketConfiguration);
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_UDP) : null;
+    var webSocketConfiguration = configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) != null ?
+            (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_WEBSOCKET) : null;
+    network.setSocketConfigurations(tcpSocketConfiguration, udpChannelConfiguration, webSocketConfiguration);
 
     if (udpChannelConfiguration != null) {
       datagramChannelManager.configureUdpPort(udpChannelConfiguration.port());
-    }
-    if (kcpSocketConfiguration != null) {
-      datagramChannelManager.configureKcpPort(kcpSocketConfiguration.port());
     }
 
     network.setSocketReaderBufferSize(

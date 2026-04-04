@@ -33,6 +33,9 @@ import java.util.Set;
  */
 public final class ExceptionUtility {
 
+  /**
+   * Events which contain the list of keywords will be ignored from logging.
+   */
   public static final Set<String> IGNORE_SOCKET_EXCEPTIONS = Set.of(
       "broken pipe",
       "connection reset"

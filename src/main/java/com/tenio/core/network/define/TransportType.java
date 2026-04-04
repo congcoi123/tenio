@@ -45,10 +45,6 @@ public enum TransportType {
    */
   UDP("udp"),
   /**
-   * KCP.
-   */
-  KCP("kcp"),
-  /**
    * WEBSOCKET.
    */
   WEB_SOCKET("websocket"),

@@ -112,3 +112,7 @@
 ## 0.6.10 2026-03-26 Bugfix release
 - Supported default embedded configurations
 - Refactored inbound/outbound packages
+
+## 0.6.11 2026-04-03 Feature release
+- Upgraded dependencies
+- Stopped supporting KCP transportation

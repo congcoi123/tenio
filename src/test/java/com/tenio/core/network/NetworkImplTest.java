@@ -29,7 +29,6 @@ import static org.mockito.Mockito.mock;
 
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.jetty.JettyHttp;
-import com.tenio.core.network.kcp.KcpChannel;
 import com.tenio.core.network.netty.NettyWebSocket;
 import com.tenio.core.network.zero.ZeroSocket;
 import java.lang.reflect.Field;
@@ -47,7 +46,6 @@ class NetworkImplTest {
     EventManager eventManager = EventManager.newInstance();
     service = (NetworkImpl) NetworkImpl.newInstance(eventManager);
     JettyHttp jettyService = mock(JettyHttp.class);
-    KcpChannel kcpChannel = mock(KcpChannel.class);
     NettyWebSocket nettyService = mock(NettyWebSocket.class);
     ZeroSocket zeroService = mock(ZeroSocket.class);
     // Inject mocks into private final fields
@@ -57,9 +55,6 @@ class NetworkImplTest {
     Field f2 = NetworkImpl.class.getDeclaredField("webSocketService");
     f2.setAccessible(true);
     f2.set(service, nettyService);
-    Field f3 = NetworkImpl.class.getDeclaredField("kcpChannelService");
-    f3.setAccessible(true);
-    f3.set(service, kcpChannel);
     Field f4 = NetworkImpl.class.getDeclaredField("socketService");
     f4.setAccessible(true);
     f4.set(service, zeroService);

@@ -29,20 +29,16 @@ import com.tenio.core.manager.Manager;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * This class takes responsibility to provide an available UDP channel port, KCP convey id, ... when required.
+ * This class takes responsibility to provide an available UDP Channel Port, UDP Convey ID, ... when required.
  */
 public class DatagramChannelManager implements Manager {
 
   private final AtomicInteger udpConveyIdGenerator;
-  private final AtomicInteger kcpConveyIdGenerator;
   private volatile int udpPort;
-  private volatile int kcpPort;
 
   private DatagramChannelManager() {
     udpPort = CoreConstant.NULL_PORT_VALUE;
-    kcpPort = CoreConstant.NULL_PORT_VALUE;
     udpConveyIdGenerator = new AtomicInteger(0);
-    kcpConveyIdGenerator = new AtomicInteger(0);
   }
 
   /**
@@ -64,32 +60,13 @@ public class DatagramChannelManager implements Manager {
   }
 
   /**
-   * Configures KCP port.
+   * Retrieves the current available UDP Convey ID.
    *
-   * @param kcpPort KCP port
-   */
-  public void configureKcpPort(int kcpPort) {
-    this.kcpPort = kcpPort;
-  }
-
-  /**
-   * Retrieves the current available UDP Convey Id.
-   *
-   * @return an {@code integer} value of a UDP Convey Id
+   * @return an {@code integer} value of a UDP Convey ID
    * @since 0.6.0
    */
   public int getCurrentUdpConveyId() {
     return udpConveyIdGenerator.getAndIncrement();
-  }
-
-  /**
-   * Retrieves the current available KCP Convey Id.
-   *
-   * @return an {@code integer} value of a KCP Convey Id
-   * @since 0.6.0
-   */
-  public int getCurrentKcpConveyId() {
-    return kcpConveyIdGenerator.getAndIncrement();
   }
 
   /**
@@ -99,14 +76,5 @@ public class DatagramChannelManager implements Manager {
    */
   public int getUdpPort() {
     return udpPort;
-  }
-
-  /**
-   * Retrieves KCP port.
-   *
-   * @return the KCP port
-   */
-  public int getKcpPort() {
-    return kcpPort;
   }
 }
