@@ -12,8 +12,8 @@
 		<Property name="version-code">1</Property>
 		<!-- The current version name of your server in string type -->
 		<Property name="version-name">1.0</Property>
-		<!-- The core setting file's path for your server -->
-		<Property name="setting">setting.example.json</Property>
+		<!-- Set this flag to `true` to enable terminal command -->
+		<Property name="enable-terminal-command">false</Property>
 	</Properties>
 
 	<Network>
