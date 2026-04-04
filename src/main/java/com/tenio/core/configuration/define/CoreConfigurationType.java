@@ -87,11 +87,12 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   SERVER_VERSION_NAME("version-name"),
   /**
-   * This server's core setting file's path.
-   *
-   * @since 0.4.0
+   * Set this flag to {@code true} to enable terminal command.
+   * <p>
+   * This feature is only recommended to be used in development environment.
+   * @since 0.6.12
    */
-  SERVER_SETTING("setting"),
+  ENABLE_TERMINAL_COMMAND("enable-terminal-command"),
   /**
    * The number of threads using for handlers to accept new incoming client socket on the server.
    */
