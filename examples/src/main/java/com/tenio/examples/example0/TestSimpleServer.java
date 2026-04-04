@@ -48,7 +48,7 @@ public final class TestSimpleServer extends AbstractHandler implements EventConn
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
   public static void main(String[] params) {
-    ApplicationLauncher.run(TestSimpleServer.class, params);
+    ApplicationLauncher.run(TestSimpleServer.class);
   }
 
   @Override

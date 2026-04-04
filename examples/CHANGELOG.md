@@ -90,3 +90,7 @@
 ## 0.6.11 2026-04-03 Feature release
 - Upgraded dependencies
 - Stopped supporting KCP transportation
+
+## 0.6.12 2026-04-04 Feature release
+- Upgraded dependencies
+- Simplified setting of the configuration file 
