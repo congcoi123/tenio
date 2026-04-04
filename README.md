@@ -53,8 +53,8 @@ Simple Movement Simulation
 public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
-  public static void main(String[] params) {
-    ApplicationLauncher.run(SimpleServer.class, params);
+  static void main(String[] params) {
+    ApplicationLauncher.run(SimpleServer.class);
   }
 
   @Override
@@ -113,18 +113,11 @@ $ info player
 $ 
 ```
 
-2) Make sure to set the command usage flag in _**setting.json**_ file to be **enabled**
+2) Make sure to enable the flag `enable-terminal-command` in the configuration file.
 
-```JSON
-{
-  "command": {
-    "enabled": true
-  },
-  "plugin": {
-    "enabled": false,
-    "path": "/plugin"
-  }
-}
+```XML
+<!-- Set this flag to `true` to enable terminal command -->
+<Property name="enable-terminal-command">true</Property>
 ``` 
 
 3) Simple implementation
