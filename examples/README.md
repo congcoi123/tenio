@@ -29,7 +29,7 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.6.10
+- tenio-core 0.6.11
 - tenio-engine 0.6.10
 ```
 
@@ -118,7 +118,7 @@ server - Allows stopping or restarting the server
 unban - Allows removing banned Ip addresses from the ban list
 	[<address>,<command>,<command>]
 $ info player
-> There are 1 players > The first 10 entities > [Player{name='IkjvI', properties={}, session=Session{id=0, name='IkjvI', transportType=TCP, createdTime=1668918078524, lastReadTime=1668918078524, lastWriteTime=1668918078524, lastActivityTime=1668918078524, readBytes=75, writtenBytes=120, droppedPackets=0, inactivatedTime=0, datagramRemoteSocketAddress=null, clientAddress='127.0.0.1', clientPort=60659, serverPort=8032, serverAddress='127.0.0.1', maxIdleTimeInSecond=0, activated=true, connected=true, hasUdp=false, enabledKcp=false, hasKcp=false}, currentRoom=null, state=null, roleInRoom=SPECTATOR, lastLoginTime=1668918078589, lastJoinedRoomTime=1668918078588, playerSlotInCurrentRoom=-1, loggedIn=true, activated=true, hasSession=true}]
+> There are 1 players > The first 10 entities > [Player{name='IkjvI', properties={}, session=Session{id=0, name='IkjvI', transportType=TCP, createdTime=1668918078524, lastReadTime=1668918078524, lastWriteTime=1668918078524, lastActivityTime=1668918078524, readBytes=75, writtenBytes=120, droppedPackets=0, inactivatedTime=0, datagramRemoteSocketAddress=null, clientAddress='127.0.0.1', clientPort=60659, serverPort=8032, serverAddress='127.0.0.1', maxIdleTimeInSecond=0, activated=true, connected=true, hasUdp=false}, currentRoom=null, state=null, roleInRoom=SPECTATOR, lastLoginTime=1668918078589, lastJoinedRoomTime=1668918078588, playerSlotInCurrentRoom=-1, loggedIn=true, activated=true, hasSession=true}]
 $ 
 ```
 
@@ -202,9 +202,6 @@ $ java TestServerLogin configuration.example1.xml
     |-- example8
     |   |-- TestClientRestful
     |   |-- TestServerRestful
-    |-- example9
-    |   |-- TestClientKcpEcho
-    |   |-- TestServerKcpEcho
     |-- example10
     |   |-- TestClientMsgPackEcho
     |   |-- TestServerMsgPackEcho
