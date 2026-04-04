@@ -24,12 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tenio.common.configuration.CommonConfiguration;
 import com.tenio.common.utility.XmlUtility;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.configuration.setting.Setting;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
 import java.io.File;
@@ -98,32 +96,7 @@ public abstract class CoreConfiguration extends CommonConfiguration {
     for (int j = 0; j < attrServerProperties.getLength(); j++) {
       var dataNode = attrServerProperties.item(j);
       var paramName = dataNode.getAttributes().getNamedItem("name").getTextContent();
-      if (paramName.equals(CoreConfigurationType.SERVER_SETTING.getValue())) {
-        var path = dataNode.getTextContent();
-        var objectMapper = new ObjectMapper();
-        // 1. Check external file (user-provided)
-        externalFile = new File(path);
-        Setting setting;
-        if (externalFile.exists()) {
-          if (isInfoEnabled()) {
-            info("CONFIGURATION", buildgen("The external setting file: ", path));
-          }
-          setting = objectMapper.readValue(new File(path), Setting.class);
-        } else {
-          // 2. Fallback to embedded default
-          if (isInfoEnabled()) {
-            info("CONFIGURATION", buildgen("The external setting file is not found, use the default: ", CoreConstant.DEFAULT_SETTING_FILE));
-          }
-          try (InputStream configStream = getClass().getClassLoader().getResourceAsStream(CoreConstant.DEFAULT_SETTING_FILE)) {
-            setting = objectMapper.readValue(configStream, Setting.class);
-          } catch (Exception exception) {
-            throw new Exception(exception);
-          }
-        }
-        push(CoreConfigurationType.getByValue(paramName), setting);
-      } else {
-        push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
-      }
+      push(CoreConfigurationType.getByValue(paramName), dataNode.getTextContent());
     }
 
     // Network Properties

@@ -1,9 +1,0 @@
-{
-	"command": {
-		"enabled": true
-	},
-	"plugin": {
-		"enabled": false,
-		"path": "/plugin"
-	}
-}

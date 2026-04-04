@@ -71,12 +71,6 @@ public final class CoreConstant {
   public static final String DEFAULT_CONFIGURATION_FILE = "configuration.tenio.xml";
 
   /**
-   * Default setting file path.
-   * Used when no specific setting file is provided.
-   */
-  public static final String DEFAULT_SETTING_FILE = "setting.tenio.json";
-
-  /**
    * Default log4j2 setting file path.
    * Used when no specific user setting file is provided.
    */
