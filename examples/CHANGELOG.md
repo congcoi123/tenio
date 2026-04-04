@@ -86,3 +86,7 @@
 ## 0.6.10 2026-03-26 Feature release
 - Upgraded dependencies
 - Allowed default configurations
+
+## 0.6.11 2026-04-03 Feature release
+- Upgraded dependencies
+- Stopped supporting KCP transportation

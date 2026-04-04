@@ -32,8 +32,6 @@ import com.tenio.core.exception.ConfigurationException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventPlayerReconnectRequestHandling;
 import com.tenio.core.handler.event.EventPlayerReconnected;
 
@@ -99,7 +97,6 @@ public final class ConfigurationAssessment {
   public void assess() throws NotDefinedSubscribersException, ConfigurationException {
     checkSubscriberReconnection();
     checkSubscriberRequestAccessingDatagramChannelHandler();
-    checkSubscriberRequestAccessingKcpChannelHandler();
     checkDefinedMainSocketConnection();
   }
 
@@ -136,23 +133,6 @@ public final class ConfigurationAssessment {
   }
 
   /**
-   * Validates the presence of required subscribers for KCP channel handling.
-   *
-   * @throws NotDefinedSubscribersException if required subscribers are missing
-   */
-  private void checkSubscriberRequestAccessingKcpChannelHandler()
-      throws NotDefinedSubscribersException {
-    if (containsTcpSocketConfiguration() && containsKcpSocketConfiguration()) {
-      if (!eventManager.hasSubscriber(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION)
-          || !eventManager.hasSubscriber(
-          ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT)) {
-        throw new NotDefinedSubscribersException(EventAccessKcpChannelRequestValidation.class,
-            EventAccessKcpChannelRequestValidationResult.class);
-      }
-    }
-  }
-
-  /**
    * Verifies that at least one main socket connection type is configured.
    *
    * @throws ConfigurationException if no valid socket connection is configured
@@ -179,14 +159,5 @@ public final class ConfigurationAssessment {
    */
   private boolean containsUdpChannelConfiguration() {
     return configuration.get(CoreConfigurationType.NETWORK_UDP) != null;
-  }
-
-  /**
-   * Checks if KCP socket configuration is present.
-   *
-   * @return {@code true} if KCP socket configuration exists
-   */
-  private boolean containsKcpSocketConfiguration() {
-    return configuration.get(CoreConfigurationType.NETWORK_KCP) != null;
   }
 }

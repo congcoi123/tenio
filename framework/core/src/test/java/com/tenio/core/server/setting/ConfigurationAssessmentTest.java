@@ -65,7 +65,6 @@ class ConfigurationAssessmentTest {
         .thenReturn(false);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(null);
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertDoesNotThrow(assessment::assess);
@@ -94,7 +93,6 @@ class ConfigurationAssessmentTest {
     when(eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECTED)).thenReturn(true);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(null);
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertDoesNotThrow(assessment::assess);
@@ -107,7 +105,6 @@ class ConfigurationAssessmentTest {
         .thenReturn(false);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(new Object());
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(new Object());
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
     when(eventManager.hasSubscriber(
         ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION)).thenReturn(false);
     when(eventManager.hasSubscriber(
@@ -124,45 +121,10 @@ class ConfigurationAssessmentTest {
         .thenReturn(false);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(new Object());
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(new Object());
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
     when(eventManager.hasSubscriber(
         ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION)).thenReturn(true);
     when(eventManager.hasSubscriber(
         ServerEvent.ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT)).thenReturn(true);
-
-    var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
-    assertDoesNotThrow(assessment::assess);
-  }
-
-  @Test
-  @DisplayName("assess throws NotDefinedSubscribersException when TCP+KCP configured but KCP subscribers missing")
-  void testAssessThrowsWhenTcpKcpWithoutKcpSubscribers() {
-    when(configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION))
-        .thenReturn(false);
-    when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(new Object());
-    when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(new Object());
-    when(eventManager.hasSubscriber(
-        ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION)).thenReturn(false);
-    when(eventManager.hasSubscriber(
-        ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT)).thenReturn(false);
-
-    var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
-    assertThrows(NotDefinedSubscribersException.class, assessment::assess);
-  }
-
-  @Test
-  @DisplayName("assess passes when TCP+KCP configured and KCP subscribers defined")
-  void testAssessPassesWhenTcpKcpWithKcpSubscribersDefined() {
-    when(configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION))
-        .thenReturn(false);
-    when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(new Object());
-    when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(new Object());
-    when(eventManager.hasSubscriber(
-        ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION)).thenReturn(true);
-    when(eventManager.hasSubscriber(
-        ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT)).thenReturn(true);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertDoesNotThrow(assessment::assess);
@@ -175,7 +137,6 @@ class ConfigurationAssessmentTest {
         .thenReturn(false);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(null);
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(new Object());
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertThrows(ConfigurationException.class, assessment::assess);
@@ -188,7 +149,6 @@ class ConfigurationAssessmentTest {
         .thenReturn(false);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(new Object());
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
-    when(configuration.get(CoreConfigurationType.NETWORK_KCP)).thenReturn(null);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertDoesNotThrow(assessment::assess);

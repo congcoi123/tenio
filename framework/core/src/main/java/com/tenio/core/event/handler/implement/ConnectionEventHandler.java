@@ -36,8 +36,6 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
@@ -72,12 +70,6 @@ public final class ConnectionEventHandler {
   @AutowiredAcceptNull
   private EventAccessDatagramChannelRequestValidationResult<Player> eventAccessDatagramChannelRequestValidationResult;
 
-  @AutowiredAcceptNull
-  private EventAccessKcpChannelRequestValidation<DataCollection> eventAccessKcpChannelRequestValidation;
-
-  @AutowiredAcceptNull
-  private EventAccessKcpChannelRequestValidationResult<Player> eventAccessKcpChannelRequestValidationResult;
-
   /**
    * Initialization.
    *
@@ -98,11 +90,6 @@ public final class ConnectionEventHandler {
         Optional.ofNullable(eventAccessDatagramChannelRequestValidation);
     final var eventAccessDatagramChannelRequestValidationResultOp =
         Optional.ofNullable(eventAccessDatagramChannelRequestValidationResult);
-
-    final var eventAccessKcpChannelRequestValidationOp =
-        Optional.ofNullable(eventAccessKcpChannelRequestValidation);
-    final var eventAccessKcpChannelRequestValidationResultOp =
-        Optional.ofNullable(eventAccessKcpChannelRequestValidationResult);
 
     eventSocketConnectionRefusedOp.ifPresent(
         event -> eventManager.on(ServerEvent.SOCKET_CONNECTION_REFUSED, params -> {
@@ -160,23 +147,6 @@ public final class ConnectionEventHandler {
           var result = (AccessDatagramChannelResult) params[2];
 
           event.onAccessDatagramChannelRequestValidationResult(player, udpConv, result);
-
-          return null;
-        }));
-
-    eventAccessKcpChannelRequestValidationOp.ifPresent(
-        event -> eventManager.on(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION, params -> {
-          var message = (DataCollection) params[0];
-
-          return event.onAccessKcpChannelRequestValidation(message);
-        }));
-
-    eventAccessKcpChannelRequestValidationResultOp.ifPresent(
-        event -> eventManager.on(ServerEvent.ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT, params -> {
-          var player = params[0] == null ? null : (Player) params[0];
-          var result = (AccessDatagramChannelResult) params[1];
-
-          event.onAccessKcpChannelRequestValidationResult(player, result);
 
           return null;
         }));

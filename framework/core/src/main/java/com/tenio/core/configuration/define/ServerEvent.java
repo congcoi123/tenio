@@ -27,8 +27,6 @@ package com.tenio.core.configuration.define;
 import com.tenio.core.bootstrap.annotation.Asynchronous;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidation;
-import com.tenio.core.handler.event.EventAccessKcpChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventChannelCreated;
 import com.tenio.core.handler.event.EventChannelWillBeRemoved;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
@@ -251,18 +249,6 @@ public enum ServerEvent {
    * @see EventAccessDatagramChannelRequestValidationResult
    */
   ACCESS_DATAGRAM_CHANNEL_REQUEST_VALIDATION_RESULT,
-  /**
-   * When the server validates a KCP channel accessing request from a player.
-   *
-   * @see EventAccessKcpChannelRequestValidation
-   */
-  ACCESS_KCP_CHANNEL_REQUEST_VALIDATION,
-  /**
-   * When the server responds a KCP channel accessing request from a player.
-   *
-   * @see EventAccessKcpChannelRequestValidationResult
-   */
-  ACCESS_KCP_CHANNEL_REQUEST_VALIDATION_RESULT,
   /**
    * When the server provides information regarding CCU.
    *

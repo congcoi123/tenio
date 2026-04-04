@@ -45,7 +45,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicReference;
-import kcp.Ukcp;
 
 /**
  * The implementation for session.
@@ -73,7 +72,6 @@ public class SessionImpl implements Session {
   private volatile PendingPacket pendingPacket;
   private volatile PacketReadState packetReadState;
 
-  private volatile Ukcp kcpChannel;
   private volatile TransportType transportType;
   private volatile InetSocketAddress socketRemoteAddress;
   private volatile InetSocketAddress datagramRemoteAddress;
@@ -82,7 +80,6 @@ public class SessionImpl implements Session {
   private volatile long inactivatedTime;
   private volatile long lastActivityTime;
   private volatile boolean hasUdp;
-  private volatile boolean hasKcp;
 
   private int maxIdleTimeInSecond;
 
@@ -185,11 +182,6 @@ public class SessionImpl implements Session {
   }
 
   @Override
-  public boolean containsKcp() {
-    return hasKcp;
-  }
-
-  @Override
   public void configureSocketChannel(SocketChannel socketChannel, SelectionKey selectionKey)
       throws IllegalArgumentException, IllegalCallerException {
     if (getTransportType() != TransportType.UNKNOWN) {
@@ -271,21 +263,6 @@ public class SessionImpl implements Session {
   @Override
   public int getUdpConveyId() {
     return udpConvey;
-  }
-
-  @Override
-  public Ukcp getKcpChannel() {
-    return kcpChannel;
-  }
-
-  @Override
-  public void setKcpChannel(Ukcp kcpChannel) {
-    if (this.kcpChannel != null && this.kcpChannel.isActive()) {
-      this.kcpChannel.close();
-    }
-
-    this.kcpChannel = kcpChannel;
-    hasKcp = kcpChannel != null;
   }
 
   @Override
@@ -536,7 +513,6 @@ public class SessionImpl implements Session {
         ", lastActivityTime=" + lastActivityTime +
         ", activated=" + activated +
         ", hasUdp=" + hasUdp +
-        ", hasKcp=" + hasKcp +
         ", associatedState=" + associatedState +
         '}';
   }

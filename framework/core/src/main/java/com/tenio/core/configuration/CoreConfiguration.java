@@ -150,8 +150,6 @@ public abstract class CoreConfiguration extends CommonConfiguration {
         push(CoreConfigurationType.NETWORK_TCP, socketConfiguration);
       } else if (socketConfiguration.type() == TransportType.WEB_SOCKET) {
         push(CoreConfigurationType.NETWORK_WEBSOCKET, socketConfiguration);
-      } else if (socketConfiguration.type() == TransportType.KCP) {
-        push(CoreConfigurationType.NETWORK_KCP, socketConfiguration);
       } else if (socketConfiguration.type() == TransportType.UDP) {
         push(CoreConfigurationType.NETWORK_UDP, socketConfiguration);
       } else if (socketConfiguration.type() == TransportType.HTTP) {

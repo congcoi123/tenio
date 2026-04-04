@@ -76,7 +76,7 @@ public interface Server {
   ClientCommandManager getClientCommandManager();
 
   /**
-   * Retrieves a event manager object which manages all events supporting on the server.
+   * Retrieves an event manager object which manages all events supporting on the server.
    *
    * @return an instance of {@link EventManager}
    */
@@ -105,7 +105,7 @@ public interface Server {
   ChannelManager getChannelManager();
 
   /**
-   * Retrieves a data channel manager object which allows managing Udp, Kcp related information.
+   * Retrieves a data channel manager object which allows managing UDP related information.
    *
    * @return an instance of {@link DatagramChannelManager}
    */

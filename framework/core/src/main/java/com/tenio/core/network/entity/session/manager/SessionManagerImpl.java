@@ -43,7 +43,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import kcp.Ukcp;
 
 /**
  * The implementation for session manager.
@@ -56,7 +55,6 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private final Map<SocketChannel, Session> sessionBySockets;
   private final Map<Channel, Session> sessionByWebSockets;
   private final Map<Integer, Session> sessionByDatagrams;
-  private final Map<Integer, Session> sessionByKcps;
   private volatile List<Session> readonlySessionsList;
   private volatile int sessionCount;
   private OutboundQueuePolicy outboundQueuePolicy;
@@ -70,7 +68,6 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     sessionBySockets = new HashMap<>();
     sessionByWebSockets = new HashMap<>();
     sessionByDatagrams = new HashMap<>();
-    sessionByKcps = new HashMap<>();
     readonlySessionsList = new ArrayList<>();
     outboundQueueSize = DEFAULT_MAX_OUTBOUND_QUEUE_SIZE;
   }
@@ -121,11 +118,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
-  public void addDatagramForSession(DatagramChannel datagramChannel, int udpConvey,
-                                    Session session) {
+  public void addDatagramForSession(DatagramChannel datagramChannel, int udpConvey, Session session) {
     if (!session.isTcp()) {
       throw new IllegalArgumentException(
-          String.format("Unable to add kcp channel for the non-TCP session: %s", session));
+          String.format("Unable to add UDP channel into a non-TCP session: %s", session));
     }
     synchronized (sessionByDatagrams) {
       session.configureDatagramChannel(datagramChannel, udpConvey);
@@ -137,25 +133,6 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   public Session getSessionByDatagram(int udpConvey) {
     synchronized (sessionByDatagrams) {
       return sessionByDatagrams.get(udpConvey);
-    }
-  }
-
-  @Override
-  public void addKcpForSession(Ukcp kcpChannel, Session session) throws IllegalArgumentException {
-    if (!session.isTcp()) {
-      throw new IllegalArgumentException(
-          String.format("Unable to add datagram channel for the non-TCP session: %s", session));
-    }
-    synchronized (sessionByKcps) {
-      session.setKcpChannel(kcpChannel);
-      sessionByKcps.put(kcpChannel.getConv(), session);
-    }
-  }
-
-  @Override
-  public Session getSessionByKcp(Ukcp kcpChannel) {
-    synchronized (sessionByKcps) {
-      return sessionByKcps.get(kcpChannel.getConv());
     }
   }
 
@@ -210,10 +187,6 @@ public final class SessionManagerImpl extends AbstractManager implements Session
           if (session.containsUdp()) {
             sessionByDatagrams.remove(session.getUdpConveyId());
             session.configureDatagramChannel(null, Session.EMPTY_DATAGRAM_CONVEY_ID);
-          }
-          if (session.containsKcp()) {
-            sessionByKcps.remove(session.getKcpChannel().getConv());
-            session.setKcpChannel(null);
           }
           sessionBySockets.remove(session.fetchSocketChannel());
         }
