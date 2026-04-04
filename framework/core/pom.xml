@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.6.10</version>
+    <version>0.6.11</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -41,11 +41,10 @@
     <properties>
         <io.github.congcoi123.tenio.common>0.6.10</io.github.congcoi123.tenio.common>
 
-        <io.netty.version>4.2.10.Final</io.netty.version>
+        <io.netty.version>4.2.12.Final</io.netty.version>
         <org.eclipse.jetty.server.version>12.1.6</org.eclipse.jetty.server.version>
         <org.eclipse.jetty.ee10.servlet.version>12.1.6</org.eclipse.jetty.ee10.servlet.version>
         <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
-        <kcp-base.version>1.6.1</kcp-base.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <org.jline.version>3.27.0</org.jline.version>
         <org.apache.commons.lang3.version>3.19.0</org.apache.commons.lang3.version>
@@ -109,11 +108,6 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>${jakarta.servlet.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.l42111996</groupId>
-            <artifactId>kcp-base</artifactId>
-            <version>${kcp-base.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

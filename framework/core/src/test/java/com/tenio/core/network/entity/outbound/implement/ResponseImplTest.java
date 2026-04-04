@@ -39,7 +39,6 @@ import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.Session;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +76,6 @@ class ResponseImplTest {
     assertNull(response.getRecipientPlayers());
     assertNull(response.getRecipientSocketSessions());
     assertNull(response.getRecipientDatagramSessions());
-    assertNull(response.getRecipientKcpSessions());
     assertNull(response.getRecipientWebSocketSessions());
     assertNull(response.getNonSessionRecipientPlayers());
   }
@@ -130,14 +128,12 @@ class ResponseImplTest {
     Session session = mock(Session.class);
     when(session.isTcp()).thenReturn(true);
     when(session.containsUdp()).thenReturn(false);
-    when(session.containsKcp()).thenReturn(false);
 
     response.setRecipientSession(session);
 
     assertNotNull(response.getRecipientSocketSessions());
     assertTrue(response.getRecipientSocketSessions().contains(session));
     assertNull(response.getRecipientDatagramSessions());
-    assertNull(response.getRecipientKcpSessions());
   }
 
   @Test
@@ -150,20 +146,6 @@ class ResponseImplTest {
 
     assertNotNull(response.getRecipientDatagramSessions());
     assertTrue(response.getRecipientDatagramSessions().contains(session));
-    assertNull(response.getRecipientSocketSessions());
-  }
-
-  @Test
-  void testSetRecipientSessionTcpWithKcpAndPrioritizedKcpGoesToKcpSessions() {
-    Session session = mock(Session.class);
-    when(session.isTcp()).thenReturn(true);
-    when(session.containsUdp()).thenReturn(false);
-    when(session.containsKcp()).thenReturn(true);
-
-    response.prioritizedKcp().setRecipientSession(session);
-
-    assertNotNull(response.getRecipientKcpSessions());
-    assertTrue(response.getRecipientKcpSessions().contains(session));
     assertNull(response.getRecipientSocketSessions());
   }
 
@@ -186,10 +168,8 @@ class ResponseImplTest {
     Session s2 = mock(Session.class);
     when(s1.isTcp()).thenReturn(true);
     when(s1.containsUdp()).thenReturn(false);
-    when(s1.containsKcp()).thenReturn(false);
     when(s2.isTcp()).thenReturn(true);
     when(s2.containsUdp()).thenReturn(false);
-    when(s2.containsKcp()).thenReturn(false);
 
     response.setRecipientSessions(List.of(s1, s2));
 

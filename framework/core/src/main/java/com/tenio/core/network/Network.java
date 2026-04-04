@@ -45,11 +45,11 @@ import java.util.Map;
 /**
  * Defines the core network service functionality for the game server.
  * This interface provides comprehensive network management capabilities including
- * HTTP, WebSocket, TCP, UDP, and KCP protocol support.
+ * HTTP, WebSocket, TCP, and UDP protocol support.
  *
  * <p>Key features:
  * <ul>
- *   <li>Multi-protocol support (HTTP, WebSocket, TCP, UDP, KCP)</li>
+ *   <li>Multiprotocol support (HTTP, WebSocket, TCP, UDP)</li>
  *   <li>Connection filtering and security</li>
  *   <li>Configurable worker thread pools</li>
  *   <li>Buffer size management</li>
@@ -63,7 +63,6 @@ import java.util.Map;
  *   <li>HTTP Service: Web server configuration and servlet mapping</li>
  *   <li>WebSocket Service: Real-time communication settings</li>
  *   <li>Socket Service: TCP/UDP connection management</li>
- *   <li>KCP Service: Reliable UDP implementation</li>
  *   <li>Security: Connection filtering and SSL/TLS</li>
  * </ul>
  *
@@ -198,12 +197,10 @@ public interface Network extends Service {
    * @param tcpSocketConfiguration  a {@link SocketConfiguration} instance for TCP
    * @param udpChannelConfiguration a {@link SocketConfiguration} instance for UDP
    * @param webSocketConfiguration  a {@link SocketConfiguration} instance for WebSocket
-   * @param kcpSocketConfiguration  a {@link SocketConfiguration} instance for KCP
    */
   void setSocketConfigurations(SocketConfiguration tcpSocketConfiguration,
                                SocketConfiguration udpChannelConfiguration,
-                               SocketConfiguration webSocketConfiguration,
-                               SocketConfiguration kcpSocketConfiguration);
+                               SocketConfiguration webSocketConfiguration);
 
   /**
    * Sets the maximum time in seconds which allows the session to get in IDLE state (Do not

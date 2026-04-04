@@ -48,23 +48,10 @@ class DatagramChannelManagerTest {
   }
 
   @Test
-  @DisplayName("New instance should initialize KCP port to NULL_PORT_VALUE")
-  void testNewInstanceInitializesKcpPortToNullValue() {
-    assertEquals(CoreConstant.NULL_PORT_VALUE, manager.getKcpPort());
-  }
-
-  @Test
   @DisplayName("Configure and get UDP port")
   void testConfigureAndGetUdpPort() {
     manager.configureUdpPort(8080);
     assertEquals(8080, manager.getUdpPort());
-  }
-
-  @Test
-  @DisplayName("Configure and get KCP port")
-  void testConfigureAndGetKcpPort() {
-    manager.configureKcpPort(9090);
-    assertEquals(9090, manager.getKcpPort());
   }
 
   @Test
@@ -82,26 +69,10 @@ class DatagramChannelManagerTest {
   }
 
   @Test
-  @DisplayName("getCurrentKcpConveyId should start at zero")
-  void testGetCurrentKcpConveyIdStartsAtZero() {
-    assertEquals(0, manager.getCurrentKcpConveyId());
-  }
-
-  @Test
-  @DisplayName("getCurrentKcpConveyId should increment on each call")
-  void testGetCurrentKcpConveyIdIncrements() {
-    manager.getCurrentKcpConveyId(); // 0
-    assertEquals(1, manager.getCurrentKcpConveyId());
-    assertEquals(2, manager.getCurrentKcpConveyId());
-  }
-
-  @Test
-  @DisplayName("UDP and KCP convey ID counters are independent")
-  void testUdpAndKcpConveyIdsAreIndependent() {
+  @DisplayName("UDP Convey ID counters are independent")
+  void testUdpConveyIdsAreIndependent() {
     manager.getCurrentUdpConveyId(); // advance UDP to 1
     manager.getCurrentUdpConveyId(); // advance UDP to 2
-    // KCP counter should still be at 0
-    assertEquals(0, manager.getCurrentKcpConveyId());
     // UDP counter should now be at 2
     assertEquals(2, manager.getCurrentUdpConveyId());
   }

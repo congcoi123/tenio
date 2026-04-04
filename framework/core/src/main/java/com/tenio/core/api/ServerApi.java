@@ -460,23 +460,6 @@ public interface ServerApi {
   int getUdpPort();
 
   /**
-   * Retrieves the current available KCP port.
-   *
-   * @return an {@code integer} value of KCP port if available, otherwise returns
-   * {@link CoreConstant#NULL_PORT_VALUE}
-   * @since 0.6.0
-   */
-  int getKcpPort();
-
-  /**
-   * Retrieves the current available KCP Convey Id.
-   *
-   * @return an {@code integer} value of a KCP Convey Id
-   * @since 0.6.0
-   */
-  int getCurrentKcpConveyId();
-
-  /**
    * Retrieves the time when server starts in milliseconds.
    *
    * @return started time in milliseconds

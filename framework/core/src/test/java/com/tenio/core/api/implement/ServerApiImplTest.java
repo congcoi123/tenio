@@ -65,7 +65,6 @@ class ServerApiImplTest {
   private PlayerManager playerManager;
   private RoomManager roomManager;
   private ChannelManager channelManager;
-  private DatagramChannelManager datagramChannelManager;
   private EventManager eventManager;
   private ServerApi api;
 
@@ -75,7 +74,7 @@ class ServerApiImplTest {
     playerManager = mock(PlayerManager.class);
     roomManager = mock(RoomManager.class);
     channelManager = mock(ChannelManager.class);
-    datagramChannelManager = mock(DatagramChannelManager.class);
+    DatagramChannelManager datagramChannelManager = mock(DatagramChannelManager.class);
     eventManager = mock(EventManager.class);
     when(server.getPlayerManager()).thenReturn(playerManager);
     when(server.getRoomManager()).thenReturn(roomManager);
@@ -223,22 +222,6 @@ class ServerApiImplTest {
     Map<String, Channel> expected = mock(Map.class);
     when(channelManager.getSubscribedChannelsForPlayer(player)).thenReturn(expected);
     assertEquals(expected, api.getSubscribedChannelsForPlayer(player));
-  }
-
-  // --- datagram channel queries ---
-
-  @Test
-  @DisplayName("getKcpPort delegates to datagramChannelManager")
-  void testGetKcpPort() {
-    when(datagramChannelManager.getKcpPort()).thenReturn(9000);
-    assertEquals(9000, api.getKcpPort());
-  }
-
-  @Test
-  @DisplayName("getCurrentKcpConveyId delegates to datagramChannelManager")
-  void testGetCurrentKcpConveyId() {
-    when(datagramChannelManager.getCurrentKcpConveyId()).thenReturn(42);
-    assertEquals(42, api.getCurrentKcpConveyId());
   }
 
   // --- changeRoom ---

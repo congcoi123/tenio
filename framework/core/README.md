@@ -43,8 +43,6 @@ This module provides all the main features for the framework to operate. It cont
 ```txt
 EventAccessDatagramChannelRequestValidation
 EventAccessDatagramChannelRequestValidationResult
-EventAccessKcpChannelRequestValidation
-EventAccessKcpChannelRequestValidationResult
 EventBroadcastToChannel
 EventChannelCreated
 EventChannelWillBeRemoved
@@ -95,7 +93,6 @@ datagram-packet-policy: DatagramPacketPolicy
 ## Dependencies
 - HTTP [Jetty](https://eclipse.dev/jetty)
 - Websocket [Netty](https://netty.io)
-- KCP [KCP Java](https://github.com/l42111996/java-Kcp)
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
