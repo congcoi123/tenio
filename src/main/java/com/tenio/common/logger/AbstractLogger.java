@@ -214,6 +214,26 @@ public abstract class AbstractLogger {
   }
 
   /**
+   * Only use for warning detection in the server system. Be careful when using
+   * it yourself. You are warned!
+   *
+   * @param info the information
+   */
+  public void warn(Object... info) {
+    if (!isWarnEnabled()) {
+      return;
+    }
+    var builder = stringPool.get();
+    builder.append("\n=========== BEGIN WARNING INFORMATION ===========\n");
+    for (var w : info) {
+      builder.append(w);
+    }
+    builder.append("\n============ END WARNING INFORMATION ============\n");
+    logger.warn(builder.toString());
+    stringPool.repay(builder);
+  }
+
+  /**
    * Only use for errors/issues detection in the server system. Be careful when using
    * it yourself. You are warned!
    *
@@ -306,6 +326,16 @@ public abstract class AbstractLogger {
    */
   public boolean isErrorEnabled() {
     return logger.isErrorEnabled();
+  }
+
+  /**
+   * Determines whether the logging level is WARN.
+   *
+   * @return {@code true} if the logging level is WARN, {@code false} otherwise
+   * @since 0.7.0
+   */
+  public boolean isWarnEnabled() {
+    return logger.isWarnEnabled();
   }
 
   /**

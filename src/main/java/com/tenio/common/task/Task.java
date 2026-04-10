@@ -33,8 +33,21 @@ public interface Task {
 
   /**
    * Executes a task.
+   */
+  void run();
+
+  /**
+   * Fetches task's main scheduler.
    *
    * @return a {@link ScheduledFuture} instance to manage its task
+   * @since 0.7.0
    */
-  ScheduledFuture<?> run();
+  ScheduledFuture<?> getScheduler();
+
+  /**
+   * Shutdown task.
+   *
+   * @since 0.7.0
+   */
+  void shutdown();
 }

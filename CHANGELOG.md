@@ -63,3 +63,7 @@
 ## 0.6.10 2026-03-26 Chore release
 - Supported default log4j configurations
 - Supported pretty print for configurations
+
+## 0.7.0 2026-04-12 Feature release
+- Supports Java 21 Features
+- Changed APIs in TaskManager

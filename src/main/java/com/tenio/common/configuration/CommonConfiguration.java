@@ -43,12 +43,15 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
    * defined keys.
    */
   private final Map<ConfigurationType, Object> configuration;
+  private final ObjectMapper objectMapper;
 
   /**
    * Creates a new instance.
    */
   public CommonConfiguration() {
     configuration = new HashMap<>();
+    objectMapper = new ObjectMapper();
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
   }
 
   @Override
@@ -83,10 +86,8 @@ public abstract class CommonConfiguration extends SystemLogger implements Config
 
   @Override
   public String toString() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
     try {
-        return mapper.writeValueAsString(configuration);
+        return objectMapper.writeValueAsString(configuration);
     } catch (JsonProcessingException exception) {
         return configuration.toString();
     }

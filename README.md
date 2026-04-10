@@ -41,7 +41,7 @@ This module provides common methods, classes for other modules to use. It suppor
 mechanism and supplies the self-defined serialized and deserialized processes for transferring data through the network.
 
 ## Requirements
-- Java 17
+- Java 21+
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.

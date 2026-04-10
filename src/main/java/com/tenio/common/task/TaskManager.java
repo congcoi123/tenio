@@ -39,9 +39,9 @@ public interface TaskManager {
    * Creates a new task.
    *
    * @param id   the unique {@link String} id for management
-   * @param task the running task, see {@link ScheduledFuture}
+   * @param task the running task, see {@link Task}
    */
-  void create(String id, ScheduledFuture<?> task);
+  void create(String id, Task task);
 
   /**
    * Kills or stops a running task.
