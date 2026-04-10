@@ -5,7 +5,7 @@
 
 	<groupId>io.github.congcoi123</groupId>
 	<artifactId>tenio-examples</artifactId>
-	<version>0.6.12</version>
+	<version>0.7.0</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
@@ -35,17 +35,17 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.release>17</jdk.release>
+		<jdk.release>21</jdk.release>
 		<jdk.vendor>oracle</jdk.vendor>
 
-		<io.github.congcoi123.tenio.core.version>0.6.12</io.github.congcoi123.tenio.core.version>
-		<io.github.congcoi123.tenio.engine.version>0.6.10</io.github.congcoi123.tenio.engine.version>
+		<io.github.congcoi123.tenio.core.version>0.7.0</io.github.congcoi123.tenio.core.version>
+		<io.github.congcoi123.tenio.engine.version>0.7.0</io.github.congcoi123.tenio.engine.version>
 		<org.apache.commons.version>3.20.0</org.apache.commons.version>
 
 		<maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
 		<maven.assembly.plugin.version>3.7.1</maven.assembly.plugin.version>
-		<maven.compiler.target>17</maven.compiler.target>
-		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
 	</properties>
 
 	<dependencies>

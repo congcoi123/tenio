@@ -29,12 +29,12 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-- tenio-core 0.6.12
-- tenio-engine 0.6.10
+- tenio-core 0.7.0
+- tenio-engine 0.7.0
 ```
 
 ## Requirements
-- Java 17
+- Java 21+
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
@@ -62,7 +62,7 @@ $ git clone https://github.com/congcoi123/tenio-examples.git
 public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
-    static void main(String[] params) {
+    static void main() {
         ApplicationLauncher.run(SimpleServer.class);
     }
 

@@ -30,18 +30,16 @@ import com.tenio.core.handler.event.EventSystemMonitoring;
 import com.tenio.core.utility.ZeroUtility;
 
 @EventHandler
-public final class SystemMonitoringHandler extends AbstractHandler
-    implements EventSystemMonitoring {
+public final class SystemMonitoringHandler extends AbstractHandler implements EventSystemMonitoring {
 
   @Override
-  public void onSystemMonitoring(double cpuUsage, long totalMemory, long usedMemory, long freeMemory,
-                                 int countRunningThreads) {
+  public void onSystemMonitoring(double cpuUsage, long totalMemory,
+                                 long usedMemory, long freeMemory, long platformThreads) {
     if (isInfoEnabled()) {
       var info = String.format(
-          "cpuUsage: %.2f%%; totalMemory: %.3fMB; usedMemory: %.3fMB; freeMemory: %.3fMB; runningThreads: %d",
+          "cpuUsage: %.2f%%; totalMemory: %.3f MB; usedMemory: %.3f MB; freeMemory: %.3f MB; platformThreads: %d",
           (float) cpuUsage * 100, ZeroUtility.convertBytesToMB(totalMemory),
-          ZeroUtility.convertBytesToMB(usedMemory), ZeroUtility.convertBytesToMB(freeMemory),
-          countRunningThreads);
+          ZeroUtility.convertBytesToMB(usedMemory), ZeroUtility.convertBytesToMB(freeMemory), platformThreads);
 
       info("SYSTEM MONITORING", info);
     }
