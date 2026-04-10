@@ -75,9 +75,9 @@ class ConfigurationAssessmentTest {
   void testAssessThrowsWhenReconnectionSubscribersMissing() {
     when(configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION))
         .thenReturn(true);
-    when(eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING))
+    when(eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RETRY))
         .thenReturn(false);
-    when(eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECTED)).thenReturn(false);
+    when(eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RESUMED)).thenReturn(false);
 
     var assessment = ConfigurationAssessment.newInstance(eventManager, configuration);
     assertThrows(NotDefinedSubscribersException.class, assessment::assess);
@@ -88,9 +88,9 @@ class ConfigurationAssessmentTest {
   void testAssessPassesWhenReconnectionSubscribersDefined() {
     when(configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION))
         .thenReturn(true);
-    when(eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING))
+    when(eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RETRY))
         .thenReturn(true);
-    when(eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECTED)).thenReturn(true);
+    when(eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RESUMED)).thenReturn(true);
     when(configuration.get(CoreConfigurationType.NETWORK_TCP)).thenReturn(null);
     when(configuration.get(CoreConfigurationType.NETWORK_UDP)).thenReturn(null);
 

@@ -29,6 +29,7 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -95,7 +96,6 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
         if (logger.isErrorEnabled()) {
           logger.error(exception, "Session: ", session.toString());
         }
-        eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
       }
     } else {
       // let the socket be closed
@@ -150,12 +150,16 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
       networkReaderStatistic.updateReadBytes(binaries.length);
       networkReaderStatistic.updateReadPackets(1);
 
-      var dataCollection = binaryPacketDecoder.decode(binaries);
+      var message = binaryPacketDecoder.decode(binaries);
 
       if (session.isAssociatedToPlayer(Session.AssociatedState.NONE)) {
-        eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, dataCollection);
+        eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
       } else if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
-        eventManager.emit(ServerEvent.SESSION_READ_MESSAGE, session, dataCollection);
+        try {
+          session.enqueueInbound(message);
+        } catch (InboundQueueFullException exception) {
+          networkReaderStatistic.updateReadDroppedPackets(1);
+        }
       }
     }
   }
@@ -167,7 +171,13 @@ public final class NettyWsHandler extends ChannelInboundHandlerAdapter {
       if (logger.isErrorEnabled()) {
         logger.error(cause, "Session: ", session.toString());
       }
-      eventManager.emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, cause);
+        try {
+            session.close();
+        } catch (IOException exception) {
+          if (logger.isErrorEnabled()) {
+            logger.error(exception, "Session closed with error: ", session.toString());
+          }
+        }
     } else {
       if (logger.isErrorEnabled()) {
         logger.error(cause, "Exception was occurred on channel: ", ctx.channel().toString());

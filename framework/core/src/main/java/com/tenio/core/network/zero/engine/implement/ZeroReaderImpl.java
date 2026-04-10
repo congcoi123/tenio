@@ -46,8 +46,7 @@ import java.util.function.Consumer;
  *
  * @see ZeroReader
  */
-public final class ZeroReaderImpl extends AbstractZeroEngine
-    implements ZeroReader, ZeroReaderListener {
+public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroReader, ZeroReaderListener {
 
   private static final AtomicInteger INDEXER = new AtomicInteger(0);
 
@@ -74,8 +73,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   }
 
   private SocketReaderHandler getSocketReaderHandler() {
-    int index =
-        Math.floorMod(INDEXER.getAndIncrement(), getThreadPoolSize() - getNumberOfExtraWorkers());
+    int index = Math.floorMod(INDEXER.getAndIncrement(), getThreadPoolSize() - getNumberOfExtraWorkers());
     return socketReaderHandlers.get(index);
   }
 
@@ -133,7 +131,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
   @Override
   public void onStarted() {
     if (datagramReaderHandler != null) {
-      runningExtraWorking(() -> {
+      run(() -> {
         while (!Thread.currentThread().isInterrupted()) {
           if (isActivated()) {
             try {
@@ -145,15 +143,14 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
             }
           }
         }
-      });
+      }, "datagram");
     }
   }
 
   @Override
   public void onRunning() {
     try {
-      var readerHandler =
-          new SocketReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
+      var readerHandler = new SocketReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
               getSessionManager(), getNetworkReaderStatistic(), getSocketIoHandler());
       socketReaderHandlers.add(readerHandler);
 
@@ -198,6 +195,6 @@ public final class ZeroReaderImpl extends AbstractZeroEngine
 
   @Override
   public void onDestroyed() {
-    // do nothing
+    // Do nothing
   }
 }

@@ -59,7 +59,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private volatile int sessionCount;
   private OutboundQueuePolicy outboundQueuePolicy;
   private ConnectionFilter connectionFilter;
+  private int inboundQueueSize;
   private int outboundQueueSize;
+  private int slowConsumingInboundQueueWarningThreshold;
+  private int slowConsumingOutboundQueueWarningThreshold;
   private int maxIdleTimeInSeconds;
 
   private SessionManagerImpl(EventManager eventManager) {
@@ -69,7 +72,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     sessionByWebSockets = new HashMap<>();
     sessionByDatagrams = new HashMap<>();
     readonlySessionsList = new ArrayList<>();
+    inboundQueueSize = DEFAULT_MAX_INBOUND_QUEUE_SIZE;
     outboundQueueSize = DEFAULT_MAX_OUTBOUND_QUEUE_SIZE;
+    slowConsumingInboundQueueWarningThreshold = DEFAULT_SLOW_CONSUMING_INBOUND_QUEUE_WARNING_THRESHOLD;
+    slowConsumingOutboundQueueWarningThreshold = DEFAULT_SLOW_CONSUMING_OUTBOUND_QUEUE_WARNING_THRESHOLD;
   }
 
   /**
@@ -175,8 +181,23 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   }
 
   @Override
+  public void configureInboundQueueSize(int queueSize) {
+    inboundQueueSize = queueSize;
+  }
+
+  @Override
   public void configureOutboundQueueSize(int queueSize) {
     outboundQueueSize = queueSize;
+  }
+
+  @Override
+  public void configureSlowConsumingInboundQueueWarningThreshold(int threshold) {
+    slowConsumingInboundQueueWarningThreshold = threshold;
+  }
+
+  @Override
+  public void configureSlowConsumingOutboundQueueWarningThreshold(int threshold) {
+    slowConsumingOutboundQueueWarningThreshold = threshold;
   }
 
   @Override
@@ -229,7 +250,10 @@ public final class SessionManagerImpl extends AbstractManager implements Session
 
   private void configureSession(Session session) {
     session.configureSessionManager(this);
+    session.configureMaxInboundQueueSize(inboundQueueSize);
     session.configureOutboundQueue(configureNewOutboundQueue());
+    session.configureSlowConsumingInboundQueueWarningThreshold(slowConsumingInboundQueueWarningThreshold);
+    session.configureSlowConsumingOutboundQueueWarningThreshold(slowConsumingOutboundQueueWarningThreshold);
     session.configureConnectionFilter(connectionFilter);
     session.configureMaxIdleTimeInSeconds(maxIdleTimeInSeconds);
   }

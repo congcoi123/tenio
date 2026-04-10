@@ -94,10 +94,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   ENABLE_TERMINAL_COMMAND("enable-terminal-command"),
   /**
-   * The number of threads using for handlers to accept new incoming client socket on the server.
-   */
-  WORKER_SOCKET_ACCEPTOR("socket-acceptor"),
-  /**
    * The number of threads using for handlers to read new messages from client sockets on the
    * server.
    */
@@ -114,16 +110,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    * The number of threads using for handlers of WebSocket consumers on the server.
    */
   WORKER_WEBSOCKET_CONSUMER("websocket-consumer"),
-  /**
-   * The thread pool size configured for Jetty server.
-   *
-   * @since 0.5.0
-   */
-  WORKER_HTTP_WORKER("http-worker"),
-  /**
-   * The number of threads using for handlers to manage internal processes on the server.
-   */
-  WORKER_INTERNAL_PROCESSOR("internal-processor"),
   /**
    * Sets an interval to frequently check removable rooms for removing them.
    *
@@ -166,10 +152,12 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
   /**
-   * Sets the maximum number of requesting packets in queue. In case there are more packets than
-   * expected, some of them should be removed.
+   * Sets the maximum size of an inbound queue (response queue). Notes that every {@link Session} has
+   * its own queue, and this setting applies for all of them.
+   *
+   * @since 0.7.0
    */
-  PROP_MAX_REQUEST_QUEUE_SIZE("max-request-queue-size"),
+  PROP_MAX_SESSION_REQUEST_QUEUE_SIZE("max-session-request-queue-size"),
   /**
    * Sets the maximum size of an outbound queue (response queue). Notes that every {@link Session} has
    * its own queue, and this setting applies for all of them.
@@ -177,7 +165,19 @@ public enum CoreConfigurationType implements ConfigurationType {
    * @see OutboundQueuePolicy
    * @see OutboundQueueFullException
    */
-  PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION("max-response-queue-size-per-session"),
+  PROP_MAX_SESSION_RESPONSE_QUEUE_SIZE("max-session-response-queue-size"),
+  /**
+   * Sets the threshold value to show warning when it slowly consumes the {@link Session} inbound queue.
+   *
+   * @since 0.7.0
+   */
+  PROP_SLOW_CONSUMING_WARNING_SESSION_REQUEST_THRESHOLD("slow-consuming-warning-session-request-threshold"),
+  /**
+   * Sets the threshold value to show warning when it slowly consumes the {@link Session} outbound queue.
+   *
+   * @since 0.7.0
+   */
+  PROP_SLOW_CONSUMING_WARNING_SESSION_RESPONSE_THRESHOLD("slow-consuming-warning-session-response-threshold"),
   /**
    * Determines whether a disconnected connection could be held for a while or be removed
    * immediately.

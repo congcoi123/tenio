@@ -56,16 +56,14 @@ import java.util.List;
 /**
  * The implementation for the Netty's websockets services.
  */
-public final class NettyWebSocketImpl extends AbstractManager
-    implements NettyWebSocket {
+public final class NettyWebSocketImpl extends AbstractManager implements NettyWebSocket {
 
   private static final String PREFIX_WEBSOCKET = "websocket";
 
   private static final int DEFAULT_SENDER_BUFFER_SIZE = 1024;
   private static final int DEFAULT_RECEIVER_BUFFER_SIZE = 1024;
   private static final int DEFAULT_PRODUCER_WORKER_SIZE = 2;
-  private static final int DEFAULT_CONSUMER_WORKER_SIZE =
-      Runtime.getRuntime().availableProcessors() * 2;
+  private static final int DEFAULT_CONSUMER_WORKER_SIZE = Runtime.getRuntime().availableProcessors() * 2;
 
   private ServerBootstrap bootstrap;
   private EventLoopGroup webSocketAcceptors;
@@ -100,7 +98,7 @@ public final class NettyWebSocketImpl extends AbstractManager
   }
 
   /**
-   * Creates a new instance of web socket service.
+   * Creates a new instance of web socket engine.
    *
    * @param eventManager the instance of {@link EventManager}
    * @return a new instance of {@link NettyWebSocket}
@@ -111,15 +109,13 @@ public final class NettyWebSocketImpl extends AbstractManager
 
   private void attemptToStart() throws InterruptedException {
     if (isInfoEnabled()) {
-      info("START SERVICE",
-          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+      info("START ENGINE", buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
     }
 
     var defaultWebsocketThreadFactory =
         new DefaultThreadFactory(PREFIX_WEBSOCKET, true, Thread.NORM_PRIORITY);
 
-    webSocketAcceptors =
-        new NioEventLoopGroup(producerWorkerSize, defaultWebsocketThreadFactory);
+    webSocketAcceptors = new NioEventLoopGroup(producerWorkerSize, defaultWebsocketThreadFactory);
     webSocketWorkers = new NioEventLoopGroup(consumerWorkerSize, defaultWebsocketThreadFactory);
     serverWebSockets = new ArrayList<>();
 
@@ -156,8 +152,7 @@ public final class NettyWebSocketImpl extends AbstractManager
     }
 
     if (isInfoEnabled()) {
-      info("STOPPED SERVICE",
-          buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
+      info("STOPPED ENGINE", buildgen(getName(), " (", producerWorkerSize + consumerWorkerSize, ")"));
     }
   }
 

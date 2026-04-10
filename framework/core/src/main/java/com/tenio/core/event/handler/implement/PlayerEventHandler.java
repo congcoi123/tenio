@@ -34,8 +34,8 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
 import com.tenio.core.handler.event.EventPlayerLogin;
-import com.tenio.core.handler.event.EventPlayerReconnectRequestHandling;
-import com.tenio.core.handler.event.EventPlayerReconnected;
+import com.tenio.core.handler.event.EventPlayerConnectionRetry;
+import com.tenio.core.handler.event.EventPlayerConnectionResumed;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.handler.event.EventSendMessageToPlayer;
 import com.tenio.core.network.entity.session.Session;
@@ -51,11 +51,10 @@ public final class PlayerEventHandler {
   private EventPlayerLogin<Player> eventPlayerLogin;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnectRequestHandling<Player, DataCollection>
-      eventPlayerReconnectRequestHandling;
+  private EventPlayerConnectionRetry<Player, DataCollection> eventPlayerConnectionRetry;
 
   @AutowiredAcceptNull
-  private EventPlayerReconnected<Player> eventPlayerReconnected;
+  private EventPlayerConnectionResumed<Player> eventPlayerConnectionResumed;
 
   @AutowiredAcceptNull
   private EventReceivedMessageFromPlayer<Player, DataCollection> eventReceivedMessageFromPlayer;
@@ -76,10 +75,10 @@ public final class PlayerEventHandler {
     final var eventPlayerLoginOp =
         Optional.ofNullable(eventPlayerLogin);
 
-    final var eventPlayerReconnectRequestHandlingOp =
-        Optional.ofNullable(eventPlayerReconnectRequestHandling);
-    final var eventPlayerReconnectedOp =
-        Optional.ofNullable(eventPlayerReconnected);
+    final var eventPlayerConnectionRetryOp =
+        Optional.ofNullable(eventPlayerConnectionRetry);
+    final var eventPlayerConnectionResumedOp =
+        Optional.ofNullable(eventPlayerConnectionResumed);
 
     final var eventReceivedMessageFromPlayerOp =
         Optional.ofNullable(eventReceivedMessageFromPlayer);
@@ -98,20 +97,20 @@ public final class PlayerEventHandler {
           return null;
         }));
 
-    eventPlayerReconnectRequestHandlingOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING, params -> {
+    eventPlayerConnectionRetryOp.ifPresent(
+            event -> eventManager.on(ServerEvent.PLAYER_CONNECTION_RETRY, params -> {
           var session = (Session) params[0];
           var message = (DataCollection) params[1];
 
-          return event.onPlayerReconnectRequestHandling(session, message);
+          return event.onPlayerConnectionRetry(session, message);
         }));
 
-    eventPlayerReconnectedOp.ifPresent(
-        event -> eventManager.on(ServerEvent.PLAYER_RECONNECTED, params -> {
+    eventPlayerConnectionResumedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_CONNECTION_RESUMED, params -> {
           var player = (Player) params[0];
           var session = (Session) params[1];
 
-          event.onPlayerReconnected(player, session);
+          event.onPlayerConnectionResumed(player, session);
 
           return null;
         }));

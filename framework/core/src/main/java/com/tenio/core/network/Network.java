@@ -29,6 +29,7 @@ import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import com.tenio.core.network.entity.outbound.Response;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.security.filter.DefaultConnectionFilter;
@@ -211,6 +212,23 @@ public interface Network extends Service {
    */
   void setSessionMaxIdleTimeInSeconds(int seconds);
 
+
+  /**
+   * Sets the threshold for warning of slow consuming {@link Session} inbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void setSessionSlowConsumingInboundQueueWarningThreshold(int threshold);
+
+  /**
+   * Sets the threshold for warning of slow consuming {@link Session} outbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void setSessionSlowConsumingOutboundQueueWarningThreshold(int threshold);
+
   /**
    * Sets an instance of outbound queue policy the network.
    *
@@ -218,16 +236,24 @@ public interface Network extends Service {
    * @see OutboundQueue
    * @see DefaultOutboundQueuePolicy
    */
-  void setOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy);
+  void setSessionOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy);
 
   /**
-   * Sets the outbound queue size.
+   * Sets the {@link Session} inbound queue size.
+   *
+   * @param queueSize the {@code integer} value of new size for the inbound queue
+   * @since 0.7.0
+   */
+  void setSessionInboundQueueSize(int queueSize);
+
+  /**
+   * Sets the {@link Session} outbound queue size.
    *
    * @param queueSize the new size ({@code integer} value) for the outbound queue
    * @see OutboundQueue
    * @see OutboundQueuePolicy
    */
-  void setOutboundQueueSize(int queueSize);
+  void setSessionOutboundQueueSize(int queueSize);
 
   /**
    * Sets an instance of packet encoder to encode packets for sending to clients.

@@ -26,7 +26,7 @@ package com.tenio.core.network.entity.inbound;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
-import com.tenio.core.controller.RequestComparator;
+import com.tenio.core.processor.RequestComparator;
 import java.net.SocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 

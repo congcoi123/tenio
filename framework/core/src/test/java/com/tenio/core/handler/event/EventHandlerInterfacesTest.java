@@ -88,14 +88,6 @@ class EventHandlerInterfacesTest {
   }
 
   @Test
-  @DisplayName("Test EventServerException")
-  void testEventServerException() {
-    EventServerException handler = throwable -> {
-    };
-    handler.onServerException(new Exception("test"));
-  }
-
-  @Test
   @DisplayName("Test EventBroadcastToChannel")
   void testEventBroadcastToChannel() {
     EventBroadcastToChannel<Player, DataCollection> handler = (channel, player, message) -> {
@@ -179,12 +171,13 @@ class EventHandlerInterfacesTest {
   }
 
   @Test
-  @DisplayName("Test EventPlayerReconnectRequestHandling")
-  void testEventPlayerReconnectRequestHandling() {
-    EventPlayerReconnectRequestHandling<Player, DataCollection> handler =
+  @DisplayName("Test EventPlayerConnectionRetry")
+  void testEventPlayerConnectionRetry() {
+    EventPlayerConnectionRetry<Player, DataCollection> handler =
         (session, message) -> Optional.empty();
-    handler.onPlayerReconnectRequestHandling(Mockito.mock(Session.class), Mockito.mock(DataCollection.class));
-    assertTrue(true);
+    var result = handler.onPlayerConnectionRetry(Mockito.mock(Session.class),
+        Mockito.mock(DataCollection.class));
+    assertTrue(result.isEmpty());
   }
 
   @Test

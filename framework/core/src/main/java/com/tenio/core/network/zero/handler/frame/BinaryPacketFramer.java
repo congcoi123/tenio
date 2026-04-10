@@ -271,8 +271,7 @@ public final class BinaryPacketFramer {
     // those bytes should be used to produce header bytes for the next packets
     if (isThereMore) {
       binaries =
-          ByteUtility.resizeBytesArray(binaries, inNeedPacketLength,
-              binaries.length - inNeedPacketLength);
+          ByteUtility.resizeBytesArray(binaries, inNeedPacketLength, binaries.length - inNeedPacketLength);
     } else {
       // reset data to wait more bytes from socket
       binaries = new byte[0];

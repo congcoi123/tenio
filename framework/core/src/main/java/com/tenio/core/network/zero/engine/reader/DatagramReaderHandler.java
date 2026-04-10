@@ -26,7 +26,6 @@ package com.tenio.core.network.zero.engine.reader;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.logger.SystemLogger;
-import com.tenio.common.utility.OsUtility;
 import com.tenio.core.exception.ServiceRuntimeException;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
@@ -159,18 +158,20 @@ public final class DatagramReaderHandler extends SystemLogger {
   public void openDatagramChannels(String serverAddress, int port, int cacheSize)
       throws ServiceRuntimeException {
     if (cacheSize <= 0) {
-      throw new IllegalArgumentException("The cache size of datagram channels must be greater " +
-          "than 0");
+      throw new IllegalArgumentException("The cache size of datagram channels must be greater than 0");
     }
     try {
+      boolean reusePortSupported = true;
       for (int i = 0; i < cacheSize; i++) {
         var datagramChannel = DatagramChannel.open();
         datagramChannel.configureBlocking(false);
-        // this does not guarantee expected behaviours on windows or macOS
-        if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
-          datagramChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-        } else {
+        datagramChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+        try {
           datagramChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+        } catch (UnsupportedOperationException exception) {
+          if (reusePortSupported) {
+            reusePortSupported = false;
+          }
         }
         datagramChannel.setOption(StandardSocketOptions.SO_BROADCAST, true);
         datagramChannel.bind(new InetSocketAddress(serverAddress, port));
@@ -178,6 +179,11 @@ public final class DatagramReaderHandler extends SystemLogger {
         // bi-direction connection, that why it's not necessary to register it to
         // acceptable selector. Just leave it to the reader selector later
         datagramChannel.register(readableSelector, SelectionKey.OP_READ);
+      }
+      if (!reusePortSupported) {
+        if (isDebugEnabled()) {
+          debug("DATAGRAM CHANNEL", "It doesn't support SO_REUSEPORT option");
+        }
       }
       if (isInfoEnabled()) {
         info("UDP CHANNEL(S)", buildgen("Opened at address: ", serverAddress, ", port: ",
@@ -222,6 +228,7 @@ public final class DatagramReaderHandler extends SystemLogger {
 
       // update statistic data
       networkReaderStatistic.updateReadBytes(byteCount);
+      networkReaderStatistic.updateReadPackets(1);
       // ready to read data from buffer
       readerBuffer.flip();
       // reads data from buffer and transfers them to the next process

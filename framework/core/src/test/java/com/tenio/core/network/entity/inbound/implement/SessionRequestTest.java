@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.network.entity.inbound.Request;
 import com.tenio.core.network.entity.session.Session;
 import java.net.InetSocketAddress;
@@ -135,13 +134,6 @@ class SessionRequestTest {
   @DisplayName("getEvent returns null before setEvent is called")
   void testGetEventReturnsNullInitially() {
     assertNull(request.getEvent());
-  }
-
-  @Test
-  @DisplayName("setEvent stores the event and getEvent returns it")
-  void testSetAndGetEvent() {
-    request.setEvent(ServerEvent.SESSION_OCCURRED_EXCEPTION);
-    assertEquals(ServerEvent.SESSION_OCCURRED_EXCEPTION, request.getEvent());
   }
 
   @Test

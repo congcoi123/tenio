@@ -221,7 +221,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
         ", dataType=" + dataType +
         ", guarantee=" + guarantee +
         ", encrypted=" + encrypted +
-        ", counting=" + lengthPrefixed +
+        ", lengthPrefixed=" + lengthPrefixed +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
         ", recipients=" + recipients +

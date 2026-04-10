@@ -170,6 +170,13 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     var outboundQueue = session.fetchOutboundQueue();
     if (outboundQueue != null) {
       try {
+        if (isWarnEnabled()) {
+          int remaining = session.getRemainingSlowConsumingOutboundQueue();
+          if (remaining > 0) {
+            warn("[Slow Consuming Outbound Queue] Remaining: ", remaining, " > ", session);
+          }
+        }
+
         // put new item into the queue
         outboundQueue.put(packet);
 
@@ -209,7 +216,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 
   @Override
   public void onStarted() {
-    // do nothing
+    // Do nothing
   }
 
   @Override
@@ -232,5 +239,6 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
 
   @Override
   public void onDestroyed() {
+    // Do nothing
   }
 }

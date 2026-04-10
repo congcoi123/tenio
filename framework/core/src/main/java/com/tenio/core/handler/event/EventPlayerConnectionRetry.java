@@ -24,16 +24,27 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.core.entity.Player;
+import com.tenio.core.network.entity.session.Session;
+import java.util.Optional;
+
 /**
- * Something went wrong on the server.
+ * When a player sends a request to reconnect to the server.
  */
 @FunctionalInterface
-public interface EventServerException {
+public interface EventPlayerConnectionRetry<P extends Player, D extends DataCollection> {
 
   /**
-   * Something went wrong on the server.
+   * When a player tried to reconnect to the server. The situation happens if the player gets in
+   * an IDLE state for long time enough to be disconnected from the server automatically.
    *
-   * @param throwable the {@link Throwable} thrown whenever any exception emerged
+   * @param session a new {@link Session} which the player is using to reconnect to the server
+   * @param message a {@link D} message that the client side tries to send to the server to judge
+   *               if the corresponding player could reconnect
+   * @return an instance of {@link Player} if available
+   * @see EventPlayerConnectionResumed
+   * @since 0.5.0
    */
-  void onServerException(Throwable throwable);
+  Optional<P> onPlayerConnectionRetry(Session session, D message);
 }

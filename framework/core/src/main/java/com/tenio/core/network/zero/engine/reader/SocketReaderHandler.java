@@ -30,6 +30,7 @@ import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.zero.engine.acceptor.AcceptorHandler;
 import com.tenio.core.network.zero.handler.SocketIoHandler;
+import com.tenio.core.utility.ExceptionUtility;
 import com.tenio.core.utility.entity.Triple;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -74,8 +75,7 @@ public final class SocketReaderHandler extends SystemLogger {
   private final SessionManager sessionManager;
   private final NetworkReaderStatistic networkReaderStatistic;
   private final SocketIoHandler socketIoHandler;
-  private final Queue<Triple<SocketChannel, Consumer<SelectionKey>, Runnable>>
-      pendingClientSocketChannels;
+  private final Queue<Triple<SocketChannel, Consumer<SelectionKey>, Runnable>> pendingClientSocketChannels;
 
   /**
    * Constructor.
@@ -149,12 +149,10 @@ public final class SocketReaderHandler extends SystemLogger {
     Triple<SocketChannel, Consumer<SelectionKey>, Runnable> pendingSocketChannel;
     while ((pendingSocketChannel = pendingClientSocketChannels.poll()) != null) {
       try {
-        SelectionKey selectionKey =
-            pendingSocketChannel.first().register(readableSelector, SelectionKey.OP_READ);
+        SelectionKey selectionKey = pendingSocketChannel.first().register(readableSelector, SelectionKey.OP_READ);
         pendingSocketChannel.second().accept(selectionKey);
       } catch (ClosedChannelException exception) {
-        error(exception, "It was unable to register this channel to to selector: ",
-            exception.getMessage());
+        error(exception, "It was unable to register this channel to to selector: ", exception.getMessage());
         pendingSocketChannel.third().run();
       }
     }
@@ -223,7 +221,8 @@ public final class SocketReaderHandler extends SystemLogger {
           return;
         }
       } catch (IOException exception) {
-        if (isErrorEnabled()) {
+        if (isErrorEnabled() && !ExceptionUtility.messageContains(exception,
+                ExceptionUtility.IGNORE_LOGGING_EXCEPTIONS)) {
           error(exception, "An exception was occurred on channel: ", socketChannel.toString());
         }
         socketIoHandler.sessionException(session, exception);

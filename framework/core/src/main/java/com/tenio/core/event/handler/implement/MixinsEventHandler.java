@@ -30,7 +30,6 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
 import com.tenio.core.handler.event.EventFetchedCcuInfo;
-import com.tenio.core.handler.event.EventServerException;
 import com.tenio.core.handler.event.EventServerInitialization;
 import com.tenio.core.handler.event.EventServerTeardown;
 import com.tenio.core.handler.event.EventSystemMonitoring;
@@ -44,9 +43,6 @@ public final class MixinsEventHandler {
 
   @AutowiredAcceptNull
   private EventServerInitialization eventServerInitialization;
-
-  @AutowiredAcceptNull
-  private EventServerException eventServerException;
 
   @AutowiredAcceptNull
   private EventServerTeardown eventServerTeardown;
@@ -69,8 +65,6 @@ public final class MixinsEventHandler {
 
     final var eventServerInitializationOp =
         Optional.ofNullable(eventServerInitialization);
-    final var eventServerExceptionOp =
-        Optional.ofNullable(eventServerException);
     final var eventServerTeardownOp =
         Optional.ofNullable(eventServerTeardown);
 
@@ -86,15 +80,6 @@ public final class MixinsEventHandler {
           var serverName = (String) params[0];
 
           event.onServerInitialization(serverName);
-
-          return null;
-        }));
-
-    eventServerExceptionOp.ifPresent(event -> eventManager.on(ServerEvent.SERVER_EXCEPTION,
-        params -> {
-          var throwable = (Throwable) params[0];
-
-          event.onServerException(throwable);
 
           return null;
         }));
@@ -139,9 +124,9 @@ public final class MixinsEventHandler {
           long totalMemory = (long) params[1];
           long usedMemory = (long) params[2];
           long freeMemory = (long) params[3];
-          int countRunningThreads = (int) params[4];
+          long platformThreads = (long) params[4];
 
-          event.onSystemMonitoring(cpuUsage, totalMemory, usedMemory, freeMemory, countRunningThreads);
+          event.onSystemMonitoring(cpuUsage, totalMemory, usedMemory, freeMemory, platformThreads);
 
           return null;
         }));

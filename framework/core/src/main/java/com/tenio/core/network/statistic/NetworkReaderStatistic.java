@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.network.statistic;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * Tracks and manages network reading statistics for the server.
  * This class provides thread-safe counters for monitoring bytes read,
@@ -43,11 +45,14 @@ package com.tenio.core.network.statistic;
  */
 public final class NetworkReaderStatistic {
 
-  private volatile long readBytes;
-  private volatile long readPackets;
-  private volatile long readDroppedPackets;
+  private final LongAdder readBytes;
+  private final LongAdder readPackets;
+  private final LongAdder readDroppedPackets;
 
   private NetworkReaderStatistic() {
+    readBytes = new LongAdder();
+    readPackets = new LongAdder();
+    readDroppedPackets = new LongAdder();
   }
 
   /**
@@ -65,27 +70,25 @@ public final class NetworkReaderStatistic {
    * @param numberBytes the additional bytes received from client sides ({@code long} value)
    */
   public void updateReadBytes(long numberBytes) {
-    readBytes += numberBytes;
+    readBytes.add(numberBytes);
   }
 
   /**
    * Updates the current number of received packets from clients side.
    *
-   * @param numberPackets the additional packets received from client sides ({@code long}
-   *                      value)
+   * @param numberPackets the additional packets received from client sides ({@code long} value)
    */
   public void updateReadPackets(long numberPackets) {
-    readPackets += numberPackets;
+    readPackets.add(numberPackets);
   }
 
   /**
    * Updates the current number of refused packets from clients side which violated the policies.
    *
-   * @param numberPackets the additional packets refused to handle from clients side
-   *                      ({@code long} value)
+   * @param numberPackets the additional packets refused to handle from clients side ({@code long} value)
    */
   public void updateReadDroppedPackets(long numberPackets) {
-    readDroppedPackets += numberPackets;
+    readDroppedPackets.add(numberPackets);
   }
 
   /**
@@ -94,7 +97,7 @@ public final class NetworkReaderStatistic {
    * @return the current number of received bytes data ({@code long} value)
    */
   public long getReadBytes() {
-    return readBytes;
+    return readBytes.sum();
   }
 
   /**
@@ -103,7 +106,7 @@ public final class NetworkReaderStatistic {
    * @return the current number of received packets ({@code long} value)
    */
   public long getReadPackets() {
-    return readPackets;
+    return readPackets.sum();
   }
 
   /**
@@ -112,15 +115,15 @@ public final class NetworkReaderStatistic {
    * @return the current number of dropped packets ({@code long} value)
    */
   public long getReadDroppedPackets() {
-    return readDroppedPackets;
+    return readDroppedPackets.sum();
   }
 
   @Override
   public String toString() {
     return "NetworkReaderStatistic{" +
-        "readBytes=" + readBytes +
-        ", readPackets=" + readPackets +
-        ", readDroppedPackets=" + readDroppedPackets +
+        "readBytes=" + getReadBytes() +
+        ", readPackets=" + getReadPackets() +
+        ", readDroppedPackets=" + getReadDroppedPackets() +
         '}';
   }
 }

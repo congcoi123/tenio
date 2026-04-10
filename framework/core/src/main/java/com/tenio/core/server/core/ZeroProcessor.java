@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.server.core;
 
-import com.tenio.core.controller.Controller;
+import com.tenio.core.processor.Processor;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.inbound.policy.RequestPolicy;
@@ -35,7 +35,7 @@ import com.tenio.core.network.statistic.NetworkWriterStatistic;
 /**
  * The internal processor service, the heart of the server.
  */
-public interface ZeroProcessor extends Controller {
+public interface ZeroProcessor extends Processor {
 
   /**
    * Subscribes all events on the server.

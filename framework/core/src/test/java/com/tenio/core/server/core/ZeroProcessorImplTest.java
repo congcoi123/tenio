@@ -50,7 +50,6 @@ import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -58,10 +57,12 @@ import java.nio.channels.DatagramChannel;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@DisplayName("Unit Test Cases For ZeroProcessorImpl")
 @RunWith(MockitoJUnitRunner.class)
 public class ZeroProcessorImplTest {
 
@@ -94,8 +95,7 @@ public class ZeroProcessorImplTest {
 
   @Before
   public void setUp() {
-    processor =
-        ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
+    processor = ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
     processor.setSessionManager(sessionManager);
     processor.setPlayerManager(playerManager);
     processor.setMaxNumberPlayers(MAX_PLAYERS);
@@ -103,7 +103,7 @@ public class ZeroProcessorImplTest {
     processor.setNetworkReaderStatistic(networkReaderStatistic);
     processor.setNetworkWriterStatistic(networkWriterStatistic);
     processor.initialize();
-    processor.subscribe();
+    processor.subscribe(true, true);
 
     // Set up common session behavior
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
@@ -117,13 +117,20 @@ public class ZeroProcessorImplTest {
         .thenReturn(true);
   }
 
-  private void processSessionWillBeClosed(Session session)
-      throws Exception {
+  private void processSessionWillBeClosed(Session session) throws Exception {
     Method method =
         ZeroProcessorImpl.class.getDeclaredMethod("processSessionWillBeClosed",
             Session.class, PlayerDisconnectMode.class);
     method.setAccessible(true);
     method.invoke(processor, session, PlayerDisconnectMode.CLIENT_REQUEST);
+  }
+
+  private void processSessionReadMessage(Session session, DataCollection message) throws Exception {
+    Method method =
+            ZeroProcessorImpl.class.getDeclaredMethod("processSessionReadMessage",
+                    Session.class, DataCollection.class);
+    method.setAccessible(true);
+    method.invoke(processor, session, message);
   }
 
   // Connection Handling Tests
@@ -136,9 +143,9 @@ public class ZeroProcessorImplTest {
         .thenReturn(true);
 
     Request request = SessionRequest.newInstance()
-        .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
-        .setSender(session)
-        .setMessage(message);
+            .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
+            .setSender(session)
+            .setMessage(message);
 
     processor.processRequest(request);
 
@@ -147,7 +154,7 @@ public class ZeroProcessorImplTest {
   }
 
   @Test
-  public void shouldRejectConnectionWhenReachedMax() throws IOException {
+  public void shouldRejectConnectionWhenReachedMax() throws Exception {
     when(playerManager.getPlayerCount()).thenReturn(MAX_PLAYERS);
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
@@ -155,9 +162,9 @@ public class ZeroProcessorImplTest {
         .thenReturn(true);
 
     Request request = SessionRequest.newInstance()
-        .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
-        .setSender(session)
-        .setMessage(message);
+            .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
+            .setSender(session)
+            .setMessage(message);
 
     processor.processRequest(request);
 
@@ -172,7 +179,7 @@ public class ZeroProcessorImplTest {
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING))
         .thenReturn(true);
-    when(eventManager.emit(eq(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING), eq(session),
+    when(eventManager.emit(eq(ServerEvent.PLAYER_CONNECTION_RETRY), eq(session),
         eq(message)))
         .thenReturn(Optional.of(player));
     when(player.getSession()).thenReturn(Optional.of(session));
@@ -180,14 +187,14 @@ public class ZeroProcessorImplTest {
     when(player.isInRoom()).thenReturn(false);
 
     Request request = SessionRequest.newInstance()
-        .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
-        .setSender(session)
-        .setMessage(message);
+            .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
+            .setSender(session)
+            .setMessage(message);
 
     processor.processRequest(request);
 
     verify(player).setSession(session);
-    verify(eventManager).emit(eq(ServerEvent.PLAYER_RECONNECTED), eq(player), eq(session));
+    verify(eventManager).emit(eq(ServerEvent.PLAYER_CONNECTION_RESUMED), eq(player), eq(session));
   }
 
   // Session Management Tests
@@ -212,16 +219,15 @@ public class ZeroProcessorImplTest {
   }
 
   @Test
-  public void shouldProcessSessionReadMessage() {
+  public void shouldProcessSessionReadMessage() throws Exception {
     when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
-    Request request = SessionRequest.newInstance()
-        .setEvent(ServerEvent.SESSION_READ_MESSAGE)
-        .setSender(session)
-        .setMessage(message);
-    reset(eventManager); // Clear previous interactions
-    processor.processRequest(request);
+
+    processSessionReadMessage(session, message);
+
+    verify(session).setLastReadTime(any(Long.class));
+    verify(session).increaseReadMessages();
     verify(eventManager, atLeastOnce()).emit(eq(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER),
         eq(player), eq(message));
   }
@@ -237,10 +243,10 @@ public class ZeroProcessorImplTest {
     when(datagramChannelManager.getCurrentUdpConveyId()).thenReturn(1);
 
     Request request = DatagramRequest.newInstance()
-        .setEvent(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME)
-        .setSender(datagramChannel)
-        .setRemoteAddress(REMOTE_ADDRESS)
-        .setMessage(message);
+            .setEvent(ServerEvent.DATAGRAM_CHANNEL_REQUEST_ACCESS)
+            .setSender(datagramChannel)
+            .setRemoteAddress(REMOTE_ADDRESS)
+            .setMessage(message);
 
     processor.processRequest(request);
 
@@ -256,10 +262,10 @@ public class ZeroProcessorImplTest {
         .thenReturn(Optional.empty());
 
     Request request = DatagramRequest.newInstance()
-        .setEvent(ServerEvent.DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME)
-        .setSender(datagramChannel)
-        .setRemoteAddress(REMOTE_ADDRESS)
-        .setMessage(message);
+            .setEvent(ServerEvent.DATAGRAM_CHANNEL_REQUEST_ACCESS)
+            .setSender(datagramChannel)
+            .setRemoteAddress(REMOTE_ADDRESS)
+            .setMessage(message);
 
     processor.processRequest(request);
 
@@ -280,9 +286,9 @@ public class ZeroProcessorImplTest {
         .thenReturn(true);
 
     Request request = SessionRequest.newInstance()
-        .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
-        .setSender(session)
-        .setMessage(message);
+            .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
+            .setSender(session)
+            .setMessage(message);
 
     processor.processRequest(request);
 
@@ -300,4 +306,4 @@ public class ZeroProcessorImplTest {
     processSessionWillBeClosed(session);
     verify(playerManager, never()).removePlayerByIdentity(any());
   }
-} 
+}

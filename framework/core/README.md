@@ -54,15 +54,14 @@ EventPlayerAfterLeftRoom
 EventPlayerBeforeLeaveRoom
 EventPlayerJoinedRoomResult
 EventPlayerLogin
-EventPlayerReconnected
-EventPlayerReconnectRequestHandle
+EventPlayerConnectionResumed
+EventPlayerConnectionRetry
 EventPlayerSubscribedChannel
 EventPlayerUnsubscribedChannel
 EventReceivedMessageFromPlayer
 EventRoomCreatedResult
 EventRoomWillBeRemoved
 EventSendMessageToPlayer
-EventServerException
 EventServerInitialization
 EventServerTeardown
 EventSocketConnectionRefused
@@ -88,7 +87,7 @@ datagram-packet-policy: DatagramPacketPolicy
 ```
 
 ## Requirements
-- Java 17
+- Java 21+
 
 ## Dependencies
 - HTTP [Jetty](https://eclipse.dev/jetty)
