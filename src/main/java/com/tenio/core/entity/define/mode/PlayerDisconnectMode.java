@@ -51,9 +51,11 @@ public enum PlayerDisconnectMode {
    */
   BAN,
   /**
-   * Disconnected by other reasons.
+   * Disconnected due to exceptions occurred.
+   *
+   * @since 0.7.0
    */
-  UNKNOWN,
+  EXCEPTION,
   /**
    * Actually, the player will not get disconnected, it only changes its session
    *

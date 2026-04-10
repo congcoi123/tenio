@@ -152,7 +152,7 @@ public final class ServerImpl extends SystemLogger implements Server {
     serverName = configuration.getString(CoreConfigurationType.SERVER_NAME);
 
     if (isInfoEnabled()) {
-      info("SERVER", serverName, "Starting ...");
+      info(serverName, "STATE", "STARTING");
     }
 
     // subscribing for processes and handlers
@@ -177,24 +177,23 @@ public final class ServerImpl extends SystemLogger implements Server {
     initializeServices();
     startServices();
 
+    // now it can be able to accept connections
+    network.activate();
+    zeroProcessor.activate();
+
     // it should wait for a while to let everything settles down
     int servicesTakeTime = Math.max(Math.max(network.getMaximumStartingTimeInMilliseconds(),
-        zeroProcessor.getMaximumStartingTimeInMilliseconds()),
-        scheduler.getMaximumStartingTimeInMilliseconds());
-    int totalWaitingTime =
-        servicesTakeTime + CoreConstant.DELAY_BEFORE_SERVER_IS_READY_IN_MILLISECONDS;
+                    zeroProcessor.getMaximumStartingTimeInMilliseconds()),
+            scheduler.getMaximumStartingTimeInMilliseconds());
+    int totalWaitingTime = servicesTakeTime + CoreConstant.DELAY_BEFORE_SERVER_IS_READY_IN_MILLISECONDS;
     Thread.sleep(totalWaitingTime);
 
     if (isInfoEnabled()) {
-      info("SERVER", serverName, buildgen("Started after ", totalWaitingTime, " milliseconds"));
+      info(serverName, "STATE", "RUNNING");
     }
 
     // emit "server initialization" event
     eventManager.emit(ServerEvent.SERVER_INITIALIZATION, serverName);
-
-    // now it can be able to accept connections
-    network.activate();
-    zeroProcessor.activate();
 
     if (configuration.getBoolean(CoreConfigurationType.ENABLE_TERMINAL_COMMAND)) {
       startConsole(bootstrapHandler.getSystemCommandManager());
@@ -264,10 +263,8 @@ public final class ServerImpl extends SystemLogger implements Server {
     var servletMap = bootstrapHandler.getServletMap();
     var httpConfiguration = configuration.get(CoreConfigurationType.NETWORK_HTTP);
     network.setHttpConfiguration(
-        httpConfiguration != null ?
-            configuration.getInt(CoreConfigurationType.WORKER_HTTP_WORKER) : 0,
-        httpConfiguration != null ?
-            ((SocketConfiguration) httpConfiguration).port() : 0,
+        CoreConstant.DEFAULT_NUMBER_HTTP_WORKERS,
+        httpConfiguration != null ? ((SocketConfiguration) httpConfiguration).port() : 0,
         httpConfiguration != null ? servletMap : null);
 
     var serverAddress = configuration.getString(CoreConfigurationType.SERVER_ADDRESS);
@@ -276,8 +273,7 @@ public final class ServerImpl extends SystemLogger implements Server {
 
     network.setSocketAcceptorBufferSize(
         configuration.getInt(CoreConfigurationType.NETWORK_PROP_SOCKET_ACCEPTOR_BUFFER_SIZE));
-    network.setSocketAcceptorWorkers(
-        configuration.getInt(CoreConfigurationType.WORKER_SOCKET_ACCEPTOR));
+    network.setSocketAcceptorWorkers(CoreConstant.DEFAULT_ENGINE_THREAD_POOL_SIZE);
 
     var tcpSocketConfiguration = configuration.get(CoreConfigurationType.NETWORK_TCP) != null ?
             (SocketConfiguration) configuration.get(CoreConfigurationType.NETWORK_TCP) : null;
@@ -320,9 +316,15 @@ public final class ServerImpl extends SystemLogger implements Server {
     if (outboundQueuePolicy == null) {
       outboundQueuePolicy = new DefaultOutboundQueuePolicy();
     }
-    network.setOutboundQueuePolicy(outboundQueuePolicy);
-    network.setOutboundQueueSize(
-        configuration.getInt(CoreConfigurationType.PROP_MAX_RESPONSE_QUEUE_SIZE_PER_SESSION));
+    network.setSessionOutboundQueuePolicy(outboundQueuePolicy);
+    network.setSessionInboundQueueSize(
+            configuration.getInt(CoreConfigurationType.PROP_MAX_SESSION_REQUEST_QUEUE_SIZE));
+    network.setSessionOutboundQueueSize(
+        configuration.getInt(CoreConfigurationType.PROP_MAX_SESSION_RESPONSE_QUEUE_SIZE));
+    network.setSessionSlowConsumingInboundQueueWarningThreshold(
+        configuration.getInt(CoreConfigurationType.PROP_SLOW_CONSUMING_WARNING_SESSION_REQUEST_THRESHOLD));
+    network.setSessionSlowConsumingOutboundQueueWarningThreshold(
+        configuration.getInt(CoreConfigurationType.PROP_SLOW_CONSUMING_WARNING_SESSION_RESPONSE_THRESHOLD));
 
     DatagramPacketPolicy datagramPacketPolicy =
         bootstrapHandler.getBeanByClazz(DatagramPacketPolicy.class);
@@ -362,9 +364,8 @@ public final class ServerImpl extends SystemLogger implements Server {
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
     zeroProcessor.setSessionManager(network.getSessionManager());
     zeroProcessor.setPlayerManager(playerManager);
-    zeroProcessor.setMaxRequestQueueSize(configuration.getInt(CoreConfigurationType.PROP_MAX_REQUEST_QUEUE_SIZE));
-    zeroProcessor
-        .setThreadPoolSize(configuration.getInt(CoreConfigurationType.WORKER_INTERNAL_PROCESSOR));
+    // Since v0.7.0, set fixed value for the thread pool size
+    zeroProcessor.setThreadPoolSize(CoreConstant.DEFAULT_PROCESSOR_THREAD_POOL_SIZE);
     zeroProcessor.setKeepPlayerOnDisconnection(
         configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION));
 
@@ -419,13 +420,13 @@ public final class ServerImpl extends SystemLogger implements Server {
   @Override
   public void shutdown() {
     if (isInfoEnabled()) {
-      info("SERVER", serverName, "Stopping ...");
+      info(serverName, "STATE", "STOPPING");
     }
     // emit "server shutdown" event
     eventManager.emit(ServerEvent.SERVER_TEARDOWN, serverName);
     shutdownServices();
     if (isInfoEnabled()) {
-      info("SERVER", serverName, "Stopped");
+      info(serverName, "STATE", "STOPPED");
     }
     // real stop
     Runtime.getRuntime().halt(0);

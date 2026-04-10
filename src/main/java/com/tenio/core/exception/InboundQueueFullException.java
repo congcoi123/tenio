@@ -22,27 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.handler.event;
+package com.tenio.core.exception;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
-import com.tenio.core.entity.Player;
+import com.tenio.core.processor.AbstractProcessor;
 import com.tenio.core.network.entity.session.Session;
 
+import java.io.Serial;
+
 /**
- * Returns the result when a player tried to reconnect to the server.
+ * When the {@link Session} inbound queue is full.
  */
-@FunctionalInterface
-public interface EventPlayerReconnected<P extends Player> {
+public final class InboundQueueFullException extends RuntimeException {
+
+  @Serial
+  private static final long serialVersionUID = 6981972099759381035L;
 
   /**
-   * When a player tried to reconnect to the server. The situation happens if the player gets in
-   * an IDLE state for long time enough to be disconnected from the server automatically.
+   * Creates a new exception.
    *
-   * @param player  the reconnecting {@link Player}
-   * @param session a new {@link Session} which the player is using to reconnect to the server
-   * @see CoreConfigurationType#PROP_KEEP_PLAYER_ON_DISCONNECTION
-   * @see CoreConfigurationType#PROP_MAX_PLAYER_IDLE_TIME
-   * @see EventPlayerReconnectRequestHandling
+   * @param currentSize the current size of the queue ({@code integer} value)
+   * @see AbstractProcessor
    */
-  void onPlayerReconnected(P player, Session session);
+  public InboundQueueFullException(int currentSize) {
+    super(String.format("Reached max queue size, the request was dropped. The current size: %d", currentSize));
+  }
 }

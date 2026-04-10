@@ -30,7 +30,6 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,7 +71,7 @@ class AutoCleanOrphanSessionTaskTest {
     Mockito.when(orphanSession.isOrphan()).thenReturn(true);
     Mockito.when(sessionManager.getReadonlySessionsList()).thenReturn(List.of(orphanSession));
     Mockito.when(sessionManager.getSessionCount()).thenReturn(1);
-    ScheduledFuture<?> future = task.run();
-    assertNotNull(future);
+    task.run();
+    assertNotNull(task.getScheduler());
   }
 }

@@ -26,13 +26,11 @@ package com.tenio.core.network.netty.websocket;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
@@ -44,6 +42,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 @DisplayName("Unit Test Cases For NettyWsHandler")
 class NettyWsHandlerTest {
@@ -102,8 +102,8 @@ class NettyWsHandlerTest {
   }
 
   @Test
-  @DisplayName("exceptionCaught with session found emits SESSION_OCCURRED_EXCEPTION")
-  void testExceptionCaughtWithSessionEmitsEvent() {
+  @DisplayName("exceptionCaught with session found closes session")
+  void testExceptionCaughtWithSessionClosesSession() throws IOException {
     ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
     Channel channel = mock(Channel.class);
     Session session = mock(Session.class);
@@ -113,21 +113,6 @@ class NettyWsHandlerTest {
 
     handler.exceptionCaught(ctx, cause);
 
-    verify(eventManager).emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, cause);
-  }
-
-  @Test
-  @DisplayName("exceptionCaught with no session emits no event")
-  void testExceptionCaughtWithNoSessionEmitsNoEvent() {
-    ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
-    Channel channel = mock(Channel.class);
-    Throwable cause = new RuntimeException("ws error");
-    when(ctx.channel()).thenReturn(channel);
-    when(sessionManager.getSessionByWebSocket(channel)).thenReturn(null);
-    when(channel.toString()).thenReturn("mock-channel");
-
-    handler.exceptionCaught(ctx, cause);
-
-    verify(eventManager, never()).emit(eq(ServerEvent.SESSION_OCCURRED_EXCEPTION), any(), any());
+    verify(session).close();
   }
 }

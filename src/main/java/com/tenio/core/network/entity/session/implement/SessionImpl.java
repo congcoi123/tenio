@@ -24,10 +24,13 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.session.implement;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.network.codec.packet.PacketReadState;
 import com.tenio.core.network.codec.packet.PendingPacket;
 import com.tenio.core.network.codec.packet.ProcessedPacket;
@@ -44,6 +47,8 @@ import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -51,7 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @see Session
  */
-public class SessionImpl implements Session {
+public class SessionImpl extends AbstractLogger implements Session {
 
   private final long id;
   private final long createdTime;
@@ -67,6 +72,12 @@ public class SessionImpl implements Session {
   private Channel webSocketChannel;
   private ConnectionFilter connectionFilter;
 
+  private final Thread inboundProcess;
+  private final BlockingQueue<DataCollection> inboundQueue;
+
+  private int maxInboundQueueSize;
+  private int slowConsumingInboundQueueWarningThreshold;
+  private int slowConsumingOutboundQueueWarningThreshold;
   private OutboundQueue outboundQueue;
   private ProcessedPacket processedPacket;
   private volatile PendingPacket pendingPacket;
@@ -98,6 +109,9 @@ public class SessionImpl implements Session {
     createdTime = currentTime;
     setLastReadTime(currentTime);
     setLastWriteTime(currentTime);
+
+    inboundQueue = new LinkedBlockingQueue<>();
+    inboundProcess = Thread.ofVirtual().name("session-" + id).unstarted(this::processInboundQueue);
   }
 
   /**
@@ -157,6 +171,40 @@ public class SessionImpl implements Session {
   }
 
   @Override
+  public void enqueueInbound(DataCollection message) {
+    int remaining = inboundQueue.size();
+    if (isWarnEnabled()) {
+      if (slowConsumingInboundQueueWarningThreshold > 0
+              && remaining > slowConsumingInboundQueueWarningThreshold) {
+        warn("[Slow Consuming Inbound Queue] Remaining: ", remaining, " > ", this);
+      }
+    }
+    if (maxInboundQueueSize > 0 && remaining >= maxInboundQueueSize) {
+      var exception = new InboundQueueFullException(remaining);
+      if (isErrorEnabled()) {
+        error(exception, exception.getMessage());
+      }
+      throw exception;
+    }
+    inboundQueue.add(message);
+  }
+
+  @Override
+  public void configureMaxInboundQueueSize(int queueSize) {
+    maxInboundQueueSize = queueSize;
+  }
+
+  @Override
+  public void configureSlowConsumingInboundQueueWarningThreshold(int threshold) {
+    slowConsumingInboundQueueWarningThreshold = threshold;
+  }
+
+  @Override
+  public void configureSlowConsumingOutboundQueueWarningThreshold(int threshold) {
+    slowConsumingOutboundQueueWarningThreshold = threshold;
+  }
+
+  @Override
   public OutboundQueue fetchOutboundQueue() {
     return outboundQueue;
   }
@@ -164,6 +212,15 @@ public class SessionImpl implements Session {
   @Override
   public void configureOutboundQueue(OutboundQueue outboundQueue) {
     this.outboundQueue = outboundQueue;
+  }
+
+  @Override
+  public int getRemainingSlowConsumingOutboundQueue() {
+    if (slowConsumingOutboundQueueWarningThreshold <= 0) {
+      return 0;
+    }
+    int remaining = outboundQueue.getSize();
+    return remaining >= slowConsumingOutboundQueueWarningThreshold ? remaining : 0;
   }
 
   @Override
@@ -402,6 +459,7 @@ public class SessionImpl implements Session {
   @Override
   public synchronized void activate() {
     activated = true;
+    inboundProcess.start();
   }
 
   @Override
@@ -433,6 +491,11 @@ public class SessionImpl implements Session {
 
     connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
 
+    // clear inbound queue
+    inboundProcess.interrupt();
+    inboundQueue.clear();
+
+    // clear outbound queue
     if (outboundQueue != null) {
       outboundQueue.clear();
     }
@@ -468,6 +531,25 @@ public class SessionImpl implements Session {
     packetReadState = PacketReadState.WAIT_NEW_PACKET;
     processedPacket = ProcessedPacket.newInstance();
     pendingPacket = PendingPacket.newInstance();
+  }
+
+  private void processInboundQueue() {
+    while (!Thread.currentThread().isInterrupted()) {
+      if (activated) {
+        try {
+          DataCollection message = inboundQueue.take();
+          sessionManager.emitEvent(ServerEvent.SESSION_READ_MESSAGE, this, message);
+        } catch (InterruptedException exception) {
+          // InterruptedException is not an error
+          // It’s a signal to stop the thread
+          Thread.currentThread().interrupt();
+        } catch (Throwable cause) {
+          if (isErrorEnabled()) {
+            error(cause);
+          }
+        }
+      }
+    }
   }
 
   private long now() {
@@ -514,6 +596,8 @@ public class SessionImpl implements Session {
         ", activated=" + activated +
         ", hasUdp=" + hasUdp +
         ", associatedState=" + associatedState +
+        ", remainingInboundQueue=" + inboundQueue.size() +
+        ", remainingOutboundQueue=" + outboundQueue.getSize() +
         '}';
   }
 }

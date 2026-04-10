@@ -24,5 +24,48 @@ THE SOFTWARE.
 
 package com.tenio.core.configuration.define;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
+@DisplayName("Unit Test Cases For ServerEvent")
 class ServerEventTest {
+
+  @Test
+  @DisplayName("All expected enum constants are present")
+  void testExpectedConstantsExist() {
+    assertNotNull(ServerEvent.valueOf("SERVER_INITIALIZATION"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_LOGIN"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_CONNECTION_RETRY"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_CONNECTION_RESUMED"));
+    assertNotNull(ServerEvent.valueOf("ROOM_CREATED_RESULT"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_JOINED_ROOM_RESULT"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_BEFORE_LEAVE_ROOM"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_AFTER_LEFT_ROOM"));
+    assertNotNull(ServerEvent.valueOf("DISCONNECT_PLAYER"));
+    assertNotNull(ServerEvent.valueOf("SERVER_TEARDOWN"));
+    assertNotNull(ServerEvent.valueOf("CHANNEL_CREATED"));
+    assertNotNull(ServerEvent.valueOf("CHANNEL_WILL_BE_REMOVED"));
+    assertNotNull(ServerEvent.valueOf("BROADCAST_TO_CHANNEL"));
+    assertNotNull(ServerEvent.valueOf("FETCHED_CCU_INFO"));
+    assertNotNull(ServerEvent.valueOf("FETCHED_BANDWIDTH_INFO"));
+    assertNotNull(ServerEvent.valueOf("SYSTEM_MONITORING"));
+  }
+
+  @Test
+  @DisplayName("Total number of ServerEvent values is 33")
+  void testTotalCount() {
+    assertEquals(33, ServerEvent.values().length);
+  }
+
+  @ParameterizedTest
+  @EnumSource(ServerEvent.class)
+  @DisplayName("toString() returns the enum name for every constant")
+  void testToStringEqualsName(ServerEvent event) {
+    assertEquals(event.name(), event.toString());
+  }
 }

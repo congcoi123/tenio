@@ -98,6 +98,9 @@ public final class OutboundQueueImpl implements OutboundQueue {
 
   @Override
   public void configureMaxSize(int maxSize) {
+    if (maxSize <= 0) {
+      maxSize = Integer.MAX_VALUE;
+    }
     this.maxSize = maxSize;
   }
 

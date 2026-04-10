@@ -24,5 +24,45 @@ THE SOFTWARE.
 
 package com.tenio.core.network;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.tenio.core.event.implement.EventManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Unit Test Cases For Network")
 class NetworkTest {
+
+  private Network network;
+
+  @BeforeEach
+  void setUp() {
+    network = NetworkImpl.newInstance(EventManager.newInstance());
+  }
+
+  @Test
+  @DisplayName("newInstance returns a Network implementation")
+  void testNewInstanceIsNetwork() {
+    assertInstanceOf(Network.class, network);
+  }
+
+  @Test
+  @DisplayName("getNetworkReaderStatistic returns non-null")
+  void testGetNetworkReaderStatistic() {
+    assertNotNull(network.getNetworkReaderStatistic());
+  }
+
+  @Test
+  @DisplayName("getNetworkWriterStatistic returns non-null")
+  void testGetNetworkWriterStatistic() {
+    assertNotNull(network.getNetworkWriterStatistic());
+  }
+
+  @Test
+  @DisplayName("getSessionManager returns non-null")
+  void testGetSessionManager() {
+    assertNotNull(network.getSessionManager());
+  }
 }

@@ -33,7 +33,9 @@ import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.scheduler.task.AbstractSystemTask;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +47,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class AutoCleanOrphanSessionTask extends AbstractSystemTask {
 
+  private ScheduledExecutorService scheduledService;
+  private ExecutorService executorService;
+  private ScheduledFuture<?> scheduler;
   private SessionManager sessionManager;
 
   private AutoCleanOrphanSessionTask(EventManager eventManager) {
@@ -62,30 +67,28 @@ public final class AutoCleanOrphanSessionTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-session-task")
-            .build();
-    var threadFactoryWorker =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-clean-orphan-worker")
-            .build();
-    var executors = Executors.newCachedThreadPool(threadFactoryWorker);
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+  public void run() {
+    executorService = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+            .name("worker-auto-clean-orphan-session-", 0)
+            .factory());
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-auto-clean-orphan-session").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
             debug("AUTO CLEAN ORPHAN SESSION",
                 "Checking orphan sessions in ", sessionManager.getSessionCount(), " entities");
           }
-          executors.execute(() -> {
+          executorService.execute(() -> {
             Iterator<Session> iterator = sessionManager.getReadonlySessionsList().listIterator();
             while (iterator.hasNext()) {
               Session session = iterator.next();
-              if (session.isActivated() && session.isOrphan()) {
+              // Since v0.7.0, it doesn't need to check whether the session is activated
+              if (session.isOrphan()) {
                 try {
                   if (isDebugEnabled()) {
                     debug("AUTO CLEAN ORPHAN SESSION",
-                        "Session ", session.getId(),
-                        " is going to be forced to remove by the cleaning task");
+                        "Session ", session.getId(), " is going to be forced to remove by the cleaning task");
                   }
                   session.close(ConnectionDisconnectMode.ORPHAN, PlayerDisconnectMode.CONNECTION_LOST);
                 } catch (IOException exception) {
@@ -106,5 +109,36 @@ public final class AutoCleanOrphanSessionTask extends AbstractSystemTask {
    */
   public void setSessionManager(SessionManager sessionManager) {
     this.sessionManager = sessionManager;
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+    if (executorService != null) {
+      executorService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+      if (executorService != null) {
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+      if (executorService != null) {
+        executorService.shutdownNow();
+      }
+    }
   }
 }

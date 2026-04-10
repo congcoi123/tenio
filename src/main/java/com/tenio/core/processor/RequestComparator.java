@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.controller;
+package com.tenio.core.processor;
 
 import com.tenio.core.network.entity.inbound.Request;
 import java.util.Comparator;
@@ -44,7 +44,7 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine.InitializationExc
  * <p>Thread safety: This class is thread-safe as it is stateless and
  * implements a pure comparison function.
  *
- * @see AbstractController
+ * @see AbstractProcessor
  * @see Request
  * @see Comparator
  */

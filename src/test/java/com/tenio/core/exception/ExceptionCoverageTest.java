@@ -25,12 +25,15 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
 import com.tenio.core.command.client.AbstractClientCommandHandler;
+import com.tenio.core.command.system.implement.HelpCommand;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
@@ -169,9 +172,9 @@ class ExceptionCoverageTest {
   }
 
   @Test
-  @DisplayName("Test RequestQueueFullException")
-  void testRequestQueueFullException() {
-    RequestQueueFullException ex = new RequestQueueFullException(10);
+  @DisplayName("Test InboundQueueFullException")
+  void testInboundQueueFullException() {
+    InboundQueueFullException ex = new InboundQueueFullException(10);
     assertTrue(ex.getMessage()
         .contains("Reached max queue size, the request was dropped. The current size: 10"));
   }
@@ -221,5 +224,53 @@ class ExceptionCoverageTest {
     InvalidRestMappingClassException ex = new InvalidRestMappingClassException();
     assertTrue(ex.getMessage().contains(
         "Invalid RestMapping class, it should return an instance of jakarta.servlet.http.HttpServlet."));
+  }
+
+  @Test
+  @DisplayName("Test AddedDuplicatedCommandException")
+  void testAddedDuplicatedCommandException() {
+    AddedDuplicatedCommandException ex =
+        new AddedDuplicatedCommandException("help", new HelpCommand());
+    assertTrue(ex.getMessage().contains("Unable to add label {help}, it already exists"));
+  }
+
+  @Test
+  @DisplayName("Test EmptyDatagramChannelsException")
+  void testEmptyDatagramChannelsException() {
+    EmptyDatagramChannelsException ex = new EmptyDatagramChannelsException();
+    assertInstanceOf(RuntimeException.class, ex);
+    assertTrue(ex.getMessage().contains("The list is empty"));
+  }
+
+  @Test
+  @DisplayName("Test IllegalReturnTypeException")
+  void testIllegalReturnTypeException() {
+    IllegalReturnTypeException ex = new IllegalReturnTypeException();
+    assertInstanceOf(RuntimeException.class, ex);
+    assertNull(ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("Test MultipleImplementedClassForInterfaceException")
+  void testMultipleImplementedClassForInterfaceException() {
+    MultipleImplementedClassForInterfaceException ex =
+        new MultipleImplementedClassForInterfaceException(Runnable.class);
+    assertTrue(ex.getMessage()
+        .contains("Multiple implementations for the class: java.lang.Runnable found"));
+  }
+
+  @Test
+  @DisplayName("Test RemovedNonExistentPlayerException")
+  void testRemovedNonExistentPlayerException() {
+    RemovedNonExistentPlayerException ex = new RemovedNonExistentPlayerException("player1");
+    assertTrue(ex.getMessage()
+        .contains("Unable to remove player: player1, the player did not exist"));
+  }
+
+  @Test
+  @DisplayName("Test UnsupportedDataTypeInUseException")
+  void testUnsupportedDataTypeInUseException() {
+    UnsupportedDataTypeInUseException ex = new UnsupportedDataTypeInUseException(DataType.ZERO);
+    assertTrue(ex.getMessage().contains("ZERO"));
   }
 }

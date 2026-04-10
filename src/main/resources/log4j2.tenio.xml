@@ -6,8 +6,8 @@
 		<!-- <Property name="logdir">/Users/kong/Downloads/logs</Property> -->
 		<!-- Or use the relative path -->
 		<Property name="logdir">./logs</Property>
-		<Property name="logfile">simple</Property>
-		<Property name="logfile-error">simple-error</Property>
+		<Property name="logfile">game-server</Property>
+		<Property name="logfile-error">game-server-error</Property>
 		<Property name="layout">%d [%t] %-5level %logger{36} - %m%n</Property>
 		<!-- Logging level: trace -included-> debug -included-> info -included-> error -->
 		<Property name="level">debug</Property>
@@ -71,7 +71,7 @@
 		<!-- Application root logger -->
 		<Root level="${level}">
 			<AppenderRef ref="Console"/> <!-- remove this in production if needed -->
-			<AppenderRef ref="AsyncFile"/>
+			<!-- <AppenderRef ref="AsyncFile"/> --> <!-- remove this in development environment if needed -->
 		</Root>
 
 	</Loggers>

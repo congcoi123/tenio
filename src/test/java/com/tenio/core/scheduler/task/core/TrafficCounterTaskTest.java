@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
-import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,8 +75,8 @@ class TrafficCounterTaskTest {
   @Test
   @DisplayName("When the task runs, bandwidth info events should be emitted")
   void testRunSchedulesTaskAndEmitsBandwidthInfoEvent() {
-    ScheduledFuture<?> future = task.run();
-    assertNotNull(future);
+    task.run();
+    assertNotNull(task.getScheduler());
     // The actual event emission is handled by the scheduled lambda, which can be verified in integration tests
   }
 }

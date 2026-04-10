@@ -32,8 +32,8 @@ import com.tenio.core.exception.ConfigurationException;
 import com.tenio.core.exception.NotDefinedSubscribersException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
-import com.tenio.core.handler.event.EventPlayerReconnectRequestHandling;
-import com.tenio.core.handler.event.EventPlayerReconnected;
+import com.tenio.core.handler.event.EventPlayerConnectionRetry;
+import com.tenio.core.handler.event.EventPlayerConnectionResumed;
 
 /**
  * Performs validation and assessment of server configuration settings.
@@ -107,10 +107,10 @@ public final class ConfigurationAssessment {
    */
   private void checkSubscriberReconnection() throws NotDefinedSubscribersException {
     if (configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION)) {
-      if (!eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECT_REQUEST_HANDLING)
-          || !eventManager.hasSubscriber(ServerEvent.PLAYER_RECONNECTED)) {
-        throw new NotDefinedSubscribersException(EventPlayerReconnectRequestHandling.class,
-            EventPlayerReconnected.class);
+      if (!eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RETRY)
+          || !eventManager.hasSubscriber(ServerEvent.PLAYER_CONNECTION_RESUMED)) {
+        throw new NotDefinedSubscribersException(EventPlayerConnectionRetry.class,
+            EventPlayerConnectionResumed.class);
       }
     }
   }

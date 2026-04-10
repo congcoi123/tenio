@@ -24,9 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.session;
 
+import com.tenio.common.data.DataCollection;
+import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.network.codec.packet.PacketReadState;
 import com.tenio.core.network.codec.packet.PendingPacket;
 import com.tenio.core.network.codec.packet.ProcessedPacket;
@@ -144,6 +147,39 @@ public interface Session {
   boolean isOrphan();
 
   /**
+   * Enqueue a new message into the internal inbound queue.
+   *
+   * @param message an instance of {@link DataCollection}
+   * @throws InboundQueueFullException when the inbound queue is full
+   * @since 0.7.0
+   */
+  void enqueueInbound(DataCollection message) throws InboundQueueFullException;
+
+  /**
+   * Sets the inbound queue size.
+   *
+   * @param queueSize the {@code integer} value of new size for the inbound queue
+   * @since 0.7.0
+   */
+  void configureMaxInboundQueueSize(int queueSize);
+
+  /**
+   * Sets the threshold for warning of slow consuming inbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void configureSlowConsumingInboundQueueWarningThreshold(int threshold);
+
+  /**
+   * Sets the threshold for warning of slow consuming outbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void configureSlowConsumingOutboundQueueWarningThreshold(int threshold);
+
+  /**
    * Retrieves an outbound queue of session which is using to send messages to clients side.
    *
    * @return an instance of {@link OutboundQueue}
@@ -157,6 +193,16 @@ public interface Session {
    * @throws IllegalStateException when an illegal queue is in use
    */
   void configureOutboundQueue(OutboundQueue outboundQueue) throws IllegalStateException;
+
+  /**
+   * Determines whether the outbound queue is being slowly consumed by the configurations.
+   *
+   * @return an {@code integer} greater than {@code 0} if it's being slowly consumed - the remaining elements,
+   * otherwise returns {@code 0}
+   * @see CoreConfigurationType#PROP_SLOW_CONSUMING_WARNING_SESSION_RESPONSE_THRESHOLD
+   * @since 0.7.0
+   */
+  int getRemainingSlowConsumingOutboundQueue();
 
   /**
    * Retrieves the transportation type of session.
@@ -500,11 +546,11 @@ public interface Session {
    * default modes.
    *
    * @throws IOException when the closing process went through any issue
-   * @see ConnectionDisconnectMode#UNKNOWN
-   * @see PlayerDisconnectMode#UNKNOWN
+   * @see ConnectionDisconnectMode#EXCEPTION
+   * @see PlayerDisconnectMode#EXCEPTION
    */
   default void close() throws IOException {
-    close(ConnectionDisconnectMode.UNKNOWN, PlayerDisconnectMode.UNKNOWN);
+    close(ConnectionDisconnectMode.EXCEPTION, PlayerDisconnectMode.EXCEPTION);
   }
 
   /**

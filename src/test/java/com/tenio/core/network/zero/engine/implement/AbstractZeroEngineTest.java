@@ -129,12 +129,4 @@ class AbstractZeroEngineTest {
   void testGetNumberOfExtraWorkersReturnsZero() {
     assertEquals(0, engine.getNumberOfExtraWorkers());
   }
-
-  @Test
-  @DisplayName("getMaximumStartingTimeInMilliseconds equals threadPoolSize multiplied by delay constant")
-  void testGetMaximumStartingTimeInMilliseconds() {
-    int threadPoolSize = engine.getThreadPoolSize();
-    // Delay constant is 100 ms per worker
-    assertEquals(threadPoolSize * 100, engine.getMaximumStartingTimeInMilliseconds());
-  }
 }

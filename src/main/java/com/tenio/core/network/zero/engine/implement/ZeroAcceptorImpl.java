@@ -94,7 +94,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
   @Override
   public void onRunning() {
     var acceptorHandler = new AcceptorHandler(serverAddress, connectionFilter, zeroReaderListener,
-        tcpSocketConfiguration, getSocketIoHandler());
+            tcpSocketConfiguration, getSocketIoHandler());
     acceptorHandlers.add(acceptorHandler);
 
     while (!Thread.currentThread().isInterrupted()) {

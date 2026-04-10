@@ -275,12 +275,27 @@ public final class NetworkImpl extends AbstractManager implements Network {
   }
 
   @Override
-  public void setOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
+  public void setSessionSlowConsumingInboundQueueWarningThreshold(int threshold) {
+    sessionManager.configureSlowConsumingInboundQueueWarningThreshold(threshold);
+  }
+
+  @Override
+  public void setSessionSlowConsumingOutboundQueueWarningThreshold(int threshold) {
+    sessionManager.configureSlowConsumingOutboundQueueWarningThreshold(threshold);
+  }
+
+  @Override
+  public void setSessionOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
     sessionManager.configureOutboundQueuePolicy(outboundQueuePolicy);
   }
 
   @Override
-  public void setOutboundQueueSize(int queueSize) {
+  public void setSessionInboundQueueSize(int queueSize) {
+    sessionManager.configureInboundQueueSize(queueSize);
+  }
+
+  @Override
+  public void setSessionOutboundQueueSize(int queueSize) {
     sessionManager.configureOutboundQueueSize(queueSize);
   }
 

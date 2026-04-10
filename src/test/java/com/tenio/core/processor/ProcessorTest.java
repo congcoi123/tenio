@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.core.controller;
+package com.tenio.core.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -40,138 +40,117 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Controller")
-class ControllerTest {
+@DisplayName("Unit Test Cases For Processor")
+class ProcessorTest {
 
-  private TestController controller;
+  private TestProcessor processor;
 
   @BeforeEach
   void setUp() {
     EventManager eventManager = mock(EventManager.class);
-    controller = new TestController(eventManager);
+    processor = new TestProcessor(eventManager);
   }
 
   @Test
-  @DisplayName("Test controller name getter/setter")
+  @DisplayName("Test processor name getter/setter")
   void testNameGetterSetter() {
-    controller.setName("Test");
-    assertEquals("Test", controller.getName());
+    processor.setName("Test");
+    assertEquals("Test", processor.getName());
   }
 
   @Test
-  @DisplayName("Test controller initialization and shutdown behaviours")
+  @DisplayName("Test processor initialization and shutdown behaviours")
   void testInitializeAndStartAndShutdown() {
-    controller.setName("Test");
-    controller.setThreadPoolSize(1);
-    controller.initialize();
-    assertFalse(controller.isActivated());
-    controller.start();
-    controller.activate();
-    assertTrue(controller.isActivated());
-    controller.shutdown();
-    assertFalse(controller.isActivated());
+    processor.setName("Test");
+    processor.setThreadPoolSize(1);
+    processor.initialize();
+    assertFalse(processor.isActivated());
+    processor.start();
+    processor.activate();
+    assertTrue(processor.isActivated());
+    processor.shutdown();
+    assertFalse(processor.isActivated());
   }
 
   @Test
-  @DisplayName("The controller should not start or shutdown again once it's done those actions")
+  @DisplayName("The processor should not start or shutdown again once it's done those actions")
   void testDoubleStartAndShutdown() {
-    controller.setThreadPoolSize(1);
-    controller.initialize();
-    controller.start();
-    controller.start(); // Should not throw
-    controller.shutdown();
-    controller.shutdown(); // Should not throw
+    processor.setThreadPoolSize(1);
+    processor.initialize();
+    processor.start();
+    processor.start(); // Should not throw
+    processor.shutdown();
+    processor.shutdown(); // Should not throw
   }
 
   @Test
-  @DisplayName("Test controller max request queue size setter")
-  void testMaxRequestQueueSize() {
-    controller.setMaxRequestQueueSize(2);
-    assertEquals(2, controller.getMaxRequestQueueSize());
-  }
-
-  @Test
-  @DisplayName("Test controller thread pool size setter")
+  @DisplayName("Test processor thread pool size setter")
   void testThreadPoolSize() {
-    controller.setThreadPoolSize(2);
-    assertEquals(2, controller.getThreadPoolSize());
-  }
-
-  @Test
-  @DisplayName("Add a request into a full request queue should throw exception")
-  void testEnqueueRequestQueueFull() {
-    controller.setThreadPoolSize(1);
-    controller.setMaxRequestQueueSize(1);
-    controller.initialize();
-    Request req1 = mock(Request.class);
-    when(req1.getId()).thenReturn(0L);
-    Request req2 = mock(Request.class);
-    when(req2.getId()).thenReturn(0L);
-    controller.enqueueRequest(req1);
-    assertThrows(Exception.class, () -> controller.enqueueRequest(req2));
+    processor.setThreadPoolSize(2);
+    assertEquals(2, processor.getThreadPoolSize());
   }
 
   @Test
   @DisplayName("Default thread pool size is DEFAULT_NUMBER_WORKERS (5)")
   void testDefaultThreadPoolSize() {
-    assertEquals(Controller.DEFAULT_NUMBER_WORKERS, controller.getThreadPoolSize());
+    assertEquals(Processor.DEFAULT_NUMBER_WORKERS, processor.getThreadPoolSize());
   }
 
   @Test
   @DisplayName("isActivated is false before activate() is called")
   void testIsActivatedDefaultFalse() {
-    assertFalse(controller.isActivated());
+    assertFalse(processor.isActivated());
   }
 
   @Test
   @DisplayName("getName returns null before setName is called")
   void testGetNameDefaultNull() {
-    assertNull(controller.getName());
+    assertNull(processor.getName());
   }
 
   @Test
   @DisplayName("setThreadPoolSize below 1 throws IllegalArgumentException")
   void testSetThreadPoolSizeBelowOneThrows() {
-    assertThrows(IllegalArgumentException.class, () -> controller.setThreadPoolSize(0));
-    assertThrows(IllegalArgumentException.class, () -> controller.setThreadPoolSize(-1));
+    assertThrows(IllegalArgumentException.class, () -> processor.setThreadPoolSize(0));
+    assertThrows(IllegalArgumentException.class, () -> processor.setThreadPoolSize(-1));
   }
 
   @Test
   @DisplayName("getMaximumStartingTimeInMilliseconds equals threadPoolSize * delay constant")
   void testGetMaximumStartingTimeInMilliseconds() {
-    controller.setThreadPoolSize(3);
+    processor.setThreadPoolSize(3);
     assertEquals(3 * CoreConstant.DELAY_BETWEEN_STARTING_WORKER_IN_MILLISECONDS,
-        controller.getMaximumStartingTimeInMilliseconds());
+        processor.getMaximumStartingTimeInMilliseconds());
   }
 
   @Test
   @DisplayName("shutdown before initialize is a no-op and does not throw")
   void testShutdownBeforeInitializeIsNoOp() {
-    assertDoesNotThrow(() -> controller.shutdown());
+    assertDoesNotThrow(() -> processor.shutdown());
   }
 
   @Test
   @DisplayName("enqueueRequest after initialize succeeds when queue is unlimited")
   void testEnqueueRequestSucceedsWhenQueueUnlimited() {
-    controller.setThreadPoolSize(1);
-    controller.initialize();
+    processor.setThreadPoolSize(1);
+    processor.initialize();
     Request req = mock(Request.class);
     when(req.getId()).thenReturn(1L);
-    assertDoesNotThrow(() -> controller.enqueueRequest(req));
+    assertDoesNotThrow(() -> processor.enqueueRequest(req));
   }
 
   @Test
-  @DisplayName("priority-enabled controller initializes without throwing")
-  void testPriorityEnabledControllerInitializesOk() {
+  @DisplayName("priority-enabled processor initializes without throwing")
+  void testPriorityEnabledProcessorInitializesOk() {
     EventManager eventManager = mock(EventManager.class);
-    var priorityController = new PriorityTestController(eventManager);
-    priorityController.setThreadPoolSize(1);
-    assertDoesNotThrow(priorityController::initialize);
+    var priorityProcessor = new PriorityTestProcessor(eventManager);
+    priorityProcessor.setThreadPoolSize(1);
+    assertDoesNotThrow(priorityProcessor::initialize);
   }
 
-  static class TestController extends AbstractController {
+  static class TestProcessor extends AbstractProcessor {
 
-    TestController(EventManager eventManager) {
+    TestProcessor(EventManager eventManager) {
       super(eventManager);
     }
 
@@ -209,9 +188,9 @@ class ControllerTest {
     }
   }
 
-  static class PriorityTestController extends AbstractController {
+  static class PriorityTestProcessor extends AbstractProcessor {
 
-    PriorityTestController(EventManager eventManager) {
+    PriorityTestProcessor(EventManager eventManager) {
       super(eventManager);
     }
 

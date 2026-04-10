@@ -40,6 +40,8 @@ import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
+
+import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import org.junit.jupiter.api.BeforeEach;
@@ -151,7 +153,7 @@ class SocketIoHandlerImplTest {
     handler.onFramedResult(session, message);
 
     verify(readerStatistic).updateReadPackets(1);
-    verify(eventManager).emit(ServerEvent.SESSION_READ_MESSAGE, session, message);
+    verify(session).enqueueInbound(message);
   }
 
   @Test
@@ -169,14 +171,14 @@ class SocketIoHandlerImplTest {
   }
 
   @Test
-  @DisplayName("sessionException emits SESSION_OCCURRED_EXCEPTION")
-  void testSessionExceptionEmitsSessionOccurredException() {
+  @DisplayName("sessionException closes session")
+  void testSessionExceptionClosesSession() throws IOException {
     Session session = mock(Session.class);
     Exception exception = new RuntimeException("test error");
 
     handler.sessionException(session, exception);
 
-    verify(eventManager).emit(ServerEvent.SESSION_OCCURRED_EXCEPTION, session, exception);
+    verify(session).close();
   }
 
   @Test

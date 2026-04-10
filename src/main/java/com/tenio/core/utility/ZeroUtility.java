@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.utility;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * The utility class for server.
  *
@@ -45,5 +48,28 @@ public final class ZeroUtility {
    */
   public static float convertBytesToMB(long bytes) {
     return (float) bytes / CONVERT_TO_MB;
+  }
+
+  /**
+   * Formats a numeric value using underscore ({@code _}) as a thousands separator.
+   * <p>
+   * This method converts the given {@code long} into a human-readable string
+   * with digit grouping every three digits. For example:
+   * <ul>
+   *   <li>{@code 1000 -> "1_000"}</li>
+   *   <li>{@code 1000000 -> "1_000_000"}</li>
+   * </ul>
+   * <p>
+   * Internally, this method uses standard number formatting with grouping
+   * separators and replaces commas with underscores.
+   *
+   * @param value the numeric value to format
+   * @return a string representation of the value with underscore-separated digit groups
+   * @since 0.7.0
+   */
+  public static String formatWithUnderscores(long value) {
+    NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    nf.setGroupingUsed(true);
+    return nf.format(value).replace(',', '_');
   }
 }
