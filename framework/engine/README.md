@@ -40,7 +40,7 @@ based server specifically designed for multiplayer games, which supports UDP, TC
 This module provides the necessary mechanisms to build a game. It also supports some kind of pattern such as ECS, FSM, and integrates a simple physic 2D library. You can even observe the running entities on the server side by using the debugger window.
 
 ## Requirements
-- Java 17
+- Java 21+
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.

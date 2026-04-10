@@ -45,3 +45,6 @@
 
 ## 0.6.10 2026-03-26 Bugfix release
 - Upgraded dependencies
+
+## 0.7.0 2026-04-12 Feature release
+- Supports Java 21 Features
