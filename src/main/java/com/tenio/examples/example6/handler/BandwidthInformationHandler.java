@@ -27,10 +27,10 @@ package com.tenio.examples.example6.handler;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.handler.AbstractHandler;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
+import com.tenio.core.utility.ZeroUtility;
 
 @EventHandler
-public final class BandwidthInformationHandler extends AbstractHandler
-    implements EventFetchedBandwidthInfo {
+public final class BandwidthInformationHandler extends AbstractHandler implements EventFetchedBandwidthInfo {
 
   @Override
   public void onFetchedBandwidthInfo(long readBytes, long readPackets, long readDroppedPackets, long writtenBytes,
@@ -38,10 +38,15 @@ public final class BandwidthInformationHandler extends AbstractHandler
                                      long writtenDroppedPacketsByFull) {
     if (isInfoEnabled()) {
       var info = String.format(
-          "readBytes: %d, readPackets: %d, readDroppedPackets: %d, writtenBytes: %d, writtenPackets: %d, writtenDroppedPacketsByPolicy: %d, writtenDroppedPacketsByFull: %d, writtenDroppedPackets: %d",
-          readBytes, readPackets, readDroppedPackets, writtenBytes, writtenPackets,
-          writtenDroppedPacketsByPolicy,
-          writtenDroppedPacketsByFull, writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull);
+                "readBytes: %d MB, readPackets: %s, readDroppedPackets: %s, writtenBytes: %d MB, writtenPackets: %s," +
+                " writtenDroppedPacketsByPolicy: %s, writtenDroppedPacketsByFull: %s, writtenDroppedPackets: %s",
+                (long) ZeroUtility.convertBytesToMB(readBytes), ZeroUtility.formatWithUnderscores(readPackets),
+                ZeroUtility.formatWithUnderscores(readDroppedPackets),
+                (long) ZeroUtility.convertBytesToMB(writtenBytes),
+                ZeroUtility.formatWithUnderscores(writtenPackets),
+                ZeroUtility.formatWithUnderscores(writtenDroppedPacketsByPolicy),
+                ZeroUtility.formatWithUnderscores(writtenDroppedPacketsByFull),
+                ZeroUtility.formatWithUnderscores(writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull));
 
       info("BANDWIDTH INFO", info);
     }
