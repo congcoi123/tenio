@@ -38,7 +38,7 @@ class TaskManagerTest {
   @DisplayName("Allow creating a new task")
   void createNewTaskShouldWork() {
     var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
+    taskManager.create("test-task", new DefaultTask());
 
     assertEquals(DefaultTask.DELAY_SECOND - 1, taskManager.getRemainTime("test-task"));
   }
@@ -47,7 +47,7 @@ class TaskManagerTest {
   @DisplayName("Allow killing a task")
   void killATaskShouldWork() {
     var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
+    taskManager.create("test-task", new DefaultTask());
     taskManager.kill("test-task");
 
     assertEquals(-1, taskManager.getRemainTime("test-task"));
@@ -57,8 +57,8 @@ class TaskManagerTest {
   @DisplayName("Starting a running task should not throw any exception")
   void startARunningTaskShouldNotThrowException() {
     var taskManager = TaskManagerImpl.newInstance();
-    taskManager.create("test-task", new DefaultTask().run());
-    taskManager.create("test-task", new DefaultTask().run());
+    taskManager.create("test-task", new DefaultTask());
+    taskManager.create("test-task", new DefaultTask());
 
     assertTrue(true);
   }
