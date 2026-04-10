@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.engine.acceptor;
 
 import com.tenio.common.logger.SystemLogger;
-import com.tenio.common.utility.OsUtility;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.exception.ServiceRuntimeException;
@@ -106,15 +105,18 @@ public final class AcceptorHandler extends SystemLogger {
     bindServerSocketChannel(tcpSocketConfiguration.port());
   }
 
-  private void bindServerSocketChannel(int port)
-      throws ServiceRuntimeException {
+  private void bindServerSocketChannel(int port) throws ServiceRuntimeException {
     try {
       var serverSocketChannel = ServerSocketChannel.open();
       serverSocketChannel.configureBlocking(false);
-      if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
-        serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-      } else {
+      serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+      try {
+        // intentionally run multiple acceptors on the same port
         serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+      } catch (UnsupportedOperationException exception) {
+        if (isDebugEnabled()) {
+          debug("SERVER SOCKET CHANNEL", "It doesn't support SO_REUSEPORT option");
+        }
       }
       serverSocketChannel.bind(new InetSocketAddress(serverAddress, port));
       if (isInfoEnabled()) {
@@ -175,8 +177,7 @@ public final class AcceptorHandler extends SystemLogger {
               error(exception2, logger);
             }
             socketIoHandler.channelException(socketChannel, exception2);
-            socketIoHandler.channelInactive(socketChannel, acceptorSelectionKey,
-                ConnectionDisconnectMode.UNKNOWN);
+            socketIoHandler.channelInactive(socketChannel, acceptorSelectionKey, ConnectionDisconnectMode.EXCEPTION);
           }
         }
       }

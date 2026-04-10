@@ -27,6 +27,8 @@ package com.tenio.core.network.statistic;
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * Tracks and manages network writing statistics for the server.
  * This class provides thread-safe counters for monitoring bytes written,
@@ -48,12 +50,16 @@ import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
  */
 public final class NetworkWriterStatistic {
 
-  private volatile long writtenBytes;
-  private volatile long writtenPackets;
-  private volatile long writtenDroppedPacketsByPolicy;
-  private volatile long writtenDroppedPacketsByFull;
+  private final LongAdder writtenBytes;
+  private final LongAdder writtenPackets;
+  private final LongAdder writtenDroppedPacketsByPolicy;
+  private final LongAdder writtenDroppedPacketsByFull;
 
   private NetworkWriterStatistic() {
+    writtenBytes = new LongAdder();
+    writtenPackets = new LongAdder();
+    writtenDroppedPacketsByPolicy = new LongAdder();
+    writtenDroppedPacketsByFull = new LongAdder();
   }
 
   /**
@@ -71,7 +77,7 @@ public final class NetworkWriterStatistic {
    * @param numberBytes {@code long} value, the number of sent bytes data to clients side
    */
   public void updateWrittenBytes(long numberBytes) {
-    writtenBytes += numberBytes;
+    writtenBytes.add(numberBytes);
   }
 
   /**
@@ -80,7 +86,7 @@ public final class NetworkWriterStatistic {
    * @param numberPackets {@code long} value, the number of sent packets to clients side
    */
   public void updateWrittenPackets(long numberPackets) {
-    writtenPackets += numberPackets;
+    writtenPackets.add(numberPackets);
   }
 
   /**
@@ -92,7 +98,7 @@ public final class NetworkWriterStatistic {
    * @see OutboundQueuePolicy
    */
   public void updateWrittenDroppedPacketsByPolicy(long numberPackets) {
-    writtenDroppedPacketsByPolicy += numberPackets;
+    writtenDroppedPacketsByPolicy.add(numberPackets);
   }
 
   /**
@@ -104,7 +110,7 @@ public final class NetworkWriterStatistic {
    * @see OutboundQueuePolicy
    */
   public void updateWrittenDroppedPacketsByFull(long numberPackets) {
-    writtenDroppedPacketsByFull += numberPackets;
+    writtenDroppedPacketsByFull.add(numberPackets);
   }
 
   /**
@@ -113,7 +119,7 @@ public final class NetworkWriterStatistic {
    * @return {@code long} value, the current number of sending bytes data to clients side
    */
   public long getWrittenBytes() {
-    return writtenBytes;
+    return writtenBytes.sum();
   }
 
   /**
@@ -122,7 +128,7 @@ public final class NetworkWriterStatistic {
    * @return {@code long} value, the current number of sending packets to clients side
    */
   public long getWrittenPackets() {
-    return writtenPackets;
+    return writtenPackets.sum();
   }
 
   /**
@@ -133,7 +139,7 @@ public final class NetworkWriterStatistic {
    * @see OutboundQueuePolicy
    */
   public long getWrittenDroppedPacketsByPolicy() {
-    return writtenDroppedPacketsByPolicy;
+    return writtenDroppedPacketsByPolicy.sum();
   }
 
   /**
@@ -144,7 +150,7 @@ public final class NetworkWriterStatistic {
    * @see OutboundQueuePolicy
    */
   public long getWrittenDroppedPacketsByFull() {
-    return writtenDroppedPacketsByFull;
+    return writtenDroppedPacketsByFull.sum();
   }
 
   /**
@@ -155,16 +161,16 @@ public final class NetworkWriterStatistic {
    * @see #getWrittenDroppedPacketsByFull
    */
   public long getWrittenDroppedPackets() {
-    return writtenDroppedPacketsByPolicy + writtenDroppedPacketsByFull;
+    return getWrittenDroppedPacketsByPolicy() + getWrittenDroppedPacketsByFull();
   }
 
   @Override
   public String toString() {
     return "NetworkWriterStatistic{" +
-        "writtenBytes=" + writtenBytes +
-        ", writtenPackets=" + writtenPackets +
-        ", writtenDroppedPacketsByPolicy=" + writtenDroppedPacketsByPolicy +
-        ", writtenDroppedPacketsByFull=" + writtenDroppedPacketsByFull +
+        "writtenBytes=" + getWrittenBytes() +
+        ", writtenPackets=" + getWrittenPackets() +
+        ", writtenDroppedPacketsByPolicy=" + getWrittenDroppedPacketsByPolicy() +
+        ", writtenDroppedPacketsByFull=" + getWrittenDroppedPacketsByFull() +
         '}';
   }
 }

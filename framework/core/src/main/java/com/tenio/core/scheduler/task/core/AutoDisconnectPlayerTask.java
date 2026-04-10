@@ -33,7 +33,9 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.scheduler.task.AbstractSystemTask;
 import com.tenio.core.server.ServerImpl;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +47,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
 
+  private ScheduledExecutorService scheduledService;
+  private ExecutorService executorService;
+  private ScheduledFuture<?> scheduler;
   private PlayerManager playerManager;
 
   private AutoDisconnectPlayerTask(EventManager eventManager) {
@@ -62,21 +67,19 @@ public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-task")
-            .build();
-    var threadFactoryWorker =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-disconnect-player-worker")
-            .build();
-    var executors = Executors.newCachedThreadPool(threadFactoryWorker);
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+  public void run() {
+    executorService = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+            .name("worker-auto-disconnect-player-", 0)
+            .factory());
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-auto-disconnect-player").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
             debug("AUTO DISCONNECT PLAYER",
                 "Checking IDLE players in ", playerManager.getPlayerCount(), " entities");
           }
-          executors.execute(() -> {
+          executorService.execute(() -> {
             Iterator<Player> iterator = playerManager.getReadonlyPlayersList().listIterator();
             while (iterator.hasNext()) {
               Player player = iterator.next();
@@ -94,8 +97,7 @@ public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
                 if (player.isIdle()) {
                   if (isDebugEnabled()) {
                     debug("AUTO DISCONNECT PLAYER",
-                        player.getIdentity(),
-                        " is going to be forced to remove by the cleaning task");
+                        player.getIdentity(), " is going to be forced to remove by the cleaning task");
                   }
                   ServerImpl.getInstance().getApi().logout(player, ConnectionDisconnectMode.IDLE,
                       PlayerDisconnectMode.IDLE);
@@ -113,5 +115,36 @@ public final class AutoDisconnectPlayerTask extends AbstractSystemTask {
    */
   public void setPlayerManager(PlayerManager playerManager) {
     this.playerManager = playerManager;
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+    if (executorService != null) {
+      executorService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+      if (executorService != null) {
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+      if (executorService != null) {
+        executorService.shutdownNow();
+      }
+    }
   }
 }

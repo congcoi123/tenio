@@ -82,9 +82,11 @@ public enum ConnectionDisconnectMode {
    */
   ORPHAN,
   /**
-   * Disconnected by other reasons.
+   * Disconnected due to exceptions occurred.
+   *
+   * @since 0.7.0
    */
-  UNKNOWN,
+  EXCEPTION,
   /**
    * There is another session will connect to the player, so this session must be closed.
    *

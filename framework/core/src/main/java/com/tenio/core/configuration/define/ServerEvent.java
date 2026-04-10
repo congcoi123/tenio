@@ -37,8 +37,8 @@ import com.tenio.core.handler.event.EventPlayerAfterLeftRoom;
 import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
 import com.tenio.core.handler.event.EventPlayerLogin;
-import com.tenio.core.handler.event.EventPlayerReconnectRequestHandling;
-import com.tenio.core.handler.event.EventPlayerReconnected;
+import com.tenio.core.handler.event.EventPlayerConnectionRetry;
+import com.tenio.core.handler.event.EventPlayerConnectionResumed;
 import com.tenio.core.handler.event.EventPlayerSubscribedChannel;
 import com.tenio.core.handler.event.EventPlayerUnsubscribedChannel;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
@@ -46,7 +46,6 @@ import com.tenio.core.handler.event.EventRoomCreatedResult;
 import com.tenio.core.handler.event.EventRoomWillBeRemoved;
 import com.tenio.core.handler.event.EventBroadcastToChannel;
 import com.tenio.core.handler.event.EventSendMessageToPlayer;
-import com.tenio.core.handler.event.EventServerException;
 import com.tenio.core.handler.event.EventServerInitialization;
 import com.tenio.core.handler.event.EventServerTeardown;
 import com.tenio.core.handler.event.EventSocketConnectionRefused;
@@ -82,10 +81,6 @@ public enum ServerEvent {
   @Asynchronous
   SESSION_REQUEST_CONNECTION,
   /**
-   * When there is any issue occurs to a session.
-   */
-  SESSION_OCCURRED_EXCEPTION,
-  /**
    * When a session is going to disconnect to the server.
    */
   SESSION_WILL_BE_CLOSED,
@@ -111,7 +106,7 @@ public enum ServerEvent {
    * @see ZeroReaderImpl
    */
   @Asynchronous
-  DATAGRAM_CHANNEL_READ_MESSAGE_FIRST_TIME,
+  DATAGRAM_CHANNEL_REQUEST_ACCESS,
   /**
    * When the server finished initialization and is ready.
    *
@@ -133,15 +128,15 @@ public enum ServerEvent {
   /**
    * When the server handles a reconnection request.
    *
-   * @see EventPlayerReconnectRequestHandling
+   * @see EventPlayerConnectionRetry
    */
-  PLAYER_RECONNECT_REQUEST_HANDLING,
+  PLAYER_CONNECTION_RETRY,
   /**
    * When the server responds a player reconnected request.
    *
-   * @see EventPlayerReconnected
+   * @see EventPlayerConnectionResumed
    */
-  PLAYER_RECONNECTED,
+  PLAYER_CONNECTION_RESUMED,
   /**
    * When the server sends a message to client side on behalf of its player.
    *
@@ -267,12 +262,6 @@ public enum ServerEvent {
    * @see EventSystemMonitoring
    */
   SYSTEM_MONITORING,
-  /**
-   * When there is any exception occurs on the server.
-   *
-   * @see EventServerException
-   */
-  SERVER_EXCEPTION,
   /**
    * When the server is going to shut down.
    *

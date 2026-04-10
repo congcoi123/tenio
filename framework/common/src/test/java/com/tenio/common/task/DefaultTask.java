@@ -32,9 +32,20 @@ class DefaultTask implements Task {
 
   public static final int DELAY_SECOND = 10;
 
+  private ScheduledFuture<?> scheduler;
+
   @Override
-  public ScheduledFuture<?> run() {
-    return Executors.newSingleThreadScheduledExecutor()
+  public void run() {
+    scheduler = Executors.newSingleThreadScheduledExecutor()
         .schedule(() -> System.out.println("test task"), DELAY_SECOND, TimeUnit.SECONDS);
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
   }
 }

@@ -130,7 +130,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
     } catch (IOException exception) {
       if (isErrorEnabled() && !ExceptionUtility.messageContains(exception,
-          ExceptionUtility.IGNORE_SOCKET_EXCEPTIONS)) {
+          ExceptionUtility.IGNORE_LOGGING_EXCEPTIONS)) {
         error(exception, "Error occurred in writing on session: ", session.toString());
       }
       // in this case, just disconnect the session, it's no longer help writing data
@@ -186,8 +186,7 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
 
       // if the outbound queue still contains more packets, session is activated, and its channel
       // is alive, then put the session back to the tickets queue
-      if (session.isActivated() && channel.isOpen() && channel.isConnected() &&
-          !outboundQueue.isEmpty()) {
+      if (session.isActivated() && channel.isOpen() && channel.isConnected() && !outboundQueue.isEmpty()) {
         getSessionTicketsQueue(session.getId()).add(session);
       }
     }

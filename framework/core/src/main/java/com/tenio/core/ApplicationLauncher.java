@@ -109,6 +109,14 @@ public final class ApplicationLauncher extends SystemLogger {
    * @param params     the additional parameters
    */
   public void start(Class<?> entryClass, String[] params) {
+    var mainThread = Thread.currentThread();
+    mainThread.setName("tenio");
+    mainThread.setUncaughtExceptionHandler((thread, cause) -> {
+      if (isErrorEnabled()) {
+        error(cause, thread.getName());
+      }
+    });
+
     // print out the framework's preface
     if (isInfoEnabled()) {
       var trademark =
@@ -152,23 +160,16 @@ public final class ApplicationLauncher extends SystemLogger {
       System.exit(1);
     }
 
-    // Keep the main thread running
+    // keep the main thread running
     try {
-      var currentThread = Thread.currentThread();
-      currentThread.setName("tenio-main-thread");
-      currentThread.setUncaughtExceptionHandler((thread, cause) -> {
-        if (isErrorEnabled()) {
-          error(cause, thread.getName());
-        }
-      });
-      currentThread.join();
+      mainThread.join();
     } catch (InterruptedException exception) {
       if (isErrorEnabled()) {
         error(exception);
       }
     }
 
-    // Suddenly shutdown
+    // suddenly shutdown
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (isDebugEnabled()) {
         debug("APPLICATION", "JVM is shutting down");

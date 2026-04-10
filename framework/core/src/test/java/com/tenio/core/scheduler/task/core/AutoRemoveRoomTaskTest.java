@@ -33,7 +33,6 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.server.ServerImpl;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,8 +84,8 @@ class AutoRemoveRoomTaskTest {
     Mockito.when(server.getApi()).thenReturn(api);
     try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class)) {
       serverStatic.when(ServerImpl::getInstance).thenReturn(server);
-      ScheduledFuture<?> future = task.run();
-      assertNotNull(future);
+      task.run();
+      assertNotNull(task.getScheduler());
     }
   }
 }

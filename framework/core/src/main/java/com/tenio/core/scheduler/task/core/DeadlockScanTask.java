@@ -32,6 +32,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 public final class DeadlockScanTask extends AbstractSystemTask {
 
   private final ThreadMXBean threadMxBean;
+  private ScheduledExecutorService scheduledService;
+  private ScheduledFuture<?> scheduler;
 
   private DeadlockScanTask(EventManager eventManager) {
     super(eventManager);
@@ -60,11 +63,33 @@ public final class DeadlockScanTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("deadlock-scan-task").build();
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
-        this::checkForDeadlockedThreads, initialDelay, interval, TimeUnit.SECONDS);
+  public void run() {
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-deadlock-scan").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
+            this::checkForDeadlockedThreads, initialDelay, interval, TimeUnit.SECONDS);
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+    }
   }
 
   private void checkForDeadlockedThreads() {

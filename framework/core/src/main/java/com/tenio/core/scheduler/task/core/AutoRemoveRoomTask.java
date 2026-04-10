@@ -33,7 +33,9 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.scheduler.task.AbstractSystemTask;
 import com.tenio.core.server.ServerImpl;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +45,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class AutoRemoveRoomTask extends AbstractSystemTask {
 
+  private ScheduledExecutorService scheduledService;
+  private ExecutorService executorService;
+  private ScheduledFuture<?> scheduler;
   private RoomManager roomManager;
 
   private AutoRemoveRoomTask(EventManager eventManager) {
@@ -60,18 +65,18 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-remove-room-task").build();
-    var threadFactoryWorker =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("auto-remove-room-worker").build();
-    var executors = Executors.newCachedThreadPool(threadFactoryWorker);
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+  public void run() {
+    executorService = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+            .name("worker-auto-remove-room-", 0)
+            .factory());
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-auto-remove-room").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
             debug("AUTO REMOVE ROOM", "Checking empty rooms in ", roomManager.getRoomCount(), " entities");
           }
-          executors.execute(() -> {
+          executorService.execute(() -> {
             Iterator<Room> iterator = roomManager.getReadonlyRoomsList().listIterator();
             while (iterator.hasNext()) {
               Room room = iterator.next();
@@ -95,5 +100,36 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
    */
   public void setRoomManager(RoomManager roomManager) {
     this.roomManager = roomManager;
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+    if (executorService != null) {
+      executorService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+      if (executorService != null) {
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+      if (executorService != null) {
+        executorService.shutdownNow();
+      }
+    }
   }
 }

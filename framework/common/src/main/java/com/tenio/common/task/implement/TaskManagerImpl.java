@@ -26,6 +26,7 @@ package com.tenio.common.task.implement;
 
 import com.tenio.common.exception.RunningScheduledTaskException;
 import com.tenio.common.logger.SystemLogger;
+import com.tenio.common.task.Task;
 import com.tenio.common.task.TaskManager;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   /**
    * A list of tasks in the server.
    */
-  private final Map<String, ScheduledFuture<?>> tasks;
+  private final Map<String, Task> tasks;
 
   private TaskManagerImpl() {
     tasks = new ConcurrentHashMap<>();
@@ -62,16 +63,19 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   }
 
   @Override
-  public void create(String id, ScheduledFuture<?> task) {
+  public void create(String id, Task task) {
     tasks.compute(id, (key, existingTask) -> {
-      if (existingTask != null && (!existingTask.isDone() || !existingTask.isCancelled())) {
+      if (existingTask != null &&
+              (!existingTask.getScheduler().isDone() || !existingTask.getScheduler().isCancelled())) {
         if (isErrorEnabled()) {
           error(new RunningScheduledTaskException(), "task id: ", id);
         }
         return existingTask; // Keep the old task
       }
+      task.run();
       if (isInfoEnabled()) {
-        info("RUN TASK", buildgen(id, " >Time left> ", task.getDelay(TimeUnit.SECONDS), " seconds"));
+        info("RUN TASK", buildgen(id, " >Time left> ",
+                task.getScheduler().getDelay(TimeUnit.SECONDS), " seconds"));
       }
       return task;
     });
@@ -81,9 +85,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   public void kill(String id) {
     var task = tasks.remove(id);  // Atomically remove and get the task
     if (task != null) {
-      if (!task.isDone() && !task.isCancelled()) {
-        task.cancel(true);
-      }
+      task.shutdown();
       if (isInfoEnabled()) {
         info("KILLED TASK", id);
       }
@@ -97,15 +99,10 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
       var entry = iterator.next();
       var id = entry.getKey();
       var task = entry.getValue();
-
       if (isInfoEnabled()) {
         info("KILLED TASK", id);
       }
-
-      if (task != null && (!task.isDone() || !task.isCancelled())) {
-        task.cancel(true);
-      }
-
+      task.shutdown();
       iterator.remove(); // Safe removal while iterating
     }
   }
@@ -114,7 +111,7 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
   public int getRemainTime(String id) {
     var task = tasks.get(id);
     if (task != null) {
-      return (int) task.getDelay(TimeUnit.SECONDS);
+      return (int) task.getScheduler().getDelay(TimeUnit.SECONDS);
     }
     return -1;
   }

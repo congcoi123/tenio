@@ -48,9 +48,21 @@ import java.util.function.Consumer;
 public interface SessionManager extends Manager {
 
   /**
+   * Default the maximum size value of an inbound queue.
+   */
+  int DEFAULT_MAX_INBOUND_QUEUE_SIZE = 100;
+  /**
    * Default the maximum size value of an outbound queue.
    */
   int DEFAULT_MAX_OUTBOUND_QUEUE_SIZE = 100;
+  /**
+   * Default the threshold for warning of slow consuming inbound queue.
+   */
+  int DEFAULT_SLOW_CONSUMING_INBOUND_QUEUE_WARNING_THRESHOLD = 10;
+  /**
+   * Default the threshold for warning of slow consuming outbound queue.
+   */
+  int DEFAULT_SLOW_CONSUMING_OUTBOUND_QUEUE_WARNING_THRESHOLD = 10;
 
   /**
    * Ensures the calculation on the session list is thread-safe.
@@ -138,6 +150,14 @@ public interface SessionManager extends Manager {
   void configureConnectionFilter(ConnectionFilter connectionFilter);
 
   /**
+   * Sets the inbound queue size.
+   *
+   * @param queueSize the {@code integer} value of new size for the inbound queue
+   * @since 0.7.0
+   */
+  void configureInboundQueueSize(int queueSize);
+
+  /**
    * Sets an instance of outbound queue policy for the session manager.
    *
    * @param outboundQueuePolicy instance of {@link OutboundQueuePolicy}
@@ -154,6 +174,22 @@ public interface SessionManager extends Manager {
    * @see OutboundQueuePolicy
    */
   void configureOutboundQueueSize(int queueSize);
+
+  /**
+   * Sets the threshold for warning of slow consuming inbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void configureSlowConsumingInboundQueueWarningThreshold(int threshold);
+
+  /**
+   * Sets the threshold for warning of slow consuming outbound queue.
+   *
+   * @param threshold the {@code integer} value of threshold
+   * @since 0.7.0
+   */
+  void configureSlowConsumingOutboundQueueWarningThreshold(int threshold);
 
   /**
    * Removes a session from its manager, this method should not be invoked directly. Calls

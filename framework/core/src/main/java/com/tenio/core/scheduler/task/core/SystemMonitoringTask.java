@@ -31,6 +31,7 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.monitoring.system.SystemMonitoring;
 import com.tenio.core.scheduler.task.AbstractSystemTask;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 public final class SystemMonitoringTask extends AbstractSystemTask {
 
   private final SystemMonitoring systemMonitoring;
+  private ScheduledExecutorService scheduledService;
+  private ScheduledFuture<?> scheduler;
 
   private SystemMonitoringTask(EventManager eventManager) {
     super(eventManager);
@@ -59,14 +62,36 @@ public final class SystemMonitoringTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("system-monitoring-task").build();
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+  public void run() {
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-system-monitoring").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
         () -> eventManager.emit(ServerEvent.SYSTEM_MONITORING, systemMonitoring.getCpuUsage(),
-            systemMonitoring.getTotalMemory(), systemMonitoring.getUsedMemory(),
-            systemMonitoring.getFreeMemory(),
-            systemMonitoring.countRunningThreads()),
+                systemMonitoring.getTotalMemory(), systemMonitoring.getUsedMemory(),
+                systemMonitoring.getFreeMemory(),
+                systemMonitoring.countRunningPlatformThreads()),
         initialDelay, interval, TimeUnit.SECONDS);
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+    }
   }
 }

@@ -43,24 +43,14 @@
 
     <Configuration>
         <Workers>
-            <!--
-              Sets the number of threads handling TCP acceptor logic.
-              - Use 1 on macOS/Windows (SO_REUSEPORT not reliable).
-              - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
-              - Each thread handles new incoming connections via a Selector.
-            -->
-            <Worker name="socket-acceptor">1</Worker>
-            <Worker name="socket-reader">2</Worker>
+            <Worker name="socket-reader">1</Worker>
             <Worker name="socket-writer">2</Worker>
             <Worker name="websocket-producer">1</Worker>
             <Worker name="websocket-consumer">2</Worker>
-            <!-- The minimum number of threads to keep alive in the thread pool is 8 -->
-            <Worker name="http-worker">8</Worker>
-            <Worker name="internal-processor">2</Worker>
         </Workers>
         <Schedules>
             <!-- Get the period checking in seconds which server can keep the empty
-                room -->
+                 room -->
             <Task name="removed-room-scan-interval">30</Task>        <!-- Unit: Seconds -->
             <!-- The period checking player time out in seconds -->
             <Task name="disconnected-player-scan-interval">45</Task>        <!-- Unit: Seconds -->
@@ -76,10 +66,15 @@
         </Schedules>
         <Properties>
             <!-- When this queue size is set to 0, then there is no restriction -->
-            <Property name="max-request-queue-size">100</Property>
-            <Property name="max-response-queue-size-per-session">100</Property>
+            <Property name="max-session-request-queue-size">100</Property>
+            <!-- When this queue size is set to 0, then there is no restriction -->
+            <Property name="max-session-response-queue-size">100</Property>
+            <!-- When this threshold is set to 0, then there is no warning -->
+            <Property name="slow-consuming-warning-session-request-threshold">10</Property>
+            <!-- When this threshold is set to 0, then there is no warning -->
+            <Property name="slow-consuming-warning-session-response-threshold">10</Property>
             <!-- When the server get disconnection of one client, can be hold its
-                player instance until timeout -->
+                 player instance until timeout -->
             <Property name="keep-player-on-disconnection">true</Property>
             <!-- The maximum number of players which game can handle -->
             <Property name="max-number-players">1000</Property>

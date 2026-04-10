@@ -118,7 +118,7 @@ public final class JettyHttp extends AbstractManager implements Service, Runnabl
         new ThreadFactoryBuilder().setDaemon(true).setNameFormat("jetty-http-management-%d").build();
     executorService = Executors.newSingleThreadExecutor(threadFactory);
     if (isInfoEnabled()) {
-      info("START SERVICE", buildgen(getName(), " (", 1, ")"));
+      info("START ENGINE", buildgen(getName(), " (", 1, ")"));
       info("Http Info",
           buildgen("Started at port: ", port, ", Endpoints: ", servletMap.keySet().toString()));
     }
@@ -152,7 +152,7 @@ public final class JettyHttp extends AbstractManager implements Service, Runnabl
       server.stop();
       executorService.shutdownNow();
       if (isInfoEnabled()) {
-        info("STOPPED SERVICE", buildgen(getName(), " (", 1, ")"));
+        info("STOPPED ENGINE", buildgen(getName(), " (", 1, ")"));
       }
     } catch (Exception exception) {
       if (isErrorEnabled()) {

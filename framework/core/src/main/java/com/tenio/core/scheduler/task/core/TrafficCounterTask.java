@@ -31,6 +31,7 @@ import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.scheduler.task.AbstractSystemTask;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,8 @@ import java.util.concurrent.TimeUnit;
  */
 public final class TrafficCounterTask extends AbstractSystemTask {
 
+  private ScheduledExecutorService scheduledService;
+  private ScheduledFuture<?> scheduler;
   private NetworkReaderStatistic networkReaderStatistic;
   private NetworkWriterStatistic networkWriterStatistic;
 
@@ -57,10 +60,10 @@ public final class TrafficCounterTask extends AbstractSystemTask {
   }
 
   @Override
-  public ScheduledFuture<?> run() {
-    var threadFactoryTask =
-        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("traffic-counter-task").build();
-    return Executors.newSingleThreadScheduledExecutor(threadFactoryTask).scheduleAtFixedRate(
+  public void run() {
+    var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-traffic-counter").build();
+    scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
+    scheduler = scheduledService.scheduleAtFixedRate(
         () -> eventManager.emit(ServerEvent.FETCHED_BANDWIDTH_INFO,
             networkReaderStatistic.getReadBytes(),
             networkReaderStatistic.getReadPackets(),
@@ -69,6 +72,28 @@ public final class TrafficCounterTask extends AbstractSystemTask {
             networkWriterStatistic.getWrittenDroppedPacketsByPolicy(),
             networkWriterStatistic.getWrittenDroppedPacketsByFull()),
         initialDelay, interval, TimeUnit.SECONDS);
+  }
+
+  @Override
+  public ScheduledFuture<?> getScheduler() {
+    return scheduler;
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduledService != null) {
+      scheduledService.shutdown();
+    }
+
+    try {
+      if (scheduledService != null) {
+        scheduledService.awaitTermination(5, TimeUnit.SECONDS);
+      }
+    } catch (InterruptedException exception) {
+      if (scheduledService != null) {
+        scheduledService.shutdownNow();
+      }
+    }
   }
 
   /**

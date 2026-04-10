@@ -25,10 +25,16 @@ THE SOFTWARE.
 package com.tenio.core.exception;
 
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.session.implement.SessionImpl;
+import com.tenio.core.network.zero.engine.implement.ZeroWriterImpl;
+
 import java.io.Serial;
 
 /**
  * When the outbound queue, which is using to send packet from the server to clients side, is full.
+ *
+ * @see SessionImpl
+ * @see ZeroWriterImpl
  */
 public final class OutboundQueueFullException extends RuntimeException {
 

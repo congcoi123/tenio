@@ -119,4 +119,10 @@
 
 ## 0.6.12 2026-04-04 Feature release
 - Upgraded dependencies
-- Simplified setting of the configuration file 
+- Simplified setting of the configuration file
+
+## 0.7.0 2026-04-12 Feature release
+- Supports Java 21 Features
+- Virtual Threads are being used in Session Inbound Process Queue and Schedulers
+- It should close sessions whenever exceptions occurred
+- Renamed Controller to Processor
