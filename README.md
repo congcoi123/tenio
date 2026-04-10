@@ -53,7 +53,7 @@ Simple Movement Simulation
 public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
         EventPlayerLogin<Player>, EventReceivedMessageFromPlayer<Player, DataCollection> {
 
-  static void main(String[] params) {
+  static void main() {
     ApplicationLauncher.run(SimpleServer.class);
   }
 
@@ -164,7 +164,7 @@ The project is strongly based on the same name framework as you can be reference
 
 ## Requirements
 ```txt
-- Java 17
+- Java 21+
 ```
 
 ## License
