@@ -43,7 +43,7 @@
 
         <google.guava.version>33.5.0-jre</google.guava.version>
         <jsr305.version>3.0.2</jsr305.version>
-        <logging.log4j.version>2.25.3</logging.log4j.version>
+        <logging.log4j.version>2.25.4</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
