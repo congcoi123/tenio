@@ -87,7 +87,7 @@ datagram-packet-policy: DatagramPacketPolicy
 ```
 
 ## Requirements
-- Java 21+
+Java 21+
 
 ## Dependencies
 - HTTP [Jetty](https://eclipse.dev/jetty)
@@ -103,6 +103,15 @@ Please check out the [changelog](CHANGELOG.md) for more details.
 Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
 
 ## Installation
+Maven Central
+```xml
+<dependency>
+    <groupId>io.github.congcoi123</groupId>
+    <artifactId>tenio-core</artifactId>
+    <version>0.7.1</version>
+</dependency>
+```
+GitHub
 ```sh
 $ git clone https://github.com/congcoi123/tenio-core.git
 ```

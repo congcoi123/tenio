@@ -126,3 +126,6 @@
 - Virtual Threads are being used in Session Inbound Process Queue and Schedulers
 - It should close sessions whenever exceptions occurred
 - Renamed Controller to Processor
+
+## 0.7.1 2026-04-19 Bugfix release
+- It should force to close sessions and disconnect players in some scenarios

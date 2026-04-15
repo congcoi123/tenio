@@ -41,13 +41,32 @@
 Simple Movement Simulation  
 ![Simple Movement Simulation](assets/movement-simulation-example-4.gif)
 
-## Simple Implementation
-- Establishes a simple server with only a single Java class
+## Quick Start
+Start a functional game server in 5 minutes (even less)
 
+1. Declare `tenio-core` as a dependency
+```xml
+<dependency>
+    <groupId>io.github.congcoi123</groupId>
+    <artifactId>tenio-core</artifactId>
+    <version>0.7.1</version>
+</dependency>
+```
+2. Initialize a game server
 ```Java
-/**
- * This class shows how a simple server handle messages that come from a client.
- */
+@Bootstrap
+public final class SimpleServer {
+
+  static void main() {
+    ApplicationLauncher.run(SimpleServer.class);
+  }
+}
+```
+
+**That's it!**
+
+However you aren't listening to any events, so the server is useless. Let's handle some and see how they work.
+```Java
 @Bootstrap
 @EventHandler
 public final class SimpleServer extends AbstractHandler implements EventConnectionEstablishedResult<ZeroMap>,
@@ -90,7 +109,9 @@ public final class SimpleServer extends AbstractHandler implements EventConnecti
 }
 ```
 
-- Supports self-defined commands to interact with the server conveniently
+## Development Mode
+Supports self-defined commands to interact with the server conveniently
+
 1) Usage
   
 ```text
@@ -120,7 +141,7 @@ $
 <Property name="enable-terminal-command">true</Property>
 ``` 
 
-3) Simple implementation
+3) Simple Implementation
 ```Java
 @Command(label = "player", usage = {
     "logout first"
@@ -164,7 +185,7 @@ The project is strongly based on the same name framework as you can be reference
 
 ## Requirements
 ```txt
-- Java 21+
+Java 21+
 ```
 
 ## License

@@ -40,7 +40,7 @@ based server specifically designed for multiplayer games, which supports UDP, TC
 This module provides the necessary mechanisms to build a game. It also supports some kind of pattern such as ECS, FSM, and integrates a simple physic 2D library. You can even observe the running entities on the server side by using the debugger window.
 
 ## Requirements
-- Java 21+
+Java 21+
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
@@ -52,6 +52,15 @@ Please check out the [changelog](CHANGELOG.md) for more details.
 Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
 
 ## Installation
+Maven Central
+```xml
+<dependency>
+    <groupId>io.github.congcoi123</groupId>
+    <artifactId>tenio-engine</artifactId>
+    <version>0.7.0</version>
+</dependency>
+```
+GitHub
 ```sh
 $ git clone https://github.com/congcoi123/tenio-engine.git
 ```

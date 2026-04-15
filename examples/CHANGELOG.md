@@ -97,3 +97,6 @@
 
 ## 0.7.0 2026-04-12 Feature release
 - Supports Java 21 Features
+
+## 0.7.1 2026-04-19 Feature release
+- Upgraded dependencies
