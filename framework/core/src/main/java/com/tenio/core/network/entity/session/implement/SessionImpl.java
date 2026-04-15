@@ -62,8 +62,9 @@ public class SessionImpl extends AbstractLogger implements Session {
   private final long createdTime;
   private final AtomicReference<AssociatedState> atomicAssociatedState;
   private volatile AssociatedState associatedState;
+  private final AtomicReference<State> atomicState;
+  private volatile State state;
   private volatile String name;
-  private volatile boolean activated;
 
   private SessionManager sessionManager;
   private SocketChannel socketChannel;
@@ -103,6 +104,8 @@ public class SessionImpl extends AbstractLogger implements Session {
     id = ID_COUNTER.getAndIncrement();
     transportType = TransportType.UNKNOWN;
     udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
+    atomicState = new AtomicReference<>();
+    setState(State.INITIALIZED);
     atomicAssociatedState = new AtomicReference<>();
     setAssociatedState(AssociatedState.NONE);
     long currentTime = now();
@@ -453,13 +456,19 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public boolean isActivated() {
-    return activated;
+    return state == State.ACTIVATED;
   }
 
   @Override
-  public synchronized void activate() {
-    activated = true;
-    inboundProcess.start();
+  public void activate() {
+    if (transitionState(State.INITIALIZED, State.ACTIVATED)) {
+      inboundProcess.start();
+    } else {
+      if (isWarnEnabled()) {
+        warn("[Invalid States Transition] Expected State: INITIALIZED, New State: ACTIVATED, " +
+                "But The Actual State: ", state);
+      }
+    }
   }
 
   @Override
@@ -480,41 +489,51 @@ public class SessionImpl extends AbstractLogger implements Session {
   @Override
   public void close(ConnectionDisconnectMode connectionDisconnectMode,
                     PlayerDisconnectMode playerDisconnectMode) throws IOException {
-    synchronized (this) {
-      if (!activated) {
-        return;
+    // Once the session is terminated, it cannot be reused
+    if (transitionState(State.INITIALIZED, State.TERMINATED) || transitionState(State.ACTIVATED, State.TERMINATED)) {
+      inactivatedTime = now();
+
+      connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
+
+      // clear inbound queue
+      inboundProcess.interrupt();
+      inboundQueue.clear();
+
+      // clear outbound queue
+      if (outboundQueue != null) {
+        outboundQueue.clear();
       }
-      activated = false;
+
+      switch (transportType) {
+        case TCP:
+          SocketUtility.closeSocket(socketChannel, socketSelectionKey);
+          break;
+
+        case WEB_SOCKET:
+          SocketUtility.closeSocket(webSocketChannel);
+          break;
+
+        default:
+          break;
+      }
+
+      sessionManager.emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
+              connectionDisconnectMode, playerDisconnectMode);
     }
+  }
 
-    inactivatedTime = now();
+  // NOTE: This method is not thread-safety
+  private void setState(State state) {
+    this.state = state;
+    atomicState.set(state);
+  }
 
-    connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
-
-    // clear inbound queue
-    inboundProcess.interrupt();
-    inboundQueue.clear();
-
-    // clear outbound queue
-    if (outboundQueue != null) {
-      outboundQueue.clear();
+  private boolean transitionState(State expectedState, State newState) {
+    if (atomicState.compareAndSet(expectedState, newState)) {
+      state = newState;
+      return true;
     }
-
-    switch (transportType) {
-      case TCP:
-        SocketUtility.closeSocket(socketChannel, socketSelectionKey);
-        break;
-
-      case WEB_SOCKET:
-        SocketUtility.closeSocket(webSocketChannel);
-        break;
-
-      default:
-        break;
-    }
-
-    sessionManager.emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
-        connectionDisconnectMode, playerDisconnectMode);
+    return false;
   }
 
   private void setAssociatedState(AssociatedState associatedState) {
@@ -535,7 +554,7 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   private void processInboundQueue() {
     while (!Thread.currentThread().isInterrupted()) {
-      if (activated) {
+      if (state == State.ACTIVATED) {
         try {
           DataCollection message = inboundQueue.take();
           sessionManager.emitEvent(ServerEvent.SESSION_READ_MESSAGE, this, message);
@@ -593,7 +612,7 @@ public class SessionImpl extends AbstractLogger implements Session {
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
         ", inactivatedTime=" + inactivatedTime +
         ", lastActivityTime=" + lastActivityTime +
-        ", activated=" + activated +
+        ", state=" + state +
         ", hasUdp=" + hasUdp +
         ", associatedState=" + associatedState +
         ", remainingInboundQueue=" + inboundQueue.size() +

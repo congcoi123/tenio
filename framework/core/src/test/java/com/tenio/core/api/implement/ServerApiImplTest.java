@@ -37,6 +37,8 @@ import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Channel;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
@@ -47,8 +49,10 @@ import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.CreatedRoomException;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import com.tenio.core.server.Server;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -291,5 +295,39 @@ class ServerApiImplTest {
     List<Room> rooms = Collections.emptyList();
     when(roomManager.getReadonlyRoomsList()).thenReturn(rooms);
     assertEquals(rooms, api.getReadonlyRoomsList());
+  }
+
+  // --- logout ---
+
+  @Test
+  @DisplayName("logout calls session.close() even when session is not activated")
+  void testLogoutCallsCloseOnUnactivatedSession() throws IOException {
+    var player = mock(Player.class);
+    var session = mock(Session.class);
+    when(player.containsSession()).thenReturn(true);
+    when(player.getSession()).thenReturn(Optional.of(session));
+    when(session.isActivated()).thenReturn(false);
+
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+
+    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+  }
+
+  @Test
+  @DisplayName("logout calls session.close() when session is activated")
+  void testLogoutCallsCloseOnActivatedSession() throws IOException {
+    var player = mock(Player.class);
+    var session = mock(Session.class);
+    when(player.containsSession()).thenReturn(true);
+    when(player.getSession()).thenReturn(Optional.of(session));
+    when(session.isActivated()).thenReturn(true);
+
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+
+    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
   }
 }
