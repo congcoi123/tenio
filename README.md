@@ -41,7 +41,7 @@ This module provides common methods, classes for other modules to use. It suppor
 mechanism and supplies the self-defined serialized and deserialized processes for transferring data through the network.
 
 ## Requirements
-- Java 21+
+Java 21+
 
 ## License
 The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
@@ -53,6 +53,15 @@ Please check out the [changelog](CHANGELOG.md) for more details.
 Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
 
 ## Installation
+Maven Central
+```xml
+<dependency>
+    <groupId>io.github.congcoi123</groupId>
+    <artifactId>tenio-common</artifactId>
+    <version>0.7.0</version>
+</dependency>
+```
+GitHub
 ```sh
 $ git clone https://github.com/congcoi123/tenio-common.git
 ```
