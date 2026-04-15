@@ -554,6 +554,26 @@ public interface Session {
   }
 
   /**
+   * The main state of session.
+   *
+   * @since 0.7.1
+   */
+  enum State {
+    /**
+     * The session is created.
+     */
+    INITIALIZED,
+    /**
+     * The session is activated.
+     */
+    ACTIVATED,
+    /**
+     * The session is terminated.
+     */
+    TERMINATED
+  }
+
+  /**
    * The state values present the phase of associating between a session and a player.
    */
   enum AssociatedState {

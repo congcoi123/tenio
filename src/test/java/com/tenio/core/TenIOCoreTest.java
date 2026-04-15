@@ -24,11 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core;
 
+import org.junit.platform.runner.JUnitPlatform;
 import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
+import org.junit.runner.RunWith;
 
-@Suite
+@RunWith(JUnitPlatform.class)
 @SuiteDisplayName("Test all unit test cases for tenio-core module")
 @SelectPackages({
     "com.tenio.core",

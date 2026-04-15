@@ -27,6 +27,7 @@ package com.tenio.core.network.entity.session.implement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.session.Session;
@@ -40,5 +41,21 @@ class SessionImplTest {
     assertFalse(actualNewInstanceResult.isActivated());
     assertEquals(TransportType.UNKNOWN, actualNewInstanceResult.getTransportType());
     assertNull(actualNewInstanceResult.fetchOutboundQueue());
+  }
+
+  @Test
+  void testActivateTransitionsToActivatedState() {
+    Session session = SessionImpl.newInstance();
+    assertFalse(session.isActivated());
+    session.activate();
+    assertTrue(session.isActivated());
+  }
+
+  @Test
+  void testSecondActivateCallIsNoOp() {
+    Session session = SessionImpl.newInstance();
+    session.activate();
+    session.activate(); // second call: already ACTIVATED, transition INITIALIZED->ACTIVATED fails
+    assertTrue(session.isActivated());
   }
 }
