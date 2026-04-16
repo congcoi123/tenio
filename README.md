@@ -109,6 +109,8 @@ public final class SimpleServer extends AbstractHandler implements EventConnecti
 }
 ```
 
+The core framework supports various event types, but your server application may listen only to those it is interested in. The full list of supported events can be found here: [events](https://github.com/congcoi123/tenio-core?tab=readme-ov-file#all-supported-events)
+
 ## Development Mode
 Supports self-defined commands to interact with the server conveniently
 
