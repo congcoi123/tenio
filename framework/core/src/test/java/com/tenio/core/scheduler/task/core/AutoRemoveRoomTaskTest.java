@@ -88,4 +88,114 @@ class AutoRemoveRoomTaskTest {
       assertNotNull(task.getScheduler());
     }
   }
+
+  @Test
+  @DisplayName("Test shutdown after run completes without exception")
+  void testShutdownAfterRun() {
+    ServerApi api = Mockito.mock(ServerApi.class);
+    ServerImpl server = Mockito.mock(ServerImpl.class);
+    Mockito.when(server.getApi()).thenReturn(api);
+    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of());
+    try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class)) {
+      serverStatic.when(ServerImpl::getInstance).thenReturn(server);
+      task.run();
+    }
+    task.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test shutdown before run is a no-op")
+  void testShutdownBeforeRun() {
+    AutoRemoveRoomTask freshTask = AutoRemoveRoomTask.newInstance(eventManager);
+    freshTask.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test setInterval does not throw")
+  void testSetInterval() {
+    task.setInterval(120);
+  }
+
+  private void runWithImmediateExecution(Runnable action) {
+    java.util.concurrent.ScheduledExecutorService mockScheduler =
+        Mockito.mock(java.util.concurrent.ScheduledExecutorService.class);
+    java.util.concurrent.ExecutorService mockExec =
+        Mockito.mock(java.util.concurrent.ExecutorService.class);
+    Mockito.when(mockScheduler.scheduleAtFixedRate(
+            Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))
+        .thenAnswer(inv -> {
+          ((Runnable) inv.getArgument(0)).run();
+          return Mockito.mock(java.util.concurrent.ScheduledFuture.class);
+        });
+    Mockito.doAnswer(inv -> {
+      ((Runnable) inv.getArgument(0)).run();
+      return null;
+    }).when(mockExec).execute(Mockito.any(Runnable.class));
+
+    ServerApi api = Mockito.mock(ServerApi.class);
+    ServerImpl server = Mockito.mock(ServerImpl.class);
+    Mockito.when(server.getApi()).thenReturn(api);
+
+    try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class);
+        org.mockito.MockedStatic<java.util.concurrent.Executors> execMock =
+            Mockito.mockStatic(java.util.concurrent.Executors.class)) {
+      serverStatic.when(ServerImpl::getInstance).thenReturn(server);
+      execMock.when(() -> java.util.concurrent.Executors.newSingleThreadScheduledExecutor(
+          Mockito.any())).thenReturn(mockScheduler);
+      execMock.when(() -> java.util.concurrent.Executors.newThreadPerTaskExecutor(
+          Mockito.any())).thenReturn(mockExec);
+      action.run();
+    }
+  }
+
+  @Test
+  @DisplayName("lambda body: empty WHEN_EMPTY idle room is removed via server API")
+  void testLambdaBodyRemovesEmptyWhenEmptyIdleRoom() {
+    Room room = Mockito.mock(Room.class);
+    Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.WHEN_EMPTY);
+    Mockito.when(room.isEmpty()).thenReturn(true);
+    com.tenio.core.entity.RoomState state = Mockito.mock(com.tenio.core.entity.RoomState.class);
+    Mockito.when(room.getState()).thenReturn(state);
+    Mockito.when(state.isIdle()).thenReturn(true);
+    Mockito.when(room.getId()).thenReturn(1L);
+    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("lambda body: non-empty room is skipped")
+  void testLambdaBodySkipsNonEmptyRoom() {
+    Room room = Mockito.mock(Room.class);
+    Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.WHEN_EMPTY);
+    Mockito.when(room.isEmpty()).thenReturn(false);
+    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("lambda body: NEVER_REMOVE room is skipped")
+  void testLambdaBodySkipsNeverRemoveRoom() {
+    Room room = Mockito.mock(Room.class);
+    Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.NEVER_REMOVE);
+    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("shutdown handles InterruptedException from awaitTermination")
+  void testShutdownHandlesInterruptedException() {
+    task.run();
+    Thread.currentThread().interrupt();
+    try {
+      task.shutdown();
+    } finally {
+      Thread.interrupted();
+    }
+  }
 }

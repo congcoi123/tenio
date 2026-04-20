@@ -27,16 +27,23 @@ package com.tenio.core.network.zero.engine.writer.implement;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.statistic.NetworkWriterStatistic;
 import com.tenio.core.network.zero.engine.manager.SessionTicketsQueueManager;
+import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,11 +52,13 @@ import org.junit.jupiter.api.Test;
 class DatagramWriterHandlerTest {
 
   private DatagramWriterHandler handler;
+  private NetworkWriterStatistic writerStatistic;
 
   @BeforeEach
   void setUp() {
     handler = DatagramWriterHandler.newInstance();
-    handler.setNetworkWriterStatistic(mock(NetworkWriterStatistic.class));
+    writerStatistic = mock(NetworkWriterStatistic.class);
+    handler.setNetworkWriterStatistic(writerStatistic);
     handler.setSessionTicketsQueueManager(mock(SessionTicketsQueueManager.class));
     handler.allocateBuffer(512);
   }
@@ -90,6 +99,125 @@ class DatagramWriterHandlerTest {
 
     when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
     when(session.getDatagramRemoteAddress()).thenReturn(null);
+
+    assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
+    verify(outboundQueue, never()).take();
+  }
+
+  @Test
+  @DisplayName("send with empty packet data removes packet from queue")
+  void testSendWithEmptyDataRemovesPacketFromQueue() {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    InetSocketAddress remoteAddress = new InetSocketAddress("127.0.0.1", 8080);
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    Session session = mock(Session.class);
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+
+    handler.setPacketEncoder(encoder);
+    when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
+    when(session.getDatagramRemoteAddress()).thenReturn(remoteAddress);
+    when(encoder.encode(packet)).thenReturn(packet);
+    when(packet.getData()).thenReturn(new byte[0]);
+
+    assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
+    verify(outboundQueue).take();
+  }
+
+  @Test
+  @DisplayName("send successfully writes data, updates statistics and removes packet from queue")
+  void testSendSuccessfullyWritesData() throws Exception {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    InetSocketAddress remoteAddress = new InetSocketAddress("127.0.0.1", 8080);
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    Session session = mock(Session.class);
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+
+    handler.setPacketEncoder(encoder);
+    when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
+    when(session.getDatagramRemoteAddress()).thenReturn(remoteAddress);
+    when(encoder.encode(packet)).thenReturn(packet);
+    when(packet.getData()).thenReturn(new byte[]{1, 2, 3});
+    when(datagramChannel.send(any(), any())).thenReturn(3);
+    when(session.isActivated()).thenReturn(false);
+    when(outboundQueue.isEmpty()).thenReturn(true);
+
+    assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
+    verify(outboundQueue).take();
+    verify(writerStatistic).updateWrittenBytes(3);
+    verify(writerStatistic).updateWrittenPackets(1);
+  }
+
+  @Test
+  @DisplayName("send with large data allocates bigger buffer and writes")
+  void testSendWithLargeDataAllocatesBiggerBuffer() throws Exception {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    InetSocketAddress remoteAddress = new InetSocketAddress("127.0.0.1", 8080);
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    Session session = mock(Session.class);
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+
+    handler.setPacketEncoder(encoder);
+    handler.allocateBuffer(2);
+    when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
+    when(session.getDatagramRemoteAddress()).thenReturn(remoteAddress);
+    when(encoder.encode(packet)).thenReturn(packet);
+    byte[] largeData = new byte[]{1, 2, 3, 4, 5};
+    when(packet.getData()).thenReturn(largeData);
+    when(datagramChannel.send(any(), any())).thenReturn(5);
+    when(session.isActivated()).thenReturn(false);
+
+    assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
+    verify(outboundQueue).take();
+  }
+
+  @Test
+  @DisplayName("send re-queues session when activated and outbound queue is not empty")
+  void testSendReQueuesSessionWhenActivatedAndQueueNotEmpty() throws Exception {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    InetSocketAddress remoteAddress = new InetSocketAddress("127.0.0.1", 8080);
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    Session session = mock(Session.class);
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+    SessionTicketsQueueManager queueManager = mock(SessionTicketsQueueManager.class);
+    java.util.concurrent.BlockingQueue<Session> ticketsQueue = new java.util.concurrent.LinkedBlockingQueue<>();
+
+    handler.setPacketEncoder(encoder);
+    handler.setSessionTicketsQueueManager(queueManager);
+    when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
+    when(session.getDatagramRemoteAddress()).thenReturn(remoteAddress);
+    when(encoder.encode(packet)).thenReturn(packet);
+    when(packet.getData()).thenReturn(new byte[]{1, 2, 3});
+    when(datagramChannel.send(any(), any())).thenReturn(3);
+    when(session.isActivated()).thenReturn(true);
+    when(session.getId()).thenReturn(42L);
+    when(outboundQueue.isEmpty()).thenReturn(false);
+    when(queueManager.getQueueByElementId(42L)).thenReturn(ticketsQueue);
+
+    assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
+    verify(outboundQueue).take();
+    assertNotNull(ticketsQueue.peek());
+  }
+
+  @Test
+  @DisplayName("send with IOException from datagramChannel.send does not propagate and skips take")
+  void testSendWithIOExceptionFromChannelDoesNotPropagate() throws Exception {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    InetSocketAddress remoteAddress = new InetSocketAddress("127.0.0.1", 8080);
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    Session session = mock(Session.class);
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    Packet packet = mock(Packet.class);
+
+    handler.setPacketEncoder(encoder);
+    when(session.fetchDatagramChannel()).thenReturn(datagramChannel);
+    when(session.getDatagramRemoteAddress()).thenReturn(remoteAddress);
+    when(encoder.encode(packet)).thenReturn(packet);
+    when(packet.getData()).thenReturn(new byte[]{1, 2, 3});
+    doThrow(new IOException("send failed")).when(datagramChannel).send(any(), any());
 
     assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
     verify(outboundQueue, never()).take();

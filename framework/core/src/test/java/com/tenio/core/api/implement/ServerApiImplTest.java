@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.api.implement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -40,6 +41,7 @@ import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerLeaveRoomMode;
+import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.define.result.PlayerJoinedRoomResult;
 import com.tenio.core.entity.define.result.PlayerLeftRoomResult;
 import com.tenio.core.entity.define.result.RoomCreatedResult;
@@ -48,7 +50,10 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.CreatedRoomException;
+import com.tenio.core.exception.PlayerJoinedRoomException;
+import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import com.tenio.core.server.Server;
@@ -66,19 +71,21 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test Cases For ServerApiImpl (extended)")
 class ServerApiImplTest {
 
+  private Server server;
   private PlayerManager playerManager;
   private RoomManager roomManager;
   private ChannelManager channelManager;
+  private DatagramChannelManager datagramChannelManager;
   private EventManager eventManager;
   private ServerApi api;
 
   @BeforeEach
   void setUp() {
-    Server server = mock(Server.class);
+    server = mock(Server.class);
     playerManager = mock(PlayerManager.class);
     roomManager = mock(RoomManager.class);
     channelManager = mock(ChannelManager.class);
-    DatagramChannelManager datagramChannelManager = mock(DatagramChannelManager.class);
+    datagramChannelManager = mock(DatagramChannelManager.class);
     eventManager = mock(EventManager.class);
     when(server.getPlayerManager()).thenReturn(playerManager);
     when(server.getRoomManager()).thenReturn(roomManager);
@@ -329,5 +336,315 @@ class ServerApiImplTest {
 
     verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
         PlayerDisconnectMode.CLIENT_REQUEST);
+  }
+
+  @Test
+  @DisplayName("logout with null player returns immediately without side effects")
+  void testLogoutNullPlayerReturnsImmediately() {
+    api.logout(null, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
+    // no exception, no event emitted
+  }
+
+  @Test
+  @DisplayName("logout with no-session player emits DISCONNECT_PLAYER and removes player")
+  void testLogoutWithNoSessionDisconnectsPlayer() {
+    var player = mock(Player.class);
+    when(player.containsSession()).thenReturn(false);
+    when(player.isInRoom()).thenReturn(false);
+    when(player.getIdentity()).thenReturn("alice");
+
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+
+    verify(eventManager).emit(ServerEvent.DISCONNECT_PLAYER, player,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(playerManager).removePlayerByIdentity("alice");
+    verify(player).clean();
+  }
+
+  // --- login ---
+
+  @Test
+  @DisplayName("login(String) creates player and emits PLAYER_LOGIN")
+  void testLoginWithPlayerName() {
+    var player = mock(Player.class);
+    when(playerManager.createPlayer("alice")).thenReturn(player);
+    api.login("alice");
+    verify(playerManager).createPlayer("alice");
+    verify(eventManager).emit(ServerEvent.PLAYER_LOGIN, player);
+  }
+
+  @Test
+  @DisplayName("login(String, Session) creates player with session and emits PLAYER_LOGIN")
+  void testLoginWithPlayerNameAndSession() {
+    var player = mock(Player.class);
+    var session = mock(Session.class);
+    when(playerManager.createPlayerWithSession("alice", session)).thenReturn(player);
+    api.login("alice", session);
+    verify(playerManager).createPlayerWithSession("alice", session);
+    verify(eventManager).emit(ServerEvent.PLAYER_LOGIN, player);
+  }
+
+  @Test
+  @DisplayName("login(Player) adds player and emits PLAYER_LOGIN")
+  void testLoginWithPlayer() {
+    var player = mock(Player.class);
+    api.login(player);
+    verify(playerManager).addPlayer(player);
+    verify(eventManager).emit(ServerEvent.PLAYER_LOGIN, player);
+  }
+
+  // --- createRoom ---
+
+  @Test
+  @DisplayName("createRoom with null owner creates room and emits SUCCESS")
+  void testCreateRoomWithNullOwner() {
+    var setting = mock(InitialRoomSetting.class);
+    var room = mock(Room.class);
+    when(roomManager.createRoom(setting)).thenReturn(room);
+    Room result = api.createRoom(setting, null);
+    assertEquals(room, result);
+    verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, room, setting,
+        RoomCreatedResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("createRoom with owner creates room and emits SUCCESS")
+  void testCreateRoomWithOwner() {
+    var setting = mock(InitialRoomSetting.class);
+    var owner = mock(Player.class);
+    var room = mock(Room.class);
+    when(roomManager.createRoomWithOwner(setting, owner)).thenReturn(room);
+    Room result = api.createRoom(setting, owner);
+    assertEquals(room, result);
+    verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, room, setting,
+        RoomCreatedResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("createRoom with IllegalArgumentException emits INVALID_NAME_OR_PASSWORD")
+  void testCreateRoomIllegalArgumentException() {
+    var setting = mock(InitialRoomSetting.class);
+    doThrow(IllegalArgumentException.class).when(roomManager).createRoom(setting);
+    Room result = api.createRoom(setting, null);
+    assertNull(result);
+    verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
+        RoomCreatedResult.INVALID_NAME_OR_PASSWORD);
+  }
+
+  @Test
+  @DisplayName("createRoom with CreatedRoomException emits the exception result")
+  void testCreateRoomCreatedRoomException() {
+    var setting = mock(InitialRoomSetting.class);
+    doThrow(new CreatedRoomException("fail", RoomCreatedResult.REACHED_MAX_ROOMS))
+        .when(roomManager).createRoom(setting);
+    Room result = api.createRoom(setting, null);
+    assertNull(result);
+    verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
+        RoomCreatedResult.REACHED_MAX_ROOMS);
+  }
+
+  // --- joinRoom ---
+
+  @Test
+  @DisplayName("joinRoom with null player emits PLAYER_OR_ROOM_UNAVAILABLE")
+  void testJoinRoomNullPlayer() {
+    var room = mock(Room.class);
+    api.joinRoom(null, room, "", 0, false);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, null, room,
+        PlayerJoinedRoomResult.PLAYER_OR_ROOM_UNAVAILABLE);
+  }
+
+  @Test
+  @DisplayName("joinRoom with null room emits PLAYER_OR_ROOM_UNAVAILABLE")
+  void testJoinRoomNullRoom() {
+    var player = mock(Player.class);
+    api.joinRoom(player, null, "", 0, false);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, null,
+        PlayerJoinedRoomResult.PLAYER_OR_ROOM_UNAVAILABLE);
+  }
+
+  @Test
+  @DisplayName("joinRoom when player is already in another room emits PLAYER_IS_IN_ANOTHER_ROOM")
+  void testJoinRoomPlayerAlreadyInRoom() {
+    var player = mock(Player.class);
+    var room = mock(Room.class);
+    when(player.isInRoom()).thenReturn(true);
+    api.joinRoom(player, room, "", 0, false);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+        PlayerJoinedRoomResult.PLAYER_IS_IN_ANOTHER_ROOM);
+  }
+
+  @Test
+  @DisplayName("joinRoom success adds player to room and emits SUCCESS")
+  void testJoinRoomSuccess() {
+    var player = mock(Player.class);
+    var room = mock(Room.class);
+    when(player.isInRoom()).thenReturn(false);
+    api.joinRoom(player, room, "", 0, false);
+    verify(room).addPlayer(player, "", false, 0);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+        PlayerJoinedRoomResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("joinRoom with PlayerJoinedRoomException emits the exception result")
+  void testJoinRoomPlayerJoinedRoomException() {
+    var player = mock(Player.class);
+    var room = mock(Room.class);
+    when(player.isInRoom()).thenReturn(false);
+    doThrow(new PlayerJoinedRoomException("fail", PlayerJoinedRoomResult.ROOM_IS_FULL))
+        .when(room).addPlayer(player, "", false, 0);
+    api.joinRoom(player, room, "", 0, false);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+        PlayerJoinedRoomResult.ROOM_IS_FULL);
+  }
+
+  @Test
+  @DisplayName("joinRoom with AddedDuplicatedPlayerException emits DUPLICATED_PLAYER")
+  void testJoinRoomAddedDuplicatedPlayerException() {
+    var player = mock(Player.class);
+    var room = mock(Room.class);
+    when(player.isInRoom()).thenReturn(false);
+    when(player.getIdentity()).thenReturn("alice");
+    doThrow(new AddedDuplicatedPlayerException(player))
+        .when(room).addPlayer(player, "", false, 0);
+    api.joinRoom(player, room, "", 0, false);
+    verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT, player, room,
+        PlayerJoinedRoomResult.DUPLICATED_PLAYER);
+  }
+
+  // --- leaveRoom edge cases ---
+
+  @Test
+  @DisplayName("leaveRoom when player is not in a room emits PLAYER_ALREADY_LEFT_ROOM")
+  void testLeaveRoomPlayerNotInRoom() {
+    var player = mock(Player.class);
+    when(player.isInRoom()).thenReturn(false);
+    api.leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
+    verify(eventManager).emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, null,
+        PlayerLeaveRoomMode.LOG_OUT, PlayerLeftRoomResult.PLAYER_ALREADY_LEFT_ROOM);
+  }
+
+  @Test
+  @DisplayName("leaveRoom with RemovedNonExistentPlayerException emits PLAYER_ALREADY_LEFT_ROOM")
+  void testLeaveRoomRemovedNonExistentPlayerException() {
+    var player = mock(Player.class);
+    var room = mock(Room.class);
+    when(player.isInRoom()).thenReturn(true);
+    when(player.getCurrentRoom()).thenReturn(Optional.of(room));
+    doThrow(RemovedNonExistentPlayerException.class).when(room).removePlayer(player);
+    api.leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
+    verify(eventManager).emit(ServerEvent.PLAYER_AFTER_LEFT_ROOM, player, room,
+        PlayerLeaveRoomMode.LOG_OUT, PlayerLeftRoomResult.PLAYER_ALREADY_LEFT_ROOM);
+  }
+
+  // --- removeRoom ---
+
+  @Test
+  @DisplayName("removeRoom with null room returns immediately without side effects")
+  void testRemoveRoomWithNull() {
+    api.removeRoom(null, RoomRemoveMode.WHEN_EMPTY);
+    // just verify no NPE is thrown
+  }
+
+  @Test
+  @DisplayName("removeRoom emits ROOM_WILL_BE_REMOVED and removes room by id")
+  void testRemoveRoomSuccess() {
+    var room = mock(Room.class);
+    when(room.getId()).thenReturn(42L);
+    api.removeRoom(room, RoomRemoveMode.WHEN_EMPTY);
+    verify(eventManager).emit(ServerEvent.ROOM_WILL_BE_REMOVED, room, RoomRemoveMode.WHEN_EMPTY);
+    verify(roomManager).removeRoomById(42L);
+  }
+
+  // --- additional simple delegates ---
+
+  @Test
+  @DisplayName("getPlayerCount delegates to playerManager")
+  void testGetPlayerCount() {
+    when(playerManager.getPlayerCount()).thenReturn(5);
+    assertEquals(5, api.getPlayerCount());
+  }
+
+  @Test
+  @DisplayName("getReadonlyPlayersList delegates to playerManager")
+  void testGetReadonlyPlayersList() {
+    List<Player> list = Collections.emptyList();
+    when(playerManager.getReadonlyPlayersList()).thenReturn(list);
+    assertEquals(list, api.getReadonlyPlayersList());
+  }
+
+  @Test
+  @DisplayName("getRoomById returns non-empty Optional when room is found")
+  void testGetRoomByIdFound() {
+    var room = mock(Room.class);
+    when(roomManager.getRoomById(1L)).thenReturn(room);
+    assertTrue(api.getRoomById(1L).isPresent());
+    assertEquals(room, api.getRoomById(1L).get());
+  }
+
+  @Test
+  @DisplayName("getRoomById returns empty Optional when room is not found")
+  void testGetRoomByIdNotFound() {
+    when(roomManager.getRoomById(99L)).thenReturn(null);
+    assertTrue(api.getRoomById(99L).isEmpty());
+  }
+
+  @Test
+  @DisplayName("getPlayerByIdentity returns non-empty Optional when player is found")
+  void testGetPlayerByIdentityFound() {
+    var player = mock(Player.class);
+    when(playerManager.getPlayerByIdentity("alice")).thenReturn(player);
+    assertTrue(api.getPlayerByIdentity("alice").isPresent());
+    assertEquals(player, api.getPlayerByIdentity("alice").get());
+  }
+
+  @Test
+  @DisplayName("getUdpPort delegates to datagramChannelManager")
+  void testGetUdpPort() {
+    when(datagramChannelManager.getUdpPort()).thenReturn(9090);
+    assertEquals(9090, api.getUdpPort());
+  }
+
+  @Test
+  @DisplayName("getStartedTime delegates to server")
+  void testGetStartedTime() {
+    when(server.getStartedTime()).thenReturn(12345L);
+    assertEquals(12345L, api.getStartedTime());
+  }
+
+  @Test
+  @DisplayName("getUptime delegates to server")
+  void testGetUptime() {
+    when(server.getUptime()).thenReturn(99L);
+    assertEquals(99L, api.getUptime());
+  }
+
+  @Test
+  @DisplayName("logout catches IOException from session.close without propagating")
+  void testLogoutHandlesIOExceptionFromSessionClose() throws IOException {
+    Player player = mock(Player.class);
+    Session session = mock(Session.class);
+    when(player.containsSession()).thenReturn(true);
+    when(player.getSession()).thenReturn(Optional.of(session));
+    doThrow(new IOException("close failed")).when(session).close(
+        org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+        () -> api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
+            PlayerDisconnectMode.CLIENT_REQUEST));
+  }
+
+  @Test
+  @DisplayName("logout without session emits DISCONNECT_PLAYER and removes player")
+  void testLogoutWithoutSessionEmitsDisconnectAndRemovesPlayer() {
+    Player player = mock(Player.class);
+    when(player.containsSession()).thenReturn(false);
+    when(player.getSession()).thenReturn(Optional.empty());
+    when(player.isInRoom()).thenReturn(false);
+    when(player.getIdentity()).thenReturn("test-player");
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(eventManager).emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(playerManager).removePlayerByIdentity("test-player");
   }
 }

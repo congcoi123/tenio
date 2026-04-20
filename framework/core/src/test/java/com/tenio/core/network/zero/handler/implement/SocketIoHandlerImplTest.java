@@ -26,6 +26,8 @@ package com.tenio.core.network.zero.handler.implement;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -34,7 +36,9 @@ import static org.mockito.Mockito.when;
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.Session;
@@ -200,6 +204,87 @@ class SocketIoHandlerImplTest {
     Session session = mock(Session.class);
     when(sessionManager.getSessionBySocket(socketChannel)).thenReturn(session);
     when(session.isActivated()).thenReturn(false);
+
+    assertDoesNotThrow(() ->
+        handler.channelInactive(socketChannel, selectionKey, ConnectionDisconnectMode.SERVER_DOWN));
+  }
+
+  @Test
+  @DisplayName("channelInactive with active session delegates close to the session")
+  void testChannelInactiveWithActiveSessionCallsSessionClose() throws IOException {
+    SocketChannel socketChannel = mock(SocketChannel.class);
+    SelectionKey selectionKey = mock(SelectionKey.class);
+    Session session = mock(Session.class);
+    when(sessionManager.getSessionBySocket(socketChannel)).thenReturn(session);
+    when(session.isActivated()).thenReturn(true);
+
+    assertDoesNotThrow(() ->
+        handler.channelInactive(socketChannel, selectionKey,
+            ConnectionDisconnectMode.CLIENT_REQUEST));
+
+    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CONNECTION_LOST);
+  }
+
+  @Test
+  @DisplayName("onFramedResult with DONE state and full inbound queue updates dropped packets")
+  void testOnFramedResultWithDoneStateAndFullQueueUpdatesDroppedPackets() {
+    Session session = mock(Session.class);
+    DataCollection message = mock(DataCollection.class);
+    when(session.isAssociatedToPlayer(Session.AssociatedState.DOING)).thenReturn(false);
+    when(session.isAssociatedToPlayer(Session.AssociatedState.NONE)).thenReturn(false);
+    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
+    doThrow(new InboundQueueFullException(10)).when(session).enqueueInbound(message);
+
+    handler.onFramedResult(session, message);
+
+    verify(readerStatistic).updateReadDroppedPackets(1);
+  }
+
+  @Test
+  @DisplayName("sessionRead delegates framing to the packet framer")
+  void testSessionReadDelegatesToPacketFramer() {
+    Session session = mock(Session.class);
+    when(session.getPacketReadState()).thenReturn(
+        com.tenio.core.network.codec.packet.PacketReadState.WAIT_NEW_PACKET);
+
+    assertDoesNotThrow(() -> handler.sessionRead(session, new byte[]{(byte) 0x80, 0x00, 0x00}));
+  }
+
+  @Test
+  @DisplayName("channelInactive with active session that throws IOException on close does not propagate")
+  void testChannelInactiveWithActiveSessionIOExceptionDoesNotPropagate() throws Exception {
+    SocketChannel socketChannel = mock(SocketChannel.class);
+    SelectionKey selectionKey = mock(SelectionKey.class);
+    Session session = mock(Session.class);
+    when(sessionManager.getSessionBySocket(socketChannel)).thenReturn(session);
+    when(session.isActivated()).thenReturn(true);
+    doThrow(new java.io.IOException("close failed")).when(session).close(any(), any());
+
+    assertDoesNotThrow(() ->
+        handler.channelInactive(socketChannel, selectionKey,
+            ConnectionDisconnectMode.SERVER_DOWN));
+  }
+
+  @Test
+  @DisplayName("sessionException when session.close() throws IOException does not propagate")
+  void testSessionExceptionWithIOExceptionDoesNotPropagate() throws Exception {
+    Session session = mock(Session.class);
+    doThrow(new java.io.IOException("close error")).when(session).close();
+
+    assertDoesNotThrow(() -> handler.sessionException(session, new RuntimeException("err")));
+  }
+
+  @Test
+  @DisplayName("channelInactive with no session and closeSocket IOException is caught without propagating")
+  void testChannelInactiveWithNoSessionCloseSocketIOException() throws Exception {
+    SocketChannel socketChannel = mock(SocketChannel.class);
+    SelectionKey selectionKey = mock(SelectionKey.class);
+    java.net.Socket mockSocket = mock(java.net.Socket.class);
+    when(sessionManager.getSessionBySocket(socketChannel)).thenReturn(null);
+    when(socketChannel.isOpen()).thenReturn(true);
+    when(socketChannel.socket()).thenReturn(mockSocket);
+    doThrow(new IOException("shutdown failed")).when(mockSocket).shutdownInput();
 
     assertDoesNotThrow(() ->
         handler.channelInactive(socketChannel, selectionKey, ConnectionDisconnectMode.SERVER_DOWN));

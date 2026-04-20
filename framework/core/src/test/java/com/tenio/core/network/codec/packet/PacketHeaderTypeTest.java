@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.codec.packet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tenio.core.network.codec.packet.PacketHeaderType;
 import org.junit.jupiter.api.DisplayName;
@@ -39,5 +40,31 @@ class PacketHeaderTypeTest {
     for (PacketHeaderType type : PacketHeaderType.values()) {
       assertEquals(type.name(), type.toString());
     }
+  }
+
+  @Test
+  @DisplayName("getByValue returns the correct type for each enum constant")
+  void testGetByValueReturnsCorrectType() {
+    for (PacketHeaderType type : PacketHeaderType.values()) {
+      assertEquals(type, PacketHeaderType.getByValue(type.getValue()));
+    }
+  }
+
+  @Test
+  @DisplayName("getByValue returns null for an unknown byte")
+  void testGetByValueUnknownReturnsNull() {
+    assertNull(PacketHeaderType.getByValue((byte) 0x00));
+  }
+
+  @Test
+  @DisplayName("getValue returns the correct bit-mask byte for LENGTH_PREFIXED")
+  void testGetValueLengthPrefixed() {
+    assertEquals((byte) 0b10000000, PacketHeaderType.LENGTH_PREFIXED.getValue());
+  }
+
+  @Test
+  @DisplayName("getValue returns the correct bit-mask byte for BIG_SIZE")
+  void testGetValueBigSize() {
+    assertEquals((byte) 0b01000000, PacketHeaderType.BIG_SIZE.getValue());
   }
 }

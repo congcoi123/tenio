@@ -26,12 +26,14 @@ package com.tenio.core.network.zero.handler.implement;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
@@ -106,5 +108,28 @@ class DatagramIoHandlerImplTest {
     handler.sessionException(session, exception);
 
     verify(session).close();
+  }
+
+  @Test
+  @DisplayName("sessionRead with InboundQueueFullException updates dropped packets statistic")
+  void testSessionReadWithFullQueueUpdatesDroppedPackets() {
+    Session session = mock(Session.class);
+    DataCollection message = mock(DataCollection.class);
+    NetworkReaderStatistic statistic = mock(NetworkReaderStatistic.class);
+    ((AbstractIoHandler) handler).setNetworkReaderStatistic(statistic);
+    doThrow(new InboundQueueFullException(10)).when(session).enqueueInbound(message);
+
+    assertDoesNotThrow(() -> handler.sessionRead(session, message));
+
+    verify(statistic).updateReadDroppedPackets(1);
+  }
+
+  @Test
+  @DisplayName("sessionException when session.close() throws IOException does not propagate")
+  void testSessionExceptionWithIOExceptionDoesNotPropagate() throws IOException {
+    Session session = mock(Session.class);
+    doThrow(new IOException("close error")).when(session).close();
+
+    assertDoesNotThrow(() -> handler.sessionException(session, new RuntimeException("err")));
   }
 }
