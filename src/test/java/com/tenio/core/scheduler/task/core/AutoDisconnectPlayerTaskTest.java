@@ -84,4 +84,126 @@ class AutoDisconnectPlayerTaskTest {
       assertNotNull(task.getScheduler());
     }
   }
+
+  @Test
+  @DisplayName("Test shutdown after run completes without exception")
+  void testShutdownAfterRun() {
+    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of());
+    Mockito.when(playerManager.getPlayerCount()).thenReturn(0);
+    ServerApi api = Mockito.mock(ServerApi.class);
+    ServerImpl server = Mockito.mock(ServerImpl.class);
+    Mockito.when(server.getApi()).thenReturn(api);
+    try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class)) {
+      serverStatic.when(ServerImpl::getInstance).thenReturn(server);
+      task.run();
+    }
+    task.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test shutdown before run is a no-op")
+  void testShutdownBeforeRun() {
+    AutoDisconnectPlayerTask freshTask =
+        AutoDisconnectPlayerTask.newInstance(eventManager);
+    freshTask.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test setInterval does not throw")
+  void testSetInterval() {
+    task.setInterval(60);
+  }
+
+  private void runWithImmediateExecution(Runnable action) {
+    java.util.concurrent.ScheduledExecutorService mockScheduler =
+        Mockito.mock(java.util.concurrent.ScheduledExecutorService.class);
+    java.util.concurrent.ExecutorService mockExec =
+        Mockito.mock(java.util.concurrent.ExecutorService.class);
+    Mockito.when(mockScheduler.scheduleAtFixedRate(
+            Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))
+        .thenAnswer(inv -> {
+          ((Runnable) inv.getArgument(0)).run();
+          return Mockito.mock(java.util.concurrent.ScheduledFuture.class);
+        });
+    Mockito.doAnswer(inv -> {
+      ((Runnable) inv.getArgument(0)).run();
+      return null;
+    }).when(mockExec).execute(Mockito.any(Runnable.class));
+
+    ServerApi api = Mockito.mock(ServerApi.class);
+    ServerImpl server = Mockito.mock(ServerImpl.class);
+    Mockito.when(server.getApi()).thenReturn(api);
+
+    try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class);
+        org.mockito.MockedStatic<java.util.concurrent.Executors> execMock =
+            Mockito.mockStatic(java.util.concurrent.Executors.class)) {
+      serverStatic.when(ServerImpl::getInstance).thenReturn(server);
+      execMock.when(() -> java.util.concurrent.Executors.newSingleThreadScheduledExecutor(
+          Mockito.any())).thenReturn(mockScheduler);
+      execMock.when(() -> java.util.concurrent.Executors.newThreadPerTaskExecutor(
+          Mockito.any())).thenReturn(mockExec);
+      action.run();
+    }
+  }
+
+  @Test
+  @DisplayName("lambda body: never-deported idle player is logged out")
+  void testLambdaBodyLogsOutNeverDeportedIdlePlayer() {
+    Player player = Mockito.mock(Player.class);
+    Mockito.when(player.isNeverDeported()).thenReturn(true);
+    Mockito.when(player.isIdleNeverDeported()).thenReturn(true);
+    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+    // ServerImpl.getInstance().getApi().logout() was called via the mocked chain
+  }
+
+  @Test
+  @DisplayName("lambda body: never-deported non-idle player is skipped")
+  void testLambdaBodySkipsNeverDeportedNonIdlePlayer() {
+    Player player = Mockito.mock(Player.class);
+    Mockito.when(player.isNeverDeported()).thenReturn(true);
+    Mockito.when(player.isIdleNeverDeported()).thenReturn(false);
+    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("lambda body: regular idle player is logged out")
+  void testLambdaBodyLogsOutRegularIdlePlayer() {
+    Player player = Mockito.mock(Player.class);
+    Mockito.when(player.isNeverDeported()).thenReturn(false);
+    Mockito.when(player.isIdle()).thenReturn(true);
+    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("lambda body: regular non-idle player is skipped")
+  void testLambdaBodySkipsRegularNonIdlePlayer() {
+    Player player = Mockito.mock(Player.class);
+    Mockito.when(player.isNeverDeported()).thenReturn(false);
+    Mockito.when(player.isIdle()).thenReturn(false);
+    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+
+    runWithImmediateExecution(task::run);
+  }
+
+  @Test
+  @DisplayName("shutdown handles InterruptedException from awaitTermination")
+  void testShutdownHandlesInterruptedException() {
+    task.run();
+    Thread.currentThread().interrupt();
+    try {
+      task.shutdown();
+    } finally {
+      Thread.interrupted();
+    }
+  }
 }

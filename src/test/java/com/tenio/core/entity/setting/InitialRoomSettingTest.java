@@ -27,14 +27,17 @@ package com.tenio.core.entity.setting;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.core.entity.define.mode.RoomRemoveMode;
 import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class InitialRoomSettingTest {
@@ -91,5 +94,46 @@ class InitialRoomSettingTest {
     assertSame(newInstanceResult,
         newInstanceResult.setRoomPlayerSlotGeneratedStrategy(
             RoomPlayerSlotGeneratedStrategy.class));
+  }
+
+  @Test
+  void testGettersReturnExpectedValues() {
+    Map<String, Object> props = Map.of("key", "value");
+    InitialRoomSetting setting = InitialRoomSetting.Builder.newInstance()
+        .setName("room1")
+        .setPassword("pass")
+        .setMaxParticipants(10)
+        .setMaxSpectators(5)
+        .setActivated(true)
+        .setRoomRemoveMode(RoomRemoveMode.NEVER_REMOVE)
+        .setRoomCredentialValidatedStrategy(DefaultRoomCredentialValidatedStrategy.class)
+        .setRoomPlayerSlotGeneratedStrategy(DefaultRoomPlayerSlotGeneratedStrategy.class)
+        .setProperties(props)
+        .build();
+
+    assertEquals("room1", setting.getName());
+    assertEquals("pass", setting.getPassword());
+    assertEquals(10, setting.getMaxParticipants());
+    assertEquals(5, setting.getMaxSpectators());
+    assertTrue(setting.isActivated());
+    assertEquals(RoomRemoveMode.NEVER_REMOVE, setting.getRoomRemoveMode());
+    assertNotNull(setting.getRoomCredentialValidatedStrategy());
+    assertNotNull(setting.getRoomPlayerSlotGeneratedStrategy());
+    assertEquals(props, setting.getProperties());
+    assertNotNull(setting.toString());
+    assertTrue(setting.toString().contains("room1"));
+  }
+
+  @Test
+  void testBuildWhenStrategiesArePreSet() {
+    InitialRoomSetting setting = InitialRoomSetting.Builder.newInstance()
+        .setRoomCredentialValidatedStrategy(DefaultRoomCredentialValidatedStrategy.class)
+        .setRoomPlayerSlotGeneratedStrategy(DefaultRoomPlayerSlotGeneratedStrategy.class)
+        .build();
+
+    assertInstanceOf(DefaultRoomCredentialValidatedStrategy.class,
+        setting.getRoomCredentialValidatedStrategy());
+    assertInstanceOf(DefaultRoomPlayerSlotGeneratedStrategy.class,
+        setting.getRoomPlayerSlotGeneratedStrategy());
   }
 }

@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.monitoring.system;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,13 @@ class SystemMonitoringTest {
   }
 
   @Test
+  void testGetCpuUsageSecondCall() {
+    SystemMonitoring monitor = SystemMonitoring.newInstance();
+    monitor.getCpuUsage(); // sets baseline
+    monitor.getCpuUsage(); // reads delta
+  }
+
+  @Test
   void testGetFreeMemory() {
     SystemMonitoring.newInstance().getFreeMemory();
   }
@@ -47,5 +55,24 @@ class SystemMonitoringTest {
   @Test
   void testGetUsedMemory() {
     SystemMonitoring.newInstance().getUsedMemory();
+  }
+
+  @Test
+  void testGetTotalMemory() {
+    long totalMemory = SystemMonitoring.newInstance().getTotalMemory();
+    assertTrue(totalMemory > 0);
+  }
+
+  @Test
+  void testCountRunningPlatformThreads() {
+    long threadCount = SystemMonitoring.newInstance().countRunningPlatformThreads();
+    assertTrue(threadCount >= 0);
+  }
+
+  @Test
+  void testToStringContainsKeywords() {
+    String str = SystemMonitoring.newInstance().toString();
+    assertTrue(str.contains("cpuUsage"));
+    assertTrue(str.contains("totalMemory"));
   }
 }

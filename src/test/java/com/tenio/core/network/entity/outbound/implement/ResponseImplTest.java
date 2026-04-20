@@ -24,12 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.outbound.implement;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tenio.common.data.DataCollection;
@@ -38,17 +40,37 @@ import com.tenio.core.entity.Player;
 import com.tenio.core.network.define.ResponseGuarantee;
 import com.tenio.core.network.entity.outbound.Response;
 import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.server.Server;
+import com.tenio.core.server.ServerImpl;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ResponseImplTest {
 
   private Response response;
+  private Server mockServer;
 
   @BeforeEach
-  void setUp() {
+  void setUp() throws Exception {
     response = ResponseImpl.newInstance();
+    mockServer = mock(Server.class);
+    Field instanceField = ServerImpl.class.getDeclaredField("instance");
+    instanceField.setAccessible(true);
+    instanceField.set(null, mockServer);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    Field instanceField = ServerImpl.class.getDeclaredField("instance");
+    instanceField.setAccessible(true);
+    instanceField.set(null, null);
   }
 
   @Test
@@ -180,5 +202,71 @@ class ResponseImplTest {
   void testToStringIsNotNull() {
     assertNotNull(response.toString());
     assertTrue(response.toString().contains("Response"));
+  }
+
+  @Test
+  void testSetRecipientPlayersSecondCallUsesAddAll() {
+    Player p1 = mock(Player.class);
+    Player p2 = mock(Player.class);
+    response.setRecipientPlayers(new ArrayList<>(List.of(p1)));
+    response.setRecipientPlayers(List.of(p2));
+    assertEquals(2, response.getRecipientPlayers().size());
+    assertTrue(response.getRecipientPlayers().contains(p1));
+    assertTrue(response.getRecipientPlayers().contains(p2));
+  }
+
+  @Test
+  void testConstructRecipientPlayersWithSessionPlayerViaReflection() throws Exception {
+    Player player = mock(Player.class);
+    Session session = mock(Session.class);
+    when(player.containsSession()).thenReturn(true);
+    when(player.getSession()).thenReturn(Optional.of(session));
+    when(session.isTcp()).thenReturn(true);
+    when(session.containsUdp()).thenReturn(false);
+
+    response.setRecipientPlayer(player);
+
+    Method method = ResponseImpl.class.getDeclaredMethod("constructRecipientPlayers");
+    method.setAccessible(true);
+    method.invoke(response);
+
+    assertNotNull(response.getRecipientSocketSessions());
+    assertTrue(response.getRecipientSocketSessions().contains(session));
+  }
+
+  @Test
+  void testConstructRecipientPlayersWithNonSessionPlayerViaReflection() throws Exception {
+    Player player = mock(Player.class);
+    when(player.containsSession()).thenReturn(false);
+
+    response.setRecipientPlayer(player);
+
+    Method method = ResponseImpl.class.getDeclaredMethod("constructRecipientPlayers");
+    method.setAccessible(true);
+    method.invoke(response);
+
+    assertNotNull(response.getNonSessionRecipientPlayers());
+    assertTrue(response.getNonSessionRecipientPlayers().contains(player));
+  }
+
+  @Test
+  @DisplayName("write() calls ServerImpl.getInstance().write(this, false)")
+  void testWriteCallsServerWrite() {
+    assertDoesNotThrow(() -> response.write());
+    verify(mockServer).write(response, false);
+  }
+
+  @Test
+  @DisplayName("writeThenClose() calls ServerImpl.getInstance().write(this, true)")
+  void testWriteThenCloseCallsServerWriteWithTrue() {
+    assertDoesNotThrow(() -> response.writeThenClose());
+    verify(mockServer).write(response, true);
+  }
+
+  @Test
+  @DisplayName("writeInDelay(0) sleeps 0ms then calls write()")
+  void testWriteInDelayCallsWriteAfterDelay() {
+    assertDoesNotThrow(() -> response.writeInDelay(0));
+    verify(mockServer).write(response, false);
   }
 }

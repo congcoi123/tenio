@@ -520,6 +520,32 @@ class ServerApiTest {
   }
 
   @Test
+  @DisplayName("changeRoom(player, room) default method delegates to 5-arg version")
+  void changeRoomTwoArgDefaultMethodDelegates() {
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var player = Mockito.mock(Player.class);
+    var room = Mockito.mock(Room.class);
+    Mockito.when(player.isInRoom()).thenReturn(false);
+    serverApi.changeRoom(player, room);
+    Mockito.verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT,
+        player, room, PlayerJoinedRoomResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("changeRoom(player, room, password) default method delegates to 5-arg version")
+  void changeRoomThreeArgDefaultMethodDelegates() {
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var player = Mockito.mock(Player.class);
+    var room = Mockito.mock(Room.class);
+    Mockito.when(player.isInRoom()).thenReturn(false);
+    serverApi.changeRoom(player, room, "pass");
+    Mockito.verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT,
+        player, room, PlayerJoinedRoomResult.SUCCESS);
+  }
+
+  @Test
   @DisplayName("Unsupported methods should not be called")
   void unsupportedMethodsShouldNotBeCalled() {
     Assertions.assertThrows(UnsupportedOperationException.class,

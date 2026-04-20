@@ -27,12 +27,15 @@ package com.tenio.core.processor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tenio.core.network.entity.inbound.Request;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -135,5 +138,16 @@ class RequestComparatorTest {
     verify(request).getPriority();
     verify(request1).getPriority();
     assertEquals(-1, actualCompareResult);
+  }
+
+  @Test
+  @DisplayName("private constructor throws InitializationException when instance already exists")
+  void testConstructorThrowsWhenInstanceAlreadyExists() throws Exception {
+    Constructor<RequestComparator> ctor =
+        RequestComparator.class.getDeclaredConstructor();
+    ctor.setAccessible(true);
+    InvocationTargetException ex =
+        assertThrows(InvocationTargetException.class, ctor::newInstance);
+    assertNotNull(ex.getCause());
   }
 }

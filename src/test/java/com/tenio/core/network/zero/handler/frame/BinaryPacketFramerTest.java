@@ -29,11 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.data.DataType;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
+import java.nio.ByteBuffer;
 import com.tenio.core.network.codec.packet.PacketHeader;
 import com.tenio.core.network.codec.packet.PacketReadState;
 import com.tenio.core.network.codec.packet.PendingPacket;
@@ -133,6 +136,229 @@ class BinaryPacketFramerTest {
 
     verify(listener).onFramedResult(session, decodedMessage);
     verify(session).setPacketReadState(PacketReadState.WAIT_NEW_PACKET);
+  }
+
+  @Test
+  @DisplayName("framing a complete big-sized packet calls onFramedResult on the listener")
+  void testFramingCompleteBigPacketCallsListener() {
+    BinaryPacketDecoder decoder = mock(BinaryPacketDecoder.class);
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    DataCollection decodedMessage = mock(DataCollection.class);
+    framer.setBinaryPacketDecoder(decoder);
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_NEW_PACKET);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+    when(decoder.decode(any(PacketHeader.class), any(byte[].class))).thenReturn(decodedMessage);
+
+    // Byte 0: 0xC0 = LENGTH_PREFIXED (0x80) | BIG_SIZE (0x40) | DataType ZERO (0x00)
+    // Bytes 1-4: int big-endian data size = 3 (0x00, 0x00, 0x00, 0x03)
+    // Bytes 5-7: payload data
+    byte[] packet = {(byte) 0xC0, 0x00, 0x00, 0x00, 0x03, 0x01, 0x02, 0x03};
+
+    framer.framing(session, packet);
+
+    verify(listener).onFramedResult(session, decodedMessage);
+    verify(session).setPacketReadState(PacketReadState.WAIT_NEW_PACKET);
+  }
+
+  @Test
+  @DisplayName(
+      "framing a big-sized packet with partial size bytes transitions to WAIT_DATA_SIZE_FRAGMENT")
+  void testFramingBigPacketWithPartialSizeBytesTransitionsToFragment() {
+    framer.setBinaryPacketDecoder(mock(BinaryPacketDecoder.class));
+    framer.setPacketFramingResult(mock(PacketFramingListener.class));
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_NEW_PACKET);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+
+    // Byte 0: 0xC0 = LENGTH_PREFIXED | BIG_SIZE | DataType ZERO
+    // Bytes 1-2: only 2 of the 4 required int-size bytes — header is incomplete
+    byte[] partial = {(byte) 0xC0, 0x00, 0x00};
+
+    framer.framing(session, partial);
+
+    verify(session).setPacketReadState(PacketReadState.WAIT_DATA_SIZE_FRAGMENT);
+  }
+
+  @Test
+  @DisplayName("framing in WAIT_DATA_SIZE_FRAGMENT state completes size and calls listener")
+  void testFramingDataSizeFragmentCompletionCallsListener() {
+    BinaryPacketDecoder decoder = mock(BinaryPacketDecoder.class);
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    DataCollection decodedMessage = mock(DataCollection.class);
+    framer.setBinaryPacketDecoder(decoder);
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    // Small-packet header: not big-sized; partial 2-byte size buffer with 1 byte already present
+    pendingPacket.setPacketHeader(
+        PacketHeader.newInstance(true, false, false, false, DataType.ZERO));
+    ByteBuffer headerBuffer = ByteBuffer.allocate(Short.BYTES);
+    headerBuffer.put((byte) 0x00); // first size byte already received
+    pendingPacket.setBuffer(headerBuffer);
+
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_DATA_SIZE_FRAGMENT);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+    when(decoder.decode(any(PacketHeader.class), any(byte[].class))).thenReturn(decodedMessage);
+
+    // Byte 0: second size byte → short(0x00, 0x05) = 5
+    // Bytes 1-5: the 5 payload bytes
+    byte[] incoming = {0x05, 0x01, 0x02, 0x03, 0x04, 0x05};
+
+    framer.framing(session, incoming);
+
+    verify(listener).onFramedResult(session, decodedMessage);
+    verify(session).setPacketReadState(PacketReadState.WAIT_NEW_PACKET);
+  }
+
+  @Test
+  @DisplayName("framing in WAIT_DATA_SIZE_FRAGMENT with too few bytes stays in fragment state")
+  void testFramingDataSizeFragmentStillIncompleteContinuesWaiting() {
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    framer.setBinaryPacketDecoder(mock(BinaryPacketDecoder.class));
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    // Big-sized header: needs Integer.BYTES (4) for size; 1 byte already put, 3 more needed
+    pendingPacket.setPacketHeader(
+        PacketHeader.newInstance(true, false, true, false, DataType.ZERO));
+    ByteBuffer headerBuffer = ByteBuffer.allocate(Integer.BYTES);
+    headerBuffer.put((byte) 0x00); // 1 byte already received
+    pendingPacket.setBuffer(headerBuffer);
+
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_DATA_SIZE_FRAGMENT);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+
+    // Only 1 byte — fewer than the 3 still needed to complete the size field
+    framer.framing(session, new byte[]{(byte) 0x01});
+
+    verify(session).setPacketReadState(PacketReadState.WAIT_DATA_SIZE_FRAGMENT);
+    verify(listener, never()).onFramedResult(any(), any());
+  }
+
+  @Test
+  @DisplayName("framing in WAIT_DATA state with partial data stays in WAIT_DATA")
+  void testFramingPartialDataTransitionsToWaitData() {
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    framer.setBinaryPacketDecoder(mock(BinaryPacketDecoder.class));
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    pendingPacket.setPacketHeader(
+        PacketHeader.newInstance(true, false, false, false, DataType.ZERO));
+    pendingPacket.setExpectedLength(5);
+    pendingPacket.setBuffer(ByteBuffer.allocate(5));
+
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_DATA);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+
+    // Only 2 bytes — fewer than the 5 needed
+    framer.framing(session, new byte[]{0x01, 0x02});
+
+    verify(session).setPacketReadState(PacketReadState.WAIT_DATA);
+    verify(listener, never()).onFramedResult(any(), any());
+  }
+
+  @Test
+  @DisplayName("framing two concatenated packets in one call invokes listener twice")
+  void testFramingTwoConsecutivePacketsInOneCallCallsListenerTwice() {
+    BinaryPacketDecoder decoder = mock(BinaryPacketDecoder.class);
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    DataCollection decodedMessage = mock(DataCollection.class);
+    framer.setBinaryPacketDecoder(decoder);
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_NEW_PACKET);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+    when(decoder.decode(any(PacketHeader.class), any(byte[].class))).thenReturn(decodedMessage);
+
+    // Two back-to-back small packets: 0x80 | size(short)=3 | 3 data bytes each
+    byte[] twoPackets = {
+        (byte) 0x80, 0x00, 0x03, 0x01, 0x02, 0x03,  // packet 1
+        (byte) 0x80, 0x00, 0x03, 0x04, 0x05, 0x06   // packet 2
+    };
+
+    framer.framing(session, twoPackets);
+
+    verify(listener, times(2)).onFramedResult(session, decodedMessage);
+  }
+
+  @Test
+  @DisplayName("big-sized fragment completes size field using getInt and transitions to WAIT_DATA")
+  void testFramingDataSizeFragmentBigSizedCompletesTransitionsToWaitData() {
+    BinaryPacketDecoder decoder = mock(BinaryPacketDecoder.class);
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    framer.setBinaryPacketDecoder(decoder);
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    pendingPacket.setPacketHeader(
+        PacketHeader.newInstance(true, false, true, false, DataType.ZERO));
+    ByteBuffer headerBuffer = ByteBuffer.allocate(Integer.BYTES);
+    headerBuffer.put((byte) 0x00); // 1 byte already received
+    pendingPacket.setBuffer(headerBuffer);
+
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_DATA_SIZE_FRAGMENT);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+
+    // Exactly 3 more bytes to complete 4-byte int size field (value = 5)
+    framer.framing(session, new byte[]{0x00, 0x00, 0x05});
+
+    verify(session).setPacketReadState(PacketReadState.WAIT_DATA);
+    verify(listener, never()).onFramedResult(any(), any());
+  }
+
+  @Test
+  @DisplayName("handlePacketData throws IllegalStateException when expectedLength != buffer capacity")
+  void testHandlePacketDataThrowsWhenExpectedLengthMismatch() {
+    BinaryPacketDecoder decoder = mock(BinaryPacketDecoder.class);
+    PacketFramingListener listener = mock(PacketFramingListener.class);
+    framer.setBinaryPacketDecoder(decoder);
+    framer.setPacketFramingResult(listener);
+
+    Session session = mock(Session.class);
+    PendingPacket pendingPacket = PendingPacket.newInstance();
+    pendingPacket.setPacketHeader(
+        PacketHeader.newInstance(true, false, false, false, DataType.ZERO));
+    // Mismatch: expectedLength=5 but buffer capacity=3
+    pendingPacket.setExpectedLength(5);
+    pendingPacket.setBuffer(ByteBuffer.allocate(3));
+
+    ProcessedPacket processedPacket = ProcessedPacket.newInstance();
+    when(session.getPacketReadState()).thenReturn(PacketReadState.WAIT_DATA);
+    when(session.getPendingPacket()).thenReturn(pendingPacket);
+    when(session.getProcessedPacket()).thenReturn(processedPacket);
+
+    // framing() swallows the IllegalStateException and resets state to WAIT_NEW_PACKET
+    framer.framing(session, new byte[]{0x01, 0x02, 0x03});
+
+    verify(session).setPacketReadState(PacketReadState.WAIT_NEW_PACKET);
+    verify(listener, never()).onFramedResult(any(), any());
   }
 
   @Test

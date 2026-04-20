@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info">
-	<Loggers>
-		<!-- Temporary disable logging -->
-		<Root level="off" />
-	</Loggers>
+<Configuration status="off">
+  <Appenders>
+    <Console name="NullConsole" target="SYSTEM_OUT">
+      <ThresholdFilter level="off" onMatch="DENY" onMismatch="DENY"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="debug" additivity="false">
+      <AppenderRef ref="NullConsole"/>
+    </Root>
+  </Loggers>
 </Configuration>

@@ -27,6 +27,7 @@ package com.tenio.core.network.utility;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -35,7 +36,10 @@ import static org.mockito.Mockito.when;
 
 import io.netty.channel.Channel;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -99,5 +103,42 @@ class SocketUtilityTest {
     assertNotNull(buffer);
     assertFalse(buffer.isDirect());
     assertEquals(256, buffer.capacity());
+  }
+
+  @Test
+  @DisplayName("Close a non-null open datagram channel with selection key")
+  void testCloseDatagramChannelNonNull() throws IOException {
+    DatagramChannel datagramChannel = mock(DatagramChannel.class);
+    SelectionKey selectionKey = mock(SelectionKey.class);
+    when(datagramChannel.isOpen()).thenReturn(true);
+    SocketUtility.closeDatagramChannel(datagramChannel, selectionKey);
+    verify(selectionKey).cancel();
+    verify(datagramChannel).close();
+  }
+
+  @Test
+  @DisplayName("Close null datagram channel should not throw")
+  void testCloseDatagramChannelNull() throws IOException {
+    SocketUtility.closeDatagramChannel(null, null);
+  }
+
+  @Test
+  @DisplayName("Close a non-null open server socket channel with selection key")
+  void testCloseServerSocketNonNullOpen() throws IOException {
+    ServerSocketChannel serverSocketChannel = mock(ServerSocketChannel.class);
+    SelectionKey selectionKey = mock(SelectionKey.class);
+    when(serverSocketChannel.isOpen()).thenReturn(true);
+    SocketUtility.closeServerSocket(serverSocketChannel, selectionKey);
+    verify(selectionKey).cancel();
+    verify(serverSocketChannel).close();
+  }
+
+  @Test
+  @DisplayName("SocketUtility constructor throws UnsupportedOperationException via reflection")
+  void testConstructorThrowsUnsupportedOperation() throws Exception {
+    Constructor<SocketUtility> ctor = SocketUtility.class.getDeclaredConstructor();
+    ctor.setAccessible(true);
+    InvocationTargetException ex = assertThrows(InvocationTargetException.class, ctor::newInstance);
+    assertTrue(ex.getCause() instanceof UnsupportedOperationException);
   }
 }
