@@ -24,13 +24,43 @@ THE SOFTWARE.
 
 package com.tenio.core.scheduler.task;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Unit Test Cases For AbstractTask")
 class AbstractTaskTest {
 
+  private static class ConcreteTask extends AbstractTask {
+
+    @Override
+    public void run() {
+    }
+
+    @Override
+    public ScheduledFuture<?> getScheduler() {
+      return null;
+    }
+
+    @Override
+    public void shutdown() {
+    }
+  }
+
   @Test
-  void placeholder() {
+  @DisplayName("Test default interval is 60 seconds")
+  void testDefaultInterval() {
+    ConcreteTask task = new ConcreteTask();
+    assertEquals(60, task.interval);
+  }
+
+  @Test
+  @DisplayName("Test setInterval updates the interval")
+  void testSetInterval() {
+    ConcreteTask task = new ConcreteTask();
+    task.setInterval(30);
+    assertEquals(30, task.interval);
   }
 }

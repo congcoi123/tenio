@@ -79,4 +79,61 @@ class TrafficCounterTaskTest {
     assertNotNull(task.getScheduler());
     // The actual event emission is handled by the scheduled lambda, which can be verified in integration tests
   }
+
+  @Test
+  @DisplayName("Test shutdown after run completes without exception")
+  void testShutdownAfterRun() {
+    task.run();
+    task.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test shutdown before run is a no-op")
+  void testShutdownBeforeRun() {
+    TrafficCounterTask freshTask = TrafficCounterTask.newInstance(eventManager);
+    freshTask.shutdown();
+  }
+
+  @Test
+  @DisplayName("Test setInterval does not throw")
+  void testSetInterval() {
+    task.setInterval(20);
+  }
+
+  @Test
+  @DisplayName("lambda body: emits FETCHED_BANDWIDTH_INFO with statistic values")
+  void testLambdaBodyEmitsBandwidthInfo() {
+    java.util.concurrent.ScheduledExecutorService mockScheduler =
+        Mockito.mock(java.util.concurrent.ScheduledExecutorService.class);
+    Mockito.when(mockScheduler.scheduleAtFixedRate(
+            Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))
+        .thenAnswer(inv -> {
+          ((Runnable) inv.getArgument(0)).run();
+          return Mockito.mock(java.util.concurrent.ScheduledFuture.class);
+        });
+
+    try (org.mockito.MockedStatic<java.util.concurrent.Executors> execMock =
+        Mockito.mockStatic(java.util.concurrent.Executors.class)) {
+      execMock.when(() -> java.util.concurrent.Executors.newSingleThreadScheduledExecutor(
+          Mockito.any())).thenReturn(mockScheduler);
+      task.run();
+    }
+
+    Mockito.verify(eventManager).emit(
+        Mockito.eq(com.tenio.core.configuration.define.ServerEvent.FETCHED_BANDWIDTH_INFO),
+        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+        Mockito.any());
+  }
+
+  @org.junit.jupiter.api.Test
+  @org.junit.jupiter.api.DisplayName("shutdown handles InterruptedException from awaitTermination")
+  void testShutdownHandlesInterruptedException() {
+    task.run();
+    Thread.currentThread().interrupt();
+    try {
+      task.shutdown();
+    } finally {
+      Thread.interrupted();
+    }
+  }
 }

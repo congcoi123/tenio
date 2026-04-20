@@ -29,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
 @DisplayName("Unit Test Cases For ServerEvent")
 class ServerEventTest {
@@ -62,10 +60,11 @@ class ServerEventTest {
     assertEquals(33, ServerEvent.values().length);
   }
 
-  @ParameterizedTest
-  @EnumSource(ServerEvent.class)
+  @Test
   @DisplayName("toString() returns the enum name for every constant")
-  void testToStringEqualsName(ServerEvent event) {
-    assertEquals(event.name(), event.toString());
+  void testToStringEqualsName() {
+    for (ServerEvent event : ServerEvent.values()) {
+      assertEquals(event.name(), event.toString());
+    }
   }
 }

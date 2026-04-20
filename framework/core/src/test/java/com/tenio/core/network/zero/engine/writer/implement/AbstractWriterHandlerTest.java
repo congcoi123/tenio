@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
 import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.session.Session;
@@ -74,6 +75,14 @@ class AbstractWriterHandlerTest {
   void testSetAndGetNetworkWriterStatistic() {
     handler.setNetworkWriterStatistic(writerStatistic);
     assertEquals(writerStatistic, handler.getNetworkWriterStatistic());
+  }
+
+  @Test
+  @DisplayName("Test packet encoder setter/getter")
+  void testSetAndGetPacketEncoder() {
+    BinaryPacketEncoder encoder = mock(BinaryPacketEncoder.class);
+    handler.setPacketEncoder(encoder);
+    assertEquals(encoder, handler.getPacketEncoder());
   }
 
   @Test

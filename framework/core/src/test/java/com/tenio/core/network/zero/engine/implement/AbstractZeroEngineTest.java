@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.network.zero.engine.implement;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -128,5 +130,113 @@ class AbstractZeroEngineTest {
   @DisplayName("getNumberOfExtraWorkers returns 0 for ZeroAcceptorImpl")
   void testGetNumberOfExtraWorkersReturnsZero() {
     assertEquals(0, engine.getNumberOfExtraWorkers());
+  }
+
+  @Test
+  @DisplayName("initialize() then shutdown() completes without exception")
+  void testInitializeThenShutdown() {
+    assertDoesNotThrow(() -> {
+      engine.initialize();
+      engine.shutdown();
+    });
+  }
+
+  @Test
+  @DisplayName("double shutdown() after initialize() — second call is a no-op")
+  void testDoubleShutdownAfterInitialize() {
+    assertDoesNotThrow(() -> {
+      engine.initialize();
+      engine.shutdown();
+      engine.shutdown(); // second call: stopping flag already set, should return immediately
+    });
+  }
+
+  @Test
+  @DisplayName("start() then shutdown() with empty onRunning covers run/configureThread/halting")
+  void testStartThenShutdownWithMinimalEngine() throws InterruptedException {
+    AbstractZeroEngine minimalEngine = new AbstractZeroEngine(mock(EventManager.class)) {
+      @Override
+      public void onInitialized() {}
+
+      @Override
+      public void onStarted() {}
+
+      @Override
+      public void onRunning() {} // returns immediately so the virtual thread finishes quickly
+
+      @Override
+      public void onShutdown() {}
+
+      @Override
+      public void onDestroyed() {}
+    };
+    minimalEngine.setName("test-engine");
+    minimalEngine.setThreadPoolSize(1);
+    minimalEngine.initialize();
+    minimalEngine.start();
+    Thread.sleep(50); // give the virtual thread time to finish onRunning()
+    minimalEngine.shutdown();
+  }
+
+  @Test
+  @DisplayName("run(Runnable, String) executes extra worker task when within limit")
+  void testRunWithExtraWorkerExecutesTask() throws InterruptedException {
+    AbstractZeroEngine engineWithExtra = new AbstractZeroEngine(mock(EventManager.class)) {
+      @Override
+      public void onInitialized() {}
+
+      @Override
+      public void onStarted() {}
+
+      @Override
+      public void onRunning() {}
+
+      @Override
+      public void onShutdown() {}
+
+      @Override
+      public void onDestroyed() {}
+
+      @Override
+      public int getNumberOfExtraWorkers() {
+        return 1;
+      }
+    };
+    engineWithExtra.setName("extra-engine");
+    engineWithExtra.setThreadPoolSize(2); // must be > extra workers (1)
+    engineWithExtra.initialize();
+
+    java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+    assertDoesNotThrow(() -> engineWithExtra.run(latch::countDown, "extra"));
+
+    latch.await(2, java.util.concurrent.TimeUnit.SECONDS);
+    engineWithExtra.shutdown();
+  }
+
+  @Test
+  @DisplayName("run(Runnable, String) throws IllegalArgumentException when extra worker limit exceeded")
+  void testRunWithExtraWorkerThrowsWhenLimitExceeded() {
+    AbstractZeroEngine engineNoExtra = new AbstractZeroEngine(mock(EventManager.class)) {
+      @Override
+      public void onInitialized() {}
+
+      @Override
+      public void onStarted() {}
+
+      @Override
+      public void onRunning() {}
+
+      @Override
+      public void onShutdown() {}
+
+      @Override
+      public void onDestroyed() {}
+    }; // getNumberOfExtraWorkers() returns 0 by default
+    engineNoExtra.setName("no-extra-engine");
+    engineNoExtra.initialize();
+
+    assertThrows(IllegalArgumentException.class,
+        () -> engineNoExtra.run(() -> {}, "test-postfix"));
+    engineNoExtra.shutdown();
   }
 }

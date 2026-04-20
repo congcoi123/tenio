@@ -241,4 +241,11 @@ class ChannelManagerImplTest {
 
     assertTrue(result.isEmpty());
   }
+
+  @Test
+  @DisplayName("createChannel(String) default method delegates to createChannel(String, null)")
+  void testCreateChannelOneArgDefaultMethod() {
+    manager.createChannel("ch-default");
+    verify(eventManager).emit(eq(ServerEvent.CHANNEL_CREATED), any());
+  }
 }

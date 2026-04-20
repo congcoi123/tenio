@@ -203,4 +203,13 @@ class PacketImplTest {
     assertNotNull(packet.toString());
     assertTrue(packet.toString().contains("Packet"));
   }
+
+  @Test
+  void testToStringWithNonNullDataAndFragmentBuffer() {
+    packet.setData(new byte[]{1, 2, 3});
+    packet.setFragmentBuffer(new byte[]{4, 5});
+    String result = packet.toString();
+    assertTrue(result.contains("data(bytes)=3"));
+    assertTrue(result.contains("fragmentBuffer(bytes)=2"));
+  }
 }

@@ -24,13 +24,19 @@ THE SOFTWARE.
 
 package com.tenio.core.utility;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -99,5 +105,143 @@ class HttpUtilityTest {
     Mockito.verify(response).setStatus(200);
     pw.flush();
     assertTrue(sw.toString().contains("ok"));
+  }
+
+  @Test
+  @DisplayName("Test hasHeaderKey returns false when headerNames is null")
+  void testHasHeaderKeyNullHeaderNames() {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getHeaderNames()).thenReturn(null);
+    assertFalse(HttpUtility.INSTANCE.hasHeaderKey(request, "X-Any-Header"));
+  }
+
+  @Test
+  @DisplayName("Test getBodyJson returns empty object for GET request")
+  void testGetBodyJsonForGetRequest() {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("GET");
+    JSONObject obj = HttpUtility.INSTANCE.getBodyJson(request);
+    assertEquals(0, obj.length());
+  }
+
+  @Test
+  @DisplayName("Test getBodyText returns empty string for GET request")
+  void testGetBodyTextForGetRequest() {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("GET");
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    assertEquals("", result);
+  }
+
+  @Test
+  @DisplayName("Test getBodyJson parses body for PUT request")
+  void testGetBodyJsonForPutRequest() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("PUT");
+    String json = "{\"key\":\"updated\"}";
+    Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    JSONObject obj = HttpUtility.INSTANCE.getBodyJson(request);
+    assertEquals("updated", obj.getString("key"));
+  }
+
+  @Test
+  @DisplayName("Test getBodyJson parses body for DELETE request")
+  void testGetBodyJsonForDeleteRequest() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("DELETE");
+    String json = "{\"id\":42}";
+    Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
+    JSONObject obj = HttpUtility.INSTANCE.getBodyJson(request);
+    assertEquals(42, obj.getInt("id"));
+  }
+
+  @Test
+  @DisplayName("Test getBodyText parses body for PUT request")
+  void testGetBodyTextForPutRequest() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("PUT");
+    String text = "put body";
+    Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(text)));
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    assertEquals(text, result);
+  }
+
+  @Test
+  @DisplayName("Test getBodyText parses body for DELETE request")
+  void testGetBodyTextForDeleteRequest() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("DELETE");
+    String text = "delete body";
+    Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(text)));
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    assertEquals(text, result);
+  }
+
+  @Test
+  @DisplayName("Test getBodyText returns empty string when reader throws IOException")
+  void testGetBodyTextIOException() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("POST");
+    Mockito.when(request.getReader()).thenThrow(new java.io.IOException("read error"));
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    assertEquals("", result);
+  }
+
+  @Test
+  @DisplayName("Test sendResponseJson when getWriter throws IOException does not propagate")
+  void testSendResponseJsonWriterIOException() throws Exception {
+    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+    Mockito.when(response.getWriter()).thenThrow(new java.io.IOException("write error"));
+    // Should not throw - exception is caught internally
+    HttpUtility.INSTANCE.sendResponseJson(response, 200, "payload");
+  }
+
+  @Test
+  @DisplayName("getBodyText when reader.read() throws covers finally close branch")
+  void testGetBodyTextReadThrowsIOExceptionClosesReader() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("POST");
+    BufferedReader reader = Mockito.mock(BufferedReader.class);
+    Mockito.when(request.getReader()).thenReturn(reader);
+    Mockito.when(reader.read(any(char[].class))).thenThrow(new IOException("read error"));
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    verify(reader).close();
+    assertEquals("", result);
+  }
+
+  @Test
+  @DisplayName("getBodyText when close() throws IOException covers inner catch branch")
+  void testGetBodyTextCloseThrowsIOException() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("POST");
+    BufferedReader reader = Mockito.mock(BufferedReader.class);
+    Mockito.when(request.getReader()).thenReturn(reader);
+    Mockito.when(reader.read(any(char[].class))).thenThrow(new IOException("read error"));
+    doThrow(new IOException("close error")).when(reader).close();
+    // should not propagate the close exception
+    String result = HttpUtility.INSTANCE.getBodyText(request);
+    assertEquals("", result);
+  }
+
+  @Test
+  @DisplayName("getBodyJson when getReader() throws IOException covers outer catch branch")
+  void testGetBodyJsonReaderThrowsIOException() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("POST");
+    Mockito.when(request.getReader()).thenThrow(new IOException("read error"));
+    assertThrows(Exception.class, () -> HttpUtility.INSTANCE.getBodyJson(request));
+  }
+
+  @Test
+  @DisplayName("getBodyJson when read() throws and close() also throws covers inner catch")
+  void testGetBodyJsonReadAndCloseBothThrow() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(request.getMethod()).thenReturn("POST");
+    BufferedReader reader = Mockito.mock(BufferedReader.class);
+    Mockito.when(request.getReader()).thenReturn(reader);
+    Mockito.when(reader.read(any(char[].class))).thenThrow(new IOException("read fail"));
+    doThrow(new IOException("close fail")).when(reader).close();
+    // body remains "" after read() throws; new JSONObject("") throws JSONException
+    assertThrows(Exception.class, () -> HttpUtility.INSTANCE.getBodyJson(request));
   }
 }

@@ -25,6 +25,8 @@ THE SOFTWARE.
 package com.tenio.core.network.jetty;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import com.tenio.core.event.implement.EventManager;
@@ -54,5 +56,65 @@ class JettyHttpTest {
     assertDoesNotThrow(() -> service.initialize());
     assertDoesNotThrow(() -> service.start());
     assertDoesNotThrow(() -> service.shutdown());
+  }
+
+  @Test
+  @DisplayName("Test isActivated() throws UnsupportedOperationException")
+  void testIsActivatedThrows() {
+    assertThrows(UnsupportedOperationException.class, () -> service.isActivated());
+  }
+
+  @Test
+  @DisplayName("Test setName() throws UnsupportedOperationException")
+  void testSetNameThrows() {
+    assertThrows(UnsupportedOperationException.class, () -> service.setName("x"));
+  }
+
+  @Test
+  @DisplayName("Test getName() returns 'jetty-http-worker'")
+  void testGetName() {
+    assertEquals("jetty-http-worker", service.getName());
+  }
+
+  @Test
+  @DisplayName("Test getMaximumStartingTimeInMilliseconds() returns 0")
+  void testGetMaximumStartingTimeInMilliseconds() {
+    assertEquals(0, service.getMaximumStartingTimeInMilliseconds());
+  }
+
+  @Test
+  @DisplayName("Test shutdown() before initialize() is a no-op")
+  void testShutdownBeforeInitializeIsNoOp() {
+    assertDoesNotThrow(() -> service.shutdown());
+  }
+
+  @Test
+  @DisplayName("Test start() before initialize() is a no-op")
+  void testStartBeforeInitializeIsNoOp() {
+    assertDoesNotThrow(() -> service.start());
+  }
+
+  @Test
+  @DisplayName("Test activate() before initialize() is a no-op")
+  void testActivateBeforeInitializeIsNoOp() {
+    assertDoesNotThrow(() -> service.activate());
+  }
+
+  @Test
+  @DisplayName("Test initialize() then start() then activate() then shutdown()")
+  void testInitializeActivateShutdown() {
+    assertDoesNotThrow(() -> service.initialize());
+    assertDoesNotThrow(() -> service.start());
+    assertDoesNotThrow(() -> service.activate());
+    assertDoesNotThrow(() -> service.shutdown());
+  }
+
+  @Test
+  @DisplayName("Test double shutdown() after initialize() is safe")
+  void testDoubleShutdown() {
+    service.initialize();
+    service.start();
+    service.shutdown();
+    service.shutdown(); // second call should be no-op
   }
 }
