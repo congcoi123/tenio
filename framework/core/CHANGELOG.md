@@ -129,3 +129,6 @@
 
 ## 0.7.1 2026-04-19 Bugfix release
 - It should force to close sessions and disconnect players in some scenarios
+
+## 0.7.2 2026-04-25 Feature release
+- Fixed issues which caused theGame Server takes time to shut down

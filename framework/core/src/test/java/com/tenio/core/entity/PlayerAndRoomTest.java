@@ -131,4 +131,10 @@ class PlayerAndRoomTest {
       roomManager.addRoom(room);
     });
   }
+
+  @Test
+  public void roomStateIsIdleShouldReturnFalseByDefault() {
+    RoomState defaultState = new RoomState() {};
+    assertEquals(false, defaultState.isIdle());
+  }
 }
