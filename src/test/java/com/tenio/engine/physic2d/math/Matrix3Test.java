@@ -1,5 +1,7 @@
 package com.tenio.engine.physic2d.math;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -140,6 +142,22 @@ class Matrix3Test {
     Matrix3 newInstanceResult = Matrix3.newInstance();
     Vector2 forward = Vector2.newInstance();
     newInstanceResult.rotate(forward, Vector2.newInstance());
+  }
+
+  @Test
+  void testSetMatrixElements() {
+    Matrix3 m = Matrix3.newInstance();
+    m.p11(1.0f);
+    m.p12(2.0f);
+    m.p13(3.0f);
+    m.p21(4.0f);
+    m.p22(5.0f);
+    m.p23(6.0f);
+    m.p31(7.0f);
+    m.p32(8.0f);
+    m.p33(9.0f);
+    Vector2 v = Vector2.newInstance();
+    assertDoesNotThrow(() -> m.transformVector2D(v));
   }
 }
 
