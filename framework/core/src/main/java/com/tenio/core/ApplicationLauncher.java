@@ -109,14 +109,6 @@ public final class ApplicationLauncher extends SystemLogger {
    * @param params     the additional parameters
    */
   public void start(Class<?> entryClass, String[] params) {
-    var mainThread = Thread.currentThread();
-    mainThread.setName("tenio");
-    mainThread.setUncaughtExceptionHandler((thread, cause) -> {
-      if (isErrorEnabled()) {
-        error(cause, thread.getName());
-      }
-    });
-
     // print out the framework's preface
     if (isInfoEnabled()) {
       var trademark =
@@ -152,21 +144,11 @@ public final class ApplicationLauncher extends SystemLogger {
       server.start(bootstrap.getBootstrapHandler(), params);
     } catch (Exception exception) {
       if (isErrorEnabled()) {
-        error(exception, "The application started with exceptions occurred: ",
-            exception.getMessage());
+        error(exception, "The application started with exceptions occurred: ", exception.getMessage());
       }
       server.shutdown();
       // exit with errors
       System.exit(1);
-    }
-
-    // keep the main thread running
-    try {
-      mainThread.join();
-    } catch (InterruptedException exception) {
-      if (isErrorEnabled()) {
-        error(exception);
-      }
     }
 
     // suddenly shutdown

@@ -24,5 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.common.bootstrap.loader;
 
+@Deprecated
 public class TestClassA {
 }

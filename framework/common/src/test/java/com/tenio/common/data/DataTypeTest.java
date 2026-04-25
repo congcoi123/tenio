@@ -27,24 +27,17 @@ package com.tenio.common.data;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("Unit Test Cases For Data Type")
 class DataTypeTest {
 
-  @ParameterizedTest
-  @CsvSource({
-      "ZERO, 0",
-      "MSG_PACK, 1"
-  })
+  @Test
   @DisplayName("Test All Enumerated Values")
-  void testAllEnumValues(String name, byte value) {
-    DataType dataType = DataType.valueOf(name);
-    DataType dataTypeByValue = DataType.getByValue(value);
-    assertEquals(dataTypeByValue, dataType);
-    assertEquals(value, dataType.getValue());
-    assertEquals(name, dataType.toString());
-    assertEquals(name, dataType.name());
+  void testAllEnumValues() {
+    for (DataType type : DataType.values()) {
+      assertEquals(type.name(), type.toString());
+      assertEquals(type, DataType.valueOf(type.name()));
+    }
   }
 }

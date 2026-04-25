@@ -1,5 +1,7 @@
 package com.tenio.engine.physic2d.utility;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 class SmootherTest {
@@ -123,6 +125,22 @@ class SmootherTest {
 
     new Smoother<Number>(3, Integer.valueOf(1));
 
+  }
+
+  @Test
+  void testUpdateReturnsSingleSampleAverage() {
+    Smoother<Float> smoother = new Smoother<>(1, 0.0f);
+    Float result = smoother.update(5.0f);
+    assertEquals(5.0f, result, 0.001f);
+  }
+
+  @Test
+  void testUpdateAveragesHistoryAfterWrapAround() {
+    Smoother<Float> smoother = new Smoother<>(2, 0.0f);
+    smoother.update(4.0f);
+    smoother.update(8.0f);
+    Float result = smoother.update(12.0f);
+    assertEquals(10.0f, result, 0.001f);
   }
 }
 

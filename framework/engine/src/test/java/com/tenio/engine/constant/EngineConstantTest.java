@@ -22,39 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.utility;
+package com.tenio.engine.constant;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Time Utility")
-class TimeUtilityTest {
+class EngineConstantTest {
 
   @Test
-  @DisplayName("Throw an exception when the class's instance is attempted creating")
-  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = TimeUtility.class.getDeclaredConstructor();
-    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-    assertThrows(InvocationTargetException.class, () -> {
-      constructor.setAccessible(true);
-      constructor.newInstance();
+  void testSendMsgImmediatelyValue() {
+    assertEquals(0.0, EngineConstant.SEND_MSG_IMMEDIATELY, 0.0001);
+  }
+
+  @Test
+  void testConstructorThrows() {
+    assertThrows(UnsupportedOperationException.class, () -> {
+      try {
+        var constructor = EngineConstant.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+      } catch (java.lang.reflect.InvocationTargetException ex) {
+        throw (UnsupportedOperationException) ex.getCause();
+      }
     });
-  }
-
-  @Test
-  @DisplayName("currentTimeSeconds should return a positive value")
-  void currentTimeSecondsShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeSeconds() > 0);
-  }
-
-  @Test
-  @DisplayName("currentTimeMillis should return a positive value")
-  void currentTimeMillisShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeMillis() > 0);
   }
 }

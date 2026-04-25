@@ -16,10 +16,10 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 package com.tenio.common.utility;
@@ -30,11 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.tenio.common.custom.DisabledTestFindingSolution;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+@SuppressWarnings("deprecated")
 
 @DisplayName("Unit Test Cases For Class Loader Utility")
 class ClassLoaderUtilityTest {
@@ -82,15 +85,38 @@ class ClassLoaderUtilityTest {
     assertFalse(listClasses.isEmpty());
   }
 
+  @Test
+  @DisplayName("Scanning multiple packages should return a combined list of classes")
+  void scanMultiplePackagesShouldReturnCombinedListOfClasses() throws ClassNotFoundException {
+    Set<String> packages = new HashSet<>();
+    packages.add("com.tenio.common.bootstrap.loader");
+    packages.add("com.google.common.annotations"); // An external library package
 
-  @DisabledTestFindingSolution
-  @DisplayName("Attempt to recall the private constructor in order to create an instance should " +
-      "throw an exception")
-  void tryToReCreateClassLoaderShouldThrowException() {
+    var listClasses = ClassLoaderUtility.getClasses(packages);
+    // Expecting at least 3 classes from "com.tenio.common.bootstrap.loader"
+    // and some classes from "com.google.common.annotations"
+    assertTrue(listClasses.size() > 3);
+    assertTrue(
+        listClasses.stream().map(Class::getName).anyMatch(name -> name.equals(
+            "com.tenio.common.bootstrap.loader.TestClassA")));
+    assertTrue(
+        listClasses.stream().map(Class::getName).anyMatch(name -> name.equals(
+            "com.google.common.annotations.Beta"))); // Example class from Guava annotations
   }
 
-  @DisabledTestFindingSolution
-  @DisplayName("Try to procedure throwable exception cases")
-  void getClassesInInvalidWaysShouldThrowException() {
+  @Test
+  @DisplayName("Filter annotated classes should return only classes with the given annotation")
+  void getTypesAnnotatedWithShouldReturnAnnotatedClasses() throws ClassNotFoundException {
+    var allClasses = ClassLoaderUtility.getClasses("com.tenio.common.bootstrap.loader");
+
+    var deprecated = ClassLoaderUtility.getTypesAnnotatedWith(allClasses, Deprecated.class);
+    assertAll("annotatedClasses",
+        () -> assertEquals(1, deprecated.size()),
+        () -> assertTrue(deprecated.stream().map(Class::getSimpleName)
+            .anyMatch(name -> name.equals("TestClassA")))
+    );
+
+    var noMatch = ClassLoaderUtility.getTypesAnnotatedWith(allClasses, FunctionalInterface.class);
+    assertTrue(noMatch.isEmpty());
   }
 }

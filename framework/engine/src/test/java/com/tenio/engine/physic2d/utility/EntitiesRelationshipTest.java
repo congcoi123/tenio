@@ -1,12 +1,15 @@
 package com.tenio.engine.physic2d.utility;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -355,6 +358,116 @@ class EntitiesRelationshipTest {
   }
 
   @Test
+  void testIsOverlappedReturnsFalseForEmptyList() {
+    BaseGameEntity ob = mock(BaseGameEntity.class);
+    when(ob.getPosition()).thenReturn(Vector2.newInstance());
+    when(ob.getBoundingRadius()).thenReturn(0.0f);
+    assertFalse(EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>isOverlapped(ob, new ArrayList<>()));
+  }
+
+  @Test
+  void testIsOverlappedReturnsTrueWhenEntitiesAreClose() {
+    BaseGameEntity ob = mock(BaseGameEntity.class);
+    when(ob.getPosition()).thenReturn(Vector2.newInstance());
+    when(ob.getBoundingRadius()).thenReturn(0.0f);
+    BaseGameEntity other = mock(BaseGameEntity.class);
+    when(other.getPosition()).thenReturn(Vector2.newInstance());
+    when(other.getBoundingRadius()).thenReturn(0.0f);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(other);
+    assertTrue(EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>isOverlapped(ob, list));
+  }
+
+  @Test
+  void testIsOverlappedReturnsFalseWhenEntitiesAreDistant() {
+    BaseGameEntity ob = mock(BaseGameEntity.class);
+    when(ob.getPosition()).thenReturn(Vector2.newInstance());
+    when(ob.getBoundingRadius()).thenReturn(0.0f);
+    Vector2 farPos = Vector2.newInstance();
+    farPos.set(1000, 0);
+    BaseGameEntity other = mock(BaseGameEntity.class);
+    when(other.getPosition()).thenReturn(farPos);
+    when(other.getBoundingRadius()).thenReturn(0.0f);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(other);
+    assertFalse(EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>isOverlapped(ob, list));
+  }
+
+  @Test
+  void testIsOverlappedWithCustomMinDistReturnsTrueWhenClose() {
+    BaseGameEntity ob = mock(BaseGameEntity.class);
+    when(ob.getPosition()).thenReturn(Vector2.newInstance());
+    when(ob.getBoundingRadius()).thenReturn(0.0f);
+    BaseGameEntity other = mock(BaseGameEntity.class);
+    when(other.getPosition()).thenReturn(Vector2.newInstance());
+    when(other.getBoundingRadius()).thenReturn(0.0f);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(other);
+    assertTrue(EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>isOverlapped(ob, list, 5.0f));
+  }
+
+  @Test
+  void testTagNeighborsTagsNearbyEntity() {
+    BaseGameEntity entity = mock(BaseGameEntity.class);
+    when(entity.getPosition()).thenReturn(Vector2.newInstance());
+    BaseGameEntity neighbor = mock(BaseGameEntity.class);
+    when(neighbor.getPosition()).thenReturn(Vector2.newInstance());
+    when(neighbor.getBoundingRadius()).thenReturn(0.0f);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(neighbor);
+    EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>tagNeighbors(entity, list, 10.0f);
+    verify(neighbor, times(1)).enableTag(false);
+    verify(neighbor, times(1)).enableTag(true);
+  }
+
+  @Test
+  void testTagNeighborsDoesNotTagDistantEntity() {
+    BaseGameEntity entity = mock(BaseGameEntity.class);
+    when(entity.getPosition()).thenReturn(Vector2.newInstance());
+    Vector2 farPos = Vector2.newInstance();
+    farPos.set(1000, 0);
+    BaseGameEntity neighbor = mock(BaseGameEntity.class);
+    when(neighbor.getPosition()).thenReturn(farPos);
+    when(neighbor.getBoundingRadius()).thenReturn(0.0f);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(neighbor);
+    EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>tagNeighbors(entity, list, 10.0f);
+    verify(neighbor, times(1)).enableTag(false);
+    verify(neighbor, times(0)).enableTag(true);
+  }
+
+  @Test
+  void testTagNeighborsSkipsSelfEntity() {
+    BaseGameEntity entity = mock(BaseGameEntity.class);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(entity);
+    EntitiesRelationship.<BaseGameEntity,
+        List<BaseGameEntity>>tagNeighbors(entity, list, 10.0f);
+    verify(entity, times(0)).enableTag(false);
+    verify(entity, times(0)).enableTag(true);
+  }
+
+  @Test
+  void testConstructorInstantiation() {
+    assertDoesNotThrow(() -> new EntitiesRelationship());
+  }
+
+  @Test
+  void testEnforceNonPenetrationConstraintEntityInOwnList() {
+    BaseGameEntity entity = mock(BaseGameEntity.class);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(entity);
+    assertDoesNotThrow(() -> EntitiesRelationship
+        .<BaseGameEntity, ArrayList<BaseGameEntity>>enforceNonPenetrationConstraint(entity, list));
+  }
+
+  @Test
   void testGetClosestEntityLineSegmentIntersection11() {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(Float.MAX_VALUE, Float.MAX_VALUE);
@@ -371,6 +484,34 @@ class EntitiesRelationshipTest {
             baseGameEntityList, "The One To Ignore", vectorA, Vector2.newInstance(), 10.0f));
     verify(baseGameEntity).getId();
     verify(baseGameEntity).getPosition();
+  }
+
+  @Test
+  void testGetGetEntityLineSegmentIntersectionsEntityOutOfRange() {
+    BaseGameEntity entity = mock(BaseGameEntity.class);
+    when(entity.getId()).thenReturn("not-ignored");
+    var pos = Vector2.newInstance();
+    pos.set(100.0f, 100.0f);
+    when(entity.getPosition()).thenReturn(pos);
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(entity);
+    var result = EntitiesRelationship
+        .<BaseGameEntity, ArrayList<BaseGameEntity>>getGetEntityLineSegmentIntersections(
+            list, "ignored", Vector2.newInstance(), Vector2.newInstance(), 10.0f);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void testGetClosestEntityLineSegmentIntersectionWithMatchingIgnoreId() {
+    BaseGameEntity baseGameEntity = mock(BaseGameEntity.class);
+    when(baseGameEntity.getId()).thenReturn("ignoreMe");
+    when(baseGameEntity.getPosition()).thenReturn(Vector2.newInstance());
+
+    ArrayList<BaseGameEntity> list = new ArrayList<>();
+    list.add(baseGameEntity);
+    assertNull(
+        EntitiesRelationship.<BaseGameEntity, ArrayList<BaseGameEntity>>getClosestEntityLineSegmentIntersection(
+            list, "ignoreMe", Vector2.newInstance(), Vector2.newInstance(), 10.0f));
   }
 }
 

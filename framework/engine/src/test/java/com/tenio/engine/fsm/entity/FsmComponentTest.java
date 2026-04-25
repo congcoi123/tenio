@@ -1,6 +1,5 @@
 package com.tenio.engine.fsm.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -13,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.tenio.engine.fsm.EntityManager;
 import com.tenio.engine.fsm.MessageDispatcher;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class FsmComponentTest {
@@ -118,7 +116,6 @@ class FsmComponentTest {
   }
 
   @Test
-  @Disabled
   void testChangeState() {
     State<Object> state = (State<Object>) mock(State.class);
     doNothing().when(state).exit((Object) any());
@@ -131,12 +128,10 @@ class FsmComponentTest {
     fsmComponent.changeState(state1);
     verify(state).exit(any());
     verify(state1).enter(any());
-    assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
-        fsmComponent.getNameOfCurrentState());
+    assertSame(state1, fsmComponent.getCurrentState());
   }
 
   @Test
-  @Disabled
   void testRevertToPreviousState() {
     State<Object> state = (State<Object>) mock(State.class);
     doNothing().when(state).exit((Object) any());
@@ -150,8 +145,7 @@ class FsmComponentTest {
     fsmComponent.revertToPreviousState();
     verify(state1).enter(any());
     verify(state).exit(any());
-    assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
-        fsmComponent.getNameOfCurrentState());
+    assertSame(state1, fsmComponent.getCurrentState());
   }
 
   @Test
@@ -163,13 +157,11 @@ class FsmComponentTest {
   }
 
   @Test
-  @Disabled
   void testGetNameOfCurrentState() {
     FsmComponent<Object> fsmComponent =
         new FsmComponent<>(new MessageDispatcher(new EntityManager()), "Entity");
     fsmComponent.setCurrentState((State<Object>) mock(State.class));
-    assertEquals("com.tenio.engine.fsm.entity.State$MockitoMock$1753640723",
-        fsmComponent.getNameOfCurrentState());
+    assertTrue(fsmComponent.getNameOfCurrentState().contains("State"));
   }
 
   @Test
@@ -183,6 +175,38 @@ class FsmComponentTest {
     assertSame(messageDispatcher, actualFsmComponent.getDispatcher());
     assertNull(actualFsmComponent.getGlobalState());
     assertNull(actualFsmComponent.getPreviousState());
+  }
+
+  @Test
+  void testIsInStateFalseWithDifferentClasses() {
+    FsmComponent<Object> fsmComponent =
+        new FsmComponent<>(new MessageDispatcher(new EntityManager()), "Entity");
+    State<Object> stateA = new State<Object>() {
+      @Override
+      public void enter(Object entity) {}
+      @Override
+      public void execute(Object entity) {}
+      @Override
+      public void exit(Object entity) {}
+      @Override
+      public boolean onMessage(Object entity, Telegram msg) {
+        return false;
+      }
+    };
+    State<Object> stateB = new State<Object>() {
+      @Override
+      public void enter(Object entity) {}
+      @Override
+      public void execute(Object entity) {}
+      @Override
+      public void exit(Object entity) {}
+      @Override
+      public boolean onMessage(Object entity, Telegram msg) {
+        return false;
+      }
+    };
+    fsmComponent.setCurrentState(stateA);
+    assertFalse(fsmComponent.isInState(stateB));
   }
 }
 

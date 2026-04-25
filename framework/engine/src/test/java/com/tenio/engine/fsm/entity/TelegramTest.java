@@ -2,12 +2,13 @@ package com.tenio.engine.fsm.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.tenio.engine.message.ExtraMessage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class TelegramTest {
@@ -22,10 +23,9 @@ class TelegramTest {
   }
 
   @Test
-  @Disabled
   void testConstructor2() {
     Telegram actualTelegram = new Telegram();
-    assertEquals(1.637569765E9, actualTelegram.getCreatedTime());
+    assertTrue(actualTelegram.getCreatedTime() > 0);
     assertEquals(-1, actualTelegram.getType());
     assertNull(actualTelegram.getSender());
     assertNull(actualTelegram.getReceiver());
@@ -54,11 +54,10 @@ class TelegramTest {
   }
 
   @Test
-  @Disabled
   void testSetDelayTime() {
     Telegram telegram = new Telegram();
     telegram.setDelayTime(10.0);
-    assertEquals(1.637569781E9, telegram.getDelayTime());
+    assertTrue(telegram.getDelayTime() > 0);
   }
 
   @Test
@@ -96,6 +95,27 @@ class TelegramTest {
   void testCompareTo2() {
     Telegram telegram = new Telegram(10.0, "Sender", "Receiver", 1);
     assertEquals(-1, telegram.compareTo(new Telegram()));
+  }
+
+  @Test
+  void testHashCode() {
+    Telegram telegram = new Telegram(0, "A", "B", 1);
+    assertNotEquals(0, telegram.hashCode());
+  }
+
+  @Test
+  void testToString() {
+    Telegram telegram = new Telegram(0, "A", "B", 1, mock(ExtraMessage.class));
+    String result = telegram.toString();
+    assertNotNull(result);
+    assertTrue(result.contains("Sender"));
+    assertTrue(result.contains("Receiver"));
+  }
+
+  @Test
+  void testCompareToSameInstance() {
+    Telegram telegram = new Telegram(0, "A", "B", 1);
+    assertEquals(0, telegram.compareTo(telegram));
   }
 }
 

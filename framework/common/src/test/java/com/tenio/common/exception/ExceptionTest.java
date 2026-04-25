@@ -22,39 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.utility;
+package com.tenio.common.exception;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Time Utility")
-class TimeUtilityTest {
+@DisplayName("Unit Test Cases For Custom Exceptions")
+class ExceptionTest {
 
   @Test
-  @DisplayName("Throw an exception when the class's instance is attempted creating")
-  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = TimeUtility.class.getDeclaredConstructor();
-    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-    assertThrows(InvocationTargetException.class, () -> {
-      constructor.setAccessible(true);
-      constructor.newInstance();
-    });
+  void testNullElementPoolException() {
+    var exception = new NullElementPoolException("message");
+    assertEquals("message", exception.getMessage());
   }
 
   @Test
-  @DisplayName("currentTimeSeconds should return a positive value")
-  void currentTimeSecondsShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeSeconds() > 0);
+  void testMsgPackOperationException() {
+    var cause = new Exception("cause");
+    var exception = new MsgPackOperationException(cause);
+    assertEquals(cause, exception.getCause());
   }
 
   @Test
-  @DisplayName("currentTimeMillis should return a positive value")
-  void currentTimeMillisShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeMillis() > 0);
+  void testRunningScheduledTaskException() {
+    var exception = new RunningScheduledTaskException();
+    assertNotNull(exception);
+  }
+
+  @Test
+  void testUnsupportedMsgPackDataTypeException() {
+    var exception = new UnsupportedMsgPackDataTypeException();
+    assertTrue(exception.getMessage().contains("The data type is not supported"));
   }
 }

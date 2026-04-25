@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,6 +36,7 @@ import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.pool.ElementPool;
 import com.tenio.engine.ecs.basis.Entity;
 import com.tenio.engine.ecs.basis.implement.ContextInfo;
+import com.tenio.engine.ecs.basis.implement.EntityImpl;
 import com.tenio.engine.ecs.model.GameComponent;
 import com.tenio.engine.ecs.model.GameEntity;
 import com.tenio.engine.ecs.pool.EntityPool;
@@ -42,7 +44,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 class EntityPoolTest {
+
+  public static class ThrowingEntity extends EntityImpl {
+    public ThrowingEntity() {
+      throw new RuntimeException("intentional failure");
+    }
+  }
 
   private ElementPool<Entity> entityPool;
 
@@ -71,6 +81,34 @@ class EntityPoolTest {
       var entity = new GameEntity();
       entityPool.repay(entity);
     });
+  }
+
+  @Test
+  public void repayAfterGetShouldSucceed() {
+    Entity entity = entityPool.get();
+    assertDoesNotThrow(() -> entityPool.repay(entity));
+  }
+
+  @Test
+  public void getAvailableSlotShouldBeNonNegative() {
+    assertTrue(entityPool.getAvailableSlot() >= 0);
+  }
+
+  @Test
+  public void throwingConstructorShouldCoverCatchBlock() {
+    var info = new ContextInfo("Game", GameComponent.getComponentNames(),
+        GameComponent.getComponentTypes(), GameComponent.getNumberComponents());
+    ElementPool<Entity> pool = new EntityPool(ThrowingEntity.class, info);
+    for (int i = 0; i < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; i++) {
+      pool.get();
+    }
+    assertDoesNotThrow(() -> pool.get());
+  }
+
+  @Test
+  public void getAvailableSlotAfterUseShouldCoverFalseBranch() {
+    entityPool.get();
+    assertTrue(entityPool.getAvailableSlot() < entityPool.getPoolSize());
   }
 
   @Test

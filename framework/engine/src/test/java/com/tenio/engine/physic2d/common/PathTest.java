@@ -1,18 +1,22 @@
 package com.tenio.engine.physic2d.common;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.tenio.engine.physic2d.graphic.Paint;
 import com.tenio.engine.physic2d.math.Vector2;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class PathTest {
+
   @Test
   void testConstructor() {
     Path actualPath = new Path();
@@ -106,7 +110,6 @@ class PathTest {
   }
 
   @Test
-  @Disabled
   void testCreateRandomPath() {
     Path path = new Path(10, 10.0f, 10.0f, 10.0f, 10.0f, true);
     List<Vector2> actualCreateRandomPathResult =
@@ -122,7 +125,7 @@ class PathTest {
     Vector2 getResult7 = actualCreateRandomPathResult.get(8);
     Vector2 getResult8 = actualCreateRandomPathResult.get(9);
     float actualResultFloat = getResult5.y;
-    assertEquals(9.999999f, actualResultFloat);
+    assertEquals(10.0f, actualResultFloat);
     assertFalse(actualCreateRandomPathResult.get(6).isZero());
     assertFalse(getResult5.isZero());
     assertFalse(getResult2.isZero());
@@ -188,16 +191,33 @@ class PathTest {
   }
 
   @Test
+  void testRenderWithMultipleWaypointsDoesNotThrow() {
+    Path path = new Path(3, 0.0f, 0.0f, 10.0f, 10.0f, false);
+    Paint paint = Paint.getInstance();
+    Graphics2D g = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB).createGraphics();
+    paint.startDrawing(g);
+    assertDoesNotThrow(() -> path.render(paint));
+  }
+
+  @Test
+  void testRenderWithLoopedPathDoesNotThrow() {
+    Path path = new Path(3, 0.0f, 0.0f, 10.0f, 10.0f, true);
+    Paint paint = Paint.getInstance();
+    Graphics2D g = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB).createGraphics();
+    paint.startDrawing(g);
+    assertDoesNotThrow(() -> path.render(paint));
+  }
+
+  @Test
   void testSetWayPoints() {
     Path path = new Path(10, 10.0f, 10.0f, 10.0f, 10.0f, true);
 
     ArrayList<Vector2> vector2List = new ArrayList<Vector2>();
     vector2List.add(Vector2.newInstance());
     path.setWayPoints(vector2List);
-    Vector2 expectedCurrentWayPoint = vector2List.get(0);
+    Vector2 expectedCurrentWayPoint = vector2List.getFirst();
     assertSame(expectedCurrentWayPoint, path.getCurrentWayPoint());
     assertTrue(path.isEndOfWayPoints());
     assertSame(vector2List, path.getWayPoints());
   }
 }
-

@@ -1,5 +1,6 @@
 package com.tenio.engine.physic2d.utility;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -196,6 +197,43 @@ class TransformationTest {
     assertEquals(0.0f, getResult7.y);
     assertEquals(0.0f, getResult2.y);
     assertEquals(0.0f, getResult5.y);
+  }
+
+  @Test
+  void testConstructorInstantiation() {
+    assertDoesNotThrow(() -> new Transformation());
+  }
+
+  @Test
+  void testPointsToWorldSpaceWithNonUnitScaleCoversScaleBranch() {
+    ArrayList<Vector2> points = new ArrayList<>();
+    var point = Vector2.newInstance();
+    point.set(1.0f, 0.0f);
+    points.add(point);
+    Vector2 position = Vector2.newInstance();
+    Vector2 forward = Vector2.newInstance();
+    forward.set(1.0f, 0.0f);
+    Vector2 side = Vector2.newInstance();
+    side.set(0.0f, 1.0f);
+    Vector2 scale = Vector2.newInstance();
+    scale.set(2.0f, 2.0f);
+    List<Vector2> result = Transformation.pointsToWorldSpace(points, position, forward, side, scale);
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  void testPointsToWorldSpaceWithUnitScale() {
+    ArrayList<Vector2> points = new ArrayList<>();
+    points.add(Vector2.newInstance());
+    Vector2 position = Vector2.newInstance();
+    Vector2 forward = Vector2.newInstance();
+    Vector2 side = Vector2.newInstance();
+    Vector2 scale = Vector2.newInstance();
+    scale.set(1.0f, 1.0f);
+    List<Vector2> result = Transformation.pointsToWorldSpace(points, position, forward, side, scale);
+    assertEquals(1, result.size());
+    assertEquals(0.0f, result.get(0).x);
+    assertEquals(0.0f, result.get(0).y);
   }
 
   @Test

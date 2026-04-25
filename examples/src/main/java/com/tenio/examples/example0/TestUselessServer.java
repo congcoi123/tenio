@@ -22,18 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.custom;
+package com.tenio.examples.example0;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import com.tenio.core.ApplicationLauncher;
+import com.tenio.core.bootstrap.annotation.Bootstrap;
 
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Test
-@Disabled("Disabled until finding solutions")
-public @interface DisabledTestFindingSolution {
+/**
+ * This class shows how to create a game server which does nothing.
+ */
+@Bootstrap
+public final class TestUselessServer {
+
+    public static void main(String[] params) {
+        ApplicationLauncher.run(TestUselessServer.class);
+    }
 }

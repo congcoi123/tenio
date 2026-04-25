@@ -28,15 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.tenio.common.custom.StringArrayConverter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayName("Unit Test Cases For Byte Utility")
 class ByteUtilityTest {
@@ -52,23 +48,31 @@ class ByteUtilityTest {
     });
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      "1695609641, '101, 16, -13, 41'",
-      "66320, '0, 1, 3, 16'"
-  })
-  void testIntToBytes(int intValue, @ConvertWith(StringArrayConverter.class) String[] binaries) {
-    byte[] byteArray = ByteUtility.intToBytes(intValue);
-    assertEquals(binaries.length, byteArray.length);
-    assertEquals(binaries[0], String.valueOf(byteArray[0]));
-    assertEquals(binaries[1], String.valueOf(byteArray[1]));
-    assertEquals(binaries[2], String.valueOf(byteArray[2]));
-    assertEquals(binaries[3], String.valueOf(byteArray[3]));
+  @Test
+  void testIntToBytes() {
+    Object[][] testCases = new Object[][]{
+            {1695609641, new String[]{"101", "16", "-13", "41"}},
+            {66320, new String[]{"0", "1", "3", "16"}}
+    };
+
+    for (Object[] testCase : testCases) {
+      int intValue = (int) testCase[0];
+      String[] binaries = (String[]) testCase[1];
+
+      byte[] byteArray = ByteUtility.intToBytes(intValue);
+
+      assertEquals(binaries.length, byteArray.length);
+      assertEquals(binaries[0], String.valueOf(byteArray[0]));
+      assertEquals(binaries[1], String.valueOf(byteArray[1]));
+      assertEquals(binaries[2], String.valueOf(byteArray[2]));
+      assertEquals(binaries[3], String.valueOf(byteArray[3]));
+    }
   }
 
   @Test
   void testBytesToInt() {
-    assertEquals(1094795585, ByteUtility.bytesToInt("AAAAAAAA" .getBytes(StandardCharsets.UTF_8)));
+    byte[] bytes = new byte[] {65, 65, 65, 65}; // "AAAA"
+    assertEquals(1094795585, ByteUtility.bytesToInt(bytes));
   }
 
   @Test
@@ -81,8 +85,8 @@ class ByteUtilityTest {
 
   @Test
   void testBytesToShort() {
-    assertEquals((short) 16705,
-        ByteUtility.bytesToShort("AAAAAAAA" .getBytes(StandardCharsets.UTF_8)));
+    byte[] bytes = new byte[] {65, 65}; // "AA"
+    assertEquals((short) 16705, ByteUtility.bytesToShort(bytes));
   }
 
   @Test

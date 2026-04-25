@@ -35,6 +35,8 @@ import org.junit.runner.RunWith;
     "com.tenio.common.configuration",
     "com.tenio.common.constant",
     "com.tenio.common.data",
+    "com.tenio.common.exception",
+    "com.tenio.common.logger",
     "com.tenio.common.pool",
     "com.tenio.common.task",
     "com.tenio.common.utility",

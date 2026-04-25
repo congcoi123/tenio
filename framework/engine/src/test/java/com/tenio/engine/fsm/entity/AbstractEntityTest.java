@@ -22,39 +22,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.utility;
+package com.tenio.engine.fsm.entity;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test Cases For Time Utility")
-class TimeUtilityTest {
+class AbstractEntityTest {
 
   @Test
-  @DisplayName("Throw an exception when the class's instance is attempted creating")
-  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = TimeUtility.class.getDeclaredConstructor();
-    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-    assertThrows(InvocationTargetException.class, () -> {
-      constructor.setAccessible(true);
-      constructor.newInstance();
-    });
+  void testDefaultConstructorGeneratesId() {
+    AbstractEntity entity = new AbstractEntity() {
+      @Override
+      public void update(float deltaTime) {
+      }
+
+      @Override
+      public boolean handleMessage(Telegram msg) {
+        return false;
+      }
+    };
+    assertNotNull(entity.getId());
   }
 
   @Test
-  @DisplayName("currentTimeSeconds should return a positive value")
-  void currentTimeSecondsShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeSeconds() > 0);
+  void testStringConstructorSetsId() {
+    AbstractEntity entity = new AbstractEntity("my-id") {
+      @Override
+      public void update(float deltaTime) {
+      }
+
+      @Override
+      public boolean handleMessage(Telegram msg) {
+        return false;
+      }
+    };
+    assertEquals("my-id", entity.getId());
   }
 
   @Test
-  @DisplayName("currentTimeMillis should return a positive value")
-  void currentTimeMillisShouldReturnPositiveValue() {
-    assertTrue(TimeUtility.currentTimeMillis() > 0);
+  void testSetId() {
+    AbstractEntity entity = new AbstractEntity("original") {
+      @Override
+      public void update(float deltaTime) {
+      }
+
+      @Override
+      public boolean handleMessage(Telegram msg) {
+        return false;
+      }
+    };
+    entity.setId("updated");
+    assertEquals("updated", entity.getId());
   }
 }
