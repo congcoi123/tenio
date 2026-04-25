@@ -73,6 +73,16 @@ class EcsSystemTest {
   }
 
   @Test
+  public void isRunningShouldBeTrueByDefault() {
+    Assertions.assertTrue(systems.isRunning());
+  }
+
+  @Test
+  public void getContextShouldReturnContext() {
+    Assertions.assertNotNull(testSystem.getContext());
+  }
+
+  @Test
   public void pauseSystemShouldReturnTrueValue() {
     systems.initialize();
 

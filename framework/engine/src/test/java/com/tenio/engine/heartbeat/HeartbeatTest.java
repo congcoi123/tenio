@@ -24,5 +24,102 @@ THE SOFTWARE.
 
 package com.tenio.engine.heartbeat;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.tenio.engine.message.ExtraMessage;
+import com.tenio.engine.physic2d.graphic.Paint;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 class HeartbeatTest {
+
+  private HeartBeatManagerImpl manager;
+
+  @BeforeEach
+  void setUp() throws Exception {
+    manager = new HeartBeatManagerImpl();
+    manager.initialize(2);
+  }
+
+  @AfterEach
+  void tearDown() {
+    manager.clear();
+  }
+
+  @Test
+  void testContainsReturnsFalseForUnknownId() {
+    assertFalse(manager.contains("unknown"));
+  }
+
+  @Test
+  void testCreateShouldRegisterHeartbeat() {
+    manager.create("hb1", new TestHeartBeat());
+    assertTrue(manager.contains("hb1"));
+  }
+
+  @Test
+  void testDisposeShouldUnregisterHeartbeat() {
+    manager.create("hb1", new TestHeartBeat());
+    manager.dispose("hb1");
+    assertFalse(manager.contains("hb1"));
+  }
+
+  @Test
+  void testDisposeWithUnknownIdShouldNotThrow() {
+    assertDoesNotThrow(() -> manager.dispose("nonexistent"));
+  }
+
+  @Test
+  void testClearShouldNotThrow() {
+    manager.create("hb1", new TestHeartBeat());
+    assertDoesNotThrow(() -> manager.clear());
+  }
+
+  @Test
+  void testSendMessageWithDelayShouldSucceed() {
+    manager.create("hb1", new TestHeartBeat());
+    assertDoesNotThrow(() -> manager.sendMessage("hb1", null, 0.5));
+  }
+
+  @Test
+  void testSendMessageWithoutDelayShouldSucceed() {
+    manager.create("hb1", new TestHeartBeat());
+    assertDoesNotThrow(() -> manager.sendMessage("hb1", null));
+  }
+
+  private static class TestHeartBeat extends AbstractHeartBeat {
+
+    @Override
+    protected void onCreate() {}
+
+    @Override
+    protected void onMessage(ExtraMessage message) {}
+
+    @Override
+    protected void onUpdate(float deltaTime) {}
+
+    @Override
+    protected void onRender(Paint paint) {}
+
+    @Override
+    protected void onPause() {}
+
+    @Override
+    protected void onResume() {}
+
+    @Override
+    protected void onDispose() {}
+
+    @Override
+    protected void onAction1() {}
+
+    @Override
+    protected void onAction2() {}
+
+    @Override
+    protected void onAction3() {}
+  }
 }

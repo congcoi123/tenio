@@ -8,6 +8,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,36 @@ class EntityManagerTest {
     //     EntityManager.entities
 
     (new EntityManager()).clear();
+  }
+
+  @Test
+  void testContainReturnsTrueAfterRegister() {
+    EntityManager entityManager = new EntityManager();
+    AbstractEntity abstractEntity = mock(AbstractEntity.class);
+    when(abstractEntity.getId()).thenReturn("42");
+    entityManager.register(abstractEntity);
+    assertTrue(entityManager.contain("42"));
+  }
+
+  @Test
+  void testRegisterDuplicateEntityShouldNotIncrementCount() {
+    EntityManager entityManager = new EntityManager();
+    AbstractEntity abstractEntity = mock(AbstractEntity.class);
+    when(abstractEntity.getId()).thenReturn("42");
+    entityManager.register(abstractEntity);
+    entityManager.register(abstractEntity);
+    assertEquals(1L, entityManager.count());
+  }
+
+  @Test
+  void testUpdateCallsEntityUpdate() {
+    EntityManager entityManager = new EntityManager();
+    AbstractEntity abstractEntity = mock(AbstractEntity.class);
+    when(abstractEntity.getId()).thenReturn("42");
+    doNothing().when(abstractEntity).update(0.5f);
+    entityManager.register(abstractEntity);
+    entityManager.update(0.5f);
+    verify(abstractEntity).update(0.5f);
   }
 }
 

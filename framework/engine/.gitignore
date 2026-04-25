@@ -125,3 +125,11 @@ Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+
+
+#---------------------------------------#
+# AI Agents Ignores                       #
+#---------------------------------------#
+
+# Claude Code
+.claude

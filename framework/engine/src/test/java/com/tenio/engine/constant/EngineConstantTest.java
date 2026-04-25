@@ -22,22 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.engine;
+package com.tenio.engine.constant;
 
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.SuiteDisplayName;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(JUnitPlatform.class)
-@SuiteDisplayName("Test all unit test cases for tenio-engine module")
-@SelectPackages({
-    "com.tenio.engine.constant",
-    "com.tenio.engine.ecs",
-    "com.tenio.engine.exception",
-    "com.tenio.engine.fsm",
-    "com.tenio.engine.heartbeat",
-    "com.tenio.engine.physic2d"
-})
-class TenIOEngineTest {
+import org.junit.jupiter.api.Test;
+
+class EngineConstantTest {
+
+  @Test
+  void testSendMsgImmediatelyValue() {
+    assertEquals(0.0, EngineConstant.SEND_MSG_IMMEDIATELY, 0.0001);
+  }
+
+  @Test
+  void testConstructorThrows() {
+    assertThrows(UnsupportedOperationException.class, () -> {
+      try {
+        var constructor = EngineConstant.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+      } catch (java.lang.reflect.InvocationTargetException ex) {
+        throw (UnsupportedOperationException) ex.getCause();
+      }
+    });
+  }
 }

@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.engine.ecs;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +41,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 class ComponentPoolTest {
+
+  public static class ThrowingComponent implements Component {
+    public ThrowingComponent() {
+      throw new RuntimeException("intentional failure");
+    }
+  }
 
   private ElementPool<Component> componentPool;
 
@@ -67,6 +76,32 @@ class ComponentPoolTest {
       View view = new View();
       componentPool.repay(view);
     });
+  }
+
+  @Test
+  public void repayAfterGetShouldSucceed() {
+    Component component = componentPool.get();
+    assertDoesNotThrow(() -> componentPool.repay(component));
+  }
+
+  @Test
+  public void getAvailableSlotShouldBeNonNegative() {
+    assertTrue(componentPool.getAvailableSlot() >= 0);
+  }
+
+  @Test
+  public void throwingConstructorShouldCoverCatchBlock() {
+    ElementPool<Component> pool = new ComponentPool(ThrowingComponent.class);
+    for (int i = 0; i < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; i++) {
+      pool.get();
+    }
+    assertDoesNotThrow(() -> pool.get());
+  }
+
+  @Test
+  public void getAvailableSlotAfterUseShouldCoverFalseBranch() {
+    componentPool.get();
+    assertTrue(componentPool.getAvailableSlot() < componentPool.getPoolSize());
   }
 
   @Test

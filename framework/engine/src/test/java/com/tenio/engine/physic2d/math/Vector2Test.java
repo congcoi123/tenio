@@ -2,6 +2,7 @@ package com.tenio.engine.physic2d.math;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -238,6 +239,14 @@ class Vector2Test {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(0.0f, 10.0f);
     assertFalse(newInstanceResult.isEqual(Vector2.newInstance()));
+  }
+
+  @Test
+  void testValueOf() {
+    Vector2 v = Vector2.valueOf(3.0f, 4.0f);
+    assertNotNull(v);
+    assertEquals(3.0f, v.x, 0.001f);
+    assertEquals(4.0f, v.y, 0.001f);
   }
 }
 
