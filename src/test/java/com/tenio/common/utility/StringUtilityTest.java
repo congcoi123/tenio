@@ -71,4 +71,21 @@ class StringUtilityTest {
         .thenReturn(expectedRandom);
     assertEquals("AAAAA", StringUtility.getRandomTextByLength(5));
   }
+
+  @Test
+  @DisplayName("It should trim a string by a given anchor substring")
+  void itShouldTrimStringByAnchor() {
+    assertEquals("hello", StringUtility.trimStringByString("...hello...", "..."));
+    assertEquals("middle", StringUtility.trimStringByString("--middle", "--"));
+    assertEquals("text", StringUtility.trimStringByString("text", "xyz"));
+  }
+
+  @Test
+  @DisplayName("It should return a formatted stack trace string from an exception")
+  void itShouldReturnFormattedStackTrace() {
+    var exception = new RuntimeException("test error");
+    var trace = StringUtility.getStackTrace(exception);
+    assertTrue(trace.contains("RuntimeException"));
+    assertTrue(trace.contains("test error"));
+  }
 }

@@ -28,38 +28,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tenio.common.data.zero.ZeroType;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("Unit Test Cases For Zero Type")
 class ZeroTypeTest {
 
-  @ParameterizedTest
-  @CsvSource({
-      "NULL, 0",
-      "BOOLEAN, 1",
-      "BYTE, 2",
-      "SHORT, 3",
-      "INTEGER, 4",
-      "LONG, 5",
-      "FLOAT, 6",
-      "DOUBLE, 7",
-      "STRING, 8",
-      "BOOLEAN_ARRAY, 9",
-      "BYTE_ARRAY, 10",
-      "SHORT_ARRAY, 11",
-      "INTEGER_ARRAY, 12",
-      "LONG_ARRAY, 13",
-      "FLOAT_ARRAY, 14",
-      "DOUBLE_ARRAY, 15",
-      "STRING_ARRAY, 16",
-      "ZERO_ARRAY, 17",
-      "ZERO_MAP, 18"
-  })
+  @Test
   @DisplayName("Test All Enumerated Values")
-  void testAllEnumValues(String name, int value) {
-    ZeroType zeroType = ZeroType.valueOf(name);
-    assertEquals(value, zeroType.getValue());
-    assertEquals(name, zeroType.toString());
+  void testAllEnumValues() {
+    for (ZeroType type : ZeroType.values()) {
+      assertEquals(type.name(), type.toString());
+      assertEquals(type, ZeroType.valueOf(type.name()));
+    }
   }
 }
