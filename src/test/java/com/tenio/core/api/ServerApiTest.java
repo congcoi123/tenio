@@ -27,6 +27,7 @@ package com.tenio.core.api;
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.api.implement.ServerApiImpl;
 import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.Channel;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
@@ -52,8 +53,10 @@ import com.tenio.core.network.entity.session.implement.SessionImpl;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import com.tenio.core.server.Server;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
@@ -565,5 +568,196 @@ class ServerApiTest {
     Assertions.assertThrows(UnsupportedOperationException.class,
         () -> serverApi.sendPrivateMessage(Mockito.mock(Player.class), Mockito.mock(Player.class)
             , Mockito.mock(DataCollection.class)));
+  }
+
+  @Test
+  @DisplayName("joinRoom(player, room, password) 3-arg default delegates to 5-arg version")
+  void joinRoomThreeArgDefaultDelegatesToFiveArg() {
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var player = Mockito.mock(Player.class);
+    var room = Mockito.mock(Room.class);
+    Mockito.when(player.isInRoom()).thenReturn(false);
+    serverApi.joinRoom(player, room, "password");
+    Mockito.verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT,
+        player, room, PlayerJoinedRoomResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("addRoom succeeds and emits ROOM_CREATED_RESULT SUCCESS")
+  void addRoomSuccessEmitsEvent() {
+    Mockito.when(server.getRoomManager()).thenReturn(roomManager);
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var room = Mockito.mock(Room.class);
+    var setting = Mockito.mock(InitialRoomSetting.class);
+    var owner = Mockito.mock(Player.class);
+    Room result = serverApi.addRoom(room, setting, owner);
+    Assertions.assertEquals(room, result);
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, room, setting,
+        RoomCreatedResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("addRoom throws IllegalArgumentException emits INVALID_NAME_OR_PASSWORD")
+  void addRoomIllegalArgumentEmitsInvalidCredentials() {
+    Mockito.when(server.getRoomManager()).thenReturn(roomManager);
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var room = Mockito.mock(Room.class);
+    var setting = Mockito.mock(InitialRoomSetting.class);
+    var owner = Mockito.mock(Player.class);
+    Mockito.doThrow(IllegalArgumentException.class).when(roomManager).addRoomWithOwner(room, setting, owner);
+    Room result = serverApi.addRoom(room, setting, owner);
+    Assertions.assertNull(result);
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
+        RoomCreatedResult.INVALID_NAME_OR_PASSWORD);
+  }
+
+  @Test
+  @DisplayName("addRoom throws CreatedRoomException emits the exception result")
+  void addRoomCreatedRoomExceptionEmitsExceptionResult() {
+    Mockito.when(server.getRoomManager()).thenReturn(roomManager);
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var room = Mockito.mock(Room.class);
+    var setting = Mockito.mock(InitialRoomSetting.class);
+    var owner = Mockito.mock(Player.class);
+    Mockito.doThrow(new CreatedRoomException("fail", RoomCreatedResult.REACHED_MAX_ROOMS))
+        .when(roomManager).addRoomWithOwner(room, setting, owner);
+    Room result = serverApi.addRoom(room, setting, owner);
+    Assertions.assertNull(result);
+    Mockito.verify(eventManager).emit(ServerEvent.ROOM_CREATED_RESULT, null, setting,
+        RoomCreatedResult.REACHED_MAX_ROOMS);
+  }
+
+  @Test
+  @DisplayName("computePlayers delegates to playerManager")
+  void computePlayersDelegatesToPlayerManager() {
+    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
+
+    Consumer<Iterator<Player>> consumer = Mockito.mock(Consumer.class);
+    serverApi.computePlayers(consumer);
+    Mockito.verify(playerManager).computePlayers(consumer);
+  }
+
+  @Test
+  @DisplayName("computeRooms delegates to roomManager")
+  void computeRoomsDelegatesToRoomManager() {
+    Mockito.when(server.getRoomManager()).thenReturn(roomManager);
+
+    Consumer<Iterator<Room>> consumer = Mockito.mock(Consumer.class);
+    serverApi.computeRooms(consumer);
+    Mockito.verify(roomManager).computeRooms(consumer);
+  }
+
+  @Test
+  @DisplayName("getRoomCount delegates to roomManager")
+  void getRoomCountDelegatesToRoomManager() {
+    Mockito.when(server.getRoomManager()).thenReturn(roomManager);
+    Mockito.when(roomManager.getRoomCount()).thenReturn(7);
+    Assertions.assertEquals(7, serverApi.getRoomCount());
+  }
+
+  @Test
+  @DisplayName("createChannel(id, description) delegates to channelManager")
+  void createChannelWithDescriptionDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    serverApi.createChannel("ch1", "desc");
+    Mockito.verify(channelManager).createChannel("ch1", "desc");
+  }
+
+  @Test
+  @DisplayName("createChannel(id) default method delegates to createChannel(id, null)")
+  void createChannelOneArgDefaultDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    serverApi.createChannel("ch1");
+    Mockito.verify(channelManager).createChannel("ch1", null);
+  }
+
+  @Test
+  @DisplayName("removeChannel delegates to channelManager")
+  void removeChannelDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    serverApi.removeChannel("ch1");
+    Mockito.verify(channelManager).removeChannel("ch1");
+  }
+
+  @Test
+  @DisplayName("subscribeToChannel delegates to channelManager")
+  void subscribeToChannelDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    var channel = Mockito.mock(Channel.class);
+    var player = Mockito.mock(Player.class);
+    serverApi.subscribeToChannel(channel, player);
+    Mockito.verify(channelManager).subscribe(channel, player);
+  }
+
+  @Test
+  @DisplayName("unsubscribeFromChannel delegates to channelManager")
+  void unsubscribeFromChannelDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    var channel = Mockito.mock(Channel.class);
+    var player = Mockito.mock(Player.class);
+    serverApi.unsubscribeFromChannel(channel, player);
+    Mockito.verify(channelManager).unsubscribe(channel, player);
+  }
+
+  @Test
+  @DisplayName("unsubscribeFromAllChannels delegates to channelManager")
+  void unsubscribeFromAllChannelsDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    var player = Mockito.mock(Player.class);
+    serverApi.unsubscribeFromAllChannels(player);
+    Mockito.verify(channelManager).unsubscribe(player);
+  }
+
+  @Test
+  @DisplayName("broadcastToChannel delegates to channelManager")
+  void broadcastToChannelDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    var channel = Mockito.mock(Channel.class);
+    var message = Mockito.mock(DataCollection.class);
+    serverApi.broadcastToChannel(channel, message);
+    Mockito.verify(channelManager).broadcast(channel, message);
+  }
+
+  @Test
+  @DisplayName("getSubscribedChannelsForPlayer delegates to channelManager")
+  void getSubscribedChannelsForPlayerDelegates() {
+    Mockito.when(server.getChannelManager()).thenReturn(channelManager);
+
+    var player = Mockito.mock(Player.class);
+    Map<String, Channel> expectedMap = new HashMap<>();
+    Mockito.when(channelManager.getSubscribedChannelsForPlayer(player)).thenReturn(expectedMap);
+    Map<String, Channel> result = serverApi.getSubscribedChannelsForPlayer(player);
+    Assertions.assertSame(expectedMap, result);
+  }
+
+  @Test
+  @DisplayName("changeRoom(player, room, password) with player in room calls leaveRoom first")
+  void changeRoomThreeArgWithPlayerInRoomCallsLeaveRoomFirst() {
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+
+    var player = Mockito.mock(Player.class);
+    var currentRoom = Mockito.mock(Room.class);
+    var newRoom = Mockito.mock(Room.class);
+    // 1st: changeRoom's isInRoom check → true (player is in a room)
+    // 2nd: leaveRoom's !isInRoom check → true (still in room, proceed to leave)
+    // 3rd: joinRoom's isInRoom check → false (player has left room)
+    Mockito.when(player.isInRoom()).thenReturn(true, true, false);
+    Mockito.when(player.getCurrentRoom()).thenReturn(Optional.of(currentRoom));
+    serverApi.changeRoom(player, newRoom, "pass");
+    Mockito.verify(eventManager).emit(ServerEvent.PLAYER_BEFORE_LEAVE_ROOM, player, currentRoom,
+        PlayerLeaveRoomMode.CHANGE_ROOM);
+    Mockito.verify(eventManager).emit(ServerEvent.PLAYER_JOINED_ROOM_RESULT,
+        player, newRoom, PlayerJoinedRoomResult.SUCCESS);
   }
 }

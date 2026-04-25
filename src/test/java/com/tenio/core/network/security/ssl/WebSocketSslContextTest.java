@@ -45,4 +45,16 @@ class WebSocketSslContextTest {
     WebSocketSslContext sslContext = new WebSocketSslContext();
     assertNull(sslContext.getServerContext());
   }
+
+  @Test
+  @DisplayName("constructor uses custom algorithm from Security property when set")
+  void testConstructorUsesCustomAlgorithmFromSecurityProperty() {
+    java.security.Security.setProperty("ssl.KeyManagerFactory.algorithm", "SunX509");
+    try {
+      WebSocketSslContext sslContext = new WebSocketSslContext();
+      assertNull(sslContext.getServerContext());
+    } finally {
+      java.security.Security.setProperty("ssl.KeyManagerFactory.algorithm", "");
+    }
+  }
 }
