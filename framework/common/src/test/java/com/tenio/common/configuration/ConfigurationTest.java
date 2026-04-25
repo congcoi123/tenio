@@ -25,10 +25,16 @@ THE SOFTWARE.
 package com.tenio.common.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
+import java.util.Map;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,5 +76,55 @@ class ConfigurationTest {
   void clearAllConfigurationsShouldWork() {
     configuration.clear();
     assertEquals("{ }", configuration.toString());
+  }
+
+  @Test
+  @DisplayName("Push null key should do nothing")
+  void pushNullKeyShouldDoNothing() {
+    class ConfigurationInternal extends CommonConfiguration {
+        @Override
+        public void load(String file) {}
+        @Override
+        protected void extend(Map<String, String> extProperties) {}
+        public void testPushNull() {
+            push(null, "value");
+        }
+    }
+    var config = new ConfigurationInternal();
+    config.testPushNull();
+    assertEquals("{ }", config.toString());
+  }
+
+  @Test
+  @DisplayName("Calling extend method should work")
+  void callingExtendMethodShouldWork() {
+    boolean[] extended = {false};
+    class ConfigurationInternal extends CommonConfiguration {
+        @Override
+        public void load(String file) {
+            extend(Collections.emptyMap());
+        }
+        @Override
+        protected void extend(Map<String, String> extProperties) {
+            extended[0] = true;
+        }
+    }
+    var config = new ConfigurationInternal();
+    config.load("dummy");
+    assertTrue(extended[0]);
+  }
+
+  @Test
+  @DisplayName("Duplicate key push should log a warning when logging is enabled")
+  void pushDuplicateKeyWithLoggingEnabledShouldLog() {
+    Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.INFO);
+    try {
+      assertDoesNotThrow(() -> {
+        var config = new DefaultConfiguration();
+        config.load("dummy");
+      });
+    } finally {
+      Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.OFF);
+    }
   }
 }

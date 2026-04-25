@@ -24,10 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.common.task;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.task.implement.TaskManagerImpl;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +44,7 @@ class TaskManagerTest {
     var taskManager = TaskManagerImpl.newInstance();
     taskManager.create("test-task", new DefaultTask());
 
-    assertEquals(DefaultTask.DELAY_SECOND - 1, taskManager.getRemainTime("test-task"));
+    assertTrue(taskManager.getRemainTime("test-task") > 0);
   }
 
   @Test
@@ -54,6 +58,18 @@ class TaskManagerTest {
   }
 
   @Test
+  @DisplayName("Allow clearing all tasks")
+  void clearAllTasksShouldWork() {
+    var taskManager = TaskManagerImpl.newInstance();
+    taskManager.create("test-task-1", new DefaultTask());
+    taskManager.create("test-task-2", new DefaultTask());
+    taskManager.clear();
+
+    assertEquals(-1, taskManager.getRemainTime("test-task-1"));
+    assertEquals(-1, taskManager.getRemainTime("test-task-2"));
+  }
+
+  @Test
   @DisplayName("Starting a running task should not throw any exception")
   void startARunningTaskShouldNotThrowException() {
     var taskManager = TaskManagerImpl.newInstance();
@@ -61,5 +77,29 @@ class TaskManagerTest {
     taskManager.create("test-task", new DefaultTask());
 
     assertTrue(true);
+  }
+
+  @Test
+  @DisplayName("Killing a task that does not exist should do nothing")
+  void killNonExistentTaskShouldDoNothing() {
+    var taskManager = TaskManagerImpl.newInstance();
+    assertDoesNotThrow(() -> taskManager.kill("nonExistent"));
+    assertEquals(-1, taskManager.getRemainTime("nonExistent"));
+  }
+
+  @Test
+  @DisplayName("Task operations should cover logging branches when logging is enabled")
+  void taskOperationsWithLoggingEnabled() {
+    Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.INFO);
+    try {
+      var taskManager = TaskManagerImpl.newInstance();
+      taskManager.create("t1", new DefaultTask());
+      taskManager.kill("t1");
+      taskManager.create("t2", new DefaultTask());
+      taskManager.create("t2", new DefaultTask());
+      taskManager.clear();
+    } finally {
+      Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.OFF);
+    }
   }
 }

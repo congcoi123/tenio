@@ -22,18 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.common.custom;
+package com.tenio.common.exception;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Test
-@Disabled("Disabled until finding solutions")
-public @interface DisabledTestFindingSolution {
+@DisplayName("Unit Test Cases For Custom Exceptions")
+class ExceptionTest {
+
+  @Test
+  void testNullElementPoolException() {
+    var exception = new NullElementPoolException("message");
+    assertEquals("message", exception.getMessage());
+  }
+
+  @Test
+  void testMsgPackOperationException() {
+    var cause = new Exception("cause");
+    var exception = new MsgPackOperationException(cause);
+    assertEquals(cause, exception.getCause());
+  }
+
+  @Test
+  void testRunningScheduledTaskException() {
+    var exception = new RunningScheduledTaskException();
+    assertNotNull(exception);
+  }
+
+  @Test
+  void testUnsupportedMsgPackDataTypeException() {
+    var exception = new UnsupportedMsgPackDataTypeException();
+    assertTrue(exception.getMessage().contains("The data type is not supported"));
+  }
 }

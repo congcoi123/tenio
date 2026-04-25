@@ -27,10 +27,14 @@ package com.tenio.common.pool;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.pool.StringBuilderPool;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,5 +116,23 @@ class StringBuilderPoolTest {
     var pool = StringBuilderPool.getInstance();
 
     assertThrows(NullElementPoolException.class, () -> pool.repay(new StringBuilder()));
+  }
+
+  @Test
+  @DisplayName("Pool expansion and error logging should work when logging is enabled")
+  void poolLoggingBranchesShouldBeReachableWithLoggingEnabled() {
+    Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.INFO);
+    try {
+      var pool = StringBuilderPool.getInstance();
+      pool.cleanup();
+      for (int i = 0; i <= CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; i++) {
+        pool.get();
+      }
+      assertTrue(pool.getPoolSize() > CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL);
+      assertThrows(NullElementPoolException.class, () -> pool.repay(new StringBuilder()));
+    } finally {
+      Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.OFF);
+      StringBuilderPool.getInstance().cleanup();
+    }
   }
 }

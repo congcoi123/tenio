@@ -83,7 +83,9 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
   public synchronized void doStop() {
     isStopped = true;
     // break pool thread out of dequeue() call.
-    currentThread.interrupt();
+    if (currentThread != null) { // Add null check here
+      currentThread.interrupt();
+    }
   }
 
   /**

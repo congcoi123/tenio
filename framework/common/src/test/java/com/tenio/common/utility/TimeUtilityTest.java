@@ -45,4 +45,16 @@ class TimeUtilityTest {
       constructor.newInstance();
     });
   }
+
+  @Test
+  @DisplayName("currentTimeSeconds should return a positive value")
+  void currentTimeSecondsShouldReturnPositiveValue() {
+    assertTrue(TimeUtility.currentTimeSeconds() > 0);
+  }
+
+  @Test
+  @DisplayName("currentTimeMillis should return a positive value")
+  void currentTimeMillisShouldReturnPositiveValue() {
+    assertTrue(TimeUtility.currentTimeMillis() > 0);
+  }
 }
