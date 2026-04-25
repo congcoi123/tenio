@@ -29,7 +29,7 @@ This project contains a collection of examples that show you how to manipulate t
 
 ## Dependencies
 ```txt
-tenio-core 0.7.1
+tenio-core 0.7.2
 tenio-engine 0.7.0
 ```
 
@@ -173,6 +173,7 @@ $ java TestServerLogin configuration.example1.xml
     |-- example0
     |   |-- TestSimpleClient
     |   |-- TestSimpleServer
+    |   |-- TestUselessServer    
     |-- example1
     |   |-- TestClientLogin
     |   |-- TestServerLogin
