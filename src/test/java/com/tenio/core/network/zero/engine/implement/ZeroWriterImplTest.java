@@ -247,14 +247,14 @@ class ZeroWriterImplTest {
   }
 
   @Test
-  @DisplayName("processSessionQueue with empty outbound queue returns immediately")
+  @DisplayName("processSessionQueue with almost empty outbound queue returns immediately")
   void testProcessSessionQueueEmptyOutboundQueueReturnsImmediately() throws Exception {
     Method m = getProcessSessionQueueMethod();
     Session session = mock(Session.class);
     OutboundQueue queue = mock(OutboundQueue.class);
     WriterHandler socketHandler = mock(WriterHandler.class);
     when(session.fetchOutboundQueue()).thenReturn(queue);
-    when(queue.isEmpty()).thenReturn(true);
+    when(queue.isSnapshotEmpty()).thenReturn(true);
 
     assertDoesNotThrow(() -> m.invoke(writer, session, socketHandler, mock(WriterHandler.class)));
 
@@ -268,7 +268,7 @@ class ZeroWriterImplTest {
     Session session = mock(Session.class);
     OutboundQueue queue = mock(OutboundQueue.class);
     when(session.fetchOutboundQueue()).thenReturn(queue);
-    when(queue.isEmpty()).thenReturn(false);
+    when(queue.isSnapshotEmpty()).thenReturn(false);
     when(session.isActivated()).thenReturn(false);
 
     assertDoesNotThrow(() -> m.invoke(writer, session, mock(WriterHandler.class),
@@ -284,7 +284,7 @@ class ZeroWriterImplTest {
     Session session = mock(Session.class);
     OutboundQueue queue = mock(OutboundQueue.class);
     when(session.fetchOutboundQueue()).thenReturn(queue);
-    when(queue.isEmpty()).thenReturn(false);
+    when(queue.isSnapshotEmpty()).thenReturn(false);
     when(session.isActivated()).thenReturn(true);
     when(queue.peek()).thenReturn(null);
 
@@ -303,7 +303,7 @@ class ZeroWriterImplTest {
     Packet packet = mock(Packet.class);
     WriterHandler socketHandler = mock(WriterHandler.class);
     when(session.fetchOutboundQueue()).thenReturn(queue);
-    when(queue.isEmpty()).thenReturn(false);
+    when(queue.isSnapshotEmpty()).thenReturn(false);
     when(session.isActivated()).thenReturn(true);
     when(queue.peek()).thenReturn(packet);
     when(packet.isTcp()).thenReturn(true);
@@ -322,7 +322,7 @@ class ZeroWriterImplTest {
     Packet packet = mock(Packet.class);
     WriterHandler datagramHandler = mock(WriterHandler.class);
     when(session.fetchOutboundQueue()).thenReturn(queue);
-    when(queue.isEmpty()).thenReturn(false);
+    when(queue.isSnapshotEmpty()).thenReturn(false);
     when(session.isActivated()).thenReturn(true);
     when(queue.peek()).thenReturn(packet);
     when(packet.isTcp()).thenReturn(false);

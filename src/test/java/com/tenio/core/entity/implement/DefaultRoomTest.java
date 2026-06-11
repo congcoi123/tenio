@@ -60,9 +60,9 @@ class DefaultRoomTest {
   void testNewInstance() {
     Room actualNewInstanceResult = DefaultRoom.newInstance();
     assertFalse(actualNewInstanceResult.isActivated());
-    assertEquals(0, actualNewInstanceResult.getSpectatorCount());
+    assertEquals(0, actualNewInstanceResult.getSnapshotSpectatorCount());
     assertEquals(RoomRemoveMode.WHEN_EMPTY, actualNewInstanceResult.getRoomRemoveMode());
-    assertEquals(0, actualNewInstanceResult.getParticipantCount());
+    assertEquals(0, actualNewInstanceResult.getSnapshotParticipantCount());
     assertTrue(actualNewInstanceResult.getOwner().isEmpty());
     assertEquals(0, actualNewInstanceResult.getMaxSpectators());
     assertEquals(0, actualNewInstanceResult.getMaxParticipants());
@@ -157,13 +157,13 @@ class DefaultRoomTest {
   }
 
   @Test
-  @DisplayName("Test retrieving participants and spectators lists")
-  void testParticipantAndSpectatorLists() {
+  @DisplayName("Test retrieving snapshot participants and spectators lists")
+  void testSnapshotParticipantAndSpectatorLists() {
     DefaultRoom room = (DefaultRoom) DefaultRoom.newInstance();
     room.configurePlayerManager(mock(PlayerManager.class));
-    assertEquals(0, room.getReadonlyParticipantsList().size());
-    assertEquals(0, room.getReadonlySpectatorsList().size());
-    assertEquals(0, room.getReadonlyPlayersList().size());
+    assertEquals(0, room.getSnapshotParticipantsList().size());
+    assertEquals(0, room.getSnapshotSpectatorsList().size());
+    assertEquals(0, room.getSnapshotPlayersList().size());
   }
 
   @Test
@@ -186,12 +186,12 @@ class DefaultRoomTest {
     room.setMaxParticipants(2);
     room.setMaxSpectators(1);
     room.setCapacity(2, 1);
-    org.mockito.Mockito.when(pm.getPlayerCount()).thenReturn(0);
-    assertFalse(room.isFull());
-    org.mockito.Mockito.when(pm.getPlayerCount()).thenReturn(3);
-    assertTrue(room.isFull());
-    org.mockito.Mockito.when(pm.getPlayerCount()).thenReturn(0);
-    assertTrue(room.isEmpty());
+    org.mockito.Mockito.when(pm.getSnapshotPlayerCount()).thenReturn(0);
+    assertFalse(room.isSnapshotFull());
+    org.mockito.Mockito.when(pm.getSnapshotPlayerCount()).thenReturn(3);
+    assertTrue(room.isSnapshotFull());
+    org.mockito.Mockito.when(pm.getSnapshotPlayerCount()).thenReturn(0);
+    assertTrue(room.isSnapshotEmpty());
   }
 
   @Test
@@ -207,13 +207,13 @@ class DefaultRoomTest {
   }
 
   @Test
-  @DisplayName("Test getPlayerCount delegates to playerManager")
-  void testGetPlayerCount() {
+  @DisplayName("Test getSnapshotPlayerCount delegates to playerManager")
+  void testGetSnapshotPlayerCount() {
     DefaultRoom room = (DefaultRoom) DefaultRoom.newInstance();
     PlayerManager pm = mock(PlayerManager.class);
     room.configurePlayerManager(pm);
-    when(pm.getPlayerCount()).thenReturn(5);
-    assertEquals(5, room.getPlayerCount());
+    when(pm.getSnapshotPlayerCount()).thenReturn(5);
+    assertEquals(5, room.getSnapshotPlayerCount());
   }
 
   @Test
@@ -262,7 +262,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player, null, false, 0);
     verify(player).setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
@@ -280,7 +280,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxSpectators(2);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player, null, true, 0);
     verify(player).setRoleInRoom(PlayerRoleInRoom.SPECTATOR);
@@ -314,7 +314,7 @@ class DefaultRoomTest {
     room.configurePlayerManager(pm);
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("alice");
     when(player.getPlayerSlotInCurrentRoom()).thenReturn(1);
@@ -353,7 +353,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxSpectators(2);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("alice");
     when(pm.containsPlayerIdentity("alice")).thenReturn(true);
@@ -392,7 +392,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     when(slotStrategy.getFreePlayerSlotInRoom()).thenReturn(2);
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("bob");
@@ -413,7 +413,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player); // calls addPlayer(player, false) → addPlayer(player, false, 0) → addPlayer(player, null, false, 0)
     verify(player).setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
@@ -430,7 +430,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player, false); // calls addPlayer(player, false, DEFAULT_SLOT)
     verify(player).setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
@@ -447,7 +447,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player, false, 0); // calls addPlayer(player, null, false, 0)
     verify(player).setRoleInRoom(PlayerRoleInRoom.PARTICIPANT);
@@ -464,7 +464,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     when(slotStrategy.getFreePlayerSlotInRoom()).thenReturn(1);
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("carol");
@@ -490,7 +490,7 @@ class DefaultRoomTest {
     room.configurePlayerManager(pm);
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player owner = mock(Player.class);
     when(owner.getIdentity()).thenReturn("owner");
     when(owner.getPlayerSlotInCurrentRoom()).thenReturn(0);
@@ -510,7 +510,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxSpectators(0);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("alice");
     when(pm.containsPlayerIdentity("alice")).thenReturn(true);
@@ -530,7 +530,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(0);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("bob");
     when(pm.containsPlayerIdentity("bob")).thenReturn(true);
@@ -551,7 +551,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     room.addPlayer(player, null, false, 2);
     verify(slotStrategy).tryTakeSlot(2);
@@ -569,7 +569,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     org.mockito.Mockito.doThrow(new IllegalArgumentException("slot taken"))
         .when(slotStrategy).tryTakeSlot(3);
     Player player = mock(Player.class);
@@ -589,7 +589,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     Player player = mock(Player.class);
     when(player.getIdentity()).thenReturn("carol");
     when(pm.containsPlayerIdentity("carol")).thenReturn(true);
@@ -610,7 +610,7 @@ class DefaultRoomTest {
     room.configurePlayerSlotGeneratedStrategy(slotStrategy);
     room.configureRoomCredentialValidatedStrategy(credStrategy);
     room.setMaxParticipants(4);
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of());
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of());
     org.mockito.Mockito.doThrow(new IllegalArgumentException("slot taken"))
         .when(slotStrategy).tryTakeSlot(5);
     Player player = mock(Player.class);
@@ -640,7 +640,7 @@ class DefaultRoomTest {
     when(spectator.getRoleInRoom()).thenReturn(PlayerRoleInRoom.SPECTATOR);
 
     // Return both players so the filter lambdas run over a non-empty stream
-    when(pm.getReadonlyPlayersList()).thenReturn(List.of(participant, spectator));
+    when(pm.getSnapshotPlayersList()).thenReturn(List.of(participant, spectator));
 
     // Triggering addPlayer calls classifyPlayersByRoles internally
     Player newPlayer = mock(Player.class);

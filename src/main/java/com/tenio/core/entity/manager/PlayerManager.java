@@ -114,14 +114,28 @@ public interface PlayerManager extends Manager {
   void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
-   * Retrieves a read-only player management list.
+   * Retrieves a snapshot of the read-only player management list.
+   * This is expected to provide the most recent update of the player list.
    * This method should be used to prevent the "escape references" issue
    * and provides thread-safe access to the player collection.
    *
-   * @return a list of all {@link Player}s in the management list
+   * @return the recent update of the list of all {@link Player}s in the management list
    * @see List
+   * @since 0.7.3
    */
-  List<Player> getReadonlyPlayersList();
+  List<Player> getSnapshotPlayersList();
+
+  /**
+   * Retrieves the read-only player management list.
+   * This method is costly, use it with caution.
+   * This method should be used to prevent the "escape references" issue
+   * and provides thread-safe access to the player collection.
+   *
+   * @return the list of all {@link Player}s in the management list
+   * @see List
+   * @since 0.7.3
+   */
+  List<Player> getPlayersList();
 
   /**
    * Removes a player from the management list.
@@ -143,10 +157,22 @@ public interface PlayerManager extends Manager {
   boolean containsPlayerIdentity(String playerIdentity);
 
   /**
+   * Retrieves the snapshot of the number of players in the management list.
+   * This is expected to provide the most recent update of the player count.
+   * This operation is thread-safe and provides an atomic count.
+   *
+   * @return the most recent update of the number of players in the list
+   * @since 0.7.3
+   */
+  int getSnapshotPlayerCount();
+
+  /**
    * Retrieves the current number of players in the management list.
+   * This method is costly, use it with caution.
    * This operation is thread-safe and provides an atomic count.
    *
    * @return the current number of players in the list
+   * @since 0.7.3
    */
   int getPlayerCount();
 

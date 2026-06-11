@@ -42,6 +42,7 @@ import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
+import com.tenio.core.entity.manager.implement.ChannelManagerImpl;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
@@ -148,8 +149,7 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("When a player login with an unavailable player instance, it should have null " +
-      "pointer exception")
+  @DisplayName("When a player login with an unavailable player instance, it should have null pointer exception")
   void playerLoginWithPlayerShouldHaveNullPointerException() {
     var playerManager = PlayerManagerImpl.newInstance(eventManager);
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
@@ -159,8 +159,7 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("When a player login with an unavailable session, it should have null pointer " +
-      "exception")
+  @DisplayName("When a player login with an unavailable session, it should have null pointer exception")
   void playerLoginWithSessionShouldHaveNullPointerException() {
     var playerManager = PlayerManagerImpl.newInstance(eventManager);
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
@@ -228,17 +227,22 @@ class ServerApiTest {
   void itLogoutPlayerHasSessionShouldCloseSession() {
     var player = Mockito.mock(Player.class);
     var session = Mockito.mock(Session.class);
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+    Mockito.when(server.getChannelManager()).thenReturn(ChannelManagerImpl.newInstance(eventManager));
+    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(player.getSession()).thenReturn(Optional.of(session));
     Mockito.when(player.containsSession()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
   }
 
   @Test
-  @DisplayName("When it tries to logout a player which has session, and the closed session has IO" +
-      " exception")
+  @DisplayName("When it tries to logout a player which has session, and the closed session has IO exception")
   void itLogoutPlayerHasSessionShouldHaveClosedSessionIoException() {
     var player = Mockito.mock(Player.class);
     var session = Mockito.mock(Session.class);
+    Mockito.when(server.getEventManager()).thenReturn(eventManager);
+    Mockito.when(server.getChannelManager()).thenReturn(ChannelManagerImpl.newInstance(eventManager));
+    Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(player.getSession()).thenReturn(Optional.of(session));
     Mockito.when(player.containsSession()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
@@ -259,8 +263,7 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("When it failed to create a new room without owner, and throw invalid credentials " +
-      "exception")
+  @DisplayName("When it failed to create a new room without owner, and throw invalid credentials exception")
   void itCreateRoomWithoutOwnerShouldThrowInvalidCredentialsException() {
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
@@ -302,8 +305,7 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("When it failed to create a new room with an owner, and throw invalid credentials " +
-      "exception")
+  @DisplayName("When it failed to create a new room with an owner, and throw invalid credentials exception")
   void itCreateRoomWithOwnerShouldThrowInvalidCredentialsException() {
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
@@ -342,31 +344,29 @@ class ServerApiTest {
 
     var playerName = "test";
     var player = Mockito.mock(Player.class);
-    Iterator<Player> playerIterator = Mockito.mock(Iterator.class);
     List<Player> playerList = Mockito.mock(List.class);
     var room = Mockito.mock(Room.class);
-    var roomIterator = Mockito.mock(Iterator.class);
     var roomList = Mockito.mock(List.class);
 
     // getPlayerByIdentity(String playerName)
     Mockito.when(playerManager.getPlayerByIdentity(playerName)).thenReturn(player);
     Assertions.assertEquals(Optional.ofNullable(player), serverApi.getPlayerByIdentity(playerName));
 
-    // getPlayerCount()
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(10);
-    Assertions.assertEquals(10, serverApi.getPlayerCount());
+    // getSnapshotPlayerCount()
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(10);
+    Assertions.assertEquals(10, serverApi.getSnapshotPlayerCount());
 
-    // getReadonlyPlayersList()
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(playerList);
-    Assertions.assertEquals(playerList, serverApi.getReadonlyPlayersList());
+    // getSnapshotPlayersList()
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(playerList);
+    Assertions.assertEquals(playerList, serverApi.getSnapshotPlayersList());
 
     // getRoomById(long roomId)
     Mockito.when(roomManager.getRoomById(10L)).thenReturn(room);
     Assertions.assertEquals(Optional.ofNullable(room), serverApi.getRoomById(10L));
 
-    // getReadonlyRoomsList()
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(roomList);
-    Assertions.assertEquals(roomList, serverApi.getReadonlyRoomsList());
+    // getSnapshotRoomsList()
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(roomList);
+    Assertions.assertEquals(roomList, serverApi.getSnapshotRoomsList());
 
     // getUdpPort()
     Mockito.when(datagramChannelManager.getUdpPort()).thenReturn(8048);
@@ -382,8 +382,7 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("When it tries to join an available player to nonexistent room, it should be " +
-      "failed")
+  @DisplayName("When it tries to join an available player to nonexistent room, it should be failed")
   void itJoinNullPlayerOrNullRoomShouldBeFailed() {
     Mockito.when(server.getEventManager()).thenReturn(eventManager);
 
@@ -652,11 +651,11 @@ class ServerApiTest {
   }
 
   @Test
-  @DisplayName("getRoomCount delegates to roomManager")
-  void getRoomCountDelegatesToRoomManager() {
+  @DisplayName("getSnapshotRoomCount delegates to roomManager")
+  void getRoomCountDelegatesToSnapshotRoomManager() {
     Mockito.when(server.getRoomManager()).thenReturn(roomManager);
-    Mockito.when(roomManager.getRoomCount()).thenReturn(7);
-    Assertions.assertEquals(7, serverApi.getRoomCount());
+    Mockito.when(roomManager.getSnapshotRoomCount()).thenReturn(7);
+    Assertions.assertEquals(7, serverApi.getSnapshotRoomCount());
   }
 
   @Test

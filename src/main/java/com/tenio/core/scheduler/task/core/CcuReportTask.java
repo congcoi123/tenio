@@ -65,7 +65,7 @@ public final class CcuReportTask extends AbstractSystemTask {
     var threadFactoryTask = new ThreadFactoryBuilder().setNameFormat("task-ccu-report").build();
     scheduledService = Executors.newSingleThreadScheduledExecutor(threadFactoryTask);
     scheduler = scheduledService.scheduleAtFixedRate(
-        () -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount()),
+        () -> eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getSnapshotPlayerCount()),
         initialDelay, interval, TimeUnit.SECONDS);
   }
 

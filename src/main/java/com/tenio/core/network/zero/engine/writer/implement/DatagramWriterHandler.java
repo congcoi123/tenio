@@ -96,7 +96,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
       allocateBuffer(sendingData.length);
     }
 
-    // put data to buffer
+    // copy data to buffer
     getBuffer().put(sendingData);
 
     // ready to send
@@ -125,7 +125,7 @@ public final class DatagramWriterHandler extends AbstractWriterHandler {
 
     // if the outbound queue still contains more packets, session is activated, then put the
     // session back to the tickets queue
-    if (session.isActivated() && !outboundQueue.isEmpty()) {
+    if (session.isActivated() && !outboundQueue.isSnapshotEmpty()) {
       getSessionTicketsQueue(session.getId()).add(session);
     }
   }

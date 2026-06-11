@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.Room;
@@ -53,11 +52,10 @@ import org.junit.jupiter.api.Test;
 class RoomManagerImplTest {
 
   private RoomManager roomManager;
-  private EventManager eventManager;
 
-  @BeforeEach
+    @BeforeEach
   void setUp() {
-    eventManager = EventManager.newInstance();
+    EventManager eventManager = EventManager.newInstance();
     roomManager = RoomManagerImpl.newInstance(eventManager);
   }
 
@@ -74,9 +72,9 @@ class RoomManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getRoomCount is zero initially")
+  @DisplayName("Test getSnapshotRoomCount is zero initially")
   void testGetRoomCountInitiallyZero() {
-    assertEquals(0, roomManager.getRoomCount());
+    assertEquals(0, roomManager.getSnapshotRoomCount());
   }
 
   @Test
@@ -84,7 +82,7 @@ class RoomManagerImplTest {
   void testAddRoomIncreasesCount() {
     Room room = DefaultRoom.newInstance();
     roomManager.addRoom(room);
-    assertEquals(1, roomManager.getRoomCount());
+    assertEquals(1, roomManager.getSnapshotRoomCount());
   }
 
   @Test
@@ -111,17 +109,17 @@ class RoomManagerImplTest {
 
   @Test
   @DisplayName("Test containsRoomName returns true when room with that name exists")
-  void testContainsRoomNameTrue() {
+  void testContainsSnapshotRoomNameTrue() {
     Room room = newConfiguredRoom();
     room.setName("MyRoom");
     roomManager.addRoom(room);
-    assertTrue(roomManager.containsRoomName("MyRoom"));
+    assertTrue(roomManager.containsSnapshotRoomName("MyRoom"));
   }
 
   @Test
-  @DisplayName("Test containsRoomName returns false when no such name exists")
-  void testContainsRoomNameFalse() {
-    assertFalse(roomManager.containsRoomName("NonExistentRoom"));
+  @DisplayName("Test containsSnapshotRoomName returns false when no such name exists")
+  void testContainsSnapshotRoomNameFalse() {
+    assertFalse(roomManager.containsSnapshotRoomName("NonExistentRoom"));
   }
 
   @Test
@@ -139,36 +137,36 @@ class RoomManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getReadonlyRoomsList is empty initially")
-  void testGetReadonlyRoomsListInitiallyEmpty() {
-    assertTrue(roomManager.getReadonlyRoomsList().isEmpty());
+  @DisplayName("Test getSnapshotRoomsList is empty initially")
+  void testGetSnapshotRoomsListInitiallyEmpty() {
+    assertTrue(roomManager.getSnapshotRoomsList().isEmpty());
   }
 
   @Test
-  @DisplayName("Test getReadonlyRoomsList contains added rooms")
-  void testGetReadonlyRoomsListContainsRooms() {
+  @DisplayName("Test getSnapshotRoomsList contains added rooms")
+  void testGetSnapshotRoomsListContainsRooms() {
     Room room1 = DefaultRoom.newInstance();
     Room room2 = DefaultRoom.newInstance();
     roomManager.addRoom(room1);
     roomManager.addRoom(room2);
-    assertEquals(2, roomManager.getReadonlyRoomsList().size());
+    assertEquals(2, roomManager.getSnapshotRoomsList().size());
   }
 
   @Test
-  @DisplayName("Test getReadonlyRoomsListByName returns matching rooms")
-  void testGetReadonlyRoomsListByName() {
+  @DisplayName("Test getSnapshotRoomsListByName returns matching rooms")
+  void testGetSnapshotRoomsListByName() {
     Room room = newConfiguredRoom();
     room.setName("SpecialRoom");
     roomManager.addRoom(room);
-    List<Room> result = roomManager.getReadonlyRoomsListByName("SpecialRoom");
+    List<Room> result = roomManager.getSnapshotRoomsListByName("SpecialRoom");
     assertEquals(1, result.size());
     assertEquals(room, result.get(0));
   }
 
   @Test
-  @DisplayName("Test getReadonlyRoomsListByName returns empty for unknown name")
-  void testGetReadonlyRoomsListByNameEmpty() {
-    assertTrue(roomManager.getReadonlyRoomsListByName("Unknown").isEmpty());
+  @DisplayName("Test getSnapshotRoomsListByName returns empty for unknown name")
+  void testGetSnapshotRoomsListByNameEmpty() {
+    assertTrue(roomManager.getSnapshotRoomsListByName("Unknown").isEmpty());
   }
 
   @Test
@@ -191,9 +189,9 @@ class RoomManagerImplTest {
   void testRemoveRoomById() {
     Room room = DefaultRoom.newInstance();
     roomManager.addRoom(room);
-    assertEquals(1, roomManager.getRoomCount());
+    assertEquals(1, roomManager.getSnapshotRoomCount());
     roomManager.removeRoomById(room.getId());
-    assertEquals(0, roomManager.getRoomCount());
+    assertEquals(0, roomManager.getSnapshotRoomCount());
   }
 
   @Test
@@ -224,7 +222,7 @@ class RoomManagerImplTest {
         .build();
     Room room = roomManager.createRoomWithOwner(setting, owner);
     assertNotNull(room);
-    assertEquals(1, roomManager.getRoomCount());
+    assertEquals(1, roomManager.getSnapshotRoomCount());
   }
 
   @Test
@@ -287,7 +285,7 @@ class RoomManagerImplTest {
     Room room = roomManager.createRoom(setting);
     assertNotNull(room);
     assertTrue(room.getOwner().isEmpty());
-    assertEquals(1, roomManager.getRoomCount());
+    assertEquals(1, roomManager.getSnapshotRoomCount());
   }
 
   @Test

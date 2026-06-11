@@ -74,13 +74,13 @@ public final class AutoRemoveRoomTask extends AbstractSystemTask {
     scheduler = scheduledService.scheduleAtFixedRate(
         () -> {
           if (isDebugEnabled()) {
-            debug("AUTO REMOVE ROOM", "Checking empty rooms in ", roomManager.getRoomCount(), " entities");
+            debug("AUTO REMOVE ROOM", "Checking empty rooms in ", roomManager.getSnapshotRoomCount(), " entities");
           }
           executorService.execute(() -> {
-            Iterator<Room> iterator = roomManager.getReadonlyRoomsList().listIterator();
+            Iterator<Room> iterator = roomManager.getSnapshotRoomsList().listIterator();
             while (iterator.hasNext()) {
               Room room = iterator.next();
-              if (room.getRoomRemoveMode() == RoomRemoveMode.WHEN_EMPTY && room.isEmpty()
+              if (room.getRoomRemoveMode() == RoomRemoveMode.WHEN_EMPTY && room.isSnapshotEmpty()
                       && room.getState() != null && room.getState().isIdle()) {
                 if (isDebugEnabled()) {
                   debug("AUTO REMOVE ROOM", "Room ", room.getId(),

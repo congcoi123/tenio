@@ -97,11 +97,11 @@ class SocketUtilityTest {
   }
 
   @Test
-  @DisplayName("Test creating a HEAP writer buffer")
+  @DisplayName("Test creating a DIRECT writer buffer")
   void testCreateWriterBuffer() {
     ByteBuffer buffer = SocketUtility.createWriterBuffer(256);
     assertNotNull(buffer);
-    assertFalse(buffer.isDirect());
+    assertTrue(buffer.isDirect());
     assertEquals(256, buffer.capacity());
   }
 

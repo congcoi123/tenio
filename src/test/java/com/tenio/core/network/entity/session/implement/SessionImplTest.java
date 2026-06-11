@@ -43,6 +43,7 @@ import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.exception.InboundQueueFullException;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.outbound.packet.implement.OutboundQueueImpl;
 import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.Session.AssociatedState;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -348,6 +349,7 @@ class SessionImplTest {
   void testConfigureMaxInboundQueueSizeLimitsQueue() {
     Session session = SessionImpl.newInstance();
     session.configureMaxInboundQueueSize(1);
+    session.configureOutboundQueue(OutboundQueueImpl.newInstance());
     DataCollection msg1 = mock(DataCollection.class);
     DataCollection msg2 = mock(DataCollection.class);
     session.enqueueInbound(msg1);
@@ -481,7 +483,7 @@ class SessionImplTest {
   void testGetRemainingSlowConsumingOutboundQueueAboveThreshold() {
     Session session = SessionImpl.newInstance();
     OutboundQueue queue = mock(OutboundQueue.class);
-    when(queue.getSize()).thenReturn(200);
+    when(queue.getSnapshotSize()).thenReturn(200);
     session.configureOutboundQueue(queue);
     session.configureSlowConsumingOutboundQueueWarningThreshold(100);
     assertEquals(200, session.getRemainingSlowConsumingOutboundQueue());
@@ -492,7 +494,7 @@ class SessionImplTest {
   void testGetRemainingSlowConsumingOutboundQueueBelowThreshold() {
     Session session = SessionImpl.newInstance();
     OutboundQueue queue = mock(OutboundQueue.class);
-    when(queue.getSize()).thenReturn(50);
+    when(queue.getSnapshotSize()).thenReturn(50);
     session.configureOutboundQueue(queue);
     session.configureSlowConsumingOutboundQueueWarningThreshold(100);
     assertEquals(0, session.getRemainingSlowConsumingOutboundQueue());
@@ -589,7 +591,7 @@ class SessionImplTest {
   void testToStringWithOutboundQueue() {
     Session session = SessionImpl.newInstance();
     OutboundQueue queue = mock(OutboundQueue.class);
-    when(queue.getSize()).thenReturn(0);
+    when(queue.getSnapshotSize()).thenReturn(0);
     session.configureOutboundQueue(queue);
     assertNotNull(session.toString());
   }
@@ -753,7 +755,7 @@ class SessionImplTest {
     session.configureSocketChannel(serverSide, mock(SelectionKey.class));
     session.setDatagramRemoteAddress(new InetSocketAddress("127.0.0.1", 9999));
     OutboundQueue queue = mock(OutboundQueue.class);
-    when(queue.getSize()).thenReturn(0);
+    when(queue.getSnapshotSize()).thenReturn(0);
     session.configureOutboundQueue(queue);
 
     String str = session.toString();
@@ -785,6 +787,7 @@ class SessionImplTest {
   void testEnqueueInboundThrowsWhenQueueFull() {
     Session session = SessionImpl.newInstance();
     session.configureMaxInboundQueueSize(1);
+    session.configureOutboundQueue(OutboundQueueImpl.newInstance());
     DataCollection msg = mock(DataCollection.class);
     session.enqueueInbound(msg);
     assertThrows(InboundQueueFullException.class, () -> session.enqueueInbound(msg));
@@ -848,7 +851,7 @@ class SessionImplTest {
   void testEnqueueInboundLogsSlowConsumingWarning() {
     Session session = SessionImpl.newInstance();
     OutboundQueue outboundQueue = mock(OutboundQueue.class);
-    when(outboundQueue.getSize()).thenReturn(0);
+    when(outboundQueue.getSnapshotSize()).thenReturn(0);
     session.configureOutboundQueue(outboundQueue);
     session.configureSlowConsumingInboundQueueWarningThreshold(1);
     session.configureMaxInboundQueueSize(0);

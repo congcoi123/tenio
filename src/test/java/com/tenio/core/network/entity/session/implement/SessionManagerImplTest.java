@@ -63,16 +63,16 @@ class SessionManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getReadonlySessionsList returns empty list initially")
-  void testGetReadonlySessionsListInitiallyEmpty() {
-    assertNotNull(sessionManager.getReadonlySessionsList());
-    assertTrue(sessionManager.getReadonlySessionsList().isEmpty());
+  @DisplayName("Test getSnapshotSessionsList returns empty list initially")
+  void testGetSnapshotSessionsListInitiallyEmpty() {
+    assertNotNull(sessionManager.getSnapshotSessionsList());
+    assertTrue(sessionManager.getSnapshotSessionsList().isEmpty());
   }
 
   @Test
-  @DisplayName("Test getSessionCount returns 0 initially")
-  void testGetSessionCountInitiallyZero() {
-    assertEquals(0, sessionManager.getSessionCount());
+  @DisplayName("Test getSnapshotSessionCount returns 0 initially")
+  void testGetSnapshotSessionCountInitiallyZero() {
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
   }
 
   @Test
@@ -173,7 +173,7 @@ class SessionManagerImplTest {
     when(session.getTransportType()).thenReturn(TransportType.UNKNOWN);
     when(session.getId()).thenReturn(99L);
     sessionManager.removeSession(session);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
   }
 
   @Test
@@ -185,7 +185,7 @@ class SessionManagerImplTest {
     when(session.fetchSocketChannel()).thenReturn(null);
     when(session.getId()).thenReturn(1L);
     sessionManager.removeSession(session);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
   }
 
   @Test
@@ -198,7 +198,7 @@ class SessionManagerImplTest {
     when(session.fetchSocketChannel()).thenReturn(null);
     when(session.getId()).thenReturn(2L);
     sessionManager.removeSession(session);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
   }
 
   @Test
@@ -209,7 +209,7 @@ class SessionManagerImplTest {
     when(session.fetchWebSocketChannel()).thenReturn(null);
     when(session.getId()).thenReturn(3L);
     sessionManager.removeSession(session);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
   }
 
   @Test
@@ -232,7 +232,7 @@ class SessionManagerImplTest {
     assertNotNull(session);
     assertTrue(session.isActivated());
     assertEquals(TransportType.WEB_SOCKET, session.getTransportType());
-    assertEquals(1, sessionManager.getSessionCount());
+    assertEquals(1, sessionManager.getSnapshotSessionCount());
     assertEquals(session, sessionManager.getSessionByWebSocket(channel));
   }
 
@@ -243,10 +243,10 @@ class SessionManagerImplTest {
     when(channel.remoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", 8080));
 
     sessionManager.createWebSocketSession(channel);
-    assertEquals(1, sessionManager.getSessionCount());
+    assertEquals(1, sessionManager.getSnapshotSessionCount());
 
     sessionManager.removeSessionByWebSocket(channel);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
     assertNull(sessionManager.getSessionByWebSocket(channel));
   }
 
@@ -269,7 +269,7 @@ class SessionManagerImplTest {
     assertNotNull(session);
     assertTrue(session.isActivated());
     assertEquals(com.tenio.core.network.define.TransportType.TCP, session.getTransportType());
-    assertEquals(1, sessionManager.getSessionCount());
+    assertEquals(1, sessionManager.getSnapshotSessionCount());
     assertEquals(session, sessionManager.getSessionBySocket(socketChannel));
   }
 
@@ -280,10 +280,10 @@ class SessionManagerImplTest {
     java.nio.channels.SelectionKey selectionKey = mock(java.nio.channels.SelectionKey.class);
 
     sessionManager.createSocketSession(socketChannel, selectionKey);
-    assertEquals(1, sessionManager.getSessionCount());
+    assertEquals(1, sessionManager.getSnapshotSessionCount());
 
     sessionManager.removeSessionBySocket(socketChannel);
-    assertEquals(0, sessionManager.getSessionCount());
+    assertEquals(0, sessionManager.getSnapshotSessionCount());
     assertNull(sessionManager.getSessionBySocket(socketChannel));
   }
 }

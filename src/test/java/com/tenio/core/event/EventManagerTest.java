@@ -67,7 +67,7 @@ class EventManagerTest {
     eventManager.subscribe();
 
     // Make events listener
-    eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getPlayerCount());
+    eventManager.emit(ServerEvent.FETCHED_CCU_INFO, playerManager.getSnapshotPlayerCount());
 
   }
 

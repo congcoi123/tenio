@@ -37,7 +37,7 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +61,9 @@ class PlayerManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getPlayerCount is zero for fresh manager")
-  void testGetPlayerCountInitiallyZero() {
-    assertEquals(0, playerManager.getPlayerCount());
+  @DisplayName("Test getSnapshotPlayerCount is zero for fresh manager")
+  void testGetSnapshotPlayerCountInitiallyZero() {
+    assertEquals(0, playerManager.getSnapshotPlayerCount());
   }
 
   @Test
@@ -71,7 +71,7 @@ class PlayerManagerImplTest {
   void testAddPlayerIncreasesCount() {
     Player player = DefaultPlayer.newInstance("alice");
     playerManager.addPlayer(player);
-    assertEquals(1, playerManager.getPlayerCount());
+    assertEquals(1, playerManager.getSnapshotPlayerCount());
   }
 
   @Test
@@ -94,7 +94,7 @@ class PlayerManagerImplTest {
     Player player = playerManager.createPlayer("charlie");
     assertNotNull(player);
     assertEquals("charlie", player.getIdentity());
-    assertEquals(1, playerManager.getPlayerCount());
+    assertEquals(1, playerManager.getSnapshotPlayerCount());
   }
 
   @Test
@@ -133,13 +133,13 @@ class PlayerManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getReadonlyPlayersList returns all added players")
-  void testGetReadonlyPlayersList() {
+  @DisplayName("Test getSnapshotPlayersList returns all added players")
+  void testGetSnapshotPlayersList() {
     Player p1 = DefaultPlayer.newInstance("grace");
     Player p2 = DefaultPlayer.newInstance("henry");
     playerManager.addPlayer(p1);
     playerManager.addPlayer(p2);
-    List<Player> list = playerManager.getReadonlyPlayersList();
+    List<Player> list = playerManager.getSnapshotPlayersList();
     assertEquals(2, list.size());
   }
 
@@ -163,9 +163,9 @@ class PlayerManagerImplTest {
   void testRemovePlayerByIdentityDecreasesCount() {
     Player player = DefaultPlayer.newInstance("jack");
     playerManager.addPlayer(player);
-    assertEquals(1, playerManager.getPlayerCount());
+    assertEquals(1, playerManager.getSnapshotPlayerCount());
     playerManager.removePlayerByIdentity("jack");
-    assertEquals(0, playerManager.getPlayerCount());
+    assertEquals(0, playerManager.getSnapshotPlayerCount());
   }
 
   @Test
@@ -180,10 +180,10 @@ class PlayerManagerImplTest {
   void testClearRemovesAllPlayers() {
     playerManager.addPlayer(DefaultPlayer.newInstance("kate"));
     playerManager.addPlayer(DefaultPlayer.newInstance("leo"));
-    assertEquals(2, playerManager.getPlayerCount());
+    assertEquals(2, playerManager.getSnapshotPlayerCount());
     playerManager.clear();
-    assertEquals(0, playerManager.getPlayerCount());
-    assertTrue(playerManager.getReadonlyPlayersList().isEmpty());
+    assertEquals(0, playerManager.getSnapshotPlayerCount());
+    assertTrue(playerManager.getSnapshotPlayersList().isEmpty());
   }
 
   @Test
@@ -210,8 +210,8 @@ class PlayerManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test getReadonlyPlayersList is empty initially")
-  void testGetReadonlyPlayersListInitiallyEmpty() {
-    assertTrue(playerManager.getReadonlyPlayersList().isEmpty());
+  @DisplayName("Test getSnapshotPlayersList is empty initially")
+  void testGetSnapshotPlayersListInitiallyEmpty() {
+    assertTrue(playerManager.getSnapshotPlayersList().isEmpty());
   }
 }

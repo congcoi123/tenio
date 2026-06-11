@@ -131,4 +131,11 @@
 - It should force to close sessions and disconnect players in some scenarios
 
 ## 0.7.2 2026-04-25 Feature release
-- Fixed issues which caused theGame Server takes time to shut down
+- Fixed issues which caused the Game Server takes time to shut down
+
+## 0.7.3 2026-05-29 Feature release
+- Fixed several issues in ServerApi
+- Improved the performance by offloading tasks from IO bound workers
+- Used EnumMap in EventHandler to increase lookup speed
+- Supported multi UDP channels
+- Renamed and added new APIs

@@ -25,7 +25,6 @@ THE SOFTWARE.
 package com.tenio.core.configuration.constant;
 
 import com.tenio.core.network.zero.engine.ZeroAcceptor;
-import com.tenio.core.server.core.ZeroProcessor;
 
 /**
  * Defines core constants used throughout the server application.
@@ -142,14 +141,6 @@ public final class CoreConstant {
    * @since 0.6.7
    */
   public static final int DELAY_BEFORE_SERVER_IS_READY_IN_MILLISECONDS = 100;
-
-  /**
-   * The default thread pool size of processor.
-   *
-   * @see ZeroProcessor
-   * @since 0.7.0
-   */
-  public static final int DEFAULT_PROCESSOR_THREAD_POOL_SIZE = 1;
 
   /**
    * The default thread pool size of engine.

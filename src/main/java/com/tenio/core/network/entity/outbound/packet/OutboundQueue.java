@@ -71,23 +71,53 @@ public interface OutboundQueue {
   Packet take();
 
   /**
+   * Determines whether the queue is empty (approximately correct).
+   *
+   * @return {@code true} if the queue is approximated to be empty, otherwise returns {@code false}
+   * @since 0.7.3
+   */
+  boolean isSnapshotEmpty();
+
+  /**
    * Determines whether the queue is empty.
+   * This method is costly, use with caution.
    *
    * @return {@code true} if the queue is empty, otherwise returns {@code false}
+   * @since 0.7.3
    */
   boolean isEmpty();
 
   /**
+   * Determines whether the queue is full (approximately correct).
+   *
+   * @return {@code true} if the queue is approximated to be full, otherwise returns {@code false}
+   * @since 0.7.3
+   */
+  boolean isSnapshotFull();
+
+  /**
    * Determines whether the queue is full.
+   * This method is costly, use with caution.
    *
    * @return {@code true} if the queue is full, otherwise returns {@code false}
+   * @since 0.7.3
    */
   boolean isFull();
 
   /**
+   * Retrieves the most recent update of the current size of queue.
+   *
+   * @return the most recent update of the current {@code integer} size of queue
+   * @since 0.7.3
+   */
+  int getSnapshotSize();
+
+  /**
    * Retrieves the current size of queue.
+   * This method is costly, use with caution.
    *
    * @return the current {@code integer} size of queue
+   * @since 0.7.3
    */
   int getSize();
 

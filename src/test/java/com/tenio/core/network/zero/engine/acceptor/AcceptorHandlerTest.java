@@ -32,6 +32,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import com.tenio.core.network.utility.SocketUtility;
 import java.io.IOException;
@@ -128,7 +129,7 @@ class AcceptorHandlerTest {
     try {
       client.connect(new InetSocketAddress("127.0.0.1", port));
       assertDoesNotThrow(() -> handler.running());
-      verify(readerListener).acceptClientSocketChannel(any(), any(), any());
+      verify(readerListener, timeout(1000)).acceptClientSocketChannel(any(), any(), any());
     } finally {
       client.close();
     }
@@ -147,8 +148,8 @@ class AcceptorHandlerTest {
     try {
       client.connect(new InetSocketAddress("127.0.0.1", port));
       assertDoesNotThrow(() -> handler.running());
-      verify(ioHandler).channelException(any(), any());
-      verify(ioHandler).channelInactive(any(), any(),
+      verify(ioHandler, timeout(1000)).channelException(any(), any());
+      verify(ioHandler, timeout(1000)).channelInactive(any(), any(),
           eq(ConnectionDisconnectMode.REFUSED_CONNECTION));
     } finally {
       client.close();
@@ -168,7 +169,7 @@ class AcceptorHandlerTest {
     try {
       client.connect(new InetSocketAddress("127.0.0.1", port));
       assertDoesNotThrow(() -> handler.running());
-      verify(ioHandler).channelInactive(any(), any(), eq(ConnectionDisconnectMode.EXCEPTION));
+      verify(ioHandler, timeout(1000)).channelInactive(any(), any(), eq(ConnectionDisconnectMode.EXCEPTION));
     } finally {
       client.close();
     }
@@ -190,7 +191,7 @@ class AcceptorHandlerTest {
     try {
       client.connect(new InetSocketAddress("127.0.0.1", port));
       assertDoesNotThrow(() -> handler.running());
-      verify(ioHandler).channelActive(any(), any());
+      verify(ioHandler, timeout(1000)).channelActive(any(), any());
     } finally {
       client.close();
     }

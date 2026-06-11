@@ -50,8 +50,8 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
   private static final AtomicInteger INDEXER = new AtomicInteger(0);
 
-  private volatile List<SocketReaderHandler> socketReaderHandlers;
-  private DatagramReaderHandler datagramReaderHandler;
+  private List<SocketReaderHandler> socketReaderHandlers;
+  private List<DatagramReaderHandler> datagramReaderHandlers;
   private DatagramPacketPolicy datagramPacketPolicy;
   private String serverAddress;
   private SocketConfiguration udpChannelConfiguration;
@@ -111,53 +111,55 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
   @Override
   public void onInitialized() {
-    // multiple socket reader handlers
+    // it should support multiple reader handlers
     socketReaderHandlers = new ArrayList<>(getThreadPoolSize() - getNumberOfExtraWorkers());
-    // but only one datagram reader handler allowed
-    if (udpChannelConfiguration != null) {
-      try {
-        datagramReaderHandler =
-            new DatagramReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
-                getSessionManager(), getSocketIoHandler().getPacketDecoder(),
-                getNetworkReaderStatistic(), getDatagramIoHandler(), datagramPacketPolicy);
-        datagramReaderHandler.openDatagramChannels(serverAddress, udpChannelConfiguration.port(),
-            udpChannelConfiguration.cacheSize());
-      } catch (IOException exception) {
-        error(exception);
-      }
-    }
+    datagramReaderHandlers = new ArrayList<>(getNumberOfExtraWorkers());
   }
 
   @Override
   public void onStarted() {
-    if (datagramReaderHandler != null) {
-      run(() -> {
-        while (!Thread.currentThread().isInterrupted()) {
-          if (isActivated()) {
-            try {
-              datagramReaderHandler.running();
-            } catch (Throwable cause) {
-              if (isErrorEnabled()) {
-                error(cause);
+    if (udpChannelConfiguration != null) {
+      for (int i = 0; i < getNumberOfExtraWorkers(); i++) {
+        run(() -> {
+          try {
+            DatagramReaderHandler datagramReaderHandler =
+                    new DatagramReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
+                            getSessionManager(), getSocketIoHandler().getPacketDecoder(),
+                            getNetworkReaderStatistic(), getDatagramIoHandler(), datagramPacketPolicy);
+            datagramReaderHandler.openDatagramChannels(serverAddress, udpChannelConfiguration.port(),
+                    udpChannelConfiguration.cacheSize());
+            datagramReaderHandlers.add(datagramReaderHandler);
+
+            while (!Thread.currentThread().isInterrupted()) {
+              if (isActivated()) {
+                try {
+                  datagramReaderHandler.running();
+                } catch (Throwable cause) {
+                  if (isErrorEnabled()) {
+                    error(cause);
+                  }
+                }
               }
             }
+          } catch (IOException exception) {
+            error(exception);
           }
-        }
-      }, "datagram");
+        }, "datagram");
+      }
     }
   }
 
   @Override
   public void onRunning() {
     try {
-      var readerHandler = new SocketReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
+      var socketReaderHandler = new SocketReaderHandler(SocketUtility.createReaderBuffer(getMaxBufferSize()),
               getSessionManager(), getNetworkReaderStatistic(), getSocketIoHandler());
-      socketReaderHandlers.add(readerHandler);
+      socketReaderHandlers.add(socketReaderHandler);
 
       while (!Thread.currentThread().isInterrupted()) {
         if (isActivated()) {
           try {
-            readerHandler.running();
+            socketReaderHandler.running();
           } catch (Throwable cause) {
             if (isErrorEnabled()) {
               error(cause);
@@ -174,7 +176,7 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
 
   @Override
   public int getNumberOfExtraWorkers() {
-    return udpChannelConfiguration != null ? 1 : 0;
+    return udpChannelConfiguration != null ? getThreadPoolSize() <= 1 ? 0 : getThreadPoolSize() / 2 : 0;
   }
 
   @Override
@@ -183,12 +185,12 @@ public final class ZeroReaderImpl extends AbstractZeroEngine implements ZeroRead
       for (SocketReaderHandler socketReaderHandler : socketReaderHandlers) {
         socketReaderHandler.shutdown();
       }
-      if (datagramReaderHandler != null) {
+      for (DatagramReaderHandler datagramReaderHandler: datagramReaderHandlers) {
         datagramReaderHandler.shutdown();
       }
-    } catch (IOException exception) {
+    } catch (Exception exception) {
       if (isErrorEnabled()) {
-        error(exception, "Exception while closing the selector");
+        error(exception, "Exception while closing readers");
       }
     }
   }

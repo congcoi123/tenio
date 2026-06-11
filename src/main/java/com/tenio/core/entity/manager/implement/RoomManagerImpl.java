@@ -49,14 +49,14 @@ import java.util.stream.Collectors;
 public final class RoomManagerImpl extends AbstractManager implements RoomManager {
 
   private final Map<Long, Room> rooms;
-  private volatile List<Room> readOnlyRoomsList;
-  private volatile int roomCount;
+  private volatile List<Room> snapshotRoomsList;
+  private volatile int snapshotRoomCount;
   private int maxRooms;
 
   private RoomManagerImpl(EventManager eventManager) {
     super(eventManager);
     rooms = new HashMap<>();
-    readOnlyRoomsList = new ArrayList<>();
+    snapshotRoomsList = new ArrayList<>();
     maxRooms = DEFAULT_MAX_ROOMS;
   }
 
@@ -75,10 +75,11 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
     if (containsRoomId(room.getId())) {
       throw new AddedDuplicatedRoomException(room);
     }
+
     synchronized (this) {
       rooms.put(room.getId(), room);
-      readOnlyRoomsList = rooms.values().stream().toList();
-      roomCount = readOnlyRoomsList.size();
+      snapshotRoomsList = rooms.values().stream().toList();
+      snapshotRoomCount = rooms.size();
     }
   }
 
@@ -142,8 +143,8 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public boolean containsRoomName(String roomName) {
-    return readOnlyRoomsList.stream().anyMatch(room -> room.getName().equals(roomName));
+  public boolean containsSnapshotRoomName(String roomName) {
+    return snapshotRoomsList.stream().anyMatch(room -> room.getName().equals(roomName));
   }
 
   @Override
@@ -152,9 +153,9 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public List<Room> getReadonlyRoomsListByName(String roomName) {
-    return readOnlyRoomsList.stream().filter(room -> room.getName().equals(roomName))
-        .collect(Collectors.toList());
+  public List<Room> getSnapshotRoomsListByName(String roomName) {
+    return snapshotRoomsList.stream().filter(room -> room.getName().equals(roomName))
+            .collect(Collectors.toList());
   }
 
   @Override
@@ -165,16 +166,24 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
   }
 
   @Override
-  public List<Room> getReadonlyRoomsList() {
-    return readOnlyRoomsList;
+  public List<Room> getSnapshotRoomsList() {
+    return snapshotRoomsList;
+  }
+
+  @Override
+  public List<Room> getRoomsList() {
+    synchronized (this) {
+      snapshotRoomsList = rooms.values().stream().toList();
+      return getSnapshotRoomsList();
+    }
   }
 
   @Override
   public void removeRoomById(long roomId) {
     synchronized (this) {
       rooms.remove(roomId);
-      readOnlyRoomsList = rooms.values().stream().toList();
-      roomCount = readOnlyRoomsList.size();
+      snapshotRoomsList = rooms.values().stream().toList();
+      snapshotRoomCount = rooms.size();
     }
   }
 
@@ -190,25 +199,33 @@ public final class RoomManagerImpl extends AbstractManager implements RoomManage
 
   @Override
   public void changeRoomCapacity(Room room, int maxParticipants, int maxSpectators) {
-    if (maxParticipants <= room.getParticipantCount()) {
+    if (maxParticipants <= room.getSnapshotParticipantCount()) {
       throw new IllegalArgumentException(String.format(
           "Unable to assign the new max participants number: %d, "
               + "because it's less than the current number of participants: %d",
-          maxParticipants, room.getParticipantCount()));
+          maxParticipants, room.getSnapshotParticipantCount()));
     }
-    if (maxSpectators <= room.getSpectatorCount()) {
+    if (maxSpectators <= room.getSnapshotSpectatorCount()) {
       throw new IllegalArgumentException(String.format(
           "Unable to assign the new max spectator number: %d, "
               + "because it's less than the current number of spectator: %d",
-          maxSpectators, room.getSpectatorCount()));
+          maxSpectators, room.getSnapshotSpectatorCount()));
     }
 
     room.setCapacity(maxParticipants, maxSpectators);
   }
 
   @Override
+  public int getSnapshotRoomCount() {
+    return snapshotRoomCount;
+  }
+
+  @Override
   public int getRoomCount() {
-    return roomCount;
+    synchronized (this) {
+      snapshotRoomCount = rooms.size();
+      return getSnapshotRoomCount();
+    }
   }
 
   @Override

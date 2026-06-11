@@ -110,7 +110,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     // now we can iterate packets from queue to proceed
     var outboundQueue = session.fetchOutboundQueue();
     // ignore the empty queue
-    if (outboundQueue == null || outboundQueue.isEmpty()) {
+    if (outboundQueue == null || outboundQueue.isSnapshotEmpty()) {
       return;
     }
 
@@ -123,7 +123,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     var packet = outboundQueue.peek();
     // ignore the null packet and remove it from queue
     if (packet == null) {
-      if (!outboundQueue.isEmpty()) {
+      if (!outboundQueue.isSnapshotEmpty()) {
         outboundQueue.take();
       }
 
