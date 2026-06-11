@@ -43,7 +43,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
     player.setProperty(Example7Constant.PLAYER_POSITION_X, positions[0]);
     player.setProperty(Example7Constant.PLAYER_POSITION_Y, positions[1]);
 
-    var players = player.getCurrentRoom().get().getReadonlyPlayersList();
+    var players = player.getCurrentRoom().get().getSnapshotPlayersList();
 
     var parcel = msgmap()
         .putString(SharedEventKey.KEY_COMMAND, "m")

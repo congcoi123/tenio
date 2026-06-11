@@ -103,3 +103,6 @@
 
 ## 0.7.2 2026-04-25 Feature release
 - Upgraded dependencies
+
+## 0.7.3 2026-05-29 Feature release
+- Upgraded dependencies

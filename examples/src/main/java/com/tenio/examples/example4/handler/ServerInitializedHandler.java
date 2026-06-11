@@ -52,7 +52,7 @@ public final class ServerInitializedHandler extends AbstractHandler
 
       @Override
       public void updateVehiclePosition(Vehicle vehicle) {
-        var players = api().getReadonlyPlayersList();
+        var players = api().getSnapshotPlayersList();
 
         var parcel = map();
         var array = new ArrayList<Integer>();
@@ -79,7 +79,7 @@ public final class ServerInitializedHandler extends AbstractHandler
 
       @Override
       public int getCcu() {
-        return api().getPlayerCount();
+        return api().getSnapshotPlayerCount();
       }
     });
 
