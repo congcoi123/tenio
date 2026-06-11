@@ -141,7 +141,7 @@ public class ZeroProcessorImplTest {
   // Connection Handling Tests
   @Test
   public void shouldEstablishNewConnectionWhenBelowMax() {
-    when(playerManager.getPlayerCount()).thenReturn(MAX_PLAYERS - 1);
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(MAX_PLAYERS - 1);
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING))
@@ -160,7 +160,7 @@ public class ZeroProcessorImplTest {
 
   @Test
   public void shouldRejectConnectionWhenReachedMax() throws Exception {
-    when(playerManager.getPlayerCount()).thenReturn(MAX_PLAYERS);
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(MAX_PLAYERS);
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING))
@@ -284,7 +284,7 @@ public class ZeroProcessorImplTest {
   public void shouldSetAndGetMaxNumberPlayers() {
     int newMaxPlayers = 200;
     processor.setMaxNumberPlayers(newMaxPlayers);
-    when(playerManager.getPlayerCount()).thenReturn(newMaxPlayers);
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(newMaxPlayers);
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING))
@@ -607,7 +607,7 @@ public class ZeroProcessorImplTest {
         Session.AssociatedState.DOING)).thenReturn(true);
     when(eventManager.emit(eq(ServerEvent.PLAYER_CONNECTION_RETRY), any(), any()))
         .thenThrow(new RuntimeException("retry failed"));
-    when(playerManager.getPlayerCount()).thenReturn(0);
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(0);
 
     Request request = SessionRequest.newInstance()
         .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
@@ -646,7 +646,7 @@ public class ZeroProcessorImplTest {
 
   @Test
   public void shouldHandleIOExceptionFromSessionCloseAtMaxCapacity() throws Exception {
-    when(playerManager.getPlayerCount()).thenReturn(MAX_PLAYERS);
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(MAX_PLAYERS);
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING)).thenReturn(true);

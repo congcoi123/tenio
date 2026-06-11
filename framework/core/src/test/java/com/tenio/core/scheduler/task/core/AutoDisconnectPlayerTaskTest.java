@@ -73,8 +73,8 @@ class AutoDisconnectPlayerTaskTest {
     Mockito.when(idlePlayer.isNeverDeported()).thenReturn(false);
     Mockito.when(idlePlayer.isIdle()).thenReturn(true);
     Mockito.when(idlePlayer.getIdentity()).thenReturn("player1");
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(idlePlayer));
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of(idlePlayer));
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(1);
     ServerApi api = Mockito.mock(ServerApi.class);
     ServerImpl server = Mockito.mock(ServerImpl.class);
     Mockito.when(server.getApi()).thenReturn(api);
@@ -88,8 +88,8 @@ class AutoDisconnectPlayerTaskTest {
   @Test
   @DisplayName("Test shutdown after run completes without exception")
   void testShutdownAfterRun() {
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of());
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(0);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of());
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(0);
     ServerApi api = Mockito.mock(ServerApi.class);
     ServerImpl server = Mockito.mock(ServerImpl.class);
     Mockito.when(server.getApi()).thenReturn(api);
@@ -152,8 +152,8 @@ class AutoDisconnectPlayerTaskTest {
     Player player = Mockito.mock(Player.class);
     Mockito.when(player.isNeverDeported()).thenReturn(true);
     Mockito.when(player.isIdleNeverDeported()).thenReturn(true);
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
     // ServerImpl.getInstance().getApi().logout() was called via the mocked chain
@@ -165,8 +165,8 @@ class AutoDisconnectPlayerTaskTest {
     Player player = Mockito.mock(Player.class);
     Mockito.when(player.isNeverDeported()).thenReturn(true);
     Mockito.when(player.isIdleNeverDeported()).thenReturn(false);
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }
@@ -177,8 +177,8 @@ class AutoDisconnectPlayerTaskTest {
     Player player = Mockito.mock(Player.class);
     Mockito.when(player.isNeverDeported()).thenReturn(false);
     Mockito.when(player.isIdle()).thenReturn(true);
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }
@@ -189,8 +189,8 @@ class AutoDisconnectPlayerTaskTest {
     Player player = Mockito.mock(Player.class);
     Mockito.when(player.isNeverDeported()).thenReturn(false);
     Mockito.when(player.isIdle()).thenReturn(false);
-    Mockito.when(playerManager.getReadonlyPlayersList()).thenReturn(List.of(player));
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(1);
+    Mockito.when(playerManager.getSnapshotPlayersList()).thenReturn(List.of(player));
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }

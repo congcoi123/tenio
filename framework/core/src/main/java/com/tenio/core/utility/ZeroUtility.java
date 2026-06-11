@@ -51,7 +51,7 @@ public final class ZeroUtility {
   }
 
   /**
-   * Formats a numeric value using underscore ({@code _}) as a thousands separator.
+   * Formats a numeric value using underscore ({@code _}) as a thousand separator.
    * <p>
    * This method converts the given {@code long} into a human-readable string
    * with digit grouping every three digits. For example:

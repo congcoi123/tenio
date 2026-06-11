@@ -72,13 +72,13 @@ class AutoRemoveRoomTaskTest {
   void testRunSchedulesTaskAndRemovesEmptyRooms() {
     Room emptyRoom = Mockito.mock(Room.class);
     Mockito.when(emptyRoom.getRoomRemoveMode()).thenReturn(RoomRemoveMode.WHEN_EMPTY);
-    Mockito.when(emptyRoom.isEmpty()).thenReturn(true);
+    Mockito.when(emptyRoom.isSnapshotEmpty()).thenReturn(true);
     com.tenio.core.entity.RoomState roomState = Mockito.mock(com.tenio.core.entity.RoomState.class);
     Mockito.when(emptyRoom.getState()).thenReturn(roomState);
     Mockito.when(roomState.isIdle()).thenReturn(true);
     Mockito.when(emptyRoom.getId()).thenReturn(1L);
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(emptyRoom));
-    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(List.of(emptyRoom));
+    Mockito.when(roomManager.getSnapshotRoomCount()).thenReturn(1);
     ServerApi api = Mockito.mock(ServerApi.class);
     ServerImpl server = Mockito.mock(ServerImpl.class);
     Mockito.when(server.getApi()).thenReturn(api);
@@ -95,7 +95,7 @@ class AutoRemoveRoomTaskTest {
     ServerApi api = Mockito.mock(ServerApi.class);
     ServerImpl server = Mockito.mock(ServerImpl.class);
     Mockito.when(server.getApi()).thenReturn(api);
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of());
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(List.of());
     try (MockedStatic<ServerImpl> serverStatic = Mockito.mockStatic(ServerImpl.class)) {
       serverStatic.when(ServerImpl::getInstance).thenReturn(server);
       task.run();
@@ -153,13 +153,13 @@ class AutoRemoveRoomTaskTest {
   void testLambdaBodyRemovesEmptyWhenEmptyIdleRoom() {
     Room room = Mockito.mock(Room.class);
     Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.WHEN_EMPTY);
-    Mockito.when(room.isEmpty()).thenReturn(true);
+    Mockito.when(room.isSnapshotEmpty()).thenReturn(true);
     com.tenio.core.entity.RoomState state = Mockito.mock(com.tenio.core.entity.RoomState.class);
     Mockito.when(room.getState()).thenReturn(state);
     Mockito.when(state.isIdle()).thenReturn(true);
     Mockito.when(room.getId()).thenReturn(1L);
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
-    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getSnapshotRoomCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }
@@ -169,9 +169,9 @@ class AutoRemoveRoomTaskTest {
   void testLambdaBodySkipsNonEmptyRoom() {
     Room room = Mockito.mock(Room.class);
     Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.WHEN_EMPTY);
-    Mockito.when(room.isEmpty()).thenReturn(false);
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
-    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+    Mockito.when(room.isSnapshotEmpty()).thenReturn(false);
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getSnapshotRoomCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }
@@ -181,8 +181,8 @@ class AutoRemoveRoomTaskTest {
   void testLambdaBodySkipsNeverRemoveRoom() {
     Room room = Mockito.mock(Room.class);
     Mockito.when(room.getRoomRemoveMode()).thenReturn(RoomRemoveMode.NEVER_REMOVE);
-    Mockito.when(roomManager.getReadonlyRoomsList()).thenReturn(List.of(room));
-    Mockito.when(roomManager.getRoomCount()).thenReturn(1);
+    Mockito.when(roomManager.getSnapshotRoomsList()).thenReturn(List.of(room));
+    Mockito.when(roomManager.getSnapshotRoomCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
   }

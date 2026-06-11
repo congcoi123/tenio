@@ -241,7 +241,7 @@ public final class ZeroProcessorImpl extends AbstractProcessor implements ZeroPr
 
   private void establishNewPlayerConnection(Session session, DataCollection message) {
     // check the number of current players
-    if (playerManager.getPlayerCount() >= maxNumberPlayers) {
+    if (playerManager.getSnapshotPlayerCount() >= maxNumberPlayers) {
       eventManager.emit(ServerEvent.CONNECTION_ESTABLISHED_RESULT, session, message,
           ConnectionEstablishedResult.REACHED_MAX_CONNECTION);
       try {
@@ -259,6 +259,7 @@ public final class ZeroProcessorImpl extends AbstractProcessor implements ZeroPr
     }
   }
 
+  // This should be finished quickly because it's processed on the caller thread
   private void processSessionWillBeClosed(Session session, PlayerDisconnectMode playerDisconnectMode) {
     if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
       var player = playerManager.getPlayerByIdentity(session.getName());

@@ -96,13 +96,13 @@ class PlayerAndRoomTest {
   }
 
   @Test
-  public void countPlayersShouldReturnTrueValue() {
+  public void countSnapshotPlayersShouldReturnTrueValue() {
     for (int i = 0; i < 10; i++) {
       var player = DefaultPlayer.newInstance(testPlayerName + i);
       playerManager.addPlayer(player);
     }
 
-    assertEquals(10, playerManager.getPlayerCount());
+    assertEquals(10, playerManager.getSnapshotPlayerCount());
   }
 
   @Test
@@ -111,7 +111,7 @@ class PlayerAndRoomTest {
     playerManager.addPlayer(player);
     playerManager.removePlayerByIdentity(testPlayerName);
 
-    assertEquals(0, playerManager.getPlayerCount());
+    assertEquals(0, playerManager.getSnapshotPlayerCount());
   }
 
   @Test

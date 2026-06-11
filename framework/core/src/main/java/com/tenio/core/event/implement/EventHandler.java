@@ -26,8 +26,8 @@ package com.tenio.core.event.implement;
 
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.Emitter;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.EnumMap;
 
 /**
  * Handles events and their subscribers in a type-safe manner.
@@ -57,13 +57,13 @@ public final class EventHandler<T> {
    * An instance creates a mapping between an event with its list of event
    * handlers.
    */
-  private final Map<ServerEvent, Emitter<T>> delegate;
+  private final EnumMap<ServerEvent, Emitter<T>> delegate;
 
   /**
    * Constructor.
    */
   public EventHandler() {
-    delegate = new HashMap<>();
+    delegate = new EnumMap<>(ServerEvent.class);
   }
 
   /**

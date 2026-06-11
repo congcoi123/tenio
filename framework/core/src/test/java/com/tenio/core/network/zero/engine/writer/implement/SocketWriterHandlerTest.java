@@ -29,10 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -402,7 +400,7 @@ class SocketWriterHandlerTest {
     when(packet.isMarkedAsLast()).thenReturn(false);
     when(session.isActivated()).thenReturn(true);
     when(session.getId()).thenReturn(1L);
-    when(outboundQueue.isEmpty()).thenReturn(false);
+    when(outboundQueue.isSnapshotEmpty()).thenReturn(false);
     when(queueManager.getQueueByElementId(1L)).thenReturn(sessionQueue);
 
     handler.send(outboundQueue, session, packet);

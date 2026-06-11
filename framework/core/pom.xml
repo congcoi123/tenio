@@ -5,7 +5,7 @@
 
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -42,7 +42,7 @@
         <io.github.congcoi123.tenio.common>0.7.0</io.github.congcoi123.tenio.common>
 
         <io.netty.version>4.2.12.Final</io.netty.version>
-        <org.eclipse.jetty.server.version>12.1.6</org.eclipse.jetty.server.version>
+        <org.eclipse.jetty.server.version>12.1.7</org.eclipse.jetty.server.version>
         <org.eclipse.jetty.ee10.servlet.version>12.1.6</org.eclipse.jetty.ee10.servlet.version>
         <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
         <javax.servlet.version>2.5</javax.servlet.version>
@@ -50,7 +50,7 @@
         <org.apache.commons.lang3.version>3.19.0</org.apache.commons.lang3.version>
         <org.apache.httpcomponents.httpcore.version>4.4.16</org.apache.httpcomponents.httpcore.version>
 
-        <logging.log4j.version>2.25.3</logging.log4j.version>
+        <logging.log4j.version>2.25.4</logging.log4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

@@ -45,15 +45,15 @@ import java.util.function.Consumer;
 public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
   private final Map<String, Player> players;
-  private volatile List<Player> readOnlyPlayersList;
-  private volatile int playerCount;
+  private volatile List<Player> snapshotPlayersList;
+  private volatile int snapshotPlayerCount;
   private int maxIdleTimeInSecond;
   private int maxIdleTimeNeverDeportedInSecond;
 
   private PlayerManagerImpl(EventManager eventManager) {
     super(eventManager);
     players = new HashMap<>();
-    readOnlyPlayersList = new ArrayList<>();
+    snapshotPlayersList = new ArrayList<>();
   }
 
   /**
@@ -80,8 +80,8 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
     synchronized (this) {
       players.put(player.getIdentity(), player);
-      readOnlyPlayersList = players.values().stream().toList();
-      playerCount = readOnlyPlayersList.size();
+      snapshotPlayersList = players.values().stream().toList();
+      snapshotPlayerCount = players.size();
     }
   }
 
@@ -96,7 +96,7 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   @Override
   public Player createPlayerWithSession(String playerName, Session session) {
     if (session == null) {
-      throw new NullPointerException("Unable to assign a null session for the player");
+      throw new NullPointerException("Unable to assign a null session to the player");
     }
 
     Player player = DefaultPlayer.newInstance(playerName, session);
@@ -118,8 +118,14 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public List<Player> getReadonlyPlayersList() {
-    return readOnlyPlayersList;
+  public List<Player> getSnapshotPlayersList() {
+    return snapshotPlayersList;
+  }
+
+  @Override
+  public synchronized List<Player> getPlayersList() {
+    snapshotPlayersList = players.values().stream().toList();
+    return getSnapshotPlayersList();
   }
 
   @Override
@@ -130,8 +136,8 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
 
     synchronized (this) {
       players.remove(playerIdentity);
-      readOnlyPlayersList = players.values().stream().toList();
-      playerCount = readOnlyPlayersList.size();
+      snapshotPlayersList = players.values().stream().toList();
+      snapshotPlayerCount = players.size();
     }
   }
 
@@ -141,8 +147,14 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public int getPlayerCount() {
-    return playerCount;
+  public int getSnapshotPlayerCount() {
+    return snapshotPlayerCount;
+  }
+
+  @Override
+  public synchronized int getPlayerCount() {
+    snapshotPlayerCount = players.size();
+    return getSnapshotPlayerCount();
   }
 
   @Override
@@ -158,8 +170,8 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   @Override
   public synchronized void clear() {
     players.clear();
-    readOnlyPlayersList = new ArrayList<>();
-    playerCount = 0;
+    snapshotPlayersList = new ArrayList<>();
+    snapshotPlayerCount = 0;
   }
 
   /**

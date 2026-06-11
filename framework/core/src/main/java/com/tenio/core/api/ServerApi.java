@@ -174,12 +174,14 @@ public interface ServerApi {
   Optional<Player> getPlayerByIdentity(String identity);
 
   /**
-   * Fetches the current number of players activating on the server.
+   * Retrieves the snapshot of the number of players in the management list.
+   * This is expected to provide the most recent update of the player count.
+   * This operation is thread-safe and provides an atomic count.
    *
-   * @return the current number of players ({@code integer} value)
-   * @since 0.5.0
+   * @return the most recent update of the number of players in the list
+   * @since 0.7.3
    */
-  int getPlayerCount();
+  int getSnapshotPlayerCount();
 
   /**
    * Ensures the calculation on the player list is thread-safe.
@@ -190,14 +192,17 @@ public interface ServerApi {
   void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
-   * Retrieves a read-only global player management list on the server. This method should be used
-   * to prevent the "escape references" issue.
+   * Retrieves a snapshot of the read-only player management list.
+   * This is expected to provide the most recent update of the player list.
+   * This method should be used to prevent the "escape references" issue
+   * and provides thread-safe access to the player collection.
    *
-   * @return a list of all {@link Player}s in the management list on the server
+   * @return the recent update of the list of all {@link Player}s in the management list
    * @see PlayerManager
    * @see List
+   * @since 0.7.3
    */
-  List<Player> getReadonlyPlayersList();
+  List<Player> getSnapshotPlayersList();
 
   /**
    * Retrieves a room instance by using its ID.
@@ -217,21 +222,22 @@ public interface ServerApi {
   void computeRooms(Consumer<Iterator<Room>> onComputed);
 
   /**
-   * Retrieves a read-only global room management list on the server. This method should be used
-   * to prevent the "escape references" issue.
+   * Retrieves the most recent rooms in the room management list.
    *
-   * @return a list of all rooms {@link Room} in the management list on the server
+   * @return a most recent up-to-date list of all {@link Room}s in the management list
    * @see RoomManager
    * @see List
+   * @since 0.7.3
    */
-  List<Room> getReadonlyRoomsList();
+  List<Room> getSnapshotRoomsList();
 
   /**
-   * Fetches the current number of rooms on the server.
+   * Fetches the most recent number of rooms in the management list.
    *
-   * @return the current number of rooms ({@code integer} value)
+   * @return the most recent number of rooms ({@code integer} value)
+   * @since 0.7.3
    */
-  int getRoomCount();
+  int getSnapshotRoomCount();
 
   /**
    * Allows a player to join a particular room.

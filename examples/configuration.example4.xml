@@ -19,15 +19,21 @@
 	<Network>
 		<Sockets>
 			<Port name="tcp" type="tcp">8032</Port>
-			<Port name="udp" type="udp" cacheSize="100">20004</Port>
+			<Port name="udp" type="udp" cacheSize="10">20004</Port>
 		</Sockets>
 		<Properties>
+			<!--
+				1 KB  -> 1024
+				8 KB  -> 8192
+				16 KB -> 16384
+				32 KB -> 32768
+			-->
 			<Property name="websocket-using-ssl">false</Property>
-			<Property name="websocket-sender-buffer-size">1024</Property>
-			<Property name="websocket-receiver-buffer-size">1024</Property>
-			<Property name="socket-acceptor-buffer-size">1024</Property>
-			<Property name="socket-reader-buffer-size">1024</Property>
-			<Property name="socket-writer-buffer-size">1024</Property>
+			<Property name="websocket-sender-buffer-size">32768</Property>
+			<Property name="websocket-receiver-buffer-size">32768</Property>
+			<Property name="socket-acceptor-buffer-size">32768</Property>
+			<Property name="socket-reader-buffer-size">32768</Property>
+			<Property name="socket-writer-buffer-size">32768</Property>
 			<Property name="packet-compression-threshold-bytes">10240</Property>
 			<Property name="allow-change-session">false</Property>
 			<Property name="max-connections-per-ip">1000</Property>
@@ -36,8 +42,9 @@
 
 	<Configuration>
 		<Workers>
+			<Worker name="processor">2</Worker>
 			<Worker name="socket-reader">16</Worker>
-			<Worker name="socket-writer">128</Worker>
+			<Worker name="socket-writer">64</Worker>
 			<Worker name="websocket-producer">0</Worker>
 			<Worker name="websocket-consumer">0</Worker>
 		</Workers>

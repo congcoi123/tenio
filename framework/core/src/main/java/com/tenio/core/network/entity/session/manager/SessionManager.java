@@ -201,18 +201,38 @@ public interface SessionManager extends Manager {
   void removeSession(Session session);
 
   /**
-   * Retrieves a fresh copy of current sessions' list.
+   * Retrieves a most recent copy of current sessions' list.
    *
-   * @return a fresh copy of list of sessions
+   * @return a most recent copy of list of sessions
    * @see List
-   * @since 0.5.0
+   * @since 0.7.3
    */
-  List<Session> getReadonlySessionsList();
+  List<Session> getSnapshotSessionsList();
 
   /**
-   * Retrieves the current number of sessions in the management list.
+   * Retrieves a copy of current sessions' list.
+   * This method is costly, use with caution.
+   *
+   * @return a copy of list of sessions
+   * @see List
+   * @since 0.7.3
+   */
+  List<Session> getSessionsList();
+
+  /**
+   * Retrieves the most recent number of sessions in the management list.
+   *
+   * @return the most recent number of sessions in the management list
+   * @since 0.7.3
+   */
+  int getSnapshotSessionCount();
+
+  /**
+   * Retrieves current number of sessions in the management list.
+   * This method is costly, use with caution.
    *
    * @return the current number of sessions in the management list
+   * @since 0.7.3
    */
   int getSessionCount();
 

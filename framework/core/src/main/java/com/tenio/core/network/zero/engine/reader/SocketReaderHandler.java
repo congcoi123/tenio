@@ -26,6 +26,7 @@ package com.tenio.core.network.zero.engine.reader;
 
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
 import com.tenio.core.network.zero.engine.acceptor.AcceptorHandler;
@@ -40,7 +41,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -67,6 +71,8 @@ import java.util.function.Consumer;
 
 public final class SocketReaderHandler extends SystemLogger {
 
+  private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
+
   /**
    * This selector manages {@link SocketChannel} instances.
    */
@@ -76,6 +82,8 @@ public final class SocketReaderHandler extends SystemLogger {
   private final NetworkReaderStatistic networkReaderStatistic;
   private final SocketIoHandler socketIoHandler;
   private final Queue<Triple<SocketChannel, Consumer<SelectionKey>, Runnable>> pendingClientSocketChannels;
+  private final Thread internalProcess;
+  private final BlockingQueue<Info> internalQueue;
 
   /**
    * Constructor.
@@ -97,6 +105,8 @@ public final class SocketReaderHandler extends SystemLogger {
 
     readableSelector = Selector.open();
     pendingClientSocketChannels = new ConcurrentLinkedQueue<>();
+    internalQueue = new LinkedBlockingQueue<>();
+    internalProcess = Thread.ofVirtual().name("socket-reader-" + ID_GENERATOR.incrementAndGet()).start(this::processInternalQueue);
   }
 
   /**
@@ -109,23 +119,24 @@ public final class SocketReaderHandler extends SystemLogger {
   public void registerClientSocketChannel(SocketChannel socketChannel,
                                           Consumer<SelectionKey> onSuccess,
                                           Runnable onFailed) {
-    pendingClientSocketChannels.offer(new Triple<>(socketChannel, onSuccess, onFailed));
+    pendingClientSocketChannels.add(new Triple<>(socketChannel, onSuccess, onFailed));
     readableSelector.wakeup(); // this helps unblock the instruction select() in the method running()
   }
 
   /**
    * Shutdown processing.
    *
-   * @throws IOException whenever IO exceptions thrown
+   * @throws Exception whenever any exceptions thrown
    */
-  public void shutdown() throws IOException {
+  public void shutdown() throws Exception {
+    internalProcess.interrupt();
+    internalQueue.clear();
     pendingClientSocketChannels.clear();
     readableSelector.wakeup(); // this helps unblock the instruction select() in the method running()
     for (SelectionKey selectionKey : readableSelector.keys()) {
       SelectableChannel channel = selectionKey.channel();
       if (channel instanceof SocketChannel socketChannel) {
-        socketIoHandler.channelInactive(socketChannel, selectionKey,
-            ConnectionDisconnectMode.SERVER_DOWN);
+        socketIoHandler.channelInactive(socketChannel, selectionKey, ConnectionDisconnectMode.SERVER_DOWN);
       }
     }
     readableSelector.close();
@@ -237,8 +248,29 @@ public final class SocketReaderHandler extends SystemLogger {
         byte[] binaries = new byte[readerBuffer.limit()];
         readerBuffer.get(binaries);
 
-        socketIoHandler.sessionRead(session, binaries);
+        // offload process
+        internalQueue.add(new Info(session, binaries));
       }
     }
   }
+
+  private void processInternalQueue() {
+    while (!Thread.currentThread().isInterrupted()) {
+      try {
+        Info info = internalQueue.take();
+
+        socketIoHandler.sessionRead(info.session, info.binaries);
+      } catch (InterruptedException exception) {
+        // InterruptedException is not an error
+        // It’s a signal to stop the thread
+        Thread.currentThread().interrupt();
+      } catch (Throwable cause) {
+        if (isErrorEnabled()) {
+          error(cause);
+        }
+      }
+    }
+  }
+
+  private record Info(Session session, byte[] binaries) {}
 }

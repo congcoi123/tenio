@@ -57,9 +57,9 @@ public class DefaultRoom implements Room {
   private volatile String name;
   private volatile String password;
   private volatile Player owner;
-  private volatile List<Player> participants;
+  private volatile List<Player> snapshotParticipants;
   private volatile int maxParticipants;
-  private volatile List<Player> spectators;
+  private volatile List<Player> snapshotSpectators;
   private volatile int maxSpectators;
   private volatile RoomRemoveMode roomRemoveMode;
   private volatile boolean activated;
@@ -75,8 +75,8 @@ public class DefaultRoom implements Room {
     id = ID_COUNTER.getAndIncrement();
     properties = new ConcurrentHashMap<>();
     state = new AtomicReference<>();
-    spectators = new ArrayList<>();
-    participants = new ArrayList<>();
+    snapshotSpectators = new ArrayList<>();
+    snapshotParticipants = new ArrayList<>();
     setState(null);
     setRoomRemoveMode(RoomRemoveMode.WHEN_EMPTY);
   }
@@ -198,18 +198,18 @@ public class DefaultRoom implements Room {
   }
 
   @Override
-  public int getPlayerCount() {
-    return playerManager.getPlayerCount();
+  public int getSnapshotPlayerCount() {
+    return playerManager.getSnapshotPlayerCount();
   }
 
   @Override
-  public int getParticipantCount() {
-    return getReadonlyParticipantsList().size();
+  public int getSnapshotParticipantCount() {
+    return getSnapshotParticipantsList().size();
   }
 
   @Override
-  public int getSpectatorCount() {
-    return getReadonlySpectatorsList().size();
+  public int getSnapshotSpectatorCount() {
+    return getSnapshotSpectatorsList().size();
   }
 
   @Override
@@ -228,18 +228,18 @@ public class DefaultRoom implements Room {
   }
 
   @Override
-  public List<Player> getReadonlyPlayersList() {
-    return playerManager.getReadonlyPlayersList();
+  public List<Player> getSnapshotPlayersList() {
+    return playerManager.getSnapshotPlayersList();
   }
 
   @Override
-  public List<Player> getReadonlyParticipantsList() {
-    return participants;
+  public List<Player> getSnapshotParticipantsList() {
+    return snapshotParticipants;
   }
 
   @Override
-  public List<Player> getReadonlySpectatorsList() {
-    return spectators;
+  public List<Player> getSnapshotSpectatorsList() {
+    return snapshotSpectators;
   }
 
   @Override
@@ -252,9 +252,9 @@ public class DefaultRoom implements Room {
 
     boolean validated;
     if (asSpectator) {
-      validated = getSpectatorCount() < getMaxSpectators();
+      validated = getSnapshotSpectatorCount() < getMaxSpectators();
     } else {
-      validated = getParticipantCount() < getMaxParticipants();
+      validated = getSnapshotParticipantCount() < getMaxParticipants();
     }
 
     if (!validated) {
@@ -303,7 +303,7 @@ public class DefaultRoom implements Room {
           SwitchedPlayerRoleInRoomResult.PLAYER_WAS_NOT_IN_ROOM);
     }
 
-    if (getSpectatorCount() >= getMaxSpectators()) {
+    if (getSnapshotSpectatorCount() >= getMaxSpectators()) {
       throw new SwitchedPlayerRoleInRoomException("All spectator slots were already taken",
           SwitchedPlayerRoleInRoomResult.SWITCH_NO_SPECTATOR_SLOTS_AVAILABLE);
     }
@@ -323,7 +323,7 @@ public class DefaultRoom implements Room {
           SwitchedPlayerRoleInRoomResult.PLAYER_WAS_NOT_IN_ROOM);
     }
 
-    if (getParticipantCount() >= getMaxParticipants()) {
+    if (getSnapshotParticipantCount() >= getMaxParticipants()) {
       throw new SwitchedPlayerRoleInRoomException("All participant slots were already taken",
           SwitchedPlayerRoleInRoomResult.SWITCH_NO_PARTICIPANT_SLOTS_AVAILABLE);
     }
@@ -347,10 +347,10 @@ public class DefaultRoom implements Room {
   }
 
   private synchronized void classifyPlayersByRoles() {
-    participants = getReadonlyPlayersList().stream()
+    snapshotParticipants = getSnapshotPlayersList().stream()
         .filter(player -> player.getRoleInRoom() == PlayerRoleInRoom.PARTICIPANT)
         .toList();
-    spectators = getReadonlyPlayersList().stream()
+    snapshotSpectators = getSnapshotPlayersList().stream()
         .filter(player -> player.getRoleInRoom() == PlayerRoleInRoom.SPECTATOR)
         .toList();
   }
@@ -373,13 +373,13 @@ public class DefaultRoom implements Room {
   }
 
   @Override
-  public boolean isEmpty() {
-    return playerManager.getPlayerCount() == 0;
+  public boolean isSnapshotEmpty() {
+    return playerManager.getSnapshotPlayerCount() == 0;
   }
 
   @Override
-  public boolean isFull() {
-    return playerManager.getPlayerCount() == getCapacity();
+  public boolean isSnapshotFull() {
+    return playerManager.getSnapshotPlayerCount() == getCapacity();
   }
 
   @Override
@@ -419,8 +419,7 @@ public class DefaultRoom implements Room {
   }
 
   @Override
-  public void configurePlayerSlotGeneratedStrategy(
-      RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
+  public void configurePlayerSlotGeneratedStrategy(RoomPlayerSlotGeneratedStrategy roomPlayerSlotGeneratedStrategy) {
     this.roomPlayerSlotGeneratedStrategy = roomPlayerSlotGeneratedStrategy;
   }
 
@@ -449,9 +448,9 @@ public class DefaultRoom implements Room {
         ", state=" + state.get() +
         ", name='" + name + '\'' +
         ", password='" + password + '\'' +
-        ", participants=" + participants +
+        ", snapshotParticipants=" + snapshotParticipants +
         ", maxParticipants=" + maxParticipants +
-        ", spectators=" + spectators +
+        ", snapshotSpectators=" + snapshotSpectators +
         ", maxSpectators=" + maxSpectators +
         ", roomRemoveMode=" + roomRemoveMode +
         ", activated=" + activated +

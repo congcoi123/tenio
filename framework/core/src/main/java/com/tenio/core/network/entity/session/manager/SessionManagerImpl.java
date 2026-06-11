@@ -55,8 +55,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
   private final Map<SocketChannel, Session> sessionBySockets;
   private final Map<Channel, Session> sessionByWebSockets;
   private final Map<Integer, Session> sessionByDatagrams;
-  private volatile List<Session> readonlySessionsList;
-  private volatile int sessionCount;
+  private volatile List<Session> snapshotSessionsList;
+  private volatile int snapshotSessionCount;
   private OutboundQueuePolicy outboundQueuePolicy;
   private ConnectionFilter connectionFilter;
   private int inboundQueueSize;
@@ -71,7 +71,7 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     sessionBySockets = new HashMap<>();
     sessionByWebSockets = new HashMap<>();
     sessionByDatagrams = new HashMap<>();
-    readonlySessionsList = new ArrayList<>();
+    snapshotSessionsList = new ArrayList<>();
     inboundQueueSize = DEFAULT_MAX_INBOUND_QUEUE_SIZE;
     outboundQueueSize = DEFAULT_MAX_OUTBOUND_QUEUE_SIZE;
     slowConsumingInboundQueueWarningThreshold = DEFAULT_SLOW_CONSUMING_INBOUND_QUEUE_WARNING_THRESHOLD;
@@ -103,8 +103,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionBySockets.put(session.fetchSocketChannel(), session);
-      readonlySessionsList = sessionByIds.values().stream().toList();
-      sessionCount = readonlySessionsList.size();
+      snapshotSessionsList = sessionByIds.values().stream().toList();
+      snapshotSessionCount = sessionByIds.size();
       session.activate();
     }
     return session;
@@ -155,8 +155,8 @@ public final class SessionManagerImpl extends AbstractManager implements Session
     synchronized (this) {
       sessionByIds.put(session.getId(), session);
       sessionByWebSockets.put(webSocketChannel, session);
-      readonlySessionsList = sessionByIds.values().stream().toList();
-      sessionCount = readonlySessionsList.size();
+      snapshotSessionsList = sessionByIds.values().stream().toList();
+      snapshotSessionCount = sessionByIds.size();
       session.activate();
     }
     return session;
@@ -216,19 +216,35 @@ public final class SessionManagerImpl extends AbstractManager implements Session
         }
       }
       sessionByIds.remove(session.getId());
-      readonlySessionsList = sessionByIds.values().stream().toList();
-      sessionCount = readonlySessionsList.size();
+      snapshotSessionsList = sessionByIds.values().stream().toList();
+      snapshotSessionCount = sessionByIds.size();
     }
   }
 
   @Override
-  public List<Session> getReadonlySessionsList() {
-    return readonlySessionsList;
+  public List<Session> getSnapshotSessionsList() {
+    return snapshotSessionsList;
+  }
+
+  @Override
+  public List<Session> getSessionsList() {
+    synchronized (this) {
+      snapshotSessionsList = sessionByIds.values().stream().toList();
+      return getSnapshotSessionsList();
+    }
+  }
+
+  @Override
+  public int getSnapshotSessionCount() {
+    return snapshotSessionCount;
   }
 
   @Override
   public int getSessionCount() {
-    return sessionCount;
+    synchronized (this) {
+      snapshotSessionCount = sessionByIds.size();
+      return getSnapshotSessionCount();
+    }
   }
 
   @Override

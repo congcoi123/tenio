@@ -204,7 +204,10 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     }
     onStarted();
     if (isInfoEnabled()) {
-      info("START ENGINE", buildgen("zero-", getName(), " (", executorSize, ")"));
+      info("START ENGINE", buildgen("zero-", getName(), " (",
+              getNumberOfExtraWorkers() > 0 ?
+                      ( "M:" + (executorSize - getNumberOfExtraWorkers()) + "|E:" + getNumberOfExtraWorkers())
+                      : executorSize, ")"));
     }
   }
 

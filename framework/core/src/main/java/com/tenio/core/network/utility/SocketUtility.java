@@ -144,11 +144,13 @@ public final class SocketUtility {
   }
 
   /**
-   * Creates a byte buffer object to hold data reading from sockets. This should be DIRECT type
-   * (created from OS) to prevent any conversion.
+   * Creates a byte buffer used for socket reading operations.
    *
-   * @param size the buffer size
-   * @return an instance of {@link ByteBuffer}
+   * <p>A direct buffer is allocated in native (off-heap) memory, which can
+   * reduce copying overhead during native socket IO operations.
+   *
+   * @param size the buffer size in bytes
+   * @return a direct {@link ByteBuffer}
    */
   public static ByteBuffer createReaderBuffer(int size) {
     // Default read buffer is DIRECT
@@ -156,13 +158,16 @@ public final class SocketUtility {
   }
 
   /**
-   * Creates a byte buffer object to hold data writing to sockets.
+   * Creates a byte buffer used for socket writing operations.
    *
-   * @param size the buffer size
-   * @return an instance of {@link ByteBuffer}
+   * <p>A direct buffer is allocated in native (off-heap) memory, which can
+   * reduce copying overhead during native socket IO operations.
+   *
+   * @param size the buffer size in bytes
+   * @return a direct {@link ByteBuffer}
    */
   public static ByteBuffer createWriterBuffer(int size) {
-    // Default write buffer is HEAP
-    return ByteBuffer.allocate(size);
+    // Default write buffer is DIRECT
+    return ByteBuffer.allocateDirect(size);
   }
 }

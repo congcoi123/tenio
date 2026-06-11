@@ -105,10 +105,9 @@ class CcuReportTaskTest {
   }
 
   @Test
-  @DisplayName("lambda body emits FETCHED_CCU_INFO event with player count")
-  @SuppressWarnings("unchecked")
+  @DisplayName("lambda body emits FETCHED_CCU_INFO event with snapshot player count")
   void testLambdaBodyEmitsCcuEvent() {
-    Mockito.when(playerManager.getPlayerCount()).thenReturn(5);
+    Mockito.when(playerManager.getSnapshotPlayerCount()).thenReturn(5);
     ScheduledExecutorService mockService = Mockito.mock(ScheduledExecutorService.class);
     Mockito.when(mockService.scheduleAtFixedRate(
             Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))

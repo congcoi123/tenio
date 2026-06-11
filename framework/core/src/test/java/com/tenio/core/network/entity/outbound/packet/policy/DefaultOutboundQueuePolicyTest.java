@@ -55,10 +55,10 @@ class DefaultOutboundQueuePolicyTest {
   }
 
   @Test
-  void testFullQueueThrowsOutboundQueueFullException() {
+  void testAlmostFullQueueThrowsOutboundQueueFullException() {
     OutboundQueue queue = mock(OutboundQueue.class);
-    when(queue.isFull()).thenReturn(true);
-    when(queue.getSize()).thenReturn(5);
+    when(queue.isSnapshotFull()).thenReturn(true);
+    when(queue.getSnapshotSize()).thenReturn(5);
 
     assertThrows(OutboundQueueFullException.class,
         () -> policy.applyPolicy(queue, mock(Packet.class)));
@@ -68,7 +68,7 @@ class DefaultOutboundQueuePolicyTest {
   void testBetween75And90PercentWithNonGuaranteedThrowsPolicyViolation() {
     OutboundQueue queue = mock(OutboundQueue.class);
     Packet packet = mock(Packet.class);
-    when(queue.isFull()).thenReturn(false);
+    when(queue.isSnapshotFull()).thenReturn(false);
     when(queue.getPercentageUsed()).thenReturn(80.0f);
     when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NON_GUARANTEED);
 
@@ -80,7 +80,7 @@ class DefaultOutboundQueuePolicyTest {
   void testBetween75And90PercentWithNormalGuaranteeDoesNotThrow() {
     OutboundQueue queue = mock(OutboundQueue.class);
     Packet packet = mock(Packet.class);
-    when(queue.isFull()).thenReturn(false);
+    when(queue.isSnapshotFull()).thenReturn(false);
     when(queue.getPercentageUsed()).thenReturn(80.0f);
     when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NORMAL);
 
@@ -91,7 +91,7 @@ class DefaultOutboundQueuePolicyTest {
   void testAt90PercentOrAboveWithNormalGuaranteeThrowsPolicyViolation() {
     OutboundQueue queue = mock(OutboundQueue.class);
     Packet packet = mock(Packet.class);
-    when(queue.isFull()).thenReturn(false);
+    when(queue.isSnapshotFull()).thenReturn(false);
     when(queue.getPercentageUsed()).thenReturn(92.0f);
     when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NORMAL);
 
@@ -103,7 +103,7 @@ class DefaultOutboundQueuePolicyTest {
   void testAt90PercentOrAboveWithGuaranteedDoesNotThrow() {
     OutboundQueue queue = mock(OutboundQueue.class);
     Packet packet = mock(Packet.class);
-    when(queue.isFull()).thenReturn(false);
+    when(queue.isSnapshotFull()).thenReturn(false);
     when(queue.getPercentageUsed()).thenReturn(92.0f);
     when(packet.getGuarantee()).thenReturn(ResponseGuarantee.GUARANTEED);
 
@@ -114,7 +114,7 @@ class DefaultOutboundQueuePolicyTest {
   void testBelow75PercentWithNonGuaranteedDoesNotThrow() {
     OutboundQueue queue = mock(OutboundQueue.class);
     Packet packet = mock(Packet.class);
-    when(queue.isFull()).thenReturn(false);
+    when(queue.isSnapshotFull()).thenReturn(false);
     when(queue.getPercentageUsed()).thenReturn(50.0f);
     when(packet.getGuarantee()).thenReturn(ResponseGuarantee.NON_GUARANTEED);
 
