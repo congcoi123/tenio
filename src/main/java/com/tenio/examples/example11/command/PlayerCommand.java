@@ -42,7 +42,7 @@ public class PlayerCommand extends AbstractSystemCommandHandler {
     var param = args.get(1);
 
     if (action.equals("logout") && param.equals("first")) {
-      var players = api().getReadonlyPlayersList();
+      var players = api().getSnapshotPlayersList();
       if (players.isEmpty()) {
         CommandUtility.INSTANCE.showConsoleMessage("Empty list of players.");
         return;

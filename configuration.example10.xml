@@ -22,6 +22,12 @@
 			<Port name="udp" type="udp">20004</Port>
 		</Sockets>
 		<Properties>
+			<!--
+				1 KB  -> 1024
+				8 KB  -> 8192
+				16 KB -> 16384
+				32 KB -> 32768
+			-->
 			<Property name="websocket-using-ssl">false</Property>
 			<Property name="websocket-sender-buffer-size">1024</Property>
 			<Property name="websocket-receiver-buffer-size">1024</Property>
@@ -36,6 +42,7 @@
 
 	<Configuration>
 		<Workers>
+			<Worker name="processor">1</Worker>
 			<Worker name="socket-reader">2</Worker>
 			<Worker name="socket-writer">2</Worker>
 			<Worker name="websocket-producer">0</Worker>

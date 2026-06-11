@@ -40,7 +40,7 @@ public final class PlayerJoinedRoomHandler extends AbstractHandler
   @Override
   public void onPlayerJoinedRoomResult(Player player, Room room, PlayerJoinedRoomResult result) {
     if (result == PlayerJoinedRoomResult.SUCCESS) {
-      var players = room.getReadonlyPlayersList();
+      var players = room.getSnapshotPlayersList();
       var iterator = players.iterator();
 
       var users = new String[players.size()];
