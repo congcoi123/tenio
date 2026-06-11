@@ -364,8 +364,7 @@ public final class ServerImpl extends SystemLogger implements Server {
         .setMaxNumberPlayers(configuration.getInt(CoreConfigurationType.PROP_MAX_NUMBER_PLAYERS));
     zeroProcessor.setSessionManager(network.getSessionManager());
     zeroProcessor.setPlayerManager(playerManager);
-    // Since v0.7.0, set fixed value for the thread pool size
-    zeroProcessor.setThreadPoolSize(CoreConstant.DEFAULT_PROCESSOR_THREAD_POOL_SIZE);
+    zeroProcessor.setThreadPoolSize(configuration.getInt(CoreConfigurationType.WORKER_PROCESSOR));
     zeroProcessor.setKeepPlayerOnDisconnection(
         configuration.getBoolean(CoreConfigurationType.PROP_KEEP_PLAYER_ON_DISCONNECTION));
 

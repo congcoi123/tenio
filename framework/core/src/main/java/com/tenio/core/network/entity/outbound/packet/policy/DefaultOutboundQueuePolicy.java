@@ -42,8 +42,8 @@ public class DefaultOutboundQueuePolicy implements OutboundQueuePolicy {
 
   @Override
   public void applyPolicy(OutboundQueue outboundQueue, Packet packet) {
-    if (outboundQueue.isFull()) {
-      throw new OutboundQueueFullException(outboundQueue.getSize());
+    if (outboundQueue.isSnapshotFull()) {
+      throw new OutboundQueueFullException(outboundQueue.getSnapshotSize());
     }
 
     float percentageUsed = outboundQueue.getPercentageUsed();

@@ -47,12 +47,12 @@ public final class InfoCommand extends AbstractSystemCommandHandler {
     switch (action) {
       case "player":
         CommandUtility.INSTANCE.showConsoleMessage(
-            "There are " + api().getPlayerCount() + " players > The first 10 entities > " +
-                api().getReadonlyPlayersList().subList(0, Math.min(api().getPlayerCount(), 10)));
+            "There are " + api().getSnapshotPlayerCount() + " players > The first 10 entities > " +
+                api().getSnapshotPlayersList().subList(0, Math.min(api().getSnapshotPlayerCount(), 10)));
         break;
 
       case "room":
-        var rooms = api().getReadonlyRoomsList();
+        var rooms = api().getSnapshotRoomsList();
         CommandUtility.INSTANCE.showConsoleMessage(
             "There are " + rooms.size() + " rooms > The first 10 entities > " +
                 rooms.subList(0, Math.min(rooms.size(), 10)));

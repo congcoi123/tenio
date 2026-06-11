@@ -49,6 +49,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -75,6 +76,7 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   private final Thread inboundProcess;
   private final BlockingQueue<DataCollection> inboundQueue;
+  private final AtomicInteger inboundQueueCount;
 
   private int maxInboundQueueSize;
   private int slowConsumingInboundQueueWarningThreshold;
@@ -114,6 +116,7 @@ public class SessionImpl extends AbstractLogger implements Session {
     setLastWriteTime(currentTime);
 
     inboundQueue = new LinkedBlockingQueue<>();
+    inboundQueueCount = new AtomicInteger();
     inboundProcess = Thread.ofVirtual().name("session-" + id).unstarted(this::processInboundQueue);
   }
 
@@ -175,21 +178,21 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public void enqueueInbound(DataCollection message) {
-    int remaining = inboundQueue.size();
-    if (isWarnEnabled()) {
-      if (slowConsumingInboundQueueWarningThreshold > 0
-              && remaining > slowConsumingInboundQueueWarningThreshold) {
+    int remaining = inboundQueueCount.intValue();
+    if (slowConsumingInboundQueueWarningThreshold > 0 && isWarnEnabled()) {
+      if (remaining > slowConsumingInboundQueueWarningThreshold) {
         warn("[Slow Consuming Inbound Queue] Remaining: ", remaining, " > ", this);
       }
     }
     if (maxInboundQueueSize > 0 && remaining >= maxInboundQueueSize) {
       var exception = new InboundQueueFullException(remaining);
       if (isErrorEnabled()) {
-        error(exception, exception.getMessage());
+        error(exception, exception.getMessage(), " > ", this);
       }
       throw exception;
     }
     inboundQueue.add(message);
+    inboundQueueCount.incrementAndGet();
   }
 
   @Override
@@ -222,7 +225,7 @@ public class SessionImpl extends AbstractLogger implements Session {
     if (slowConsumingOutboundQueueWarningThreshold <= 0) {
       return 0;
     }
-    int remaining = outboundQueue.getSize();
+    int remaining = outboundQueue.getSnapshotSize();
     return remaining >= slowConsumingOutboundQueueWarningThreshold ? remaining : 0;
   }
 
@@ -498,6 +501,7 @@ public class SessionImpl extends AbstractLogger implements Session {
       // clear inbound queue
       inboundProcess.interrupt();
       inboundQueue.clear();
+      inboundQueueCount.set(0);
 
       // clear outbound queue
       if (outboundQueue != null) {
@@ -557,6 +561,7 @@ public class SessionImpl extends AbstractLogger implements Session {
       if (state == State.ACTIVATED) {
         try {
           DataCollection message = inboundQueue.take();
+          inboundQueueCount.decrementAndGet();
           sessionManager.emitEvent(ServerEvent.SESSION_READ_MESSAGE, this, message);
         } catch (InterruptedException exception) {
           // InterruptedException is not an error
@@ -615,8 +620,8 @@ public class SessionImpl extends AbstractLogger implements Session {
         ", state=" + state +
         ", hasUdp=" + hasUdp +
         ", associatedState=" + associatedState +
-        ", remainingInboundQueue=" + inboundQueue.size() +
-        ", remainingOutboundQueue=" + outboundQueue.getSize() +
+        ", remainingInboundQueue=" + inboundQueueCount.intValue() +
+        ", remainingOutboundQueue=" + outboundQueue.getSnapshotSize() +
         '}';
   }
 }

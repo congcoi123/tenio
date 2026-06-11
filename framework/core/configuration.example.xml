@@ -24,16 +24,22 @@
               - Use 1 or let the cacheSize to be absent on macOS/Windows (SO_REUSEPORT not reliable).
               - On Linux, increase for better load balancing if SO_REUSEPORT is enabled.
              -->
-            <Port name="udp" type="udp" cacheSize="100">20004</Port>
+            <Port name="udp" type="udp" cacheSize="10">20004</Port>
             <Port name="http" type="http">9999</Port>
         </Sockets>
         <Properties>
             <Property name="websocket-using-ssl">false</Property>
-            <Property name="websocket-sender-buffer-size">1024</Property>
-            <Property name="websocket-receiver-buffer-size">1024</Property>
-            <Property name="socket-acceptor-buffer-size">1024</Property>
-            <Property name="socket-reader-buffer-size">1024</Property>
-            <Property name="socket-writer-buffer-size">1024</Property>
+            <!--
+                1 KB  -> 1024
+                8 KB  -> 8192
+                16 KB -> 16384
+                32 KB -> 32768
+            -->
+            <Property name="websocket-sender-buffer-size">1024</Property>   <!-- 1KB -->
+            <Property name="websocket-receiver-buffer-size">1024</Property> <!-- 1KB -->
+            <Property name="socket-acceptor-buffer-size">1024</Property>    <!-- 1KB -->
+            <Property name="socket-reader-buffer-size">1024</Property>      <!-- 1KB -->
+            <Property name="socket-writer-buffer-size">1024</Property>      <!-- 1KB -->
             <!-- This will never compress packets if the threshold is less than or equals to 0 -->
             <Property name="packet-compression-threshold-bytes">10240</Property>
             <Property name="allow-change-session">false</Property>
@@ -43,7 +49,10 @@
 
     <Configuration>
         <Workers>
-            <Worker name="socket-reader">1</Worker>
+            <!-- The processor handle socket and datagram connection requests -->
+            <Worker name="processor">1</Worker>
+            <!-- In case udp channel is in use, half of the socket-reader workers will be used for them -->
+            <Worker name="socket-reader">4</Worker>
             <Worker name="socket-writer">2</Worker>
             <Worker name="websocket-producer">1</Worker>
             <Worker name="websocket-consumer">2</Worker>

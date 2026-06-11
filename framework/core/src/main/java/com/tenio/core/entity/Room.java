@@ -257,25 +257,28 @@ public interface Room {
   void clearProperties();
 
   /**
-   * Retrieves the current number of players (participants + spectators) in the room.
+   * Retrieves the most recent number of players (participants + spectators) in the room.
    *
-   * @return the current number of players ({@code integer} value)
+   * @return the most recent number of players ({@code integer} value)
+   * @since 0.7.3
    */
-  int getPlayerCount();
+  int getSnapshotPlayerCount();
 
   /**
-   * Retrieves the current number of participants in the room.
+   * Retrieves the most recent number of participants in the room.
    *
-   * @return the current number of participants ({@code integer} value)
+   * @return the most recent number of participants ({@code integer} value)
+   * @since 0.7.3
    */
-  int getParticipantCount();
+  int getSnapshotParticipantCount();
 
   /**
-   * Retrieves the current number of spectators in the room.
+   * Retrieves the most recent number of spectators in the room.
    *
-   * @return the current number of spectators ({@code integer} value)
+   * @return the most recent number of spectators ({@code integer} value)
+   * @since 0.7.3
    */
-  int getSpectatorCount();
+  int getSnapshotSpectatorCount();
 
   /**
    * Determines whether a player is present in the room.
@@ -303,33 +306,33 @@ public interface Room {
   void computePlayers(Consumer<Iterator<Player>> onComputed);
 
   /**
-   * Retrieves a read-only player management list. This method should be used to prevent the
-   * "escape references" issue.
+   * Retrieves the most recent players in the room.
    *
-   * @return a list of all {@link Player}s in the management list
+   * @return a list of all {@link Player}s in the room
    * @see List
+   * @since 0.7.3
    */
-  List<Player> getReadonlyPlayersList();
+  List<Player> getSnapshotPlayersList();
 
   /**
-   * Retrieves a read-only list of participants in a player management list. This method should be
-   * used to prevent the "escape references" issue.
+   * Retrieves the most recent participants in the room.
    *
-   * @return a list of participants in a player management list
+   * @return a list of participants in the room
    * @see List
    * @see PlayerRoleInRoom#PARTICIPANT
+   * @since 0.7.3
    */
-  List<Player> getReadonlyParticipantsList();
+  List<Player> getSnapshotParticipantsList();
 
   /**
-   * Retrieves a read-only list of spectators in a player management list. This method should be
-   * used to prevent the "escape references" issue.
+   * Retrieves the most recent spectators in the room.
    *
-   * @return a list of spectators in a player management list
+   * @return a list of spectators in the room
    * @see List
    * @see PlayerRoleInRoom#SPECTATOR
+   * @since 0.7.3
    */
-  List<Player> getReadonlySpectatorsList();
+  List<Player> getSnapshotSpectatorsList();
 
   /**
    * Adds a player to the room.
@@ -439,19 +442,21 @@ public interface Room {
   }
 
   /**
-   * Determines whether the room is empty.
+   * Determines whether the room is empty (approximately correct).
    *
-   * @return {@code true} if there is no entity in the room, otherwise returns {@code false}
+   * @return {@code true} if there is approximately no entity in the room, otherwise returns {@code false}
+   * @since 0.7.3
    */
-  boolean isEmpty();
+  boolean isSnapshotEmpty();
 
   /**
-   * Determines whether the room is full.
+   * Determines whether the room is full (approximately correct).
    *
-   * @return {@code true} if the number of entities reached the limitation in the room,
+   * @return {@code true} if the number of entities approximately reached the limitation in the room,
    * otherwise returns {@code false}
+   * @since 0.7.3
    */
-  boolean isFull();
+  boolean isSnapshotFull();
 
   /**
    * Retrieves the maximum number of participants allowing in the room.

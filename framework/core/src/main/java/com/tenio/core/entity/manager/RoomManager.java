@@ -64,8 +64,7 @@ public interface RoomManager extends Manager {
    *                                      is mentioned again
    * @since 0.5.0
    */
-  void addRoomWithOwner(Room room, InitialRoomSetting roomSetting, Player player)
-      throws AddedDuplicatedRoomException;
+  void addRoomWithOwner(Room room, InitialRoomSetting roomSetting, Player player) throws AddedDuplicatedRoomException;
 
   /**
    * Creates a new room without an owner and adds it to the server.
@@ -74,8 +73,7 @@ public interface RoomManager extends Manager {
    * @return an instance of {@link Room}
    * @throws IllegalArgumentException when an invalid setting builder is set
    */
-  default Room createRoom(InitialRoomSetting roomSetting)
-      throws IllegalArgumentException, CreatedRoomException {
+  default Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CreatedRoomException {
     return createRoomWithOwner(roomSetting, null);
   }
 
@@ -101,11 +99,13 @@ public interface RoomManager extends Manager {
 
   /**
    * Determines whether a room is in the management list by looking for its name.
+   * This method works on a snapshot so will not guarantee the lastest state of the room list.
    *
    * @param roomName the {@link String} value room's name
    * @return {@code true} if the searching room is available, otherwise returns {@code false}
+   * @since 0.7.3
    */
-  boolean containsRoomName(String roomName);
+  boolean containsSnapshotRoomName(String roomName);
 
   /**
    * Retrieves a room instance by looking for its unique ID.
@@ -116,14 +116,14 @@ public interface RoomManager extends Manager {
   Room getRoomById(long roomId);
 
   /**
-   * Retrieves a read-only room management list by searching with the room's name. This method
-   * should be used to prevent the "escape references" issue.
+   * Retrieves the most recent rooms in the management list by searching with the room's name.
    *
    * @param roomName the room's name that is in inquiring
-   * @return a list of all {@link Room}s sharing the same name in the management list
+   * @return a most recent up-to-date list of all {@link Room}s sharing the same name in the management list
    * @see List
+   * @since 0.7.3
    */
-  List<Room> getReadonlyRoomsListByName(String roomName);
+  List<Room> getSnapshotRoomsListByName(String roomName);
 
   /**
    * Ensures the calculation on the room list is thread-safe.
@@ -134,13 +134,23 @@ public interface RoomManager extends Manager {
   void computeRooms(Consumer<Iterator<Room>> onComputed);
 
   /**
-   * Retrieves a read-only room management list. This method should be used to prevent the
-   * "escape references" issue.
+   * Retrieves the most recent rooms in the room management list.
    *
-   * @return a list of all {@link Room}s in the management list
+   * @return a most recent up-to-date list of all {@link Room}s in the management list
    * @see List
+   * @since 0.7.3
    */
-  List<Room> getReadonlyRoomsList();
+  List<Room> getSnapshotRoomsList();
+
+  /**
+   * Retrieves the current rooms in the room management list.
+   * This method is costly, use with caution.
+   *
+   * @return a current up-to-date list of all {@link Room}s in the management list
+   * @see List
+   * @since 0.7.3
+   */
+  List<Room> getRoomsList();
 
   /**
    * Removes a room from the management list.
@@ -183,9 +193,19 @@ public interface RoomManager extends Manager {
       throws IllegalArgumentException;
 
   /**
+   * Fetches the most recent number of rooms in the management list.
+   *
+   * @return the most recent number of rooms ({@code integer} value)
+   * @since 0.7.3
+   */
+  int getSnapshotRoomCount();
+
+  /**
    * Fetches the current number of rooms in the management list.
+   * This method is costly, use with caution.
    *
    * @return the current number of rooms ({@code integer} value)
+   * @since 0.7.3
    */
   int getRoomCount();
 

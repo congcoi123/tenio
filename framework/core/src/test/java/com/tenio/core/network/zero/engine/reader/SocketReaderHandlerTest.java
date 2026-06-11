@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,14 +70,14 @@ class SocketReaderHandlerTest {
 
   @Test
   @DisplayName("Constructor creates a non-null handler")
-  void testConstructorCreatesHandler() throws IOException {
+  void testConstructorCreatesHandler() throws Exception {
     assertNotNull(handler);
     handler.shutdown();
   }
 
   @Test
   @DisplayName("registerClientSocketChannel queues the channel and invokes onFailed when channel is already closed")
-  void testRegisterClientSocketChannelQueuesClosed() throws IOException {
+  void testRegisterClientSocketChannelQueuesClosed() throws Exception {
     AtomicBoolean failedCalled = new AtomicBoolean(false);
     SocketChannel closedChannel = mock(SocketChannel.class);
     Consumer<SelectionKey> onSuccess = key -> {};
@@ -146,7 +147,7 @@ class SocketReaderHandlerTest {
 
     h.running(); // reads data and calls sessionRead
 
-    verify(ioHandler).sessionRead(eq(session), any(byte[].class));
+    verify(ioHandler, timeout(1000)).sessionRead(eq(session), any(byte[].class));
     clientChannel.close();
     serverChannel.close();
     h.shutdown();

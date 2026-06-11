@@ -67,6 +67,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 @DisplayName("Unit Test Cases For ServerApiImpl (extended)")
 class ServerApiImplTest {
@@ -156,13 +157,13 @@ class ServerApiImplTest {
     verify(roomManager).computeRooms(consumer);
   }
 
-  // --- getRoomCount ---
+  // --- getSnapshotRoomCount ---
 
   @Test
-  @DisplayName("getRoomCount delegates to roomManager")
-  void testGetRoomCount() {
-    when(roomManager.getRoomCount()).thenReturn(7);
-    assertEquals(7, api.getRoomCount());
+  @DisplayName("getSnapshotRoomCount delegates to roomManager")
+  void testGetSnapshotRoomCount() {
+    when(roomManager.getSnapshotRoomCount()).thenReturn(7);
+    assertEquals(7, api.getSnapshotRoomCount());
   }
 
   // --- getPlayerByIdentity when not found ---
@@ -294,33 +295,17 @@ class ServerApiImplTest {
         PlayerLeaveRoomMode.LOG_OUT, PlayerLeftRoomResult.SUCCESS);
   }
 
-  // --- getReadonlyRoomsList ---
+  // --- getSnapshotRoomsList ---
 
   @Test
-  @DisplayName("getReadonlyRoomsList delegates to roomManager")
-  void testGetReadonlyRoomsList() {
+  @DisplayName("getSnapshotRoomsList delegates to roomManager")
+  void testGetSnapshotRoomsList() {
     List<Room> rooms = Collections.emptyList();
-    when(roomManager.getReadonlyRoomsList()).thenReturn(rooms);
-    assertEquals(rooms, api.getReadonlyRoomsList());
+    when(roomManager.getSnapshotRoomsList()).thenReturn(rooms);
+    assertEquals(rooms, api.getSnapshotRoomsList());
   }
 
   // --- logout ---
-
-  @Test
-  @DisplayName("logout calls session.close() even when session is not activated")
-  void testLogoutCallsCloseOnUnactivatedSession() throws IOException {
-    var player = mock(Player.class);
-    var session = mock(Session.class);
-    when(player.containsSession()).thenReturn(true);
-    when(player.getSession()).thenReturn(Optional.of(session));
-    when(session.isActivated()).thenReturn(false);
-
-    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
-        PlayerDisconnectMode.CLIENT_REQUEST);
-
-    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
-        PlayerDisconnectMode.CLIENT_REQUEST);
-  }
 
   @Test
   @DisplayName("logout calls session.close() when session is activated")
@@ -329,13 +314,12 @@ class ServerApiImplTest {
     var session = mock(Session.class);
     when(player.containsSession()).thenReturn(true);
     when(player.getSession()).thenReturn(Optional.of(session));
+    Mockito.when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.isActivated()).thenReturn(true);
 
-    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
-        PlayerDisconnectMode.CLIENT_REQUEST);
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
 
-    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
-        PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
   }
 
   @Test
@@ -561,18 +545,18 @@ class ServerApiImplTest {
   // --- additional simple delegates ---
 
   @Test
-  @DisplayName("getPlayerCount delegates to playerManager")
-  void testGetPlayerCount() {
-    when(playerManager.getPlayerCount()).thenReturn(5);
-    assertEquals(5, api.getPlayerCount());
+  @DisplayName("getSnapshotPlayerCount delegates to playerManager")
+  void testGetSnapshotPlayerCount() {
+    when(playerManager.getSnapshotPlayerCount()).thenReturn(5);
+    assertEquals(5, api.getSnapshotPlayerCount());
   }
 
   @Test
-  @DisplayName("getReadonlyPlayersList delegates to playerManager")
-  void testGetReadonlyPlayersList() {
+  @DisplayName("getSnapshotPlayersList delegates to playerManager")
+  void testGetSnapshotPlayersList() {
     List<Player> list = Collections.emptyList();
-    when(playerManager.getReadonlyPlayersList()).thenReturn(list);
-    assertEquals(list, api.getReadonlyPlayersList());
+    when(playerManager.getSnapshotPlayersList()).thenReturn(list);
+    assertEquals(list, api.getSnapshotPlayersList());
   }
 
   @Test

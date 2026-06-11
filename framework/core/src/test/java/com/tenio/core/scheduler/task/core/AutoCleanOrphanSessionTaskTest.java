@@ -78,8 +78,8 @@ class AutoCleanOrphanSessionTaskTest {
     Session orphanSession = Mockito.mock(Session.class);
     Mockito.when(orphanSession.isActivated()).thenReturn(true);
     Mockito.when(orphanSession.isOrphan()).thenReturn(true);
-    Mockito.when(sessionManager.getReadonlySessionsList()).thenReturn(List.of(orphanSession));
-    Mockito.when(sessionManager.getSessionCount()).thenReturn(1);
+    Mockito.when(sessionManager.getSnapshotSessionsList()).thenReturn(List.of(orphanSession));
+    Mockito.when(sessionManager.getSnapshotSessionCount()).thenReturn(1);
     task.run();
     assertNotNull(task.getScheduler());
   }
@@ -132,8 +132,8 @@ class AutoCleanOrphanSessionTaskTest {
   void testLambdaBodyClosesOrphanSession() throws IOException {
     Session orphan = Mockito.mock(Session.class);
     Mockito.when(orphan.isOrphan()).thenReturn(true);
-    Mockito.when(sessionManager.getReadonlySessionsList()).thenReturn(List.of(orphan));
-    Mockito.when(sessionManager.getSessionCount()).thenReturn(1);
+    Mockito.when(sessionManager.getSnapshotSessionsList()).thenReturn(List.of(orphan));
+    Mockito.when(sessionManager.getSnapshotSessionCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
 
@@ -146,8 +146,8 @@ class AutoCleanOrphanSessionTaskTest {
   void testLambdaBodySkipsNonOrphanSession() throws IOException {
     Session session = Mockito.mock(Session.class);
     Mockito.when(session.isOrphan()).thenReturn(false);
-    Mockito.when(sessionManager.getReadonlySessionsList()).thenReturn(List.of(session));
-    Mockito.when(sessionManager.getSessionCount()).thenReturn(1);
+    Mockito.when(sessionManager.getSnapshotSessionsList()).thenReturn(List.of(session));
+    Mockito.when(sessionManager.getSnapshotSessionCount()).thenReturn(1);
 
     runWithImmediateExecution(task::run);
 
@@ -160,8 +160,8 @@ class AutoCleanOrphanSessionTaskTest {
     Session orphan = Mockito.mock(Session.class);
     Mockito.when(orphan.isOrphan()).thenReturn(true);
     Mockito.doThrow(IOException.class).when(orphan).close(Mockito.any(), Mockito.any());
-    Mockito.when(sessionManager.getReadonlySessionsList()).thenReturn(List.of(orphan));
-    Mockito.when(sessionManager.getSessionCount()).thenReturn(1);
+    Mockito.when(sessionManager.getSnapshotSessionsList()).thenReturn(List.of(orphan));
+    Mockito.when(sessionManager.getSnapshotSessionCount()).thenReturn(1);
 
     assertDoesNotThrow(() -> runWithImmediateExecution(task::run));
   }

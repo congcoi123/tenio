@@ -108,7 +108,7 @@ Maven Central
 <dependency>
     <groupId>io.github.congcoi123</groupId>
     <artifactId>tenio-core</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
 </dependency>
 ```
 GitHub

@@ -79,12 +79,6 @@ class CoreConstantTest {
   }
 
   @Test
-  @DisplayName("Test DEFAULT_PROCESSOR_THREAD_POOL_SIZE constant value")
-  void testDefaultProcessorThreadPoolSizeConstant() {
-    assertEquals(1, CoreConstant.DEFAULT_PROCESSOR_THREAD_POOL_SIZE);
-  }
-
-  @Test
   @DisplayName("Test DEFAULT_ENGINE_THREAD_POOL_SIZE constant value")
   void testDefaultEngineThreadPoolSizeConstant() {
     assertEquals(1, CoreConstant.DEFAULT_ENGINE_THREAD_POOL_SIZE);

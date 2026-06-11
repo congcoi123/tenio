@@ -141,7 +141,7 @@ class DatagramWriterHandlerTest {
     when(packet.getData()).thenReturn(new byte[]{1, 2, 3});
     when(datagramChannel.send(any(), any())).thenReturn(3);
     when(session.isActivated()).thenReturn(false);
-    when(outboundQueue.isEmpty()).thenReturn(true);
+    when(outboundQueue.isSnapshotEmpty()).thenReturn(true);
 
     assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
     verify(outboundQueue).take();
@@ -194,7 +194,7 @@ class DatagramWriterHandlerTest {
     when(datagramChannel.send(any(), any())).thenReturn(3);
     when(session.isActivated()).thenReturn(true);
     when(session.getId()).thenReturn(42L);
-    when(outboundQueue.isEmpty()).thenReturn(false);
+    when(outboundQueue.isSnapshotEmpty()).thenReturn(false);
     when(queueManager.getQueueByElementId(42L)).thenReturn(ticketsQueue);
 
     assertDoesNotThrow(() -> handler.send(outboundQueue, session, packet));
