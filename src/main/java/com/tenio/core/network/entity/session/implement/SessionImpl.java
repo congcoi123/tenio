@@ -1,0 +1,727 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+package com.tenio.core.network.entity.session.implement;
+
+import com.tenio.core.admin.OperationalHistory;
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.logger.AbstractLogger;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.exception.InboundQueueFullException;
+import com.tenio.core.network.codec.packet.PacketReadState;
+import com.tenio.core.network.codec.packet.PendingPacket;
+import com.tenio.core.network.codec.packet.ProcessedPacket;
+import com.tenio.core.network.define.TransportType;
+import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.entity.session.manager.SessionManager;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.network.utility.SocketUtility;
+import io.netty.channel.Channel;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * The implementation for session.
+ * <p>Directional timestamps are visible across network/watchdog threads, and traffic
+ * totals use atomic counters. Attached UDP contributes to general receive statistics;
+ * the reliable receive timestamp is reserved for primary TCP/WebSocket byte receipt.
+ * Creation initializes all timestamps, allowing a new connection a full receive window.
+ *
+ * @see Session
+ */
+public class SessionImpl extends AbstractLogger implements Session {
+
+  private final long id;
+  private final long createdTime;
+  private final Object playerAssociationLock;
+  private final AtomicReference<AssociatedState> atomicAssociatedState;
+  private final AtomicReference<State> atomicState;
+  private volatile String name;
+
+  private SessionManager sessionManager;
+  private SocketChannel socketChannel;
+  private SelectionKey socketSelectionKey;
+  private DatagramChannel datagramChannel;
+  private Channel webSocketChannel;
+  private ConnectionFilter connectionFilter;
+
+  private final Thread inboundProcess;
+  private final BlockingQueue<DataCollection> inboundQueue;
+  private final AtomicInteger inboundQueueCount;
+
+  private int maxInboundQueueSize;
+  private AtomicLong inboundFullRejections;
+  private int slowConsumingInboundQueueWarningThreshold;
+  private int slowConsumingOutboundQueueWarningThreshold;
+  private OutboundQueue outboundQueue;
+  private ProcessedPacket processedPacket;
+  private volatile PendingPacket pendingPacket;
+  private volatile PacketReadState packetReadState;
+
+  private volatile TransportType transportType;
+  private volatile InetSocketAddress socketRemoteAddress;
+  private volatile InetSocketAddress datagramRemoteAddress;
+  private volatile int udpConvey;
+
+  private volatile long inactivatedTime;
+  private volatile long lastActivityTime;
+  /** Latest receive timestamp across decoded messages and reliable transport reads. */
+  private volatile long lastReadTime;
+  /** Latest outbound activity timestamp, independent of receive liveness. */
+  private volatile long lastWriteTime;
+  /** Latest TCP/WebSocket byte receipt; attached UDP must never renew this deadline. */
+  private volatile long lastReliableReadTime;
+  private final AtomicLong readBytes;
+  private final AtomicLong writtenBytes;
+  private final AtomicLong readMessages;
+  private final AtomicLong droppedPackets;
+  private volatile boolean hasUdp;
+  private volatile boolean closeAfterPendingWriteMarked;
+
+  private int maxIdleTimeInSecond;
+
+  /**
+   * Constructor.
+   *
+   * @since 0.6.7
+   */
+  protected SessionImpl() {
+    id = ID_COUNTER.getAndIncrement();
+    transportType = TransportType.UNKNOWN;
+    udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
+    atomicState = new AtomicReference<>(State.INITIALIZED);
+    playerAssociationLock = new Object();
+    atomicAssociatedState = new AtomicReference<>(AssociatedState.NONE);
+    readBytes = new AtomicLong();
+    writtenBytes = new AtomicLong();
+    readMessages = new AtomicLong();
+    droppedPackets = new AtomicLong();
+    long currentTime = now();
+    createdTime = currentTime;
+    setLastReadTime(currentTime);
+    setLastWriteTime(currentTime);
+    setLastReliableReadTime(currentTime);
+
+    inboundQueue = new LinkedBlockingQueue<>();
+    inboundQueueCount = new AtomicInteger();
+    inboundProcess = Thread.ofVirtual().name("session-" + id).unstarted(this::processInboundQueue);
+  }
+
+  /**
+   * Creates a new session instance.
+   *
+   * @return a new instance of {@link Session}
+   */
+  public static Session newInstance() {
+    return new SessionImpl();
+  }
+
+  @Override
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public boolean isAssociatedToPlayer(AssociatedState associatedState) {
+    return atomicAssociatedState.get() == associatedState;
+  }
+
+  @Override
+  public void setAssociatedToPlayer(AssociatedState associatedState) {
+    atomicAssociatedState.set(associatedState);
+  }
+
+  @Override
+  public boolean transitionAssociatedState(AssociatedState expectedState, AssociatedState newState) {
+    return atomicAssociatedState.compareAndSet(expectedState, newState);
+  }
+
+  @Override
+  public boolean associatePlayer(Player player) {
+    if (player == null) {
+      throw new NullPointerException("Unable to associate an unavailable player");
+    }
+    synchronized (playerAssociationLock) {
+      if (isAssociatedToPlayer(AssociatedState.NONE)
+          && !transitionAssociatedState(AssociatedState.NONE, AssociatedState.DOING)) {
+        return false;
+      }
+      if (!transitionAssociatedState(AssociatedState.DOING, AssociatedState.DONE)) {
+        return false;
+      }
+      // Player.setSession owns the player-side monitor. The session lock keeps the association
+      // state stable until that assignment has completed.
+      player.setSession(this);
+      return true;
+    }
+  }
+
+  @Override
+  public boolean beginPlayerAssociationClose() {
+    synchronized (playerAssociationLock) {
+      if (transitionAssociatedState(AssociatedState.DONE, AssociatedState.CLOSING)) {
+        return true;
+      }
+      transitionAssociatedState(AssociatedState.DOING, AssociatedState.CLOSING);
+      return false;
+    }
+  }
+
+  @Override
+  public void prepareForReplacement() {
+    synchronized (playerAssociationLock) {
+      if (!transitionAssociatedState(AssociatedState.DONE, AssociatedState.CLOSING)) {
+        transitionAssociatedState(AssociatedState.DOING, AssociatedState.CLOSING);
+      }
+      if (outboundQueue != null) {
+        outboundQueue.clear();
+      }
+    }
+  }
+
+  @Override
+  public void markCloseAfterPendingWrite() {
+    closeAfterPendingWriteMarked = true;
+  }
+
+  @Override
+  public boolean isCloseAfterPendingWriteMarked() {
+    return closeAfterPendingWriteMarked;
+  }
+
+  @Override
+  public boolean isOrphan() {
+    return (!isAssociatedToPlayer(AssociatedState.DONE) &&
+        (now() - createdTime) >= ORPHAN_ALLOWANCE_TIME_IN_MILLISECONDS);
+  }
+
+  @Override
+  public void enqueueInbound(DataCollection message) {
+    synchronized (inboundQueue) {
+      int remaining = inboundQueueCount.intValue();
+      if (slowConsumingInboundQueueWarningThreshold > 0 && isWarnEnabled()) {
+        if (remaining > slowConsumingInboundQueueWarningThreshold) {
+          warn("[Slow Consuming Inbound Queue] Remaining: ", remaining, " > ", this);
+        }
+      }
+      if (maxInboundQueueSize > 0 && remaining >= maxInboundQueueSize) {
+        if (inboundFullRejections != null) {
+          inboundFullRejections.incrementAndGet();
+        }
+        var exception = new InboundQueueFullException(remaining);
+        if (isErrorEnabled()) {
+          error(exception, exception.getMessage(), " > ", this);
+        }
+        throw exception;
+      }
+      inboundQueue.add(message);
+      inboundQueueCount.incrementAndGet();
+    }
+  }
+
+  @Override
+  public void enableInboundQueueMonitoring() {
+    inboundFullRejections = new AtomicLong();
+  }
+
+  @Override
+  public InboundQueueStatistics inboundQueueStatistics() {
+    var rejections = inboundFullRejections;
+    return rejections == null ? null : new InboundQueueStatistics(
+        Math.max(0, inboundQueueCount.get()), maxInboundQueueSize, rejections.get());
+  }
+
+  @Override
+  public void configureMaxInboundQueueSize(int queueSize) {
+    maxInboundQueueSize = queueSize;
+  }
+
+  @Override
+  public void configureSlowConsumingInboundQueueWarningThreshold(int threshold) {
+    slowConsumingInboundQueueWarningThreshold = threshold;
+  }
+
+  @Override
+  public void configureSlowConsumingOutboundQueueWarningThreshold(int threshold) {
+    slowConsumingOutboundQueueWarningThreshold = threshold;
+  }
+
+  @Override
+  public OutboundQueue fetchOutboundQueue() {
+    return outboundQueue;
+  }
+
+  @Override
+  public void configureOutboundQueue(OutboundQueue outboundQueue) {
+    this.outboundQueue = outboundQueue;
+  }
+
+  @Override
+  public int getRemainingSlowConsumingOutboundQueue() {
+    if (slowConsumingOutboundQueueWarningThreshold <= 0) {
+      return 0;
+    }
+    int remaining = outboundQueue.getSnapshotSize();
+    return remaining >= slowConsumingOutboundQueueWarningThreshold ? remaining : 0;
+  }
+
+  @Override
+  public TransportType getTransportType() {
+    return transportType;
+  }
+
+  @Override
+  public boolean isTcp() {
+    return getTransportType() == TransportType.TCP;
+  }
+
+  @Override
+  public boolean containsUdp() {
+    return hasUdp;
+  }
+
+  @Override
+  public void configureSocketChannel(SocketChannel socketChannel, SelectionKey selectionKey)
+      throws IllegalArgumentException, IllegalCallerException {
+    if (getTransportType() != TransportType.UNKNOWN) {
+      throw new IllegalCallerException(
+          String.format("Unable to add another connection type, the current connection is: %s",
+              getTransportType().toString()));
+    }
+
+    if (socketChannel == null) {
+      throw new IllegalArgumentException("Null value is unacceptable");
+    }
+
+    transportType = TransportType.TCP;
+    createPacketSocketHandler();
+    this.socketChannel = socketChannel;
+    this.socketSelectionKey = selectionKey;
+
+    socketRemoteAddress = (InetSocketAddress) this.socketChannel.socket().getRemoteSocketAddress();
+  }
+
+  @Override
+  public boolean isWebSocket() {
+    return getTransportType() == TransportType.WEB_SOCKET;
+  }
+
+  @Override
+  public SocketChannel fetchSocketChannel() {
+    return socketChannel;
+  }
+
+  @Override
+  public SelectionKey fectchSocketSelectionKey() {
+    return socketSelectionKey;
+  }
+
+  @Override
+  public SocketAddress getSocketRemoteAddress() {
+    return socketRemoteAddress;
+  }
+
+  @Override
+  public PacketReadState getPacketReadState() {
+    return packetReadState;
+  }
+
+  @Override
+  public void setPacketReadState(PacketReadState packetReadState) {
+    this.packetReadState = packetReadState;
+  }
+
+  @Override
+  public ProcessedPacket getProcessedPacket() {
+    return processedPacket;
+  }
+
+  @Override
+  public PendingPacket getPendingPacket() {
+    return pendingPacket;
+  }
+
+  @Override
+  public void configureDatagramChannel(DatagramChannel datagramChannel, int udpConvey) {
+    this.datagramChannel = datagramChannel;
+    if (this.datagramChannel == null) {
+      datagramRemoteAddress = null;
+      this.udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
+      hasUdp = false;
+    } else {
+      this.udpConvey = udpConvey;
+      hasUdp = true;
+    }
+  }
+
+  @Override
+  public DatagramChannel fetchDatagramChannel() {
+    return datagramChannel;
+  }
+
+  @Override
+  public int getUdpConveyId() {
+    return udpConvey;
+  }
+
+  @Override
+  public SocketAddress getDatagramRemoteAddress() {
+    return datagramRemoteAddress;
+  }
+
+  @Override
+  public void setDatagramRemoteAddress(SocketAddress datagramRemoteAddress) {
+    this.datagramRemoteAddress = (InetSocketAddress) datagramRemoteAddress;
+  }
+
+  @Override
+  public Channel fetchWebSocketChannel() {
+    return webSocketChannel;
+  }
+
+  @Override
+  public void configureWebSocketChannel(Channel webSocketChannel) {
+    if (transportType != TransportType.UNKNOWN) {
+      throw new IllegalCallerException(
+          String.format("Unable to add another connection type, the current connection is: %s",
+              transportType.toString()));
+    }
+
+    if (webSocketChannel == null) {
+      throw new IllegalArgumentException("Null value is unacceptable");
+    }
+
+    transportType = TransportType.WEB_SOCKET;
+    this.webSocketChannel = webSocketChannel;
+
+    socketRemoteAddress = (InetSocketAddress) this.webSocketChannel.remoteAddress();
+  }
+
+  @Override
+  public void configureConnectionFilter(ConnectionFilter connectionFilter) {
+    this.connectionFilter = connectionFilter;
+  }
+
+  @Override
+  public long getCreatedTime() {
+    return createdTime;
+  }
+
+  @Override
+  public long getLastActivityTime() {
+    return lastActivityTime;
+  }
+
+  private void setLastActivityTime(long timestamp) {
+    lastActivityTime = timestamp;
+  }
+
+  @Override
+  public long getLastReadTime() {
+    return lastReadTime;
+  }
+
+  @Override
+  public void setLastReadTime(long timestamp) {
+    lastReadTime = timestamp;
+    setLastActivityTime(timestamp);
+  }
+
+  @Override
+  public long getLastReliableReadTime() {
+    return lastReliableReadTime;
+  }
+
+  @Override
+  public void setLastReliableReadTime(long timestamp) {
+    lastReliableReadTime = timestamp;
+    setLastReadTime(timestamp);
+  }
+
+  @Override
+  public long getLastWriteTime() {
+    return lastWriteTime;
+  }
+
+  @Override
+  public void setLastWriteTime(long timestamp) {
+    lastWriteTime = timestamp;
+    setLastActivityTime(timestamp);
+  }
+
+  @Override
+  public long getReadBytes() {
+    return readBytes.get();
+  }
+
+  @Override
+  public void addReadBytes(long bytes) {
+    if (bytes > 0) {
+      readBytes.addAndGet(bytes);
+      setLastReadTime(now());
+    }
+  }
+
+  @Override
+  public long getWrittenBytes() {
+    return writtenBytes.get();
+  }
+
+  @Override
+  public void addWrittenBytes(long bytes) {
+    if (bytes > 0) {
+      writtenBytes.addAndGet(bytes);
+      setLastWriteTime(now());
+    }
+  }
+
+  @Override
+  public long getReadMessages() {
+    return readMessages.get();
+  }
+
+  @Override
+  public void increaseReadMessages() {
+    readMessages.incrementAndGet();
+  }
+
+  @Override
+  public long getDroppedPackets() {
+    return droppedPackets.get();
+  }
+
+  @Override
+  public void addDroppedPackets(int packets) {
+    if (packets > 0) {
+      droppedPackets.addAndGet(packets);
+    }
+  }
+
+  @Override
+  public void configureMaxIdleTimeInSeconds(int seconds) {
+    maxIdleTimeInSecond = seconds;
+  }
+
+  @Override
+  public boolean isIdle() {
+    return isConnectionIdle();
+  }
+
+  private boolean isConnectionIdle() {
+    return (maxIdleTimeInSecond > 0) &&
+        ((now() - getLastActivityTime()) / 1000L > maxIdleTimeInSecond);
+  }
+
+  @Override
+  public boolean isActivated() {
+    return atomicState.get() == State.ACTIVATED;
+  }
+
+  @Override
+  public void activate() {
+    if (transitionState(State.INITIALIZED, State.ACTIVATED)) {
+      inboundProcess.start();
+    } else {
+      if (isWarnEnabled()) {
+        warn("[Invalid States Transition] Expected State: INITIALIZED, New State: ACTIVATED, " +
+                "But The Actual State: ", atomicState.get());
+      }
+    }
+  }
+
+  @Override
+  public long getInactivatedTime() {
+    return now() - inactivatedTime;
+  }
+
+  @Override
+  public void configureSessionManager(SessionManager sessionManager) {
+    this.sessionManager = sessionManager;
+  }
+
+  @Override
+  public void remove() {
+    sessionManager.removeSession(this);
+  }
+
+  @Override
+  public void close(ConnectionDisconnectMode connectionDisconnectMode,
+                    PlayerDisconnectMode playerDisconnectMode) throws IOException {
+    // Once the session is terminated, it cannot be reused
+    if (transitionState(State.INITIALIZED, State.TERMINATED) || transitionState(State.ACTIVATED, State.TERMINATED)) {
+      inactivatedTime = now();
+      var history = sessionManager == null ? null : sessionManager.getOperationalHistory();
+      if (history != null) {
+        history.record(id, String.valueOf(transportType), OperationalHistory.Kind.DISCONNECT,
+            String.valueOf(connectionDisconnectMode));
+      }
+
+      if (connectionFilter != null && socketRemoteAddress != null) {
+        connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
+      }
+
+      // clear inbound queue
+      inboundProcess.interrupt();
+      inboundQueue.clear();
+      inboundQueueCount.set(0);
+
+      // clear outbound queue
+      if (outboundQueue != null) {
+        outboundQueue.clear();
+      }
+
+      switch (transportType) {
+        case TCP:
+          SocketUtility.closeSocket(socketChannel, socketSelectionKey);
+          break;
+
+        case WEB_SOCKET:
+          SocketUtility.closeSocket(webSocketChannel);
+          break;
+
+        default:
+          break;
+      }
+
+      sessionManager.emitEvent(ServerEvent.SESSION_WILL_BE_CLOSED, this,
+              connectionDisconnectMode, playerDisconnectMode);
+    }
+  }
+
+  private boolean transitionState(State expectedState, State newState) {
+    return atomicState.compareAndSet(expectedState, newState);
+  }
+
+  /**
+   * Creates packet handler objects.
+   *
+   * @since 0.6.7
+   */
+  protected void createPacketSocketHandler() {
+    packetReadState = PacketReadState.WAIT_NEW_PACKET;
+    processedPacket = ProcessedPacket.newInstance();
+    pendingPacket = PendingPacket.newInstance();
+  }
+
+  private void processInboundQueue() {
+    while (!Thread.currentThread().isInterrupted()) {
+      if (atomicState.get() == State.ACTIVATED) {
+        try {
+          DataCollection message = inboundQueue.take();
+          inboundQueueCount.decrementAndGet();
+          sessionManager.emitEvent(ServerEvent.SESSION_READ_MESSAGE, this, message);
+        } catch (InterruptedException exception) {
+          // InterruptedException is not an error
+          // It’s a signal to stop the thread
+          Thread.currentThread().interrupt();
+        } catch (Throwable cause) {
+          if (isErrorEnabled()) {
+            error(cause);
+          }
+        }
+      }
+    }
+  }
+
+  private long now() {
+    return TimeUtility.currentTimeMillis();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (!(object instanceof Session session)) {
+      return false;
+    } else {
+      return getId() == session.getId();
+    }
+  }
+
+  /**
+   * It is generally necessary to override the <b>hashCode</b> method whenever
+   * equals method is overridden, to maintain the general contract for the
+   * hashCode method, which states that equal objects must have equal hash codes.
+   *
+   * @see <a href="https://imgur.com/x6rEAZE">Formula</a>
+   */
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "Session{" +
+        "id=" + id +
+        ", createdTime=" + createdTime +
+        ", name='" + name + '\'' +
+        ", transportType=" + transportType +
+        ", socketRemoteAddress='" +
+        (socketRemoteAddress == null ? "null" :
+            (socketRemoteAddress.getAddress() + ":" + socketRemoteAddress.getPort())) + '\'' +
+        ", datagramRemoteAddress='" + (datagramRemoteAddress == null ? "null" :
+        (datagramRemoteAddress.getAddress() + ":" + datagramRemoteAddress.getPort())) + '\'' +
+        ", udpConvey=" + udpConvey +
+        ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
+        ", inactivatedTime=" + inactivatedTime +
+        ", lastActivityTime=" + lastActivityTime +
+        ", lastReadTime=" + lastReadTime +
+        ", lastWriteTime=" + lastWriteTime +
+        ", lastReliableReadTime=" + lastReliableReadTime +
+        ", readBytes=" + readBytes.get() +
+        ", writtenBytes=" + writtenBytes.get() +
+        ", readMessages=" + readMessages.get() +
+        ", droppedPackets=" + droppedPackets.get() +
+        ", state=" + atomicState.get() +
+        ", hasUdp=" + hasUdp +
+        ", associatedState=" + atomicAssociatedState.get() +
+        ", remainingInboundQueue=" + inboundQueueCount.intValue() +
+        ", remainingOutboundQueue=" +
+        (outboundQueue == null ? 0 : outboundQueue.getSnapshotSize()) +
+        '}';
+  }
+}

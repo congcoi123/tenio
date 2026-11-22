@@ -1,0 +1,227 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+package com.tenio.core.entity.manager;
+
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.Room;
+import com.tenio.core.entity.setting.InitialRoomSetting;
+import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
+import com.tenio.core.exception.AddedDuplicatedRoomException;
+import com.tenio.core.exception.CreatedRoomException;
+import com.tenio.core.manager.Manager;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * All supported APIs for the room management.
+ */
+public interface RoomManager extends Manager {
+
+  /**
+   * Default maximum number of rooms.
+   */
+  int DEFAULT_MAX_ROOMS = 100;
+
+  /**
+   * Adds a new room to the server.
+   *
+   * @param room an instance of {@link Room}
+   * @throws AddedDuplicatedRoomException when a room is already available on the server, but it
+   *                                      is mentioned again
+   */
+  void addRoom(Room room) throws AddedDuplicatedRoomException;
+
+  /**
+   * Adds a new room to the server.
+   *
+   * @param room        an instance of {@link Room}
+   * @param roomSetting all settings created by a {@link InitialRoomSetting} builder
+   * @param player      a {@link Player} as the room's owner
+   * @throws AddedDuplicatedRoomException when a room is already available on the server, but it
+   *                                      is mentioned again
+   * @since 0.5.0
+   */
+  void addRoomWithOwner(Room room, InitialRoomSetting roomSetting, Player player) throws AddedDuplicatedRoomException;
+
+  /**
+   * Creates a new room without an owner and adds it to the server.
+   *
+   * @param roomSetting all settings created by a {@link InitialRoomSetting} builder
+   * @return an instance of {@link Room}
+   * @throws IllegalArgumentException when an invalid setting builder is set
+   */
+  default Room createRoom(InitialRoomSetting roomSetting) throws IllegalArgumentException, CreatedRoomException {
+    return createRoomWithOwner(roomSetting, null);
+  }
+
+  /**
+   * Creates a new room with an owner and adds it to the server.
+   *
+   * @param roomSetting all settings created by a {@link InitialRoomSetting} builder
+   * @param player      a {@link Player} as the room's owner
+   * @return an instance of {@link Room}
+   * @throws IllegalArgumentException when an invalid setting builder is set
+   * @throws CreatedRoomException     when it fails to create a new room
+   */
+  Room createRoomWithOwner(InitialRoomSetting roomSetting, Player player)
+      throws IllegalArgumentException, CreatedRoomException;
+
+  /**
+   * Determines whether a room is in the management list by looking for its unique ID.
+   *
+   * @param roomId the {@code long} value of room's ID
+   * @return {@code true} if the searching room is available, otherwise returns {@code false}
+   */
+  boolean containsRoomId(long roomId);
+
+  /**
+   * Determines whether a room is in the management list by looking for its name.
+   * This method works on a snapshot so will not guarantee the lastest state of the room list.
+   *
+   * @param roomName the {@link String} value room's name
+   * @return {@code true} if the searching room is available, otherwise returns {@code false}
+   * @since 0.7.3
+   */
+  boolean containsSnapshotRoomName(String roomName);
+
+  /**
+   * Retrieves a room instance by looking for its unique ID.
+   *
+   * @param roomId the {@code long} value of room's ID
+   * @return an instance of {@link Room} if present, otherwise {@code null}
+   */
+  Room getRoomById(long roomId);
+
+  /**
+   * Retrieves the most recent rooms in the management list by searching with the room's name.
+   *
+   * @param roomName the room's name that is in inquiring
+   * @return a most recent up-to-date list of all {@link Room}s sharing the same name in the management list
+   * @see List
+   * @since 0.7.3
+   */
+  List<Room> getSnapshotRoomsListByName(String roomName);
+
+  /**
+   * Ensures the calculation on the room list is thread-safe.
+   *
+   * @param onComputed a {@link Consumer} to handle the logic
+   * @since 0.6.6
+   */
+  void computeRooms(Consumer<Iterator<Room>> onComputed);
+
+  /**
+   * Retrieves the most recent rooms in the room management list.
+   *
+   * @return a most recent up-to-date list of all {@link Room}s in the management list
+   * @see List
+   * @since 0.7.3
+   */
+  List<Room> getSnapshotRoomsList();
+
+  /**
+   * Retrieves the current rooms in the room management list.
+   * This method is costly, use with caution.
+   *
+   * @return a current up-to-date list of all {@link Room}s in the management list
+   * @see List
+   * @since 0.7.3
+   */
+  List<Room> getRoomsList();
+
+  /**
+   * Removes a room from the management list.
+   *
+   * @param roomId the unique {@code long} room's ID
+   */
+  void removeRoomById(long roomId);
+
+  /**
+   * Updates a room's name.
+   *
+   * @param room     the updating {@link Room}
+   * @param roomName new {@link String} value of room's name
+   * @throws IllegalArgumentException when invalid name is set
+   * @see RoomCredentialValidatedStrategy
+   */
+  void changeRoomName(Room room, String roomName) throws IllegalArgumentException;
+
+  /**
+   * Updates a room's password.
+   *
+   * @param room         the updating {@link Room}
+   * @param roomPassword new {@link String} value of room's password
+   * @throws IllegalArgumentException when invalid password is set
+   * @see RoomCredentialValidatedStrategy
+   */
+  void changeRoomPassword(Room room, String roomPassword) throws IllegalArgumentException;
+
+  /**
+   * Updates a room's capacity.
+   *
+   * @param room            the updating {@link Room}
+   * @param maxParticipants the maximum number of participants allows in the room
+   *                        ({@code integer} value)
+   * @param maxSpectators   the maximum number of spectators allows in the room
+   *                        ({@code integer} value)
+   * @throws IllegalArgumentException when invalid value is set
+   */
+  void changeRoomCapacity(Room room, int maxParticipants, int maxSpectators)
+      throws IllegalArgumentException;
+
+  /**
+   * Fetches the most recent number of rooms in the management list.
+   *
+   * @return the most recent number of rooms ({@code integer} value)
+   * @since 0.7.3
+   */
+  int getSnapshotRoomCount();
+
+  /**
+   * Fetches the current number of rooms in the management list.
+   * This method is costly, use with caution.
+   *
+   * @return the current number of rooms ({@code integer} value)
+   * @since 0.7.3
+   */
+  int getRoomCount();
+
+  /**
+   * Sets the maximum number of room on the server.
+   *
+   * @param maxRooms the maximum number of rooms ({@code integer} value)
+   */
+  void configureMaxRooms(int maxRooms);
+
+  /**
+   * Removes all rooms from the management list.
+   *
+   * @throws UnsupportedOperationException the operation is not supported at the moment
+   */
+  default void clear() {
+    throw new UnsupportedOperationException();
+  }
+}
