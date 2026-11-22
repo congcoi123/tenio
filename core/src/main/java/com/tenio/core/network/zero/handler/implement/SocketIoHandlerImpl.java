@@ -1,0 +1,168 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+package com.tenio.core.network.zero.handler.implement;
+
+import com.tenio.common.data.DataCollection;
+import com.tenio.common.utility.TimeUtility;
+import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
+import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.exception.InboundQueueFullException;
+import com.tenio.core.exception.RefusedConnectionAddressException;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
+import com.tenio.core.network.entity.session.Session;
+import com.tenio.core.network.utility.SocketUtility;
+import com.tenio.core.network.zero.handler.SocketIoHandler;
+import com.tenio.core.network.zero.handler.frame.BinaryPacketFramer;
+import com.tenio.core.network.zero.handler.frame.PacketFramingListener;
+import java.io.IOException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+
+/**
+ * The implementation for socket IO handler.
+ */
+public final class SocketIoHandlerImpl extends AbstractIoHandler
+    implements SocketIoHandler, PacketFramingListener {
+
+  private final BinaryPacketFramer binaryPacketFramer;
+
+  private SocketIoHandlerImpl(EventManager eventManager) {
+    super(eventManager);
+    binaryPacketFramer = new BinaryPacketFramer();
+  }
+
+  /**
+   * Creates a new instance of the socket handler.
+   *
+   * @param eventManager the instance of {@link EventManager}
+   * @return a new instance of {@link SocketIoHandler}
+   */
+  public static SocketIoHandler newInstance(EventManager eventManager) {
+    return new SocketIoHandlerImpl(eventManager);
+  }
+
+  @Override
+  public void onFramedResult(Session session, DataCollection message) {
+    if (message == null) {
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Trying to decode a null message on session: ",
+            session.toString());
+      }
+      return;
+    }
+
+    networkReaderStatistic.updateReadPackets(1);
+
+    if (session.isAssociatedToPlayer(Session.AssociatedState.DOING)) {
+      if (isDebugEnabled()) {
+        debug("READ TCP CHANNEL", "Session is associating to a player: ", session.toString(),
+            " Rejected message: ", message);
+      }
+      return;
+    }
+
+    if (session.isAssociatedToPlayer(Session.AssociatedState.NONE)) {
+      eventManager.emit(ServerEvent.SESSION_REQUEST_CONNECTION, session, message);
+    } else if (session.isAssociatedToPlayer(Session.AssociatedState.DONE)) {
+      try {
+        session.enqueueInbound(message);
+      } catch (InboundQueueFullException exception) {
+        networkReaderStatistic.updateReadDroppedPackets(1);
+      }
+    }
+  }
+
+  @Override
+  public void channelActive(SocketChannel socketChannel, SelectionKey selectionKey) {
+    sessionManager.createSocketSession(socketChannel, selectionKey);
+  }
+
+  @Override
+  public void sessionRead(Session session, byte[] binaries) {
+    if (binaries.length > 0) {
+      // Track TCP receipt before decoding; queued UDP messages share the session processor.
+      session.setLastReliableReadTime(TimeUtility.currentTimeMillis());
+    }
+    binaryPacketFramer.framing(session, binaries);
+  }
+
+  @Override
+  public void channelInactive(SocketChannel socketChannel,
+                              SelectionKey selectionKey,
+                              ConnectionDisconnectMode connectionDisconnectMode) {
+    var session = sessionManager.getSessionBySocket(socketChannel);
+    if (session != null && session.isActivated()) {
+      // if the socket is handled by its session, let the session processes
+      try {
+        session.close(connectionDisconnectMode, PlayerDisconnectMode.CONNECTION_LOST);
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Session closed with error: ", session.toString());
+        }
+      }
+    } else {
+      // let the socket be closed
+      try {
+        SocketUtility.closeSocket(socketChannel, selectionKey);
+      } catch (IOException exception) {
+        if (isErrorEnabled()) {
+          error(exception, "Socket closed with error: ", socketChannel.toString());
+        }
+      }
+    }
+  }
+
+  @Override
+  public void channelException(SocketChannel socketChannel, Exception exception) {
+    // handle refused connection, it should send to the client the reason before closing connection
+    if (exception instanceof RefusedConnectionAddressException) {
+      eventManager.emit(ServerEvent.SOCKET_CONNECTION_REFUSED, socketChannel, exception);
+    }
+  }
+
+  @Override
+  public BinaryPacketDecoder getPacketDecoder() {
+    return binaryPacketFramer.getBinaryPacketDecoder();
+  }
+
+  @Override
+  public void sessionException(Session session, Exception exception) {
+      try {
+          session.close();
+      } catch (IOException exception1) {
+        if (isErrorEnabled()) {
+          error(exception1, "Session closed with error: ", session.toString());
+        }
+      }
+  }
+
+  @Override
+  public void setPacketDecoder(BinaryPacketDecoder packetDecoder) {
+    binaryPacketFramer.setBinaryPacketDecoder(packetDecoder);
+    binaryPacketFramer.setPacketFramingResult(this);
+  }
+}

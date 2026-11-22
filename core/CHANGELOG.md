@@ -1,0 +1,161 @@
+# CHANGELOG
+
+## 0.0.1 2021-10-13 Feature release
+**Initial release**
+- NIO mechanism  
+- Server configuration  
+- Events handling  
+- Player and Room management  
+- Session management  
+- TCP, UDP and WebSocket support  
+- Server monitoring  
+- Schedule management  
+
+## 0.2.0 2022-04-20 Feature release
+- Fulfilled java-docs for all classes
+- Optimization
+- Refactoring the project's structure
+- Bugs fixed  
+
+## 0.3.0 2022-10-13 Feature release
+- Supported multiple UDP channels
+- Allowed fetching available UDP channel by using round-robin mechanism
+- Refactoring: renamed package "extension" to "handler"
+- Allowed declaring the server address in configuration file
+- Supported KCP transportation
+- Bugs fixed
+
+## 0.3.1 2022-10-21 Feature release
+- Multiple data serialization methods supported (MsgPack)
+- Added new events to handle connection refused cases
+- WebSocket handling issues fixed
+- Allowed showing server's uptime 
+- Refactoring the project's structure
+- Bugs fixed  
+
+## 0.4.0 2022-11-20 Feature release
+- Adapted annotations' management from the [tenio-common](https://github.com/congcoi123/tenio-common) module
+- Introduces more annotations
+- Supports self-defined commands
+- Refactoring the project's structure
+- Bugs fixed  
+
+## 0.5.0 2023-08-30 Feature release
+- Upgraded to JDK 17
+- Upgraded dependencies 
+- Allowed checking logging configuration before writing logs 
+- configuration.xml file changed
+- Introduced new annotations: @RestController and @RestMapping to work with Restful, @ClientCommand
+- Added a new configuration value that allows limiting the player's IDLE time in case of non-deported state enabled
+- Methods changed/updated/enhanced in classes ServerApi, Injector, ServerEvent
+- Annotations enhanced: @Bean, @AutowiredQualifier
+- Set names for all necessary threads
+- Resolved the deadlock issue while writing packets
+- Player and Room are now opened for custom classes
+- Removed redundant constant, enum values
+- Fixed test cases' issues
+- Bugs fixed 
+
+## 0.5.1 2023-09-03 Feature release
+- Fixed bugs that stops the main thread 
+- It allows removing optional schedule tasks (CcuReportTask, DeadlockScanTask, SystemMonitoringTask, TrafficCounterTask)
+
+## 0.6.0 2024-10-09 Feature release
+- Upgraded dependencies
+- Fixed issues related to the "100% CPU"
+- Reworked on Restful
+
+## 0.6.1 2025-01-15 Bugfix release
+- Upgraded dependencies
+- Fixed several issues related to concurrency
+
+## 0.6.2 2025-05-11 Feature release
+- Fixed several issues related to concurrency
+- Allowed dynamically declaring behaviors for packets processing with annotations
+
+## 0.6.3 2025-06-01 Feature release
+- Fixed several bugs
+- Stopped supporting multiple UDP ports, instead it is using datagram channel cache to enhance performance
+- New feature and events added: Channel which allows broadcasting to subscribed players
+
+## 0.6.4 2025-07-01 Bugfix release
+- Fixed several issues related to performance
+- Temporarily disabled the Request Priority Mechanism, it could be enabled by checking this constant value AbstractController#REQUEST_PRIORITY_ENABLED
+
+## 0.6.5 2025-08-01 Bugfix release
+- Upgraded dependencies
+- Fixed several performance issues related to Injector (Removed unused Reflections API)
+- Fixed several performance issues related to Acceptor and Reader Engines
+
+## 0.6.6 2025-09-01 Feature release
+- Upgraded dependencies
+- Provided several thread-safe methods to work with lists (compute methods)
+- Removed unnecessary wrapper methods
+- Reworked on writer, reader and acceptor handlers
+- Supported Request Policy interface
+
+## 0.6.7 2025-09-02 Feature release
+- Fixed several bugs
+- Supported Datagram Packet Policy interface
+- Reworked on Binary Packet Encoder / Decoder
+- Full support Codec for all Transportations
+
+## 0.6.8 2026-03-10 Bugfix release
+- Upgraded dependencies
+- Fixed several bugs
+
+## 0.6.9 2026-03-23 Bugfix release
+- Supported injecting multiple interfaces into one class
+- Renamed all events' main method
+- Updated License
+
+## 0.6.10 2026-03-26 Bugfix release
+- Supported default embedded configurations
+- Refactored inbound/outbound packages
+
+## 0.6.11 2026-04-03 Feature release
+- Upgraded dependencies
+- Stopped supporting KCP transportation
+
+## 0.6.12 2026-04-04 Feature release
+- Upgraded dependencies
+- Simplified setting of the configuration file
+
+## 0.7.0 2026-04-12 Feature release
+- Supports Java 21 Features
+- Virtual Threads are being used in Session Inbound Process Queue and Schedulers
+- It should close sessions whenever exceptions occurred
+- Renamed Controller to Processor
+
+## 0.7.1 2026-04-19 Bugfix release
+- It should force to close sessions and disconnect players in some scenarios
+
+## 0.7.2 2026-04-25 Feature release
+- Fixed issues which caused the Game Server takes time to shut down
+
+## 0.7.3 2026-05-29 Feature release
+- Fixed several issues in ServerApi
+- Improved the performance by offloading tasks from IO bound workers
+- Used EnumMap in EventHandler to increase lookup speed
+- Supported multi UDP channels
+- Renamed and added new APIs
+
+## 1.0.0 2026-11-11 Feature release
+- Added startup profiles for bootstrap classes, components, factories, handlers, commands, REST mappings and field injection.
+- Improved dependency injection: circular dependency handling, collision diagnostics, and instance-owned Injector and Bootstrapper state.
+- Added `EventConnectionWillBeClosed` and `EventPlayerConnectionReplacing` lifecycle events.
+- Made player/session replacement and outbound responses consistent with the current connection; prevented stale session requests from affecting replacement connections.
+- Corrected player retention, logout, idle-time calculation, and orphan-session cleanup.
+- Added response APIs and support for creating rooms with externally supplied IDs.
+- Added configurable TCP main-connection keepalive scanning based on the last successful read.
+- Improved subscribed-event checks, monitoring, concurrent collection access, and reader/writer lifecycle behavior.
+- Updated dependencies and expanded regression tests for profiles, dependency injection, sessions, connection replacement, and cleanup.
+- Corrected TCP framing to decode the fully accumulated body and treat 16-bit frame lengths as unsigned. Added regression coverage for fragmented/coalesced frames and large normal-sized frames.
+- Isolated launcher-profile test logging so diagnostic assertions are independent of suite logging configuration.
+- Added opt-in per-command token buckets with player/session isolation and rejection counters.
+- Added read-only session, room, traffic, and outbound-pressure inspection with optional per-queue metrics.
+- Added a local desktop admin window and built-in system commands gated by the monitor profile.
+- Pinned admin commands and added inspection usage to help. Formatted uptime and statistics totals.
+- Added readable operational history, disk archives for deployments without the monitor window, and arrow-key command recall.
+- Accepted an explicitly empty XML profile for deployments using unrestricted components.
+- Removed the unused JLine dependencies and the unfilled security policy template.
