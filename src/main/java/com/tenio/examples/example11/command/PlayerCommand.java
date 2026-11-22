@@ -26,18 +26,22 @@ package com.tenio.examples.example11.command;
 
 import com.tenio.core.bootstrap.annotation.SystemCommand;
 import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.utility.CommandUtility;
 import java.util.List;
 
-@SystemCommand(label = "player", usage = {
-    "logout first"
-}, description = "Logout the first player from the server")
+@SystemCommand(label = "player", profile = CoreConstant.MONITOR_PROFILE,
+    usage = {"logout first"}, description = "Logout the first player from the server")
 public class PlayerCommand extends AbstractSystemCommandHandler {
 
   @Override
   public void execute(List<String> args) {
+    if (args.size() != 2) {
+      CommandUtility.INSTANCE.showConsoleMessage("Usage: player logout first");
+      return;
+    }
     var action = args.get(0);
     var param = args.get(1);
 

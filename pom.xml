@@ -5,7 +5,7 @@
 
 	<groupId>io.github.congcoi123</groupId>
 	<artifactId>tenio-examples</artifactId>
-	<version>0.7.3</version>
+	<version>1.0.0</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
@@ -38,8 +38,8 @@
 		<jdk.release>21</jdk.release>
 		<jdk.vendor>oracle</jdk.vendor>
 
-		<io.github.congcoi123.tenio.core.version>0.7.3</io.github.congcoi123.tenio.core.version>
-		<io.github.congcoi123.tenio.engine.version>0.7.0</io.github.congcoi123.tenio.engine.version>
+		<io.github.congcoi123.tenio.core.version>1.0.0</io.github.congcoi123.tenio.core.version>
+		<io.github.congcoi123.tenio.engine.version>1.0.0</io.github.congcoi123.tenio.engine.version>
 		<org.apache.commons.version>3.20.0</org.apache.commons.version>
 
 		<maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
@@ -49,6 +49,10 @@
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId>
+            <version>5.11.2</version><scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>io.github.congcoi123</groupId>
 			<artifactId>tenio-core</artifactId>
@@ -80,6 +84,8 @@
 			</testResource>
 		</testResources>
 		<plugins>
+            <plugin><groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId><version>3.2.5</version></plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.plugin.version}</version>
@@ -103,7 +109,7 @@
 								<manifest>
 									<mainClass>
 										<!-- change your target built main class here -->
-										com.tenio.example.example1.TestServerLogin
+										com.tenio.examples.example1.TestServerLogin
 									</mainClass>
 								</manifest>
 							</archive>

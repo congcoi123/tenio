@@ -36,7 +36,6 @@ public final class PlayerLoginHandler extends AbstractHandler
 
   @Override
   public void onPlayerLogin(Player player) {
-    player.setNeverDeported(true);
     var parcel = map()
         .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
             String.format("Welcome to server: %s", player.getIdentity()))

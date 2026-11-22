@@ -37,8 +37,7 @@ public final class ReceivedMessageFromPlayerHandler extends AbstractHandler
 
   @Override
   public void onReceivedMessageFromPlayer(Player player, MsgPackMap message) {
-    var parcel =
-        msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+    var parcel = msgmap().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
             player.getIdentity(),
             message.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 

@@ -1,54 +1,33 @@
-<p align="center">
-    <a href="#">
-        <img src="https://raw.githubusercontent.com/congcoi123/tenio/refs/heads/master/assets/tenio-github-logo.png">
-    </a>
-</p>
-<p align="center">
-    <a href="LICENSE">
-        <img src="https://img.shields.io/badge/license-MIT-blue.svg">
-    </a>
-    <a href="#">
-        <img src="https://img.shields.io/github/last-commit/congcoi123/tenio-examples">
-    </a>
-    <a href="https://github.com/congcoi123/tenio-examples/issues">
-        <img src="https://img.shields.io/github/issues/congcoi123/tenio-examples">
-    </a>
-    <a href="CONTRIBUTING.md">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
-    </a>
-    <a href="https://discord.gg/ybkNU87Psy">
-        <img src="https://img.shields.io/discord/1146091189456613407?logo=discord&logoColor=white">
-    </a>
-</p>
+# TenIO Examples
 
-# TenIO Examples Project [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=TenIO%20is%20a%20java%20NIO%20based%20server%20specifically%20designed%20for%20multiplayer%20games.%0D%0A&url=https://github.com/congcoi123/tenio%0D%0A&hashtags=tenio,java,gameserver,multiplayer,nio,netty,jetty,msgpack,cocos2dx,unity,libgdx,phaserjs%0D%0A&via=congcoi123)
-[`TenIO`](https://github.com/congcoi123/tenio) is an open-source project to create multiplayer online games that includes a java NIO (Non-blocking I/O) 
-based server specifically designed for multiplayer games, which supports UDP, TCP, Websocket, HTTP transports, and available simple client projects for quick development.
+Runnable Java 21 examples for `tenio-core:1.0.0` and `tenio-engine:1.0.0`.
 
-This project contains a collection of examples that show you how to manipulate the framework.
+## Build and run
 
-## Dependencies
-```txt
-tenio-core 0.7.3
-tenio-engine 0.7.0
-```
+Install the updated core locally before building examples if version 1.0.0 has not yet been published:
 
-## Requirements
-Java 21+
-
-## License
-The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
-
-## Changelog
-Please check out the [changelog](CHANGELOG.md) for more details.
-
-## Contributing
-Please check out the [contributing guideline](CONTRIBUTING.md) for more details.
-
-## Installation
 ```sh
-$ git clone https://github.com/congcoi123/tenio-examples.git
+# In tenio-core
+mvn -Dgpg.skip=true install
+
+# In tenio-examples
+mvn test package
 ```
+
+The assembly defaults to example1's login server. Run it from the examples directory:
+
+```sh
+java -jar target/tenio-examples-1.0.0-jar-with-dependencies.jar configuration.example1.xml
+```
+
+For another entry point, use the assembled JAR as the classpath:
+
+```sh
+java -cp target/tenio-examples-1.0.0-jar-with-dependencies.jar com.tenio.examples.example3.TestServerAccessDatagramChannel configuration.example3.xml
+java -cp target/tenio-examples-1.0.0-jar-with-dependencies.jar com.tenio.examples.example3.TestClientAccessDatagramChannel
+```
+
+Start each server before its client. Each example uses its own package as its component scan root. Start separate examples in separate JVMs; the server runtime still contains global services. TCP uses port 8032 unless its configuration says otherwise. Clients currently target localhost; the shared transports also accept explicit remote hosts.
 
 ## Simple Implementation
 - Establishes a simple server with only a single Java class
@@ -99,109 +78,108 @@ public final class SimpleServer extends AbstractHandler implements EventConnecti
 }
 ```
 
-- Supports self-defined commands to interact with the server conveniently
-1) Usage
-  
-```text
-2022-11-20 05:20:38,256 [main] INFO  com.tenio.core.server.ServerImpl - [SERVER][Example] Started
-$ help
-help - Shows all supporting commands
-	[<command>,<command>,<command>]
-info - Provides brief information about players and rooms on the server
-	player
-	room
-player - Logout the first player from the server
-	logout first
-server - Allows stopping or restarting the server
-	stop
-	restart
-unban - Allows removing banned Ip addresses from the ban list
-	[<address>,<command>,<command>]
-$ info player
-> There are 1 players > The first 10 entities > [Player{name='IkjvI', properties={}, session=Session{id=0, name='IkjvI', transportType=TCP, createdTime=1668918078524, lastReadTime=1668918078524, lastWriteTime=1668918078524, lastActivityTime=1668918078524, readBytes=75, writtenBytes=120, droppedPackets=0, inactivatedTime=0, datagramRemoteSocketAddress=null, clientAddress='127.0.0.1', clientPort=60659, serverPort=8032, serverAddress='127.0.0.1', maxIdleTimeInSecond=0, activated=true, connected=true, hasUdp=false}, currentRoom=null, state=null, roleInRoom=SPECTATOR, lastLoginTime=1668918078589, lastJoinedRoomTime=1668918078588, playerSlotInCurrentRoom=-1, loggedIn=true, activated=true, hasSession=true}]
-$ 
-```
-
-2) Make sure to enable the flag `enable-terminal-command` in the configuration file.
-
-```XML
-<!-- Set this flag to `true` to enable terminal command -->
-<Property name="enable-terminal-command">true</Property>
-``` 
-
-3) Simple implementation
-```Java
-@Command(label = "player", usage = {
-    "logout first"
-}, description = "Logout the first player from the server")
-public class PlayerCommand extends AbstractCommandHandler {
-
-  @Override
-  public void execute(List<String> args) {
-    var action = args.get(0);
-    var param = args.get(1);
-
-    if (action.equals("logout") && param.equals("first")) {
-      var players = api().getReadonlyPlayersList();
-      if (players.isEmpty()) {
-        CommandUtility.INSTANCE.showConsoleMessage("Empty list of players.");
-        return;
-      }
-      var firstPlayer = players.get(0);
-      CommandUtility.INSTANCE.showConsoleMessage("Player {" + firstPlayer.getName() + "} is " +
-          "going to logout.");
-      api().logout(firstPlayer);
-    } else {
-      CommandUtility.INSTANCE.showConsoleMessage("Invalid action.");
-    }
-  }
-}
-``` 
-
 ## Examples
-Please start the server before its corresponding client in each example package.
-```code
-$ java <server_main_class> <server_configuration_file.xml>
-```
-For instance:
-```code
-$ java TestServerLogin configuration.example1.xml
+
+| Package | Demonstrates | Configuration |
+| --- | --- | --- |
+| example0 | Minimal server and mixed ZeroMap/MsgPack echoes | Embedded default; accepts an XML path |
+| example1 | Login, request policy, custom codec extension points | configuration.example1.xml |
+| example2 | Finite state machine and message dispatch | No network server |
+| example3 | TCP login, UDP registration, convey ID, ZeroMap echo | configuration.example3.xml |
+| example4 | Movement simulation, steering, UDP statistics | configuration.example4.xml |
+| example5 | Entity/component/system simulation | No network server |
+| example6 | TCP echo load generator | configuration.example6.xml |
+| example7 | WebSocket server and room handlers | configuration.example7.xml |
+| example8 | HTTP server and Java HttpClient request | configuration.example8.xml |
+| example10 | TCP login and MsgPack UDP registration/echo | configuration.example10.xml |
+| example11 | Custom terminal commands | configuration.example11.xml |
+| example12 | Profile-selected components, factory methods, fields and event handlers | Three configurations below |
+
+Example6 defaults to 100 clients. Use `-Dtenio.clients=10000` before the main class to opt into a larger load test. It uses one platform reader thread per client and is a demonstration, not a high-scale benchmark driver.
+
+## Example 11: Desktop Monitoring and Custom Commands
+
+Run the server with `configuration.example11.xml`. It enables `monitor` and `history`.
+On a machine with a graphical desktop, TenIO opens the monitor window. Enter `help`
+to see the available commands. Try `player logout first` after connecting a test
+client, then run `history` to see the disconnect. Use Up and Down to recall commands.
+
+The original echo messages still work. Optional ZeroMap commands use short `op=1`
+and string `name` to create a room, or short `op=2` and string `chat` to send a
+message to the current room. Room creation is limited to 1 request per second with a
+burst of 2, and chat to 2 per second with a burst of 4, per player. Enter `limits` to
+see accepted and rejected requests. TenIO also applies its normal session queue policies.
+
+Remove `monitor` from the example profile to run without the window and system
+commands. With `history` still present, TenIO writes a TSV file under `logs/history/`.
+See the TenIO Core README for the full profile reference.
+
+## Example 12: Profiles
+
+Run the same server with different XML files:
+
+```sh
+java -cp target/tenio-examples-1.0.0-jar-with-dependencies.jar com.tenio.examples.example12.TestServerProfiles configuration.example12.development.xml
 ```
 
-```txt
-|-- example
-    |-- example0
-    |   |-- TestSimpleClient
-    |   |-- TestSimpleServer
-    |   |-- TestUselessServer    
-    |-- example1
-    |   |-- TestClientLogin
-    |   |-- TestServerLogin
-    |-- example2
-    |   |-- (*)TestFsmMechanism
-    |-- example3
-    |   |-- TestClientAccessDatagramChannel
-    |   |-- TestServerAccessDatagramChannel
-    |-- example4
-    |   |-- TestClientMovement
-    |   |-- TestServerMovement
-    |   |-- (*)TestMovementMechanism
-    |-- example5
-    |   |-- (*)TestEcsMechanism
-    |-- example6
-    |   |-- TestClientEchoStress
-    |   |-- TestServerEchoStress
-    |-- example7
-    |   |-- TestServerWebsocket
-    |-- example8
-    |   |-- TestClientRestful
-    |   |-- TestServerRestful
-    |-- example10
-    |   |-- TestClientMsgPackEcho
-    |   |-- TestServerMsgPackEcho
-    |-- example11
-    |   |-- TestClientCommand
-    |   |-- TestServerCommand
+In another terminal:
+
+```sh
+java -cp target/tenio-examples-1.0.0-jar-with-dependencies.jar com.tenio.examples.example12.TestClientProfiles
+```
+
+Stop the server, then repeat with another configuration:
+
+| XML file | Active profiles | Selected behavior |
+| --- | --- | --- |
+| configuration.example12.development.xml | development | Development greeting component and development Banner factory method |
+| configuration.example12.production.xml | production | Production greeting component and production Banner factory method |
+| configuration.example12.development-metrics.xml | development,metrics | Development behavior plus LoginMetrics, profile-gated field injection and MetricsHandler |
+
+The production profile is an instructional configuration, not a hardened deployment template.
+
+The corresponding source examples are:
+
+- `DevelopmentGreetingService` / `ProductionGreetingService`: alternative `@Component(profile = "...")` implementations of `GreetingService`.
+- `BannerFactory`: `@BeanFactory(profile = {"development", "production"})` and per-method `@Bean(profile = "...")` selection.
+- `ProfileServices`: shared components can inject the selected implementation; `@Autowired(profile = "metrics")` activates a required field only for metrics.
+- `MetricsHandler`: `@EventHandler(profile = "metrics")` adds optional CCU reporting.
+- `TestServerProfiles`: `@Bootstrap(profile = {"development", "production"})` admits either base profile.
+
+XML selects profiles under the top-level Server/Properties section:
+
+```xml
+<Property name="profile">development,metrics</Property>
+```
+
+Profile names are trimmed and case-sensitive. An annotation's listed names are OR alternatives. Empty annotation restrictions participate in every profile; they do not imply a profile named `default`. XML must supply at least one profile. Selection happens at startup and is not a runtime feature toggle. Profiles do not replace bean qualifiers.
+
+Choose **one** of development or production in this example. Activating both introduces competing implementations and factory products. Using only metrics omits the base profile needed by the bootstrap and greeting service. Other examples explicitly select `default` and keep their unrestricted annotations.
+
+## Shared Example Client
+
+`client/TCP`, `client/UDP`, `ClientCodec` and `ClientTasks` centralize transport and task lifecycle behavior. New code should connect explicitly, assign its fields, configure error/disconnection handlers, then start receiving. Constructor callbacks remain only as compatibility adapters.
+
+TCP sends are synchronous and serialized. Listener callbacks run on the reader and must remain short; the simple echo examples schedule delayed sends instead of sleeping in callbacks. Closing a transport stops its reader; close owned timers and UDP together when TCP disconnects. UDP decodes only the received byte range and filters unrelated senders in peer-specific mode.
+
+The sample compression/encryption classes are **pass-through teaching placeholders**. They neither compress nor protect data and must match the server's configured codecs. UDP registration by player name demonstrates the flow; a deployed application needs authenticated registration. Configure TCP main-connection expiry only alongside a suitable application heartbeat. UDP activity cannot keep TCP alive.
+
+## Requirements
+Java 21+
+
+## License
+The [`TenIO`](https://github.com/congcoi123/tenio) project is currently available under the [MIT](LICENSE) License.
+
+## Changelog
+Please check out the [changelog](CHANGELOG.md) for more details.
+
+## Contributing
+Please check out the [checklist](CHECKLIST.md) and [contributing guideline](CONTRIBUTING.md) for more details.
+
+## Installation
+GitHub
+```sh
+$ git clone https://github.com/congcoi123/tenio-examples.git
 ```
 
 > Happy coding !

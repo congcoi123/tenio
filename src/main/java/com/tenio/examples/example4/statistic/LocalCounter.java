@@ -26,8 +26,22 @@ package com.tenio.examples.example4.statistic;
 
 public final class LocalCounter {
 
-  private volatile int countReceivedPacketSizeOneMinute;
-  private volatile int countUdpPacketsOneMinute;
+  private int countReceivedPacketSizeOneMinute;
+  private int countUdpPacketsOneMinute;
+
+  public record Snapshot(int packets, int bytes) { }
+
+  public synchronized Snapshot drain() {
+    var snapshot = new Snapshot(countUdpPacketsOneMinute, countReceivedPacketSizeOneMinute);
+    countUdpPacketsOneMinute = 0;
+    countReceivedPacketSizeOneMinute = 0;
+    return snapshot;
+  }
+
+  public synchronized void record(int bytes) {
+    countUdpPacketsOneMinute++;
+    countReceivedPacketSizeOneMinute += bytes;
+  }
 
   private LocalCounter() {
     countReceivedPacketSizeOneMinute = 0;
@@ -38,27 +52,27 @@ public final class LocalCounter {
     return new LocalCounter();
   }
 
-  public int getCountReceivedPacketSizeOneMinute() {
+  public synchronized int getCountReceivedPacketSizeOneMinute() {
     return countReceivedPacketSizeOneMinute;
   }
 
-  public void setCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
+  public synchronized void setCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
     this.countReceivedPacketSizeOneMinute = countReceivedPacketSizeOneMinute;
   }
 
-  public void addCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
+  public synchronized void addCountReceivedPacketSizeOneMinute(int countReceivedPacketSizeOneMinute) {
     this.countReceivedPacketSizeOneMinute += countReceivedPacketSizeOneMinute;
   }
 
-  public int getCountUdpPacketsOneMinute() {
+  public synchronized int getCountUdpPacketsOneMinute() {
     return countUdpPacketsOneMinute;
   }
 
-  public void setCountUdpPacketsOneMinute(int countUdpPacketsOneMinute) {
+  public synchronized void setCountUdpPacketsOneMinute(int countUdpPacketsOneMinute) {
     this.countUdpPacketsOneMinute = countUdpPacketsOneMinute;
   }
 
-  public void addCountUdpPacketsOneMinute() {
+  public synchronized void addCountUdpPacketsOneMinute() {
     countUdpPacketsOneMinute++;
   }
 }

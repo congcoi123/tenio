@@ -39,7 +39,8 @@ import com.tenio.examples.example4.statistic.LocalCounter;
 import com.tenio.examples.example4.statistic.NetworkStatistic;
 import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
-import java.util.concurrent.Executors;
+import com.tenio.examples.client.ClientTasks;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,27 +59,35 @@ public final class TestClientMovement extends AbstractLogger
   private static final long START_EXECUTION_TIME = TimeUtility.currentTimeSeconds();
   private final String playerName;
   private final LocalCounter localCounter;
-  private UDP udp;
+  private volatile UDP udp;
+  private final ClientTasks tasks = new ClientTasks();
+  private final TCP tcp;
+  private boolean measurementsStarted;
   private int udpConvey;
   private volatile long sentTimestamp;
 
-  public TestClientMovement(String playerName) {
+  public TestClientMovement(String playerName) throws IOException {
     this.playerName = playerName;
     localCounter = LocalCounter.newInstance();
 
-    // create a new TCP object and listen to this port
-    new TCP(Example4Constant.SOCKET_PORT, it -> {
-      it.receive(TestClientMovement.this);
-
-      // send a login request
-      sendLoginRequest(it);
+    tcp = new TCP("localhost", Example4Constant.SOCKET_PORT, 5000);
+    tcp.handleDisconnection(() -> {
+      tasks.close();
+      if (udp != null) {
+        udp.close();
+      }
     });
+    sendLoginRequest(tcp);
+    tcp.receive(this);
   }
 
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) throws IOException {
+
+    var summaryTasks = new ClientTasks();
+    Runtime.getRuntime().addShutdownHook(new Thread(summaryTasks::close));
 
     // average measurement
-    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+    summaryTasks.repeat(() -> {
 
       logExecutionTime();
       logLatencyAverage();
@@ -134,23 +143,18 @@ public final class TestClientMovement extends AbstractLogger
       switch (accessingPhaseData.getByte(0)) {
         case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
           // create a new UDP object and listen to this port
-          udp = new UDP(accessingPhaseData.getInteger(1), it -> {
-            it.receive(TestClientMovement.this);
-            System.out.println(playerName + " connected to UDP port: " +
-                accessingPhaseData.getInteger(1));
-
-            // now you can send request for UDP connection request
-            var udpMessageData = DataUtility.newZeroMap();
-            udpMessageData.putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-            var request =
-                DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
-                    udpMessageData);
-            it.send(request);
-
-            if (LOGGER_DEBUG) {
-              System.out.println(playerName + " requests a UDP connection -> " + request);
-            }
-          });
+          if (udp != null) {
+            return;
+          }
+          try {
+            udp = new UDP("localhost", accessingPhaseData.getInteger(1));
+            udp.receive(this);
+            var body = DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
+            udp.send(DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, body));
+          } catch (IOException exception) {
+            tcp.close();
+            throw new java.io.UncheckedIOException(exception);
+          }
         }
         case DatagramEstablishedState.ESTABLISHED -> {
           udpConvey = accessingPhaseData.getInteger(1);
@@ -162,29 +166,31 @@ public final class TestClientMovement extends AbstractLogger
           udp.send(request);
         }
         case DatagramEstablishedState.COMMUNICATING -> {
+          if (measurementsStarted) {
+            return;
+          }
+          measurementsStarted = true;
           // the UDP connected successful, you now can send test requests
           System.out.println(playerName + " started the conversation -> " + parcel);
 
           // packets counting
-          Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+          tasks.repeat(() -> {
 
-            int countPackets = localCounter.getCountUdpPacketsOneMinute();
-            double lostPacket =
-                ((double) (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS - countPackets)
-                    / (double) Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS) * (double) 100;
-
+            var snapshot = localCounter.drain();
+            double lostPacket = Math.max(0, 100.0 *
+                (Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS - snapshot.packets()) /
+                Example4Constant.ONE_MINUTE_EXPECT_RECEIVE_TOTAL_PACKETS);
             statistic.addLostPackets(lostPacket);
-            logLostPacket(lostPacket);
-
-            localCounter.setCountUdpPacketsOneMinute(0);
-            localCounter.setCountReceivedPacketSizeOneMinute(0);
-
+            if (isInfoEnabled()) {
+              info("COUNTING", String.format("Player %s -> Packets: %d, Loss: %.2f %%, Data: %.2f KB",
+                  playerName, snapshot.packets(), lostPacket, snapshot.bytes() / 1000.0));
+            }
           }, 1, 1, TimeUnit.MINUTES);
 
           // send requests to calculate latency
-          Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+          tasks.repeat(() -> {
 
-                sentTimestamp = TimeUtility.currentTimeMillis();
+                sentTimestamp = System.nanoTime();
 
                 requestNeighbours();
 
@@ -194,8 +200,7 @@ public final class TestClientMovement extends AbstractLogger
       }
     } else if (parcel.containsKey(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS)) {
       int fps = parcel.getInteger(SharedEventKey.KEY_PLAYER_REQUEST_NEIGHBOURS);
-      long receivedTimestamp = TimeUtility.currentTimeMillis();
-      long latency = receivedTimestamp - sentTimestamp;
+      long latency = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - sentTimestamp);
 
       statistic.addLatency(latency);
       statistic.addFps(fps);
@@ -203,16 +208,6 @@ public final class TestClientMovement extends AbstractLogger
       if (isInfoEnabled()) {
         info("LATENCY", buildgen("Player ", playerName, " -> ", latency, " ms | fps -> ", fps));
       }
-    }
-  }
-
-  private void logLostPacket(double lostPacket) {
-    if (isInfoEnabled()) {
-      info("COUNTING",
-          String.format("Player %s -> Packet Count: %d (Loss: %.2f %%) -> Received Data: %.2f KB",
-              playerName,
-              localCounter.getCountUdpPacketsOneMinute(), lostPacket,
-              (float) localCounter.getCountReceivedPacketSizeOneMinute() / 1000.0f));
     }
   }
 
@@ -237,7 +232,6 @@ public final class TestClientMovement extends AbstractLogger
   }
 
   private void counting(DataCollection message) {
-    localCounter.addCountUdpPacketsOneMinute();
-    localCounter.addCountReceivedPacketSizeOneMinute((message.toBinaries().length));
+    localCounter.record(message.toBinaries().length);
   }
 }

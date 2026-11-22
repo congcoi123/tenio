@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.example;
+package com.tenio.examples.example12;
 
-public final class TestTenIOExample {
-}
+/** A factory-produced bean; it does not need a Component annotation. */
+public record Banner(String text) { }

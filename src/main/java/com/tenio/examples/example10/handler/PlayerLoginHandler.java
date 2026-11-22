@@ -32,13 +32,11 @@ import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
 
 @EventHandler
-public final class PlayerLoginHandler extends AbstractHandler
-    implements EventPlayerLogin<Player> {
+public final class PlayerLoginHandler extends AbstractHandler implements EventPlayerLogin<Player> {
 
   @Override
   public void onPlayerLogin(Player player) {
-    var parcel =
-        msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
+    var parcel = msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
             new int[] { DatagramEstablishedState.ALLOW_TO_ACCESS, api().getUdpPort() });
 
     response().setContent(parcel).setRecipientPlayer(player).write();

@@ -25,153 +25,157 @@ THE SOFTWARE.
 package com.tenio.examples.client;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.common.utility.OsUtility;
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
-import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
-import com.tenio.core.network.entity.outbound.packet.implement.PacketImpl;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.StandardSocketOptions;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-/**
- * Create an object for handling a Datagram socket connection. It is used to
- * send messages to a server or receive messages from that one.
- */
-public final class UDP {
+/** Peer-specific UDP transport. UDP registration and convey IDs belong to application code. */
+public final class UDP implements AutoCloseable {
 
-  private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
-  private static final String BROADCAST_ADDRESS = "0.0.0.0";
-  /**
-   * The desired port for listening.
-   */
-  private int port;
-  private BinaryPacketEncoder binaryPacketEncoder;
-  private BinaryPacketDecoder binaryPacketDecoder;
-  private Future<?> future;
-  private DatagramSocket datagramSocket;
-  private InetAddress inetAddress;
+  private static final int MAX_DATAGRAM = 65507;
 
-  /**
-   * Listen in a port on the local machine.
-   *
-   * @param port      the desired port
-   * @param broadcast sets to {@code true} to enable broadcasting
-   * @param onSuccess UDP connected successfully
-   */
-  public UDP(int port, boolean broadcast, Consumer<UDP> onSuccess) {
+  private final DatagramSocket socket;
+  private final InetAddress remoteAddress;
+  private final int remotePort;
+  private final ClientCodec codec = new ClientCodec();
+  private final AtomicBoolean receiving = new AtomicBoolean();
+  private volatile Consumer<Throwable> errorHandler = Throwable::printStackTrace;
+
+  public UDP(String host, int port) throws IOException {
+    remoteAddress = InetAddress.getByName(host);
+    remotePort = port;
+    socket = new DatagramSocket(null);
     try {
-      if (broadcast) {
-        datagramSocket = new DatagramSocket(port, InetAddress.getByName(BROADCAST_ADDRESS));
-        datagramSocket.setBroadcast(true);
-        if (OsUtility.getOperatingSystemType() == OsUtility.OsType.WINDOWS) {
-          datagramSocket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-        } else {
-          datagramSocket.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-        }
-      } else {
-        datagramSocket = new DatagramSocket();
-      }
-
-      inetAddress = InetAddress.getLocalHost();
-      this.port = port;
-
-      var binaryCompressor = new DefaultBinaryPacketCompressor();
-      var binaryEncryptor = new DefaultBinaryPacketEncryptor();
-
-      binaryPacketEncoder = new BinaryPacketEncoderImpl();
-      binaryPacketEncoder.setCompressor(binaryCompressor);
-      binaryPacketEncoder.setEncryptor(binaryEncryptor);
-
-      binaryPacketDecoder = new BinaryPacketDecoderImpl();
-      binaryPacketDecoder.setCompressor(binaryCompressor);
-      binaryPacketDecoder.setEncryptor(binaryEncryptor);
-
-      onSuccess.accept(this);
-    } catch (IOException exception) {
-      exception.printStackTrace();
+      socket.bind(new InetSocketAddress(0));
+      socket.connect(remoteAddress, remotePort); // Filters packets from unrelated peers.
+    } catch (IOException | RuntimeException exception) {
+      socket.close();
+      throw exception;
     }
   }
 
-  /**
-   * Listen in a port on the local machine.
-   *
-   * @param port      the desired port
-   * @param onSuccess UDP connected successfully
-   */
   public UDP(int port, Consumer<UDP> onSuccess) {
     this(port, false, onSuccess);
   }
 
-  public int getLocalPort() {
-    return datagramSocket.getLocalPort();
-  }
-
-  public InetAddress getLocalAddress() {
-    return inetAddress;
-  }
-
-  public int getRemotePort() {
-    return port;
-  }
-
-  public DatagramSocket getDatagramSocket() {
-    return datagramSocket;
-  }
-
-  /**
-   * Send a message to the server.
-   *
-   * @param message the desired message
-   */
-  public void send(DataCollection message) {
-    // convert message object to bytes data
-    var packet = PacketImpl.newInstance();
-    packet.setDataType(message.getType());
-    packet.setData(message.toBinaries());
-    packet = binaryPacketEncoder.encode(packet);
-    var sendingPacket = packet.getData();
-    var request = new DatagramPacket(sendingPacket, sendingPacket.length, inetAddress, port);
+  /** Compatibility adapter; the boolean retains the old local broadcast-listener behavior. */
+  public UDP(int port, boolean broadcast, Consumer<UDP> onSuccess) {
     try {
-      datagramSocket.send(request);
+      remoteAddress = InetAddress.getLoopbackAddress();
+      remotePort = port;
+      socket = new DatagramSocket(null);
+      try {
+        socket.setReuseAddress(broadcast);
+        socket.setBroadcast(broadcast);
+        socket.bind(new InetSocketAddress(broadcast ? port : 0));
+        if (!broadcast) {
+          socket.connect(remoteAddress, remotePort);
+        }
+      } catch (IOException | RuntimeException exception) {
+        socket.close();
+        throw exception;
+      }
     } catch (IOException exception) {
-      exception.printStackTrace();
+      throw new UncheckedIOException(exception);
+    }
+    try {
+      Objects.requireNonNull(onSuccess).accept(this);
+    } catch (RuntimeException exception) {
+      close();
+      throw exception;
     }
   }
 
-  /**
-   * Listen to messages that came from the server.
-   *
-   * @param listener instance of {@link DatagramListener}
-   */
-  public void receive(DatagramListener listener) {
-    var executorService = Executors.newSingleThreadExecutor();
-    future = executorService.submit(() -> {
-      var binaries = new byte[DEFAULT_BYTE_BUFFER_SIZE];
-      while (true) {
-        try {
-          var response = new DatagramPacket(binaries, binaries.length);
-          datagramSocket.receive(response);
-          listener.onReceivedUDP(binaryPacketDecoder.decode(binaries));
-        } catch (IOException exception) {
-          exception.printStackTrace();
-          return;
+  public int getLocalPort() {
+    return socket.getLocalPort();
+  }
+
+  public InetAddress getLocalAddress() {
+    return socket.getLocalAddress();
+  }
+
+  public InetAddress getServerAddress() {
+    return remoteAddress;
+  }
+
+  public int getRemotePort() {
+    return remotePort;
+  }
+
+  public DatagramSocket getDatagramSocket() {
+    return socket;
+  }
+
+  public boolean isClosed() {
+    return socket.isClosed();
+  }
+
+  public void handleException(Consumer<Throwable> handler) {
+    errorHandler = Objects.requireNonNull(handler);
+  }
+
+  public synchronized void send(DataCollection message) {
+    if (isClosed()) {
+      throw new IllegalStateException("UDP is closed");
+    }
+    byte[] bytes = codec.encode(Objects.requireNonNull(message), false);
+    if (bytes.length > MAX_DATAGRAM) {
+      throw new IllegalArgumentException("UDP packet exceeds " + MAX_DATAGRAM);
+    }
+    try {
+      socket.send(new DatagramPacket(bytes, bytes.length, remoteAddress, remotePort));
+    } catch (IOException exception) {
+      throw new UncheckedIOException(exception);
+    }
+  }
+
+  public <D extends DataCollection> void receive(DatagramListener<D> listener) {
+    Objects.requireNonNull(listener);
+    if (isClosed() || !receiving.compareAndSet(false, true)) {
+      throw new IllegalStateException("UDP receive already started or socket closed");
+    }
+    Thread.ofPlatform().name("tenio-example-udp-reader").start(() -> {
+      byte[] bytes = new byte[MAX_DATAGRAM + 1];
+      var packet = new DatagramPacket(bytes, bytes.length);
+      try {
+        while (!isClosed()) {
+          packet.setLength(bytes.length);
+          socket.receive(packet);
+          try {
+            if (packet.getLength() > MAX_DATAGRAM) {
+              throw new IllegalArgumentException("UDP packet too large");
+            }
+            byte[] payload = Arrays.copyOfRange(packet.getData(), packet.getOffset(),
+                packet.getOffset() + packet.getLength());
+            deliver(listener, codec.decode(payload));
+          } catch (RuntimeException exception) {
+            errorHandler.accept(exception); // One malformed datagram does not stop reception.
+          }
         }
+      } catch (IOException exception) {
+        if (!isClosed()) {
+          errorHandler.accept(exception);
+        }
+      } finally {
+        close();
       }
     });
   }
 
-  /**
-   * Close this connection.
-   */
+  @SuppressWarnings("unchecked")
+  private static <D extends DataCollection> void deliver(DatagramListener<D> listener, DataCollection message) {
+    listener.onReceivedUDP((D) message);
+  }
+
+  @Override
   public void close() {
-    datagramSocket.close();
-    future.cancel(true);
+    socket.close();
   }
 }

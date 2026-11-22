@@ -24,13 +24,13 @@ THE SOFTWARE.
 
 package com.tenio.examples.example11;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.common.data.zero.ZeroMap;
 import com.tenio.core.ApplicationLauncher;
 import com.tenio.core.bootstrap.annotation.Bootstrap;
+import com.tenio.core.bootstrap.annotation.ClientCommand;
 import com.tenio.core.bootstrap.annotation.EventHandler;
 import com.tenio.core.bootstrap.annotation.Setting;
-import com.tenio.core.configuration.CoreConfiguration;
+import com.tenio.core.command.client.AbstractClientCommandHandler;
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.handler.AbstractHandler;
@@ -38,15 +38,17 @@ import com.tenio.core.handler.event.EventConnectionEstablishedResult;
 import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.examples.server.ExampleConfigurationType;
+import com.tenio.examples.server.AbstractExampleConfiguration;
 import com.tenio.examples.server.SharedEventKey;
-import java.util.Map;
 
 /**
  * This class shows how a simple server handle messages that came from a client.
  */
 @Bootstrap
 public final class TestServerCommand {
+
+  private static final short CREATE_ROOM = 1;
+  private static final short CHAT = 2;
 
   public static void main(String[] params) {
     ApplicationLauncher.run(TestServerCommand.class, params);
@@ -56,15 +58,7 @@ public final class TestServerCommand {
    * Create your own configurations.
    */
   @Setting
-  public static class TestConfiguration extends CoreConfiguration implements Configuration {
-
-    @Override
-    protected void extend(Map<String, String> extProperties) {
-      for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-        var paramName = entry.getKey();
-        push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-      }
-    }
+  public static class TestConfiguration extends AbstractExampleConfiguration {
   }
 
   /**
@@ -96,14 +90,39 @@ public final class TestServerCommand {
     }
   }
 
+  @ClientCommand(value = CREATE_ROOM, name = "Create Room", description = "Create a new room", requestsPerSecond = 1, burst = 2)
+  public static final class CreateRoom extends AbstractClientCommandHandler<Player, ZeroMap> {
+
+    @Override
+    public void execute(Player player, ZeroMap message) {
+      var setting = com.tenio.core.entity.setting.InitialRoomSetting.Builder.newInstance()
+          .setName(message.getString("name")).setMaxParticipants(2).build();
+      api().createRoom(setting, player);
+    }
+  }
+
+  @ClientCommand(value = CHAT, requestsPerSecond = 2, burst = 4)
+  public static final class Chat extends AbstractClientCommandHandler<Player, ZeroMap> {
+
+    @Override
+    public void execute(Player player, ZeroMap message) {
+      player.getCurrentRoom().ifPresent(room -> response()
+          .setContent(map().putString("chat", message.getString("chat")))
+          .setRecipientPlayers(room.getSnapshotPlayersList()).write());
+    }
+  }
+
   @EventHandler
   public static class ReceivedMessageFromPlayerHandler extends AbstractHandler
       implements EventReceivedMessageFromPlayer<Player, ZeroMap> {
 
     @Override
     public void onReceivedMessageFromPlayer(Player player, ZeroMap message) {
-      var data =
-          map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
+      if (message.containsKey("op")) {
+        clientCommand().invoke(message.getShort("op"), player, message);
+        return;
+      }
+      var data = map().putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, String.format("Echo(%s): %s",
               player.getIdentity(),
               message.getString(SharedEventKey.KEY_CLIENT_SERVER_ECHO)));
 

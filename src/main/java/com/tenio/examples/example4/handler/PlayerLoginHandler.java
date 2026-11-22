@@ -37,7 +37,6 @@ public final class PlayerLoginHandler extends AbstractHandler
 
   @Override
   public void onPlayerLogin(Player player) {
-    player.setNeverDeported(true);
     var parcel =
         map().putZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
             array().addByte(DatagramEstablishedState.ALLOW_TO_ACCESS)
