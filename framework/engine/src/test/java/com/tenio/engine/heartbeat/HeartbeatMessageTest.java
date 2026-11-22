@@ -78,11 +78,10 @@ class HeartbeatMessageTest {
   }
 
   @Test
-  void testEqualsSameDelayTime() {
-    // Two messages created back-to-back should have nearly the same delay time
+  void testDistinctMessagesAreNotEqualEvenAtSameTime() {
     HeartbeatMessage other = HeartbeatMessage.newInstance(mock(ExtraMessage.class), 1.0);
-    // Both are within SMALLEST_DELAY (0.25s) of each other
-    assertTrue(message.equals(other));
+    assertFalse(message.equals(other));
+    assertNotEquals(0, message.compareTo(other));
   }
 
   @Test

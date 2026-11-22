@@ -27,6 +27,7 @@ package com.tenio.core;
 import com.tenio.common.logger.LoggerBootstrap;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.Bootstrapper;
+import com.tenio.core.configuration.ConfigurationSource;
 import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.configuration.constant.Trademark;
 import com.tenio.core.monitoring.system.SystemInfo;
@@ -38,26 +39,28 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.apache.logging.log4j.util.Strings;
 
 /**
- * The main entry point for launching the game server application.
- * This class handles the initialization and startup of the server, including
- * configuration loading, system monitoring setup, and server instance creation.
+ * The main entry point for launching the game server application. This class handles the
+ * initialization and startup of the server, including configuration loading, system monitoring
+ * setup, and server instance creation.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Command-line argument parsing</li>
- *   <li>Configuration file loading</li>
- *   <li>System monitoring initialization</li>
- *   <li>Server instance creation and startup</li>
- *   <li>Logging system configuration</li>
+ *   <li>Command-line argument parsing
+ *   <li>Configuration file loading
+ *   <li>System monitoring initialization
+ *   <li>Server instance creation and startup
+ *   <li>Logging system configuration
  * </ul>
  *
  * <p>Command-line options:
+ *
  * <ul>
- *   <li>The first parameter: Path to the configuration file (default: configuration.xml)</li>
+ *   <li>The first parameter: Path to the configuration file (default: configuration.xml)
  * </ul>
  *
- * <p>Note: This class is designed to be the single entry point for the application
- * and should not be instantiated multiple times.
+ * <p>Note: This class is designed to be the single entry point for the application and should not
+ * be instantiated multiple times.
  *
  * @see Bootstrapper
  * @see Server
@@ -78,7 +81,7 @@ public final class ApplicationLauncher extends SystemLogger {
    * Run the application.
    *
    * @param entryClass the {@link Class} which is placed in the root package
-   * @param params     the additional parameters
+   * @param params the additional parameters
    */
   public static void run(Class<?> entryClass, String[] params) {
     // Logger Configuration
@@ -94,7 +97,7 @@ public final class ApplicationLauncher extends SystemLogger {
    *
    * @param entryClass the {@link Class} which is placed in the root package
    */
-  public  static void run(Class<?> entryClass) {
+  public static void run(Class<?> entryClass) {
     run(entryClass, null);
   }
 
@@ -106,13 +109,12 @@ public final class ApplicationLauncher extends SystemLogger {
    * Start the game server with DI mechanism.
    *
    * @param entryClass the {@link Class} which is placed in the root package
-   * @param params     the additional parameters
+   * @param params the additional parameters
    */
   public void start(Class<?> entryClass, String[] params) {
     // print out the framework's preface
     if (isInfoEnabled()) {
-      var trademark =
-          String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
+      var trademark = String.format("\n\n%s\n", Strings.join(Arrays.asList(Trademark.CONTENT), '\n'));
       info("HAPPY CODING", trademark);
     }
 
@@ -123,12 +125,21 @@ public final class ApplicationLauncher extends SystemLogger {
     systemInfo.logDiskInfo();
 
     Bootstrapper bootstrap = null;
+    ConfigurationSource source = null;
     if (entryClass != null) {
-      bootstrap = Bootstrapper.newInstance();
+      bootstrap = new Bootstrapper();
       try {
-        bootstrap.run(entryClass, CoreConstant.DEFAULT_BOOTSTRAP_PACKAGE,
-            CoreConstant.DEFAULT_EVENT_PACKAGE, CoreConstant.DEFAULT_COMMAND_PACKAGE,
-            CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE);
+        source = ConfigurationSource.read(params == null || params.length == 0 ? null : params[0],
+            entryClass.getClassLoader());
+        bootstrap.runWithProfiles(
+            entryClass,
+            source.profiles(),
+            CoreConstant.DEFAULT_BOOTSTRAP_PACKAGE,
+            CoreConstant.DEFAULT_EVENT_PACKAGE,
+            CoreConstant.DEFAULT_COMMAND_PACKAGE,
+            CoreConstant.DEFAULT_SCHEDULER_PACKAGE,
+            CoreConstant.DEFAULT_REST_CONTROLLER_PACKAGE
+        );
       } catch (Exception exception) {
         if (isErrorEnabled()) {
           error(exception, "The application started with exceptions occurred: ", exception.getMessage());
@@ -141,7 +152,7 @@ public final class ApplicationLauncher extends SystemLogger {
     var server = ServerImpl.getInstance();
     try {
       assert bootstrap != null;
-      server.start(bootstrap.getBootstrapHandler(), params);
+      server.start(bootstrap.getBootstrapHandler(), params, source);
     } catch (Exception exception) {
       if (isErrorEnabled()) {
         error(exception, "The application started with exceptions occurred: ", exception.getMessage());
@@ -158,7 +169,6 @@ public final class ApplicationLauncher extends SystemLogger {
         debug("LAST SYSTEM MONITORING", SystemMonitoring.newInstance());
       }
       server.shutdown();
-      System.exit(0);
     }));
   }
 }

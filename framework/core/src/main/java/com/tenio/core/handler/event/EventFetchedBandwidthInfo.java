@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.processor.AbstractProcessor;
 import com.tenio.core.exception.OutboundQueueFullException;
 import com.tenio.core.exception.OutboundQueuePolicyViolationException;
@@ -59,7 +58,6 @@ public interface EventFetchedBandwidthInfo {
    *                                      dropped packets which could not sent to clients side
    *                                      because outbound queue is full and could not hold any
    *                                      written packet
-   * @see CoreConfigurationType#INTERVAL_TRAFFIC_COUNTER
    * @see AbstractProcessor
    * @see OutboundQueue
    * @see OutboundQueuePolicy

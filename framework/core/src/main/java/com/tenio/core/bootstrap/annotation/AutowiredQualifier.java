@@ -32,26 +32,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to specify which implementation should be injected when multiple
- * implementations of an interface are available. This annotation works in conjunction
- * with {@link Autowired} and {@link Bean} to provide fine-grained control over dependency
- * injection.
+ * Annotation used to specify which implementation should be injected when multiple implementations
+ * of an interface are available. This annotation works in conjunction with {@link Autowired} and
+ * {@link Bean} to provide fine-grained control over dependency injection.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Name-based implementation selection</li>
- *   <li>Class-based implementation selection</li>
- *   <li>Integration with dependency injection</li>
- *   <li>Runtime retention for reflection-based processing</li>
+ *   <li>Name-based implementation selection
+ *   <li>Class-based implementation selection
+ *   <li>Integration with dependency injection
+ *   <li>Runtime retention for reflection-based processing
  * </ul>
  *
  * <p>Usage example:
+ *
  * <pre>
  * {@code public class MyService {
  *     @Autowired
  *     @AutowiredQualifier(name = "default")
  *     private Repository repository;
- *     
+ *
  *     @Autowired
  *     @AutowiredQualifier(clazz = CustomRepository.class)
  *     private Repository customRepository;
@@ -59,9 +60,8 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * <p>Note: This annotation can be used in combination with {@link Autowired} to
- * specify which implementation should be injected when multiple implementations
- * of an interface are available.
+ * <p>Note: This annotation can be used in combination with {@link Autowired} to specify which
+ * implementation should be injected when multiple implementations of an interface are available.
  *
  * @see Autowired
  * @see Component
@@ -72,6 +72,17 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface AutowiredQualifier {
+
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 
   /**
    * Declares the name should be used to distinguish implementations.
@@ -87,9 +98,6 @@ public @interface AutowiredQualifier {
    */
   Class<?> clazz() default DEFAULT.class;
 
-  /**
-   * Dummy default class
-   */
-  final class DEFAULT {
-  }
+  /** Dummy default class */
+  final class DEFAULT {}
 }

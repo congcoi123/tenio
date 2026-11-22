@@ -99,28 +99,29 @@ public final class ServerApiImpl extends SystemLogger implements ServerApi {
   public void logout(Player player, ConnectionDisconnectMode connectionDisconnectMode,
                      PlayerDisconnectMode playerDisconnectMode) {
     if (player == null) {
-      // maybe we needn't do anything
       return;
     }
 
     try {
-      if (player.containsSession() && player.getSession().isPresent() && player.getSession().get().isActivated()) {
-        // check process on method ZeroProcessorImpl#processSessionWillBeClosed
-        Session session = player.getSession().get();
+      var session = player.getSession().orElse(null);
+
+      // This closes the physical connection. ZeroProcessor may retain the player,
+      // depending on keepPlayerOnDisconnection.
+      if (session != null && session.isActivated()) {
         session.close(connectionDisconnectMode, playerDisconnectMode);
-      } else {
-        // unsubscribe it from all channels
+      }
+
+      // An explicit API logout must always remove the logical player.
+      // If ZeroProcessor already removed it, this prevents duplicate cleanup.
+      if (getPlayerManager().getPlayerByIdentity(player.getIdentity()) == player) {
         unsubscribeFromAllChannels(player);
-        // player should leave room (if applicable) first
+
         if (player.isInRoom()) {
           leaveRoom(player, PlayerLeaveRoomMode.LOG_OUT);
         }
+
         getEventManager().emit(ServerEvent.DISCONNECT_PLAYER, player, playerDisconnectMode);
-        String removedPlayer = player.getIdentity();
-        getPlayerManager().removePlayerByIdentity(removedPlayer);
-        if (isDebugEnabled()) {
-          debug("DISCONNECTED PLAYER", "Player ", removedPlayer, " was removed");
-        }
+        getPlayerManager().removePlayerByIdentity(player.getIdentity());
         player.clean();
       }
     } catch (RemovedNonExistentPlayerException | IOException exception) {

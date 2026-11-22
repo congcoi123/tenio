@@ -381,9 +381,10 @@ public final class Geometry {
    */
   public static boolean isTwoCirclesOverlapped(float x1, float y1, float r1, float x2, float y2,
                                                float r2) {
+    validateRadii(r1, r2);
     float distBetweenCenters = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
-    return (distBetweenCenters < (r1 + r2)) || (distBetweenCenters < Math.abs(r1 - r2));
+    return distBetweenCenters <= r1 + r2;
   }
 
   /**
@@ -398,12 +399,7 @@ public final class Geometry {
    */
   public static boolean isTwoCirclesOverlapped(Vector2 circle1, float radius1, Vector2 circle2,
                                                float radius2) {
-    float distBetweenCenters =
-        (float) Math.sqrt((circle1.x - circle2.x) * (circle1.x - circle2.x)
-            + (circle1.y - circle2.y) * (circle1.y - circle2.y));
-
-    return (distBetweenCenters < (radius1 + radius2))
-        || (distBetweenCenters < Math.abs(radius1 - radius2));
+    return isTwoCirclesOverlapped(circle1.x, circle1.y, radius1, circle2.x, circle2.y, radius2);
   }
 
   /**
@@ -419,9 +415,10 @@ public final class Geometry {
    */
   public static boolean isTwoCirclesEnclosed(float x1, float y1, float r1, float x2, float y2,
                                              float r2) {
+    validateRadii(r1, r2);
     float distBetweenCenters = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
-    return distBetweenCenters < Math.abs(r1 - r2);
+    return distBetweenCenters + Math.min(r1, r2) <= Math.max(r1, r2);
   }
 
   /**
@@ -438,17 +435,17 @@ public final class Geometry {
    */
   public static float[] getTwoCirclesIntersectionPoints(float x1, float y1, float r1, float x2,
                                                         float y2, float r2) {
-    // first check to see if they overlap
-    if (!isTwoCirclesOverlapped(x1, y1, r1, x2, y2, r2)) {
-      return null;
-    }
+    validateRadii(r1, r2);
 
     // calculate the distance between the circle centers
     float d = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    if (d == 0 || d > r1 + r2 || d < Math.abs(r1 - r2)) {
+      return null;
+    }
 
     // Now calculate the distance from the center of each circle to the center
     // of the line which connects the intersection points.
-    float a = (r1 - r2 + (d * d)) / (2 * d);
+    float a = (r1 * r1 - r2 * r2 + d * d) / (2 * d);
 
     // MAYBE A TEST FOR EXACT OVERLAP?
 
@@ -461,17 +458,15 @@ public final class Geometry {
     p2Y = y1 + a * (y2 - y1) / d;
 
     // calculate first point
-    float h1 = (float) Math.sqrt((r1 * r1) - (a * a));
+    float h = (float) Math.sqrt(Math.max(0, r1 * r1 - a * a));
     float[] points = new float[4];
 
-    points[0] = p2X - h1 * (y2 - y1) / d;
-    points[1] = p2Y + h1 * (x2 - x1) / d;
+    points[0] = p2X - h * (y2 - y1) / d;
+    points[1] = p2Y + h * (x2 - x1) / d;
 
     // calculate second point
-    float h2 = (float) Math.sqrt((r2 * r2) - (a * a));
-
-    points[2] = p2X + h2 * (y2 - y1) / d;
-    points[3] = p2Y - h2 * (x2 - x1) / d;
+    points[2] = p2X + h * (y2 - y1) / d;
+    points[3] = p2Y - h * (x2 - x1) / d;
 
     return points;
   }
@@ -494,19 +489,25 @@ public final class Geometry {
    */
   public static float getTwoCirclesIntersectionArea(float x1, float y1, float r1, float x2,
                                                     float y2, float r2) {
-    // first calculate the intersection points
-    if (getTwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2) == null) {
-      return 0; // no overlap
-    }
+    validateRadii(r1, r2);
 
     // calculate the distance between the circle centers
     float d = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    if (d >= r1 + r2) {
+      return 0;
+    }
+    if (d <= Math.abs(r1 - r2)) {
+      float contained = Math.min(r1, r2);
+      return (float) (Math.PI * contained * contained);
+    }
 
     // find the angles given that A and B are the two circle centers
     // and C and D are the intersection points
-    float cbd = (float) (2 * Math.acos((r2 * r2 + d * d - r1 * r1) / (r2 * d * 2)));
+    float cbd = (float) (2 * Math.acos(clampCosine(
+        (r2 * r2 + d * d - r1 * r1) / (r2 * d * 2))));
 
-    float cad = (float) (2 * Math.acos((r1 * r1 + d * d - r2 * r2) / (r1 * d * 2)));
+    float cad = (float) (2 * Math.acos(clampCosine(
+        (r1 * r1 + d * d - r2 * r2) / (r1 * d * 2))));
 
     // Then we find the segment of each of the circles cut off by the
     // chord CD, by taking the area of the sector of the circle BCD and
@@ -635,6 +636,16 @@ public final class Geometry {
                                             Vector2 posSecond, float fov) {
     var temp = Vector2.newInstance().set(posSecond).sub(posFirst).normalize();
     return facingFirst.getDotProductValue(temp) >= Math.cos(fov / 2);
+  }
+
+  private static void validateRadii(float first, float second) {
+    if (!Float.isFinite(first) || !Float.isFinite(second) || first < 0 || second < 0) {
+      throw new IllegalArgumentException("Circle radii must be finite and non-negative");
+    }
+  }
+
+  private static float clampCosine(float value) {
+    return Math.max(-1, Math.min(1, value));
   }
 
   // ------------------------- WhereIsPoint ------------------------

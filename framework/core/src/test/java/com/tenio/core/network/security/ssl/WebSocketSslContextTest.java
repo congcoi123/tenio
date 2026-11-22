@@ -24,8 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.security.ssl;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,16 +33,9 @@ import org.junit.jupiter.api.Test;
 class WebSocketSslContextTest {
 
   @Test
-  @DisplayName("constructor does not throw even when keystore file is absent")
-  void testConstructorDoesNotThrowWhenKeystoreAbsent() {
-    assertDoesNotThrow(WebSocketSslContext::new);
-  }
-
-  @Test
-  @DisplayName("getServerContext returns null when keystore file is absent")
-  void testGetServerContextReturnsNullWhenKeystoreAbsent() {
-    WebSocketSslContext sslContext = new WebSocketSslContext();
-    assertNull(sslContext.getServerContext());
+  @DisplayName("constructor fails fast when TLS configuration is unavailable")
+  void testConstructorFailsFastWhenKeystoreUnavailable() {
+    assertThrows(IllegalStateException.class, WebSocketSslContext::new);
   }
 
   @Test
@@ -51,8 +43,7 @@ class WebSocketSslContextTest {
   void testConstructorUsesCustomAlgorithmFromSecurityProperty() {
     java.security.Security.setProperty("ssl.KeyManagerFactory.algorithm", "SunX509");
     try {
-      WebSocketSslContext sslContext = new WebSocketSslContext();
-      assertNull(sslContext.getServerContext());
+      assertThrows(IllegalStateException.class, WebSocketSslContext::new);
     } finally {
       java.security.Security.setProperty("ssl.KeyManagerFactory.algorithm", "");
     }

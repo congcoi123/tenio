@@ -98,11 +98,8 @@ class EntityPoolTest {
   public void throwingConstructorShouldCoverCatchBlock() {
     var info = new ContextInfo("Game", GameComponent.getComponentNames(),
         GameComponent.getComponentTypes(), GameComponent.getNumberComponents());
-    ElementPool<Entity> pool = new EntityPool(ThrowingEntity.class, info);
-    for (int i = 0; i < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; i++) {
-      pool.get();
-    }
-    assertDoesNotThrow(() -> pool.get());
+    assertThrows(IllegalArgumentException.class,
+        () -> new EntityPool(ThrowingEntity.class, info));
   }
 
   @Test

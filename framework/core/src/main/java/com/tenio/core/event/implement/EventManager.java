@@ -28,6 +28,7 @@ import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.event.Subscriber;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -61,12 +62,17 @@ public final class EventManager extends SystemLogger {
    */
   private final List<EventSubscriber> eventSubscribers;
   /**
+   * A map of subscribed events for quick lookup.
+   */
+  private final EnumMap<ServerEvent, Boolean> subscribedEvents;
+  /**
    * The producer.
    */
   private final EventProducer eventProducer;
 
   private EventManager() {
     eventSubscribers = new ArrayList<>();
+    subscribedEvents = new EnumMap<>(ServerEvent.class);
     eventProducer = new EventProducer();
   }
 
@@ -114,6 +120,7 @@ public final class EventManager extends SystemLogger {
     }
 
     eventSubscribers.add(EventSubscriber.newInstance(event, subscriber));
+    subscribedEvents.put(event, Boolean.TRUE);
   }
 
   /**
@@ -123,20 +130,17 @@ public final class EventManager extends SystemLogger {
     // clear the old first
     eventProducer.clear();
 
-    // only for log recording
-    var events = new ArrayList<ServerEvent>();
     // start handling
-    eventSubscribers.forEach(eventSubscriber -> {
-      events.add(eventSubscriber.getEvent());
-      eventProducer.getEventHandler().subscribe(eventSubscriber.getEvent(),
-          eventSubscriber.getSubscriber()::dispatch);
-    });
+    eventSubscribers.forEach(eventSubscriber ->
+            eventProducer.getEventHandler().subscribe(eventSubscriber.getEvent(),
+                    eventSubscriber.getSubscriber()::dispatch));
+
     if (isInfoEnabled()) {
       StringBuilder sb = new StringBuilder("[\n");
-      if (events.isEmpty()) {
+      if (subscribedEvents.isEmpty()) {
         sb.append("<empty>\n");
       } else {
-        for (Object item : events) {
+        for (Object item : subscribedEvents.keySet()) {
           sb.append("  - ").append(item).append("\n");
         }
       }
@@ -152,12 +156,7 @@ public final class EventManager extends SystemLogger {
    * @return {@code true} if an event has any subscribers
    */
   public boolean hasSubscriber(ServerEvent event) {
-    for (var subscriber : eventSubscribers) {
-      if (subscriber.getEvent() == event) {
-        return true;
-      }
-    }
-    return false;
+    return subscribedEvents.containsKey(event);
   }
 
   /**
@@ -165,6 +164,7 @@ public final class EventManager extends SystemLogger {
    */
   public void clear() {
     eventSubscribers.clear();
+    subscribedEvents.clear();
     eventProducer.clear();
   }
 

@@ -185,6 +185,21 @@ class RoomManagerImplTest {
   }
 
   @Test
+  @DisplayName("computeRooms allows the callback to remove a room")
+  void testComputeRoomsAllowsCallbackMutation() {
+    Room room = DefaultRoom.newInstance();
+    roomManager.addRoom(room);
+
+    roomManager.computeRooms(iterator -> {
+      while (iterator.hasNext()) {
+        roomManager.removeRoomById(iterator.next().getId());
+      }
+    });
+
+    assertEquals(0, roomManager.getSnapshotRoomCount());
+  }
+
+  @Test
   @DisplayName("Test removeRoomById decreases room count")
   void testRemoveRoomById() {
     Room room = DefaultRoom.newInstance();

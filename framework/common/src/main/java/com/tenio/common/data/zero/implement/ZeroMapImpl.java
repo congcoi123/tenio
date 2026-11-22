@@ -34,7 +34,7 @@ import com.tenio.common.data.zero.ZeroType;
 import com.tenio.common.data.zero.utility.ZeroUtility;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -86,12 +86,12 @@ public final class ZeroMapImpl implements ZeroMap {
 
   @Override
   public Set<String> getKeys() {
-    return map.keySet();
+    return Collections.unmodifiableSet(map.keySet());
   }
 
   @Override
   public Set<String> getReadonlyKeys() {
-    return new HashSet<>(map.keySet());
+    return Set.copyOf(map.keySet());
   }
 
   @Override
@@ -114,7 +114,7 @@ public final class ZeroMapImpl implements ZeroMap {
    */
   @Override
   public Iterator<Entry<String, ZeroElement>> iterator() {
-    return map.entrySet().iterator();
+    return Collections.unmodifiableMap(map).entrySet().iterator();
   }
 
   @Override
@@ -346,7 +346,7 @@ public final class ZeroMapImpl implements ZeroMap {
 
   @Override
   public ReadonlyZeroMap getReadonlyZeroMap() {
-    return new ZeroMapImpl(new HashMap<>(map));
+    return new ReadonlyZeroMapImpl(this);
   }
 
   @SuppressWarnings("DefaultLocale")

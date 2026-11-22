@@ -25,14 +25,21 @@ THE SOFTWARE.
 package com.tenio.core.network.netty.websocket;
 
 import com.tenio.core.event.implement.EventManager;
+import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import com.tenio.core.network.entity.session.manager.SessionManager;
 import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.statistic.NetworkReaderStatistic;
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * <a href="https://en.wikipedia.org/wiki/WebSocket">WebSocket</a> is distinct
@@ -84,13 +91,16 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
 
   @Override
   public void channelRead(ChannelHandlerContext ctx, Object raw) {
-
     // check the request for handshake
     if (raw instanceof HttpRequest httpRequest) {
       var headers = httpRequest.headers();
 
-      if (headers.get("Connection").equalsIgnoreCase("Upgrade")
-          || headers.get("Upgrade").equalsIgnoreCase("WebSocket")) {
+      boolean validUpgrade = httpRequest.method().equals(HttpMethod.GET)
+          && headers.containsValue(HttpHeaderNames.CONNECTION, HttpHeaderValues.UPGRADE, true)
+          && headers.contains(HttpHeaderNames.UPGRADE, HttpHeaderValues.WEBSOCKET, true)
+          && headers.contains(HttpHeaderNames.HOST);
+
+      if (validUpgrade) {
 
         // add new handler to the existing pipeline to handle HandShake-WebSocket
         // Messages
@@ -100,7 +110,14 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
 
         // do the Handshake to upgrade connection from HTTP to WebSocket protocol
         handleHandshake(ctx, httpRequest);
+      } else {
+        ReferenceCountUtil.release(raw);
+        ctx.writeAndFlush(new DefaultFullHttpResponse(
+            HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST))
+            .addListener(future -> ctx.close());
       }
+    } else {
+      ReferenceCountUtil.release(raw);
     }
   }
 
@@ -127,6 +144,6 @@ public final class NettyWsHandShake extends ChannelInboundHandlerAdapter {
   }
 
   private String getWebSocketUrl(HttpRequest req) {
-    return "ws://" + req.headers().get("Host") + req.uri();
+    return "ws://" + req.headers().get(HttpHeaderNames.HOST) + req.uri();
   }
 }

@@ -170,7 +170,7 @@ public final class NetworkImpl extends AbstractManager implements Network {
   @Override
   public int getMaximumStartingTimeInMilliseconds() {
     int httpServiceStartingTime = httpService.getMaximumStartingTimeInMilliseconds();
-    int webSocketServiceStartingTime = httpService.getMaximumStartingTimeInMilliseconds();
+    int webSocketServiceStartingTime = webSocketService.getMaximumStartingTimeInMilliseconds();
     int socketServiceStartingTime = socketService.getMaximumStartingTimeInMilliseconds();
 
     return Math.max(Math.max(httpServiceStartingTime, webSocketServiceStartingTime), socketServiceStartingTime);
@@ -349,7 +349,10 @@ public final class NetworkImpl extends AbstractManager implements Network {
       var nonSessionIterator = nonSessionRecipientPlayers.iterator();
       while (nonSessionIterator.hasNext()) {
         var player = nonSessionIterator.next();
-        eventManager.emit(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, player, message);
+        // A response remains an outbound message even when the recipient no longer has a session.
+        // Emitting RECEIVED_MESSAGE_FROM_PLAYER here re-enters the client's command handler and can
+        // recursively execute the command that created this response.
+        eventManager.emit(ServerEvent.SEND_MESSAGE_TO_PLAYER, player, message);
       }
     }
 

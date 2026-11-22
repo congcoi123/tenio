@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.core.network.zero.handler.implement;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
@@ -102,6 +103,10 @@ public final class SocketIoHandlerImpl extends AbstractIoHandler
 
   @Override
   public void sessionRead(Session session, byte[] binaries) {
+    if (binaries.length > 0) {
+      // Track TCP receipt before decoding; queued UDP messages share the session processor.
+      session.setLastReliableReadTime(TimeUtility.currentTimeMillis());
+    }
     binaryPacketFramer.framing(session, binaries);
   }
 

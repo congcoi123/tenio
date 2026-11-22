@@ -24,36 +24,40 @@ THE SOFTWARE.
 
 package com.tenio.core.bootstrap;
 
+import com.tenio.common.logger.SystemLogger;
 import com.tenio.core.bootstrap.annotation.Bootstrap;
 import com.tenio.core.bootstrap.injector.Injector;
-import com.tenio.common.logger.SystemLogger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+import com.tenio.core.bootstrap.injector.ProfileSelection;
+
+import java.util.Set;
 
 /**
- * Handles the initialization and bootstrapping of the game server application.
- * This class is responsible for scanning and initializing components, managing
- * dependency injection, and setting up the application's core services.
+ * Handles the initialization and bootstrapping of the game server application. This class is
+ * responsible for scanning and initializing components, managing dependency injection, and setting
+ * up the application's core services.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Component scanning and initialization</li>
- *   <li>Dependency injection management</li>
- *   <li>Command handler registration</li>
- *   <li>Servlet bean management</li>
- *   <li>Singleton instance management</li>
+ *   <li>Component scanning and initialization
+ *   <li>Dependency injection management
+ *   <li>Command handler registration
+ *   <li>Servlet bean management
+ *   <li>Independent bootstrap contexts
  * </ul>
  *
  * <p>Initialization process:
+ *
  * <ol>
- *   <li>Scan specified packages for annotated components</li>
- *   <li>Initialize dependency injection container</li>
- *   <li>Register command handlers</li>
- *   <li>Configure servlet beans</li>
- *   <li>Set up bootstrap handler</li>
+ *   <li>Scan specified packages for annotated components
+ *   <li>Initialize dependency injection container
+ *   <li>Register command handlers
+ *   <li>Configure servlet beans
+ *   <li>Set up bootstrap handler
  * </ol>
  *
- * <p>Note: This class implements the singleton pattern and should be accessed
- * through the {@link #newInstance()} method.
+ * <p>Each instance owns its injector, bean registrations, and startup profile selection.
+ * Repeated runs rebuild that instance's registrations without changing another bootstrapper.
  *
  * @see Bootstrap
  * @see Injector
@@ -62,57 +66,67 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine;
  */
 public final class Bootstrapper extends SystemLogger {
 
-  private static final Bootstrapper instance = new Bootstrapper();
-
   private final Injector injector;
   private BootstrapHandler bootstrapHandler;
+  /** Immutable selection installed before any application constructor runs. */
+  private ProfileSelection profileSelection;
 
-  private Bootstrapper() {
-    if (instance != null) {
-      throw new CommandLine.InitializationException("Could not recreate this class instance");
-    }
-    injector = Injector.newInstance();
-  }
-
-  /**
-   * Creates a new instance.
-   *
-   * @return a new instance of {@link Bootstrapper}
-   */
-  public static Bootstrapper newInstance() {
-    return instance;
+  /** Creates a bootstrapper with its own injector and startup profile selection. */
+  public Bootstrapper() {
+    injector = new Injector();
+    profileSelection = new ProfileSelection(Set.of());
   }
 
   /**
    * Start the bootstrapping.
    *
    * @param entryClass a {@link Class} in the root package
-   * @param packages   the scanning {@link String} package names
+   * @param packages the scanning {@link String} package names
    * @throws Exception when any exceptions occurred
    */
   public void run(Class<?> entryClass, String... packages) throws Exception {
-    boolean hasExtApplicationAnnotation = entryClass.isAnnotationPresent(Bootstrap.class);
+    profileSelection = new ProfileSelection(Set.of());
+    injector.setProfiles(profileSelection.activeProfiles());
+    runSelected(entryClass, packages);
+  }
+
+  private void runSelected(Class<?> entryClass, String... packages) throws Exception {
+    bootstrapHandler = null;
+    boolean hasExtApplicationAnnotation = entryClass.isAnnotationPresent(Bootstrap.class) && profileSelection.matches(entryClass);
 
     if (hasExtApplicationAnnotation) {
       start(entryClass, packages);
       bootstrapHandler = injector.getBean(BootstrapHandler.class);
       bootstrapHandler.createReversedClassesMap(injector.getClassesMap());
+      bootstrapHandler.setActiveProfiles(profileSelection.activeProfiles());
       bootstrapHandler.setClassBeansMap(injector.getClassBeansMap());
       bootstrapHandler.setServletMap(injector.getServletBeansMap());
+      bootstrapHandler.setScheduledJobs(injector.getScheduledJobs());
       bootstrapHandler.setSystemCommandManager(injector.getSystemCommandManager());
       bootstrapHandler.setClientCommandManager(injector.getClientCommandManager());
+    } else {
+      // An excluded entry point must not expose beans left by an earlier bootstrap generation.
+      injector.scanPackages(null);
     }
   }
 
-  private void start(Class<?> entryClass, String... packages) {
-    try {
-      synchronized (Bootstrapper.class) {
-        injector.scanPackages(entryClass, packages);
-      }
-    } catch (Exception exception) {
-      if (isErrorEnabled()) {
-        error(exception);
-      }
+  /**
+   * Starts discovery with the XML-derived selection, independently of injection qualifiers.
+   *
+   * @param entryClass application entry point
+   * @param names active startup profile names
+   * @param packages extra packages to scan
+   * @throws Exception when discovery, construction or injection fails
+   */
+  public void runWithProfiles(Class<?> entryClass, java.util.Set<String> names, String... packages) throws Exception {
+    profileSelection = new ProfileSelection(names);
+    injector.setProfiles(profileSelection.activeProfiles());
+    runSelected(entryClass, packages);
+  }
+
+  private void start(Class<?> entryClass, String... packages) throws Exception {
+    synchronized (Bootstrapper.class) {
+      injector.scanPackages(entryClass, packages);
     }
   }
 

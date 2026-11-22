@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
 import com.tenio.core.entity.Player;
 
 /**
@@ -38,7 +37,6 @@ public interface EventFetchedCcuInfo {
    * interval time.
    *
    * @param numberPlayers the concurrent number of {@link Player} on the server.
-   * @see CoreConfigurationType#INTERVAL_CCU_SCAN
    */
   void onFetchedCcuInfo(int numberPlayers);
 }

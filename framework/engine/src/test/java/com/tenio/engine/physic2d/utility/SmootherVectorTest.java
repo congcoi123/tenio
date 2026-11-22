@@ -1,7 +1,7 @@
 package com.tenio.engine.physic2d.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import com.tenio.engine.physic2d.math.Vector2;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class SmootherVectorTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     SmootherVector<Vector2> smootherVector = new SmootherVector<Vector2>(3, newInstanceResult);
     Vector2 actualUpdateResult = smootherVector.update(Vector2.newInstance());
-    assertSame(newInstanceResult, actualUpdateResult);
+    assertNotSame(newInstanceResult, actualUpdateResult);
     assertEquals(0.0f, actualUpdateResult.y);
     assertEquals(0.0f, actualUpdateResult.x);
   }
@@ -36,7 +36,7 @@ class SmootherVectorTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     SmootherVector<Vector2> smootherVector = new SmootherVector<Vector2>(1, newInstanceResult);
     Vector2 actualUpdateResult = smootherVector.update(Vector2.newInstance());
-    assertSame(newInstanceResult, actualUpdateResult);
+    assertNotSame(newInstanceResult, actualUpdateResult);
     assertEquals(0.0f, actualUpdateResult.y);
     assertEquals(0.0f, actualUpdateResult.x);
   }

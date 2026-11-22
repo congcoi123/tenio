@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.common.data.common;
 
+import com.tenio.common.data.ImmutableSnapshot;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,6 +170,6 @@ public final class CommonMap extends HashMap<String, Object> implements Serializ
    * @return a new copy of the map in unmodified mode.
    */
   public Map<String, Object> getReadonlyMap() {
-    return Map.copyOf(this);
+    return ImmutableSnapshot.ofMap(this);
   }
 }

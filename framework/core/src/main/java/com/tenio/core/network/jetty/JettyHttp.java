@@ -32,6 +32,8 @@ import jakarta.servlet.http.HttpServlet;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
@@ -50,12 +52,12 @@ public final class JettyHttp extends AbstractManager implements Service, Runnabl
   private int port;
   private Map<String, HttpServlet> servletMap;
   private volatile boolean initialized;
-  private boolean stopping;
+  private final AtomicBoolean stopping;
 
   private JettyHttp(EventManager eventManager) {
     super(eventManager);
     initialized = false;
-    stopping = false;
+    stopping = new AtomicBoolean(false);
   }
 
   /**
@@ -123,17 +125,7 @@ public final class JettyHttp extends AbstractManager implements Service, Runnabl
           buildgen("Started at port: ", port, ", Endpoints: ", servletMap.keySet().toString()));
     }
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (executorService != null && !executorService.isShutdown()) {
-        try {
-          shutdown();
-        } catch (Exception exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
-        }
-      }
-    }));
+
   }
 
   @Override
@@ -142,17 +134,27 @@ public final class JettyHttp extends AbstractManager implements Service, Runnabl
       return;
     }
 
-    if (stopping) {
+    if (!stopping.compareAndSet(false, true)) {
       return;
     }
 
-    stopping = true;
-
     try {
       server.stop();
-      executorService.shutdownNow();
+      executorService.shutdown();
+      if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+        executorService.shutdownNow();
+        if (!executorService.awaitTermination(10, TimeUnit.SECONDS) && isErrorEnabled()) {
+          error("Jetty HTTP management executor did not terminate cleanly");
+        }
+      }
       if (isInfoEnabled()) {
         info("STOPPED ENGINE", buildgen(getName(), " (", 1, ")"));
+      }
+    } catch (InterruptedException exception) {
+      executorService.shutdownNow();
+      Thread.currentThread().interrupt();
+      if (isErrorEnabled()) {
+        error(exception);
       }
     } catch (Exception exception) {
       if (isErrorEnabled()) {

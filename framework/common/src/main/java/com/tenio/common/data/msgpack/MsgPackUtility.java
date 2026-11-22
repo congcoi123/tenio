@@ -28,13 +28,13 @@ import com.tenio.common.data.msgpack.element.MsgPackMap;
 import com.tenio.common.exception.MsgPackOperationException;
 import com.tenio.common.exception.UnsupportedMsgPackDataTypeException;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Map;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.msgpack.value.ArrayValue;
-import org.msgpack.value.ImmutableMapValue;
-import org.msgpack.value.ImmutableValue;
 import org.msgpack.value.Value;
 import org.msgpack.value.ValueType;
 
@@ -84,6 +84,10 @@ public final class MsgPackUtility {
 
 class MsgPackConverter {
 
+  private static final int MAX_INPUT_BYTES = 16 * 1024 * 1024;
+  private static final int MAX_COLLECTION_SIZE = 1_000_000;
+  private static final int MAX_NESTING_DEPTH = 64;
+
   /**
    * Converting an object ({@link Map}) to array of bytes data.
    *
@@ -92,103 +96,12 @@ class MsgPackConverter {
    * @return an array of bytes data
    */
   public static byte[] pack(MessageBufferPacker packer, Map<String, Object> map) {
-    byte[] binaries;
-    try {
-      packer.packMapHeader(map.size());
-      for (Map.Entry<String, Object> entry : map.entrySet()) {
-        // Single value
-        if (entry.getValue() == null) {
-          packer.packString(entry.getKey());
-          packer.packNil();
-        } else if (entry.getValue() instanceof Boolean) {
-          packer.packString(entry.getKey());
-          packer.packBoolean((boolean) entry.getValue());
-        } else if (entry.getValue() instanceof Byte) {
-          packer.packString(entry.getKey());
-          packer.packByte((byte) entry.getValue());
-        } else if (entry.getValue() instanceof Short) {
-          packer.packString(entry.getKey());
-          packer.packShort((short) entry.getValue());
-        } else if (entry.getValue() instanceof Integer) {
-          packer.packString(entry.getKey());
-          packer.packInt((int) entry.getValue());
-        } else if (entry.getValue() instanceof Float) {
-          packer.packString(entry.getKey());
-          packer.packFloat((float) entry.getValue());
-        } else if (entry.getValue() instanceof Long) {
-          packer.packString(entry.getKey());
-          packer.packLong((long) entry.getValue());
-        } else if (entry.getValue() instanceof Double) {
-          packer.packString(entry.getKey());
-          packer.packDouble((double) entry.getValue());
-        } else if (entry.getValue() instanceof String) {
-          packer.packString(entry.getKey());
-          packer.packString((String) entry.getValue());
-
-          // Multiple values (array)
-        } else if (entry.getValue() instanceof boolean[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (boolean value : values) {
-            packer.packBoolean(value);
-          }
-        } else if (entry.getValue() instanceof byte[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (byte value : values) {
-            packer.packByte(value);
-          }
-        } else if (entry.getValue() instanceof short[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (short value : values) {
-            packer.packShort(value);
-          }
-        } else if (entry.getValue() instanceof int[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (int value : values) {
-            packer.packInt(value);
-          }
-        } else if (entry.getValue() instanceof float[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (float value : values) {
-            packer.packFloat(value);
-          }
-        } else if (entry.getValue() instanceof long[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (long value : values) {
-            packer.packLong(value);
-          }
-        } else if (entry.getValue() instanceof double[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (double value : values) {
-            packer.packDouble(value);
-          }
-        } else if (entry.getValue() instanceof String[] values) {
-          packer.packString(entry.getKey());
-          packer.packArrayHeader(values.length);
-          for (String value : values) {
-            packer.packString(value);
-          }
-
-          // MsgPack Map
-        } else if (entry.getValue() instanceof MsgPackMap msgPackMap) {
-          packer.packString(entry.getKey());
-          pack(packer, msgPackMap);
-        } else {
-          throw new UnsupportedMsgPackDataTypeException();
-        }
-      }
-      binaries = packer.toByteArray();
-      packer.close();
+    try (packer) {
+      packMap(packer, map, 0);
+      return packer.toByteArray();
     } catch (IOException exception) {
       throw new MsgPackOperationException(exception);
     }
-    return binaries;
   }
 
   /**
@@ -198,123 +111,187 @@ class MsgPackConverter {
    * @return an object in map type
    */
   public static MsgPackMap unpack(byte[] binaries) {
-    MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(binaries);
-    MsgPackMap msgPackMap;
-    try {
+    if (binaries == null || binaries.length == 0 || binaries.length > MAX_INPUT_BYTES) {
+      throw new IllegalArgumentException("MessagePack payload size is invalid");
+    }
+    try (MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(binaries)) {
       int size = unpacker.unpackMapHeader();
-      msgPackMap = new MsgPackMap();
+      checkCollectionSize(size);
+      var msgPackMap = new MsgPackMap();
       for (int indexKey = 0; indexKey < size; indexKey++) {
         String key = unpacker.unpackString();
-        ImmutableValue value = unpacker.unpackValue();
-        // Assign types
-        ValueType valueType = value.getValueType();
-        switch (valueType) {
-          case NIL -> msgPackMap.putNull(key);
-          case BOOLEAN -> msgPackMap.putBoolean(key, value.asBooleanValue().getBoolean());
-          case INTEGER -> msgPackMap.putInteger(key, value.asIntegerValue().asInt());
-          case FLOAT -> msgPackMap.putFloat(key, value.asFloatValue().toFloat());
-          case STRING -> msgPackMap.putString(key, value.asStringValue().asString());
-          case ARRAY -> {
-            ArrayValue arrayValues = value.asArrayValue();
-            int arrayIndex = 0;
-            for (Value arrayValue : arrayValues) {
-              ValueType arrayValueType = arrayValue.getValueType();
-              // Initialize arrays
-              if (!msgPackMap.contains(key)) {
-                switch (arrayValueType) {
-                  case BOOLEAN -> msgPackMap.putBooleanArray(key, new boolean[arrayValues.size()]);
-                  case INTEGER -> msgPackMap.putIntegerArray(key, new int[arrayValues.size()]);
-                  case FLOAT -> msgPackMap.putFloatArray(key, new float[arrayValues.size()]);
-                  case STRING -> msgPackMap.putStringArray(key, new String[arrayValues.size()]);
-                }
-              }
-              // Put elements into arrays
-              switch (arrayValueType) {
-                case BOOLEAN -> {
-                  boolean[] primitiveArray = msgPackMap.getBooleanArray(key);
-                  primitiveArray[arrayIndex] = arrayValue.asBooleanValue().getBoolean();
-                }
-                case INTEGER -> {
-                  int[] primitiveArray = msgPackMap.getIntegerArray(key);
-                  primitiveArray[arrayIndex] = arrayValue.asIntegerValue().asInt();
-                }
-                case FLOAT -> {
-                  float[] primitiveArray = msgPackMap.getFloatArray(key);
-                  primitiveArray[arrayIndex] = arrayValue.asFloatValue().toFloat();
-                }
-                case STRING -> {
-                  String[] primitiveArray = msgPackMap.getStringArray(key);
-                  primitiveArray[arrayIndex] = arrayValue.asStringValue().asString();
-                }
-              }
-              arrayIndex++;
-            }
-          }
-          case MAP -> {
-            ImmutableMapValue mapValue = value.asMapValue();
-            msgPackMap.putMsgPackMap(key, unpack(mapValue));
-          }
-        }
+        msgPackMap.put(key, decodeValue(unpacker.unpackValue(), 1));
       }
-      unpacker.close();
+      if (unpacker.hasNext()) {
+        throw new IllegalArgumentException("Trailing MessagePack values are not allowed");
+      }
+      return msgPackMap;
     } catch (IOException exception) {
       throw new MsgPackOperationException(exception);
     }
-    return msgPackMap;
   }
 
-  private static MsgPackMap unpack(ImmutableMapValue map) {
-    MsgPackMap msgPackMap;
-    msgPackMap = new MsgPackMap();
-    for (Map.Entry<Value, Value> entry : map.entrySet()) {
-      String key = entry.getKey().asStringValue().asString();
-      ImmutableValue value = entry.getValue().immutableValue();
-      // Assign types
-      ValueType valueType = value.getValueType();
-      switch (valueType) {
-        case NIL -> msgPackMap.putNull(key);
-        case BOOLEAN -> msgPackMap.putBoolean(key, value.asBooleanValue().getBoolean());
-        case INTEGER -> msgPackMap.putInteger(key, value.asIntegerValue().asInt());
-        case FLOAT -> msgPackMap.putFloat(key, value.asFloatValue().toFloat());
-        case STRING -> msgPackMap.putString(key, value.asStringValue().asString());
-        case ARRAY -> {
-          ArrayValue arrayValues = value.asArrayValue();
-          int arrayIndex = 0;
-          for (Value arrayValue : arrayValues) {
-            ValueType arrayValueType = arrayValue.getValueType();
-            // Initialize arrays
-            if (!msgPackMap.contains(key)) {
-              switch (arrayValueType) {
-                case BOOLEAN -> msgPackMap.putBooleanArray(key, new boolean[arrayValues.size()]);
-                case INTEGER -> msgPackMap.putIntegerArray(key, new int[arrayValues.size()]);
-                case FLOAT -> msgPackMap.putFloatArray(key, new float[arrayValues.size()]);
-                case STRING -> msgPackMap.putStringArray(key, new String[arrayValues.size()]);
-              }
-            }
-            // Put elements into arrays
-            switch (arrayValueType) {
-              case BOOLEAN -> {
-                boolean[] primitiveArray = msgPackMap.getBooleanArray(key);
-                primitiveArray[arrayIndex] = arrayValue.asBooleanValue().getBoolean();
-              }
-              case INTEGER -> {
-                int[] primitiveArray = msgPackMap.getIntegerArray(key);
-                primitiveArray[arrayIndex] = arrayValue.asIntegerValue().asInt();
-              }
-              case FLOAT -> {
-                float[] primitiveArray = msgPackMap.getFloatArray(key);
-                primitiveArray[arrayIndex] = arrayValue.asFloatValue().toFloat();
-              }
-              case STRING -> {
-                String[] primitiveArray = msgPackMap.getStringArray(key);
-                primitiveArray[arrayIndex] = arrayValue.asStringValue().asString();
-              }
-            }
-            arrayIndex++;
-          }
-        }
+  private static void packMap(MessageBufferPacker packer, Map<?, ?> map, int depth)
+      throws IOException {
+    checkDepth(depth);
+    checkCollectionSize(map.size());
+    packer.packMapHeader(map.size());
+    for (var entry : map.entrySet()) {
+      if (!(entry.getKey() instanceof String key)) {
+        throw new UnsupportedMsgPackDataTypeException();
+      }
+      packer.packString(key);
+      packValue(packer, entry.getValue(), depth + 1);
+    }
+  }
+
+  private static void packValue(MessageBufferPacker packer, Object value, int depth) throws IOException {
+    checkDepth(depth);
+    if (value == null) {
+      packer.packNil();
+    } else if (value instanceof Boolean booleanValue) {
+      packer.packBoolean(booleanValue);
+    } else if (value instanceof Byte byteValue) {
+      packer.packByte(byteValue);
+    } else if (value instanceof Short shortValue) {
+      packer.packShort(shortValue);
+    } else if (value instanceof Integer integerValue) {
+      packer.packInt(integerValue);
+    } else if (value instanceof Long longValue) {
+      packer.packLong(longValue);
+    } else if (value instanceof Float floatValue) {
+      packer.packFloat(floatValue);
+    } else if (value instanceof Double doubleValue) {
+      packer.packDouble(doubleValue);
+    } else if (value instanceof String stringValue) {
+      packer.packString(stringValue);
+    } else if (value instanceof byte[] bytes) {
+      packer.packBinaryHeader(bytes.length);
+      packer.writePayload(bytes);
+    } else if (value instanceof Map<?, ?> map) {
+      packMap(packer, map, depth);
+    } else if (value instanceof Iterable<?> iterable) {
+      var values = new ArrayList<>();
+      iterable.forEach(values::add);
+      checkCollectionSize(values.size());
+      packer.packArrayHeader(values.size());
+      for (var item : values) {
+        packValue(packer, item, depth + 1);
+      }
+    } else if (value.getClass().isArray()) {
+      int length = Array.getLength(value);
+      checkCollectionSize(length);
+      packer.packArrayHeader(length);
+      for (int i = 0; i < length; i++) {
+        packValue(packer, Array.get(value, i), depth + 1);
+      }
+    } else {
+      throw new UnsupportedMsgPackDataTypeException();
+    }
+  }
+
+  private static Object decodeValue(Value value, int depth) {
+    checkDepth(depth);
+    return switch (value.getValueType()) {
+      case NIL -> null;
+      case BOOLEAN -> value.asBooleanValue().getBoolean();
+      case INTEGER -> value.asIntegerValue().isInIntRange()
+          ? value.asIntegerValue().asInt() : value.asIntegerValue().asLong();
+      case FLOAT -> value.asFloatValue().toDouble();
+      case STRING -> value.asStringValue().asString();
+      case BINARY -> value.asBinaryValue().asByteArray();
+      case ARRAY -> decodeArray(value.asArrayValue(), depth + 1);
+      case MAP -> decodeMap(value, depth + 1);
+      case EXTENSION -> throw new UnsupportedMsgPackDataTypeException();
+    };
+  }
+
+  private static MsgPackMap decodeMap(Value value, int depth) {
+    checkDepth(depth);
+    var mapValue = value.asMapValue();
+    checkCollectionSize(mapValue.size());
+    var result = new MsgPackMap();
+    for (var entry : mapValue.entrySet()) {
+      if (!entry.getKey().isStringValue()) {
+        throw new IllegalArgumentException("MessagePack map keys must be strings");
+      }
+      result.put(entry.getKey().asStringValue().asString(), decodeValue(entry.getValue(), depth + 1));
+    }
+    return result;
+  }
+
+  private static Object decodeArray(ArrayValue array, int depth) {
+    checkDepth(depth);
+    checkCollectionSize(array.size());
+    if (array.size() == 0) {
+      return new Object[0];
+    }
+    ValueType firstType = array.get(0).getValueType();
+    boolean homogeneous = true;
+    for (int i = 1; i < array.size(); i++) {
+      if (array.get(i).getValueType() != firstType) {
+        homogeneous = false;
+        break;
       }
     }
-    return msgPackMap;
+    if (homogeneous && firstType == ValueType.BOOLEAN) {
+      var result = new boolean[array.size()];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = array.get(i).asBooleanValue().getBoolean();
+      }
+      return result;
+    }
+    if (homogeneous && firstType == ValueType.STRING) {
+      var result = new String[array.size()];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = array.get(i).asStringValue().asString();
+      }
+      return result;
+    }
+    if (homogeneous && firstType == ValueType.INTEGER) {
+      boolean fitsInt = true;
+      for (int i = 0; i < array.size(); i++) {
+        if (!array.get(i).asIntegerValue().isInIntRange()) {
+          fitsInt = false;
+          break;
+        }
+      }
+      if (fitsInt) {
+        var result = new int[array.size()];
+        for (int i = 0; i < result.length; i++) {
+          result[i] = array.get(i).asIntegerValue().asInt();
+        }
+        return result;
+      }
+      var result = new long[array.size()];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = array.get(i).asIntegerValue().asLong();
+      }
+      return result;
+    }
+    if (homogeneous && firstType == ValueType.FLOAT) {
+      var result = new double[array.size()];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = array.get(i).asFloatValue().toDouble();
+      }
+      return result;
+    }
+    var result = new Object[array.size()];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = decodeValue(array.get(i), depth + 1);
+    }
+    return result;
+  }
+
+  private static void checkDepth(int depth) {
+    if (depth > MAX_NESTING_DEPTH) {
+      throw new IllegalArgumentException("MessagePack nesting is too deep");
+    }
+  }
+
+  private static void checkCollectionSize(int size) {
+    if (size < 0 || size > MAX_COLLECTION_SIZE) {
+      throw new IllegalArgumentException("MessagePack collection is too large: " + size);
+    }
   }
 }

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 package com.tenio.core.handler.event;
 
-import com.tenio.core.configuration.define.CoreConfigurationType;
 
 /**
  * Monitoring the system information.
@@ -42,7 +41,6 @@ public interface EventSystemMonitoring {
    * @param usedMemory          {@code long} value, the memory volume that the JVM is consuming
    * @param freeMemory          {@code long} value, the available memory that the JVM can use
    * @param platformThreads     {@code long} value, the current running platform threads on the JVM
-   * @see CoreConfigurationType#INTERVAL_SYSTEM_MONITORING
    */
   void onSystemMonitoring(double cpuUsage, long totalMemory, long usedMemory, long freeMemory, long platformThreads);
 }

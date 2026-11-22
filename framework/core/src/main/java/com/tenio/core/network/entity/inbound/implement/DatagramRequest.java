@@ -152,9 +152,9 @@ public class DatagramRequest implements Request {
         "id=" + id +
         ", timestamp=" + timestamp +
         ", event=" + event +
-        ", datagramChannel=" + datagramChannel +
+        ", channelType=" + (datagramChannel == null ? null : datagramChannel.getClass().getName()) +
         ", datagramRemoteAddress=" + datagramRemoteAddress +
-        ", message=" + message +
+        ", messageType=" + (message == null ? null : message.getClass().getName()) +
         ", priority=" + priority +
         '}';
   }

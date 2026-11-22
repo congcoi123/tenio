@@ -172,8 +172,8 @@ public final class ApiResponse {
     return "ApiResponse{" +
         "timestamp='" + timestamp + '\'' +
         ", status='" + status + '\'' +
-        ", data=" + data +
-        ", error=" + error +
+        ", dataCount=" + (data == null ? 0 : data.size()) +
+        ", errorCount=" + (error == null ? 0 : error.size()) +
         '}';
   }
 }

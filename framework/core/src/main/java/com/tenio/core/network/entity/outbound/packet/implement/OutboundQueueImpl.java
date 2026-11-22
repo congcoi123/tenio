@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.outbound.packet.implement;
 
+import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.admin.OperationalHistory;
+import com.tenio.core.exception.OutboundQueueFullException;
 import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.OutboundQueue;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
@@ -42,6 +45,7 @@ public final class OutboundQueueImpl implements OutboundQueue {
   private volatile int snapshotSize;
   private OutboundQueuePolicy outboundQueuePolicy;
   private int maxSize;
+  private Monitor monitor;
 
   /**
    * Constructor.
@@ -71,6 +75,9 @@ public final class OutboundQueueImpl implements OutboundQueue {
     synchronized (queue) {
       Packet packet = queue.poll();
       snapshotSize = queue.size();
+      if (monitor != null) {
+        updatePressure();
+      }
       return packet;
     }
   }
@@ -123,6 +130,11 @@ public final class OutboundQueueImpl implements OutboundQueue {
   }
 
   @Override
+  public void enableMonitoring(boolean diagnostics, OperationalHistory history, long id, String transport) {
+    monitor = diagnostics || history != null ? new Monitor(diagnostics, history, id, transport) : null;
+  }
+
+  @Override
   public void configureOutboundQueuePolicy(OutboundQueuePolicy outboundQueuePolicy) {
     this.outboundQueuePolicy = outboundQueuePolicy;
   }
@@ -134,10 +146,35 @@ public final class OutboundQueueImpl implements OutboundQueue {
 
   @Override
   public void put(Packet packet) {
-    outboundQueuePolicy.applyPolicy(this, packet);
     synchronized (queue) {
+      snapshotSize = queue.size();
+      if (isSnapshotFull()) {
+        if (monitor != null && monitor.diagnostics) {
+          monitor.fullDrops++;
+        }
+        throw new OutboundQueueFullException(snapshotSize);
+      }
+      try {
+        outboundQueuePolicy.applyPolicy(this, packet);
+      } catch (OutboundQueuePolicyViolationException rejected) {
+        if (monitor != null && monitor.diagnostics) {
+          monitor.policyDrops++;
+        }
+        throw rejected;
+      } catch (OutboundQueueFullException full) {
+        if (monitor != null && monitor.diagnostics) {
+          monitor.fullDrops++;
+        }
+        throw full;
+      }
       queue.add(packet);
       snapshotSize = queue.size();
+      if (monitor != null) {
+        if (monitor.diagnostics) {
+          monitor.highWater = Math.max(monitor.highWater, snapshotSize);
+        }
+        updatePressure();
+      }
     }
   }
 
@@ -146,14 +183,61 @@ public final class OutboundQueueImpl implements OutboundQueue {
     synchronized (queue) {
       queue.clear();
       snapshotSize = 0;
+      if (monitor != null) {
+        updatePressure();
+      }
+    }
+  }
+
+  private static final class Monitor {
+
+    int highWater;
+    long fullDrops;
+    long policyDrops;
+    boolean pressured;
+    long pressureSince;
+    final boolean diagnostics;
+    final OperationalHistory history;
+    final long id;
+    final String transport;
+
+    Monitor(boolean diagnostics, OperationalHistory history, long id, String transport) {
+      this.diagnostics = diagnostics;
+      this.history = history;
+      this.id = id;
+      this.transport = transport;
+    }
+  }
+
+  @Override
+  public Statistics statistics() {
+    synchronized (queue) {
+      if (monitor == null || !monitor.diagnostics) {
+        return new Statistics(snapshotSize, maxSize, -1, -1, -1, 0);
+      }
+      long age = monitor.pressured ? (System.nanoTime() - monitor.pressureSince) / 1_000_000 : 0;
+      return new Statistics(snapshotSize, maxSize, monitor.highWater, monitor.fullDrops, monitor.policyDrops, age);
+    }
+  }
+
+  private void updatePressure() {
+    boolean next = maxSize > 0 && snapshotSize * 100L >= maxSize * 80L;
+    if (next != monitor.pressured) {
+      monitor.pressured = next;
+      if (monitor.diagnostics) {
+        monitor.pressureSince = next ? System.nanoTime() : 0;
+      }
+      if (monitor.history != null) {
+        monitor.history.record(monitor.id, monitor.transport, next ? OperationalHistory.Kind.PRESSURE_START
+                : OperationalHistory.Kind.PRESSURE_END, "outbound queue 80% threshold");
+      }
     }
   }
 
   @Override
   public String toString() {
     return "OutboundQueue{" +
-        "queue=" + queue +
-        ", outboundQueuePolicy=" + outboundQueuePolicy +
+        "outboundQueuePolicyType=" + (outboundQueuePolicy == null ? null : outboundQueuePolicy.getClass().getName()) +
         ", maxSize=" + maxSize +
         ", snapshotSize=" + snapshotSize +
         '}';

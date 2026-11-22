@@ -28,6 +28,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.Point2D;
+import java.util.Objects;
 
 /**
  * Supported methods for windows.
@@ -51,7 +52,8 @@ public final class Windows {
    * @return the image
    */
   public static Image loadIcon(String file) {
-    var iconUrl = Windows.class.getResource(file);
+    var iconUrl = Objects.requireNonNull(Windows.class.getResource(file),
+        "Icon resource not found: " + file);
     return Toolkit.getDefaultToolkit().createImage(iconUrl);
   }
 

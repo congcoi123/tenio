@@ -26,8 +26,10 @@ package com.tenio.core.command.system.implement;
 
 import com.tenio.core.bootstrap.annotation.SystemCommand;
 import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.utility.CommandUtility;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.List;
 
 /**
@@ -35,38 +37,45 @@ import java.util.List;
  *
  * @since 0.4.0
  */
-@SystemCommand(label = "help", usage = {
-    "[<command>,<command>,<command>]"
-}, description = "Shows all supporting commands")
+@SystemCommand(label = "help", profile = CoreConstant.MONITOR_PROFILE,
+    usage = {"[name]", "all"},
+    description = "Shows all supporting commands")
 public final class HelpCommand extends AbstractSystemCommandHandler {
 
-  private String createCommandDetails(AbstractSystemCommandHandler command) {
-    return command.getLabel() +
-        " - " +
-        (command.getDescription().isBlank() ? "Non Description" : command.getDescription()) +
-        "\n\t" +
-        String.join("\n\t", command.getUsage());
+  private void showDetails(AbstractSystemCommandHandler command) {
+    var details = new StringBuilder(command.getLabel()).append(" - ").append(command.getDescription());
+    for (String usage : command.getUsage()) {
+      if (!usage.isBlank()) {
+        details.append("\n\t").append(usage);
+      }
+    }
+    CommandUtility.INSTANCE.showConsoleMessage(details.toString());
   }
 
   @Override
   public void execute(List<String> arguments) {
-    var commandManager = getCommandManager();
-    var commands = new ArrayList<>();
-    if (arguments.isEmpty()) {
-      commandManager.getHandlers()
-          .forEach((key, command) -> commands.add(createCommandDetails(command)));
-    } else {
-      var labels = arguments.remove(0).toLowerCase().trim().split(",");
-      for (var label : labels) {
-        var command = commandManager.getHandler(label);
-        if (command == null) {
-          CommandUtility.INSTANCE.showConsoleMessage("SystemCommand {" + label + "} does not exist.");
-          return;
-        } else {
-          commands.add(createCommandDetails(command));
-        }
+    var manager = getCommandManager();
+    boolean showAll = arguments.size() == 1 && arguments.getFirst().equalsIgnoreCase("all");
+    if (arguments.isEmpty() || showAll) {
+      int total = manager.getHandlers().size();
+      int shown = showAll ? total : Math.min(total, 50);
+      manager.getHandlers().keySet().stream().sorted().limit(shown).map(manager::getHandler)
+          .forEach(this::showDetails);
+      if (shown < total) {
+        CommandUtility.INSTANCE.showConsoleMessage(
+            "Showing " + shown + " of " + total + " system commands. Use help all for the full table.");
       }
+      return;
     }
-    commands.forEach(System.out::println);
+    arguments.stream().flatMap(argument -> Arrays.stream(argument.split(",")))
+        .map(label -> label.strip().toLowerCase(Locale.ROOT))
+        .filter(label -> !label.isEmpty()).distinct().forEach(label -> {
+          var command = manager.getHandler(label);
+          if (command == null) {
+            CommandUtility.INSTANCE.showConsoleMessage("Unknown system command: " + label);
+          } else {
+            showDetails(command);
+          }
+        });
   }
 }

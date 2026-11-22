@@ -30,6 +30,7 @@ import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationR
 import com.tenio.core.handler.event.EventChannelCreated;
 import com.tenio.core.handler.event.EventChannelWillBeRemoved;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.handler.event.EventConnectionWillBeClosed;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
 import com.tenio.core.handler.event.EventFetchedBandwidthInfo;
 import com.tenio.core.handler.event.EventFetchedCcuInfo;
@@ -38,6 +39,7 @@ import com.tenio.core.handler.event.EventPlayerBeforeLeaveRoom;
 import com.tenio.core.handler.event.EventPlayerJoinedRoomResult;
 import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.handler.event.EventPlayerConnectionRetry;
+import com.tenio.core.handler.event.EventPlayerConnectionReplacing;
 import com.tenio.core.handler.event.EventPlayerConnectionResumed;
 import com.tenio.core.handler.event.EventPlayerSubscribedChannel;
 import com.tenio.core.handler.event.EventPlayerUnsubscribedChannel;
@@ -120,6 +122,12 @@ public enum ServerEvent {
    */
   CONNECTION_ESTABLISHED_RESULT,
   /**
+   * When a connection is about to be closed and its session is still available.
+   *
+   * @see EventConnectionWillBeClosed
+   */
+  CONNECTION_WILL_BE_CLOSED,
+  /**
    * When the server responds a player logged in request.
    *
    * @see EventPlayerLogin
@@ -131,6 +139,12 @@ public enum ServerEvent {
    * @see EventPlayerConnectionRetry
    */
   PLAYER_CONNECTION_RETRY,
+  /**
+   * When an active player connection is being replaced by a newer connection.
+   *
+   * @see EventPlayerConnectionReplacing
+   */
+  PLAYER_CONNECTION_REPLACING,
   /**
    * When the server responds a player reconnected request.
    *

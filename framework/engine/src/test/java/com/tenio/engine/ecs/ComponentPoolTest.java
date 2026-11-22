@@ -91,11 +91,8 @@ class ComponentPoolTest {
 
   @Test
   public void throwingConstructorShouldCoverCatchBlock() {
-    ElementPool<Component> pool = new ComponentPool(ThrowingComponent.class);
-    for (int i = 0; i < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; i++) {
-      pool.get();
-    }
-    assertDoesNotThrow(() -> pool.get());
+    assertThrows(IllegalArgumentException.class,
+        () -> new ComponentPool(ThrowingComponent.class));
   }
 
   @Test

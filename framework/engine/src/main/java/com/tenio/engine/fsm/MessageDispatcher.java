@@ -29,9 +29,10 @@ import com.tenio.engine.constant.EngineConstant;
 import com.tenio.engine.fsm.entity.AbstractEntity;
 import com.tenio.engine.fsm.entity.Telegram;
 import com.tenio.engine.message.ExtraMessage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class is used for sending messages between entities.
@@ -57,7 +58,7 @@ public final class MessageDispatcher {
   public MessageDispatcher(EntityManager manager) {
     entityManager = manager;
     telegrams = new TreeSet<>();
-    messageListeners = new ArrayList<>();
+    messageListeners = new CopyOnWriteArrayList<>();
   }
 
   /**
@@ -71,8 +72,12 @@ public final class MessageDispatcher {
    * @param msgType  the message's type
    * @param info     the message extra information
    */
-  public void dispatchMessage(double delay, String sender, String receiver, int msgType,
+  public synchronized void dispatchMessage(double delay, String sender, String receiver, int msgType,
                               ExtraMessage info) {
+
+    if (!Double.isFinite(delay)) {
+      throw new IllegalArgumentException("delay must be finite");
+    }
 
     // get pointers to the receiver
     var preceiver = entityManager.get(receiver);
@@ -103,7 +108,7 @@ public final class MessageDispatcher {
    *
    * @param deltaTime the time between consecutive frames
    */
-  public void update(float deltaTime) {
+  public synchronized void update(float deltaTime) {
 
     // get current time
     double currentTime = TimeUtility.currentTimeSeconds();
@@ -121,7 +126,9 @@ public final class MessageDispatcher {
       var preceiver = entityManager.get(telegram.getReceiver());
 
       // send the telegram to the recipient
-      discharge(preceiver, telegram);
+      if (preceiver != null) {
+        discharge(preceiver, telegram);
+      }
 
       // remove it from the queue
       telegrams.remove(telegrams.last());
@@ -145,10 +152,10 @@ public final class MessageDispatcher {
   }
 
   public void listen(MessageListener listener) {
-    messageListeners.add(listener);
+    messageListeners.add(Objects.requireNonNull(listener, "listener"));
   }
 
-  public void clear() {
+  public synchronized void clear() {
     messageListeners.clear();
     telegrams.clear();
   }

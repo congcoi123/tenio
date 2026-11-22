@@ -24,16 +24,19 @@ THE SOFTWARE.
 
 package com.tenio.core.server;
 
+import com.tenio.core.admin.ServerInspection;
 import com.tenio.common.configuration.Configuration;
 import com.tenio.core.api.ServerApi;
 import com.tenio.core.bootstrap.BootstrapHandler;
 import com.tenio.core.bootstrap.Bootstrapper;
 import com.tenio.core.command.client.ClientCommandManager;
+import com.tenio.core.configuration.ConfigurationSource;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.entity.outbound.Response;
+import com.tenio.core.network.security.filter.ConnectionFilter;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import io.netty.bootstrap.Bootstrap;
 
@@ -56,9 +59,23 @@ public interface Server {
   void start(BootstrapHandler bootstrapHandler, String[] params) throws Exception;
 
   /**
+   * Starts with XML already read by the application launcher.
+   */
+  default void start(BootstrapHandler bootstrapHandler, String[] params, ConfigurationSource source) throws Exception {
+    start(bootstrapHandler, params);
+  }
+
+  /**
    * Shuts down the server and closes all services.
    */
   void shutdown();
+
+  /**
+   * Returns the active TCP and WebSocket connection filter.
+   */
+  default ConnectionFilter getConnectionFilter() {
+    return null;
+  }
 
   /**
    * Retrieves a server APIs object which provides all supporting APIs on the server.
@@ -132,6 +149,13 @@ public interface Server {
    * @return the current server's uptime in milliseconds
    */
   long getUptime();
+
+  /**
+   * Available when the local admin window or operational history is enabled.
+   */
+  default ServerInspection getInspection() {
+    return null;
+  }
 
   /**
    * Writes down data to socket/channel to send them to client sides.

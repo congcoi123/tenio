@@ -67,3 +67,15 @@
 ## 0.7.0 2026-04-12 Feature release
 - Supports Java 21 Features
 - Changed APIs in TaskManager
+
+## 1.0.0 2026-11-11 Feature release
+- Made snapshots recursively immutable for `CommonArray`, `CommonMap`, and `MsgPackMap`, and detached read-only snapshots for `ZeroArray` and `ZeroMap`.
+- Added payload size and nesting limits to the MessagePack and Zero codecs. Decoders reject malformed or trailing data, and the Zero codec reports invalid payloads with `IllegalArgumentException`. Added MessagePack numeric and array conversions.
+- Hardened XML parsing by rejecting DOCTYPE declarations and blocking external entities and schemas.
+- Updated `TaskManager` to reserve task IDs during startup, reject duplicate starts, and keep cancellation scoped to the requested ID. Finished or canceled tasks can be replaced.
+- Reworked `WorkerPool` around a bounded executor. Submitting to a full queue now throws `RejectedExecutionException`.
+- Updated `StringBuilderPool` to track borrowed builders and discard oversized buffers on return. Borrowing, returns, and cleanup are synchronized, and builders borrowed before cleanup can be returned once and are then discarded.
+- Made Gaussian sampling thread-safe and fixed trimming with an empty delimiter.
+- Added regression tests for configuration parsing, task startup and cancellation races, and concurrent builder borrowing, returns, and cleanup.
+- Replaced the obsolete JUnit Platform runner dependency with the suite API so Maven discovers and executes the JUnit 5 tests.
+- Scoped static mocks in `StringUtilityTest` so they are closed before subsequent tests run.

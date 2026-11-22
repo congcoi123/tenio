@@ -67,7 +67,7 @@ class HelpCommandTest {
   @Test
   @DisplayName("getUsage returns usage array")
   void testGetUsage() {
-    assertArrayEquals(new String[]{"[<command>,<command>,<command>]"}, helpCommand.getUsage());
+    assertArrayEquals(new String[]{"[name]", "all"}, helpCommand.getUsage());
   }
 
   @Test
@@ -100,6 +100,6 @@ class HelpCommandTest {
     var serverCommand = new ServerCommand();
     manager.registerCommand("server", serverCommand);
     serverCommand.setCommandManager(manager);
-    assertDoesNotThrow(() -> helpCommand.execute(new ArrayList<>(List.of("help,server"))));
+    assertDoesNotThrow(() -> helpCommand.execute(List.of("HELP,", "server")));
   }
 }

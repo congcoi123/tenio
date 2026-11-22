@@ -34,26 +34,28 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to mark fields that can be autowired with {@code null} values.
- * This annotation is similar to {@link Autowired} but allows the dependency
- * injection system to inject {@code null} values when no suitable bean is found.
+ * Annotation used to mark fields that can be autowired with {@code null} values. This annotation is
+ * similar to {@link Autowired} but allows the dependency injection system to inject {@code null}
+ * values when no suitable bean is found.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Optional dependency injection</li>
- *   <li>Null value acceptance</li>
- *   <li>Integration with dependency injection</li>
- *   <li>Runtime retention for reflection-based processing</li>
- *   <li>Field-level annotation</li>
+ *   <li>Optional dependency injection
+ *   <li>Null value acceptance
+ *   <li>Integration with dependency injection
+ *   <li>Runtime retention for reflection-based processing
+ *   <li>Field-level annotation
  * </ul>
  *
  * <p>Usage example:
+ *
  * <pre>
  * {@code @Component
  * public class UserService {
  *     @AutowiredAcceptNull
  *     private EmailService emailService; // Can be null if no EmailService bean exists
- *     
+ *
  *     public void sendNotification(User user) {
  *         if (emailService != null) {
  *             emailService.sendEmail(user.getEmail());
@@ -64,10 +66,11 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * <p>Note: This annotation is useful when:
+ *
  * <ul>
- *   <li>A dependency is optional</li>
- *   <li>Fallback behavior is needed when no bean is found</li>
- *   <li>Gradual feature enablement is desired</li>
+ *   <li>A dependency is optional
+ *   <li>Fallback behavior is needed when no bean is found
+ *   <li>Gradual feature enablement is desired
  * </ul>
  *
  * @see Autowired
@@ -80,4 +83,15 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 @Documented
 public @interface AutowiredAcceptNull {
+
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 }

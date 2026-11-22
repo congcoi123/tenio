@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.utility.entity;
 
+import java.util.Objects;
+
 /**
  * Keeps references to three objects.
  *
@@ -36,4 +38,27 @@ package com.tenio.core.utility.entity;
  * @since 0.6.7
  */
 public record Triple<F, S, T>(F first, S second, T third) {
+
+  @Override
+  public String toString() {
+    return "Triple[first=" + describe(first) + ", second=" + describe(second)
+        + ", third=" + describe(third) + "]";
+  }
+
+  private static String describe(Object value) {
+    return switch (value) {
+      case null -> "null";
+      case String text -> text;
+      case Boolean flag -> flag.toString();
+      case Character character -> character.toString();
+      case Byte number -> number.toString();
+      case Short number -> number.toString();
+      case Integer number -> number.toString();
+      case Long number -> number.toString();
+      case Float number -> number.toString();
+      case Double number -> number.toString();
+      case Enum<?> constant -> constant.name();
+      default -> Objects.toIdentityString(value);
+    };
+  }
 }

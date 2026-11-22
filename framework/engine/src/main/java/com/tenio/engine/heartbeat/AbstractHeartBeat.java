@@ -36,6 +36,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.TreeSet;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -103,13 +104,14 @@ public abstract class AbstractHeartBeat extends AbstractLogger
   /**
    * Frame per second.
    */
-  private int currentFps;
+  private volatile int currentFps;
   private int frameCount;
 
-  private int currentCcu;
+  private volatile int currentCcu;
 
-  private boolean running;
-  private boolean debugging;
+  private volatile boolean running;
+  private volatile boolean paused;
+  private volatile boolean debugging;
 
   /**
    * Create a new instance with default FPS value, see {@value #TARGET_FPS}.
@@ -120,6 +122,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger
     currentCcu = 0;
 
     running = true;
+    paused = false;
     debugging = false;
   }
 
@@ -142,7 +145,7 @@ public abstract class AbstractHeartBeat extends AbstractLogger
    * @param listener the messages' listener
    */
   public void setMessageListener(TreeSet<HeartbeatMessage> listener) {
-    this.listener = listener;
+    this.listener = Objects.requireNonNull(listener, "listener");
   }
 
   /**
@@ -163,11 +166,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger
    */
   protected void pause(final boolean pause) {
     if (pause) { // pause
-      running = false;
+      paused = true;
       onPause();
     } else { // resume
       onResume();
-      running = true;
+      paused = false;
     }
   }
 
@@ -251,14 +254,21 @@ public abstract class AbstractHeartBeat extends AbstractLogger
     // Simple way of finding FPS.
     int lastSecondTime = (int) (lastUpdateTime / 1000000000);
 
-    while (running) {
+    try {
+      while (running && !Thread.currentThread().isInterrupted()) {
+        if (paused) {
+          Thread.sleep(1);
+          lastUpdateTime = System.nanoTime();
+          lastRenderTime = lastUpdateTime;
+          continue;
+        }
       double now = System.nanoTime();
       int updateCount = 0;
 
       // Do as many game updates as we need to, potentially playing catch-up.
       while (now - lastUpdateTime > TIME_BETWEEN_UPDATES
           && updateCount < MAX_UPDATES_BEFORE_RENDER) {
-        float delta = 1.0f / currentFps;
+        float delta = 1.0f / TARGET_FPS;
 
         // Message communication
         // get current time
@@ -267,13 +277,11 @@ public abstract class AbstractHeartBeat extends AbstractLogger
         // now peek at the queue to see if any telegrams need dispatching.
         // remove all telegrams from the front of the queue that have gone
         // past their sell by date
-        while (!listener.isEmpty() && (listener.last().getDelayTime() < currentTime)) {
-          // read the message from the front of the queue
-          var message = listener.last();
-          // listening
-          onMessage(message.getMessage());
-          // remove it from the queue
-          listener.remove(message);
+        synchronized (listener) {
+          while (!listener.isEmpty() && listener.last().getDelayTime() <= currentTime) {
+            var message = listener.pollLast();
+            onMessage(message.getMessage());
+          }
         }
 
         // Main update
@@ -322,10 +330,10 @@ public abstract class AbstractHeartBeat extends AbstractLogger
         // look at different peoples' solutions to this.
         try {
           Thread.sleep(1);
-        } catch (Exception exception) {
-          // can dispose
-          onDispose();
-          return;
+        } catch (InterruptedException exception) {
+          Thread.currentThread().interrupt();
+          running = false;
+          break;
         }
 
         now = System.nanoTime();
@@ -333,6 +341,12 @@ public abstract class AbstractHeartBeat extends AbstractLogger
 
       // update counter
       frameCount++;
+      }
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
+    } finally {
+      running = false;
+      onDispose();
     }
   }
 

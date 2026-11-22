@@ -150,8 +150,8 @@ public class SessionRequest implements Request {
         "id=" + id +
         ", timestamp=" + timestamp +
         ", event=" + event +
-        ", session=" + session +
-        ", message=" + message +
+        ", sessionId=" + (session == null ? null : session.getId()) +
+        ", messageType=" + (message == null ? null : message.getClass().getName()) +
         ", priority=" + priority +
         '}';
   }

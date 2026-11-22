@@ -42,6 +42,8 @@ public final class WebSocketSslContext extends SystemLogger {
   private static final String DEFAULT_PROTOCOL = "TLS";
 
   private static final String KEYSTORE_FILE_PASSWORD = "keystore.file.password";
+  private static final String KEYSTORE_FILE_PATH = "keystore.file.path";
+  private static final String KEYSTORE_PASSWORD_ENV = "TENIO_KEYSTORE_PASSWORD";
   private static final String DEFAULT_KEYSTORE_PATH = "websocket-ssl-key.bin";
 
   private SSLContext serverContext;
@@ -50,33 +52,35 @@ public final class WebSocketSslContext extends SystemLogger {
    * Initialization.
    */
   public WebSocketSslContext() {
-
     try {
       var algorithm = Security.getProperty(KEY_MANAGER_FACTORY_ALGORITHM);
       if (algorithm == null) {
         algorithm = DEFAULT_ALGORITHM;
       }
 
-      try {
-        var keyStoreFilePassword = System.getProperty(KEYSTORE_FILE_PASSWORD);
-        var keyStore = KeyStore.getInstance(DEFAULT_KEYSTORE);
-        var fileInputStream = new FileInputStream(DEFAULT_KEYSTORE_PATH);
-        keyStore.load(fileInputStream, keyStoreFilePassword.toCharArray());
-
-        var keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
-        keyManagerFactory.init(keyStore, keyStoreFilePassword.toCharArray());
-
-        serverContext = SSLContext.getInstance(DEFAULT_PROTOCOL);
-        serverContext.init(keyManagerFactory.getKeyManagers(), null, null);
-      } catch (Exception exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
+      var keyStoreFilePassword = System.getenv(KEYSTORE_PASSWORD_ENV);
+      if (keyStoreFilePassword == null || keyStoreFilePassword.isBlank()) {
+        keyStoreFilePassword = System.getProperty(KEYSTORE_FILE_PASSWORD);
       }
+      if (keyStoreFilePassword == null || keyStoreFilePassword.isBlank()) {
+        throw new IllegalStateException("Missing WebSocket TLS keystore password. Set "
+            + KEYSTORE_PASSWORD_ENV + " or -D" + KEYSTORE_FILE_PASSWORD);
+      }
+
+      var keyStorePath = System.getProperty(KEYSTORE_FILE_PATH, DEFAULT_KEYSTORE_PATH);
+      var keyStore = KeyStore.getInstance(DEFAULT_KEYSTORE);
+      char[] password = keyStoreFilePassword.toCharArray();
+      try (var fileInputStream = new FileInputStream(keyStorePath)) {
+        keyStore.load(fileInputStream, password);
+      }
+
+      var keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
+      keyManagerFactory.init(keyStore, password);
+
+      serverContext = SSLContext.getInstance(DEFAULT_PROTOCOL);
+      serverContext.init(keyManagerFactory.getKeyManagers(), null, null);
     } catch (Exception exception) {
-      if (isErrorEnabled()) {
-        error(exception);
-      }
+      throw new IllegalStateException("Unable to initialize WebSocket TLS", exception);
     }
   }
 

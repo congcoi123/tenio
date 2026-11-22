@@ -26,6 +26,7 @@ package com.tenio.core.network.netty.websocket;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -178,6 +179,7 @@ class NettyWsHandlerTest {
 
     assertDoesNotThrow(() -> handler.channelRead(ctx, frame));
 
+    verify(session).setLastReliableReadTime(anyLong());
     verify(session).enqueueInbound(message);
     verify(networkReaderStatistic).updateReadBytes(3);
     verify(networkReaderStatistic).updateReadPackets(1);
@@ -336,6 +338,7 @@ class NettyWsHandlerTest {
     verify(eventManager).emit(eq(ServerEvent.WEBSOCKET_CONNECTION_REFUSED), eq(channel),
         any(RefusedConnectionAddressException.class));
     verify(channel).close();
+    verify(sessionManager, never()).createWebSocketSession(channel);
   }
 
   @Test

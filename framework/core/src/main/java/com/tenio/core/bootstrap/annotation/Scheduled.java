@@ -22,7 +22,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package com.tenio.example;
+package com.tenio.core.bootstrap.annotation;
 
-public final class TestTenIOExample {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Schedules a public, parameterless instance method on a managed bean.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Scheduled {
+
+    /**
+     * Delay in seconds measured from completion of the previous invocation.
+     */
+    long intervalSeconds() default 0;
+
+    /**
+     * Delay before the first interval invocation.
+     */
+    long initialDelaySeconds() default 0;
+
+    /**
+     * Five-field numeric cron expression, starting with minutes.
+     */
+    String cron() default "";
+
+    /**
+     * Time zone for cron expressions.
+     */
+    String zone() default "UTC";
+
+    /**
+     * Optional worker name visible during this invocation.
+     */
+    String threadName() default "";
+
+    /**
+     * Active profiles, using the same rules as Component.
+     */
+    String[] profile() default {};
 }

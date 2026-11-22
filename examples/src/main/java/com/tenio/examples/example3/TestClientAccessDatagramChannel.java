@@ -31,6 +31,9 @@ import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
+import com.tenio.examples.client.ClientTasks;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import com.tenio.examples.client.UDP;
 import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
@@ -51,35 +54,39 @@ public final class TestClientAccessDatagramChannel implements SocketListener<Zer
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
   private final String playerName;
-  private UDP udp;
+  private volatile UDP udp;
+  private final ClientTasks tasks = new ClientTasks();
+  private int echoesSent;
+  private boolean started;
   private int udpConvey;
 
-  public TestClientAccessDatagramChannel() {
+  public TestClientAccessDatagramChannel() throws IOException {
     playerName = ClientUtility.generateRandomString(5);
 
-    // create a new TCP object and listen to this port
-    tcp = new TCP(SOCKET_PORT, it -> {
-      it.receive(TestClientAccessDatagramChannel.this);
-
-      // send a login request
-      var request =
-          DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-      it.send(request);
-
-      System.out.println("Login Request -> " + request);
+    tcp = new TCP("localhost", SOCKET_PORT, 5000);
+    tcp.handleDisconnection(() -> {
+      tasks.close();
+      if (udp != null) {
+        udp.close();
+      }
     });
+    tcp.send(DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName));
+    tcp.receive(this);
   }
 
   /**
    * The entry point.
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     new TestClientAccessDatagramChannel();
   }
 
   @Override
   public void onReceivedTCP(ZeroMap parcel) {
     System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
+    if (!parcel.containsKey(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL)) {
+      return;
+    }
     ZeroArray udpParcel = parcel.getZeroArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
 
     switch (udpParcel.getByte(0)) {
@@ -91,12 +98,17 @@ public final class TestClientAccessDatagramChannel implements SocketListener<Zer
             DataUtility.newZeroMap().putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
                 udpMessageData);
         // create a new UDP object and listen to this port
-        udp = new UDP(udpParcel.getInteger(1), it -> {
-          it.receive(TestClientAccessDatagramChannel.this);
-          it.send(request);
-
-          System.out.println("Request a UDP connection -> " + request);
-        });
+        if (udp != null) {
+          return;
+        }
+        try {
+          udp = new UDP("localhost", udpParcel.getInteger(1));
+          udp.receive(this);
+          udp.send(request);
+        } catch (IOException exception) {
+          tcp.close();
+          throw new java.io.UncheckedIOException(exception);
+        }
       }
       case DatagramEstablishedState.ESTABLISHED -> {
         udpConvey = udpParcel.getInteger(1);
@@ -108,32 +120,25 @@ public final class TestClientAccessDatagramChannel implements SocketListener<Zer
         udp.send(request);
       }
       case DatagramEstablishedState.COMMUNICATING -> {
-        // the UDP connected successful, you now can send test requests
-        System.out.println("Start the conversation ...");
-
-        for (int i = 1; i <= 100; i++) {
-          var udpMessageData = DataUtility.newZeroMap();
-          udpMessageData.putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING);
-          udpMessageData.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO,
-              String.format("Hello from client %d", i));
-          var request = DataUtility.newZeroMap();
-          request.putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey);
-          request.putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, udpMessageData);
-          udp.send(request);
-
-          System.out.println("[SENT TO SERVER " + i + "] -> " + request);
-
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException exception) {
-            exception.printStackTrace();
-          }
+        if (!started) {
+          started = true;
+          tasks.repeat(this::sendEcho, 0, 1, TimeUnit.SECONDS);
         }
-
-        tcp.close();
-        udp.close();
       }
     }
+  }
+
+  private void sendEcho() {
+    if (++echoesSent > 100) {
+      tcp.close();
+      return;
+    }
+    var body = DataUtility.newZeroMap()
+        .putByte(SharedEventKey.KEY_COMMAND, DatagramEstablishedState.COMMUNICATING)
+        .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client " + echoesSent);
+    udp.send(DataUtility.newZeroMap()
+        .putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey)
+        .putZeroMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, body));
   }
 
   @Override

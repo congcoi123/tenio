@@ -24,23 +24,59 @@ THE SOFTWARE.
 
 package com.tenio.core.command.system.implement;
 
+import com.google.common.net.InetAddresses;
 import com.tenio.core.bootstrap.annotation.SystemCommand;
+import com.tenio.core.network.security.filter.ConnectionFilter;
+import com.tenio.core.server.ServerImpl;
 import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.utility.CommandUtility;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
- * Allows removing banned Ip addresses from the ban list.
+ * Removes an IP address from the active connection filter.
  *
  * @since 0.4.0
  */
-@SystemCommand(label = "unban", usage = {
-    "[<address>,<command>,<command>]"
-}, description = "Allows removing banned Ip addresses from the ban list")
+@SystemCommand(label = "unban", profile = CoreConstant.MONITOR_PROFILE,
+    usage = {"<ip-address>"},
+    description = "Removes an IP address from the ban list")
 public final class UnBanAddressCommand extends AbstractSystemCommandHandler {
+
+  private final Supplier<ConnectionFilter> filter;
+
+  public UnBanAddressCommand() {
+    this(() -> ServerImpl.getInstance().getConnectionFilter());
+  }
+
+  UnBanAddressCommand(Supplier<ConnectionFilter> filter) {
+    this.filter = filter;
+  }
 
   @Override
   public void execute(List<String> arguments) {
-    CommandUtility.INSTANCE.showConsoleMessage("The feature is not available at the moment.");
+    if (arguments.size() != 1 || !InetAddresses.isInetAddress(arguments.getFirst())) {
+      CommandUtility.INSTANCE.showConsoleMessage("Usage: unban <ip-address>");
+      return;
+    }
+    var activeFilter = filter.get();
+    if (activeFilter == null) {
+      CommandUtility.INSTANCE.showConsoleMessage("The connection filter is unavailable.");
+      return;
+    }
+    String input = arguments.getFirst();
+    String canonical = InetAddresses.forString(input).getHostAddress();
+    var banned = Arrays.asList(activeFilter.getBannedAddresses());
+    if (banned.contains(input)) {
+      activeFilter.removeBannedAddress(input);
+    } else if (banned.contains(canonical)) {
+      activeFilter.removeBannedAddress(canonical);
+    } else {
+      CommandUtility.INSTANCE.showConsoleMessage("Address is not banned: " + input);
+      return;
+    }
+    CommandUtility.INSTANCE.showConsoleMessage("Unbanned " + input);
   }
 }

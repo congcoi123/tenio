@@ -26,6 +26,7 @@ package com.tenio.common.utility;
 
 import java.io.File;
 import java.io.InputStream;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -41,8 +42,6 @@ import org.w3c.dom.NodeList;
  */
 public final class XmlUtility {
 
-  private static XPath oXpath;
-
   private XmlUtility() {
     throw new UnsupportedOperationException("This class does not support to create a new instance");
   }
@@ -55,15 +54,7 @@ public final class XmlUtility {
    * @throws Exception the exception
    */
   public static Document parseFile(File file) throws Exception {
-    var dbf = DocumentBuilderFactory.newInstance();
-    dbf.setValidating(false);
-    var db = dbf.newDocumentBuilder();
-    Document doc = db.parse(file);
-
-    var factory = XPathFactory.newInstance();
-    oXpath = factory.newXPath();
-
-    return doc;
+    return newDocumentBuilderFactory().newDocumentBuilder().parse(file);
   }
 
   /**
@@ -74,15 +65,7 @@ public final class XmlUtility {
    * @throws Exception the exception
    */
   public static Document parseStream(InputStream in) throws Exception {
-    var dbf = DocumentBuilderFactory.newInstance();
-    dbf.setValidating(false);
-    var db = dbf.newDocumentBuilder();
-    Document doc = db.parse(in);
-
-    var factory = XPathFactory.newInstance();
-    oXpath = factory.newXPath();
-
-    return doc;
+    return newDocumentBuilderFactory().newDocumentBuilder().parse(in);
   }
 
   /**
@@ -104,7 +87,7 @@ public final class XmlUtility {
    * @throws XPathExpressionException the exception
    */
   public static NodeList getNodeList(Node node, String xpath) throws XPathExpressionException {
-    return (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
+    return (NodeList) newXPath().evaluate(xpath, node, XPathConstants.NODESET);
   }
 
   /**
@@ -116,7 +99,7 @@ public final class XmlUtility {
    * @throws XPathExpressionException the exception
    */
   public static Node getNode(Node node, String xpath) throws XPathExpressionException {
-    return (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
+    return (Node) newXPath().evaluate(xpath, node, XPathConstants.NODE);
   }
 
   /**
@@ -129,5 +112,24 @@ public final class XmlUtility {
   public static String getAttrVal(Node node, String name) {
     var elementNode = (Element) node;
     return elementNode.getAttribute(name);
+  }
+
+  private static DocumentBuilderFactory newDocumentBuilderFactory() throws Exception {
+    var factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    factory.setXIncludeAware(false);
+    factory.setExpandEntityReferences(false);
+    factory.setValidating(false);
+    return factory;
+  }
+
+  private static XPath newXPath() {
+    return XPathFactory.newInstance().newXPath();
   }
 }

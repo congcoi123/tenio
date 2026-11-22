@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.Map;
@@ -126,5 +128,32 @@ class ConfigurationTest {
     } finally {
       Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.OFF);
     }
+  }
+
+  @Test
+  void missingStringAndBooleanRetainOriginalDefaults() {
+    assertNull(configuration.getString(DefaultConfigurationType.NULL_DEFINED));
+    assertFalse(configuration.getBoolean(DefaultConfigurationType.NULL_DEFINED));
+  }
+
+  @Test
+  void typedGettersRequireStringValues() {
+    var config = new DefaultConfiguration();
+    config.push(DefaultConfigurationType.BOOLEAN, Boolean.TRUE);
+    config.push(DefaultConfigurationType.INTEGER, 42);
+    config.push(DefaultConfigurationType.FLOAT, 1.5F);
+    config.push(DefaultConfigurationType.STRING, 42);
+
+    assertAll(
+        () -> assertThrows(ClassCastException.class,
+            () -> config.getBoolean(DefaultConfigurationType.BOOLEAN)),
+        () -> assertThrows(ClassCastException.class,
+            () -> config.getInt(DefaultConfigurationType.INTEGER)),
+        () -> assertThrows(ClassCastException.class,
+            () -> config.getFloat(DefaultConfigurationType.FLOAT)),
+        () -> assertThrows(ClassCastException.class,
+            () -> config.getString(DefaultConfigurationType.STRING)),
+        () -> assertThrows(ClassCastException.class,
+            () -> config.isDefined(DefaultConfigurationType.STRING)));
   }
 }

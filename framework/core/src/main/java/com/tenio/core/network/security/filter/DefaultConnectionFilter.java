@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The default implementation for the connection filter.
@@ -37,8 +36,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultConnectionFilter implements ConnectionFilter {
 
   private final Set<String> bannedAddresses;
-  private final Map<String, AtomicInteger> addressMap;
-  private int maxConnectionsPerIp;
+  private final Map<String, Integer> addressMap;
+  private final Object addressLock;
+  private volatile int maxConnectionsPerIp;
 
   /**
    * Initialization.
@@ -46,19 +46,20 @@ public class DefaultConnectionFilter implements ConnectionFilter {
   public DefaultConnectionFilter() {
     bannedAddresses = new HashSet<>();
     addressMap = new HashMap<>();
+    addressLock = new Object();
     maxConnectionsPerIp = DEFAULT_MAX_CONNECTIONS_PER_IP;
   }
 
   @Override
   public void addBannedAddress(String addressIp) {
-    synchronized (bannedAddresses) {
+    synchronized (addressLock) {
       bannedAddresses.add(addressIp);
     }
   }
 
   @Override
   public void removeBannedAddress(String addressIp) {
-    synchronized (bannedAddresses) {
+    synchronized (addressLock) {
       bannedAddresses.remove(addressIp);
     }
   }
@@ -66,7 +67,7 @@ public class DefaultConnectionFilter implements ConnectionFilter {
   @Override
   public String[] getBannedAddresses() {
     String[] set;
-    synchronized (bannedAddresses) {
+    synchronized (addressLock) {
       set = new String[bannedAddresses.size()];
       set = bannedAddresses.toArray(set);
       return set;
@@ -75,36 +76,30 @@ public class DefaultConnectionFilter implements ConnectionFilter {
 
   @Override
   public void validateAndAddAddress(String addressIp) {
-    if (isAddressBanned(addressIp)) {
-      throw new RefusedConnectionAddressException("The IP address has banned", addressIp);
-    }
-
-    synchronized (addressMap) {
-      var counter = addressMap.get(addressIp);
-      if (counter != null && counter.intValue() >= maxConnectionsPerIp) {
+    synchronized (addressLock) {
+      if (bannedAddresses.contains(addressIp)) {
+        throw new RefusedConnectionAddressException("The IP address has banned", addressIp);
+      }
+      int counter = addressMap.getOrDefault(addressIp, 0);
+      if (counter >= maxConnectionsPerIp) {
         throw new RefusedConnectionAddressException(
             String.format("The IP address has reached maximum (%d) allowed connection",
-                counter.intValue()),
+                counter),
             addressIp);
       }
-
-      if (counter == null) {
-        counter = new AtomicInteger(1);
-        addressMap.put(addressIp, counter);
-      } else {
-        counter.incrementAndGet();
-      }
+      addressMap.put(addressIp, counter + 1);
     }
   }
 
   @Override
   public void removeAddress(String addressIp) {
-    synchronized (addressMap) {
-      var counter = addressMap.get(addressIp);
+    synchronized (addressLock) {
+      Integer counter = addressMap.get(addressIp);
       if (counter != null) {
-        int value = counter.decrementAndGet();
-        if (value == 0) {
+        if (counter <= 1) {
           addressMap.remove(addressIp);
+        } else {
+          addressMap.put(addressIp, counter - 1);
         }
       }
     }
@@ -115,18 +110,14 @@ public class DefaultConnectionFilter implements ConnectionFilter {
     maxConnectionsPerIp = maxConnections;
   }
 
-  private boolean isAddressBanned(String addressIp) {
-    synchronized (bannedAddresses) {
-      return bannedAddresses.contains(addressIp);
-    }
-  }
-
   @Override
   public String toString() {
-    return "DefaultConnectionFilter{" +
-        "bannedAddresses=" + bannedAddresses +
-        ", addressMap=" + addressMap +
-        ", maxConnectionsPerIp=" + maxConnectionsPerIp +
-        '}';
+    synchronized (addressLock) {
+      return "DefaultConnectionFilter{" +
+          "bannedAddresses=" + bannedAddresses +
+          ", addressMap=" + addressMap +
+          ", maxConnectionsPerIp=" + maxConnectionsPerIp +
+          '}';
+    }
   }
 }

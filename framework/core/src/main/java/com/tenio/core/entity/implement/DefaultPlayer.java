@@ -55,15 +55,13 @@ public class DefaultPlayer implements Player {
   private volatile long lastReadTime;
   private volatile long lastWriteTime;
   private volatile long lastActivityTime;
+  private volatile long disconnectedTime;
 
   private volatile int playerSlotInCurrentRoom;
 
   private volatile boolean loggedIn;
   private volatile boolean activated;
-  private volatile boolean deportedFlag;
-
   private int maxIdleTimeInSecond;
-  private int maxIdleTimeNeverDeportedInSecond;
 
   /**
    * Constructor.
@@ -184,11 +182,6 @@ public class DefaultPlayer implements Player {
     return lastActivityTime;
   }
 
-  @Override
-  public long getInactiveTimeInSeconds() {
-    return (now() - getLastActivityTime()) / 1000L;
-  }
-
   private void setLastActivityTime(long timestamp) {
     lastActivityTime = timestamp;
   }
@@ -216,24 +209,9 @@ public class DefaultPlayer implements Player {
   }
 
   @Override
-  public boolean isIdle() {
-    return isConnectionIdle(maxIdleTimeInSecond);
-  }
-
-  @Override
-  public boolean isNeverDeported() {
-    return deportedFlag;
-  }
-
-  @Override
-  public void setNeverDeported(boolean flag) {
-    deportedFlag = flag;
-    notifyUpdate(Field.DEPORTATION);
-  }
-
-  @Override
-  public boolean isIdleNeverDeported() {
-    return isNeverDeported() && isConnectionIdle(maxIdleTimeNeverDeportedInSecond);
+  public boolean isReconnectGracePeriodExpired() {
+    return maxIdleTimeInSecond > 0 && session == null && disconnectedTime > 0L &&
+        now() - disconnectedTime >= maxIdleTimeInSecond * 1000L;
   }
 
   @Override
@@ -242,12 +220,20 @@ public class DefaultPlayer implements Player {
   }
 
   @Override
-  public void setSession(Session session) {
+  public synchronized void setSession(Session session) {
+    // Session.associatePlayer owns the association lock before calling this method. Assign the
+    // player-side reference before publishing DONE so that state is never visible without the
+    // matching reference.
+    if (session == null && this.session != null) {
+      disconnectedTime = now();
+    } else if (session != null) {
+      disconnectedTime = 0L;
+    }
+    this.session = session;
     if (session != null) {
       session.setName(identity);
       session.setAssociatedToPlayer(Session.AssociatedState.DONE);
     }
-    this.session = session;
   }
 
   @Override
@@ -283,7 +269,9 @@ public class DefaultPlayer implements Player {
   @Override
   public void setCurrentRoom(Room room) {
     currentRoom = room;
-    setPlayerSlotInCurrentRoom(room == null ? Room.NIL_SLOT : Room.DEFAULT_SLOT);
+    if (room == null) {
+      setPlayerSlotInCurrentRoom(Room.NIL_SLOT);
+    }
     setLastJoinedRoomTime();
   }
 
@@ -349,11 +337,6 @@ public class DefaultPlayer implements Player {
     maxIdleTimeInSecond = seconds;
   }
 
-  @Override
-  public void configureMaxIdleTimeNeverDeportedInSeconds(int seconds) {
-    maxIdleTimeNeverDeportedInSecond = seconds;
-  }
-
   /**
    * Retrieves current time in milliseconds.
    *
@@ -362,10 +345,6 @@ public class DefaultPlayer implements Player {
    */
   protected long now() {
     return TimeUtility.currentTimeMillis();
-  }
-
-  private boolean isConnectionIdle(int maxIdleTimeInSecond) {
-    return (maxIdleTimeInSecond > 0) && (getInactiveTimeInSeconds() > maxIdleTimeInSecond);
   }
 
   private void setLastLoggedInTime() {
@@ -395,12 +374,15 @@ public class DefaultPlayer implements Player {
 
   @Override
   public String toString() {
+    var currentState = state.get();
+    var activeSession = session;
+    var room = currentRoom;
     return "DefaultPlayer{" +
         "identity='" + identity + '\'' +
-        ", properties=" + properties +
-        ", session=" + session +
-        ", currentRoom=" + currentRoom +
-        ", state=" + state.get() +
+        ", propertyCount=" + properties.size() +
+        ", sessionId=" + (activeSession == null ? null : activeSession.getId()) +
+        ", currentRoomId=" + (room == null ? null : room.getId()) +
+        ", stateType=" + (currentState == null ? null : currentState.getClass().getName()) +
         ", roleInRoom=" + roleInRoom.get() +
         ", lastLoginTime=" + lastLoginTime +
         ", lastJoinedRoomTime=" + lastJoinedRoomTime +
@@ -410,9 +392,7 @@ public class DefaultPlayer implements Player {
         ", playerSlotInCurrentRoom=" + playerSlotInCurrentRoom +
         ", loggedIn=" + loggedIn +
         ", activated=" + activated +
-        ", deportedFlag=" + deportedFlag +
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
-        ", maxIdleTimeNeverDeportedInSecond=" + maxIdleTimeNeverDeportedInSecond +
         '}';
   }
 }

@@ -30,8 +30,9 @@ import com.tenio.engine.ecs.basis.Context;
 import com.tenio.engine.ecs.basis.Entity;
 import com.tenio.engine.ecs.pool.ComponentPool;
 import com.tenio.engine.ecs.pool.EntityPool;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A context manages the life-cycle of entities and groups. You can create and
@@ -54,7 +55,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
    */
   public ContextImpl(ContextInfo contextInfo, Class<T> clazz) {
     this.contextInfo = contextInfo;
-    entities = new HashMap<>();
+    entities = new LinkedHashMap<>();
     entityPool = new EntityPool(clazz, this.contextInfo);
     componentPools = new ComponentPool[getContextInfo().getNumberComponents()];
 
@@ -66,7 +67,7 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
   }
 
   @Override
-  public T createEntity() {
+  public synchronized T createEntity() {
     @SuppressWarnings("unchecked")
     var entity = (T) entityPool.get();
     entity.setComponentPools(componentPools);
@@ -75,25 +76,29 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
   }
 
   @Override
-  public T getEntity(String entityId) {
+  public synchronized T getEntity(String entityId) {
     return entities.get(entityId);
   }
 
   @Override
-  public void destroyEntity(T entity) {
-    entity.reset();
+  public synchronized void destroyEntity(T entity) {
+    Objects.requireNonNull(entity, "entity");
+    if (entities.get(entity.getId()) != entity) {
+      return;
+    }
     entities.remove(entity.getId());
+    reclaimComponents(entity);
     entityPool.repay(entity);
   }
 
   @Override
-  public boolean hasEntity(T entity) {
-    return entities.containsKey(entity.getId());
+  public synchronized boolean hasEntity(T entity) {
+    return entity != null && entities.get(entity.getId()) == entity;
   }
 
   @Override
-  public Map<String, T> getEntities() {
-    return entities;
+  public synchronized Map<String, T> getEntities() {
+    return Map.copyOf(entities);
   }
 
   @Override
@@ -102,23 +107,37 @@ public class ContextImpl<T extends EntityImpl> implements Context<T> {
   }
 
   @Override
-  public int getEntitiesCount() {
+  public synchronized int getEntitiesCount() {
     return entities.size();
   }
 
   @Override
-  public void destroyAllEntities() {
-    entities.values().forEach(EntityImpl::reset);
-    entities.clear();
+  public synchronized void destroyAllEntities() {
+    for (var entity : java.util.List.copyOf(entities.values())) {
+      destroyEntity(entity);
+    }
   }
 
   @Override
-  public void reset() {
+  public synchronized void reset() {
     destroyAllEntities();
     entityPool.cleanup();
     for (var componentPool : componentPools) {
       if (componentPool != null) {
         componentPool.cleanup();
+      }
+    }
+  }
+
+  private void reclaimComponents(T entity) {
+    var components = entity.getComponents();
+    for (int i = 0; i < components.length; i++) {
+      if (components[i] != null && componentPools[i] != null) {
+        if (!(componentPools[i] instanceof ComponentPool pool)
+            || pool.isBorrowed(components[i])) {
+          componentPools[i].repay(components[i]);
+        }
+        entity.replaceComponent(i, null);
       }
     }
   }

@@ -42,4 +42,14 @@ public final class ServiceRuntimeException extends RuntimeException {
   public ServiceRuntimeException(String message) {
     super(message);
   }
+
+  /**
+   * Creates a service exception with its underlying cause.
+   *
+   * @param message the warning {@link String} message
+   * @param cause   the exception that prevented the service from operating
+   */
+  public ServiceRuntimeException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -45,14 +45,15 @@ import java.util.function.Consumer;
 public final class PlayerManagerImpl extends AbstractManager implements PlayerManager {
 
   private final Map<String, Player> players;
+  private final Object playersLock;
   private volatile List<Player> snapshotPlayersList;
   private volatile int snapshotPlayerCount;
-  private int maxIdleTimeInSecond;
-  private int maxIdleTimeNeverDeportedInSecond;
+  private volatile int maxIdleTimeInSecond;
 
   private PlayerManagerImpl(EventManager eventManager) {
     super(eventManager);
     players = new HashMap<>();
+    playersLock = new Object();
     snapshotPlayersList = new ArrayList<>();
   }
 
@@ -72,13 +73,11 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
       throw new NullPointerException("Unable to process an unavailable player");
     }
 
-    if (containsPlayerIdentity(player.getIdentity())) {
-      throw new AddedDuplicatedPlayerException(player);
-    }
-
-    configureInitialPlayer(player);
-
-    synchronized (this) {
+    synchronized (playersLock) {
+      if (players.containsKey(player.getIdentity())) {
+        throw new AddedDuplicatedPlayerException(player);
+      }
+      configureInitialPlayer(player);
       players.put(player.getIdentity(), player);
       snapshotPlayersList = players.values().stream().toList();
       snapshotPlayerCount = players.size();
@@ -88,7 +87,6 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   @Override
   public Player createPlayer(String playerName) {
     Player player = DefaultPlayer.newInstance(playerName);
-    configureInitialPlayer(player);
     addPlayer(player);
     return player;
   }
@@ -99,22 +97,32 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
       throw new NullPointerException("Unable to assign a null session to the player");
     }
 
-    Player player = DefaultPlayer.newInstance(playerName, session);
-    configureInitialPlayer(player);
+    // Register the player before publishing the session association. The close handler can then
+    // always find the player after it observes DONE.
+    Player player = DefaultPlayer.newInstance(playerName);
     addPlayer(player);
+    if (!associateSession(player, session)) {
+      removePlayerByIdentity(playerName);
+      throw new IllegalStateException("Unable to associate a closing session with player: "
+          + playerName);
+    }
     return player;
   }
 
   @Override
-  public synchronized Player getPlayerByIdentity(String playerIdentity) {
-    return players.get(playerIdentity);
+  public Player getPlayerByIdentity(String playerIdentity) {
+    synchronized (playersLock) {
+      return players.get(playerIdentity);
+    }
   }
 
   @Override
   public void computePlayers(Consumer<Iterator<Player>> onComputed) {
-    synchronized (this) {
-      onComputed.accept(players.values().iterator());
+    List<Player> playersSnapshot;
+    synchronized (playersLock) {
+      playersSnapshot = new ArrayList<>(players.values());
     }
+    onComputed.accept(playersSnapshot.iterator());
   }
 
   @Override
@@ -123,18 +131,19 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public synchronized List<Player> getPlayersList() {
-    snapshotPlayersList = players.values().stream().toList();
-    return getSnapshotPlayersList();
+  public List<Player> getPlayersList() {
+    synchronized (playersLock) {
+      snapshotPlayersList = players.values().stream().toList();
+      return getSnapshotPlayersList();
+    }
   }
 
   @Override
   public void removePlayerByIdentity(String playerIdentity) {
-    if (!containsPlayerIdentity(playerIdentity)) {
-      throw new RemovedNonExistentPlayerException(playerIdentity);
-    }
-
-    synchronized (this) {
+    synchronized (playersLock) {
+      if (!players.containsKey(playerIdentity)) {
+        throw new RemovedNonExistentPlayerException(playerIdentity);
+      }
       players.remove(playerIdentity);
       snapshotPlayersList = players.values().stream().toList();
       snapshotPlayerCount = players.size();
@@ -142,8 +151,10 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public synchronized boolean containsPlayerIdentity(String playerIdentity) {
-    return players.containsKey(playerIdentity);
+  public boolean containsPlayerIdentity(String playerIdentity) {
+    synchronized (playersLock) {
+      return players.containsKey(playerIdentity);
+    }
   }
 
   @Override
@@ -152,9 +163,11 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public synchronized int getPlayerCount() {
-    snapshotPlayerCount = players.size();
-    return getSnapshotPlayerCount();
+  public int getPlayerCount() {
+    synchronized (playersLock) {
+      snapshotPlayerCount = players.size();
+      return getSnapshotPlayerCount();
+    }
   }
 
   @Override
@@ -163,15 +176,12 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
   }
 
   @Override
-  public void configureMaxIdleTimeNeverDeportedInSeconds(int seconds) {
-    maxIdleTimeNeverDeportedInSecond = seconds;
-  }
-
-  @Override
-  public synchronized void clear() {
-    players.clear();
-    snapshotPlayersList = new ArrayList<>();
-    snapshotPlayerCount = 0;
+  public void clear() {
+    synchronized (playersLock) {
+      players.clear();
+      snapshotPlayersList = new ArrayList<>();
+      snapshotPlayerCount = 0;
+    }
   }
 
   /**
@@ -181,9 +191,21 @@ public final class PlayerManagerImpl extends AbstractManager implements PlayerMa
    * @param player the target player
    */
   private void configureInitialPlayer(Player player) {
-    player.configureMaxIdleTimeInSeconds(maxIdleTimeInSecond);
-    player.configureMaxIdleTimeNeverDeportedInSeconds(maxIdleTimeNeverDeportedInSecond);
+    // Room-owned player managers only track membership and intentionally have no reconnect
+    // timeout. Do not let their default zero value overwrite the server player's configured
+    // grace period when a player joins a room.
+    if (maxIdleTimeInSecond > 0) {
+      player.configureMaxIdleTimeInSeconds(maxIdleTimeInSecond);
+    }
     player.setActivated(true);
     player.setLoggedIn(true);
+  }
+
+  /**
+   * The session owns the synchronization for association publication, so close cannot change the
+   * association to CLOSING between the state transition and the player-side reference update.
+   */
+  private boolean associateSession(Player player, Session session) {
+    return session.associatePlayer(player);
   }
 }

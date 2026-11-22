@@ -24,10 +24,12 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.session.implement;
 
+import com.tenio.core.admin.OperationalHistory;
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.logger.AbstractLogger;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.Player;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.exception.InboundQueueFullException;
@@ -50,10 +52,15 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The implementation for session.
+ * <p>Directional timestamps are visible across network/watchdog threads, and traffic
+ * totals use atomic counters. Attached UDP contributes to general receive statistics;
+ * the reliable receive timestamp is reserved for primary TCP/WebSocket byte receipt.
+ * Creation initializes all timestamps, allowing a new connection a full receive window.
  *
  * @see Session
  */
@@ -61,10 +68,9 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   private final long id;
   private final long createdTime;
+  private final Object playerAssociationLock;
   private final AtomicReference<AssociatedState> atomicAssociatedState;
-  private volatile AssociatedState associatedState;
   private final AtomicReference<State> atomicState;
-  private volatile State state;
   private volatile String name;
 
   private SessionManager sessionManager;
@@ -79,6 +85,7 @@ public class SessionImpl extends AbstractLogger implements Session {
   private final AtomicInteger inboundQueueCount;
 
   private int maxInboundQueueSize;
+  private AtomicLong inboundFullRejections;
   private int slowConsumingInboundQueueWarningThreshold;
   private int slowConsumingOutboundQueueWarningThreshold;
   private OutboundQueue outboundQueue;
@@ -93,7 +100,18 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   private volatile long inactivatedTime;
   private volatile long lastActivityTime;
+  /** Latest receive timestamp across decoded messages and reliable transport reads. */
+  private volatile long lastReadTime;
+  /** Latest outbound activity timestamp, independent of receive liveness. */
+  private volatile long lastWriteTime;
+  /** Latest TCP/WebSocket byte receipt; attached UDP must never renew this deadline. */
+  private volatile long lastReliableReadTime;
+  private final AtomicLong readBytes;
+  private final AtomicLong writtenBytes;
+  private final AtomicLong readMessages;
+  private final AtomicLong droppedPackets;
   private volatile boolean hasUdp;
+  private volatile boolean closeAfterPendingWriteMarked;
 
   private int maxIdleTimeInSecond;
 
@@ -106,14 +124,18 @@ public class SessionImpl extends AbstractLogger implements Session {
     id = ID_COUNTER.getAndIncrement();
     transportType = TransportType.UNKNOWN;
     udpConvey = Session.EMPTY_DATAGRAM_CONVEY_ID;
-    atomicState = new AtomicReference<>();
-    setState(State.INITIALIZED);
-    atomicAssociatedState = new AtomicReference<>();
-    setAssociatedState(AssociatedState.NONE);
+    atomicState = new AtomicReference<>(State.INITIALIZED);
+    playerAssociationLock = new Object();
+    atomicAssociatedState = new AtomicReference<>(AssociatedState.NONE);
+    readBytes = new AtomicLong();
+    writtenBytes = new AtomicLong();
+    readMessages = new AtomicLong();
+    droppedPackets = new AtomicLong();
     long currentTime = now();
     createdTime = currentTime;
     setLastReadTime(currentTime);
     setLastWriteTime(currentTime);
+    setLastReliableReadTime(currentTime);
 
     inboundQueue = new LinkedBlockingQueue<>();
     inboundQueueCount = new AtomicInteger();
@@ -146,28 +168,70 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public boolean isAssociatedToPlayer(AssociatedState associatedState) {
-    return this.associatedState == associatedState;
+    return atomicAssociatedState.get() == associatedState;
   }
 
   @Override
   public void setAssociatedToPlayer(AssociatedState associatedState) {
-    if (this.associatedState != associatedState) {
-      synchronized (this) {
-        if (this.associatedState != associatedState) {
-          setAssociatedState(associatedState);
-        }
+    atomicAssociatedState.set(associatedState);
+  }
+
+  @Override
+  public boolean transitionAssociatedState(AssociatedState expectedState, AssociatedState newState) {
+    return atomicAssociatedState.compareAndSet(expectedState, newState);
+  }
+
+  @Override
+  public boolean associatePlayer(Player player) {
+    if (player == null) {
+      throw new NullPointerException("Unable to associate an unavailable player");
+    }
+    synchronized (playerAssociationLock) {
+      if (isAssociatedToPlayer(AssociatedState.NONE)
+          && !transitionAssociatedState(AssociatedState.NONE, AssociatedState.DOING)) {
+        return false;
+      }
+      if (!transitionAssociatedState(AssociatedState.DOING, AssociatedState.DONE)) {
+        return false;
+      }
+      // Player.setSession owns the player-side monitor. The session lock keeps the association
+      // state stable until that assignment has completed.
+      player.setSession(this);
+      return true;
+    }
+  }
+
+  @Override
+  public boolean beginPlayerAssociationClose() {
+    synchronized (playerAssociationLock) {
+      if (transitionAssociatedState(AssociatedState.DONE, AssociatedState.CLOSING)) {
+        return true;
+      }
+      transitionAssociatedState(AssociatedState.DOING, AssociatedState.CLOSING);
+      return false;
+    }
+  }
+
+  @Override
+  public void prepareForReplacement() {
+    synchronized (playerAssociationLock) {
+      if (!transitionAssociatedState(AssociatedState.DONE, AssociatedState.CLOSING)) {
+        transitionAssociatedState(AssociatedState.DOING, AssociatedState.CLOSING);
+      }
+      if (outboundQueue != null) {
+        outboundQueue.clear();
       }
     }
   }
 
   @Override
-  public boolean transitionAssociatedState(AssociatedState expectedState,
-                                           AssociatedState newState) {
-    if (atomicAssociatedState.compareAndSet(expectedState, newState)) {
-      associatedState = newState;
-      return true;
-    }
-    return false;
+  public void markCloseAfterPendingWrite() {
+    closeAfterPendingWriteMarked = true;
+  }
+
+  @Override
+  public boolean isCloseAfterPendingWriteMarked() {
+    return closeAfterPendingWriteMarked;
   }
 
   @Override
@@ -178,21 +242,38 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public void enqueueInbound(DataCollection message) {
-    int remaining = inboundQueueCount.intValue();
-    if (slowConsumingInboundQueueWarningThreshold > 0 && isWarnEnabled()) {
-      if (remaining > slowConsumingInboundQueueWarningThreshold) {
-        warn("[Slow Consuming Inbound Queue] Remaining: ", remaining, " > ", this);
+    synchronized (inboundQueue) {
+      int remaining = inboundQueueCount.intValue();
+      if (slowConsumingInboundQueueWarningThreshold > 0 && isWarnEnabled()) {
+        if (remaining > slowConsumingInboundQueueWarningThreshold) {
+          warn("[Slow Consuming Inbound Queue] Remaining: ", remaining, " > ", this);
+        }
       }
-    }
-    if (maxInboundQueueSize > 0 && remaining >= maxInboundQueueSize) {
-      var exception = new InboundQueueFullException(remaining);
-      if (isErrorEnabled()) {
-        error(exception, exception.getMessage(), " > ", this);
+      if (maxInboundQueueSize > 0 && remaining >= maxInboundQueueSize) {
+        if (inboundFullRejections != null) {
+          inboundFullRejections.incrementAndGet();
+        }
+        var exception = new InboundQueueFullException(remaining);
+        if (isErrorEnabled()) {
+          error(exception, exception.getMessage(), " > ", this);
+        }
+        throw exception;
       }
-      throw exception;
+      inboundQueue.add(message);
+      inboundQueueCount.incrementAndGet();
     }
-    inboundQueue.add(message);
-    inboundQueueCount.incrementAndGet();
+  }
+
+  @Override
+  public void enableInboundQueueMonitoring() {
+    inboundFullRejections = new AtomicLong();
+  }
+
+  @Override
+  public InboundQueueStatistics inboundQueueStatistics() {
+    var rejections = inboundFullRejections;
+    return rejections == null ? null : new InboundQueueStatistics(
+        Math.max(0, inboundQueueCount.get()), maxInboundQueueSize, rejections.get());
   }
 
   @Override
@@ -382,64 +463,83 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public long getLastReadTime() {
-    throw new UnsupportedOperationException();
+    return lastReadTime;
   }
 
   @Override
   public void setLastReadTime(long timestamp) {
-    // Reversed
+    lastReadTime = timestamp;
     setLastActivityTime(timestamp);
   }
 
   @Override
+  public long getLastReliableReadTime() {
+    return lastReliableReadTime;
+  }
+
+  @Override
+  public void setLastReliableReadTime(long timestamp) {
+    lastReliableReadTime = timestamp;
+    setLastReadTime(timestamp);
+  }
+
+  @Override
   public long getLastWriteTime() {
-    throw new UnsupportedOperationException();
+    return lastWriteTime;
   }
 
   @Override
   public void setLastWriteTime(long timestamp) {
-    // Reversed
+    lastWriteTime = timestamp;
     setLastActivityTime(timestamp);
   }
 
   @Override
   public long getReadBytes() {
-    throw new UnsupportedOperationException();
+    return readBytes.get();
   }
 
   @Override
   public void addReadBytes(long bytes) {
-    // Reserved
+    if (bytes > 0) {
+      readBytes.addAndGet(bytes);
+      setLastReadTime(now());
+    }
   }
 
   @Override
   public long getWrittenBytes() {
-    throw new UnsupportedOperationException();
+    return writtenBytes.get();
   }
 
   @Override
   public void addWrittenBytes(long bytes) {
-    // Reserved
+    if (bytes > 0) {
+      writtenBytes.addAndGet(bytes);
+      setLastWriteTime(now());
+    }
   }
 
   @Override
   public long getReadMessages() {
-    throw new UnsupportedOperationException();
+    return readMessages.get();
   }
 
   @Override
   public void increaseReadMessages() {
-    // Reserved
+    readMessages.incrementAndGet();
   }
 
   @Override
   public long getDroppedPackets() {
-    throw new UnsupportedOperationException();
+    return droppedPackets.get();
   }
 
   @Override
   public void addDroppedPackets(int packets) {
-    // Reserved
+    if (packets > 0) {
+      droppedPackets.addAndGet(packets);
+    }
   }
 
   @Override
@@ -459,7 +559,7 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   @Override
   public boolean isActivated() {
-    return state == State.ACTIVATED;
+    return atomicState.get() == State.ACTIVATED;
   }
 
   @Override
@@ -469,7 +569,7 @@ public class SessionImpl extends AbstractLogger implements Session {
     } else {
       if (isWarnEnabled()) {
         warn("[Invalid States Transition] Expected State: INITIALIZED, New State: ACTIVATED, " +
-                "But The Actual State: ", state);
+                "But The Actual State: ", atomicState.get());
       }
     }
   }
@@ -495,8 +595,15 @@ public class SessionImpl extends AbstractLogger implements Session {
     // Once the session is terminated, it cannot be reused
     if (transitionState(State.INITIALIZED, State.TERMINATED) || transitionState(State.ACTIVATED, State.TERMINATED)) {
       inactivatedTime = now();
+      var history = sessionManager == null ? null : sessionManager.getOperationalHistory();
+      if (history != null) {
+        history.record(id, String.valueOf(transportType), OperationalHistory.Kind.DISCONNECT,
+            String.valueOf(connectionDisconnectMode));
+      }
 
-      connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
+      if (connectionFilter != null && socketRemoteAddress != null) {
+        connectionFilter.removeAddress(socketRemoteAddress.getAddress().getHostAddress());
+      }
 
       // clear inbound queue
       inboundProcess.interrupt();
@@ -526,23 +633,8 @@ public class SessionImpl extends AbstractLogger implements Session {
     }
   }
 
-  // NOTE: This method is not thread-safety
-  private void setState(State state) {
-    this.state = state;
-    atomicState.set(state);
-  }
-
   private boolean transitionState(State expectedState, State newState) {
-    if (atomicState.compareAndSet(expectedState, newState)) {
-      state = newState;
-      return true;
-    }
-    return false;
-  }
-
-  private void setAssociatedState(AssociatedState associatedState) {
-    this.associatedState = associatedState;
-    atomicAssociatedState.set(associatedState);
+    return atomicState.compareAndSet(expectedState, newState);
   }
 
   /**
@@ -558,7 +650,7 @@ public class SessionImpl extends AbstractLogger implements Session {
 
   private void processInboundQueue() {
     while (!Thread.currentThread().isInterrupted()) {
-      if (state == State.ACTIVATED) {
+      if (atomicState.get() == State.ACTIVATED) {
         try {
           DataCollection message = inboundQueue.take();
           inboundQueueCount.decrementAndGet();
@@ -617,11 +709,19 @@ public class SessionImpl extends AbstractLogger implements Session {
         ", maxIdleTimeInSecond=" + maxIdleTimeInSecond +
         ", inactivatedTime=" + inactivatedTime +
         ", lastActivityTime=" + lastActivityTime +
-        ", state=" + state +
+        ", lastReadTime=" + lastReadTime +
+        ", lastWriteTime=" + lastWriteTime +
+        ", lastReliableReadTime=" + lastReliableReadTime +
+        ", readBytes=" + readBytes.get() +
+        ", writtenBytes=" + writtenBytes.get() +
+        ", readMessages=" + readMessages.get() +
+        ", droppedPackets=" + droppedPackets.get() +
+        ", state=" + atomicState.get() +
         ", hasUdp=" + hasUdp +
-        ", associatedState=" + associatedState +
+        ", associatedState=" + atomicAssociatedState.get() +
         ", remainingInboundQueue=" + inboundQueueCount.intValue() +
-        ", remainingOutboundQueue=" + outboundQueue.getSnapshotSize() +
+        ", remainingOutboundQueue=" +
+        (outboundQueue == null ? 0 : outboundQueue.getSnapshotSize()) +
         '}';
   }
 }

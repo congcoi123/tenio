@@ -33,25 +33,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to mark the root class that serves as the entry point of the application.
- * This annotation is used to identify the main application class that will be
- * used to bootstrap the dependency injection system and initialize the application.
+ * Annotation used to mark the root class that serves as the entry point of the application. This
+ * annotation is used to identify the main application class that will be used to bootstrap the
+ * dependency injection system and initialize the application.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Application entry point identification</li>
- *   <li>Component scanning initialization</li>
- *   <li>Dependency injection bootstrap</li>
- *   <li>Runtime retention for reflection-based processing</li>
- *   <li>Type-level annotation</li>
+ *   <li>Application entry point identification
+ *   <li>Component scanning initialization
+ *   <li>Dependency injection bootstrap
+ *   <li>Runtime retention for reflection-based processing
+ *   <li>Type-level annotation
  * </ul>
  *
  * <p>Note: The class annotated with this annotation:
+ *
  * <ul>
- *   <li>Should contain the main application entry point</li>
- *   <li>Will be used as the root for component scanning</li>
- *   <li>Should initialize the dependency injection system</li>
- *   <li>Must be a public class</li>
+ *   <li>Should contain the main application entry point
+ *   <li>Will be used as the root for component scanning
+ *   <li>Should initialize the dependency injection system
+ *   <li>Must be a public class
  * </ul>
  *
  * @see Injector
@@ -63,4 +65,15 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Documented
 public @interface Bootstrap {
+  
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 }

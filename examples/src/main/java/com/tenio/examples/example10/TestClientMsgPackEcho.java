@@ -26,7 +26,7 @@ package com.tenio.examples.example10;
 
 import com.tenio.common.data.DataUtility;
 import com.tenio.common.data.msgpack.element.MsgPackMap;
-import com.tenio.core.network.entity.session.Session;
+import com.tenio.examples.client.ClientTasks;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.DatagramListener;
 import com.tenio.examples.client.SocketListener;
@@ -34,6 +34,11 @@ import com.tenio.examples.client.TCP;
 import com.tenio.examples.client.UDP;
 import com.tenio.examples.server.DatagramEstablishedState;
 import com.tenio.examples.server.SharedEventKey;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class shows how a client communicates with the server:<br>
@@ -45,64 +50,75 @@ import com.tenio.examples.server.SharedEventKey;
  * 5. Send messages via UDP connection and get these echoes from the server.<br>
  * 6. Close connections.
  */
-public final class TestClientMsgPackEcho implements SocketListener<MsgPackMap>,
-    DatagramListener<MsgPackMap> {
+public final class TestClientMsgPackEcho implements SocketListener<MsgPackMap>, DatagramListener<MsgPackMap> {
 
-  private static final int SOCKET_PORT = 8032;
-  private final String playerName;
+  private final String playerName = ClientUtility.generateRandomString(5);
+  private final TCP tcp;
+  private final ClientTasks tasks = new ClientTasks();
+  private volatile UDP udp;
+  private int udpConvey;
+  private int sent;
+  private final AtomicInteger received = new AtomicInteger();
 
-  public TestClientMsgPackEcho() {
-    playerName = ClientUtility.generateRandomString(5);
-
-    // create a new TCP object and listen to this port
-    new TCP(SOCKET_PORT, it -> {
-      it.receive(TestClientMsgPackEcho.this);
-
-      Session session = it.getSession();
-      session.setName(playerName);
-
-      // send a login request
-      var request =
-          DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-      it.send(request);
-
-      System.out.println("Login Request -> " + request);
+  public TestClientMsgPackEcho() throws IOException {
+    tcp = new TCP("localhost", 8032, 5000);
+    tcp.handleDisconnection(() -> {
+      tasks.close();
+      if (udp != null) {
+        udp.close();
+      }
     });
+    tcp.send(DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName));
+    tcp.receive(this);
+    tasks.later(tcp::close, 15000); // Bound failed registration/lost-packet runs.
   }
 
-  /**
-   * The entry point.
-   */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     new TestClientMsgPackEcho();
   }
 
   @Override
   public void onReceivedTCP(MsgPackMap parcel) {
-    System.err.println("[RECV FROM SERVER TCP] -> " + parcel);
-    var pack = parcel.getIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
-
-    switch (pack[0]) {
+    System.out.println("[TCP] " + parcel);
+    if (!parcel.containsKey(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL)) {
+      return;
+    }
+    var state = parcel.getIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL);
+    switch (state[0]) {
       case DatagramEstablishedState.ALLOW_TO_ACCESS -> {
-        // now you can send request for UDP connection request
-        var request =
-            DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName);
-        // create a new UDP object and listen to this port
-        new UDP(pack[1], it -> {
-          it.receive(TestClientMsgPackEcho.this);
-          it.send(request);
-
-          System.out.println(
-              it.getLocalAddress().getHostAddress() + ", " + it.getLocalPort() + " Request a UDP " +
-                  "connection -> " + request);
-        });
+        if (udp != null) {
+          return;
+        }
+        try {
+          udp = new UDP("localhost", state[1]);
+          udp.receive(this);
+          udp.send(DataUtility.newMsgMap().putMsgPackMap(SharedEventKey.KEY_UDP_MESSAGE_DATA,
+              DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, playerName)));
+        } catch (IOException exception) {
+          tcp.close();
+          throw new UncheckedIOException(exception);
+        }
       }
       case DatagramEstablishedState.ESTABLISHED -> {
+        udpConvey = state[1];
+        tasks.repeat(() -> {
+          if (++sent <= 5) {
+            var body = DataUtility.newMsgMap()
+                .putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "MsgPack echo " + sent);
+            udp.send(DataUtility.newMsgMap()
+                .putInteger(SharedEventKey.KEY_UDP_CONVEY_ID, udpConvey)
+                .putMsgPackMap(SharedEventKey.KEY_UDP_MESSAGE_DATA, body));
+          }
+        }, 0, 1, TimeUnit.SECONDS);
       }
     }
   }
 
   @Override
   public void onReceivedUDP(MsgPackMap parcel) {
+    System.out.println("[UDP] " + parcel);
+    if (received.incrementAndGet() >= 5) {
+      tcp.close();
+    }
   }
 }

@@ -131,17 +131,18 @@ public class EntityImpl extends AbstractLogger implements Entity {
 
   @Override
   public Component getComponent(int index) {
+    checkIndex(index);
     return components[index];
   }
 
   @Override
   public Component[] getComponents() {
-    return components;
+    return components.clone();
   }
 
   @Override
   public boolean hasComponent(int index) {
-    if (index < components.length) {
+    if (index >= 0 && index < components.length) {
       return components[index] != null;
     } else {
       return false;
@@ -151,7 +152,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasComponents(int... indices) {
     for (int index : indices) {
-      if (components[index] == null) {
+      if (!hasComponent(index)) {
         return false;
       }
     }
@@ -161,7 +162,7 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public boolean hasAnyComponent(int... indices) {
     for (int index : indices) {
-      if (components[index] != null) {
+      if (hasComponent(index)) {
         return true;
       }
     }
@@ -193,5 +194,11 @@ public class EntityImpl extends AbstractLogger implements Entity {
   @Override
   public void reset() {
     removeAllComponents();
+  }
+
+  private void checkIndex(int index) {
+    if (index < 0 || index >= components.length) {
+      throw new IndexOutOfBoundsException("Component index: " + index);
+    }
   }
 }

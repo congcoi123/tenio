@@ -33,7 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is specific to server' configuration, it is also considered as a candidate for
+ * This annotation is specific to server's configuration, it is also considered as a candidate for
  * the <b>auto-detection</b> when using <b>annotation-based</b> configuration and <b>classpath
  * scanning</b>.
  *
@@ -46,4 +46,15 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Documented
 public @interface Setting {
+
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 }

@@ -143,33 +143,23 @@ class MsgPackUtilityTest {
   }
 
   @Test
-  @DisplayName("Unsupported MsgPackMap operations should throw UnsupportedOperationException")
-  void unsupportedMsgPackMapOperationsShouldThrowException() {
+  @DisplayName("All MsgPackMap numeric operations should round trip")
+  void allNumericMsgPackMapOperationsShouldRoundTrip() {
     var map = MsgPackUtility.newMsgPackMap();
-    assertAll("unsupportedOperations",
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getByte("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getShort("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getLong("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getDouble("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getByteArray("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getShortArray("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getLongArray("k")),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.getDoubleArray("k")),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putByte("k", (byte) 0)),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putShort("k", (short) 0)),
-        () -> assertThrows(UnsupportedOperationException.class, () -> map.putLong("k", 0L)),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putDouble("k", 0.0)),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putByteArray("k", new byte[0])),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putShortArray("k", new short[0])),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putLongArray("k", new long[0])),
-        () -> assertThrows(UnsupportedOperationException.class,
-            () -> map.putDoubleArray("k", new double[0]))
+    map.putByte("b", (byte) 1).putShort("s", (short) 2).putLong("l", 3L)
+        .putDouble("d", 4.5).putByteArray("ba", new byte[]{5})
+        .putShortArray("sa", new short[]{6}).putLongArray("la", new long[]{7})
+        .putDoubleArray("da", new double[]{8.5});
+    var result = MsgPackUtility.deserialize(map.toBinaries());
+    assertAll("numericOperations",
+        () -> assertEquals((byte) 1, result.getByte("b")),
+        () -> assertEquals((short) 2, result.getShort("s")),
+        () -> assertEquals(3L, result.getLong("l")),
+        () -> assertEquals(4.5, result.getDouble("d")),
+        () -> assertEquals((byte) 5, result.getByteArray("ba")[0]),
+        () -> assertEquals((short) 6, result.getShortArray("sa")[0]),
+        () -> assertEquals(7L, result.getLongArray("la")[0]),
+        () -> assertEquals(8.5, result.getDoubleArray("da")[0])
     );
   }
 
@@ -209,7 +199,7 @@ class MsgPackUtilityTest {
     map.put("da", new double[]{1.5, 2.5});
     var result = MsgPackUtility.deserialize(MsgPackUtility.serialize(map));
     assertAll("numericArrayValues",
-        () -> assertEquals(1, result.getIntegerArray("ba")[0]),
+        () -> assertEquals(1, result.getByteArray("ba")[0]),
         () -> assertEquals(10, result.getIntegerArray("sha")[0]),
         () -> assertEquals(100, result.getIntegerArray("la")[0]),
         () -> assertEquals(1.5f, result.getFloatArray("da")[0])

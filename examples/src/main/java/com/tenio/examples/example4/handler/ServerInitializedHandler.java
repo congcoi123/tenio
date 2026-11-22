@@ -38,8 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EventHandler
-public final class ServerInitializedHandler extends AbstractHandler
-    implements EventServerInitialization {
+public final class ServerInitializedHandler extends AbstractHandler implements EventServerInitialization {
 
   @AutowiredAcceptNull
   private HeartBeatManager heartBeatManager;

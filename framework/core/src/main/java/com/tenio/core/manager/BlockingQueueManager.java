@@ -102,6 +102,20 @@ public class BlockingQueueManager<T> implements Manager {
   }
 
   /**
+   * Determines whether all managed queues are empty.
+   *
+   * @return {@code true} when every managed queue is empty
+   */
+  public boolean isEmpty() {
+    for (var queue : queues) {
+      if (!queue.isEmpty()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Cleanup all internal queues.
    */
   public void clear() {

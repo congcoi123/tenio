@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.entity;
 
-import com.tenio.core.scheduler.task.core.AutoRemoveRoomTask;
+import com.tenio.core.scheduler.task.AutoRemoveRoomTask;
 
 /**
  * Definitions for room states. All customized states must be implemented this interface.

@@ -26,12 +26,15 @@ package com.tenio.core.network;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
@@ -51,6 +54,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.mockito.Mockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,13 +64,14 @@ import org.junit.jupiter.api.Test;
 class NetworkImplTest {
 
   private NetworkImpl service;
+  private EventManager eventManager;
   private JettyHttp jettyService;
   private NettyWebSocket nettyService;
   private ZeroSocket zeroService;
 
   @BeforeEach
   void setUp() throws Exception {
-    EventManager eventManager = EventManager.newInstance();
+    eventManager = EventManager.newInstance();
     service = (NetworkImpl) NetworkImpl.newInstance(eventManager);
     jettyService = mock(JettyHttp.class);
     nettyService = mock(NettyWebSocket.class);
@@ -462,7 +467,7 @@ class NetworkImplTest {
   }
 
   @Test
-  @DisplayName("write() with nonSessionRecipientPlayers emits RECEIVED_MESSAGE_FROM_PLAYER")
+  @DisplayName("write() with non-session recipients emits SEND_MESSAGE_TO_PLAYER")
   void testWriteWithNonSessionRecipientPlayers() throws Exception {
     com.tenio.common.data.DataCollection content = mock(com.tenio.common.data.DataCollection.class);
     Mockito.when(content.getType()).thenReturn(com.tenio.common.data.DataType.ZERO);
@@ -478,6 +483,22 @@ class NetworkImplTest {
     nonSessionPlayers.add(player);
     nonSessionField.set(response, nonSessionPlayers);
 
+    AtomicBoolean messageSent = new AtomicBoolean();
+    AtomicBoolean messageReceived = new AtomicBoolean();
+    eventManager.on(ServerEvent.SEND_MESSAGE_TO_PLAYER, params -> {
+      assertEquals(player, params[0]);
+      assertEquals(content, params[1]);
+      messageSent.set(true);
+      return null;
+    });
+    eventManager.on(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER, params -> {
+      messageReceived.set(true);
+      return null;
+    });
+    eventManager.subscribe();
+
     assertDoesNotThrow(() -> service.write(response, false));
+    assertTrue(messageSent.get());
+    assertFalse(messageReceived.get());
   }
 }

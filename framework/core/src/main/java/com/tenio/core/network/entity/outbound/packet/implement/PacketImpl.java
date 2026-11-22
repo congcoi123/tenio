@@ -224,7 +224,7 @@ public final class PacketImpl implements Packet, Comparable<Packet> {
         ", lengthPrefixed=" + lengthPrefixed +
         ", transportType=" + transportType +
         ", originalSize=" + originalSize +
-        ", recipients=" + recipients +
+        ", recipientCount=" + (recipients == null ? 0 : recipients.size()) +
         ", last=" + last +
         ", fragmentBuffer(bytes)=" + (fragmentBuffer != null ? fragmentBuffer.length : "null") +
         '}';

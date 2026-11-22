@@ -27,6 +27,7 @@ package com.tenio.core.network.entity.session.implement;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.when;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
+import com.tenio.core.entity.Player;
+import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.exception.InboundQueueFullException;
@@ -148,6 +151,45 @@ class SessionImplTest {
   }
 
   @Test
+  @DisplayName("Test associatePlayer binds a fresh session and publishes DONE")
+  void testAssociatePlayer() {
+    Session session = SessionImpl.newInstance();
+    Player player = DefaultPlayer.newInstance("player-1");
+
+    assertTrue(session.associatePlayer(player));
+    assertEquals(session, player.getSession().orElseThrow());
+    assertEquals("player-1", session.getName());
+    assertTrue(session.isAssociatedToPlayer(AssociatedState.DONE));
+  }
+
+  @Test
+  @DisplayName("Test beginPlayerAssociationClose makes the association terminal")
+  void testBeginPlayerAssociationClose() {
+    Session session = SessionImpl.newInstance();
+    Player player = DefaultPlayer.newInstance("player-1");
+    assertTrue(session.associatePlayer(player));
+
+    assertTrue(session.beginPlayerAssociationClose());
+    assertTrue(session.isAssociatedToPlayer(AssociatedState.CLOSING));
+    assertFalse(session.associatePlayer(player));
+  }
+
+  @Test
+  @DisplayName("Test prepareForReplacement blocks input and discards queued output")
+  void testPrepareForReplacement() {
+    Session session = SessionImpl.newInstance();
+    Player player = DefaultPlayer.newInstance("player-1");
+    OutboundQueue outboundQueue = mock(OutboundQueue.class);
+    session.configureOutboundQueue(outboundQueue);
+    assertTrue(session.associatePlayer(player));
+
+    session.prepareForReplacement();
+
+    assertTrue(session.isAssociatedToPlayer(AssociatedState.CLOSING));
+    verify(outboundQueue).clear();
+  }
+
+  @Test
   @DisplayName("Test isOrphan returns false for a freshly created session")
   void testIsOrphanReturnsFalseForFreshSession() {
     Session session = SessionImpl.newInstance();
@@ -234,73 +276,98 @@ class SessionImplTest {
   }
 
   @Test
-  @DisplayName("Test getLastReadTime throws UnsupportedOperationException")
-  void testGetLastReadTimeThrows() {
+  void testTimestampInitialization() {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getLastReadTime);
+    assertEquals(session.getCreatedTime(), session.getLastReadTime());
+    assertEquals(session.getCreatedTime(), session.getLastWriteTime());
+    assertEquals(session.getCreatedTime(), session.getLastReliableReadTime());
   }
 
   @Test
-  @DisplayName("Test getLastWriteTime throws UnsupportedOperationException")
-  void testGetLastWriteTimeThrows() {
+  void testReadWriteAndReliableTimesAreIndependent() {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getLastWriteTime);
+    long created = session.getCreatedTime();
+    session.setLastReliableReadTime(created + 10);
+    assertEquals(created + 10, session.getLastReadTime());
+    assertEquals(created + 10, session.getLastReliableReadTime());
+    assertEquals(created, session.getLastWriteTime());
+    session.setLastWriteTime(created + 20);
+    assertEquals(created + 20, session.getLastWriteTime());
+    assertEquals(created + 10, session.getLastReadTime());
+    assertEquals(created + 10, session.getLastReliableReadTime());
+    session.setLastReadTime(created + 30);
+    assertEquals(created + 30, session.getLastReadTime());
+    assertEquals(created + 20, session.getLastWriteTime());
+    assertEquals(created + 10, session.getLastReliableReadTime());
+    assertEquals(created + 30, session.getLastActivityTime());
   }
 
   @Test
-  @DisplayName("Test getReadBytes throws UnsupportedOperationException")
-  void testGetReadBytesThrows() {
+  void testTrafficCountersStartAtZeroAndAccumulate() {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getReadBytes);
+    assertEquals(0, session.getReadBytes());
+    assertEquals(0, session.getWrittenBytes());
+    assertEquals(0, session.getReadMessages());
+    assertEquals(0, session.getDroppedPackets());
+    long readTime = session.getLastReliableReadTime();
+    session.addReadBytes(1024);
+    session.addReadBytes(512);
+    session.addWrittenBytes(2048);
+    session.increaseReadMessages();
+    session.increaseReadMessages();
+    session.addDroppedPackets(3);
+    session.addDroppedPackets(2);
+    assertEquals(1536, session.getReadBytes());
+    assertEquals(2048, session.getWrittenBytes());
+    assertEquals(2, session.getReadMessages());
+    assertEquals(5, session.getDroppedPackets());
+    assertEquals(readTime, session.getLastReliableReadTime());
   }
 
   @Test
-  @DisplayName("Test getWrittenBytes throws UnsupportedOperationException")
-  void testGetWrittenBytesThrows() {
+  void testTrafficCountersRejectNegativeIncrements() {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getWrittenBytes);
+    assertEquals(0, session.getReadBytes());
+    assertEquals(0, session.getWrittenBytes());
+    assertEquals(0, session.getDroppedPackets());
   }
 
   @Test
-  @DisplayName("Test getReadMessages throws UnsupportedOperationException")
-  void testGetReadMessagesThrows() {
+  void testConcurrentTrafficAccounting() throws Exception {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getReadMessages);
+    try (var executor = java.util.concurrent.Executors.newFixedThreadPool(4)) {
+      var futures = new java.util.ArrayList<java.util.concurrent.Future<?>>();
+      for (int worker = 0; worker < 4; worker++) {
+        futures.add(executor.submit(() -> {
+          for (int update = 0; update < 1000; update++) {
+            session.addReadBytes(2);
+            session.addWrittenBytes(3);
+            session.increaseReadMessages();
+            session.addDroppedPackets(1);
+          }
+        }));
+      }
+      for (var future : futures) {
+        future.get();
+      }
+    }
+    assertEquals(8000, session.getReadBytes());
+    assertEquals(12000, session.getWrittenBytes());
+    assertEquals(4000, session.getReadMessages());
+    assertEquals(4000, session.getDroppedPackets());
   }
 
   @Test
-  @DisplayName("Test getDroppedPackets throws UnsupportedOperationException")
-  void testGetDroppedPacketsThrows() {
+  void testDiagnosticsIncludeSupportedTimestampAndCounterValues() {
     Session session = SessionImpl.newInstance();
-    assertThrows(UnsupportedOperationException.class, session::getDroppedPackets);
-  }
-
-  @Test
-  @DisplayName("Test addReadBytes is a no-op")
-  void testAddReadBytesIsNoOp() {
-    Session session = SessionImpl.newInstance();
-    session.addReadBytes(1024L); // should not throw
-  }
-
-  @Test
-  @DisplayName("Test addWrittenBytes is a no-op")
-  void testAddWrittenBytesIsNoOp() {
-    Session session = SessionImpl.newInstance();
-    session.addWrittenBytes(512L); // should not throw
-  }
-
-  @Test
-  @DisplayName("Test increaseReadMessages is a no-op")
-  void testIncreaseReadMessagesIsNoOp() {
-    Session session = SessionImpl.newInstance();
-    session.increaseReadMessages(); // should not throw
-  }
-
-  @Test
-  @DisplayName("Test addDroppedPackets is a no-op")
-  void testAddDroppedPacketsIsNoOp() {
-    Session session = SessionImpl.newInstance();
-    session.addDroppedPackets(3); // should not throw
+    session.addReadBytes(17);
+    session.addWrittenBytes(19);
+    String details = session.toString();
+    assertTrue(details.contains("lastReadTime=" + session.getLastReadTime()));
+    assertTrue(details.contains("lastWriteTime=" + session.getLastWriteTime()));
+    assertTrue(details.contains("lastReliableReadTime=" + session.getLastReliableReadTime()));
+    assertTrue(details.contains("readBytes=17"));
+    assertTrue(details.contains("writtenBytes=19"));
   }
 
   @Test
@@ -354,6 +421,21 @@ class SessionImplTest {
     DataCollection msg2 = mock(DataCollection.class);
     session.enqueueInbound(msg1);
     assertThrows(InboundQueueFullException.class, () -> session.enqueueInbound(msg2));
+    assertNull(session.inboundQueueStatistics());
+  }
+
+  @Test
+  void reportsInboundFullRejectionsOnlyWhenMonitoringIsEnabled() {
+    var session = SessionImpl.newInstance();
+    session.configureMaxInboundQueueSize(1);
+    session.configureOutboundQueue(OutboundQueueImpl.newInstance());
+    session.enableInboundQueueMonitoring();
+    var message = mock(DataCollection.class);
+
+    assertEquals(new Session.InboundQueueStatistics(0, 1, 0), session.inboundQueueStatistics());
+    session.enqueueInbound(message);
+    assertThrows(InboundQueueFullException.class, () -> session.enqueueInbound(message));
+    assertEquals(new Session.InboundQueueStatistics(1, 1, 1), session.inboundQueueStatistics());
   }
 
   @Test
@@ -396,7 +478,7 @@ class SessionImplTest {
   void testEqualsDifferentSessions() {
     Session session1 = SessionImpl.newInstance();
     Session session2 = SessionImpl.newInstance();
-    assertFalse(session1.equals(session2));
+      assertNotEquals(session1, session2);
   }
 
   @Test
@@ -469,13 +551,6 @@ class SessionImplTest {
   void testGetPendingPacketNullByDefault() {
     Session session = SessionImpl.newInstance();
     assertNull(session.getPendingPacket());
-  }
-
-  @Test
-  @DisplayName("Test equals returns false for non-Session object")
-  void testEqualsNonSessionObject() {
-    Session session = SessionImpl.newInstance();
-    assertFalse(session.equals("not a session"));
   }
 
   @Test

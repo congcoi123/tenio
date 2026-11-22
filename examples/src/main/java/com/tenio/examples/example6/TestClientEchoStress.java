@@ -30,7 +30,8 @@ import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
 import com.tenio.examples.server.SharedEventKey;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ import java.util.Map;
 public final class TestClientEchoStress implements SocketListener<ZeroMap> {
 
   private static final int SOCKET_PORT = 8032;
-  private static final int NUMBER_CLIENTS = 10_000;
+  private static final int NUMBER_CLIENTS = Integer.getInteger("tenio.clients", 10000);
   private static final int REQUEST_INTERVAL_MS = 1;
   private static final boolean ENABLED_DEBUG = false;
   /**
@@ -55,29 +56,28 @@ public final class TestClientEchoStress implements SocketListener<ZeroMap> {
    */
   private final Map<String, TCP> tcps;
 
-  public TestClientEchoStress() {
-    tcps = new HashMap<>();
-    // create a list of TCP objects and listen to this port
-    for (int i = 0; i < NUMBER_CLIENTS; i++) {
-      var name = ClientUtility.generateRandomString(5);
-      new TCP(SOCKET_PORT, it -> {
-        it.receive(TestClientEchoStress.this);
-        tcps.put(name, it);
-
-        // send a login request
-        var request = DataUtility.newZeroMap();
-        request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-        it.send(request);
-
-        System.err.println("Login Request -> " + request);
-      });
+  public TestClientEchoStress() throws IOException {
+    tcps = new ConcurrentHashMap<>();
+    try {
+      for (int i = 0; i < NUMBER_CLIENTS; i++) {
+        String name = "stress-" + i;
+        var tcp = new TCP("localhost", SOCKET_PORT, 5000);
+        tcps.put(name, tcp);
+        tcp.handleDisconnection(() -> tcps.remove(name, tcp));
+        tcp.send(DataUtility.newZeroMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, name));
+        tcp.receive(this);
+      }
+    } catch (IOException | RuntimeException exception) {
+      tcps.values().forEach(TCP::close);
+      throw exception;
     }
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> tcps.values().forEach(TCP::close)));
   }
 
   /**
    * The entry point
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     new TestClientEchoStress();
   }
 
@@ -90,10 +90,15 @@ public final class TestClientEchoStress implements SocketListener<ZeroMap> {
     try {
       Thread.sleep(REQUEST_INTERVAL_MS);
     } catch (InterruptedException exception) {
-      exception.printStackTrace();
+      Thread.currentThread().interrupt();
+      return;
     }
 
     var tcp = tcps.get(parcel.getString(SharedEventKey.KEY_PLAYER_LOGIN));
+
+    if (tcp == null || tcp.isClosed()) {
+      return;
+    }
 
     // make an echo message
     var request = DataUtility.newZeroMap();

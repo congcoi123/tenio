@@ -24,94 +24,61 @@ THE SOFTWARE.
 
 package com.tenio.examples.example4.statistic;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Lifetime aggregates use constant space and return zero before the first sample.
+ */
 public final class NetworkStatistic {
 
-  private final List<Long> latencyRecorder;
-  private final List<Integer> fpsRecorder;
-  private final List<Double> lostPacketRecorder;
+    private double latencySum;
+    private double fpsSum;
+    private double lossSum;
+    private int latencyCount;
+    private int fpsCount;
+    private int lossCount;
 
-  private NetworkStatistic() {
-    latencyRecorder = new ArrayList<>();
-    fpsRecorder = new ArrayList<>();
-    lostPacketRecorder = new ArrayList<>();
-  }
-
-  public static NetworkStatistic newInstance() {
-    return new NetworkStatistic();
-  }
-
-  public double getLatencyAverage() {
-    synchronized (latencyRecorder) {
-      long average = 0;
-      int size = latencyRecorder.size();
-      for (Long aLong : latencyRecorder) {
-        average += aLong;
-      }
-
-      return (double) average / (double) size;
+    private NetworkStatistic() {
     }
-  }
 
-  public int getLatencySize() {
-    synchronized (latencyRecorder) {
-      return latencyRecorder.size();
+    public static NetworkStatistic newInstance() {
+        return new NetworkStatistic();
     }
-  }
 
-  public void addLatency(long latency) {
-    synchronized (latencyRecorder) {
-      latencyRecorder.add(latency);
+    public synchronized void addLatency(long value) {
+        latencySum += value;
+        latencyCount++;
     }
-  }
 
-  public double getFpsAverage() {
-    synchronized (fpsRecorder) {
-      int average = 0;
-      int size = fpsRecorder.size();
-      for (Integer integer : fpsRecorder) {
-        average += integer;
-      }
-
-      return (double) average / (double) size;
+    public synchronized void addFps(int value) {
+        fpsSum += value;
+        fpsCount++;
     }
-  }
 
-  public int getFpsSize() {
-    synchronized (fpsRecorder) {
-      return fpsRecorder.size();
+    public synchronized void addLostPackets(double value) {
+        lossSum += value;
+        lossCount++;
     }
-  }
 
-  public void addFps(int fps) {
-    synchronized (fpsRecorder) {
-      fpsRecorder.add(fps);
+    public synchronized int getLatencySize() {
+        return latencyCount;
     }
-  }
 
-  public double getLostPacketsAverage() {
-    synchronized (lostPacketRecorder) {
-      double average = 0;
-      int size = lostPacketRecorder.size();
-      for (Double aDouble : lostPacketRecorder) {
-        average += aDouble;
-      }
-
-      return average / (double) size;
+    public synchronized int getFpsSize() {
+        return fpsCount;
     }
-  }
 
-  public int getLostPacketsSize() {
-    synchronized (lostPacketRecorder) {
-      return lostPacketRecorder.size();
+    public synchronized int getLostPacketsSize() {
+        return lossCount;
     }
-  }
 
-  public void addLostPackets(double packets) {
-    synchronized (lostPacketRecorder) {
-      lostPacketRecorder.add(packets);
+    public synchronized double getLatencyAverage() {
+        return latencyCount == 0 ? 0 : latencySum / latencyCount;
     }
-  }
+
+    public synchronized double getFpsAverage() {
+        return fpsCount == 0 ? 0 : fpsSum / fpsCount;
+    }
+
+    public synchronized double getLostPacketsAverage() {
+        return lossCount == 0 ? 0 : lossSum / lossCount;
+    }
 }

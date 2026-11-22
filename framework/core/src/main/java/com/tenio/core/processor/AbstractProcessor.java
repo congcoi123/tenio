@@ -105,17 +105,7 @@ public abstract class AbstractProcessor extends AbstractManager implements Proce
 
     executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (executorService != null && !executorService.isShutdown()) {
-        try {
-          attemptToShutdown();
-        } catch (Exception exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
-        }
-      }
-    }));
+
   }
 
   private void attemptToShutdown() {
@@ -132,13 +122,14 @@ public abstract class AbstractProcessor extends AbstractManager implements Proce
     executorService.shutdown();
 
     try {
-      if (executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+      if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
         executorService.shutdownNow();
-        destroyProcessor();
       }
+      destroyProcessor();
     } catch (InterruptedException exception) {
       executorService.shutdownNow();
       destroyProcessor();
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -150,19 +141,27 @@ public abstract class AbstractProcessor extends AbstractManager implements Proce
   }
 
   private void processing(int index) {
+    var queue = requestManager.getQueueByIndex(index);
     while (!Thread.currentThread().isInterrupted()) {
-      if (activated) {
-        try {
-          Request request = requestManager.getQueueByIndex(index).take();
+      try {
+        if (!activated && !stopping.get()) {
+          TimeUnit.MILLISECONDS.sleep(1);
+          continue;
+        }
+
+        Request request = queue.poll(100, TimeUnit.MILLISECONDS);
+        if (request != null) {
           processRequest(request);
-        } catch (InterruptedException exception) {
-          // InterruptedException is not an error
-          // It’s a signal to stop the thread
-          Thread.currentThread().interrupt();
-        } catch (Throwable cause) {
-          if (isErrorEnabled()) {
-            error(cause);
-          }
+        }
+
+        if (stopping.get() && queue.isEmpty()) {
+          return;
+        }
+      } catch (InterruptedException exception) {
+        Thread.currentThread().interrupt();
+      } catch (Throwable cause) {
+        if (isErrorEnabled()) {
+          error(cause);
         }
       }
     }
@@ -184,9 +183,6 @@ public abstract class AbstractProcessor extends AbstractManager implements Proce
   }
 
   private void destroyProcessor() {
-    if (isInfoEnabled()) {
-      info("STOPPING PROCESSOR", buildgen(getName(), " (", executorSize, ")"));
-    }
     destroy();
     if (isInfoEnabled()) {
       info("DESTROYED PROCESSOR", buildgen(getName(), " (", executorSize, ")"));
@@ -248,7 +244,10 @@ public abstract class AbstractProcessor extends AbstractManager implements Proce
 
   @Override
   public void enqueueRequest(Request request) {
-      requestManager.getQueueByElementId(request.getId()).add(request);
+    if (stopping.get()) {
+      return;
+    }
+    requestManager.getQueueByElementId(request.getId()).add(request);
   }
 
   @Override

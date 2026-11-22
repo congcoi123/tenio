@@ -94,6 +94,12 @@ public final class StringUtility {
    * @since 0.5.0
    */
   public static String trimStringByString(String text, String trimBy) {
+    if (text == null || trimBy == null) {
+      throw new IllegalArgumentException("Text and trim value must not be null");
+    }
+    if (trimBy.isEmpty()) {
+      return text;
+    }
     int beginIndex = 0;
     int endIndex = text.length();
 

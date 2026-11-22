@@ -27,8 +27,9 @@ package com.tenio.engine.fsm;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.engine.exception.DuplicatedEntityException;
 import com.tenio.engine.fsm.entity.AbstractEntity;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class for managing entities.
@@ -38,7 +39,7 @@ public final class EntityManager extends SystemLogger {
   /**
    * The list of entities.
    */
-  private final Map<String, AbstractEntity> entities = new HashMap<>();
+  private final Map<String, AbstractEntity> entities = new ConcurrentHashMap<>();
 
   /**
    * Register an entity to this management.
@@ -46,18 +47,13 @@ public final class EntityManager extends SystemLogger {
    * @param entity the desired entity, see {@link AbstractEntity}
    */
   public void register(AbstractEntity entity) {
-    try {
-      if (contain(entity.getId())) {
-        throw new DuplicatedEntityException();
-      }
-    } catch (DuplicatedEntityException exception) {
+    Objects.requireNonNull(entity, "entity");
+    if (entities.putIfAbsent(entity.getId(), entity) != null) {
+      var exception = new DuplicatedEntityException();
       if (isErrorEnabled()) {
         error(exception, "entity id: ", entity.getId());
       }
-      return;
     }
-
-    entities.put(entity.getId(), entity);
   }
 
   public boolean contain(String id) {
@@ -89,7 +85,7 @@ public final class EntityManager extends SystemLogger {
    * @return a map of entities in this manager
    */
   public Map<String, AbstractEntity> gets() {
-    return entities;
+    return Map.copyOf(entities);
   }
 
   public void remove(String id) {

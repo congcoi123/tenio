@@ -202,6 +202,9 @@ public class Vector2 {
    * @return a new truncated vector, see {@link Vector2}
    */
   public Vector2 truncate(float max) {
+    if (!Float.isFinite(max) || max < 0) {
+      throw new IllegalArgumentException("max must be finite and non-negative");
+    }
     if (getLength() > max) {
       normalize().mul(max);
     }
@@ -283,6 +286,9 @@ public class Vector2 {
   }
 
   public Vector2 div(float rhs) {
+    if (rhs == 0) {
+      throw new ArithmeticException("Cannot divide a vector by " + rhs);
+    }
     x /= rhs;
     y /= rhs;
 

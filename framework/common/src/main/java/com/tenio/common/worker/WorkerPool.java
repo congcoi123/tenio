@@ -25,19 +25,19 @@ THE SOFTWARE.
 package com.tenio.common.worker;
 
 import com.tenio.common.logger.SystemLogger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class helps you create a worker pool.
  */
 public final class WorkerPool extends SystemLogger {
 
-  private final BlockingQueue<Runnable> taskQueue;
-  private final List<WorkerPoolRunnable> runnableWorkerPools;
-  private boolean isStopped;
+  private final ThreadPoolExecutor executor;
 
   /**
    * Creates a new worker pool.
@@ -47,23 +47,29 @@ public final class WorkerPool extends SystemLogger {
    * @param maxNoOfTasks the maximum supported tasks
    */
   public WorkerPool(String name, int noOfThreads, int maxNoOfTasks) {
-    taskQueue = new ArrayBlockingQueue<>(maxNoOfTasks);
-    runnableWorkerPools = new ArrayList<>();
-    isStopped = false;
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("Worker pool name must not be blank");
+    }
+    if (noOfThreads <= 0 || maxNoOfTasks <= 0) {
+      throw new IllegalArgumentException("Thread and task limits must be positive");
+    }
+    var threadIndex = new AtomicInteger();
+    ThreadFactory threadFactory = runnable -> {
+      var thread = new Thread(runnable, String.format("worker-%s-%d", name, threadIndex.getAndIncrement()));
+      thread.setDaemon(true);
+      thread.setUncaughtExceptionHandler((ignored, cause) -> error(cause));
+      return thread;
+    };
+    executor = new ThreadPoolExecutor(noOfThreads, noOfThreads, 0L,
+        TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(maxNoOfTasks), threadFactory,
+        new ThreadPoolExecutor.AbortPolicy());
 
     if (isInfoEnabled()) {
       info("CREATED NEW WORKERS",
           buildgen("Number of threads: ", noOfThreads, ", Max number of tasks: ", maxNoOfTasks));
     }
 
-    for (int i = 0; i < noOfThreads; i++) {
-      runnableWorkerPools.add(new WorkerPoolRunnable(name, i, taskQueue));
-    }
-    for (WorkerPoolRunnable runnable : runnableWorkerPools) {
-      Thread thread = new Thread(runnable);
-      thread.setDaemon(true);
-      thread.start();
-    }
+    executor.prestartAllCoreThreads();
   }
 
   /**
@@ -73,8 +79,8 @@ public final class WorkerPool extends SystemLogger {
    * @param debugText a supported text using for debugging or logging
    * @throws IllegalStateException when you try to execute an unstopped task
    */
-  public synchronized void execute(Runnable task, String debugText) throws IllegalStateException {
-    if (isStopped) {
+  public void execute(Runnable task, String debugText) throws IllegalStateException {
+    if (executor.isShutdown()) {
       throw new IllegalStateException("WorkersPool is stopped");
     }
 
@@ -82,16 +88,17 @@ public final class WorkerPool extends SystemLogger {
       trace("EXECUTED A TASK", debugText);
     }
 
-    taskQueue.offer(task);
+    try {
+      executor.execute(java.util.Objects.requireNonNull(task, "task"));
+    } catch (RejectedExecutionException exception) {
+      throw new RejectedExecutionException("Worker queue is full or stopped", exception);
+    }
   }
 
   /**
    * Stop a task.
    */
-  public synchronized void stop() {
-    isStopped = true;
-    for (var runnable : runnableWorkerPools) {
-      runnable.doStop();
-    }
+  public void stop() {
+    executor.shutdownNow();
   }
 }

@@ -24,68 +24,27 @@ THE SOFTWARE.
 
 package com.tenio.examples.example8;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
-/**
- * This class shows how to send an HTTP requests to server.
- */
+/** Send an HTTP form request with bounded connection and response timeouts. */
 public final class TestClientRestful {
-
-  public TestClientRestful() {
-    System.err.println(executeRequest("http://localhost:9999/ping/another", "param=test", "POST"));
-  }
-
-  /**
-   * The entry point.
-   */
-  public static void main(String[] args) {
-    new TestClientRestful();
-  }
-
-  private String executeRequest(String targetURL, String urlParameters, String method) {
-    HttpURLConnection connection = null;
-
-    try {
-      // Create connection
-      var url = new URL(targetURL);
-      connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod(method);
-      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-      connection.setRequestProperty("Content-Length",
-          Integer.toString(urlParameters.getBytes().length));
-      connection.setRequestProperty("Content-Language", "en-US");
-
-      connection.setUseCaches(false);
-      connection.setDoOutput(true);
-
-      // Send request
-      var wr = new DataOutputStream(connection.getOutputStream());
-      wr.writeBytes(urlParameters);
-      wr.close();
-
-      // Get Response
-      var is = connection.getInputStream();
-      var rd = new BufferedReader(new InputStreamReader(is));
-      var response = new StringBuilder(); // or StringBuffer if Java version 5+
-      String line;
-      while ((line = rd.readLine()) != null) {
-        response.append(line);
-        response.append('\r');
+  public static void main(String[] args) throws IOException, InterruptedException {
+    try (var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()) {
+      var request = HttpRequest.newBuilder(URI.create("http://localhost:9999/ping/another"))
+          .timeout(Duration.ofSeconds(10))
+          .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+          .POST(HttpRequest.BodyPublishers.ofString("param=test"))
+          .build();
+      var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      if (response.statusCode() < 200 || response.statusCode() >= 300) {
+        throw new IOException("HTTP " + response.statusCode() + ": " + response.body());
       }
-      rd.close();
-      return response.toString();
-    } catch (Exception exception) {
-      exception.printStackTrace();
-      return null;
-    } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
+      System.out.println(response.body());
     }
   }
 }

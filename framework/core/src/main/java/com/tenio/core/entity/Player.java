@@ -27,7 +27,7 @@ package com.tenio.core.entity;
 import com.tenio.core.entity.define.room.PlayerRoleInRoom;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.scheduler.task.core.AutoDisconnectPlayerTask;
+import com.tenio.core.scheduler.task.AutoDisconnectPlayerTask;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -55,12 +55,6 @@ import java.util.function.Consumer;
  * // Set player properties
  * player.setProperty("score", 100);
  * player.setProperty("level", 5);
- * 
- * // Track player activity
- * player.setLastActivityTime(System.currentTimeMillis());
- * if (player.isIdle()) {
- *     // Handle idle player
- * }
  * 
  * // Manage player state
  * player.setLoggedIn(true);
@@ -180,14 +174,6 @@ public interface Player {
   long getLastActivityTime();
 
   /**
-   * Retrieves the duration from the last activity.
-   * This value is used for idle state management.
-   *
-   * @return the duration from the last activity in seconds
-   */
-  long getInactiveTimeInSeconds();
-
-  /**
    * Retrieves the last time when the player receives the last byte of data.
    * This value is used for connection monitoring.
    *
@@ -220,42 +206,15 @@ public interface Player {
   void setLastWriteTime(long timestamp);
 
   /**
-   * Determines whether the player is in an idle state.
-   * A player is considered idle if they haven't performed any actions
-   * within the configured idle time threshold.
+   * Determines whether a retained player has exceeded the reconnect grace period.
    *
-   * @return {@code true} if the player is idle, otherwise returns {@code false}
-   */
-  boolean isIdle();
-
-  /**
-   * Ensures that the player is never deported from the server even if they timeout.
-   * This setting is useful for special players that should remain connected
-   * regardless of activity status.
+   * <p>This timeout starts when the session is detached. It is intentionally separate from
+   * normal activity tracking so game traffic or a player's room state cannot extend a disconnected
+   * player's lifetime.</p>
    *
-   * @return {@code true} if the player should never be deported, otherwise returns {@code false}
-   * @see AutoDisconnectPlayerTask
+   * @return {@code true} when the player has no session and the reconnect grace period expired
    */
-  boolean isNeverDeported();
-
-  /**
-   * Allows making a {@link Player} not to be deported from the server.
-   *
-   * @param flag sets it {@code true} to make the player not to be deported
-   * @see AutoDisconnectPlayerTask
-   * @since 0.5.0
-   */
-  void setNeverDeported(boolean flag);
-
-  /**
-   * Determines whether the player got in IDLE state (Do not perform any action, such as reading
-   * or writing data) in case of never deported selection.
-   *
-   * @return {@code true} if the player got in IDLE state, otherwise returns {@code false}
-   * @see AutoDisconnectPlayerTask
-   * @since 0.5.0
-   */
-  boolean isIdleNeverDeported();
+  boolean isReconnectGracePeriodExpired();
 
   /**
    * Retrieves the player's session.
@@ -397,23 +356,11 @@ public interface Player {
   void clean();
 
   /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data).
+   * Sets the reconnect grace period in seconds for a player whose session has been detached.
    *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
+   * @param seconds the reconnect grace period in seconds
    */
   void configureMaxIdleTimeInSeconds(int seconds);
-
-  /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state (Do not
-   * perform any action, such as reading or writing data) in case of never deported selection.
-   *
-   * @param seconds the maximum time in seconds ({@code integer} value) which allows the
-   *                player to get in IDLE state
-   * @since 0.5.0
-   */
-  void configureMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * All the support fields that can be triggered as events.
@@ -429,10 +376,6 @@ public interface Player {
      * The player activation status.
      */
     ACTIVATION,
-    /**
-     * The player deportation status.
-     */
-    DEPORTATION,
     /**
      * The player role in his room.
      *

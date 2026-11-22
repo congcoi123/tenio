@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.tenio.common.data.DataCollection;
+import com.tenio.core.bootstrap.annotation.ClientCommand;
 import com.tenio.core.entity.Player;
 import com.tenio.core.exception.AddedDuplicatedClientCommandException;
 import org.junit.jupiter.api.BeforeEach;
@@ -136,5 +137,74 @@ class ClientCommandManagerTest {
   void testInitiallyEmpty() {
     assertNotNull(manager.getHandlers());
     assertTrue(manager.getHandlers().isEmpty());
+  }
+
+  @Test
+  void omittedRateLeavesCommandUnrestrictedEvenWithAnExplicitBurst() {
+    var handler = new BurstOnlyCommand();
+    var player = mock(Player.class);
+    manager.registerCommand((short) 10, handler);
+    manager.invoke((short) 10, player, null);
+    manager.invoke((short) 10, player, null);
+
+    assertEquals(2, handler.invocations);
+    assertTrue(manager.limitCounts().isEmpty());
+    org.mockito.Mockito.verifyNoInteractions(player);
+  }
+
+  @Test
+  void omittedBurstUsesTheRateForBucketCapacity() {
+    manager.registerCommand((short) 11, new RateOnlyCommand());
+    assertTrue(manager.getLimits().allow((short) 11, "player"));
+    assertEquals(new CommandLimits.Counts(1, 0), manager.limitCounts().get((short) 11));
+  }
+
+  @Test
+  void describesNamedCommandsAndFallsBackToTheHandlerClassName() {
+    manager.registerCommand((short) 10, new BurstOnlyCommand());
+    manager.registerCommand((short) 11, new RateOnlyCommand());
+
+    assertEquals("10 | BurstOnlyCommand", manager.describeCommand((short) 10, true));
+    assertEquals("11 | join-room | Joins a room using an invite code", manager.describeCommand((short) 11, true));
+    assertEquals("11 | join-room", manager.describeCommand((short) 11, false));
+
+    manager.getHandlers().put((short) 11, new BurstOnlyCommand());
+    assertEquals("11 | BurstOnlyCommand", manager.describeCommand((short) 11, true));
+    manager.clear();
+    assertEquals("11", manager.describeCommand((short) 11, true));
+  }
+
+  @ClientCommand(value = 10, burst = 2)
+  private static final class BurstOnlyCommand extends AbstractClientCommandHandler<Player, DataCollection> {
+    private int invocations;
+
+    @Override
+    public void execute(Player player, DataCollection data) {
+      invocations++;
+    }
+  }
+
+  @ClientCommand(value = 11, name = "join-room", description = "Joins a room using an invite code",
+      requestsPerSecond = 2)
+  private static final class RateOnlyCommand extends AbstractClientCommandHandler<Player, DataCollection> {
+    @Override
+    public void execute(Player player, DataCollection data) {
+    }
+  }
+
+  @Test
+  void onePlayersBurstDoesNotConsumeAnotherPlayersAllowance() {
+    var first = mock(Player.class);
+    var second = mock(Player.class);
+    org.mockito.Mockito.when(first.getIdentity()).thenReturn("one");
+    org.mockito.Mockito.when(second.getIdentity()).thenReturn("two");
+    var message = mock(DataCollection.class);
+    var handler = stubHandler();
+    manager.registerCommand((short) 1, handler);
+    manager.getLimits().configure((short) 1, 1, 1);
+    manager.invoke((short) 1, first, message);
+    manager.invoke((short) 1, first, message);
+    manager.invoke((short) 1, second, message);
+    assertEquals(new CommandLimits.Counts(2, 1), manager.getLimits().counts().get((short) 1));
   }
 }

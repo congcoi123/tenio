@@ -26,6 +26,7 @@ package com.tenio.common.data.msgpack.element;
 
 import com.tenio.common.data.DataCollection;
 import com.tenio.common.data.DataType;
+import com.tenio.common.data.ImmutableSnapshot;
 import com.tenio.common.data.msgpack.MsgPackUtility;
 import java.io.Serial;
 import java.io.Serializable;
@@ -36,8 +37,7 @@ import java.util.Map;
  * This is an element object class holds data in a map. All message comes from other services
  * will be converted to this object. That helps normalize the way to communicate and be easy to use.
  */
-public final class MsgPackMap extends HashMap<String, Object>
-    implements DataCollection, Serializable {
+public final class MsgPackMap extends HashMap<String, Object> implements DataCollection, Serializable {
 
   @Serial
   private static final long serialVersionUID = 6697372748701824069L;
@@ -94,7 +94,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>byte</code> type fetched by its key in the map
    */
   public byte getByte(String key) {
-    throw new UnsupportedOperationException();
+    return ((Number) get(key)).byteValue();
   }
 
   /**
@@ -104,7 +104,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>short</code> type fetched by its key in the map
    */
   public short getShort(String key) {
-    throw new UnsupportedOperationException();
+    return ((Number) get(key)).shortValue();
   }
 
   /**
@@ -114,7 +114,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>integer</code> type fetched by its key in the map
    */
   public int getInteger(String key) {
-    return (int) get(key);
+    return ((Number) get(key)).intValue();
   }
 
   /**
@@ -124,7 +124,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>float</code> type fetched by its key in the map
    */
   public float getFloat(String key) {
-    return (float) get(key);
+    return ((Number) get(key)).floatValue();
   }
 
   /**
@@ -134,7 +134,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>long</code> type fetched by its key in the map
    */
   public long getLong(String key) {
-    throw new UnsupportedOperationException();
+    return ((Number) get(key)).longValue();
   }
 
   /**
@@ -144,7 +144,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>double</code> type fetched by its key in the map
    */
   public double getDouble(String key) {
-    throw new UnsupportedOperationException();
+    return ((Number) get(key)).doubleValue();
   }
 
   /**
@@ -174,7 +174,18 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>byte[]</code> type fetched by its key in the map
    */
   public byte[] getByteArray(String key) {
-    throw new UnsupportedOperationException();
+    var value = get(key);
+    if (value instanceof byte[] bytes) {
+      return bytes;
+    }
+    if (value instanceof int[] integers) {
+      var result = new byte[integers.length];
+      for (int i = 0; i < integers.length; i++) {
+        result[i] = (byte) integers[i];
+      }
+      return result;
+    }
+    return (byte[]) value;
   }
 
   /**
@@ -184,7 +195,15 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>short[]</code> type fetched by its key in the map
    */
   public short[] getShortArray(String key) {
-    throw new UnsupportedOperationException();
+    var value = get(key);
+    if (value instanceof int[] integers) {
+      var result = new short[integers.length];
+      for (int i = 0; i < integers.length; i++) {
+        result[i] = (short) integers[i];
+      }
+      return result;
+    }
+    return (short[]) value;
   }
 
   /**
@@ -204,7 +223,15 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>float[]</code> type fetched by its key in the map
    */
   public float[] getFloatArray(String key) {
-    return (float[]) get(key);
+    var value = get(key);
+    if (value instanceof double[] doubles) {
+      var result = new float[doubles.length];
+      for (int i = 0; i < doubles.length; i++) {
+        result[i] = (float) doubles[i];
+      }
+      return result;
+    }
+    return (float[]) value;
   }
 
   /**
@@ -214,7 +241,15 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>long[]</code> type fetched by its key in the map
    */
   public long[] getLongArray(String key) {
-    throw new UnsupportedOperationException();
+    var value = get(key);
+    if (value instanceof int[] integers) {
+      var result = new long[integers.length];
+      for (int i = 0; i < integers.length; i++) {
+        result[i] = integers[i];
+      }
+      return result;
+    }
+    return (long[]) value;
   }
 
   /**
@@ -224,7 +259,15 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the value converted in <code>double[]</code> type fetched by its key in the map
    */
   public double[] getDoubleArray(String key) {
-    throw new UnsupportedOperationException();
+    var value = get(key);
+    if (value instanceof float[] floats) {
+      var result = new double[floats.length];
+      for (int i = 0; i < floats.length; i++) {
+        result[i] = floats[i];
+      }
+      return result;
+    }
+    return (double[]) value;
   }
 
   /**
@@ -277,7 +320,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putByte(String key, byte value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -288,7 +332,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putShort(String key, short value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -323,7 +368,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putLong(String key, long value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -334,7 +380,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putDouble(String key, double value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -369,7 +416,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putByteArray(String key, byte[] value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -380,7 +428,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putShortArray(String key, short[] value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -415,7 +464,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putLongArray(String key, long[] value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -426,7 +476,8 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return the pointer of this instance
    */
   public MsgPackMap putDoubleArray(String key, double[] value) {
-    throw new UnsupportedOperationException();
+    put(key, value);
+    return this;
   }
 
   /**
@@ -459,7 +510,7 @@ public final class MsgPackMap extends HashMap<String, Object>
    * @return a new copy of the map in unmodified mode.
    */
   public Map<String, Object> getReadonlyMap() {
-    return Map.copyOf(this);
+    return ImmutableSnapshot.ofMap(this);
   }
 
   @Override

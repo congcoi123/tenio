@@ -35,6 +35,7 @@ import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.handler.event.EventDisconnectPlayer;
 import com.tenio.core.handler.event.EventPlayerLogin;
 import com.tenio.core.handler.event.EventPlayerConnectionRetry;
+import com.tenio.core.handler.event.EventPlayerConnectionReplacing;
 import com.tenio.core.handler.event.EventPlayerConnectionResumed;
 import com.tenio.core.handler.event.EventReceivedMessageFromPlayer;
 import com.tenio.core.handler.event.EventSendMessageToPlayer;
@@ -52,6 +53,9 @@ public final class PlayerEventHandler {
 
   @AutowiredAcceptNull
   private EventPlayerConnectionRetry<Player, DataCollection> eventPlayerConnectionRetry;
+
+  @AutowiredAcceptNull
+  private EventPlayerConnectionReplacing<Player> eventPlayerConnectionReplacing;
 
   @AutowiredAcceptNull
   private EventPlayerConnectionResumed<Player> eventPlayerConnectionResumed;
@@ -77,6 +81,8 @@ public final class PlayerEventHandler {
 
     final var eventPlayerConnectionRetryOp =
         Optional.ofNullable(eventPlayerConnectionRetry);
+    final var eventPlayerConnectionReplacingOp =
+        Optional.ofNullable(eventPlayerConnectionReplacing);
     final var eventPlayerConnectionResumedOp =
         Optional.ofNullable(eventPlayerConnectionResumed);
 
@@ -103,6 +109,17 @@ public final class PlayerEventHandler {
           var message = (DataCollection) params[1];
 
           return event.onPlayerConnectionRetry(session, message);
+        }));
+
+    eventPlayerConnectionReplacingOp.ifPresent(
+        event -> eventManager.on(ServerEvent.PLAYER_CONNECTION_REPLACING, params -> {
+          var player = (Player) params[0];
+          var staleSession = (Session) params[1];
+          var replacementSession = (Session) params[2];
+
+          event.onPlayerConnectionReplacing(player, staleSession, replacementSession);
+
+          return null;
         }));
 
     eventPlayerConnectionResumedOp.ifPresent(
