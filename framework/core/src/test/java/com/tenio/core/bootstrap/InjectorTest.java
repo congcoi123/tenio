@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,52 +40,57 @@ import com.tenio.core.bootstrap.bean.TestBeanClass;
 import com.tenio.core.bootstrap.command.TestClientCommandHandler;
 import com.tenio.core.bootstrap.command.TestSystemCommandHandler;
 import com.tenio.core.bootstrap.eventhandler.TestEventHandlerClass;
+import com.tenio.core.bootstrap.exception.two.BootstrapComponentTwo;
+import com.tenio.core.bootstrap.injector.BeanClass;
 import com.tenio.core.bootstrap.injector.Injector;
 import com.tenio.core.bootstrap.setting.TestSettingClass;
 import com.tenio.core.bootstrap.test.BootstrapComponent;
+import com.tenio.core.bootstrap.test.factory.TestBeanCommon;
 import com.tenio.core.bootstrap.test.impl.TestClassA;
 import com.tenio.core.bootstrap.test.impl.TestClassAlone;
 import com.tenio.core.bootstrap.test.impl.TestClassCCopy;
+import com.tenio.core.bootstrap.test.impl.TestClassD;
+import com.tenio.core.bootstrap.test.impl.TestClassDCopy;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceA;
 import com.tenio.core.bootstrap.test.inf.TestInterfaceC;
+import com.tenio.core.bootstrap.test.inf.TestInterfaceD;
+import com.tenio.core.command.system.implement.HelpCommand;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.exception.DuplicatedBeanCreationException;
 import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
 import com.tenio.core.exception.NoImplementedClassFoundException;
+import com.tenio.core.fixture.injector.failure.FailingFactory;
+import com.tenio.core.fixture.injector.inherited.InheritedBase;
+import com.tenio.core.fixture.injector.inherited.InheritedComponent;
+import com.tenio.core.fixture.injector.inherited.InheritedConsumer;
+import com.tenio.core.fixture.injector.inherited.InheritedContract;
+import com.tenio.core.fixture.injector.qualifiedfactory.QualifiedFactoryFixtures;
 import jakarta.servlet.http.HttpServlet;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Unit Test Cases For Injector")
 class InjectorTest {
 
-  private final Injector injector = Injector.newInstance();
+  private final Injector injector = new Injector();
 
-  @Test
-  @DisplayName("Throw an exception when the class's instance is attempted creating again")
-  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
-    var constructor = Injector.class.getDeclaredConstructor();
-    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-    assertThrows(InvocationTargetException.class, () -> {
-      constructor.setAccessible(true);
-      constructor.newInstance();
-    });
+  @BeforeEach
+  @AfterEach
+  void resetInjectorState() throws Exception {
+    injector.setProfiles(Set.of());
+    injector.scanPackages(null);
   }
 
   @Test
-  @DisplayName("Injector.newInstance() always returns singleton")
-  void testNewInstanceSingleton() {
-    Injector i1 = Injector.newInstance();
-    Injector i2 = Injector.newInstance();
-    assertSame(i1, i2);
-  }
-
-  @Test
-  @DisplayName("getClassesMap, getClassBeansMap, getServletBeansMap, getSystemCommandManager, getClientCommandManager should not be null")
+  @DisplayName("Registries exist before scanning")
   void testGettersNotNull() {
-    Injector injector = Injector.newInstance();
+    Injector injector = new Injector();
     assertNotNull(injector.getClassesMap());
     assertNotNull(injector.getClassBeansMap());
     assertNotNull(injector.getServletBeansMap());
@@ -95,14 +101,14 @@ class InjectorTest {
   @Test
   @DisplayName("getBean returns null for unknown class")
   void testGetBeanReturnsNullForUnknownClass() {
-    Injector injector = Injector.newInstance();
+    Injector injector = new Injector();
     assertNull(injector.getBean(String.class));
   }
 
   @Test
   @DisplayName("getBean returns correct instance after scanPackages")
   void testGetBeanAfterScanPackages() throws Exception {
-    Injector injector = Injector.newInstance();
+    Injector injector = new Injector();
     injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
     Object bean = injector.getBean(BootstrapComponent.class);
     assertNotNull(bean);
@@ -111,7 +117,7 @@ class InjectorTest {
   @Test
   @DisplayName("getServletBeansMap returns map that can be modified")
   void testServletBeansMapModifiable() {
-    Injector injector = Injector.newInstance();
+    Injector injector = new Injector();
     Map<String, HttpServlet> map = injector.getServletBeansMap();
     HttpServlet servlet = mock(HttpServlet.class);
     map.put("test", servlet);
@@ -228,7 +234,7 @@ class InjectorTest {
   @Test
   @DisplayName("Attempt fetching null bean should return null")
   void getNullBeanShouldReturnNull() {
-    assertNull(Injector.newInstance().getBean(null));
+    assertNull(new Injector().getBean(null));
   }
 
   @Test
@@ -236,6 +242,30 @@ class InjectorTest {
   void scanPackageWithSystemCommandRegistersCommand() throws Exception {
     injector.scanPackages(null, "com.tenio.core.bootstrap.command");
     assertNotNull(injector.getSystemCommandManager().getHandler("test-sys"));
+  }
+
+  @Test
+  @DisplayName("Built-in system commands are created only with the monitor profile")
+  void builtInSystemCommandsRequireMonitorProfile() throws Exception {
+    injector.scanPackages(HelpCommand.class);
+
+    assertTrue(injector.getSystemCommandManager().getHandlers().isEmpty());
+    assertFalse(injector.getClassBeansMap().containsKey(new BeanClass(HelpCommand.class, "help")));
+
+    injector.setProfiles(Set.of(CoreConstant.MONITOR_PROFILE));
+    injector.scanPackages(HelpCommand.class);
+
+    var manager = injector.getSystemCommandManager();
+    assertSame(manager, manager.getHandler("help").getCommandManager());
+    assertEquals(Set.of("help", "info", "server", "unban"), manager.getHandlers().keySet());
+    assertSame(manager.getHandler("help"),
+        injector.getClassBeansMap().get(new BeanClass(HelpCommand.class, "help")));
+
+    injector.setProfiles(Set.of("world"));
+    injector.scanPackages(HelpCommand.class);
+
+    assertTrue(injector.getSystemCommandManager().getHandlers().isEmpty());
+    assertTrue(manager.getHandlers().isEmpty());
   }
 
   @Test
@@ -313,5 +343,237 @@ class InjectorTest {
     Object bean = injector.getBean(TestSettingClass.class);
     assertNotNull(bean);
     assertInstanceOf(TestSettingClass.class, bean);
+  }
+  @Test
+  @DisplayName("Initialization lookups should reuse the sole unnamed implementation")
+  void getBeanShouldReuseUnnamedImplementation() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+
+    var implementation = injector.getBean(TestClassA.class);
+    assertNotNull(implementation);
+    assertSame(implementation, injector.getBean(TestInterfaceA.class));
+    assertSame(implementation, injector.getBean(TestInterfaceA.class));
+  }
+
+  @Test
+  @DisplayName("Initialization lookups should reflect replaced and removed bean registrations")
+  void getBeanShouldReflectReplacedAndRemovedRegistrations() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+    var key = new BeanClass(TestClassA.class, "");
+    var original = injector.getBean(TestInterfaceA.class);
+    assertNotNull(original);
+
+    var replacement = new TestClassA();
+    injector.getClassBeansMap().put(key, replacement);
+
+    assertSame(replacement, injector.getBean(TestInterfaceA.class));
+    assertSame(replacement, injector.getBean(TestClassA.class));
+    assertNotSame(original, replacement);
+
+    injector.getClassBeansMap().remove(key);
+    assertNull(injector.getBean(TestInterfaceA.class));
+    assertNull(injector.getBean(TestClassA.class));
+  }
+
+  @Test
+  @DisplayName("Initialization lookups should detect ambiguity introduced after an earlier lookup")
+  void getBeanShouldDetectAmbiguityAfterRegistrationsChange() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+    var extraKey = new BeanClass(TestClassDCopy.class, "");
+    var extra = injector.getClassBeansMap().remove(extraKey);
+    var original = injector.getClassBeansMap().get(new BeanClass(TestClassD.class, ""));
+    assertNotNull(extra);
+    assertNotNull(original);
+    assertSame(original, injector.getBean(TestInterfaceD.class));
+
+    injector.getClassBeansMap().put(extraKey, extra);
+
+    var exception = assertThrows(IllegalStateException.class,
+        () -> injector.getBean(TestInterfaceD.class));
+    assertTrue(exception.getMessage().contains(TestInterfaceD.class.getName()));
+  }
+
+  @Test
+  @DisplayName("Initialization lookups should ignore named beans when an unnamed bean exists")
+  void getBeanShouldExcludeNamedBeans() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.factory");
+
+    var bean = injector.getBean(TestBeanCommon.class);
+    assertNotNull(bean);
+    assertEquals("common", bean.text());
+  }
+
+  @Test
+  @DisplayName("Ambiguous unnamed initialization lookups should fail explicitly")
+  void getBeanShouldRejectAmbiguousUnnamedBeans() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+
+    var exception = assertThrows(IllegalStateException.class,
+        () -> injector.getBean(TestInterfaceD.class));
+    assertTrue(exception.getMessage().contains(TestInterfaceD.class.getName()));
+  }
+
+  @Test
+  @DisplayName("A lookup before scanning should not hide a subsequently created bean")
+  void getBeanShouldFindBeanAfterScanning() throws Exception {
+    assertNull(injector.getBean(TestInterfaceA.class));
+
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+
+    assertNotNull(injector.getBean(TestInterfaceA.class));
+  }
+
+  @Test
+  @DisplayName("Rescanning should replace bean registrations from the previous generation")
+  void scanPackagesShouldReplacePreviousGeneration() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+    var previous = injector.getBean(TestInterfaceA.class);
+    assertNotNull(previous);
+
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+
+    var current = injector.getBean(TestInterfaceA.class);
+    assertNotNull(current);
+    assertNotSame(previous, current);
+    assertSame(current, injector.getBean(TestClassA.class));
+
+    injector.scanPackages(null);
+    assertNull(injector.getBean(TestInterfaceA.class));
+    assertNull(injector.getBean(TestClassA.class));
+  }
+
+  @Test
+  @DisplayName("Discovery should resolve inherited contracts and wire fields on abstract parents")
+  void scanPackagesShouldResolveInheritedContractsAndFields() throws Exception {
+    injector.scanPackages(InheritedComponent.class, "com.tenio.core.bootstrap.test.impl");
+
+    var component = injector.getBean(InheritedComponent.class);
+    assertNotNull(component);
+    assertAll(
+        () -> assertSame(component, injector.getBean(InheritedBase.class)),
+        () -> assertSame(component, injector.getBean(InheritedContract.class)),
+        () -> assertSame(component, injector.getBean(InheritedContract.Child.class)),
+        () -> assertSame(injector.getBean(TestClassA.class), component.getDependency()),
+        () -> assertSame(component, injector.getBean(InheritedConsumer.class).getContract()),
+        () -> assertTrue(injector.getClassesMap().get(InheritedComponent.class)
+            .containsAll(Set.of(InheritedBase.class, InheritedContract.Child.class,
+                InheritedContract.class))));
+  }
+
+  @Test
+  @DisplayName("Failed autowiring should discard old beans and all partial registrations")
+  void failedScanShouldDiscardPartialGeneration() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl");
+    assertNotNull(injector.getBean(TestInterfaceA.class));
+
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(BootstrapComponentTwo.class,
+            "com.tenio.core.bootstrap.command", "com.tenio.core.network.jetty.controller"));
+
+    assertAll(
+        () -> assertTrue(injector.getClassesMap().isEmpty()),
+        () -> assertTrue(injector.getClassBeansMap().isEmpty()),
+        () -> assertTrue(injector.getServletBeansMap().isEmpty()),
+        () -> assertTrue(injector.getSystemCommandManager().getHandlers().isEmpty()),
+        () -> assertNull(injector.getClientCommandManager().getHandler((short) 42)),
+        () -> assertNull(injector.getBean(TestInterfaceA.class)),
+        () -> assertNull(injector.getBean(BootstrapComponentTwo.class)));
+  }
+
+  @Test
+  @DisplayName("Failed factories should retain the original exception and discard partial beans")
+  void failedFactoryShouldPreserveCauseAndDiscardPartialGeneration() {
+    var exception = assertThrows(InvocationTargetException.class,
+        () -> injector.scanPackages(FailingFactory.class, "com.tenio.core.bootstrap.command"));
+
+    assertAll(
+        () -> assertInstanceOf(IllegalStateException.class, exception.getCause()),
+        () -> assertEquals("Expected factory failure", exception.getCause().getMessage()),
+        () -> assertTrue(injector.getClassesMap().isEmpty()),
+        () -> assertTrue(injector.getClassBeansMap().isEmpty()),
+        () -> assertTrue(injector.getServletBeansMap().isEmpty()),
+        () -> assertTrue(injector.getSystemCommandManager().getHandlers().isEmpty()),
+        () -> assertNull(injector.getClientCommandManager().getHandler((short) 42)));
+  }
+  @Test
+  @DisplayName("Class qualifiers should resolve interface-returning factories by runtime type and name")
+  void classQualifierShouldResolveFactoryRuntimeImplementation() throws Exception {
+    injector.setProfiles(Set.of("matches"));
+    injector.scanPackages(QualifiedFactoryFixtures.class);
+
+    var consumer = injector.getBean(QualifiedFactoryFixtures.MatchingConsumer.class);
+    var defaultService = injector.getClassBeansMap()
+        .get(new BeanClass(QualifiedFactoryFixtures.Service.class, ""));
+    var namedService = injector.getClassBeansMap()
+        .get(new BeanClass(QualifiedFactoryFixtures.Service.class, "chosen"));
+    assertAll(
+        () -> assertNotNull(consumer),
+        () -> assertSame(defaultService, consumer.defaultService),
+        () -> assertSame(namedService, consumer.namedService),
+        () -> assertNotSame(consumer.defaultService, consumer.namedService),
+        () -> assertNull(consumer.wrongClass),
+        () -> assertNull(consumer.absentService),
+        () -> assertNull(consumer.incompatibleContract));
+  }
+
+  @Test
+  @DisplayName("A class-qualified factory lookup must not use another name's matching implementation")
+  void classQualifierShouldRejectWrongFactoryRuntimeImplementation() {
+    injector.setProfiles(Set.of("wrong-class"));
+
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(QualifiedFactoryFixtures.class));
+  }
+
+  @Test
+  @DisplayName("Both the requested name and runtime implementation must match a factory bean")
+  void classQualifierShouldNotIgnoreRequestedFactoryName() {
+    injector.setProfiles(Set.of("wrong-name"));
+
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(QualifiedFactoryFixtures.class));
+  }
+
+  @Test
+  @DisplayName("A missing factory name cannot fall back to the default qualified implementation")
+  void classQualifierShouldRejectMissingFactoryName() {
+    injector.setProfiles(Set.of("missing-name"));
+
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(QualifiedFactoryFixtures.class));
+  }
+
+  @Test
+  @DisplayName("A null factory value cannot satisfy a required runtime class qualifier")
+  void classQualifierShouldRejectRequiredNullFactoryValue() {
+    injector.setProfiles(Set.of("required-null"));
+
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(QualifiedFactoryFixtures.class));
+  }
+
+  @Test
+  @DisplayName("Equal but distinct class-qualified factory instances remain ambiguous")
+  void classQualifierShouldRejectAmbiguousFactoryInstances() {
+    injector.setProfiles(Set.of("ambiguous"));
+
+    assertThrows(MultipleImplementedClassForInterfaceException.class,
+        () -> injector.scanPackages(QualifiedFactoryFixtures.class));
+  }
+
+  @Test
+  @DisplayName("Factory aliases of the same instance should not create class qualifier ambiguity")
+  void classQualifierShouldAcceptAliasesOfSameFactoryInstance() throws Exception {
+    injector.setProfiles(Set.of("same-instance"));
+    injector.scanPackages(QualifiedFactoryFixtures.class);
+
+    var consumer = injector.getBean(QualifiedFactoryFixtures.AliasedConsumer.class);
+    var service = injector.getClassBeansMap()
+        .get(new BeanClass(QualifiedFactoryFixtures.Service.class, ""));
+    var alias = injector.getClassBeansMap()
+        .get(new BeanClass(QualifiedFactoryFixtures.AliasService.class, ""));
+    assertNotNull(consumer);
+    assertSame(service, alias);
+    assertSame(service, consumer.service);
   }
 }

@@ -35,27 +35,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Defines the core configuration types used throughout the server.
- * This enum provides a centralized way to manage and access various server
- * configuration parameters, including server properties, worker thread settings,
- * network configurations, and player/room management settings.
+ * Defines the core configuration types used throughout the server. This enum provides a centralized
+ * way to manage and access various server configuration parameters, including server properties,
+ * worker thread settings, network configurations, and player/room management settings.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Server identity and version management</li>
- *   <li>Worker thread pool configuration</li>
- *   <li>Network and socket settings</li>
- *   <li>Player and room management parameters</li>
- *   <li>System monitoring and maintenance settings</li>
+ *   <li>Server identity and version management
+ *   <li>Worker thread pool configuration
+ *   <li>Network and socket settings
+ *   <li>Player and room management parameters
+ *   <li>System monitoring and maintenance settings
  * </ul>
  *
  * <p>Configuration categories:
+ *
  * <ul>
- *   <li>Server Properties: Basic server identification and settings</li>
- *   <li>Worker Settings: Thread pool configurations for various tasks</li>
- *   <li>Network Properties: Socket and connection settings</li>
- *   <li>Player Properties: Player management and behavior settings</li>
- *   <li>Room Properties: Room management and behavior settings</li>
+ *   <li>Server Properties: Basic server identification and settings
+ *   <li>Worker Settings: Thread pool configurations for various tasks
+ *   <li>Network Properties: Socket and connection settings
+ *   <li>Player Properties: Player management and behavior settings
+ *   <li>Room Properties: Room management and behavior settings
  * </ul>
  *
  * @see CoreConfiguration
@@ -64,6 +65,12 @@ import java.util.Map;
  */
 public enum CoreConfigurationType implements ConfigurationType {
 
+  /**
+   * Mandatory comma-separated startup names, trimmed before annotated definitions are selected.
+   *
+   * @since 0.7.4
+   */
+  PROFILE("profile"),
   /**
    * The server name.
    */
@@ -87,13 +94,6 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   SERVER_VERSION_NAME("version-name"),
   /**
-   * Set this flag to {@code true} to enable terminal command.
-   * <p>
-   * This feature is only recommended to be used in development environment.
-   * @since 0.6.12
-   */
-  ENABLE_TERMINAL_COMMAND("enable-terminal-command"),
-  /**
    * The number of threads using for handlers to process connection requests from client sockets on the server.
    * @since 0.7.3
    */
@@ -116,46 +116,12 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   WORKER_WEBSOCKET_CONSUMER("websocket-consumer"),
   /**
-   * Sets an interval to frequently check removable rooms for removing them.
+   * Delay between main-connection keepalive scans, in seconds. A positive value enables
+   * scheduling independently of the receive timeout.
    *
-   * @see RoomRemoveMode
+   * @since 0.7.4
    */
-  INTERVAL_REMOVED_ROOM_SCAN("removed-room-scan-interval"),
-  /**
-   * Sets an interval to frequently check disconnected players. In case a disconnected time of a
-   * player excess the allowed time then that player will be logged out from the server.
-   *
-   * @see PlayerDisconnectMode
-   */
-  INTERVAL_DISCONNECTED_PLAYER_SCAN("disconnected-player-scan-interval"),
-  /**
-   * Sets an interval to frequently check the concurrent users activating on the server. Disable
-   * this feature by setting the value to {@code 0}.
-   *
-   * @since 0.5.1
-   */
-  INTERVAL_CCU_SCAN("ccu-scan-interval"),
-  /**
-   * Sets an interval to frequently check whether a deadlock occurred.Disable
-   * this feature by setting the value to {@code 0}.
-   *
-   * @since 0.5.1
-   */
-  INTERVAL_DEADLOCK_SCAN("deadlock-scan-interval"),
-  /**
-   * Sets an interval to frequently report the current read and written number of packets on the
-   * server. Disable this feature by setting the value to {@code 0}.
-   *
-   * @since 0.5.1
-   */
-  INTERVAL_TRAFFIC_COUNTER("traffic-counter-interval"),
-  /**
-   * Sets an interval to frequently monitoring the server information. Disable
-   * this feature by setting the value to {@code 0}.
-   *
-   * @since 0.5.1
-   */
-  INTERVAL_SYSTEM_MONITORING("system-monitoring-interval"),
+  INTERVAL_MAIN_CONNECTION_KEEPALIVE_SCAN("main-connection-keepalive-scan-interval"),
   /**
    * Sets the maximum size of an inbound queue (response queue). Notes that every {@link Session} has
    * its own queue, and this setting applies for all of them.
@@ -197,18 +163,13 @@ public enum CoreConfigurationType implements ConfigurationType {
    */
   PROP_MAX_NUMBER_ROOMS("max-number-rooms"),
   /**
-   * Sets the maximum time in seconds a player can be in IDLE state (Without sending or receiving
-   * packets). Excesses this time then the player will be removed from the server.
+   * Sets the detached-player reconnect grace period in seconds, live TCP silence is configured separately.
    */
   PROP_MAX_PLAYER_IDLE_TIME("max-player-idle-time"),
   /**
-   * Sets the maximum time in seconds a player can be in IDLE state (Without sending or receiving
-   * packets) in case of never deported selection. Excesses this time then the player will be
-   * removed from the server.
-   *
-   * @since 0.5.0
+   * Maximum main-connection silence for an authenticated player session, in seconds.
    */
-  PROP_MAX_PLAYER_IDLE_TIME_NEVER_DEPORTED("max-player-idle-time-never-deported"),
+  PROP_MAIN_CONNECTION_KEEPALIVE_TIMEOUT_SECONDS("main-connection-keepalive-timeout-seconds"),
   /**
    * Determines whether the WebSocket connection could use SSL configuration.
    */

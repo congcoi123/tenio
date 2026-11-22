@@ -27,12 +27,14 @@ package com.tenio.engine.fsm.entity;
 import com.tenio.common.utility.TimeUtility;
 import com.tenio.engine.message.ExtraMessage;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This object is used for communication between entities.
  */
-@SuppressWarnings("rawtypes")
-public class Telegram implements Comparable {
+public class Telegram implements Comparable<Telegram> {
+
+  private final String id;
 
   /**
    * These telegrams will be stored in a priority queue. Therefore, the operator
@@ -71,6 +73,7 @@ public class Telegram implements Comparable {
    * Initialization.
    */
   public Telegram() {
+    id = UUID.randomUUID().toString();
     createdTime = TimeUtility.currentTimeSeconds();
     delayTime = -1;
     sender = null;
@@ -92,6 +95,8 @@ public class Telegram implements Comparable {
    * @param info      the information
    */
   public Telegram(double delayTime, String sender, String receiver, int type, ExtraMessage info) {
+    id = UUID.randomUUID().toString();
+    createdTime = TimeUtility.currentTimeSeconds();
     this.delayTime = delayTime;
     this.sender = sender;
     this.receiver = receiver;
@@ -129,14 +134,7 @@ public class Telegram implements Comparable {
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Telegram)) {
-      return false;
-    }
-    var t1 = this;
-    var t2 = (Telegram) o;
-    return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY)
-        && (Objects.equals(t1.getSender(), t2.getSender()))
-        && (Objects.equals(t1.getReceiver(), t2.getReceiver())) && (t1.getType() == t2.getType());
+    return o instanceof Telegram other && id.equals(other.id);
   }
 
   /**
@@ -146,22 +144,13 @@ public class Telegram implements Comparable {
    */
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 89 * hash + sender.hashCode();
-    hash = 89 * hash + receiver.hashCode();
-    hash = 89 * hash + type;
-    return hash;
+    return id.hashCode();
   }
 
   @Override
-  public int compareTo(Object o2) {
-    var t1 = this;
-    var t2 = (Telegram) o2;
-    if (t1 == t2) {
-      return 0;
-    } else {
-      return (t1.getDelayTime() > t2.getDelayTime()) ? -1 : 1;
-    }
+  public int compareTo(Telegram other) {
+    int byTime = Double.compare(other.delayTime, delayTime);
+    return byTime != 0 ? byTime : id.compareTo(other.id);
   }
 
   @Override
@@ -175,6 +164,6 @@ public class Telegram implements Comparable {
         ", MsgType: " +
         type +
         ", Info: " +
-        info.toString();
+        Objects.toString(info);
   }
 }

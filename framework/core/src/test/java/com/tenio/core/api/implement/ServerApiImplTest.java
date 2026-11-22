@@ -67,7 +67,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 @DisplayName("Unit Test Cases For ServerApiImpl (extended)")
 class ServerApiImplTest {
@@ -312,9 +311,7 @@ class ServerApiImplTest {
   void testLogoutCallsCloseOnActivatedSession() throws IOException {
     var player = mock(Player.class);
     var session = mock(Session.class);
-    when(player.containsSession()).thenReturn(true);
     when(player.getSession()).thenReturn(Optional.of(session));
-    Mockito.when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.isActivated()).thenReturn(true);
 
     api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
@@ -333,9 +330,9 @@ class ServerApiImplTest {
   @DisplayName("logout with no-session player emits DISCONNECT_PLAYER and removes player")
   void testLogoutWithNoSessionDisconnectsPlayer() {
     var player = mock(Player.class);
-    when(player.containsSession()).thenReturn(false);
     when(player.isInRoom()).thenReturn(false);
     when(player.getIdentity()).thenReturn("alice");
+    when(playerManager.getPlayerByIdentity("alice")).thenReturn(player);
 
     api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST,
         PlayerDisconnectMode.CLIENT_REQUEST);
@@ -610,8 +607,8 @@ class ServerApiImplTest {
   void testLogoutHandlesIOExceptionFromSessionClose() throws IOException {
     Player player = mock(Player.class);
     Session session = mock(Session.class);
-    when(player.containsSession()).thenReturn(true);
     when(player.getSession()).thenReturn(Optional.of(session));
+    when(session.isActivated()).thenReturn(true);
     doThrow(new IOException("close failed")).when(session).close(
         org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     org.junit.jupiter.api.Assertions.assertDoesNotThrow(
@@ -623,12 +620,33 @@ class ServerApiImplTest {
   @DisplayName("logout without session emits DISCONNECT_PLAYER and removes player")
   void testLogoutWithoutSessionEmitsDisconnectAndRemovesPlayer() {
     Player player = mock(Player.class);
-    when(player.containsSession()).thenReturn(false);
     when(player.getSession()).thenReturn(Optional.empty());
     when(player.isInRoom()).thenReturn(false);
     when(player.getIdentity()).thenReturn("test-player");
+    when(playerManager.getPlayerByIdentity("test-player")).thenReturn(player);
     api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
     verify(eventManager).emit(ServerEvent.DISCONNECT_PLAYER, player, PlayerDisconnectMode.CLIENT_REQUEST);
     verify(playerManager).removePlayerByIdentity("test-player");
+  }
+
+  @Test
+  @DisplayName("logout removes an active player even when session close retains it")
+  void testLogoutRemovesActivePlayerAfterSessionClose() throws IOException {
+    Player player = mock(Player.class);
+    Session session = mock(Session.class);
+    when(player.getSession()).thenReturn(Optional.of(session));
+    when(session.isActivated()).thenReturn(true);
+    when(player.isInRoom()).thenReturn(false);
+    when(player.getIdentity()).thenReturn("retained-player");
+    when(playerManager.getPlayerByIdentity("retained-player")).thenReturn(player);
+
+    api.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
+
+    verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(eventManager).emit(ServerEvent.DISCONNECT_PLAYER, player,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(playerManager).removePlayerByIdentity("retained-player");
+    verify(player).clean();
   }
 }

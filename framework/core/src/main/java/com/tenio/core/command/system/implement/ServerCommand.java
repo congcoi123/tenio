@@ -26,22 +26,66 @@ package com.tenio.core.command.system.implement;
 
 import com.tenio.core.bootstrap.annotation.SystemCommand;
 import com.tenio.core.command.system.AbstractSystemCommandHandler;
+import com.tenio.core.configuration.constant.CoreConstant;
 import com.tenio.core.utility.CommandUtility;
+import com.tenio.core.server.ServerImpl;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntConsumer;
 
 /**
  * Allows stopping or restarting the server.
  *
  * @since 0.4.0
  */
-@SystemCommand(label = "server", usage = {
-    "stop",
-    "restart",
-}, description = "Allows stopping or restarting the server", isBackgroundRunning = true)
+@SystemCommand(label = "server", profile = CoreConstant.MONITOR_PROFILE,
+    usage = {"stop", "restart"},
+    description = "Stops the server or requests a restart from its supervisor")
 public final class ServerCommand extends AbstractSystemCommandHandler {
+
+  private static final int RESTART_EXIT_CODE = 75;
+  private final AtomicBoolean stopping = new AtomicBoolean();
+  private final Runnable shutdown;
+  private final BooleanSupplier restartEnabled;
+  private final IntConsumer exit;
+
+  public ServerCommand() {
+    this(() -> ServerImpl.getInstance().shutdown(),
+        () -> Boolean.getBoolean("tenio.supervisedRestart"), System::exit);
+  }
+
+  ServerCommand(Runnable shutdown, BooleanSupplier restartEnabled, IntConsumer exit) {
+    this.shutdown = shutdown;
+    this.restartEnabled = restartEnabled;
+    this.exit = exit;
+  }
 
   @Override
   public void execute(List<String> arguments) {
-    CommandUtility.INSTANCE.showConsoleMessage("The feature is not available at the moment.");
+    String action = arguments.size() == 1 ? arguments.getFirst().toLowerCase(Locale.ROOT) : "";
+    if (!action.equals("stop") && !action.equals("restart")) {
+      CommandUtility.INSTANCE.showConsoleMessage("Usage: server stop | server restart");
+      return;
+    }
+    boolean restart = action.equals("restart");
+    if (restart && !restartEnabled.getAsBoolean()) {
+      CommandUtility.INSTANCE.showConsoleMessage(
+          "Restart requires a supervisor configured for exit code 75 and -Dtenio.supervisedRestart=true.");
+      return;
+    }
+    if (!stopping.compareAndSet(false, true)) {
+      CommandUtility.INSTANCE.showConsoleMessage("Server shutdown is already in progress.");
+      return;
+    }
+    CommandUtility.INSTANCE.showConsoleMessage(restart ? "Requesting restart." : "Stopping server.");
+    // The lifecycle thread can close the command executor without waiting for itself.
+    Thread.ofPlatform().daemon(false).name("tenio-admin-shutdown").start(() -> {
+      shutdown.run();
+      if (restart) {
+        exit.accept(RESTART_EXIT_CODE);
+      }
+    });
   }
 }

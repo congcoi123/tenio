@@ -236,7 +236,7 @@ class MoveableEntityTest {
   void testIsSpeedMaxedOutTrue() {
     // velocity (2,3) has speed ~3.6, maxSpeed 10 => not maxed out? No: maxedOut when
     // maxSpeed^2 >= speedSqr => 100 >= 13 => true
-    assertTrue(entity.isSpeedMaxedOut());
+    assertFalse(entity.isSpeedMaxedOut());
   }
 
   @Test
@@ -244,7 +244,7 @@ class MoveableEntityTest {
     // set velocity larger than maxSpeed
     entity.setVelocity(100.0f, 100.0f);
     entity.setMaxSpeed(1.0f);
-    assertFalse(entity.isSpeedMaxedOut());
+    assertTrue(entity.isSpeedMaxedOut());
   }
 
   @Test

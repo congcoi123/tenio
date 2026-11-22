@@ -30,6 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.tenio.core.entity.Player;
 import com.tenio.core.entity.implement.DefaultPlayer;
@@ -37,6 +40,7 @@ import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
+import com.tenio.core.network.entity.session.Session;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -105,6 +109,18 @@ class PlayerManagerImplTest {
   }
 
   @Test
+  @DisplayName("Test createPlayerWithSession binds an active fresh session after registering player")
+  void testCreatePlayerWithSession() {
+    Session session = mock(Session.class);
+    when(session.associatePlayer(org.mockito.ArgumentMatchers.any(Player.class))).thenReturn(true);
+
+    Player player = playerManager.createPlayerWithSession("dave", session);
+
+    assertEquals(player, playerManager.getPlayerByIdentity("dave"));
+    verify(session).associatePlayer(player);
+  }
+
+  @Test
   @DisplayName("Test getPlayerByIdentity returns existing player")
   void testGetPlayerByIdentityFound() {
     Player player = DefaultPlayer.newInstance("eve");
@@ -159,6 +175,21 @@ class PlayerManagerImplTest {
   }
 
   @Test
+  @DisplayName("computePlayers allows the callback to remove a player")
+  void testComputePlayersAllowsCallbackMutation() {
+    Player player = DefaultPlayer.newInstance("snapshot-player");
+    playerManager.addPlayer(player);
+
+    playerManager.computePlayers(iterator -> {
+      while (iterator.hasNext()) {
+        playerManager.removePlayerByIdentity(iterator.next().getIdentity());
+      }
+    });
+
+    assertEquals(0, playerManager.getSnapshotPlayerCount());
+  }
+
+  @Test
   @DisplayName("Test removePlayerByIdentity decreases player count")
   void testRemovePlayerByIdentityDecreasesCount() {
     Player player = DefaultPlayer.newInstance("jack");
@@ -194,10 +225,20 @@ class PlayerManagerImplTest {
   }
 
   @Test
-  @DisplayName("Test configureMaxIdleTimeNeverDeportedInSeconds does not throw")
-  void testConfigureMaxIdleTimeNeverDeportedInSeconds() {
-    playerManager.configureMaxIdleTimeNeverDeportedInSeconds(60);
-    // no exception expected
+  @DisplayName("A room membership manager does not clear the configured reconnect grace period")
+  void testRoomMembershipManagerKeepsReconnectGracePeriod() throws Exception {
+    playerManager.configureMaxIdleTimeInSeconds(1);
+    Player player = DefaultPlayer.newInstance("reconnecting", mock(Session.class));
+    playerManager.addPlayer(player);
+
+    PlayerManager roomPlayerManager = PlayerManagerImpl.newInstance(EventManager.newInstance());
+    roomPlayerManager.addPlayer(player);
+    player.setSession(null);
+    java.lang.reflect.Field field = DefaultPlayer.class.getDeclaredField("disconnectedTime");
+    field.setAccessible(true);
+    field.set(player, System.currentTimeMillis() - 2000L);
+
+    assertTrue(player.isReconnectGracePeriodExpired());
   }
 
   @Test

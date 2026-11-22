@@ -33,6 +33,7 @@ import com.tenio.engine.ecs.basis.implement.ContextInfo;
 import com.tenio.engine.ecs.basis.implement.EntityImpl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -61,18 +62,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
     used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
     for (int i = 0; i < pool.length; i++) {
-      try {
-        var entity = this.clazz.getDeclaredConstructor().newInstance();
-        entity.setId(UUID.randomUUID().toString());
-        entity.setContextInfo(this.contextInfo);
-        pool[i] = entity;
-        used[i] = false;
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-          | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
-      }
+      pool[i] = createElement();
     }
   }
 
@@ -96,18 +86,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
     System.arraycopy(oldPool, 0, pool, 0, oldPool.length);
 
     for (int i = oldPool.length; i < pool.length; i++) {
-      try {
-        var entity = clazz.getDeclaredConstructor().newInstance();
-        entity.setId(UUID.randomUUID().toString());
-        entity.setContextInfo(contextInfo);
-        pool[i] = entity;
-        used[i] = false;
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-          | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
-      }
+      pool[i] = createElement();
     }
 
     if (isInfoEnabled()) {
@@ -115,36 +94,32 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
           CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
     }
 
-    // and allocate the last old element
-    used[oldPool.length - 1] = true;
-    return pool[oldPool.length - 1];
+    used[oldPool.length] = true;
+    return pool[oldPool.length];
   }
 
   @Override
   public synchronized void repay(Entity element) {
-    boolean flagFound = false;
+    Objects.requireNonNull(element, "element");
     for (int i = 0; i < pool.length; i++) {
       if (pool[i] == element) {
+        if (!used[i]) {
+          throw new NullElementPoolException("Element was already repaid: " + element);
+        }
         used[i] = false;
         element.reset();
-        flagFound = true;
-        break;
+        return;
       }
     }
-    if (!flagFound) {
-      var exception = new NullElementPoolException(element.toString());
-      if (isErrorEnabled()) {
-        error(exception);
-      }
-      throw exception;
-    }
+    throw new NullElementPoolException(element.toString());
   }
 
   @Override
   public synchronized void cleanup() {
-    Arrays.fill(pool, null);
-    used = null;
-    pool = null;
+    for (var element : pool) {
+      element.reset();
+    }
+    Arrays.fill(used, false);
   }
 
   @Override
@@ -153,7 +128,7 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
   }
 
   @Override
-  public int getAvailableSlot() {
+  public synchronized int getAvailableSlot() {
     int slot = 0;
     for (boolean b : used) {
       if (!b) {
@@ -162,5 +137,18 @@ public final class EntityPool extends SystemLogger implements ElementPool<Entity
     }
 
     return slot;
+  }
+
+  private Entity createElement() {
+    try {
+      var entity = clazz.getDeclaredConstructor().newInstance();
+      entity.setId(UUID.randomUUID().toString());
+      entity.setContextInfo(contextInfo);
+      return entity;
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
+      throw new IllegalArgumentException("Cannot create pooled entity: " + clazz.getName(),
+          exception);
+    }
   }
 }

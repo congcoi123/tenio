@@ -93,6 +93,8 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     try {
       Session session = sessionTicketsQueue.take();
       processSessionQueue(session, socketWriterHandler, datagramWriterHandler);
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
     } catch (Throwable cause) {
       if (isErrorEnabled()) {
         error(cause, "Interruption occurred when process a session and its packet");
@@ -225,7 +227,7 @@ public final class ZeroWriterImpl extends AbstractZeroEngine implements ZeroWrit
     var datagramWriterHandler = createDatagramWriterHandler();
     var sessionTicketsQueue = sessionTicketsQueueManager.getQueueByIndex(id.getAndIncrement());
 
-    while (!Thread.currentThread().isInterrupted()) {
+    while (!Thread.currentThread().isInterrupted() && !isStopping()) {
       if (isActivated()) {
         writing(sessionTicketsQueue, socketWriterHandler, datagramWriterHandler);
       }

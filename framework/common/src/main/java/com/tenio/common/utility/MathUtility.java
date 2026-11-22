@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.utility;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A collection of utility methods for calculations.
@@ -71,8 +72,6 @@ public final class MathUtility {
   // some random number functions
   // ----------------------------------------------
   private static final Random random = new Random();
-  private static float Y2 = 0;
-  private static boolean USE_LAST = false;
 
   private MathUtility() {
     throw new UnsupportedOperationException("This class does not support to create a new instance");
@@ -220,29 +219,11 @@ public final class MathUtility {
    * @return a random number with set distribution.
    */
   public static float randGaussian(float mean, float standardDeviation) {
-    float x1;
-    float x2;
-    float w;
-    float y1;
-
-    // use value from previous call
-    if (USE_LAST) {
-      y1 = Y2;
-      USE_LAST = false;
-    } else {
-      do {
-        x1 = 2 * randFloat() - 1;
-        x2 = 2 * randFloat() - 1;
-        w = x1 * x1 + x2 * x2;
-      } while (w >= 1.0);
-
-      w = (float) Math.sqrt((-2 * Math.log(w)) / w);
-      y1 = x1 * w;
-      Y2 = x2 * w;
-      USE_LAST = true;
+    if (!Float.isFinite(mean) || !Float.isFinite(standardDeviation)
+        || standardDeviation < 0) {
+      throw new IllegalArgumentException("Mean must be finite and deviation non-negative");
     }
-
-    return (mean + y1 * standardDeviation);
+    return (float) (mean + ThreadLocalRandom.current().nextGaussian() * standardDeviation);
   }
 
   /**

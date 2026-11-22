@@ -30,7 +30,7 @@ import com.tenio.core.entity.setting.strategy.RoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.RoomPlayerSlotGeneratedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomCredentialValidatedStrategy;
 import com.tenio.core.entity.setting.strategy.implement.DefaultRoomPlayerSlotGeneratedStrategy;
-import com.tenio.core.scheduler.task.core.AutoRemoveRoomTask;
+import com.tenio.core.scheduler.task.AutoRemoveRoomTask;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -151,9 +151,9 @@ public final class InitialRoomSetting {
         ", maxSpectators=" + maxSpectators +
         ", activated=" + activated +
         ", roomRemoveMode=" + roomRemoveMode +
-        ", roomCredentialValidatedStrategy=" + roomCredentialValidatedStrategy +
-        ", roomPlayerSlotGeneratedStrategy=" + roomPlayerSlotGeneratedStrategy +
-        ", properties=" + properties +
+        ", roomCredentialValidatedStrategyType=" + (roomCredentialValidatedStrategy == null ? null : roomCredentialValidatedStrategy.getClass().getName()) +
+        ", roomPlayerSlotGeneratedStrategyType=" + (roomPlayerSlotGeneratedStrategy == null ? null : roomPlayerSlotGeneratedStrategy.getClass().getName()) +
+        ", propertyCount=" + (properties == null ? 0 : properties.size()) +
         '}';
   }
 

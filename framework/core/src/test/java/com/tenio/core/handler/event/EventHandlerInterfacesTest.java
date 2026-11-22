@@ -208,6 +208,14 @@ class EventHandlerInterfacesTest {
   }
 
   @Test
+  @DisplayName("Test EventConnectionWillBeClosed")
+  void testEventConnectionWillBeClosed() {
+    EventConnectionWillBeClosed handler = (session, mode) -> {
+    };
+    handler.onConnectionWillBeClosed(Mockito.mock(Session.class), PlayerDisconnectMode.CLIENT_REQUEST);
+  }
+
+  @Test
   @DisplayName("Test EventPlayerUnsubscribedChannel")
   void testEventPlayerUnsubscribedChannel() {
     EventPlayerUnsubscribedChannel<Player> handler = (channel, player) -> {

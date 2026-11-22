@@ -33,6 +33,8 @@ import com.tenio.common.data.zero.implement.ZeroArrayImpl;
 import com.tenio.common.data.zero.implement.ZeroElementImpl;
 import com.tenio.common.data.zero.implement.ZeroMapImpl;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +55,10 @@ public final class ZeroUtility {
   private static final int ENCODE_HEADER_BYTE_ARRAY_BYTES = Byte.BYTES + Integer.BYTES;
   private static final int ENCODE_HEADER_NUMERIC_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
   private static final int ENCODE_HEADER_STRING_ARRAY_BYTES = Byte.BYTES + Short.BYTES;
+  private static final int MAX_MESSAGE_BYTES = 16 * 1024 * 1024;
+  private static final int MAX_BINARY_BYTES = 8 * 1024 * 1024;
+  private static final int MAX_NESTING_DEPTH = 64;
+  private static final int MAX_SHORT_LENGTH = Short.MAX_VALUE;
 
   private ZeroUtility() {
     throw new UnsupportedOperationException("This class does not support to create an instance");
@@ -105,6 +111,7 @@ public final class ZeroUtility {
    * @return a new zero collection instance
    */
   public static DataCollection binariesToCollection(byte[] binaries) {
+    validatePayload(binaries);
     return switch (ZeroType.getByValue(binaries[0])) {
       case ZERO_MAP -> binariesToMap(binaries);
       case ZERO_ARRAY -> binariesToArray(binaries);
@@ -120,18 +127,17 @@ public final class ZeroUtility {
    * @return a new zero array instance
    */
   public static ZeroArray binariesToArray(byte[] binaries) {
-    if (binaries.length < 3) {
-      throw new IllegalStateException(String.format(
-          "Unable to decode a ZeroArray because binary data size is not big enough to work on it."
-              + " Size: %d bytes",
-          binaries.length));
+    validatePayload(binaries);
+    try {
+      var buffer = ByteBuffer.wrap(binaries).order(ByteOrder.BIG_ENDIAN);
+      var result = decodeZeroArray(buffer, 0);
+      requireFullyConsumed(buffer);
+      return result;
+    } catch (IllegalArgumentException exception) {
+      throw exception;
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException("Malformed ZeroArray payload", exception);
     }
-
-    var buffer = ByteBuffer.allocate(binaries.length);
-    buffer.put(binaries);
-    buffer.flip();
-
-    return decodeZeroArray(buffer);
   }
 
   /**
@@ -141,18 +147,17 @@ public final class ZeroUtility {
    * @return a new zero map instance
    */
   public static ZeroMap binariesToMap(byte[] binaries) {
-    if (binaries.length < 3) {
-      throw new IllegalStateException(String.format(
-          "Unable to decode a ZeroMap because binary data size is not big enough to work on it"
-              + ". Size: %d bytes",
-          binaries.length));
+    validatePayload(binaries);
+    try {
+      var buffer = ByteBuffer.wrap(binaries).order(ByteOrder.BIG_ENDIAN);
+      var result = decodeZeroMap(buffer, 0);
+      requireFullyConsumed(buffer);
+      return result;
+    } catch (IllegalArgumentException exception) {
+      throw exception;
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException("Malformed ZeroMap payload", exception);
     }
-
-    var buffer = ByteBuffer.allocate(binaries.length);
-    buffer.put(binaries);
-    buffer.flip();
-
-    return decodeZeroMap(buffer);
   }
 
   /**
@@ -162,6 +167,10 @@ public final class ZeroUtility {
    * @return the stream of bytes converted from the map
    */
   public static byte[] mapToBinaries(ZeroMap map) {
+    if (map == null) {
+      throw new IllegalArgumentException("ZeroMap must not be null");
+    }
+    checkShortLength(map.size(), "map");
     var buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
     buffer.put((byte) ZeroType.ZERO_MAP.getValue());
     buffer.putShort((short) map.size());
@@ -197,6 +206,10 @@ public final class ZeroUtility {
    * @return the stream of bytes converted from the array
    */
   public static byte[] arrayToBinaries(ZeroArray array) {
+    if (array == null) {
+      throw new IllegalArgumentException("ZeroArray must not be null");
+    }
+    checkShortLength(array.size(), "array");
     var buffer = ByteBuffer.allocate(BUFFER_CHUNK_BYTES);
     buffer.put((byte) ZeroType.ZERO_ARRAY.getValue());
     buffer.putShort((short) array.size());
@@ -222,7 +235,9 @@ public final class ZeroUtility {
     return result;
   }
 
-  private static ZeroElement decodeElement(ByteBuffer buffer) throws RuntimeException {
+  private static ZeroElement decodeElement(ByteBuffer buffer, int depth) throws RuntimeException {
+    checkDepth(depth);
+    requireRemaining(buffer, Byte.BYTES, "element type");
     var headerByte = buffer.get();
     var type = ZeroType.getByValue(headerByte);
     if (type == null) {
@@ -249,11 +264,11 @@ public final class ZeroUtility {
       case STRING_ARRAY -> decodeStringArray(buffer);
       case ZERO_ARRAY -> {
         buffer.position(buffer.position() - Byte.BYTES);
-        yield newZeroElement(ZeroType.ZERO_ARRAY, decodeZeroArray(buffer));
+        yield newZeroElement(ZeroType.ZERO_ARRAY, decodeZeroArray(buffer, depth + 1));
       }
       case ZERO_MAP -> {
         buffer.position(buffer.position() - Byte.BYTES);
-        yield newZeroElement(ZeroType.ZERO_MAP, decodeZeroMap(buffer));
+        yield newZeroElement(ZeroType.ZERO_MAP, decodeZeroMap(buffer, depth + 1));
       }
     };
   }
@@ -338,6 +353,7 @@ public final class ZeroUtility {
   }
 
   private static ZeroElement decodeString(ByteBuffer buffer) {
+    requireRemaining(buffer, Short.BYTES, "string length");
     var strLen = buffer.getShort();
 
     if (strLen < 0) {
@@ -345,16 +361,18 @@ public final class ZeroUtility {
           String.format("The length of string is incorrect: %d", strLen));
     }
 
+    requireRemaining(buffer, strLen, "string");
     var strData = new byte[strLen];
     buffer.get(strData, 0, strLen);
-    var data = new String(strData);
+    var data = new String(strData, StandardCharsets.UTF_8);
 
     return newZeroElement(ZeroType.STRING, data);
   }
 
   private static ZeroElement decodeBooleanArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Boolean>();
+    requireRemaining(buffer, collectionSize, "boolean array");
+    var data = new ArrayList<Boolean>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var bool = buffer.get();
@@ -374,12 +392,12 @@ public final class ZeroUtility {
   }
 
   private static ZeroElement decodeByteArray(ByteBuffer buffer) {
+    requireRemaining(buffer, Integer.BYTES, "byte array length");
     var arraySize = buffer.getInt();
-    if (arraySize < 0) {
-      throw new NegativeArraySizeException(
-          String.format("Could not create an array with negative size value: %d", arraySize));
+    if (arraySize < 0 || arraySize > MAX_BINARY_BYTES) {
+      throw new IllegalArgumentException("Invalid byte array size: " + arraySize);
     }
-
+    requireRemaining(buffer, arraySize, "byte array");
     var byteData = new byte[arraySize];
     buffer.get(byteData, 0, arraySize);
 
@@ -388,7 +406,8 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeShortArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Short>();
+    requireElements(buffer, collectionSize, Short.BYTES, "short array");
+    var data = new ArrayList<Short>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var shortValue = buffer.getShort();
@@ -400,7 +419,8 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeIntegerArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Integer>();
+    requireElements(buffer, collectionSize, Integer.BYTES, "integer array");
+    var data = new ArrayList<Integer>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var intValue = buffer.getInt();
@@ -412,7 +432,8 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeLongArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Long>();
+    requireElements(buffer, collectionSize, Long.BYTES, "long array");
+    var data = new ArrayList<Long>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var longValue = buffer.getLong();
@@ -424,7 +445,8 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeFloatArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Float>();
+    requireElements(buffer, collectionSize, Float.BYTES, "float array");
+    var data = new ArrayList<Float>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var floatValue = buffer.getFloat();
@@ -436,7 +458,8 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeDoubleArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<Double>();
+    requireElements(buffer, collectionSize, Double.BYTES, "double array");
+    var data = new ArrayList<Double>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
       var doubleValue = buffer.getDouble();
@@ -448,25 +471,29 @@ public final class ZeroUtility {
 
   private static ZeroElement decodeStringArray(ByteBuffer buffer) {
     var collectionSize = getCollectionSize(buffer);
-    var data = new ArrayList<String>();
+    var data = new ArrayList<String>(collectionSize);
 
     for (int i = 0; i < collectionSize; ++i) {
+      requireRemaining(buffer, Short.BYTES, "string array item length");
       var strLen = buffer.getShort();
       if (strLen < 0) {
         throw new IllegalStateException(
             String.format("The length of string is incorrect: %d", strLen));
       }
 
+      requireRemaining(buffer, strLen, "string array item");
       var strData = new byte[strLen];
       buffer.get(strData, 0, strLen);
-      var stringValue = new String(strData);
+      var stringValue = new String(strData, StandardCharsets.UTF_8);
       data.add(stringValue);
     }
 
     return newZeroElement(ZeroType.STRING_ARRAY, data);
   }
 
-  private static ZeroArray decodeZeroArray(ByteBuffer buffer) {
+  private static ZeroArray decodeZeroArray(ByteBuffer buffer, int depth) {
+    checkDepth(depth);
+    requireRemaining(buffer, Byte.BYTES + Short.BYTES, "ZeroArray header");
     var zeroArray = newZeroArray();
     var headerByte = buffer.get();
 
@@ -486,7 +513,7 @@ public final class ZeroUtility {
 
     try {
       for (int i = 0; i < arraySize; ++i) {
-        var zeroElement = decodeElement(buffer);
+        var zeroElement = decodeElement(buffer, depth);
         if (zeroElement == null) {
           throw new IllegalStateException(
               String.format("Unable to not decode ZeroArray item at index: %d", i));
@@ -496,12 +523,16 @@ public final class ZeroUtility {
       }
 
       return zeroArray;
+    } catch (IllegalArgumentException exception) {
+      throw exception;
     } catch (RuntimeException exception) {
-      throw new IllegalArgumentException(exception.getMessage());
+      throw new IllegalArgumentException("Malformed ZeroArray", exception);
     }
   }
 
-  private static ZeroMap decodeZeroMap(ByteBuffer buffer) {
+  private static ZeroMap decodeZeroMap(ByteBuffer buffer, int depth) {
+    checkDepth(depth);
+    requireRemaining(buffer, Byte.BYTES + Short.BYTES, "ZeroMap header");
     var zeroMap = newZeroMap();
     var headerByte = buffer.get();
 
@@ -520,11 +551,16 @@ public final class ZeroUtility {
 
     try {
       for (int i = 0; i < mapSize; ++i) {
+        requireRemaining(buffer, Short.BYTES, "map key length");
         var keySize = buffer.getShort();
+        if (keySize < 0) {
+          throw new IllegalArgumentException("Invalid map key size: " + keySize);
+        }
+        requireRemaining(buffer, keySize, "map key");
         var keyData = new byte[keySize];
         buffer.get(keyData, 0, keyData.length);
-        var key = new String(keyData);
-        var zeroElement = decodeElement(buffer);
+        var key = new String(keyData, StandardCharsets.UTF_8);
+        var zeroElement = decodeElement(buffer, depth);
 
         if (zeroElement == null) {
           throw new IllegalStateException(
@@ -535,12 +571,15 @@ public final class ZeroUtility {
       }
 
       return zeroMap;
+    } catch (IllegalArgumentException exception) {
+      throw exception;
     } catch (RuntimeException exception) {
-      throw new IllegalArgumentException(exception.getMessage());
+      throw new IllegalArgumentException("Malformed ZeroMap", exception);
     }
   }
 
   private static short getCollectionSize(ByteBuffer buffer) {
+    requireRemaining(buffer, Short.BYTES, "collection length");
     var collectionSize = buffer.getShort();
     if (collectionSize < 0) {
       throw new NegativeArraySizeException(
@@ -606,7 +645,11 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeString(ByteBuffer buffer, String data) {
-    var stringBytes = data.getBytes();
+    if (data == null) {
+      throw new IllegalArgumentException("String value must not be null");
+    }
+    var stringBytes = data.getBytes(StandardCharsets.UTF_8);
+    checkShortLength(stringBytes.length, "string");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_STRING_BYTES + stringBytes.length);
     buf.put((byte) ZeroType.STRING.getValue());
     buf.putShort((short) stringBytes.length);
@@ -616,6 +659,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeBooleanArray(ByteBuffer buffer, Collection<Boolean> data) {
+    checkCollection(data, "boolean array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_BOOLEAN_ARRAY_BYTES + data.size());
     buf.put((byte) ZeroType.BOOLEAN_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -628,6 +672,9 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeByteArray(ByteBuffer buffer, byte[] data) {
+    if (data == null || data.length > MAX_BINARY_BYTES) {
+      throw new IllegalArgumentException("Invalid byte array size");
+    }
     var buf = ByteBuffer.allocate(ENCODE_HEADER_BYTE_ARRAY_BYTES + data.length);
     buf.put((byte) ZeroType.BYTE_ARRAY.getValue());
     buf.putInt(data.length);
@@ -637,6 +684,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeShortArray(ByteBuffer buffer, Collection<Short> data) {
+    checkCollection(data, "short array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Short.BYTES * data.size());
     buf.put((byte) ZeroType.SHORT_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -649,6 +697,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeIntegerArray(ByteBuffer buffer, Collection<Integer> data) {
+    checkCollection(data, "integer array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Integer.BYTES * data.size());
     buf.put((byte) ZeroType.INTEGER_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -661,6 +710,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeLongArray(ByteBuffer buffer, Collection<Long> data) {
+    checkCollection(data, "long array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Long.BYTES * data.size());
     buf.put((byte) ZeroType.LONG_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -673,6 +723,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeFloatArray(ByteBuffer buffer, Collection<Float> data) {
+    checkCollection(data, "float array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Float.BYTES * data.size());
     buf.put((byte) ZeroType.FLOAT_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -685,6 +736,7 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeDoubleArray(ByteBuffer buffer, Collection<Double> data) {
+    checkCollection(data, "double array");
     var buf = ByteBuffer.allocate(ENCODE_HEADER_NUMERIC_ARRAY_BYTES + Double.BYTES * data.size());
     buf.put((byte) ZeroType.DOUBLE_ARRAY.getValue());
     buf.putShort((short) data.size());
@@ -697,20 +749,25 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeStringArray(ByteBuffer buffer, Collection<String> collection) {
+    checkCollection(collection, "string array");
     var totalStringsLengthInBytes = 0;
     byte[] stringInBinary;
 
     for (var iterator = collection.iterator(); iterator
         .hasNext(); totalStringsLengthInBytes += Short.BYTES + stringInBinary.length) {
       var item = iterator.next();
-      stringInBinary = item.getBytes();
+      if (item == null) {
+        throw new IllegalArgumentException("String array items must not be null");
+      }
+      stringInBinary = item.getBytes(StandardCharsets.UTF_8);
+      checkShortLength(stringInBinary.length, "string array item");
     }
 
     var buf = ByteBuffer.allocate(ENCODE_HEADER_STRING_ARRAY_BYTES + totalStringsLengthInBytes);
     buf.put((byte) ZeroType.STRING_ARRAY.getValue());
     buf.putShort((short) collection.size());
     collection.forEach(string -> {
-      var bytes = string.getBytes();
+      var bytes = string.getBytes(StandardCharsets.UTF_8);
       buf.putShort((short) bytes.length);
       buf.put(bytes);
     });
@@ -719,14 +776,22 @@ public final class ZeroUtility {
   }
 
   private static ByteBuffer encodeZeroMapKey(ByteBuffer buffer, String key) {
-    var buf = ByteBuffer.allocate(Short.BYTES + key.length());
-    buf.putShort((short) key.length());
-    buf.put(key.getBytes());
+    if (key == null) {
+      throw new IllegalArgumentException("Map key must not be null");
+    }
+    var keyBytes = key.getBytes(StandardCharsets.UTF_8);
+    checkShortLength(keyBytes.length, "map key");
+    var buf = ByteBuffer.allocate(Short.BYTES + keyBytes.length);
+    buf.putShort((short) keyBytes.length);
+    buf.put(keyBytes);
 
     return appendBinariesToBuffer(buffer, buf.array());
   }
 
   private static ByteBuffer appendBinariesToBuffer(ByteBuffer buffer, byte[] binaries) {
+    if ((long) buffer.position() + binaries.length > MAX_MESSAGE_BYTES) {
+      throw new IllegalArgumentException("Encoded Zero payload exceeds maximum size");
+    }
     if (buffer.remaining() < binaries.length) {
       int newSize = BUFFER_CHUNK_BYTES;
       if (newSize < binaries.length) {
@@ -741,5 +806,51 @@ public final class ZeroUtility {
 
     buffer.put(binaries);
     return buffer;
+  }
+
+  private static void validatePayload(byte[] binaries) {
+    if (binaries == null || binaries.length < Byte.BYTES + Short.BYTES
+        || binaries.length > MAX_MESSAGE_BYTES) {
+      throw new IllegalArgumentException("Zero payload size is invalid");
+    }
+  }
+
+  private static void requireFullyConsumed(ByteBuffer buffer) {
+    if (buffer.hasRemaining()) {
+      throw new IllegalArgumentException("Trailing bytes are not allowed in a Zero payload");
+    }
+  }
+
+  private static void requireRemaining(ByteBuffer buffer, int bytes, String description) {
+    if (bytes < 0 || buffer.remaining() < bytes) {
+      throw new IllegalArgumentException("Insufficient bytes for " + description);
+    }
+  }
+
+  private static void requireElements(ByteBuffer buffer, int elements, int bytesPerElement, String description) {
+    long required = (long) elements * bytesPerElement;
+    if (required > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Invalid size for " + description);
+    }
+    requireRemaining(buffer, (int) required, description);
+  }
+
+  private static void checkDepth(int depth) {
+    if (depth > MAX_NESTING_DEPTH) {
+      throw new IllegalArgumentException("Zero payload nesting is too deep");
+    }
+  }
+
+  private static void checkShortLength(int size, String description) {
+    if (size < 0 || size > MAX_SHORT_LENGTH) {
+      throw new IllegalArgumentException(description + " exceeds the protocol limit: " + size);
+    }
+  }
+
+  private static void checkCollection(Collection<?> collection, String description) {
+    if (collection == null) {
+      throw new IllegalArgumentException(description + " must not be null");
+    }
+    checkShortLength(collection.size(), description);
   }
 }

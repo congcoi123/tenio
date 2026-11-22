@@ -27,10 +27,13 @@ package com.tenio.core.network.entity.outbound.packet.implement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.tenio.core.admin.OperationalHistory;
+import com.tenio.core.exception.OutboundQueueFullException;
 import com.tenio.core.network.entity.outbound.packet.Packet;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +76,7 @@ class OutboundQueueImplTest {
   void testClear() {
     OutboundQueueImpl newInstanceResult = OutboundQueueImpl.newInstance();
     newInstanceResult.clear();
-    assertEquals("OutboundQueue{queue=[], outboundQueuePolicy=null, maxSize=0, snapshotSize=0}", newInstanceResult.toString());
+    assertEquals("OutboundQueue{outboundQueuePolicyType=null, maxSize=0, snapshotSize=0}", newInstanceResult.toString());
     assertTrue(newInstanceResult.isSnapshotEmpty());
   }
 
@@ -123,6 +126,8 @@ class OutboundQueueImplTest {
     q.configureOutboundQueuePolicy(mock(OutboundQueuePolicy.class));
     q.put(mock(Packet.class));
     assertTrue(q.isSnapshotFull());
+    assertThrows(OutboundQueueFullException.class, () -> q.put(mock(Packet.class)));
+    assertEquals(1, q.getSize());
   }
 
   @Test
@@ -157,5 +162,46 @@ class OutboundQueueImplTest {
     assertEquals(2, queue.getSnapshotSize());
     queue.take();
     assertEquals(1, queue.getSnapshotSize());
+  }
+
+  @Test
+  void recordsPressureTransitionsAndDistinguishesFullQueues() {
+    var history = new OperationalHistory(4);
+    queue.enableMonitoring(history, 7, "TCP");
+    queue.configureMaxSize(2);
+    var packet = mock(Packet.class);
+    queue.put(packet);
+    queue.put(packet);
+    assertThrows(OutboundQueueFullException.class, () -> queue.put(packet));
+    queue.take();
+    assertEquals(2, queue.statistics().highWater());
+    assertEquals(1, queue.statistics().fullDrops());
+    assertEquals(0, queue.statistics().policyDrops());
+    assertEquals(2, history.snapshot().size());
+    assertEquals("PRESSURE_START", history.snapshot().getFirst().kind().name());
+    assertEquals("PRESSURE_END", history.snapshot().getLast().kind().name());
+  }
+
+  @Test
+  void historyOnlyRecordsPressureWithoutCollectingDiagnostics() {
+    try (var history = new OperationalHistory(4)) {
+      queue.enableMonitoring(false, history, 7, "TCP");
+      queue.configureMaxSize(1);
+      var packet = mock(Packet.class);
+      queue.put(packet);
+      assertThrows(OutboundQueueFullException.class, () -> queue.put(packet));
+      queue.take();
+      var stats = queue.statistics();
+      assertEquals(-1, stats.highWater());
+      assertEquals(-1, stats.fullDrops());
+      assertEquals(-1, stats.policyDrops());
+      assertEquals(2, history.snapshot().size());
+    }
+  }
+
+  @Test
+  void unmonitoredQueueDoesNotCollectHighWater() {
+    queue.put(mock(Packet.class));
+    assertEquals(-1, queue.statistics().highWater());
   }
 }

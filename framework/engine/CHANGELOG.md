@@ -48,3 +48,20 @@
 
 ## 0.7.0 2026-04-12 Feature release
 - Supports Java 21 Features
+
+## 1.0.0 2026-11-11 Feature release
+- Updated the `tenio-common` dependency to 1.0.0.
+- Synchronized ECS context operations, added entity-map snapshots and component-array copies, and reworked entity destruction, component reclamation, and context reset.
+- Fixed entity and component pool expansion returning an already borrowed element. Pool construction now fails explicitly for invalid types or constructors, duplicate returns are rejected, and cleanup resets pools for reuse.
+- Changed ECS system lists to support concurrent iteration and made running-state changes visible across threads.
+- Made FSM entity registration atomic, returned entity-map snapshots, synchronized message dispatch, and handled removed message recipients and initial or missing previous FSM states.
+- Gave telegrams and heartbeat messages identity-based equality and ordering tie-breakers so messages scheduled at the same time remain distinct.
+- Reworked heartbeat pause, resume, interruption, and disposal handling. Added validation for initialization, duplicate IDs, missing heartbeats, and message delays, with cleanup after failed startup or removal.
+- Corrected movement speed checks, normalized headings, and preserved rotated heading and velocity updates.
+- Added defensive waypoint copies and explicit handling of empty paths, invalid bounds, and waypoint counts.
+- Corrected circle overlap, containment, intersection, and intersection-area calculations, and handled coincident entity positions in non-penetration constraints.
+- Restricted cell-space neighbor searches to relevant cells and validated partition dimensions, query radii, and vector operations.
+- Replaced numeric and vector smoothing scans with running sums. Vector smoothing now copies input samples and returns a separate result.
+- Changed world wrapping to use modulo arithmetic and return a new vector, and handled single-whisker generation.
+- Fixed pixel, arrowhead, rectangle, and background rendering, and added an explicit error for missing icon resources.
+- Updated tests for pool construction failures, message identity, movement checks, path copying, validation, smoothing, and world wrapping.

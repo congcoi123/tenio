@@ -149,8 +149,10 @@ public final class Paint {
   }
 
   public void drawDot(int x, int y, Color color) {
-    brush.setColor(bgColor);
-    brush.fillRect(x, y, 0, 0);
+    var old = brush.getColor();
+    brush.setColor(color);
+    brush.fillRect(x, y, 1, 1);
+    brush.setColor(old);
   }
 
   // ------------------ Draw Line ------------------
@@ -206,9 +208,9 @@ public final class Paint {
     var crossingPoint = temp3;
 
     // calculate the two extra points required to make the arrowhead
-    temp4.set(norm.perpendicular()).mul(0.4f * size).add(crossingPoint);
-    final var arrowPoint1 = temp4;
-    final var arrowPoint2 = temp4;
+    var perpendicular = norm.clone().perpendicular().mul(0.4f * size);
+    final var arrowPoint1 = temp4.set(crossingPoint).add(perpendicular);
+    final var arrowPoint2 = temp2.set(crossingPoint).sub(perpendicular);
 
     // draw the line
     brush.setColor(penColor);
@@ -273,6 +275,11 @@ public final class Paint {
       right = left;
       left = tmp;
     }
+    if (top > bottom) {
+      int tmp = bottom;
+      bottom = top;
+      top = tmp;
+    }
     brush.setColor(penColor);
     brush.drawRect(left, top, right - left, bottom - top);
     if (bgColor != null) {
@@ -300,6 +307,7 @@ public final class Paint {
     brush.setColor(penColor);
     brush.drawPolygon(polygon);
     if (bgColor != null) {
+      brush.setColor(bgColor);
       brush.fillPolygon(polygon);
     }
   }

@@ -25,6 +25,7 @@ THE SOFTWARE.
 package com.tenio.common.pool;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.tenio.common.constant.CommonConstant;
 import com.tenio.common.exception.NullElementPoolException;
 import com.tenio.common.logger.pool.StringBuilderPool;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -81,8 +89,7 @@ class StringBuilderPoolTest {
   }
 
   @Test
-  @DisplayName("When retrieving the instances reaches threshold, it automatically expands the " +
-      "pool size")
+  @DisplayName("When retrieving the instances reaches threshold, it automatically expands the pool size")
   void poolSizeIncreaseShouldBeAsExpected() {
     var pool = StringBuilderPool.getInstance();
     var takenNumber = CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + 1;
@@ -133,6 +140,114 @@ class StringBuilderPoolTest {
     } finally {
       Configurator.setAllLevels(LogManager.ROOT_LOGGER_NAME, Level.OFF);
       StringBuilderPool.getInstance().cleanup();
+    }
+  }
+
+  @Test
+  void builderBorrowedBeforeCleanupCanBeReturnedOnce() {
+    var pool = StringBuilderPool.getInstance();
+    var builder = pool.get();
+    builder.append("old contents");
+
+    pool.cleanup();
+    pool.cleanup();
+    pool.repay(builder);
+
+    assertEquals(0, builder.length());
+    assertEquals(CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL, pool.getPoolSize());
+    assertEquals(pool.getPoolSize(), pool.getAvailableSlot());
+    assertThrows(NullElementPoolException.class, () -> pool.repay(builder));
+  }
+
+  @Test
+  void cleanupDoesNotReuseOutstandingBuilder() {
+    var pool = StringBuilderPool.getInstance();
+    var outstanding = pool.get();
+    pool.cleanup();
+    var borrowed = new ArrayList<StringBuilder>();
+    try {
+      for (int index = 0; index < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL + 1; index++) {
+        var builder = pool.get();
+        assertFalse(builder == outstanding);
+        borrowed.add(builder);
+      }
+    } finally {
+      borrowed.forEach(pool::repay);
+      pool.repay(outstanding);
+    }
+  }
+
+  @Test
+  void concurrentCleanupBorrowingAndReturnsKeepOwnershipConsistent() throws Exception {
+    var pool = StringBuilderPool.getInstance();
+    Set<StringBuilder> inUse = ConcurrentHashMap.newKeySet();
+    var start = new CountDownLatch(1);
+    var workers = Executors.newFixedThreadPool(9);
+    var futures = new ArrayList<Future<?>>();
+    try {
+      for (int worker = 0; worker < 8; worker++) {
+        futures.add(workers.submit(() -> {
+          assertTrue(start.await(5, TimeUnit.SECONDS));
+          for (int iteration = 0; iteration < 1000; iteration++) {
+            var builder = pool.get();
+            assertTrue(inUse.add(builder), "Builder borrowed concurrently");
+            try {
+              assertEquals(0, builder.length());
+              builder.append("owned by ").append(Thread.currentThread().getName());
+            } finally {
+              assertTrue(inUse.remove(builder));
+              pool.repay(builder);
+            }
+          }
+          return null;
+        }));
+      }
+      futures.add(workers.submit(() -> {
+        assertTrue(start.await(5, TimeUnit.SECONDS));
+        for (int iteration = 0; iteration < 1000; iteration++) {
+          pool.cleanup();
+        }
+        return null;
+      }));
+      start.countDown();
+      for (var future : futures) {
+        future.get(15, TimeUnit.SECONDS);
+      }
+      assertTrue(inUse.isEmpty());
+      assertEquals(pool.getPoolSize(), pool.getAvailableSlot());
+    } finally {
+      start.countDown();
+      workers.shutdownNow();
+      assertTrue(workers.awaitTermination(5, TimeUnit.SECONDS));
+    }
+  }
+
+  @Test
+  void nullAndDuplicateReturnsAreRejected() {
+    var pool = StringBuilderPool.getInstance();
+    var builder = pool.get();
+    pool.repay(builder);
+
+    assertThrows(NullElementPoolException.class, () -> pool.repay(builder));
+    assertThrows(NullElementPoolException.class, () -> pool.repay(null));
+  }
+
+  @Test
+  void oversizedBuilderIsReplacedOnReturn() {
+    var pool = StringBuilderPool.getInstance();
+    var builder = pool.get();
+    builder.ensureCapacity(16 * 1024);
+    pool.repay(builder);
+    var borrowed = new ArrayList<StringBuilder>();
+    try {
+      for (int index = 0; index < CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL; index++) {
+        var next = pool.get();
+        assertFalse(next == builder);
+        assertTrue(next.capacity() <= 8 * 1024);
+        borrowed.add(next);
+      }
+    } finally {
+      borrowed.forEach(pool::repay);
     }
   }
 }

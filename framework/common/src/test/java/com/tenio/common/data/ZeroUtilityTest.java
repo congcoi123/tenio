@@ -137,7 +137,7 @@ class ZeroUtilityTest {
     var checkZeroArray = ZeroUtility.binariesToCollection(zeroArray.toBinaries());
 
     assertEquals(zeroArray.toString(), checkZeroArray.toString());
-    assertThrows(UnsupportedOperationException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToCollection(new byte[] {(byte) 1}));
   }
 
@@ -506,14 +506,14 @@ class ZeroUtilityTest {
   @DisplayName("It should throw exceptions when invalid conversions  were called")
   void itShouldThrowExceptionsWhenInvalidConversionCalled() {
     // array size is insufficient
-    assertThrows(IllegalStateException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToArray(new byte[] {(byte) 1}));
     // it is not the zero array
-    assertThrows(IllegalStateException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToArray(new byte[] {(byte) 1, (byte) 2, (byte) 3}));
     // an array with negative size
     var negativeArraySizeInShort = ByteUtility.shortToBytes((short) -2);
-    assertThrows(NegativeArraySizeException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToArray(
             new byte[] {(byte) ZeroType.ZERO_ARRAY.getValue(), negativeArraySizeInShort[0],
                 negativeArraySizeInShort[1]}));
@@ -567,17 +567,18 @@ class ZeroUtilityTest {
                 (byte) ZeroType.STRING_ARRAY.getValue(), negativeArraySizeInShort[0],
                 negativeArraySizeInShort[1]}));
 
-    assertThrows(IllegalStateException.class, () -> ZeroUtility.binariesToMap(new byte[] {(byte) 1}));
+    assertThrows(IllegalArgumentException.class,
+        () -> ZeroUtility.binariesToMap(new byte[] {(byte) 1}));
     // it is not the zero map
-    assertThrows(IllegalStateException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToMap(new byte[] {(byte) 1, (byte) 2, (byte) 3}));
     // a map with negative size
-    assertThrows(NegativeArraySizeException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToMap(
             new byte[] {(byte) ZeroType.ZERO_MAP.getValue(), negativeArraySizeInShort[0],
                 negativeArraySizeInShort[1]}));
     // unrecognized zero type
-    assertThrows(IllegalStateException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> ZeroUtility.binariesToMap(
             new byte[] {(byte) ZeroType.ZERO_ARRAY.getValue(), arraySizeInShort[0],
                 arraySizeInShort[1], (byte) 19, (byte) 1}));

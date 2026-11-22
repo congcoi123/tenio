@@ -97,7 +97,7 @@ public final class ZeroAcceptorImpl extends AbstractZeroEngine implements ZeroAc
             tcpSocketConfiguration, getSocketIoHandler());
     acceptorHandlers.add(acceptorHandler);
 
-    while (!Thread.currentThread().isInterrupted()) {
+    while (!Thread.currentThread().isInterrupted() && !isStopping()) {
       if (isActivated()) {
         try {
           acceptorHandler.running();

@@ -27,6 +27,7 @@ package com.tenio.core.network.zero.handler.implement;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -249,6 +250,7 @@ class SocketIoHandlerImplTest {
         com.tenio.core.network.codec.packet.PacketReadState.WAIT_NEW_PACKET);
 
     assertDoesNotThrow(() -> handler.sessionRead(session, new byte[]{(byte) 0x80, 0x00, 0x00}));
+    verify(session).setLastReliableReadTime(anyLong());
   }
 
   @Test

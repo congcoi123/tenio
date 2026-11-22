@@ -505,6 +505,15 @@ public interface Room {
   void setCapacity(int maxParticipants, int maxSpectators) throws IllegalArgumentException;
 
   /**
+   * Atomically validates and changes capacity against the room's current membership.
+   *
+   * @param maxParticipants the new maximum participant count
+   * @param maxSpectators the new maximum spectator count
+   * @throws IllegalArgumentException when the new capacity cannot contain current members
+   */
+  void changeCapacity(int maxParticipants, int maxSpectators) throws IllegalArgumentException;
+
+  /**
    * Sets a new player manager for the room.
    *
    * @param playerManager a {@link PlayerManager} instance

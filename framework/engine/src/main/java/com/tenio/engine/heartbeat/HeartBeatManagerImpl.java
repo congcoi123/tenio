@@ -30,6 +30,7 @@ import com.tenio.engine.message.ExtraMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -65,7 +66,13 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
   }
 
   @Override
-  public void initialize(final int maxHeartbeat) throws Exception {
+  public synchronized void initialize(final int maxHeartbeat) throws Exception {
+    if (maxHeartbeat <= 0) {
+      throw new IllegalArgumentException("maxHeartbeat must be positive");
+    }
+    if (executorService != null) {
+      throw new IllegalStateException("Heartbeat manager is already initialized");
+    }
     executorService = Executors.newFixedThreadPool(maxHeartbeat);
     if (isInfoEnabled()) {
       info("INITIALIZE HEART BEAT", buildgen(maxHeartbeat));
@@ -74,6 +81,14 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
 
   @Override
   public synchronized void create(final String id, final AbstractHeartBeat heartbeat) {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(heartbeat, "heartbeat");
+    if (executorService == null) {
+      throw new IllegalStateException("Heartbeat manager is not initialized");
+    }
+    if (threadsManager.containsKey(id)) {
+      throw new IllegalArgumentException("Heartbeat id already exists: " + id);
+    }
     try {
       if (isInfoEnabled()) {
         info("CREATE HEART BEAT", buildgen("id: ", id));
@@ -85,15 +100,18 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       // Start the heart-beat
       var future = executorService.submit(heartbeat);
       threadsManager.put(id, future);
-    } catch (Exception exception) {
+    } catch (RuntimeException exception) {
       if (isErrorEnabled()) {
         error(exception, "id: ", id);
       }
+      messagesManager.remove(id);
+      throw exception;
     }
   }
 
   @Override
   public synchronized void dispose(final String id) {
+    Objects.requireNonNull(id, "id");
     try {
       if (!threadsManager.containsKey(id)) {
         throw new HeartbeatNotFoundException();
@@ -112,8 +130,12 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
       }
 
       // Remove the listener
-      messagesManager.get(id).clear();
-      messagesManager.remove(id);
+      var messages = messagesManager.remove(id);
+      if (messages != null) {
+        synchronized (messages) {
+          messages.clear();
+        }
+      }
     } catch (Exception exception) {
       if (isErrorEnabled()) {
         error(exception, "id: ", id);
@@ -133,12 +155,20 @@ public final class HeartBeatManagerImpl extends SystemLogger implements HeartBea
     }
     executorService = null;
     threadsManager.clear();
+    messagesManager.clear();
   }
 
   @Override
-  public void sendMessage(String id, ExtraMessage message, double delayTime) {
+  public synchronized void sendMessage(String id, ExtraMessage message, double delayTime) {
+    Objects.requireNonNull(id, "id");
+    if (!Double.isFinite(delayTime) || delayTime < 0) {
+      throw new IllegalArgumentException("delayTime must be finite and non-negative");
+    }
     var container = HeartbeatMessage.newInstance(message, delayTime);
     var treeSet = messagesManager.get(id);
+    if (treeSet == null) {
+      throw new IllegalArgumentException("Heartbeat not found: " + id);
+    }
     synchronized (treeSet) {
       treeSet.add(container);
     }

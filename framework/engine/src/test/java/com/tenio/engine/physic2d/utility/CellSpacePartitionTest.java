@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,13 +42,8 @@ class CellSpacePartitionTest {
 
   @Test
   void testUpdateEntity2() {
-    CellSpacePartition<BaseGameEntity> cellSpacePartition =
-        new CellSpacePartition<BaseGameEntity>(10.0f, 10.0f, 0, 1,
-            3);
-    BaseGameEntity baseGameEntity = mock(BaseGameEntity.class);
-    when(baseGameEntity.getPosition()).thenReturn(Vector2.newInstance());
-    cellSpacePartition.updateEntity(baseGameEntity, Vector2.newInstance());
-    verify(baseGameEntity).getPosition();
+    assertThrows(IllegalArgumentException.class,
+        () -> new CellSpacePartition<BaseGameEntity>(10.0f, 10.0f, 0, 1, 3));
   }
 
   @Test
@@ -77,35 +73,26 @@ class CellSpacePartitionTest {
     CellSpacePartition<BaseGameEntity> cellSpacePartition =
         new CellSpacePartition<BaseGameEntity>(10.0f, 10.0f, 1, 1,
             3);
-    cellSpacePartition.calculateNeighbors(Vector2.newInstance(), -10.0f);
-    assertNull(cellSpacePartition.getFrontOfNeighbor());
+    assertThrows(IllegalArgumentException.class,
+        () -> cellSpacePartition.calculateNeighbors(Vector2.newInstance(), -10.0f));
   }
 
   @Test
   void testCalculateNeighbors3() {
-    CellSpacePartition<BaseGameEntity> cellSpacePartition =
-        new CellSpacePartition<BaseGameEntity>(10.0f, 0.0f, 1, 1,
-            3);
-    cellSpacePartition.calculateNeighbors(Vector2.newInstance(), -10.0f);
-    assertNull(cellSpacePartition.getFrontOfNeighbor());
+    assertThrows(IllegalArgumentException.class,
+        () -> new CellSpacePartition<BaseGameEntity>(10.0f, 0.0f, 1, 1, 3));
   }
 
   @Test
   void testCalculateNeighbors4() {
-    CellSpacePartition<BaseGameEntity> cellSpacePartition =
-        new CellSpacePartition<BaseGameEntity>(10.0f, Float.NaN, 1,
-            1, 3);
-    cellSpacePartition.calculateNeighbors(Vector2.newInstance(), -10.0f);
-    assertNull(cellSpacePartition.getFrontOfNeighbor());
+    assertThrows(IllegalArgumentException.class,
+        () -> new CellSpacePartition<BaseGameEntity>(10.0f, Float.NaN, 1, 1, 3));
   }
 
   @Test
   void testCalculateNeighbors5() {
-    CellSpacePartition<BaseGameEntity> cellSpacePartition =
-        new CellSpacePartition<BaseGameEntity>(0.0f, Float.NaN, 1,
-            1, 3);
-    cellSpacePartition.calculateNeighbors(Vector2.newInstance(), -10.0f);
-    assertNull(cellSpacePartition.getFrontOfNeighbor());
+    assertThrows(IllegalArgumentException.class,
+        () -> new CellSpacePartition<BaseGameEntity>(0.0f, Float.NaN, 1, 1, 3));
   }
 
   @Test
@@ -141,11 +128,8 @@ class CellSpacePartitionTest {
 
   @Test
   void testRender() {
-    CellSpacePartition<BaseGameEntity> cellSpacePartition =
-        new CellSpacePartition<BaseGameEntity>(10.0f, 10.0f, 0, 1,
-            3);
-    cellSpacePartition.render(null);
-    assertTrue(cellSpacePartition.isEndOfNeighbors());
+    assertThrows(IllegalArgumentException.class,
+        () -> new CellSpacePartition<BaseGameEntity>(10.0f, 10.0f, 0, 1, 3));
   }
 
   @Test

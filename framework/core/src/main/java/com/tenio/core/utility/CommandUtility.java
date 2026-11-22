@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 package com.tenio.core.utility;
 
+import java.util.function.Consumer;
+
 /**
  * The class provides utility methods to work with commands.
  *
@@ -35,12 +37,33 @@ public enum CommandUtility {
    */
   INSTANCE;
 
+  private final ThreadLocal<Consumer<String>> output = new ThreadLocal<>();
+
+  public void withOutput(Consumer<String> sink, Runnable action) {
+    var previous = output.get();
+    output.set(sink);
+    try {
+      action.run();
+    } finally {
+      if (previous == null) {
+        output.remove();
+      } else {
+        output.set(previous);
+      }
+    }
+  }
+
   /**
    * Displays text on console.
    *
    * @param text the displayed {@link String}
    */
   public void showConsoleMessage(String text) {
-    System.out.println("> " + text);
+    var sink = output.get();
+    if (sink == null) {
+      System.out.println("> " + text);
+    } else {
+      sink.accept(text);
+    }
   }
 }

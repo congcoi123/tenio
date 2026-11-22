@@ -30,7 +30,7 @@ import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.pool.ElementPool;
 import com.tenio.engine.ecs.basis.Component;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.Objects;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -54,17 +54,11 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
     pool = new Component[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
     used = new boolean[CommonConstant.DEFAULT_NUMBER_ELEMENTS_POOL];
 
+    if (!Component.class.isAssignableFrom(clazz)) {
+      throw new IllegalArgumentException(clazz.getName() + " does not implement Component");
+    }
     for (int i = 0; i < pool.length; i++) {
-      try {
-        var component = (Component) this.clazz.getDeclaredConstructor().newInstance();
-        pool[i] = component;
-        used[i] = false;
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-          | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
-      }
+      pool[i] = createElement();
     }
   }
 
@@ -88,15 +82,7 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
     System.arraycopy(oldPool, 0, pool, 0, oldPool.length);
 
     for (int i = oldPool.length; i < pool.length; i++) {
-      try {
-        pool[i] = (Component) clazz.getDeclaredConstructor().newInstance();
-        used[i] = false;
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-          | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
-        if (isErrorEnabled()) {
-          error(exception);
-        }
-      }
+      pool[i] = createElement();
     }
 
     if (isInfoEnabled()) {
@@ -104,35 +90,28 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
           CommonConstant.ADDITIONAL_NUMBER_ELEMENTS_POOL, " to ", used.length));
     }
 
-    // and allocate the last old element
-    used[oldPool.length - 1] = true;
-    return pool[oldPool.length - 1];
+    used[oldPool.length] = true;
+    return pool[oldPool.length];
   }
 
   @Override
   public synchronized void repay(Component element) {
-    boolean flagFound = false;
+    Objects.requireNonNull(element, "element");
     for (int i = 0; i < pool.length; i++) {
       if (pool[i] == element) {
+        if (!used[i]) {
+          throw new NullElementPoolException("Element was already repaid: " + element);
+        }
         used[i] = false;
-        flagFound = true;
-        break;
+        return;
       }
     }
-    if (!flagFound) {
-      var exception = new NullElementPoolException(element.toString());
-      if (isErrorEnabled()) {
-        error(exception);
-      }
-      throw exception;
-    }
+    throw new NullElementPoolException(element.toString());
   }
 
   @Override
   public synchronized void cleanup() {
-    Arrays.fill(pool, null);
-    used = null;
-    pool = null;
+    java.util.Arrays.fill(used, false);
   }
 
   @Override
@@ -141,7 +120,7 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
   }
 
   @Override
-  public int getAvailableSlot() {
+  public synchronized int getAvailableSlot() {
     int slot = 0;
     for (boolean b : used) {
       if (!b) {
@@ -150,5 +129,25 @@ public final class ComponentPool extends SystemLogger implements ElementPool<Com
     }
 
     return slot;
+  }
+
+  /** Returns whether the element is currently checked out from this pool. */
+  public synchronized boolean isBorrowed(Component element) {
+    for (int i = 0; i < pool.length; i++) {
+      if (pool[i] == element) {
+        return used[i];
+      }
+    }
+    return false;
+  }
+
+  private Component createElement() {
+    try {
+      return (Component) clazz.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException exception) {
+      throw new IllegalArgumentException("Cannot create pooled component: " + clazz.getName(),
+          exception);
+    }
   }
 }

@@ -64,13 +64,13 @@ class TelegramTest {
   void testEquals() {
     assertFalse((new Telegram()).equals(null));
     assertFalse((new Telegram()).equals("Different type to Telegram"));
-    assertTrue((new Telegram()).equals(new Telegram()));
+    assertFalse((new Telegram()).equals(new Telegram()));
   }
 
   @Test
   void testEquals2() {
     Telegram telegram = new Telegram();
-    assertTrue(telegram.equals(new Telegram()));
+    assertFalse(telegram.equals(new Telegram()));
   }
 
   @Test
@@ -88,7 +88,7 @@ class TelegramTest {
   @Test
   void testCompareTo() {
     Telegram telegram = new Telegram();
-    assertEquals(1, telegram.compareTo(new Telegram()));
+    assertNotEquals(0, telegram.compareTo(new Telegram()));
   }
 
   @Test

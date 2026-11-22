@@ -258,6 +258,12 @@ public final class Transformation {
   public static List<Vector2> createWhiskers(int numWhiskers, float whiskerLength, float fov,
                                              Vector2 facing,
                                              Vector2 origin) {
+    if (numWhiskers <= 0) {
+      throw new IllegalArgumentException("numWhiskers must be positive");
+    }
+    if (numWhiskers == 1) {
+      return List.of(Vector2.valueOf(facing).normalize().mul(whiskerLength).add(origin));
+    }
     // this is the magnitude of the angle separating each whisker
     float sectorSize = fov / (float) (numWhiskers - 1);
 
@@ -286,34 +292,12 @@ public final class Transformation {
    * @return a new vector
    */
   public static Vector2 wrapAround(Vector2 position, int maxX, int maxY) {
-
-    boolean clone = false;
-
-    if (position.x > maxX) {
-      position.x = 0;
-      clone = true;
+    if (maxX <= 0 || maxY <= 0) {
+      throw new IllegalArgumentException("World dimensions must be positive");
     }
-
-    if (position.x < 0) {
-      position.x = maxX;
-      clone = true;
-    }
-
-    if (position.y < 0) {
-      position.y = maxY;
-      clone = true;
-    }
-
-    if (position.y > maxY) {
-      position.y = 0;
-      clone = true;
-    }
-
-    if (clone) {
-      return Vector2.newInstance().set(position);
-    }
-
-    return position;
+    float wrappedX = ((position.x % maxX) + maxX) % maxX;
+    float wrappedY = ((position.y % maxY) + maxY) % maxY;
+    return Vector2.valueOf(wrappedX, wrappedY);
   }
 
   private static List<Vector2> clone(List<Vector2> list) {

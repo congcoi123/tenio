@@ -62,22 +62,19 @@ public final class ChannelManagerImpl implements ChannelManager {
 
   @Override
   public void createChannel(String id, String description) {
-    if (channels.containsKey(id)) {
+    Channel channel = ChannelImpl.newInstance(id, eventManager, description);
+    if (channels.putIfAbsent(channel.getId(), channel) != null) {
       throw new CreatedDuplicatedChannelException(id);
     }
-    Channel channel = ChannelImpl.newInstance(id, eventManager, description);
-    channels.put(channel.getId(), channel);
     eventManager.emit(ServerEvent.CHANNEL_CREATED, channel);
   }
 
   @Override
   public void removeChannel(String id) {
-    if (channels.containsKey(id)) {
-      Channel channel = channels.get(id);
+    Channel channel = channels.remove(id);
+    if (channel != null) {
       eventManager.emit(ServerEvent.CHANNEL_WILL_BE_REMOVED, channel);
-      // Unsubscribe all players from this channel
       channel.removePlayers();
-      channels.remove(id);
     }
   }
 

@@ -46,4 +46,15 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Documented
 public @interface EventHandler {
+
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 }

@@ -33,6 +33,7 @@ import com.tenio.common.data.zero.ZeroType;
 import com.tenio.common.data.zero.utility.ZeroUtility;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public final class ZeroArrayImpl implements ZeroArray {
    */
   @Override
   public Iterator<ZeroElement> iterator() {
-    return array.iterator();
+    return Collections.unmodifiableList(array).iterator();
   }
 
   @Override
@@ -371,7 +372,7 @@ public final class ZeroArrayImpl implements ZeroArray {
 
   @Override
   public ReadonlyZeroArray getReadonlyZeroArray() {
-    return new ZeroArrayImpl(new ArrayList<>(array));
+    return new ReadonlyZeroArrayImpl(this);
   }
 
   @SuppressWarnings("DefaultLocale")

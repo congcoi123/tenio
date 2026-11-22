@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * This class is used to define, manage, and traverse a path (defined by a
@@ -79,7 +80,7 @@ public final class Path implements Renderable {
   }
 
   public boolean isEndOfWayPoints() {
-    return !(currWayPoints.hasNext());
+    return currWayPoints == null || !currWayPoints.hasNext();
   }
 
   /**
@@ -90,6 +91,9 @@ public final class Path implements Renderable {
       return;
     }
 
+    if (currWayPoints == null) {
+      currWayPoints = wayPoints.listIterator();
+    }
     if (!currWayPoints.hasNext()) {
       if (looped) {
         currWayPoints = wayPoints.listIterator();
@@ -112,7 +116,19 @@ public final class Path implements Renderable {
    */
   public List<Vector2> createRandomPath(int numWaypoints, float minX, float minY, float maxX,
                                         float maxY) {
+    if (numWaypoints < 0) {
+      throw new IllegalArgumentException("numWaypoints must be non-negative");
+    }
+    if (maxX < minX || maxY < minY) {
+      throw new IllegalArgumentException("Invalid path bounds");
+    }
     wayPoints.clear();
+
+    if (numWaypoints == 0) {
+      currWayPoints = wayPoints.listIterator();
+      currWayPoint = null;
+      return List.of();
+    }
 
     float midX = (maxX + minX) / 2;
     float midY = (maxY + minY) / 2;
@@ -150,10 +166,12 @@ public final class Path implements Renderable {
 
   public void clear() {
     wayPoints.clear();
+    currWayPoints = null;
+    currWayPoint = null;
   }
 
   public List<Vector2> getWayPoints() {
-    return wayPoints;
+    return wayPoints.stream().map(Vector2::clone).toList();
   }
 
   /**
@@ -163,13 +181,18 @@ public final class Path implements Renderable {
    * @param wayPoints list of way-points
    */
   public void setWayPoints(List<Vector2> wayPoints) {
-    this.wayPoints = wayPoints;
+    Objects.requireNonNull(wayPoints, "wayPoints");
+    this.wayPoints = new LinkedList<>();
+    wayPoints.forEach(point -> this.wayPoints.add(Objects.requireNonNull(point).clone()));
     currWayPoints = this.wayPoints.listIterator();
-    currWayPoint = currWayPoints.next();
+    currWayPoint = currWayPoints.hasNext() ? currWayPoints.next() : null;
   }
 
   @Override
   public void render(Paint paint) {
+    if (wayPoints.isEmpty()) {
+      return;
+    }
     paint.setPenColor(Color.ORANGE);
 
     var it = wayPoints.listIterator();

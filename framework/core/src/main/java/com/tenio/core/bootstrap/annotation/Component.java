@@ -34,21 +34,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to mark classes as components that should be automatically
- * detected and instantiated by the dependency injection system.
- * This is a fundamental annotation for component scanning and automatic
- * bean creation.
+ * Annotation used to mark classes as components that should be automatically detected and
+ * instantiated by the dependency injection system. This is a fundamental annotation for component
+ * scanning and automatic bean creation.
  *
  * <p>Key features:
+ *
  * <ul>
- *   <li>Automatic component detection</li>
- *   <li>Singleton bean creation</li>
- *   <li>Dependency injection support</li>
- *   <li>Runtime retention for reflection-based processing</li>
- *   <li>Inheritance support through {@link Inherited}</li>
+ *   <li>Automatic component detection
+ *   <li>Singleton bean creation
+ *   <li>Dependency injection support
+ *   <li>Runtime retention for reflection-based processing
+ *   <li>Inheritance support through {@link Inherited}
  * </ul>
  *
  * <p>Usage example:
+ *
  * <pre>
  * {@code @Component
  * public class UserService {
@@ -63,11 +64,12 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * <p>Note: Classes annotated with this annotation:
+ *
  * <ul>
- *   <li>Must have a no-args constructor</li>
- *   <li>Will be instantiated as singleton beans</li>
- *   <li>Can use other dependency injection annotations</li>
- *   <li>Will be automatically scanned by the {@link Injector}</li>
+ *   <li>Must have a no-args constructor
+ *   <li>Will be instantiated as singleton beans
+ *   <li>Can use other dependency injection annotations
+ *   <li>Will be automatically scanned by the {@link Injector}
  * </ul>
  *
  * @see Injector
@@ -81,4 +83,15 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 public @interface Component {
+
+  /**
+   * Startup profiles allowing this annotated element to participate. An empty array or blank
+   * restriction is unrestricted. Values are trimmed, case-sensitive OR alternatives; each entry may
+   * also contain comma-separated names. Java supports a single string shorthand or an array, but
+   * annotation defaults cannot be null. Selection precedes construction, factory invocation,
+   * registration and injection and does not replace bean qualifiers.
+   *
+   * @return accepted startup names, or an empty array for every profile
+   */
+  String[] profile() default {};
 }

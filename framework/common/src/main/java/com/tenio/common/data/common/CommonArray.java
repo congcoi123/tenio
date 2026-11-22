@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.common.data.common;
 
+import com.tenio.common.data.ImmutableSnapshot;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,6 @@ public final class CommonArray extends ArrayList<Object> implements Serializable
    * @return a new copy of the array in unmodified mode.
    */
   public List<Object> getReadonlyList() {
-    return List.copyOf(this);
+    return ImmutableSnapshot.ofCollection(this);
   }
 }

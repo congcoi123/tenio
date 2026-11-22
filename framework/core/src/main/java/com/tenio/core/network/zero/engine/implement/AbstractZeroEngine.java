@@ -77,17 +77,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
   private void initializeWorkers() {
     executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (executorService != null && !executorService.isShutdown()) {
-        try {
-          halting();
-        } catch (Exception exception) {
-          if (isErrorEnabled()) {
-            error(exception);
-          }
-        }
-      }
-    }));
+
   }
 
   private void halting() throws ServiceRuntimeException {
@@ -102,13 +92,14 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     executorService.shutdown();
 
     try {
-      if (executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+      if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
         executorService.shutdownNow();
-        destroyEngine();
       }
+      destroyEngine();
     } catch (InterruptedException exception) {
       executorService.shutdownNow();
       destroyEngine();
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -190,6 +181,7 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     if (executorSize - getNumberOfExtraWorkers() <= 0) {
       throw new IllegalArgumentException("The number of extra workers must be less than the executor size");
     }
+    onStarting();
     for (int count = 0; count < executorSize - getNumberOfExtraWorkers(); count++) {
       executorService.execute(this);
       if (CoreConstant.DELAY_BETWEEN_STARTING_WORKER_IN_MILLISECONDS > 0) {
@@ -211,6 +203,17 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
     }
   }
 
+  /**
+   * Prepares resources required by worker threads.
+   *
+   * <p>This hook runs synchronously after the worker configuration has been validated and before
+   * any worker is submitted. Implementations must use it for resources that workers share, so a
+   * worker can never observe a partially populated collection.
+   */
+  protected void onStarting() {
+    // Do nothing by default.
+  }
+
   @Override
   public void shutdown() {
     halting();
@@ -223,6 +226,15 @@ public abstract class AbstractZeroEngine extends AbstractManager implements Zero
 
   public boolean isActivated() {
     return activated;
+  }
+
+  /**
+   * Determines whether this engine is stopping.
+   *
+   * @return {@code true} when shutdown has started
+   */
+  protected boolean isStopping() {
+    return stopping.get();
   }
 
   /**

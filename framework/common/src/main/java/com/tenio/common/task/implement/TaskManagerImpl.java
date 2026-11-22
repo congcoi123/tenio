@@ -28,7 +28,9 @@ import com.tenio.common.exception.RunningScheduledTaskException;
 import com.tenio.common.logger.SystemLogger;
 import com.tenio.common.task.Task;
 import com.tenio.common.task.TaskManager;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,9 +50,13 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
    * A list of tasks in the server.
    */
   private final Map<String, Task> tasks;
+  private final Object lifecycleLock;
+  private final Map<String, Object> startingTasks;
 
   private TaskManagerImpl() {
     tasks = new ConcurrentHashMap<>();
+    lifecycleLock = new Object();
+    startingTasks = new HashMap<>();
   }
 
   /**
@@ -64,26 +70,61 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
 
   @Override
   public void create(String id, Task task) {
-    tasks.compute(id, (key, existingTask) -> {
-      if (existingTask != null &&
-              (!existingTask.getScheduler().isDone() || !existingTask.getScheduler().isCancelled())) {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(task, "task");
+
+    var registration = new Object();
+    synchronized (lifecycleLock) {
+      if (startingTasks.containsKey(id) || isActive(tasks.get(id))) {
         if (isErrorEnabled()) {
           error(new RunningScheduledTaskException(), "task id: ", id);
         }
-        return existingTask; // Keep the old task
+        return;
       }
+      startingTasks.put(id, registration);
+    }
+
+    ScheduledFuture<?> scheduler;
+    boolean installed = false;
+    try {
       task.run();
-      if (isInfoEnabled()) {
-        info("RUN TASK", buildgen(id, " >Time left> ",
-                task.getScheduler().getDelay(TimeUnit.SECONDS), " seconds"));
+      scheduler = Objects.requireNonNull(task.getScheduler(),
+          "A task must expose its scheduler after run()");
+      synchronized (lifecycleLock) {
+        if (startingTasks.get(id) == registration) {
+          tasks.put(id, task);
+          installed = true;
+        }
       }
-      return task;
-    });
+    } catch (RuntimeException | Error failure) {
+      try {
+        task.shutdown();
+      } catch (RuntimeException | Error shutdownFailure) {
+        failure.addSuppressed(shutdownFailure);
+      }
+      throw failure;
+    } finally {
+      synchronized (lifecycleLock) {
+        startingTasks.remove(id, registration);
+      }
+    }
+    if (!installed) {
+      task.shutdown();
+      return;
+    }
+    if (isInfoEnabled()) {
+      info("RUN TASK", buildgen(id, " >Time left> ", scheduler.getDelay(TimeUnit.SECONDS), " seconds"));
+    }
   }
 
   @Override
   public void kill(String id) {
-    var task = tasks.remove(id);  // Atomically remove and get the task
+    Objects.requireNonNull(id, "id");
+    final Task task;
+    synchronized (lifecycleLock) {
+      startingTasks.remove(id);
+      task = tasks.remove(id);
+    }
     if (task != null) {
       task.shutdown();
       if (isInfoEnabled()) {
@@ -94,25 +135,35 @@ public final class TaskManagerImpl extends SystemLogger implements TaskManager {
 
   @Override
   public void clear() {
-    var iterator = tasks.entrySet().iterator();
-    while (iterator.hasNext()) {
-      var entry = iterator.next();
-      var id = entry.getKey();
-      var task = entry.getValue();
+    final Map<String, Task> tasksToStop;
+    synchronized (lifecycleLock) {
+      startingTasks.clear();
+      tasksToStop = new HashMap<>(tasks);
+      tasks.clear();
+    }
+    for (var entry : tasksToStop.entrySet()) {
       if (isInfoEnabled()) {
-        info("KILLED TASK", id);
+        info("KILLED TASK", entry.getKey());
       }
-      task.shutdown();
-      iterator.remove(); // Safe removal while iterating
+      entry.getValue().shutdown();
     }
   }
 
   @Override
   public int getRemainTime(String id) {
+    Objects.requireNonNull(id, "id");
     var task = tasks.get(id);
     if (task != null) {
       return (int) task.getScheduler().getDelay(TimeUnit.SECONDS);
     }
     return -1;
+  }
+
+  private static boolean isActive(Task task) {
+    if (task == null) {
+      return false;
+    }
+    var scheduler = task.getScheduler();
+    return scheduler != null && !scheduler.isDone();
   }
 }

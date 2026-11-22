@@ -76,6 +76,15 @@ class ExceptionCoverageTest {
   }
 
   @Test
+  @DisplayName("Test ServiceRuntimeException preserves its cause")
+  void testServiceRuntimeExceptionWithCause() {
+    Exception cause = new Exception("service failed");
+    ServiceRuntimeException ex = new ServiceRuntimeException("service error", cause);
+    assertEquals("service error", ex.getMessage());
+    assertEquals(cause, ex.getCause());
+  }
+
+  @Test
   @DisplayName("Test NoImplementedClassFoundException")
   void testNoImplementedClassFoundException() {
     NoImplementedClassFoundException ex = new NoImplementedClassFoundException(String.class);

@@ -30,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import com.tenio.common.data.DataCollection;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.event.handler.implement.ConnectionEventHandler;
@@ -38,6 +39,7 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.handler.event.EventConnectionWillBeClosed;
 import com.tenio.core.handler.event.EventSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
@@ -112,6 +114,22 @@ class ConnectionEventHandlerTest {
         ConnectionEstablishedResult.SUCCESS);
     verify(mockEvent).onConnectionEstablishedResult(session, message,
         ConnectionEstablishedResult.SUCCESS);
+  }
+
+  @Test
+  @DisplayName("Test CONNECTION_WILL_BE_CLOSED event dispatches to listener")
+  void testConnectionWillBeClosedEvent() throws Exception {
+    ConnectionEventHandler handler = new ConnectionEventHandler();
+    EventManager em = EventManager.newInstance();
+    EventConnectionWillBeClosed mockEvent = mock(EventConnectionWillBeClosed.class);
+    Field field = ConnectionEventHandler.class.getDeclaredField("eventConnectionWillBeClosed");
+    field.setAccessible(true);
+    field.set(handler, mockEvent);
+    handler.initialize(em);
+    em.subscribe();
+    Session session = mock(Session.class);
+    em.emit(ServerEvent.CONNECTION_WILL_BE_CLOSED, session, PlayerDisconnectMode.CLIENT_REQUEST);
+    verify(mockEvent).onConnectionWillBeClosed(session, PlayerDisconnectMode.CLIENT_REQUEST);
   }
 
   @Test

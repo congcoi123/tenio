@@ -35,8 +35,8 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
   private final BlockingQueue<Runnable> taskQueue;
   private final String name;
   private final int index;
-  private Thread currentThread;
-  private boolean isStopped;
+  private volatile Thread currentThread;
+  private volatile boolean isStopped;
 
   /**
    * Creates a worker pool management.
@@ -80,7 +80,7 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
   /**
    * Stops the current worker pool.
    */
-  public synchronized void doStop() {
+  public void doStop() {
     isStopped = true;
     // break pool thread out of dequeue() call.
     if (currentThread != null) { // Add null check here
@@ -93,7 +93,7 @@ public final class WorkerPoolRunnable extends AbstractLogger implements Runnable
    *
    * @return <code>true</code> if the work pool is stopped, otherwise <code>false</code>
    */
-  public synchronized boolean isStopped() {
+  public boolean isStopped() {
     return isStopped;
   }
 }

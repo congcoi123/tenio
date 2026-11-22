@@ -75,9 +75,11 @@ public final class SocketWriterHandler extends AbstractWriterHandler {
       return;
     }
 
-    // encode the packet
-    packet.hasLengthPrefixed(true);
-    packet = getPacketEncoder().encode(packet);
+    // Encode exactly once. A fragmented packet already contains the encoded remainder.
+    if (!packet.isFragmented()) {
+      packet.hasLengthPrefixed(true);
+      packet = getPacketEncoder().encode(packet);
+    }
     // set priority for packet left unsent data (fragment)
     byte[] sendingData = packet.isFragmented() ? packet.getFragmentBuffer() : packet.getData();
     if (sendingData == null || sendingData.length == 0) {

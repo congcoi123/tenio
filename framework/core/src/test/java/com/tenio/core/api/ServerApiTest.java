@@ -42,7 +42,6 @@ import com.tenio.core.entity.implement.DefaultPlayer;
 import com.tenio.core.entity.manager.ChannelManager;
 import com.tenio.core.entity.manager.PlayerManager;
 import com.tenio.core.entity.manager.RoomManager;
-import com.tenio.core.entity.manager.implement.ChannelManagerImpl;
 import com.tenio.core.entity.manager.implement.PlayerManagerImpl;
 import com.tenio.core.entity.setting.InitialRoomSetting;
 import com.tenio.core.event.implement.EventManager;
@@ -53,6 +52,8 @@ import com.tenio.core.network.entity.session.Session;
 import com.tenio.core.network.entity.session.implement.SessionImpl;
 import com.tenio.core.network.zero.engine.manager.DatagramChannelManager;
 import com.tenio.core.server.Server;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -200,6 +201,8 @@ class ServerApiTest {
 
     var player = Mockito.mock(Player.class);
     var room = Mockito.mock(Room.class);
+    Mockito.when(player.getIdentity()).thenReturn("player-in-room");
+    Mockito.when(playerManager.getPlayerByIdentity("player-in-room")).thenReturn(player);
     room.addPlayer(player);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
     Mockito.verify(eventManager, Mockito.times(1))
@@ -216,6 +219,8 @@ class ServerApiTest {
 
     var player = Mockito.mock(Player.class);
     var room = Mockito.mock(Room.class);
+    Mockito.when(player.getIdentity()).thenReturn("player-not-in-room");
+    Mockito.when(playerManager.getPlayerByIdentity("player-not-in-room")).thenReturn(player);
     room.addPlayer(player);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
     Mockito.verify(eventManager, Mockito.times(1))
@@ -224,15 +229,15 @@ class ServerApiTest {
 
   @Test
   @DisplayName("When it tries to logout a player which has session, the session should be closed")
-  void itLogoutPlayerHasSessionShouldCloseSession() {
+  void itLogoutPlayerHasSessionShouldCloseSession() throws IOException {
     var player = Mockito.mock(Player.class);
     var session = Mockito.mock(Session.class);
-    Mockito.when(server.getEventManager()).thenReturn(eventManager);
-    Mockito.when(server.getChannelManager()).thenReturn(ChannelManagerImpl.newInstance(eventManager));
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(player.getSession()).thenReturn(Optional.of(session));
-    Mockito.when(player.containsSession()).thenReturn(true);
+    Mockito.when(session.isActivated()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
+    Mockito.verify(session).close(ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
   }
 
   @Test
@@ -240,11 +245,9 @@ class ServerApiTest {
   void itLogoutPlayerHasSessionShouldHaveClosedSessionIoException() {
     var player = Mockito.mock(Player.class);
     var session = Mockito.mock(Session.class);
-    Mockito.when(server.getEventManager()).thenReturn(eventManager);
-    Mockito.when(server.getChannelManager()).thenReturn(ChannelManagerImpl.newInstance(eventManager));
     Mockito.when(server.getPlayerManager()).thenReturn(playerManager);
     Mockito.when(player.getSession()).thenReturn(Optional.of(session));
-    Mockito.when(player.containsSession()).thenReturn(true);
+    Mockito.when(session.isActivated()).thenReturn(true);
     serverApi.logout(player, ConnectionDisconnectMode.CLIENT_REQUEST, PlayerDisconnectMode.CLIENT_REQUEST);
   }
 

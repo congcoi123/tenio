@@ -60,16 +60,18 @@ class StringUtilityTest {
   @DisplayName("It should return random values")
   void itShouldReturnRandomValues() {
     var expectedUuid = UUID.randomUUID();
-    var mockUuid = Mockito.mockStatic(UUID.class);
-    mockUuid.when(UUID::randomUUID).thenReturn(expectedUuid);
-    assertEquals(expectedUuid.toString(), StringUtility.getRandomUuid());
+    try (var mockUuid = Mockito.mockStatic(UUID.class)) {
+      mockUuid.when(UUID::randomUUID).thenReturn(expectedUuid);
+      assertEquals(expectedUuid.toString(), StringUtility.getRandomUuid());
+    }
 
     var expectedRandom = 0;
     var ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
-    var mockRandom = Mockito.mockStatic(MathUtility.class);
-    mockRandom.when(() -> MathUtility.randInt(0, ALPHA_NUMERIC_STRING.length()))
-        .thenReturn(expectedRandom);
-    assertEquals("AAAAA", StringUtility.getRandomTextByLength(5));
+    try (var mockRandom = Mockito.mockStatic(MathUtility.class)) {
+      mockRandom.when(() -> MathUtility.randInt(0, ALPHA_NUMERIC_STRING.length()))
+          .thenReturn(expectedRandom);
+      assertEquals("AAAAA", StringUtility.getRandomTextByLength(5));
+    }
   }
 
   @Test

@@ -29,7 +29,7 @@ import com.tenio.core.exception.AddedDuplicatedPlayerException;
 import com.tenio.core.exception.RemovedNonExistentPlayerException;
 import com.tenio.core.manager.Manager;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.scheduler.task.core.AutoDisconnectPlayerTask;
+import com.tenio.core.scheduler.task.AutoDisconnectPlayerTask;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -177,24 +177,12 @@ public interface PlayerManager extends Manager {
   int getPlayerCount();
 
   /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state.
-   * This configuration affects all players managed by this manager.
-   * Players exceeding this idle time may be automatically disconnected.
+   * Sets the reconnect grace period in seconds for sessionless retained players.
    *
-   * @param seconds the maximum time in seconds which allows the player to get in IDLE state
+   * @param seconds the reconnect grace period in seconds
    * @see AutoDisconnectPlayerTask
    */
   void configureMaxIdleTimeInSeconds(int seconds);
-
-  /**
-   * Sets the maximum time in seconds which allows the player to get in IDLE state
-   * in case of never deported selection. This configuration is used for special
-   * players that should not be automatically disconnected.
-   *
-   * @param seconds the maximum time in seconds which allows the player to get in IDLE state
-   * @see Player#isNeverDeported()
-   */
-  void configureMaxIdleTimeNeverDeportedInSeconds(int seconds);
 
   /**
    * Removes all players from the list.

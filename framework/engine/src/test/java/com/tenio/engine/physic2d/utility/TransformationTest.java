@@ -253,9 +253,9 @@ class TransformationTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(10.0f, 3.0f);
     Vector2 actualWrapAroundResult = Transformation.wrapAround(newInstanceResult, 3, 3);
-    assertEquals(3.0f, actualWrapAroundResult.y);
-    assertEquals(0.0f, actualWrapAroundResult.x);
-    assertEquals(0.0f, newInstanceResult.x);
+    assertEquals(0.0f, actualWrapAroundResult.y);
+    assertEquals(1.0f, actualWrapAroundResult.x);
+    assertEquals(10.0f, newInstanceResult.x);
   }
 
   @Test
@@ -263,9 +263,9 @@ class TransformationTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(-1.0f, 3.0f);
     Vector2 actualWrapAroundResult = Transformation.wrapAround(newInstanceResult, 3, 3);
-    assertEquals(3.0f, actualWrapAroundResult.y);
-    assertEquals(3.0f, actualWrapAroundResult.x);
-    assertEquals(3.0f, newInstanceResult.x);
+    assertEquals(0.0f, actualWrapAroundResult.y);
+    assertEquals(2.0f, actualWrapAroundResult.x);
+    assertEquals(-1.0f, newInstanceResult.x);
   }
 
   @Test
@@ -273,9 +273,9 @@ class TransformationTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(3.0f, 10.0f);
     Vector2 actualWrapAroundResult = Transformation.wrapAround(newInstanceResult, 3, 3);
-    assertEquals(0.0f, actualWrapAroundResult.y);
-    assertEquals(3.0f, actualWrapAroundResult.x);
-    assertEquals(0.0f, newInstanceResult.y);
+    assertEquals(1.0f, actualWrapAroundResult.y);
+    assertEquals(0.0f, actualWrapAroundResult.x);
+    assertEquals(10.0f, newInstanceResult.y);
   }
 
   @Test
@@ -283,9 +283,9 @@ class TransformationTest {
     Vector2 newInstanceResult = Vector2.newInstance();
     newInstanceResult.add(3.0f, -1.0f);
     Vector2 actualWrapAroundResult = Transformation.wrapAround(newInstanceResult, 3, 3);
-    assertEquals(3.0f, actualWrapAroundResult.y);
-    assertEquals(3.0f, actualWrapAroundResult.x);
-    assertEquals(3.0f, newInstanceResult.y);
+    assertEquals(2.0f, actualWrapAroundResult.y);
+    assertEquals(0.0f, actualWrapAroundResult.x);
+    assertEquals(-1.0f, newInstanceResult.y);
   }
 }
 

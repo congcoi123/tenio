@@ -139,3 +139,23 @@
 - Used EnumMap in EventHandler to increase lookup speed
 - Supported multi UDP channels
 - Renamed and added new APIs
+
+## 1.0.0 2026-11-11 Feature release
+- Added startup profiles for bootstrap classes, components, factories, handlers, commands, REST mappings and field injection.
+- Improved dependency injection: circular dependency handling, collision diagnostics, and instance-owned Injector and Bootstrapper state.
+- Added `EventConnectionWillBeClosed` and `EventPlayerConnectionReplacing` lifecycle events.
+- Made player/session replacement and outbound responses consistent with the current connection; prevented stale session requests from affecting replacement connections.
+- Corrected player retention, logout, idle-time calculation, and orphan-session cleanup.
+- Added response APIs and support for creating rooms with externally supplied IDs.
+- Added configurable TCP main-connection keepalive scanning based on the last successful read.
+- Improved subscribed-event checks, monitoring, concurrent collection access, and reader/writer lifecycle behavior.
+- Updated dependencies and expanded regression tests for profiles, dependency injection, sessions, connection replacement, and cleanup.
+- Corrected TCP framing to decode the fully accumulated body and treat 16-bit frame lengths as unsigned. Added regression coverage for fragmented/coalesced frames and large normal-sized frames.
+- Isolated launcher-profile test logging so diagnostic assertions are independent of suite logging configuration.
+- Added opt-in per-command token buckets with player/session isolation and rejection counters.
+- Added read-only session, room, traffic, and outbound-pressure inspection with optional per-queue metrics.
+- Added a local desktop admin window and built-in system commands gated by the monitor profile.
+- Pinned admin commands and added inspection usage to help. Formatted uptime and statistics totals.
+- Added readable operational history, disk archives for deployments without the monitor window, and arrow-key command recall.
+- Accepted an explicitly empty XML profile for deployments using unrestricted components.
+- Removed the unused JLine dependencies and the unfilled security policy template.

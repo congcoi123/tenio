@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.session.manager;
 
+import com.tenio.core.admin.OperationalHistory;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.define.mode.ConnectionDisconnectMode;
 import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
@@ -41,6 +42,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 /**
  * A session manager.
@@ -141,6 +143,14 @@ public interface SessionManager extends Manager {
    * datagram channel and the remote address is present, otherwise {@code null}
    */
   Session getSessionByDatagram(int udpConvey);
+
+  /**
+   * Looks up a session by its ID.
+   *
+   * @param sessionId the ID of the session to find
+   * @return the session with the given ID, or {@code null} if no such session is registered
+   */
+  Session getSessionById(long sessionId);
 
   /**
    * Sets an instance for the connection filter.
@@ -244,6 +254,40 @@ public interface SessionManager extends Manager {
    *                session to get in IDLE state
    */
   void configureMaxIdleTimeInSeconds(int seconds);
+
+  /**
+   * Registers a listener that receives the session ID after a session is removed from the manager.
+   * Configure the listener before the manager starts handling sessions.
+   *
+   * @param listener the listener to register, or {@code null} to clear the current listener.
+   *                 Registering a listener replaces the previous one.
+   */
+  void onSessionRemoved(LongConsumer listener);
+
+  /**
+   * Enables inbound and outbound queue diagnostics for sessions configured after this call.
+   * Call this method during startup to collect diagnostics from the first connection.
+   */
+  void enableQueueMonitoring();
+
+  /**
+   * Sets the recorder used for session events and outbound queue pressure events. Configure it
+   * during startup so newly created outbound queues use the recorder.
+   *
+   * @param history the recorder to use, or {@code null} to disable history for future queues
+   * @see #getOperationalHistory()
+   */
+  void setOperationalHistory(OperationalHistory history);
+
+  /**
+   * Returns the operational history recorder associated with this session manager.
+   * The default implementation returns {@code null}.
+   *
+   * @return the history recorder, or {@code null} if history recording is unavailable
+   */
+  default OperationalHistory getOperationalHistory() {
+    return null;
+  }
 
   /**
    * Emits an event on the server.

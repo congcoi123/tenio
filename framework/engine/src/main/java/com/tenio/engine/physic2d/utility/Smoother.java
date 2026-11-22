@@ -1,8 +1,7 @@
 package com.tenio.engine.physic2d.utility;
 
 import com.tenio.engine.physic2d.math.Vector2;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Template class to help calculate the average value of a history of values.
@@ -15,13 +14,14 @@ public class Smoother<T extends Number> {
   /**
    * This holds the history.
    */
-  private final List<T> histories;
+  private final double[] histories;
   /**
    * an example of the 'zero' value of the type to be smoothed. This would be
    * something like Vector2D(0,0), see {@link Vector2}.
    */
   private final T zeroValue;
   private int nextUpdateSlot;
+  private double sum;
 
   /**
    * To instantiate a Smoother, pass it the number of samples you want to use in the smoothing,
@@ -31,11 +31,11 @@ public class Smoother<T extends Number> {
    * @param zeroValue  the zero value
    */
   public Smoother(int sampleSize, T zeroValue) {
-    histories = new ArrayList<>(sampleSize);
-    for (int i = 0; i < sampleSize; i++) {
-      histories.add(zeroValue);
+    if (sampleSize <= 0) {
+      throw new IllegalArgumentException("sampleSize must be positive");
     }
-    this.zeroValue = zeroValue;
+    this.zeroValue = Objects.requireNonNull(zeroValue, "zeroValue");
+    histories = new double[sampleSize];
     nextUpdateSlot = 0;
   }
 
@@ -47,42 +47,46 @@ public class Smoother<T extends Number> {
    * @return an average over the last SampleSize updates
    */
   //
-  @SuppressWarnings("unchecked")
-  public T update(T mostRecentValue) {
-    // overwrite the oldest value with the newest
-    histories.set(nextUpdateSlot++, mostRecentValue);
-
-    // make sure m_iNextUpdateSlot wraps around.
-    if (nextUpdateSlot == histories.size()) {
-      nextUpdateSlot = 0;
-    }
-
-    // now to calculate the average of the history list
-    T sum = null;
-    try {
-      sum = (T) zeroValue.getClass().getConstructor(Float.TYPE).newInstance(0);
-    } catch (Exception exception) {
-      exception.printStackTrace();
-      System.exit(1);
-    }
-
-    var it = histories.listIterator();
-
-    while (it.hasNext()) {
-      sum = add(sum, it.next());
-    }
-
-    sum = div(sum, (float) histories.size());
-    return sum;
+  public synchronized T update(T mostRecentValue) {
+    Objects.requireNonNull(mostRecentValue, "mostRecentValue");
+    sum -= histories[nextUpdateSlot];
+    histories[nextUpdateSlot] = mostRecentValue.doubleValue();
+    sum += histories[nextUpdateSlot];
+    nextUpdateSlot = (nextUpdateSlot + 1) % histories.length;
+    return convert(sum / histories.length, zeroValue);
   }
 
   @SuppressWarnings("unchecked")
   public <X extends Number> X add(X a, X b) {
-    return (X) Float.valueOf(a.floatValue() + b.floatValue());
+    return (X) convert(a.doubleValue() + b.doubleValue(), a);
   }
 
   @SuppressWarnings("unchecked")
   public <X extends Number> X div(X a, float b) {
-    return (X) Float.valueOf(a.floatValue() / b);
+    if (b == 0) {
+      throw new ArithmeticException("division by zero");
+    }
+    return (X) convert(a.doubleValue() / b, a);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <X extends Number> X convert(double value, X template) {
+    Number result;
+    if (template instanceof Byte) {
+      result = (byte) value;
+    } else if (template instanceof Short) {
+      result = (short) value;
+    } else if (template instanceof Integer) {
+      result = (int) value;
+    } else if (template instanceof Long) {
+      result = (long) value;
+    } else if (template instanceof Float) {
+      result = (float) value;
+    } else if (template instanceof Double) {
+      result = value;
+    } else {
+      throw new IllegalArgumentException("Unsupported number type: " + template.getClass());
+    }
+    return (X) result;
   }
 }

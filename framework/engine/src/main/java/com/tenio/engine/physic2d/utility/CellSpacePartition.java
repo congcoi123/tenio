@@ -60,6 +60,10 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @param maxEntities maximum number of entities to partition
    */
   public CellSpacePartition(float width, float height, int cellsX, int cellsY, int maxEntities) {
+    if (!Float.isFinite(width) || !Float.isFinite(height) || width <= 0 || height <= 0
+        || cellsX <= 0 || cellsY <= 0 || maxEntities < 0) {
+      throw new IllegalArgumentException("Invalid cell-space dimensions or capacity");
+    }
     spaceWidth = width;
     spaceHeight = height;
     numCellsX = cellsX;
@@ -90,16 +94,9 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @return the index
    */
   private int getIndexByPosition(Vector2 position) {
-    int idx = (int) (numCellsX * position.x / spaceWidth)
-        + ((int) ((numCellsY) * position.y / spaceHeight) * numCellsX);
-
-    // if the entity's position is equal to Vector2D(m_dSpaceWidth, m_dSpaceHeight)
-    // then the index will overshoot. We need to check for this and adjust
-    if (idx > cells.size() - 1) {
-      idx = cells.size() - 1;
-    }
-
-    return idx;
+    int x = Math.clamp((int) (numCellsX * position.x / spaceWidth), 0, numCellsX - 1);
+    int y = Math.clamp((int) (numCellsY * position.y / spaceHeight), 0, numCellsY - 1);
+    return y * numCellsX + x;
   }
 
   /**
@@ -151,6 +148,9 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
    * @param queryRadius radius value
    */
   public void calculateNeighbors(Vector2 targetPos, float queryRadius) {
+    if (!Float.isFinite(queryRadius) || queryRadius < 0) {
+      throw new IllegalArgumentException("queryRadius must be finite and non-negative");
+    }
     neighbors.clear();
 
     // create the query box that is the bounding box of the target's query area
@@ -164,24 +164,33 @@ public class CellSpacePartition<T extends BaseGameEntity> implements Renderable 
     // iterate through each cell and test to see if its bounding box overlaps
     // with the query box. If it does, and it also contains entities then
     // make further proximity tests.
-    var cellListIterator = cells.listIterator();
-    while (cellListIterator.hasNext()) {
-      var curCell = cellListIterator.next();
-      // test to see if this cell contains members and if it overlaps the
-      // query box
-      if (curCell.bbox.isOverlappedWith(aabbBox2D) && !curCell.members.isEmpty()) {
+    int minX = Math.clamp((int) (numCellsX * (targetPos.x - queryRadius) / spaceWidth),
+        0, numCellsX - 1);
+    int maxX = Math.clamp((int) (numCellsX * (targetPos.x + queryRadius) / spaceWidth),
+        0, numCellsX - 1);
+    int minY = Math.clamp((int) (numCellsY * (targetPos.y - queryRadius) / spaceHeight),
+        0, numCellsY - 1);
+    int maxY = Math.clamp((int) (numCellsY * (targetPos.y + queryRadius) / spaceHeight),
+        0, numCellsY - 1);
+    for (int y = minY; y <= maxY; y++) {
+      for (int x = minX; x <= maxX; x++) {
+        var curCell = cells.get(y * numCellsX + x);
+        // test to see if this cell contains members and if it overlaps the
+        // query box
+        if (curCell.bbox.isOverlappedWith(aabbBox2D) && !curCell.members.isEmpty()) {
 
-        // add any entities found within query radius to the neighbor list
-        var it = curCell.members.listIterator();
-        while (it.hasNext()) {
-          T ent = it.next();
-          if (temp.set(ent.getPosition()).getDistanceSqrValue(targetPos)
-              < queryRadius * queryRadius) {
-            neighbors.add(ent);
+          // add any entities found within query radius to the neighbor list
+          var it = curCell.members.listIterator();
+          while (it.hasNext()) {
+            T ent = it.next();
+            if (temp.set(ent.getPosition()).getDistanceSqrValue(targetPos)
+                < queryRadius * queryRadius) {
+              neighbors.add(ent);
+            }
           }
         }
       }
-    } // next cell
+    }
   }
 
   /**

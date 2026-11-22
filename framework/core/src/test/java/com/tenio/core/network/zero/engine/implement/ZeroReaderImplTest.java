@@ -26,18 +26,19 @@ package com.tenio.core.network.zero.engine.implement;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tenio.core.event.implement.EventManager;
 import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
-import java.io.IOException;
-import org.mockito.MockedConstruction;
 import com.tenio.core.network.configuration.SocketConfiguration;
 import com.tenio.core.network.define.TransportType;
 import com.tenio.core.network.entity.session.manager.SessionManager;
@@ -251,18 +252,59 @@ class ZeroReaderImplTest {
   @Test
   @DisplayName("onShutdown with non-empty socketReaderHandlers calls shutdown on each handler")
   void testOnShutdownWithNonEmptySocketReaderHandlers() throws Exception {
+    Field socketReadersField = ZeroReaderImpl.class.getDeclaredField("socketReaderHandlers");
+    socketReadersField.setAccessible(true);
+    List<SocketReaderHandler> handlers = new ArrayList<>();
+    SocketReaderHandler mockHandler = mock(SocketReaderHandler.class);
+    handlers.add(mockHandler);
+    socketReadersField.set(reader, handlers);
+
+    Method onShutdown = ZeroReaderImpl.class.getDeclaredMethod("onShutdown");
+    onShutdown.setAccessible(true);
+    onShutdown.invoke(reader);
+
+    verify(mockHandler).shutdown();
+  }
+
+  @Test
+  @DisplayName("start creates and publishes all socket readers before workers can run")
+  void testStartCreatesAllSocketReaderHandlersBeforeWorkersRun() throws Exception {
+    reader.setThreadPoolSize(4);
+    reader.setSocketIoHandler(mock(SocketIoHandler.class));
+    reader.setSessionManager(mock(SessionManager.class));
+    reader.setNetworkReaderStatistic(mock(NetworkReaderStatistic.class));
     reader.initialize();
+
+    try {
+      reader.start();
+
+      Field socketReadersField = ZeroReaderImpl.class.getDeclaredField("socketReaderHandlers");
+      socketReadersField.setAccessible(true);
+      List<SocketReaderHandler> handlers = (List<SocketReaderHandler>) socketReadersField.get(reader);
+
+      assertEquals(4, handlers.size());
+      assertThrows(UnsupportedOperationException.class, () -> handlers.add(null));
+    } finally {
+      reader.shutdown();
+    }
+  }
+
+  @Test
+  @DisplayName("acceptClientSocketChannel selects only from available reader handlers")
+  void testAcceptClientSocketChannelUsesAvailableHandlerCount() throws Exception {
+    reader.setThreadPoolSize(4);
+    SocketReaderHandler handler = mock(SocketReaderHandler.class);
 
     Field socketReadersField = ZeroReaderImpl.class.getDeclaredField("socketReaderHandlers");
     socketReadersField.setAccessible(true);
-    List<SocketReaderHandler> handlers = (List<SocketReaderHandler>) socketReadersField.get(reader);
+    socketReadersField.set(reader, List.of(handler));
 
-    SocketReaderHandler mockHandler = mock(SocketReaderHandler.class);
-    handlers.add(mockHandler);
+    ZeroReaderListener readerListener = (ZeroReaderListener) reader;
+    for (int i = 0; i < 4; i++) {
+      readerListener.acceptClientSocketChannel(mock(SocketChannel.class), mock(Consumer.class), mock(Runnable.class));
+    }
 
-    reader.shutdown();
-
-    verify(mockHandler).shutdown();
+    verify(handler, times(4)).registerClientSocketChannel(any(), any(), any());
   }
 
   @Test
@@ -293,8 +335,8 @@ class ZeroReaderImplTest {
   }
 
   @Test
-  @DisplayName("onRunning catches IOException thrown by socketReaderHandler.running()")
-  void testOnRunningCatchesIOExceptionFromSocketReaderHandler() throws Exception {
+  @DisplayName("onRunning catches an unchecked failure from its assigned socketReaderHandler")
+  void testOnRunningCatchesUncheckedFailureFromSocketReaderHandler() throws Exception {
     reader.setSocketIoHandler(mock(SocketIoHandler.class));
     reader.setSessionManager(mock(SessionManager.class));
     reader.setNetworkReaderStatistic(mock(NetworkReaderStatistic.class));
@@ -303,23 +345,22 @@ class ZeroReaderImplTest {
 
     Field socketReadersField = ZeroReaderImpl.class.getDeclaredField("socketReaderHandlers");
     socketReadersField.setAccessible(true);
-    socketReadersField.set(reader, new ArrayList<>());
+    SocketReaderHandler handler = mock(SocketReaderHandler.class);
+    doAnswer(invocation -> {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("reader error");
+    }).when(handler).running();
+    socketReadersField.set(reader, List.of(handler));
 
     Method onRunning = ZeroReaderImpl.class.getDeclaredMethod("onRunning");
     onRunning.setAccessible(true);
 
-    try (MockedConstruction<SocketReaderHandler> mockConstruction =
-        mockConstruction(SocketReaderHandler.class, (mock, ctx) ->
-            doThrow(new IOException("reader error")).when(mock).running())) {
-
-      Thread t = new Thread(() -> {
-        try { onRunning.invoke(reader); } catch (Exception ignored) {}
-      });
-      t.start();
-      Thread.sleep(150);
-      t.interrupt();
-      t.join(2000);
-    }
+    Thread t = new Thread(() -> {
+      try { onRunning.invoke(reader); } catch (Exception ignored) {}
+    });
+    t.start();
+    t.join(2000);
+    assertFalse(t.isAlive());
   }
 
   @Test

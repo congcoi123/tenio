@@ -30,8 +30,8 @@ import com.tenio.engine.ecs.system.RenderSystem;
 import com.tenio.engine.ecs.system.System;
 import com.tenio.engine.ecs.system.TearDownSystem;
 import com.tenio.engine.physic2d.graphic.Paint;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Systems provide a convenient way to group systems. You can add
@@ -50,16 +50,16 @@ public final class Systems
   /**
    * Check if systems is running or not.
    */
-  private boolean flagRunning = true;
+  private volatile boolean flagRunning = true;
 
   /**
    * Creates a new systems instance.
    */
   public Systems() {
-    initializeSystems = new ArrayList<>();
-    executeSystems = new ArrayList<>();
-    renderSystems = new ArrayList<>();
-    tearDownSystems = new ArrayList<>();
+    initializeSystems = new CopyOnWriteArrayList<>();
+    executeSystems = new CopyOnWriteArrayList<>();
+    renderSystems = new CopyOnWriteArrayList<>();
+    tearDownSystems = new CopyOnWriteArrayList<>();
   }
 
   /**

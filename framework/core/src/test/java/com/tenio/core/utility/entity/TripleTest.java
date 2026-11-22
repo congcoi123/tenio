@@ -32,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 @DisplayName("Unit Test Cases For Triple")
 class TripleTest {
 
@@ -85,5 +88,14 @@ class TripleTest {
     assertTrue(str.contains("alpha"));
     assertTrue(str.contains("42"));
     assertTrue(str.contains("true"));
+  }
+
+  @Test
+  void cyclicComponentIsPrintedByIdentity() {
+    var values = new ArrayList<>();
+    var triple = new Triple<>(values, null, "ok");
+    values.add(triple);
+    assertEquals("Triple[first=" + Objects.toIdentityString(values)
+        + ", second=null, third=ok]", triple.toString());
   }
 }

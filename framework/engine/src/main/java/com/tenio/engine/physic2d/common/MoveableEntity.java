@@ -130,10 +130,15 @@ public abstract class MoveableEntity extends BaseGameEntity {
    * @param y the new heading in Y
    */
   public void setHeading(float x, float y) {
-    headingX = x;
-    headingY = y;
+    var normalized = Vector2.valueOf(x, y);
+    if (normalized.isZero()) {
+      throw new IllegalArgumentException("Heading must not be zero");
+    }
+    normalized.normalize();
+    headingX = normalized.x;
+    headingY = normalized.y;
     // the side vector must always be perpendicular to the heading
-    var temp = Vector2.newInstance().set(x, y).perpendicular();
+    var temp = normalized.clone().perpendicular();
     sideX = temp.x;
     sideY = temp.y;
     // update the rotation
@@ -185,7 +190,7 @@ public abstract class MoveableEntity extends BaseGameEntity {
   }
 
   public boolean isSpeedMaxedOut() {
-    return maxSpeed * maxSpeed >= getVelocity().getLengthSqr();
+    return getVelocity().getLengthSqr() >= maxSpeed * maxSpeed;
   }
 
   public float getSpeed() {
@@ -217,7 +222,8 @@ public abstract class MoveableEntity extends BaseGameEntity {
     var temp = Vector2.newInstance().set(target).sub(getPosition()).normalize();
 
     // first determine the angle between the heading vector and the target
-    float angle = (float) Math.acos(getHeading().getDotProductValue(temp));
+    float dot = Math.max(-1, Math.min(1, getHeading().getDotProductValue(temp)));
+    float angle = (float) Math.acos(dot);
     if (Float.isNaN(angle)) {
       angle = 0;
     }
@@ -239,11 +245,15 @@ public abstract class MoveableEntity extends BaseGameEntity {
     // notice how the direction of rotation has to be determined when creating
     // the rotation matrix
     matrix3.rotate(angle * getHeading().getSignValue(temp));
-    matrix3.transformVector2D(getHeading());
-    matrix3.transformVector2D(getVelocity());
+    var newHeading = getHeading().clone();
+    var newVelocity = getVelocity().clone();
+    matrix3.transformVector2D(newHeading);
+    matrix3.transformVector2D(newVelocity);
+    setHeading(newHeading);
+    setVelocity(newVelocity);
 
     // finally, recreate m_vSide
-    setSide(getHeading().perpendicular());
+    setSide(getHeading().clone().perpendicular());
 
     return false;
   }

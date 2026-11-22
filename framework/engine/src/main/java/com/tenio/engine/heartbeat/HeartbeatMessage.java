@@ -32,8 +32,7 @@ import java.util.UUID;
  * The message which is used for communication between one heart-beat and
  * outside.
  */
-@SuppressWarnings("rawtypes")
-final class HeartbeatMessage implements Comparable {
+final class HeartbeatMessage implements Comparable<HeartbeatMessage> {
 
   /**
    * These messages will be stored in a priority queue. Therefore, the operator
@@ -104,12 +103,7 @@ final class HeartbeatMessage implements Comparable {
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof HeartbeatMessage)) {
-      return false;
-    }
-    var t1 = this;
-    var t2 = (HeartbeatMessage) o;
-    return (Math.abs(t1.getDelayTime() - t2.getDelayTime()) < SMALLEST_DELAY);
+    return o instanceof HeartbeatMessage other && id.equals(other.id);
   }
 
   /**
@@ -123,14 +117,9 @@ final class HeartbeatMessage implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o2) {
-    var t1 = this;
-    var t2 = (HeartbeatMessage) o2;
-    if (t1 == t2) {
-      return 0;
-    } else {
-      return (t1.getDelayTime() > t2.getDelayTime()) ? -1 : 1;
-    }
+  public int compareTo(HeartbeatMessage other) {
+    int byTime = Double.compare(other.delayTime, delayTime);
+    return byTime != 0 ? byTime : id.compareTo(other.id);
   }
 
   @Override

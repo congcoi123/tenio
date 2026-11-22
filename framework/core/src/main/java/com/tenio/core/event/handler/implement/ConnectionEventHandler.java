@@ -30,6 +30,7 @@ import com.tenio.core.bootstrap.annotation.AutowiredAcceptNull;
 import com.tenio.core.bootstrap.annotation.Component;
 import com.tenio.core.configuration.define.ServerEvent;
 import com.tenio.core.entity.Player;
+import com.tenio.core.entity.define.mode.PlayerDisconnectMode;
 import com.tenio.core.entity.define.result.AccessDatagramChannelResult;
 import com.tenio.core.entity.define.result.ConnectionEstablishedResult;
 import com.tenio.core.event.implement.EventManager;
@@ -37,6 +38,7 @@ import com.tenio.core.exception.RefusedConnectionAddressException;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidation;
 import com.tenio.core.handler.event.EventAccessDatagramChannelRequestValidationResult;
 import com.tenio.core.handler.event.EventConnectionEstablishedResult;
+import com.tenio.core.handler.event.EventConnectionWillBeClosed;
 import com.tenio.core.handler.event.EventSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWebSocketConnectionRefused;
 import com.tenio.core.handler.event.EventWriteMessageToConnection;
@@ -62,6 +64,9 @@ public final class ConnectionEventHandler {
   private EventConnectionEstablishedResult<DataCollection> eventConnectionEstablishedResult;
 
   @AutowiredAcceptNull
+  private EventConnectionWillBeClosed eventConnectionWillBeClosed;
+
+  @AutowiredAcceptNull
   private EventWriteMessageToConnection eventWriteMessageToConnection;
 
   @AutowiredAcceptNull
@@ -83,6 +88,7 @@ public final class ConnectionEventHandler {
 
     final var eventConnectionEstablishedResultOp =
         Optional.ofNullable(eventConnectionEstablishedResult);
+    final var eventConnectionWillBeClosedOp = Optional.ofNullable(eventConnectionWillBeClosed);
     final var eventWriteMessageToConnectionOp =
         Optional.ofNullable(eventWriteMessageToConnection);
 
@@ -118,6 +124,16 @@ public final class ConnectionEventHandler {
           var result = (ConnectionEstablishedResult) params[2];
 
           event.onConnectionEstablishedResult(session, message, result);
+
+          return null;
+        }));
+
+    eventConnectionWillBeClosedOp.ifPresent(
+        event -> eventManager.on(ServerEvent.CONNECTION_WILL_BE_CLOSED, params -> {
+          var session = (Session) params[0];
+          var mode = (PlayerDisconnectMode) params[1];
+
+          event.onConnectionWillBeClosed(session, mode);
 
           return null;
         }));

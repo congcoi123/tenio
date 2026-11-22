@@ -149,7 +149,7 @@ public final class BinaryPacketFramer {
       headerBytes = Integer.BYTES;
     } else {
       if (binaries.length >= Short.BYTES) {
-        dataSize = ByteUtility.bytesToShort(binaries);
+        dataSize = Short.toUnsignedInt(ByteUtility.bytesToShort(binaries));
       }
     }
 
@@ -199,7 +199,7 @@ public final class BinaryPacketFramer {
       // we now have exactly the number of bytes in need, no need to use bitwise
       // method here, just feel free to use utility functions of ByteBuffer
       int dataSize = pendingPacket.getPacketHeader().isBigSized() ? headerBytesBuffer.getInt()
-          : headerBytesBuffer.getShort();
+          : Short.toUnsignedInt(headerBytesBuffer.getShort());
 
       // got data size, can wait to collect packet data bytes
       // this.validateIncomingDataSize(session, dataSize);
@@ -253,7 +253,7 @@ public final class BinaryPacketFramer {
       }
 
       // now the packet data is completely collected
-      DataCollection dataCollection = binaryPacketDecoder.decode(packetHeader, binaries);
+      DataCollection dataCollection = binaryPacketDecoder.decode(packetHeader, dataBuffer.array());
 
       // result a framed packet data
       packetFramingListener.onFramedResult(session, dataCollection);

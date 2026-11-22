@@ -26,6 +26,7 @@ package com.tenio.engine.fsm.entity;
 
 import com.tenio.engine.fsm.Component;
 import com.tenio.engine.fsm.MessageDispatcher;
+import java.util.Objects;
 
 /**
  * Check out the
@@ -105,11 +106,14 @@ public final class FsmComponent<T> extends Component<T> {
    * @param state the new state
    */
   public void changeState(State<T> state) {
+    Objects.requireNonNull(state, "state");
     // keep a record of the previous state
     previousState = currentState;
 
     // call the exit method of the existing state
-    currentState.exit(entity);
+    if (currentState != null) {
+      currentState.exit(entity);
+    }
 
     // change state to the new state
     currentState = state;
@@ -122,6 +126,9 @@ public final class FsmComponent<T> extends Component<T> {
    * Change state back to the previous state.
    */
   public void revertToPreviousState() {
+    if (previousState == null) {
+      throw new IllegalStateException("No previous state is available");
+    }
     changeState(previousState);
   }
 
@@ -132,7 +139,7 @@ public final class FsmComponent<T> extends Component<T> {
    * @return <b>true</b> if the current state's type is equal to the type of the parameter's class
    */
   public boolean isInState(State<T> state) {
-    return currentState.getClass() == state.getClass();
+    return currentState != null && state != null && currentState.getClass() == state.getClass();
   }
 
   public State<T> getCurrentState() {
@@ -180,6 +187,6 @@ public final class FsmComponent<T> extends Component<T> {
    * @return the name of current state
    */
   public String getNameOfCurrentState() {
-    return currentState.getClass().getName();
+    return currentState == null ? null : currentState.getClass().getName();
   }
 }

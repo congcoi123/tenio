@@ -39,7 +39,9 @@ class ServerEventTest {
     assertNotNull(ServerEvent.valueOf("SERVER_INITIALIZATION"));
     assertNotNull(ServerEvent.valueOf("PLAYER_LOGIN"));
     assertNotNull(ServerEvent.valueOf("PLAYER_CONNECTION_RETRY"));
+    assertNotNull(ServerEvent.valueOf("PLAYER_CONNECTION_REPLACING"));
     assertNotNull(ServerEvent.valueOf("PLAYER_CONNECTION_RESUMED"));
+    assertNotNull(ServerEvent.valueOf("CONNECTION_WILL_BE_CLOSED"));
     assertNotNull(ServerEvent.valueOf("ROOM_CREATED_RESULT"));
     assertNotNull(ServerEvent.valueOf("PLAYER_JOINED_ROOM_RESULT"));
     assertNotNull(ServerEvent.valueOf("PLAYER_BEFORE_LEAVE_ROOM"));
@@ -55,9 +57,9 @@ class ServerEventTest {
   }
 
   @Test
-  @DisplayName("Total number of ServerEvent values is 33")
+  @DisplayName("Total number of ServerEvent values is 35")
   void testTotalCount() {
-    assertEquals(33, ServerEvent.values().length);
+    assertEquals(35, ServerEvent.values().length);
   }
 
   @Test

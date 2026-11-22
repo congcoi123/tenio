@@ -1,8 +1,7 @@
 package com.tenio.engine.physic2d.utility;
 
 import com.tenio.engine.physic2d.math.Vector2;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Template class to help calculate the average value of a history of values.
@@ -15,13 +14,14 @@ public class SmootherVector<T extends Vector2> {
   /**
    * This holds the history.
    */
-  private final List<T> histories;
+  private final Vector2[] histories;
   /**
    * An example of the 'zero' value of the type to be smoothed. This would be
    * something like Vector2D(0,0).
    */
-  private final T zeroValue;
   private int nextUpdateSlot;
+  private float sumX;
+  private float sumY;
 
   /**
    * To instantiate a Smoother, pass it the number of samples you want to use in the smoothing,
@@ -31,11 +31,14 @@ public class SmootherVector<T extends Vector2> {
    * @param zeroValue  the zero value
    */
   public SmootherVector(int sampleSize, T zeroValue) {
-    histories = new ArrayList<>(sampleSize);
-    for (int i = 0; i < sampleSize; i++) {
-      histories.add(zeroValue);
+    if (sampleSize <= 0) {
+      throw new IllegalArgumentException("sampleSize must be positive");
     }
-    this.zeroValue = zeroValue;
+    Objects.requireNonNull(zeroValue, "zeroValue");
+    histories = new Vector2[sampleSize];
+    for (int i = 0; i < sampleSize; i++) {
+      histories[i] = Vector2.newInstance();
+    }
     nextUpdateSlot = 0;
   }
 
@@ -46,28 +49,16 @@ public class SmootherVector<T extends Vector2> {
    * @param mostRecentValue the most recent value
    * @return an average over the last SampleSize updates
    */
-  public T update(T mostRecentValue) {
-    // overwrite the oldest value with the newest
-    histories.set(nextUpdateSlot++, mostRecentValue);
-
-    // make sure m_iNextUpdateSlot wraps around.
-    if (nextUpdateSlot == histories.size()) {
-      nextUpdateSlot = 0;
-    }
-
-    // now to calculate the average of the history list
-    // c++ code make a copy here, I use Zero method instead.
-    // Another approach could be creating public clone() method in Vector2D ...
-    var sum = zeroValue;
-    sum.zero();
-
-    var it = histories.listIterator();
-
-    while (it.hasNext()) {
-      sum.add(it.next());
-    }
-
-    sum.div(histories.size());
-    return sum;
+  @SuppressWarnings("unchecked")
+  public synchronized T update(T mostRecentValue) {
+    Objects.requireNonNull(mostRecentValue, "mostRecentValue");
+    var oldest = histories[nextUpdateSlot];
+    sumX -= oldest.x;
+    sumY -= oldest.y;
+    oldest.set(mostRecentValue);
+    sumX += oldest.x;
+    sumY += oldest.y;
+    nextUpdateSlot = (nextUpdateSlot + 1) % histories.length;
+    return (T) Vector2.valueOf(sumX / histories.length, sumY / histories.length);
   }
 }

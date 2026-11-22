@@ -145,6 +145,16 @@ public interface Response {
   Response prioritizedUdp();
 
   /**
+   * Sends packets only through the Datagram channel.
+   *
+   * Recipients without an available Datagram channel are ignored. This method does not fall
+   * back to TCP or WebSocket.
+   *
+   * @return the pointer of response
+   */
+  Response onlyUdp();
+
+  /**
    * Allows the sending content to be encrypted.
    *
    * @return the pointer of response

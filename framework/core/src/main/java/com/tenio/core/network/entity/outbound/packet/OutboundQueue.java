@@ -24,8 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.core.network.entity.outbound.packet;
 
+import com.tenio.core.admin.OperationalHistory;
 import com.tenio.core.exception.OutboundQueueFullException;
 import com.tenio.core.exception.OutboundQueuePolicyViolationException;
+import com.tenio.core.network.entity.outbound.packet.implement.OutboundQueueImpl;
 import com.tenio.core.network.entity.outbound.packet.policy.DefaultOutboundQueuePolicy;
 import com.tenio.core.network.entity.outbound.packet.policy.OutboundQueuePolicy;
 
@@ -129,6 +131,30 @@ public interface OutboundQueue {
   void configureMaxSize(int maxSize);
 
   /**
+   * Enables queue diagnostics and optionally records queue pressure events.
+   * Call this method before making the session available to other threads.
+   *
+   * @param history the operational history recorder, or {@code null} to skip history recording
+   * @param id the session ID associated with recorded events
+   * @param transport the transport name associated with recorded events
+   * @see #enableMonitoring(boolean, OperationalHistory, long, String)
+   */
+  default void enableMonitoring(OperationalHistory history, long id, String transport) {
+    enableMonitoring(true, history, id, transport);
+  }
+
+  /**
+   * Configures queue diagnostics and pressure event recording independently.
+   * Call this method before making the queue available to other threads.
+   *
+   * @param diagnostics whether to track the high-water mark, packet drops, and pressure duration
+   * @param history the operational history recorder, or {@code null} to skip history recording
+   * @param id the session ID associated with recorded events
+   * @param transport the transport name associated with recorded events
+   */
+  void enableMonitoring(boolean diagnostics, OperationalHistory history, long id, String transport);
+
+  /**
    * Sets a set of rules for managing packets in queue.
    *
    * @param outboundQueuePolicy the implementation of {@link OutboundQueuePolicy} used to manage
@@ -160,4 +186,33 @@ public interface OutboundQueue {
    * Clears all packets from the queue.
    */
   void clear();
+
+  /**
+   * A snapshot of outbound queue occupancy, packet drops, and pressure.
+   *
+   * @param depth the last recorded number of packets in the queue
+   * @param capacity the maximum number of packets the queue can hold, or {@code -1} if unavailable
+   * @param highWater the highest recorded queue depth since diagnostics began, or {@code -1}
+   *     if unavailable
+   * @param fullDrops the number of packets rejected because the queue was full, or {@code -1}
+   *     if unavailable
+   * @param policyDrops the number of packets rejected for violating the outbound queue policy,
+   *     or {@code -1} if unavailable
+   * @param pressureAgeMillis the elapsed time in milliseconds since the current period of queue
+   *     pressure began, or {@code 0} if the queue is below the pressure threshold or pressure
+   *     tracking is unavailable
+   */
+  record Statistics(int depth, int capacity, int highWater, long fullDrops, long policyDrops, long pressureAgeMillis) {}
+
+  /**
+   * Returns a snapshot of outbound queue statistics.
+   *
+   * <p>The default implementation uses {@link #getSnapshotSize()} for depth, returns {@code -1}
+   * for capacity, high-water mark, and drop counters, and returns {@code 0} for pressure age.
+   *
+   * @return the outbound queue statistics snapshot
+   */
+  default Statistics statistics() {
+    return new Statistics(getSnapshotSize(), -1, -1, -1, -1, 0);
+  }
 }

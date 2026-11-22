@@ -60,15 +60,18 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 @DisplayName("Unit Test Cases For ZeroProcessorImpl")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ZeroProcessorImplTest {
 
   private static final String PLAYER_IDENTITY = "test-player";
@@ -98,7 +101,7 @@ public class ZeroProcessorImplTest {
   private NetworkWriterStatistic networkWriterStatistic;
   private ZeroProcessorImpl processor;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     processor = ZeroProcessorImpl.newInstance(eventManager, serverApi, datagramChannelManager);
     processor.setSessionManager(sessionManager);
@@ -116,18 +119,30 @@ public class ZeroProcessorImplTest {
         .thenReturn(true);
     when(session.isAssociatedToPlayer(Session.AssociatedState.DONE))
         .thenReturn(true);
+    when(session.beginPlayerAssociationClose()).thenReturn(true);
+    when(session.associatePlayer(player))
+        .thenReturn(true);
     when(session.getName())
         .thenReturn(PLAYER_IDENTITY);
     when(session.isTcp())
         .thenReturn(true);
+    when(player.getSession())
+        .thenReturn(Optional.of(session));
   }
 
   private void processSessionWillBeClosed(Session session) throws Exception {
+    processSessionWillBeClosed(session, ConnectionDisconnectMode.CLIENT_REQUEST,
+        PlayerDisconnectMode.CLIENT_REQUEST);
+  }
+
+  private void processSessionWillBeClosed(Session session,
+                                          ConnectionDisconnectMode connectionDisconnectMode,
+                                          PlayerDisconnectMode playerDisconnectMode) throws Exception {
     Method method =
         ZeroProcessorImpl.class.getDeclaredMethod("processSessionWillBeClosed",
-            Session.class, PlayerDisconnectMode.class);
+            Session.class, ConnectionDisconnectMode.class, PlayerDisconnectMode.class);
     method.setAccessible(true);
-    method.invoke(processor, session, PlayerDisconnectMode.CLIENT_REQUEST);
+    method.invoke(processor, session, connectionDisconnectMode, playerDisconnectMode);
   }
 
   private void processSessionReadMessage(Session session, DataCollection message) throws Exception {
@@ -198,14 +213,13 @@ public class ZeroProcessorImplTest {
 
     processor.processRequest(request);
 
-    verify(player).setSession(session);
+    verify(session).associatePlayer(player);
     verify(eventManager).emit(eq(ServerEvent.PLAYER_CONNECTION_RESUMED), eq(player), eq(session));
   }
 
   // Session Management Tests
   @Test
   public void shouldHandleSessionWillBeClosed() throws Exception {
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
     when(player.isInRoom()).thenReturn(false);
@@ -217,15 +231,32 @@ public class ZeroProcessorImplTest {
     verify(playerManager).removePlayerByIdentity(PLAYER_IDENTITY);
     verify(player).clean();
     verify(session).setName(null);
-    verify(session).setAssociatedToPlayer(Session.AssociatedState.NONE);
     verify(session).remove();
     verify(eventManager).emit(eq(ServerEvent.DISCONNECT_PLAYER), eq(player),
+        eq(PlayerDisconnectMode.CLIENT_REQUEST));
+    verify(eventManager).emit(eq(ServerEvent.CONNECTION_WILL_BE_CLOSED), eq(session),
         eq(PlayerDisconnectMode.CLIENT_REQUEST));
   }
 
   @Test
+  public void shouldNotDisconnectPlayerWhenClosingStaleSession() throws Exception {
+    Session newerSession = mock(Session.class);
+    when(session.getName()).thenReturn(PLAYER_IDENTITY);
+    when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
+    when(player.getSession()).thenReturn(Optional.of(newerSession));
+
+    processSessionWillBeClosed(session);
+
+    verify(serverApi, never()).unsubscribeFromAllChannels(player);
+    verify(serverApi, never()).leaveRoom(eq(player), any());
+    verify(eventManager, never()).emit(eq(ServerEvent.DISCONNECT_PLAYER), any(), any());
+    verify(player, never()).setSession(null);
+    verify(playerManager, never()).removePlayerByIdentity(any());
+    verify(session).remove();
+  }
+
+  @Test
   public void shouldProcessSessionReadMessage() throws Exception {
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
 
@@ -302,14 +333,21 @@ public class ZeroProcessorImplTest {
   }
 
   @Test
-  public void shouldSetKeepPlayerOnDisconnection() throws Exception {
+  public void shouldKeepPlayerOnDisconnection() throws Exception {
     processor.setKeepPlayerOnDisconnection(true);
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
     reset(eventManager); // Clear previous interactions
-    processSessionWillBeClosed(session);
+
+    processSessionWillBeClosed(session, ConnectionDisconnectMode.LOST_IN_READ,
+        PlayerDisconnectMode.CONNECTION_LOST);
+
+    verify(player).setSession(null);
+    verify(serverApi, never()).unsubscribeFromAllChannels(player);
+    verify(serverApi, never()).leaveRoom(eq(player), any());
+    verify(eventManager, never()).emit(eq(ServerEvent.DISCONNECT_PLAYER), eq(player), any());
     verify(playerManager, never()).removePlayerByIdentity(any());
+    verify(player, never()).clean();
   }
 
   @Test
@@ -341,17 +379,16 @@ public class ZeroProcessorImplTest {
 
   @Test
   public void shouldHandleSessionWillBeClosedWhenNotAssociatedToDone() throws Exception {
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(false);
+    when(session.beginPlayerAssociationClose()).thenReturn(false);
     processSessionWillBeClosed(session);
     verify(playerManager, never()).getPlayerByIdentity(any());
     verify(session).setName(null);
-    verify(session).setAssociatedToPlayer(Session.AssociatedState.NONE);
+    verify(session, never()).setAssociatedToPlayer(any());
     verify(session).remove();
   }
 
   @Test
   public void shouldHandleSessionWillBeClosedWhenPlayerIsInRoom() throws Exception {
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
     when(player.isInRoom()).thenReturn(true);
@@ -362,7 +399,6 @@ public class ZeroProcessorImplTest {
 
   @Test
   public void shouldHandleSessionWillBeClosedWhenPlayerIsNull() throws Exception {
-    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
     when(session.getName()).thenReturn(PLAYER_IDENTITY);
     when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(null);
     processSessionWillBeClosed(session);
@@ -388,6 +424,19 @@ public class ZeroProcessorImplTest {
     processSessionReadMessage(session, message);
     verify(session).setLastReadTime(any(Long.class));
     verify(session).increaseReadMessages();
+    verify(eventManager, never()).emit(eq(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER), any(), any());
+  }
+
+  @Test
+  public void shouldIgnoreMessageFromSupersededSession() throws Exception {
+    Session replacementSession = mock(Session.class);
+    when(session.isAssociatedToPlayer(Session.AssociatedState.DONE)).thenReturn(true);
+    when(session.getName()).thenReturn(PLAYER_IDENTITY);
+    when(playerManager.getPlayerByIdentity(PLAYER_IDENTITY)).thenReturn(player);
+    when(player.getSession()).thenReturn(Optional.of(replacementSession));
+
+    processSessionReadMessage(session, message);
+
     verify(eventManager, never()).emit(eq(ServerEvent.RECEIVED_MESSAGE_FROM_PLAYER), any(), any());
   }
 
@@ -443,7 +492,6 @@ public class ZeroProcessorImplTest {
   public void shouldCloseOldSessionOnReconnectionWhenCurrentSessionIsActivated() throws Exception {
     Session currentSession = mock(Session.class);
     when(currentSession.isActivated()).thenReturn(true);
-    when(currentSession.getName()).thenReturn("old-name");
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING)).thenReturn(true);
@@ -458,6 +506,34 @@ public class ZeroProcessorImplTest {
     processor.processRequest(request);
     verify(currentSession).close(
         eq(ConnectionDisconnectMode.RECONNECTION), eq(PlayerDisconnectMode.RECONNECTION));
+  }
+
+  @Test
+  public void shouldLetWriterCloseOldSessionAfterFinalResponseOnReconnection() throws Exception {
+    Session currentSession = mock(Session.class);
+    when(currentSession.isActivated()).thenReturn(true);
+    when(currentSession.isCloseAfterPendingWriteMarked()).thenReturn(true);
+    when(session.isActivated()).thenReturn(true);
+    when(session.transitionAssociatedState(Session.AssociatedState.NONE,
+        Session.AssociatedState.DOING)).thenReturn(true);
+    when(session.associatePlayer(player)).thenReturn(true);
+    when(eventManager.emit(eq(ServerEvent.PLAYER_CONNECTION_RETRY), eq(session), eq(message)))
+        .thenReturn(Optional.of(player));
+    when(player.getSession()).thenReturn(Optional.of(currentSession));
+    when(player.isInRoom()).thenReturn(false);
+    Request request = SessionRequest.newInstance()
+        .setEvent(ServerEvent.SESSION_REQUEST_CONNECTION)
+        .setSender(session)
+        .setMessage(message);
+
+    processor.processRequest(request);
+
+    verify(currentSession).prepareForReplacement();
+    verify(eventManager).emit(eq(ServerEvent.PLAYER_CONNECTION_REPLACING), eq(player),
+        eq(currentSession), eq(session));
+    verify(currentSession, never()).close(
+        eq(ConnectionDisconnectMode.RECONNECTION), eq(PlayerDisconnectMode.RECONNECTION));
+    verify(session).associatePlayer(player);
   }
 
   @Test
@@ -624,7 +700,6 @@ public class ZeroProcessorImplTest {
   public void shouldHandleIOExceptionFromCurrentSessionCloseOnReconnection() throws Exception {
     Session currentSession = mock(Session.class);
     when(currentSession.isActivated()).thenReturn(true);
-    when(currentSession.getName()).thenReturn("old-session");
     when(session.isActivated()).thenReturn(true);
     when(session.transitionAssociatedState(Session.AssociatedState.NONE,
         Session.AssociatedState.DOING)).thenReturn(true);
@@ -641,7 +716,7 @@ public class ZeroProcessorImplTest {
         .setMessage(message);
 
     processor.processRequest(request);
-    verify(player).setSession(session);
+    verify(session).associatePlayer(player);
   }
 
   @Test

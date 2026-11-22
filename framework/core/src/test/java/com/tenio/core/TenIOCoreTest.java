@@ -24,30 +24,14 @@ THE SOFTWARE.
 
 package com.tenio.core;
 
-import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.IncludeEngines;
 import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
-import org.junit.runner.RunWith;
 
-@RunWith(JUnitPlatform.class)
+@Suite
+@IncludeEngines("junit-jupiter")
 @SuiteDisplayName("Test all unit test cases for tenio-core module")
-@SelectPackages({
-    "com.tenio.core",
-    "com.tenio.core.api",
-    "com.tenio.core.bootstrap",
-    "com.tenio.core.command",
-    "com.tenio.core.configuration",
-    "com.tenio.core.entity",
-    "com.tenio.core.event",
-    "com.tenio.core.exception",
-    "com.tenio.core.handler",
-    "com.tenio.core.manager",
-    "com.tenio.core.monitoring",
-    "com.tenio.core.network",
-    "com.tenio.core.processor",
-    "com.tenio.core.scheduler",
-    "com.tenio.core.server",
-    "com.tenio.core.utility"
-})
+@SelectPackages("com.tenio.core")
 class TenIOCoreTest {
 }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -177,10 +178,11 @@ class PathTest {
 
     path.setPath(path1);
     Vector2 expectedCurrentWayPoint = path1.getCurrentWayPoint();
-    assertSame(expectedCurrentWayPoint, path.getCurrentWayPoint());
+    assertTrue(expectedCurrentWayPoint.isEqual(path.getCurrentWayPoint()));
     assertFalse(path.isEndOfWayPoints());
     List<Vector2> expectedWayPoints = path1.getWayPoints();
-    assertSame(expectedWayPoints, path.getWayPoints());
+    assertEquals(expectedWayPoints.size(), path.getWayPoints().size());
+    assertNotSame(expectedWayPoints, path.getWayPoints());
   }
 
   @Test
@@ -216,8 +218,8 @@ class PathTest {
     vector2List.add(Vector2.newInstance());
     path.setWayPoints(vector2List);
     Vector2 expectedCurrentWayPoint = vector2List.getFirst();
-    assertSame(expectedCurrentWayPoint, path.getCurrentWayPoint());
+    assertTrue(expectedCurrentWayPoint.isEqual(path.getCurrentWayPoint()));
     assertTrue(path.isEndOfWayPoints());
-    assertSame(vector2List, path.getWayPoints());
+    assertNotSame(vector2List, path.getWayPoints());
   }
 }
