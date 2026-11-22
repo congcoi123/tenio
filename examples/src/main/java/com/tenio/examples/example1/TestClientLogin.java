@@ -29,6 +29,8 @@ import com.tenio.common.data.DataUtility;
 import com.tenio.examples.client.ClientUtility;
 import com.tenio.examples.client.SocketListener;
 import com.tenio.examples.client.TCP;
+import com.tenio.examples.client.ClientTasks;
+import java.io.IOException;
 import com.tenio.examples.server.SharedEventKey;
 
 /**
@@ -45,27 +47,21 @@ public final class TestClientLogin implements SocketListener<DataCollection> {
 
   private static final int SOCKET_PORT = 8032;
   private final TCP tcp;
+  private final ClientTasks tasks = new ClientTasks();
 
-  public TestClientLogin() {
-    // create a new TCP object and listen to this port
-    tcp = new TCP(SOCKET_PORT, it -> {
-      it.receive(TestClientLogin.this);
-
-      String name = ClientUtility.generateRandomString(5);
-
-      // send a login request
-      var request = DataUtility.newMsgMap();
-      request.putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
-      it.send(request);
-
-      System.err.println("Login Request -> " + request);
-    });
+  public TestClientLogin() throws IOException {
+    tcp = new TCP("localhost", SOCKET_PORT, 5000);
+    tcp.handleDisconnection(tasks::close);
+    String name = ClientUtility.generateRandomString(5);
+    var request = DataUtility.newMsgMap().putString(SharedEventKey.KEY_PLAYER_LOGIN, name);
+    tcp.send(request);
+    tcp.receive(this);
   }
 
   /**
    * The entry point
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     new TestClientLogin();
   }
 
@@ -73,12 +69,10 @@ public final class TestClientLogin implements SocketListener<DataCollection> {
   public void onReceivedTCP(DataCollection parcel) {
     System.out.println("[RECV FROM SERVER TCP] -> " + parcel.toString());
 
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException exception) {
-      exception.printStackTrace();
-    }
+    tasks.later(this::sendEcho, 1000);
+  }
 
+  private void sendEcho() {
     var request = DataUtility.newMsgMap();
     request.putString(SharedEventKey.KEY_CLIENT_SERVER_ECHO, "Hello from client");
     tcp.send(request);

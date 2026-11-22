@@ -2,18 +2,18 @@
 <Server>
 
 	<Properties>
+		<!-- Required startup profile; blank annotation restrictions match every profile. -->
+		<Property name="profile">default,monitor,history</Property>
 		<!-- The server name -->
 		<Property name="server-name">Example</Property>
 		<!-- The server id (module name) -->
 		<Property name="server-id">tenio-example-11</Property>
 		<!-- The server address -->
-		<Property name="server-address">localhost</Property>
+		<Property name="server-address">0.0.0.0</Property>
 		<!-- The current version code of your server in integer type (comparable) -->
 		<Property name="version-code">1</Property>
 		<!-- The current version name of your server in string type -->
 		<Property name="version-name">1.0</Property>
-		<!-- Set this flag to `true` to enable terminal command -->
-		<Property name="enable-terminal-command">true</Property>
 	</Properties>
 
 	<Network>
@@ -47,22 +47,6 @@
 			<Worker name="websocket-producer">0</Worker>
 			<Worker name="websocket-consumer">0</Worker>
 		</Workers>
-		<Schedules>
-			<!-- Get the period checking in seconds which server can keep the empty 
-				 room -->
-			<Task name="removed-room-scan-interval">30</Task>	<!-- Unit: Seconds -->
-			<!-- The period checking player time out in seconds -->
-			<Task name="disconnected-player-scan-interval">45</Task>		<!-- Unit: Seconds -->
-			<!-- The period checking CCU in seconds -->
-			<Task name="ccu-scan-interval">60</Task>			<!-- Unit: Seconds -->
-			<!-- Schedule detecting deadlocked threads -->
-			<Task name="deadlock-scan-interval">60</Task>			<!-- Unit: Seconds -->
-			<!-- The delay between two computations of performances for channels or 
-				 0 if no statics are to be computed -->
-			<Task name="traffic-counter-interval">60</Task>	<!-- Unit: Seconds -->
-			<!-- The period monitoring system -->
-			<Task name="system-monitoring-interval">60</Task>		<!-- Unit: Seconds -->
-		</Schedules>
 		<Properties>
 			<!-- When this queue size is set to 0, then there is no restriction -->
 			<Property name="max-session-request-queue-size">100</Property>
@@ -82,7 +66,6 @@
 			<!-- The max IDLE time in seconds which server can wait from the last 
 				 getting message from client -->
 			<Property name="max-player-idle-time">180</Property>		<!-- Unit: Seconds -->
-			<Property name="max-player-idle-time-never-deported">86400</Property>	<!-- Unit: Seconds -->
 		</Properties>
 	</Configuration>
 

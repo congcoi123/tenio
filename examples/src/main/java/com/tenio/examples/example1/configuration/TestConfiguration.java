@@ -24,23 +24,10 @@ THE SOFTWARE.
 
 package com.tenio.examples.example1.configuration;
 
-import com.tenio.common.configuration.Configuration;
 import com.tenio.core.bootstrap.annotation.Setting;
-import com.tenio.core.configuration.CoreConfiguration;
-import com.tenio.examples.server.ExampleConfigurationType;
-import java.util.Map;
+import com.tenio.examples.server.AbstractExampleConfiguration;
 
-/**
- * Create your own configurations.
- */
+/** Example-local scan entry using the shared extension configuration parser. */
 @Setting
-public final class TestConfiguration extends CoreConfiguration implements Configuration {
-
-  @Override
-  protected void extend(Map<String, String> extProperties) {
-    for (Map.Entry<String, String> entry : extProperties.entrySet()) {
-      var paramName = entry.getKey();
-      push(ExampleConfigurationType.getByValue(paramName), String.valueOf(entry.getValue()));
-    }
-  }
+public final class TestConfiguration extends AbstractExampleConfiguration {
 }

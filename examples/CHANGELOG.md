@@ -106,3 +106,16 @@
 
 ## 0.7.3 2026-05-29 Feature release
 - Upgraded dependencies
+
+## 1.0.0 2026-11-11 Feature release
+- Updated the tenio-core dependency to 1.0.0; added the required startup profile property to existing XML configurations.
+- Removed calls to the deleted setNeverDeported API and its obsolete XML property.
+- Added example12 with development, production and development+metrics profiles, selected components, bean factory methods, field injection, event handlers and a finite client.
+- Reworked shared TCP/UDP transports: explicit endpoints, bounded TCP frame lengths, serialized writes, exact UDP packet lengths, peer filtering, single receive loop and idempotent close.
+- Fixed the MsgPack UDP registration/convey-ID/echo flow.
+- Moved delayed echoes out of reader callbacks; tied client tasks and movement measurements to connection lifetime.
+- Fixed stress-client concurrent map access and identity collisions; reduced default load to 100 with an explicit system-property override.
+- Made movement counters atomic across interval resets and replaced unbounded statistics lists with lifetime aggregates.
+- Consolidated identical extension configuration parsing into AbstractExampleConfiguration while keeping each example's local Setting entry.
+- Used Java HttpClient with timeouts in the REST example, corrected the assembly main class, honored configuration arguments and guarded terminal-command arguments.
+- Added transport, profile, configuration and statistics regression tests.

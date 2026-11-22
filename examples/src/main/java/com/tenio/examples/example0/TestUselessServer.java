@@ -34,6 +34,6 @@ import com.tenio.core.bootstrap.annotation.Bootstrap;
 public final class TestUselessServer {
 
     public static void main(String[] params) {
-        ApplicationLauncher.run(TestUselessServer.class);
+        ApplicationLauncher.run(TestUselessServer.class, params);
     }
 }

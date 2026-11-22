@@ -40,7 +40,7 @@ public final class AccessDatagramChannelRequestValidationResultHandler extends A
   public void onAccessDatagramChannelRequestValidationResult(Player player, int udpConv, AccessDatagramChannelResult result) {
     if (result == AccessDatagramChannelResult.SUCCESS) {
       var parcel = msgmap().putIntegerArray(SharedEventKey.KEY_ALLOW_TO_ACCESS_UDP_CHANNEL,
-          new int[] { DatagramEstablishedState.ESTABLISHED });
+          new int[] { DatagramEstablishedState.ESTABLISHED, udpConv });
 
       response().setContent(parcel).setRecipientPlayer(player).write();
     }

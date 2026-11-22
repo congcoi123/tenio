@@ -25,75 +25,68 @@ THE SOFTWARE.
 package com.tenio.examples.client;
 
 import com.tenio.common.data.DataCollection;
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoder;
-import com.tenio.core.network.codec.decoder.BinaryPacketDecoderImpl;
-import com.tenio.core.network.codec.encoder.BinaryPacketEncoder;
-import com.tenio.core.network.codec.encoder.BinaryPacketEncoderImpl;
-import com.tenio.core.network.entity.outbound.packet.implement.PacketImpl;
 import com.tenio.core.network.entity.session.Session;
-import com.tenio.core.network.zero.handler.frame.BinaryPacketFramer;
-import com.tenio.core.network.zero.handler.frame.PacketFramingListener;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-/**
- * Create an object for handling a socket connection. It is used to send
- * messages to a server or receive messages from that one.
- */
-public final class TCP implements PacketFramingListener {
+/** A blocking example transport with one owned reader and serialized writes. */
+public final class TCP implements AutoCloseable {
 
-  private static final int DEFAULT_BYTE_BUFFER_SIZE = 10240;
-  private static final String LOCAL_HOST = "localhost";
+  private final Socket socket = new Socket();
+  private final ClientCodec codec = new ClientCodec();
+  private final Session session = new CustomSession();
+  private final AtomicBoolean receiving = new AtomicBoolean();
+  private final AtomicBoolean closed = new AtomicBoolean();
+  private final DataInputStream input;
+  private final DataOutputStream output;
+  private volatile Consumer<Throwable> errorHandler = Throwable::printStackTrace;
+  private volatile Runnable disconnected = () -> { };
 
-  private SocketListener socketListener;
-  private Future<?> future;
-  private Socket socket;
-  private DataOutputStream dataOutputStream;
-  private DataInputStream dataInputStream;
-  private ByteArrayOutputStream byteArrayOutputStream;
-  private Session session;
-  private BinaryPacketFramer binaryPacketFramer;
-  private BinaryPacketEncoder binaryPacketEncoder;
-
-  /**
-   * Listen in a port on the local machine.
-   *
-   * @param port      the desired port
-   * @param onSuccess TCP connected successfully
-   */
-  public TCP(int port, Consumer<TCP> onSuccess) {
+  /** Connect without starting callbacks; configure listeners before calling receive. */
+  public TCP(String host, int port, int timeoutMillis) throws IOException {
+    if (timeoutMillis <= 0) {
+      throw new IllegalArgumentException("Connection timeout must be positive");
+    }
     try {
-      socket = new Socket(LOCAL_HOST, port);
-      dataOutputStream = new DataOutputStream(socket.getOutputStream());
-      dataInputStream = new DataInputStream(socket.getInputStream());
-      byteArrayOutputStream = new ByteArrayOutputStream();
+      socket.connect(new InetSocketAddress(host, port), timeoutMillis);
+      socket.setTcpNoDelay(true);
+      socket.setKeepAlive(true);
+      input = new DataInputStream(socket.getInputStream());
+      output = new DataOutputStream(socket.getOutputStream());
+    } catch (IOException | RuntimeException exception) {
+      socket.close();
+      throw exception;
+    }
+  }
 
-      session = new CustomSession();
+  /** Compatibility adapter for existing examples. Prefer the explicit constructor. */
+  public TCP(int port, Consumer<TCP> onSuccess) {
+    this("localhost", port, onSuccess);
+  }
 
-      var binaryCompressor = new DefaultBinaryPacketCompressor();
-      var binaryEncryptor = new DefaultBinaryPacketEncryptor();
-
-      binaryPacketEncoder = new BinaryPacketEncoderImpl();
-      binaryPacketEncoder.setCompressor(binaryCompressor);
-      binaryPacketEncoder.setEncryptor(binaryEncryptor);
-
-      BinaryPacketDecoder binaryPacketDecoder = new BinaryPacketDecoderImpl();
-      binaryPacketDecoder.setCompressor(binaryCompressor);
-      binaryPacketDecoder.setEncryptor(binaryEncryptor);
-
-      binaryPacketFramer = new BinaryPacketFramer();
-      binaryPacketFramer.setBinaryPacketDecoder(binaryPacketDecoder);
-      binaryPacketFramer.setPacketFramingResult(this);
-
-      onSuccess.accept(this);
+  public TCP(String host, int port, Consumer<TCP> onSuccess) {
+    try {
+      socket.connect(new InetSocketAddress(host, port), 5000);
+      socket.setTcpNoDelay(true);
+      socket.setKeepAlive(true);
+      input = new DataInputStream(socket.getInputStream());
+      output = new DataOutputStream(socket.getOutputStream());
     } catch (IOException exception) {
-      exception.printStackTrace();
+      close();
+      throw new UncheckedIOException(exception);
+    }
+    try {
+      Objects.requireNonNull(onSuccess).accept(this);
+    } catch (RuntimeException exception) {
+      close();
+      throw exception;
     }
   }
 
@@ -101,65 +94,74 @@ public final class TCP implements PacketFramingListener {
     return session;
   }
 
-  /**
-   * Send a message to the server.
-   *
-   * @param message the desired message
-   */
-  public void send(DataCollection message) {
-    // convert message object to binaries data
-    var packet = PacketImpl.newInstance();
-    packet.setDataType(message.getType());
-    packet.setData(message.toBinaries());
-    packet.hasLengthPrefixed(true);
-    packet = binaryPacketEncoder.encode(packet);
-    // attach the packet's length to packet's header
-    var binaries = packet.getData();
+  public boolean isClosed() {
+    return closed.get();
+  }
+
+  public void handleException(Consumer<Throwable> handler) {
+    errorHandler = Objects.requireNonNull(handler);
+  }
+
+  /** Registered before receive; invoked once when this transport closes, including EOF. */
+  public void handleDisconnection(Runnable action) {
+    disconnected = Objects.requireNonNull(action);
+  }
+
+  public synchronized void send(DataCollection message) {
+    if (isClosed()) {
+      throw new IllegalStateException("TCP is closed");
+    }
+    byte[] bytes = codec.encode(Objects.requireNonNull(message), true);
     try {
-      dataOutputStream.write(binaries);
-      dataOutputStream.flush();
+      output.write(bytes);
+      output.flush();
     } catch (IOException exception) {
-      exception.printStackTrace();
+      close();
+      throw new UncheckedIOException(exception);
     }
   }
 
-  /**
-   * Listen to messages that came from the server.
-   *
-   * @param listener the socket listener
-   */
-  public void receive(SocketListener listener) {
-    socketListener = listener;
-    var executorService = Executors.newSingleThreadExecutor();
-    future = executorService.submit(() -> {
-      var binaries = new byte[DEFAULT_BYTE_BUFFER_SIZE];
-      int readBytes;
+  /** Call once. Callbacks execute on the reader; do not block them. */
+  public <D extends DataCollection> void receive(SocketListener<D> listener) {
+    Objects.requireNonNull(listener);
+    if (isClosed() || !receiving.compareAndSet(false, true)) {
+      throw new IllegalStateException("TCP receive already started or connection closed");
+    }
+    // Platform thread keeps command-line clients alive; close/EOF terminates it.
+    Thread.ofPlatform().name("tenio-example-tcp-reader").start(() -> {
       try {
-        while ((readBytes = dataInputStream.read(binaries, 0, binaries.length)) != -1) {
-          byteArrayOutputStream.reset();
-          byteArrayOutputStream.write(binaries, 0, readBytes);
-          binaryPacketFramer.framing(session, byteArrayOutputStream.toByteArray());
+        while (!isClosed()) {
+          var message = codec.read(input);
+          if (message == null) {
+            break;
+          }
+          deliver(listener, message);
         }
       } catch (IOException | RuntimeException exception) {
-        exception.printStackTrace();
+        if (!isClosed()) {
+          errorHandler.accept(exception);
+        }
+      } finally {
+        close();
       }
     });
   }
 
-  /**
-   * Close this connection.
-   */
-  public void close() {
-    try {
-      socket.close();
-      future.cancel(true);
-    } catch (IOException exception) {
-      exception.printStackTrace();
-    }
+  @SuppressWarnings("unchecked")
+  private static <D extends DataCollection> void deliver(SocketListener<D> listener, DataCollection message) {
+    listener.onReceivedTCP((D) message);
   }
 
   @Override
-  public void onFramedResult(Session session, DataCollection message) {
-    socketListener.onReceivedTCP(message);
+  public void close() {
+    if (closed.compareAndSet(false, true)) {
+      try {
+        socket.close(); // Unblocks read without waiting on the writer monitor.
+      } catch (IOException exception) {
+        errorHandler.accept(exception);
+      } finally {
+        disconnected.run();
+      }
+    }
   }
 }
